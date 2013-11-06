@@ -55,6 +55,16 @@ namespace RadialReview.Controllers
             });
         }
 
+        public ActionResult Error()
+        {
+            throw new Exception();
+        }
+
+        public ActionResult Perm()
+        {
+            throw new PermissionsException();
+        }
+
         public ActionResult Save(SaveUserModel save)
         {
             try

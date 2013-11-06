@@ -9,11 +9,16 @@ using Microsoft.AspNet.Identity;
 using RadialReview.Exceptions;
 using System.Web.Routing;
 using RadialReview.Properties;
+using log4net;
 
 namespace RadialReview.Controllers
 {
     public class BaseController : Controller
     {
+        protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+
+
         protected static UserAccessor _UserAccessor = new UserAccessor();
 
         protected void EditableOrException(UserOrganizationModel user)
@@ -68,31 +73,38 @@ namespace RadialReview.Controllers
             if (filterContext.ExceptionHandled)
                 return;
 
+            
+
 
             if (filterContext.Exception is LoginException)
             {
                 var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                 if (redirectUrl == null)
                     redirectUrl = Request.Url.PathAndQuery;
-
+                log.Info("Login: [" + Request.Url.PathAndQuery+"] --> ["+redirectUrl+"]");
                 filterContext.Result = RedirectToAction("Login", "Account", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             }
             else if (filterContext.Exception is RedirectException)
             {
-                filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl });
+                var returnUrl=((RedirectException)filterContext.Exception).RedirectUrl;
+                log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
+                filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             }
             else if (filterContext.Exception is OrganizationIdException)
             {
-                filterContext.Result = RedirectToAction("ManagingList", "Organization", new { message = filterContext.Exception.Message, returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl });
+                var redirectUrl=((RedirectException)filterContext.Exception).RedirectUrl;
+                log.Info("Organization: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
+                filterContext.Result = RedirectToAction("ManagingList", "Organization", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             }
             else
             {
+               log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);
                base.OnException(filterContext);
             }
         }
