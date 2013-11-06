@@ -1,0 +1,62 @@
+﻿@model IEnumerable<RadialReview.Models.QuestionCategoryModel>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+<style>
+    .glyphicon-ban-circle {
+        color: #F54165;
+        -webkit-text-shadow: 0px -1px 0px #C4C4C4;
+        text-shadow: 0px -1px 0px #C4C4C4;
+        filter: dropshadow(color=#C4C4C4, offx=0, offy=-1);
+    }
+    .glyphicon-ok {
+        color: #6ADD6A;
+        -webkit-text-shadow: 0px -1px 0px #C4C4C4;
+        text-shadow: 0px -1px 0px #C4C4C4;
+        filter: dropshadow(color=#C4C4C4, offx=0, offy=-1);
+    }
+</style>
+}
+
+<h2>Question Categories</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th style="width:10px;">
+            @Html.DisplayNameFor(model => model.DeleteTime)
+        </th>
+        <th style="">
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th style=""></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td style="width: 10px; text-align:center">
+            @if (item.Active)
+            {
+                <span class="glyphicon glyphicon-ok"></span>
+            }
+            else
+            { 
+                <span class="glyphicon glyphicon-ban-circle "></span>
+            }
+        </td>
+        <td style="">
+            @Html.DisplayFor(modelItem => item.Category)
+        </td>
+        <td style="">
+            @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+        </td>
+    </tr>
+}
+
+</table>

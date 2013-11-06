@@ -1,0 +1,19 @@
+﻿@model RadialReview.Models.ViewModels.ManageViewModel
+
+<table class="table">
+    <tr>
+        <th>Group</th>
+        <th style="width:120px"># Members</th>
+        <th style="width:50px">
+            <a href="@Url.Action("Create", "Group", new {organizationId=Model.Organization.Id})" role="button" class="btn addButton" data-toggle="modal">+</a>
+        </th>
+    </tr>
+    @foreach (var group in Model.ManagingGroups)
+    {
+        <tr>
+            <td>@group.GroupName</td>
+            <td>@group.GroupUsers.Count</td>
+            <td><a href="@Url.Action("Edit", "Group", new {id=group.Id})" class="btn btn-info">Edit</a></td>
+        </tr>
+    }
+</table>

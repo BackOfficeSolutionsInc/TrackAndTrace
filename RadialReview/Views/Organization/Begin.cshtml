@@ -1,0 +1,163 @@
+﻿@{
+    ViewBag.Title = "Begin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section styles{
+    <style>
+        .rect {
+            width: 100%;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        h4, h3 {
+            margin-bottom: 0px;
+            margin-top: 5px;
+        }
+
+        .btn-success {
+            position: relative;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            height: 40px;
+            padding-top:8px;
+            font-size: 16px;
+        }
+
+        input {
+            width: 100%;
+        }
+
+        .bordered {
+            text-align: center;
+            /*max-width: 160px;*/
+            margin-bottom: 20px;
+            border: 1px solid #DDD;
+            padding: 7px;
+            border-radius: 5px;
+            background-color: #F5FAFF;
+            -webkit-box-shadow: 0px 0px 6px 0px rgba(1, 1, 1, .1);
+            box-shadow: 0px 0px 6px 0px rgba(1, 1, 1, .1);
+            padding-bottom: 25px;
+            -webkit-transition: .2s linear;
+            -moz-transition: .2s linear;
+            -ms-transition: .2s linear;
+            -o-transition: .2s linear;
+            transition: .2s linear;
+            cursor: pointer;
+        }
+
+            .bordered:hover {
+                background-color: #FFDE5F;
+                -webkit-box-shadow: 0px 0px 10px 0px #FFFF32;
+                box-shadow: 0px 0px 10px 0px #FFD600;
+                border-color: #FFD600;
+                padding-top: 8px;
+                padding-bottom: 24px;
+                padding-left: 7px;
+                text-shadow: 0px 0px 3px #FFF4BD,0px 0px 0px #000;
+                filter: dropshadow(color=#FAC009, offx=0, offy=0);
+                color: #8D822F;
+                /*background-color: #DAFDE0;
+                -webkit-box-shadow: 0px -1px 6px 0px rgba(255, 255, 255, .1);
+                box-shadow: 0px -1px 6px 0px rgba(255, 255, 255, .1);*/
+            }
+
+        .oneline {
+            display: inline-block;
+        }
+
+        .buttonContainer {
+            padding-top: 20px;
+        }
+    </style>
+}
+<div class="row">
+    @if (ViewBag.Count == null)
+{
+    <div class="col-md-8 col-md-offset-2 jumbotron">
+        <div class="center">
+            <h4>First things first:</h4><br />
+            <h5>How many employees does your organization have?</h5>
+        </div><br />
+        @using (Html.BeginForm("Begin", "Organization", FormMethod.Get))
+        {
+            <div class="row">
+                <input class="col-md-8 col-md-offset-2" type="text" name="count" placeholder="Number of employees" autocomplete="off" />
+            </div><div class="row-fluid">
+                      <input class="col-md-8 col-md-offset-2 btn btn-success " type="submit" />
+            </div>
+        }
+    </div>
+}
+    else if (ViewBag.Count <= 10)
+    {
+        <div class="col-md-12 jumbotron">
+            <div class="center">
+                <h3><span class="oneline">So your organization has</span> <span class="oneline">fewer than 11 members?</span></h3>
+                <h4><span class="oneline">That means you're</span> <span class="oneline">good to go.</span></h4>
+            </div>
+            <br />
+            <div class="row">
+                <a class="btn btn-success col-md-6 col-md-offset-3" href="@Url.Action("Create", "Organization", new { count = ViewBag.Count })">Let's get started &#187;</a>
+            </div>
+        </div>
+    }
+    else if (ViewBag.Count > 500)
+    {
+        <div class="col-md-12 jumbotron">
+            <div class="center">
+                <h3><span class="oneline">So your organization has</span> <span class="oneline">501+ members?</span></h3>
+                <h4><span class="oneline">You qualify for our</span> <span class="oneline">enterprise solution.</span></h4>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-6">
+                    <p>@RadialReview.Properties.ProductStrings.ProductName Enterprise license includes additional support. </p>
+                    <ul>
+                        <li>24&times;7 online & phone support</li>
+                        <li>Access to online training videos</li>
+                    </ul>
+                </div>
+                <div class="col-md-6 center">
+                    <div class="bordered noselect" onclick="window.open('mailto:@RadialReview.Properties.ProductStrings.PurchaseEmail?Subject=Requesting a quote&')">
+                        <h3><span class="oneline">Call or Email 24&times;7</span> <span class="oneline"> for a quote!</span></h3>
+                        <br />
+                        <h4>@RadialReview.Properties.ProductStrings.PurchaseEmail</h4><br />
+                        <h4>@RadialReview.Properties.ProductStrings.PurchaseNumber</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-12 jumbotron">
+            <div class="center">
+                <h3><span class="oneline">So your organization has</span> <span class="oneline">@ViewBag.Count members?</span></h3>
+                <h4><span class="oneline">That means @RadialReview.Properties.ProductStrings.ProductName</span> <span class="oneline">only costs your organization $@ViewBag.Price/year.</span></h4>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-6">
+                    <p>@RadialReview.Properties.ProductStrings.ProductName also comes with the follow support: </p>
+                    <ul>
+                        <li>24&times;7 online & phone support</li>
+                        <li>Access to online training videos</li>
+                    </ul>
+                </div>
+                <div class="col-md-6 center">
+                    <div class="buttonContainer row">
+                        <a class="btn btn-success col-md-6 col-md-offset-3" href="@Url.Action("Index", "Payment", new { count = ViewBag.Count })">Let's get started &#187;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

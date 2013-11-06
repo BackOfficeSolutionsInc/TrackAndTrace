@@ -1,0 +1,52 @@
+﻿@model RadialReview.Models.OrganizationModel
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12 jumbotron">
+        <div class="container">
+
+            <h2 class="text-center">Create Organization</h2>
+            <br />
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+
+
+                <div class="row col-md-6">
+                    <div class="col-md-12">
+                        <input type="text" class="form-control" name="@Html.NameFor(x=>x.Name)" placeholder="Organization Name" />
+                        @Html.ValidationMessageFor(model => model.Name, null, new { @class = "help-inline" })
+                    </div>
+                    <div class="col-md-12">
+                        <input type="checkbox" name="@Html.NameFor(x=>x.ManagersCanEdit)" />
+                        @Html.LabelFor(x => x.ManagersCanEdit)
+                        @Html.ValidationMessageFor(model => model.Name, null, new { @class = "help-inline" })
+                    </div>
+                </div>
+                <div class="row">
+                </div>
+
+                @*<fieldset class="form-horizontal">
+                        <div class="control-group">
+                            @Html.LabelFor(model => model.Name, new { @class = "control-label" })
+                            <div class="controls">
+
+                                <div class="input-group">
+                                    @Html.EditorFor(model => model.Name, new { @class = "form-control" })
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="submit">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>*@
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,134 @@
+﻿@model RadialReview.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/animations")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            circle(200, 300, "glowSpin", 80, 130, 23, -.5, 12, -1, "visible-md visible-lg", "glow2");
+            //circle(230, 300, "c1", 80, 130, 20, -1, 12, 0, "orange");
+            //circle(50, 30, "c2", 90, 100, 10, 1, 10, -1, "orange");
+        });
+
+    </script>
+}
+
+@section styles{
+    <style>
+        .glowSpin {
+            position: relative;
+            left:17% !important;
+        }
+
+        .glow2 > div {
+            -webkit-box-shadow: 0px 0px 20px 5px #98C7FF; /*rgba(255, 255, 255, .751);*/
+            box-shadow: 0px 0px 20px 5px #98C7FF; /*rgba(255, 255, 255, .751);*/
+            background-color: #98C7FF; /*rgba(255, 255, 255, .751);*/
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+        }
+
+        .orange > div {
+            background-color: rgba(255, 201, 14, .5); /*
+            -webkit-box-shadow: 0px 0px 20px 5px rgba(255, 201, 14, .751);
+            box-shadow: 0px 0px 20px 5px rgba(255, 201, 14,.751);*/
+        }
+
+        #regTitle {
+            font-size: 80px;
+            font-family: 'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
+            position: absolute;
+            left: calc(17% + 77px) !important;
+            top: 240px;
+            /*
+                position: absolute;
+                top: 240px;
+                left: 150px;
+                */
+            z-index: 100000;
+            color: #FCFDFF;
+            -webkit-text-shadow: 0px 0px 10px #9FA1B9;
+            text-shadow: 0px 0px 10px #9FA1B9;
+            filter: dropshadow(color=#9FA1B9, offx=0, offy=0);
+        }
+
+        #regSubtitle {
+            font-size: 36px;
+            position: absolute;
+            left: calc(17% + 193px) !important;
+            top: 321px;
+            /*position: absolute;
+            left: 272px;*/
+            z-index: 100000;
+            color: #68759E;
+            font-family: 'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
+            -webkit-text-shadow: 0px 0px 2px #888;
+            text-shadow: 0px 0px 2px #888;
+            filter: dropshadow(color=#888, offx=0, offy=0);
+        }
+    </style>
+
+
+
+}
+
+<div id="regTitle" class="visible-md visible-lg">Radial</div>
+<div id="regSubtitle" class="visible-md visible-lg">Review</div>
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div class="row col-md-6">
+        <div id="regCircle"></div>
+    </div>
+    <div class="row col-md-6">
+        <h3 class="col-md-offset-4">Create a new account.</h3>
+        @Html.AntiForgeryToken()
+        <hr />
+        @Html.ValidationSummary()
+        <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl"/>
+        <div class="form-group">
+            @Html.LabelFor(m => m.UserName, new { @class = "col-md-4 control-label"})
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control",placeholder=Html.DisplayNameFor(x=>x.UserName) })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Password, new { @class = "col-md-4 control-label" })
+            <div class=" col-md-8">
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.Password) })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
+            <div class=" col-md-8">
+                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.ConfirmPassword) })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.FirstName, new { @class = "col-md-4 control-label" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.FirstName) })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.LastName, new { @class = "col-md-4 control-label" })
+            <div class=" col-md-8">
+                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.LastName) })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-offset-5 col-md-8">
+                <input type="submit" class="btn btn-default" value="Register" />
+            </div>
+        </div>
+
+    </div>
+
+}
+

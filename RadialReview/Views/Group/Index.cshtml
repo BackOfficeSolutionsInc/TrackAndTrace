@@ -1,0 +1,31 @@
+﻿@model IList<RadialReview.Models.GroupModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Groups</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Edit")
+</p>
+
+
+<table>
+    @foreach (var group in Model)
+    {
+
+        <tr>
+            <td>
+
+                <a href="@Url.Action("Edit",new {Id=group.Id})">@group.GroupName</a>
+            </td>
+        </tr>
+    }
+</table>
+
+@*
+    Html.Partial("~/Views/Partial/_DragDrop.cshtml", Model.DragDrop.Start)
+*@
+
+

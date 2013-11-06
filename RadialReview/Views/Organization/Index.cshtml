@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+    <style>
+        table td {
+            border: 1px solid black;
+            padding: 14px;
+            width: 100px;
+        }
+
+        table h1, h2, h3, h4, h5, h6 {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .info {
+            width: 100%;
+            text-align: center;
+            padding-top: 20px;
+        }
+
+
+        .btn-success {
+            height: 40px;
+        }
+
+        .price {
+            text-align: center;
+            /*max-width: 160px;*/
+            margin-bottom: 20px;
+            border: 1px solid #DDD;
+            padding: 7px;
+            height: 74px;
+            border-radius: 5px;
+            background-color: #D2E8FF;/*#F5FAFF*/;
+            -webkit-box-shadow: 1px 1px 6px 0px rgba(1, 1, 1, .1);
+            box-shadow: 1px 1px 6px 0px rgba(1, 1, 1, .1);
+            -webkit-transition: .2s linear;
+            -moz-transition: .2s linear;
+            -ms-transition: .2s linear;
+            -o-transition: .2s linear;
+            transition: .2s linear;
+            cursor: pointer;
+        }
+
+            .price:hover {
+                background-color: #FFDE5F;
+                -webkit-box-shadow: 0px 0px 10px 0px #FFFF32;
+                box-shadow: 0px 0px 10px 0px #FFD600;
+                border-color: #FFD600;
+                padding-top: 9px;
+                padding-left: 7px;
+                text-shadow: 0px 0px 3px #FFF4BD,0px 0px 0px #000;
+                filter: dropshadow(color=#FAC009, offx=0, offy=0);
+                color: #8D822F;
+            }
+
+        .getStarted {
+            padding: 7px;
+            -webkit-transition: .2s linear;
+            -moz-transition: .2s linear;
+            -ms-transition: .2s linear;
+            -o-transition: .2s linear;
+            transition: .2s linear;
+        }
+
+            .getStarted:hover {
+                padding-top: 9px;
+                -webkit-box-shadow: 0px 0px 10px 0px #BDE0BD;
+                box-shadow: 0px 0px 10px 0px #BDE0BD;
+            }
+    </style>
+}
+
+<div class="row">
+    <div style="" class="rect col-md-12">
+        <div class="info">
+            <h2>Pricing that scales with your organization.</h2><br />
+            <h4>That's why your first 10 users are <a href="@Url.Action("Begin","Organization")">free</a>.</h4>
+        </div>
+        <br />
+        <br />
+        <div class="row center prices">
+            <div class="col-md-2 ">
+                <div class="price" onclick="document.location.href = '/Organization/Begin?count=15'">
+                    <h4>15 users.</h4><br />
+                    <h5>$199/year</h5>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="price" onclick="document.location.href = '/Organization/Begin?count=25'">
+                    <h4>25 users.</h4><br />
+                    <h5>$499/year</h5>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="price" onclick="document.location.href = '/Organization/Begin?count=50'">
+                    <h4>50 users.</h4><br />
+                    <h5>$999/year</h5>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="price" onclick="document.location.href = '/Organization/Begin?count=100'">
+                    <h4>100 users.</h4><br />
+                    <h5>$1999/year</h5>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="price" onclick="document.location.href = '/Organization/Begin?count=500'">
+                    <h4>500 users.</h4><br />
+                    <h5>$3999/year</h5>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="price" onclick="document.location.href = '/Organization/Begin?count=501'">
+                    <h4>500+ users.</h4><br />
+                    <h5>Request Quote &#187;</h5>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <button class="btn btn-success col-md-4 col-md-offset-4 getStarted" onclick="document.location.href='/Organization/Begin'">Let's get started &#187;</button>
+        </div>
+    </div>
+</div>

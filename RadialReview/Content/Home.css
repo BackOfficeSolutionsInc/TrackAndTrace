@@ -1,0 +1,84 @@
+﻿<style>
+        .inputBox:focus {
+            outline: none;
+        }
+
+        .inputBox {
+            width: 100%;
+            height: 40px;
+        }
+
+            .inputBox.name {
+                width: 48%;
+            }
+
+        .glowSpin {
+            position: relative;
+            left: 11% !important;
+        }
+
+        .glow2 > div {
+            -webkit-box-shadow: 0px 0px 20px 5px rgba(255, 255, 255, .751);
+            box-shadow: 0px 0px 20px 5px rgba(255, 255, 255,.751);
+            background-color: rgba(255, 255, 255, .751);
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+        }
+
+        .orange > div {
+            background-color: rgba(255, 201, 14, .5); /*
+            -webkit-box-shadow: 0px 0px 20px 5px rgba(255, 201, 14, .751);
+            box-shadow: 0px 0px 20px 5px rgba(255, 201, 14,.751);*/
+        }
+
+
+        .c1 {
+            position: absolute !important;
+            left: initial !important;
+            right: 100px !important;
+            top: 518px !important;
+        }
+
+            .c1 .line {
+                -webkit-border-radius: 5px;
+                border-radius: 5px;
+            }
+
+        .c2 {
+            position: absolute !important;
+            left: initial !important;
+            top: initial !important;
+            right: 130px !important;
+            bottom: 130px !important;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+        }
+
+            .c2 .line {
+                -webkit-border-radius: 5px;
+                border-radius: 5px;
+                -webkit-box-shadow: 0px 0px 20px 5px rgba(255, 201, 14, .751);
+                box-shadow: 0px 0px 20px 5px rgba(255, 201, 14,.751);
+            }
+
+
+        .submit {
+            width: 100%;
+            height: 42px;
+            margin-left: 0%;
+            font-size: 18px;
+        }
+
+        #footer {
+            top: 800px;
+            position: absolute;
+            width: 100%;
+            bottom: -81px;
+            height: auto;
+        }
+
+        .shiftedLogin {
+            text-align: center;
+            padding-top: 15px;
+        }
+    </style>

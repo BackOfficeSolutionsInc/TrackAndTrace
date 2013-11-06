@@ -1,0 +1,108 @@
+﻿@model RadialReview.Models.ViewModels.DragDropViewModel
+
+@using (Html.BeginScripts())
+{
+    <script type="text/javascript">
+        //var items = [];
+        $(document).ready(function () {
+            $("#drag").droppable({
+                accept: ".dragableDragDropItem",
+                drop: function (event, ui) {
+                    $(this).append(ui.draggable);
+                    //var id = items.indexOf($(this).attr("id"));
+                    //items = items.splice(id, 1);
+                    UpdateHidden();
+                }
+            });
+
+            $("#drop").droppable({
+                accept: ".dragableDragDropItem",
+                drop: function (event, ui) {
+                    $(this).append(ui.draggable);
+                    //items.push($(this).attr("id"));
+                    UpdateHidden();
+                }
+            });
+
+            $(".dragableDragDropItem").draggable({
+                helper: "clone",
+                start: function () {
+                    $(this).css({ "opacity": "0.4", "filter": "alpha(opacity=40)" });
+                    $(".ui-droppable").addClass("dragging");//.css({ "border": "1px dashed black" });
+                },
+                stop: function () {
+                    $(this).css({ "opacity": "1.0", "filter": "alpha(opacity=100)" });
+                    $(".ui-droppable").removeClass("dragging");
+                }
+
+            });
+
+            function DragItems() {
+                return $("#drag").find("li").map(function (f) {
+                    return this.id;
+                }).toArray();
+            }
+
+            function DropItems() {
+                return $("#drop").find("li").map(function (f) {
+                    return this.id;
+                }).toArray();
+            }
+
+            function UpdateHidden() {
+                $(".DragItems").val(DragItems());
+                $(".DropItems").val(DropItems());
+            }
+
+            UpdateHidden();
+
+
+        });
+        /*
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("Text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("Text");
+            ev.target.appendChild(document.getElementById(data));
+        }*/
+    </script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+}
+
+<div class="row">
+    <div class="col-md-12 dragDrop">
+        @Html.HiddenFor(x => x.StartName, new {  })
+        @Html.HiddenFor(x => x.EndName  , new {  })
+        @Html.HiddenFor(x => x.DragItems, new { @class = "DragItems" })
+        @Html.HiddenFor(x => x.DropItems, new { @class = "DropItems" })
+        <!--input type="hidden" id="DragItems" name="DragItems" />
+        <input type="hidden" id="DropItems" name="DropItems" /-->
+        <div class="row">
+            <div class="drag col-md-6">
+                <h5>@Model.StartName</h5>
+                <ul id="drag" class="thumbnails" style="/*display:inline;*/">
+                    @foreach (var item in Model.Start)
+                    {
+                        @Html.Partial("~/Views/Partial/_DragDropItem.cshtml", item)
+                    }
+                </ul>
+            </div>
+            <div class="drop col-md-6">
+                <h5>@Model.EndName</h5>
+                <ul id="drop" class="thumbnails" style="">
+                    @foreach (var item in Model.End)
+                    {
+                        @Html.Partial("~/Views/Partial/_DragDropItem.cshtml", item)
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

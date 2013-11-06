@@ -1,0 +1,121 @@
+﻿@model RadialReview.Models.ViewModels.ManageViewModel
+
+
+
+<ul class="nav nav-tabs" id="userTab">
+    <li><a href="#members" name="members">Members</a></li>
+    <li><a href="#pending" name="pending">Unverified @Html.Badge(x => x.PendingUsers.Count())</a></li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+    <div class="tab-pane active" id="members">
+        <table class="table">
+            <tr>
+                <th>User</th>
+                <th></th>
+                <th style="width:120px">Joined</th>
+                <th style="width: 50px">
+                    <button data-target="#addUserModal" role="button" class="btn addButton" data-toggle="modal">+</button>
+                </th>
+            </tr>
+            @foreach (var user in Model.ManagedUsers.OrderByDescending(x => x.AttachTime))
+            {
+                <tr>
+                    <td style="width:10px;">
+                        <img style="max-width:28px;max-height:28px" src="@user.User.ImageUrl" alt="@user.User.Name()" class="img-thumbnail">
+                    </td>
+                    <td>@user.User.Name()</td>
+                    <td><span data-livestamp="@(user.AttachTime.ToString("o"))-00:00"></span></td>
+                    <td><a href="@Url.Action("Manage", "User", new {id=user.Id})" class="btn btn-info">Edit</a></td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="tab-pane" id="pending">
+        <table class="table">
+            <tr>
+                <th>Email</th>
+                <th style="width:120px">Sent</th>
+                <th style="width: 50px">
+                    <button data-target="#addUserModal" role="button" class="btn addButton" data-toggle="modal">+</button>
+                </th>
+            </tr>
+            @foreach (var pending in Model.PendingUsers.OrderByDescending(x => x.Date))
+            {
+                <tr>
+                    <td>@pending.EmailAddress</td>
+                    <td><span data-livestamp="@(pending.Date.ToString("o"))-00:00"></span></td>
+                    <td><a href="@Url.Action("Manage", "User", new {id=pending.Id})" class="btn btn-info">Edit</a></td>
+                </tr>
+            }
+        </table>
+    </div>
+
+    <form id="addUserForm" onsubmit="" action="">
+        <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Add User</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="organizationId" value="@Model.Organization.Id" />
+                        <table class="control-group">
+                            <tr>
+                                <td><label>Email: &nbsp;</label></td>
+                                <td>@Html.TextBox("emailAddress", null, new { placeholder = "Email Address" })</td>
+                            </tr>
+                            <tr>
+                                <td><label>Title: &nbsp;</label></td>
+                                <td>@Html.TextBox("jobTitle", null, new { placeholder = "Job Title" })</td>
+                            </tr>
+                            <tr>
+                                <td><label>Manager: &nbsp;</label></td>
+                                <td>@Html.CheckBox("isManager", false, new { style = "padding-bottom: 7px;" })</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="addUser" type="button" class="btn btn-primary">Send</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        @using (var s = Html.BeginScripts())
+        {
+            <script type="text/javascript">
+
+                $(function () {
+                    $('#addUser').click(function () {
+                        var str = $('#addUserForm').serialize();
+                        $.post("@(Url.Action("AddManagedUserToOrganization","Nexus"))",
+                              str,
+                              function (data) {
+                                  $("#myModal").modal('hide');
+                                  if (data.Error == true) {
+                                      var alert = @(Html.AlertBoxDismissableJavascript("data.Message"));
+                                      $("#alertContainer").append(alert);
+                                  } else {
+                                      location.reload();
+                                  }
+
+                              });
+                    });
+                });
+            </script>
+        }
+    </form>
+
+
+    @using (var script = Html.BeginScripts())
+    {
+        <script>
+            /*$('#userTab a').click(function (e) {
+                $(this).tab('show')
+            })*/
+        </script>
+    }
+</div>

@@ -1,0 +1,152 @@
+﻿@model RadialReview.Models.ViewModels.ManagerUserViewModel
+
+@{
+    ViewBag.Title = "Manage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+    <style>
+        .small-centered {
+            text-align: center;
+            width: 20px;
+        }
+
+        .glyphicon-ban-circle {
+            color: #F54165;
+            -webkit-text-shadow: 0px -1px 0px #C4C4C4;
+            text-shadow: 0px -1px 0px #C4C4C4;
+            filter: dropshadow(color=#C4C4C4, offx=0, offy=-1);
+            cursor: pointer;
+        }
+
+        .glyphicon-ok {
+            color: #6ADD6A;
+            -webkit-text-shadow: 0px -1px 0px #C4C4C4;
+            text-shadow: 0px -1px 0px #C4C4C4;
+            filter: dropshadow(color=#C4C4C4, offx=0, offy=-1);
+            cursor: pointer;
+        }
+        
+        .saving *{
+            cursor:progress;
+        }
+
+    </style>
+}
+
+@using (var s = Html.BeginScripts())
+{
+    <script type="text/javascript">
+
+
+        $(".glyphicon.editable").click(function () {
+            if ($(this).hasClass("glyphicon-ok")) {
+                $(this).removeClass("glyphicon-ok");
+                $(this).addClass("glyphicon-ban-circle save");
+                $(this).attr("data-save",false);
+            } else if ($(this).hasClass("glyphicon-ban-circle")) {
+                $(this).removeClass("glyphicon-ban-circle");
+                $(this).addClass("glyphicon-ok save");
+                $(this).attr("data-save",true);
+            } else {
+                alert("Button not recognized.")
+            }
+        });
+
+        function save() {
+
+            var toSave = $(".save");
+            var saveData=new Array();
+            for(var i=0;i<toSave.length;i++)
+            {
+                var id=$(toSave[i]).attr("data-id");
+                var val=$(toSave[i]).attr("data-save");
+                var type=$(toSave[i]).attr("data-type");
+                var item={"Id":id,"Value":val,"Type":type};
+                saveData.push(item)
+            }
+
+
+            if(!$("#saveStatus").is(".saving"))
+            {
+                $("#saveStatus").addClass("progress-striped");
+                $("#saveStatus").addClass("saving");
+
+                var save= {
+                        forUser:@(Model.User.Id),
+                        toSave:saveData,
+                        OrganizationId:@Model.OrganizationId
+                    };
+
+                $(".save").removeClass("save");
+
+                $.ajax({
+                    contentType: "application/json; charset=utf-8",
+                    method: "post",
+                    url:"@Url.Action("Save", "User")",
+                    dataType: "json",
+                    data: JSON.stringify(save),
+                    success: function(data)
+                    {
+                        if(data.Error){
+                            var alert = @(Html.AlertBoxDismissableJavascript("data.Message"));
+                            $("#alertContainer").append(alert);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown)
+                    {
+                        var alert = @(Html.AlertBoxDismissableJavascript("errorThrown"));
+                    },
+                    complete: function(){
+                        $("#saveStatus").removeClass("progress-striped");
+                        $("#saveStatus").removeClass("saving");
+                    }
+                });
+            }
+        }
+
+    </script>
+}
+
+<div id="alertContainer"></div>
+
+<div class="row">
+
+    <div class="col-md-11"><h2>Manage @Model.User.User.Name()</h2></div>
+
+    <div class="col-md-1"><h2 id="saveStatus" class="progress active" style="height:inherit"><button onclick="save()" class="btn btn-success progress-bar progress-bar-success fullWidth">Save</button></h2></div>
+</div>
+
+<table class="table table-condensed table-hover table-responsive">
+    <tr>
+        <th class="small-centered">Enabled</th>
+        <th class="small-centered"></th>
+        <th>Question</th>
+        <th class="small-centered">Category</th>
+        <th class="small-centered">Origin</th>
+        <th></th>
+        <th><button class="btn fullWidth">+</button></th>
+    </tr>
+    @foreach (var q in Model.MatchingQuestions)
+    {
+        <tr>
+            <td class="small-centered">
+                @if (!q.DisabledFor.Any(x => x.Long == Model.User.Id))
+                {
+                    <span data-id="@q.Id" data-type="questionEnabled" class="glyphicon glyphicon-ok editable"></span>
+                }
+                else
+                {
+                    <span data-id="@q.Id" data-type="questionEnabled" class="glyphicon glyphicon-ban-circle editable"></span>
+                }
+            </td>
+            <td></td>
+            <td>@(q.Question)</td>
+            <td class="small-centered">@(q.Category.Category)</td>
+            <td class="small-centered">@(q.Origin)</td>
+            <td class="small-centered"></td>
+            <td class="small-centered"><button class="btn  btn-primary">@RadialReview.Properties.DisplayNameStrings.edit</button></td>
+        </tr>
+    }
+</table>

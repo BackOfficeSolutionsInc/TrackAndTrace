@@ -1,0 +1,19 @@
+﻿@model RadialReview.Models.GroupModel
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div>
+    <h3>@Html.DisplayFor(model => model.GroupName)</h3>
+    <hr />
+    <h4>Members:</h4>
+    <dl class="dl-horizontal">
+        @foreach (var user in Model.GroupUsers)
+        {
+            <dt>@user.User.Name()</dt>
+            <dd>@user.Title</dd>
+        }
+    </dl>
+</div>

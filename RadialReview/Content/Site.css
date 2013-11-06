@@ -1,0 +1,307 @@
+﻿body {
+    /*padding-bottom: 150px;*/
+    padding-top: 00px;
+    padding-bottom: 0;
+    /*padding-top: 50px;*/
+    background-color: #FEFEFE;
+    background-image: url("img/box.png");
+}
+
+.mainContainer {
+    min-height: 100%;
+    position: relative;
+}
+
+html, body {
+    height: 100%;
+    position: relative;
+}
+
+#wrap {
+    min-height: 100%;
+}
+
+#main {
+    overflow: auto;
+    padding-top: 15px;
+    /*padding-bottom: 150px;*/
+}
+/* must be same height as the footer */
+
+#spinnerContainer {
+    top: 0px;
+    bottom: -100px;
+    left: 0px;
+    right: 0px;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.jumbotron.alert {
+    background-color: rgba(255, 0, 0, 0.25);
+    color: #AD5252;
+    padding-bottom: 30px;
+    -webkit-text-shadow: 0px -1px 1px #ffc5c5;
+    text-shadow: 0px -1px 1px #ffc5c5;
+    filter: dropshadow(color=#ffc5c5, offx=0, offy=-1);
+}
+
+
+#footer {
+    text-align: center;
+    position: relative;
+    margin-top: -150px; /* negative value of footer height */
+    height: 150px;
+    clear: both;
+    background-color: rgba(0, 0, 0, 0.41);
+    color: #c9c8d8;
+    border-top: 1px solid #505050;
+    background: url('img/footer.png');
+    background: url('img/footer.png'),-moz-linear-gradient(top, #1c2235 0%,#262e4a 6%, #000000 100%); /* FF3.6+ */
+    background: url('img/footer.png'),-webkit-gradient(linear, left top, left bottom, color-stop(0%,#1c2235), color-stop( 6%,#262e4a ), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+    background: url('img/footer.png'),-webkit-linear-gradient(top, #1c2235 0%,#262e4a 6%,#000000 100%); /* Chrome10+,Safari5.1+ */
+    background: url('img/footer.png'),-o-linear-gradient(top, #1c2235 0%,#262e4a 6%,#000000 100%); /* Opera 11.10+ */
+    background: url('img/footer.png'),-ms-linear-gradient(top, #1c2235 0%,#262e4a 6%,#000000 100%); /* IE10+ */
+    background: url('img/footer.png'),linear-gradient(to bottom, #1c2235 0%,#262e4a 6%,#000000 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#57569c', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+    padding-top: 10px;
+}
+
+
+.jumbotron {
+    background-image: url("img/little_pluses.png");
+    background-color: rgba(60, 104, 255, 0.14);
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(1, 1, 1, 0.25);
+    box-shadow: 0px 0px 3px 0px rgba(1, 1, 1, 0.25);
+}
+
+.fullWidth{
+    width:100%;
+}
+
+/*
+#footer{
+	text-align: center;
+    padding-top:20px;
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:150px;   /* Height of the footer *
+}*/
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding: 60px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 150px; /* Height of the footer */
+}
+
+.navbar-brand {
+    z-index: 100000;
+    position: relative;
+    text-shadow: 0px 0px 1px #152042;
+    filter: dropshadow(color=#152042, offx=0, offy=0);
+    font-family: 'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
+}
+
+#logo {
+    position: relative;
+}
+
+.navbar-brand:hover {
+    color: white !important;
+    /*text-shadow: 0px 0px 2px #86DDFF;
+    filter: dropshadow(color=#86DDFF, offx=0, offy=0);*/
+}
+
+    .navbar-brand:hover span {
+        text-shadow: 0px 0px 2px #86DDFF;
+        filter: dropshadow(color=#86DDFF, offx=0, offy=0);
+    }
+
+    .navbar-brand:hover div > .navbar-brand {
+        border: 4px solid #5b9bd5 !important;
+    }
+
+#logo .circles {
+    position: absolute;
+    left: 19px;
+    top: 0px;
+}
+
+#logo .circle1 {
+    border-radius: 47px;
+    width: 47px;
+    height: 47px;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    border: 4px solid #6271a5;
+}
+
+#logo .circle2 {
+    border-radius: 49px;
+    width: 49px;
+    height: 49px;
+    position: absolute;
+    border: 6px solid #4c536d;
+}
+
+.navbar {
+    min-height: 54px;
+}
+
+.navbar-inverse {
+    background: url('img/titlebarTiles.png');
+    background: url('img/titlebarTiles.png'),-moz-linear-gradient(top, #36426d 16%, #152042 85%); /* FF3.6+ */
+    background: url('img/titlebarTiles.png'),-webkit-gradient(linear, left top, left bottom, color-stop(16%,#36426d), color-stop(85%,#152042)); /* Chrome,Safari4+ */
+    background: url('img/titlebarTiles.png'),-webkit-linear-gradient(top, #36426d 16%,#152042 85%); /* Chrome10+,Safari5.1+ */
+    background: url('img/titlebarTiles.png'),-o-linear-gradient(top, #36426d 16%,#152042 85%); /* Opera 11.10+ */
+    background: url('img/titlebarTiles.png'),-ms-linear-gradient(top, #36426d 16%,#152042 85%); /* IE10+ */
+    background: url('img/titlebarTiles.png'),linear-gradient(to bottom, #36426d 16%,#152042 85%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#797da8', endColorstr='#152042',GradientType=0 ); /* IE6-9 */
+    -webkit-box-shadow: 0px 0px 12px 0px rgba(1, 1, 1, 1);
+    box-shadow: 0px 0px 12px 0px rgba(1, 1, 1, 1);
+}
+
+    .navbar-inverse .navbar-nav > li > a, .navbar-inverse .navbar-brand {
+        color: #D5E8FF;
+        -webkit-transition: .15s linear !important;
+        -moz-transition: .15s linear !important;
+        -ms-transition: .15s linear !important;
+        -o-transition: .15s linear !important;
+        transition: .15s linear !important;
+    }
+
+        .navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-brand:hover {
+            color: #98c7ff;
+            text-shadow: 0px -1px 10px #286D9B;
+            filter: dropshadow(color=#286D9B, offx=0, offy=-1);
+        }
+
+        .navbar-inverse .navbar-nav > li > a:hover {
+            padding-top: 17px;
+            padding-bottom: 13px;
+        }
+
+.badge {
+    display: inline-block;
+    min-width: 17px;
+    padding: 3px 4px;
+    font-size: 9px;
+    font-weight: bold;
+    line-height: 1;
+    color: #FFF;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    background-color: #8EB7FF;
+    border-radius: 4px;
+}
+
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+
+.dragDropItem {
+    font-size: 16px;
+    text-transform: capitalize;
+    display: inline-block;
+}
+
+.dragableDragDropItem {
+    display: inline-block;
+    cursor: pointer;
+    position:relative;
+    z-index:10;
+    padding:2px;
+}
+
+.dragDropItem .displayName {
+    padding-left: 4px;
+    padding-right: 4px;
+    text-align:justify;
+    font-family:'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
+    font-size:11px;
+}
+
+.userImage {
+    background-image: linear-gradient(bottom, rgb(205, 235, 255) 24%, rgb(157, 198, 255) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(205, 235, 255) 24%, rgb(157, 198, 255) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(205, 235, 255) 24%, rgb(157, 198, 255) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(205, 235, 255) 24%, rgb(157, 198, 255) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(205, 235, 255) 24%, rgb(157, 198, 255) 100%);
+    background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0.24, rgb(205, 235, 255)), color-stop(1, rgb(157, 198, 255)) );
+    padding: 0px;
+    border: 5px solid white;
+}
+
+.drag ul, .drop ul {
+    border: 2px solid #dbe3e5;
+    padding: 10px;
+    height: 450px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: 10px;
+    margin-left: 10px;
+    -webkit-transition: .15s linear !important;
+    -moz-transition: .15s linear !important;
+    -ms-transition: .15s linear !important;
+    -o-transition: .15s linear !important;
+    transition: .15s linear !important;
+}
+
+    .drag ul.dragging, .drop ul.dragging: {
+        border: 2px dashed #dbe3e5;
+    -webkit-transition: .15s linear !important;
+    -moz-transition: .15s linear !important;
+    -ms-transition: .15s linear !important;
+    -o-transition: .15s linear !important;
+    transition: .15s linear !important;
+    }
+
+.drag ul {
+}
+
+.drop ul {
+}
+
+
+/* Set width on the form input elements since they're 100% wide by default */
+input, select, textarea; {
+    max-width: 280px;
+}
+
+/* styles for validation helpers */
+.field-validation-error {
+    color: #b94a48;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
+
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.validation-summary-errors {
+    color: #b94a48;
+}
+
+.validation-summary-valid {
+    display: none;
+}
