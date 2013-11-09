@@ -129,27 +129,5 @@ namespace RadialReview.Controllers
             else
                 return RedirectToLocal(returnUrl + "?organizationId=" + organizationId);
         }
-
-        public JsonResult AddQuestion(long organizationId, String question, String questionType, long categoryId)
-        {
-            try
-            {
-                var user = GetOneUserOrganization(organizationId);
-                var category = _OrganizationAccessor.GetCategory(user, categoryId, false);
-
-                var q = new QuestionModel()
-                {
-                    Category = category,
-                    Question = question
-                };
-                _OrganizationAccessor.EditQuestion(user, q);
-
-                return Json(JsonObject.Success);
-            }
-            catch (Exception e)
-            {
-                return Json(new JsonObject(true, e.Message));
-            }
-        }
     }
 }

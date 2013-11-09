@@ -138,6 +138,23 @@ namespace RadialReview.Accessors
                 }
             }
         }
+        
+        public QuestionCategoryModel GetCategory(UserOrganizationModel user, long categoryId, Boolean overridePermissions)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var category = s.Get<QuestionCategoryModel>(categoryId);
+                    if (!overridePermissions)
+                    {
+                        if (user.Organization.Id != category.Organization.Id)
+                            throw new PermissionsException();
+                    }
+                    return category;
+                }
+            }
+        }
 
     }
 }

@@ -14,7 +14,43 @@ namespace RadialReview.Controllers
 {
     public class QuestionController : BaseController
     {
-                
+        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
+        protected static GroupAccessor _GroupAccessor = new GroupAccessor();
+        protected static UserAccessor _UserAccessor = new UserAccessor();
+        protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
+
+
+        public JsonResult AddQuestion(long organizationId, String question, String questionType, long categoryId)
+        {
+            try
+            {
+                var user = GetOneUserOrganization(organizationId);
+                var category = _QuestionAccessor.GetCategory(user, categoryId, false);
+
+                var q = new QuestionModel()
+                {
+                    Category = category,
+                    Question = question
+                };
+                switch(questionType)
+                {
+                    case "Organization": _OrganizationAccessor.EditQuestion(user, q); break;
+                    case "User":         _UserAccessor.EditQuestion(user, q); break;
+                    case "Group":        _GroupAccessor.EditQuestion(user, q); break;
+
+
+                    default: throw new InvalidOperationException();
+                }
+
+                _OrganizationAccessor.EditQuestion(user, q);
+
+                return Json(JsonObject.Success);
+            }
+            catch (Exception e)
+            {
+                return Json(new JsonObject(true, e.Message));
+            }
+        }
 
         /*private ApplicationDbContext db = new ApplicationDbContext();
 

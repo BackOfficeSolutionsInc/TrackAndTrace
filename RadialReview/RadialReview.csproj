@@ -391,6 +391,7 @@
     <Content Include="Views\Organization\Partials\ManageQuestions.cshtml" />
     <Content Include="Views\Organization\Partials\ManageGroups.cshtml" />
     <Content Include="Views\User\Manage.cshtml" />
+    <Content Include="Views\Partial\_QuestionModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

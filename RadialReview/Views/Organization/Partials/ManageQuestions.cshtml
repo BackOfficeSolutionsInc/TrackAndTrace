@@ -17,56 +17,5 @@
         </tr>
     }
 </table>
-<!--Add Question-->
-<form id="addQuestionForm" onsubmit="" action="">
-    <div class="modal fade" id="questionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Add Question</h4>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="organizationId" value="@Model.Organization.Id" />
-                    <div class="row">
-                        <div class="col-md-2"><label>Question: &nbsp;</label></div>
-                        <div class="col-md-9">@Html.TextBox("question", null, new { placeholder = "Question", @class = "fullWidth" })</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2"><label>Type: &nbsp;</label></div>
-                        <div class="col-md-7">@Html.DropDownList("categoryId", Model.Categories.Select((x, i) => new SelectListItem() { Selected = (i == 0), Text = x.Category, Value = "" + x.Id }), new { @class = "fullWidth" })</div>
-                        <div class="col-md-2">@Html.ActionLink("Create", "Create", "Category")</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="addQuestion" type="button" class="btn btn-primary">Ok</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
 
-    @using(var s=Html.BeginScripts())
-    { 
-    <script type="text/javascript">
-
-            $(function () {
-                $('#addQuestion').click(function () {
-                    var serializedForm = $('#addQuestionForm').serialize();
-                    $.post("@(Url.Action("AddQuestion", "Organization"))",
-                          serializedForm,
-                          function (data) {
-                              $("#questionModal").modal('hide');
-                              if (data.Error == true) {
-                                  var alert = @(Html.AlertBoxDismissableJavascript("data.Message"));
-                                  $("#alertContainer").append(alert);
-                              } else {
-                                  location.reload();
-                              }
-
-                          });
-                });
-            });
-    </script>
-    }
-</form>
+@Html.Partial("~/")
