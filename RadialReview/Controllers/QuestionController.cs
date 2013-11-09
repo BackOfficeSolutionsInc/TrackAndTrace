@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using RadialReview.Models;
 using RadialReview.Models.Json;
 using RadialReview.Accessors;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Controllers
 {
@@ -24,23 +25,25 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var user = GetOneUserOrganization(organizationId);
-                var category = _QuestionAccessor.GetCategory(user, categoryId, false);
+                var caller = GetOneUserOrganization(organizationId);
+                var category = _QuestionAccessor.GetCategory(caller, categoryId, false);
 
                 var q = new QuestionModel()
                 {
                     Category = category,
                     Question = question
                 };
+                _QuestionAccessor.EditQuestion(caller, q, (OriginType)Enum.Parse(typeof(OriginType), questionType),forId);
 
+                /*
                 switch(questionType)
                 {
-                    case "Organization": _OrganizationAccessor.EditQuestion(user, q); break;
-                    case "User":         _UserAccessor.EditQuestion(user, q,forId); break;
-                    case "Group":        _GroupAccessor.EditQuestion(user, q, forId); break;
+                    case "Organization":     break;
+                    case "User":            _QuestionAccessor.EditQuestion(user, q, forId); break;
+                    case "Group":           _QuestionAccessor.EditQuestion(user, q, forId); break;
                     default: throw new InvalidOperationException();
                 }
-
+                */
 
                 return Json(JsonObject.Success);
             }

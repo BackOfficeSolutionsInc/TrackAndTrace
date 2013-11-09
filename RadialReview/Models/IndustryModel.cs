@@ -11,11 +11,18 @@ namespace RadialReview.Models
     public class IndustryModel : ICustomQuestions
     {
         public long Id { get; protected set; }
-        public IList<QuestionModel> CustomQuestions { get; set; }
-        public OriginType QuestionOwner { get { return OriginType.Industry; } }
         public String Name { get; set; }
         public List<IndustryModel> Subindustries { get; set; }
         public List<IndustryModel> Superindustries { get; set; }
+        public IList<QuestionModel> CustomQuestions { get; set; }
+        public OriginType QuestionOwner { get { return OriginType.Industry; } }
+
+        public IndustryModel()
+        {
+            Subindustries = new List<IndustryModel>();
+            Superindustries = new List<IndustryModel>();
+            CustomQuestions = new List<QuestionModel>();
+        }
 
     }
 

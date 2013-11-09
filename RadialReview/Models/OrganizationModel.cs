@@ -34,6 +34,7 @@ namespace RadialReview.Models
         public virtual IList<InvoiceModel> Invoices { get; set; }
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
         public virtual IList<QuestionCategoryModel> QuestionCategories { get; set; }
+        public virtual IList<IndustryModel> Industries { get; set; }
         public virtual IList<GroupModel> Groups { get;set;}
         public virtual DateTime? DeleteTime { get; set; }
         public OriginType QuestionOwner { get { return OriginType.Organization; } }
@@ -45,6 +46,7 @@ namespace RadialReview.Models
             Invoices = new List<InvoiceModel>();
             CustomQuestions = new List<QuestionModel>();
             Members = new List<UserOrganizationModel>();
+            Industries = new List<IndustryModel>();
             QuestionCategories = new List<QuestionCategoryModel>();
         }
 
@@ -66,13 +68,17 @@ namespace RadialReview.Models
                 .Cascade.SaveUpdate();
             HasMany(x => x.Invoices)
                 .Cascade.SaveUpdate();
-            HasMany(x => x.CustomQuestions)
-                .KeyColumn("OrganizationQuestion_Id")
-                .Inverse();
+            HasMany(x => x.Industries)
+                .KeyColumn("OrganizationId")
+                .Cascade.SaveUpdate();
             HasMany(x => x.QuestionCategories)
                 .KeyColumn("OrganizationId")
                 .Inverse();
             HasMany(x => x.Groups)
+                .Inverse();
+
+            HasMany(x => x.CustomQuestions)
+                .KeyColumn("OrganizationQuestion_Id")
                 .Inverse();
         }
     }

@@ -21,6 +21,7 @@ namespace RadialReview.Models
         public virtual ApplicationWideModel ForApplication { get; set; }
         public virtual OrganizationModel ForOrganization { get; set; }
         public virtual UserOrganizationModel ForUser { get; set; }
+        public virtual IndustryModel ForIndustry { get; set; }
         public virtual GroupModel ForGroup { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
 
@@ -33,6 +34,8 @@ namespace RadialReview.Models
                 return DisplayNameStrings.user;
             else if (ForGroup != null)
                 return DisplayNameStrings.group;
+            else if (ForIndustry != null)
+                return DisplayNameStrings.industry;
             else
                 throw new Exception();
         } }
@@ -66,6 +69,9 @@ namespace RadialReview.Models
                 .Cascade.SaveUpdate();
             References(x => x.ForUser)
                 .Column("UserQuestion_Id")
+                .Cascade.SaveUpdate();
+            References(x => x.ForIndustry)
+                .Column("IndustryQuestion_Id")
                 .Cascade.SaveUpdate();
             
             References(x => x.CreatedBy)
