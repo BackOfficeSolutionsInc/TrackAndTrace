@@ -37,7 +37,7 @@ namespace RadialReview.Models
         public virtual IList<IndustryModel> Industries { get; set; }
         public virtual IList<GroupModel> Groups { get;set;}
         public virtual DateTime? DeleteTime { get; set; }
-        public OriginType QuestionOwner { get { return OriginType.Organization; } }
+        public virtual OriginType QuestionOwner { get { return OriginType.Organization; } }
         
         public OrganizationModel()
         {

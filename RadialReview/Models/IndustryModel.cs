@@ -10,12 +10,12 @@ namespace RadialReview.Models
 {
     public class IndustryModel : ICustomQuestions
     {
-        public long Id { get; protected set; }
-        public String Name { get; set; }
-        public List<IndustryModel> Subindustries { get; set; }
-        public List<IndustryModel> Superindustries { get; set; }
-        public IList<QuestionModel> CustomQuestions { get; set; }
-        public OriginType QuestionOwner { get { return OriginType.Industry; } }
+        public virtual long Id { get; protected set; }
+        public virtual String Name { get; set; }
+        public virtual List<IndustryModel> Subindustries { get; set; }
+        public virtual List<IndustryModel> Superindustries { get; set; }
+        public virtual IList<QuestionModel> CustomQuestions { get; set; }
+        public virtual OriginType QuestionOwner { get { return OriginType.Industry; } }
 
         public IndustryModel()
         {

@@ -1,5 +1,6 @@
 ﻿
 using FluentNHibernate.Mapping;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
 using System;
@@ -25,19 +26,13 @@ namespace RadialReview.Models
         public virtual GroupModel ForGroup { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
 
-        public virtual String Origin { get {
-            if (ForApplication != null)
-                return DisplayNameStrings.Default;
-            else if (ForOrganization != null)
-                return DisplayNameStrings.organization;
-            else if (ForUser != null)
-                return DisplayNameStrings.user;
-            else if (ForGroup != null)
-                return DisplayNameStrings.group;
-            else if (ForIndustry != null)
-                return DisplayNameStrings.industry;
-            else
-                throw new Exception();
+        public virtual OriginType Origin { get {
+            if      (ForApplication != null)    return OriginType.Application;
+            else if (ForOrganization != null)   return OriginType.Organization;
+            else if (ForUser != null)           return OriginType.User;
+            else if (ForGroup != null)          return OriginType.Group;
+            else if (ForIndustry != null)       return OriginType.Industry;
+            else                                return OriginType.Invalid;
         } }
 
 

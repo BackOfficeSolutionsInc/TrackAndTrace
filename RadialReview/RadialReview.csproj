@@ -297,6 +297,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\DragDropUtility.cs" />
     <Compile Include="Utilities\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Utilities\Extensions\EnumExtensions.cs" />
     <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
     <Compile Include="Utilities\Extensions\SessionExtensions.cs" />
     <Compile Include="Utilities\HibernateSession.cs" />
@@ -395,7 +396,7 @@
     <Content Include="Views\Organization\Partials\ManageQuestions.cshtml" />
     <Content Include="Views\Organization\Partials\ManageGroups.cshtml" />
     <Content Include="Views\User\Manage.cshtml" />
-    <Content Include="Views\Partial\_QuestionModal.cshtml" />
+    <Content Include="Views\Shared\Partial\_QuestionModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

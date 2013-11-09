@@ -57,7 +57,13 @@ namespace RadialReview.Utilities
         {
             if (IsRadialAdmin(session, caller))
                 return true;
+            throw new PermissionsException();
+        }
 
+        public static Boolean EditIndustry(ISession session, UserOrganizationModel caller, long forId)
+        {
+            if (IsRadialAdmin(session, caller))
+                return true;
             throw new PermissionsException();
         }
     }

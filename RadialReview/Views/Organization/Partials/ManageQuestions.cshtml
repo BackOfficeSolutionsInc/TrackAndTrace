@@ -1,4 +1,5 @@
 ﻿@model RadialReview.Models.ViewModels.ManageViewModel
+@using RadialReview.Models.ViewModels;
 
 <table class="table">
     <tr>
@@ -18,4 +19,4 @@
     }
 </table>
 
-@Html.Partial("~/")
+@Html.Partial("Partial/_QuestionModal", new QuestionModalViewModel(Model.Organization, Model.Organization))

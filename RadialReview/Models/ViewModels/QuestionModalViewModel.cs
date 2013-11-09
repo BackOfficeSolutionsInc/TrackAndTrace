@@ -11,5 +11,12 @@ namespace RadialReview.Models.ViewModels
         public List<QuestionCategoryModel> Categories { get; set; }
         public ICustomQuestions QuestionOwner { get; set; }
         public long OrganizationId { get;set;}
+
+        public QuestionModalViewModel(OrganizationModel organization,ICustomQuestions questionOwner)
+        {
+            Categories      = organization.QuestionCategories.ToList();
+            QuestionOwner   = questionOwner;
+            OrganizationId  = organization.Id ;
+        }
     }
 }

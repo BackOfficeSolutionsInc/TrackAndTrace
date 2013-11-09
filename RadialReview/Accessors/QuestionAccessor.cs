@@ -160,10 +160,8 @@ namespace RadialReview.Accessors
             }
         }
 
-        public QuestionModel EditQuestion(UserOrganizationModel caller, QuestionModel question, OriginType origin, long forId)
+        public QuestionModel EditQuestion(UserOrganizationModel caller, OriginType origin, long forOriginId, QuestionModel question)
         {
-
-
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
@@ -183,40 +181,41 @@ namespace RadialReview.Accessors
                     {
                         case OriginType.User:
                             {
-                                PermissionsUtility.EditUserOrganization(s, caller, forId);
-                                var user = s.Get<UserOrganizationModel>(forId);
+                                PermissionsUtility.EditUserOrganization(s, caller, forOriginId);
+                                var user = s.Get<UserOrganizationModel>(forOriginId);
                                 question.ForUser = user;
                                 break;
                             }
                         case OriginType.Group:
                             {
-                                PermissionsUtility.EditGroup(s, caller, forId);
-                                var group = s.Get<GroupModel>(forId);
+                                PermissionsUtility.EditGroup(s, caller, forOriginId);
+                                var group = s.Get<GroupModel>(forOriginId);
                                 question.ForGroup = group;
                                 break;
                             }
                         case OriginType.Organization:
                             {
-                                PermissionsUtility.EditOrganization(s, caller, forId);
-                                var org = s.Get<OrganizationModel>(forId);
+                                PermissionsUtility.EditOrganization(s, caller, forOriginId);
+                                var org = s.Get<OrganizationModel>(forOriginId);
                                 question.ForOrganization = org;
                                 break;
                             }
-                        case OriginType.Industry
+                        case OriginType.Industry:
                             {
-
+                                PermissionsUtility.EditIndustry(s, caller, forOriginId);
+                                var ind = s.Get<IndustryModel>(forOriginId);
+                                question.ForIndustry = ind;
+                                break;
                             }
                         case OriginType.Application:
                             {
-                                PermissionsUtility.EditApplication(s, caller, forId);
-                                var app = s.Get<ApplicationWideModel>(forId);
+                                PermissionsUtility.EditApplication(s, caller, forOriginId);
+                                var app = s.Get<ApplicationWideModel>(forOriginId);
                                 question.ForApplication = app;
                                 break;
                             }
                         default: throw new PermissionsException();
                     }
-
-
                     s.SaveOrUpdate(question);
                     tx.Commit();
                     s.Flush();

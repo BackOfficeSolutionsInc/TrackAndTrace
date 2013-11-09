@@ -10,6 +10,7 @@ using RadialReview.Models;
 using RadialReview.Models.Json;
 using RadialReview.Accessors;
 using RadialReview.Models.Enums;
+using RadialReview;
 
 namespace RadialReview.Controllers
 {
@@ -33,18 +34,8 @@ namespace RadialReview.Controllers
                     Category = category,
                     Question = question
                 };
-                _QuestionAccessor.EditQuestion(caller, q, (OriginType)Enum.Parse(typeof(OriginType), questionType),forId);
-
-                /*
-                switch(questionType)
-                {
-                    case "Organization":     break;
-                    case "User":            _QuestionAccessor.EditQuestion(user, q, forId); break;
-                    case "Group":           _QuestionAccessor.EditQuestion(user, q, forId); break;
-                    default: throw new InvalidOperationException();
-                }
-                */
-
+                _QuestionAccessor.EditQuestion(caller, questionType.Parse<OriginType>(), forId, q);
+                
                 return Json(JsonObject.Success);
             }
             catch (Exception e)

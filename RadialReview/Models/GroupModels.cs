@@ -24,7 +24,7 @@ namespace RadialReview.Models
         public virtual IList<UserOrganizationModel> Managers { get; set; }
 
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
-        public OriginType QuestionOwner { get { return OriginType.Group; } }
+        public virtual OriginType QuestionOwner { get { return OriginType.Group; } }
         public GroupModel()
         {
             GroupUsers = new List<UserOrganizationModel>();

@@ -13,8 +13,7 @@ namespace RadialReview.Models
     {
         public virtual long Id { get; protected set; }
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
-
-        public OriginType QuestionOwner { get { return OriginType.Application; } }
+        public virtual OriginType QuestionOwner { get { return OriginType.Application; } }
     }
 
     public class ApplicationWideModelMap : ClassMap<ApplicationWideModel>

@@ -31,7 +31,8 @@ namespace RadialReview.Models
         public virtual IList<NexusModel> CreatedNexuses { get; set; }
         public virtual IList<QuestionModel> CreatedQuestions { get; set; }
 
-        public virtual DateTime? DeleteTime { get; set; }
+        public virtual DateTime? DeleteTime { get; set; }        
+        public virtual OriginType QuestionOwner { get { return OriginType.User; } }
 
         #region Helpers
             public virtual IList<UserOrganizationModel> GetManagingUsersAndSelf()
@@ -40,7 +41,7 @@ namespace RadialReview.Models
             }
             public virtual Boolean IsManager { get { return IsRadialAdmin || ManagerAtOrganization || ManagingOrganization; } }
             public virtual Boolean IsManagerCanEditOrganization { get { return IsRadialAdmin || ManagingOrganization || (ManagerAtOrganization && Organization.ManagersCanEdit); } }
-            public OriginType QuestionOwner { get { return OriginType.User; } }
+            
 
             public virtual List<OriginType> EditableQuestionOrigins
             {
