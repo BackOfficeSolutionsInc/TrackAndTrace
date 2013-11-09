@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
 using System;
@@ -23,8 +24,7 @@ namespace RadialReview.Models
         public virtual IList<UserOrganizationModel> Managers { get; set; }
 
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
-
-       
+        public OriginType QuestionOwner { get { return OriginType.Group; } }
         public GroupModel()
         {
             GroupUsers = new List<UserOrganizationModel>();

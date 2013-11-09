@@ -183,4 +183,7 @@
   <data name="invalid" xml:space="preserve">
     <value>Invalid</value>
   </data>
+  <data name="industry" xml:space="preserve">
+    <value>Industry</value>
+  </data>
 </root>

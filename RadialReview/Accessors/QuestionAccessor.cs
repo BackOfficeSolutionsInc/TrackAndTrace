@@ -1,6 +1,8 @@
 ﻿using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
+using RadialReview.Properties;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -27,7 +29,7 @@ namespace RadialReview.Accessors
             return question;
         }
 
-        public void SetQuestionsEnabled(UserOrganizationModel caller,long forUserId, List<long> enabled,List<long> disabled)
+        public void SetQuestionsEnabled(UserOrganizationModel caller, long forUserId, List<long> enabled, List<long> disabled)
         {
             //Yea this is pretty nasty.
             using (var s = HibernateSession.GetCurrentSession())
@@ -39,12 +41,13 @@ namespace RadialReview.Accessors
                         throw new PermissionsException();
 
                     //Enable
-                    var foundEnabled=s.GetByMultipleIds<QuestionModel>(enabled);
-                    foreach(var f in foundEnabled){
+                    var foundEnabled = s.GetByMultipleIds<QuestionModel>(enabled);
+                    foreach (var f in foundEnabled)
+                    {
                         var found = f.DisabledFor.ToList().FirstOrDefault(x => x.Long == forUserId);
                         if (found != null)
                         {
-                            var newList=f.DisabledFor.ToList();
+                            var newList = f.DisabledFor.ToList();
                             newList.RemoveAll(x => x.Long == forUserId);
                             f.DisabledFor = newList;
                             s.Delete(s.Load<LongModel>(found.Id));
@@ -53,11 +56,12 @@ namespace RadialReview.Accessors
                     tx.Commit();
                     s.Flush();
                 }
-                using(var tx = s.BeginTransaction())
+                using (var tx = s.BeginTransaction())
                 {
                     //Disable
-                    var foundDisabled=s.GetByMultipleIds<QuestionModel>(disabled);
-                    foreach(var f in foundDisabled){
+                    var foundDisabled = s.GetByMultipleIds<QuestionModel>(disabled);
+                    foreach (var f in foundDisabled)
+                    {
                         if (!f.DisabledFor.Any(x => x.Long == forUserId))
                         {
                             f.DisabledFor.Add(new LongModel() { Long = forUserId });
@@ -70,24 +74,24 @@ namespace RadialReview.Accessors
             }
         }
 
-        public List<QuestionModel> GetQuestionsForUser(UserOrganizationModel caller,UserOrganizationModel forUser)
+        public List<QuestionModel> GetQuestionsForUser(UserOrganizationModel caller, UserOrganizationModel forUser)
         {
-            using(var s=HibernateSession.GetCurrentSession())
+            using (var s = HibernateSession.GetCurrentSession())
             {
-                using(var tx=s.BeginTransaction())
+                using (var tx = s.BeginTransaction())
                 {
-                    if(!caller.GetManagingUsersAndSelf().Any(x=>x.Id==forUser.Id))
+                    if (!caller.GetManagingUsersAndSelf().Any(x => x.Id == forUser.Id))
                         throw new PermissionsException();
-                    forUser=s.Get<UserOrganizationModel>(forUser.Id);
-                    List<QuestionModel> questions=new List<QuestionModel>();
+                    forUser = s.Get<UserOrganizationModel>(forUser.Id);
+                    List<QuestionModel> questions = new List<QuestionModel>();
                     //Self Questions
                     questions.AddRange(forUser.CustomQuestions);
                     //Group Questions
-                    questions.AddRange(forUser.Groups.SelectMany(x=>x.CustomQuestions));
+                    questions.AddRange(forUser.Groups.SelectMany(x => x.CustomQuestions));
                     //Organization Questions
                     questions.AddRange(forUser.Organization.CustomQuestions);
                     //Application Questions
-                    var applicationQuestions=s.QueryOver<ApplicationWideModel>().List().SelectMany(x=>x.CustomQuestions).ToList();
+                    var applicationQuestions = s.QueryOver<ApplicationWideModel>().List().SelectMany(x => x.CustomQuestions).ToList();
                     questions.AddRange(applicationQuestions);
                     return questions;
                 }
@@ -138,7 +142,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        
+
         public QuestionCategoryModel GetCategory(UserOrganizationModel user, long categoryId, Boolean overridePermissions)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -154,6 +158,71 @@ namespace RadialReview.Accessors
                     return category;
                 }
             }
+        }
+
+        public QuestionModel EditQuestion(UserOrganizationModel caller, QuestionModel question, OriginType origin, long forId)
+        {
+
+
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    caller = s.Get<UserOrganizationModel>(caller.Id);
+                    if (question.Id == 0) //Creating
+                    {
+                        question.DateCreated = DateTime.UtcNow;
+                        question.CreatedBy = caller;
+                    }
+                    question.Category = s.Get<QuestionCategoryModel>(question.Category.Id);
+
+                    if (question.Category.Organization.Id != caller.Organization.Id)
+                        throw new PermissionsException(ExceptionStrings.CategoryAccessability);
+
+                    switch (origin)
+                    {
+                        case OriginType.User:
+                            {
+                                PermissionsUtility.EditUserOrganization(s, caller, forId);
+                                var user = s.Get<UserOrganizationModel>(forId);
+                                question.ForUser = user;
+                                break;
+                            }
+                        case OriginType.Group:
+                            {
+                                PermissionsUtility.EditGroup(s, caller, forId);
+                                var group = s.Get<GroupModel>(forId);
+                                question.ForGroup = group;
+                                break;
+                            }
+                        case OriginType.Organization:
+                            {
+                                PermissionsUtility.EditOrganization(s, caller, forId);
+                                var org = s.Get<OrganizationModel>(forId);
+                                question.ForOrganization = org;
+                                break;
+                            }
+                        case OriginType.Industry
+                            {
+
+                            }
+                        case OriginType.Application:
+                            {
+                                PermissionsUtility.EditApplication(s, caller, forId);
+                                var app = s.Get<ApplicationWideModel>(forId);
+                                question.ForApplication = app;
+                                break;
+                            }
+                        default: throw new PermissionsException();
+                    }
+
+
+                    s.SaveOrUpdate(question);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return question;
         }
 
     }

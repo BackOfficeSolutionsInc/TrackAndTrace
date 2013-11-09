@@ -81,36 +81,5 @@ namespace RadialReview.Accessors
             }
         }
 
-        public QuestionModel EditQuestion(UserOrganizationModel user, QuestionModel question)
-        {
-            if (!user.IsManagerCanEdit)//(!user.IsManager || !user.Organization.ManagersCanEdit)
-                throw new PermissionsException();
-
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    var org=s.Get<OrganizationModel>(user.Organization.Id);
-                    if (question.Id == 0) //Creating
-                    {
-                        question.DateCreated = DateTime.UtcNow;
-                        user = s.Get<UserOrganizationModel>(user.Id);
-                        question.CreatedBy = user;
-                    }
-                    question.Category = s.Get<QuestionCategoryModel>(question.Category.Id);
-                    if (question.Category.Organization.Id != user.Organization.Id)
-                        throw new PermissionsException();
-
-
-                    question.ForOrganization=org;
-
-                    s.SaveOrUpdate(question);
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-            return question;
-        }
-
     }
 }

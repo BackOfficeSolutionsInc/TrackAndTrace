@@ -36,7 +36,7 @@ namespace RadialReview.Controllers
             var orgUser = GetOneUserOrganization(organizationId, true);
             organizationId = orgUser.Organization.Id;
 
-            if (!orgUser.IsManagerCanEdit)
+            if (!orgUser.IsManagerCanEditOrganization)
                 throw new PermissionsException();
 
             var start = orgUser.GetManagingUsersAndSelf().ToDragDropList();
@@ -112,7 +112,7 @@ namespace RadialReview.Controllers
         {
             var userOrg=GetUserOrganization(model.OrganizationId,true);
 
-            if (!userOrg.IsManagerCanEdit)
+            if (!userOrg.IsManagerCanEditOrganization)
                 throw new PermissionsException();
 
             List<long> userIds=(model.DragDrop.DropItems??"").Split(new char[]{','},StringSplitOptions.RemoveEmptyEntries).Select(x=>long.Parse(x)).ToList();

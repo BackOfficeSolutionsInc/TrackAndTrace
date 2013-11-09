@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using NHibernate.Mapping;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
 using System;
@@ -35,6 +36,7 @@ namespace RadialReview.Models
         public virtual IList<QuestionCategoryModel> QuestionCategories { get; set; }
         public virtual IList<GroupModel> Groups { get;set;}
         public virtual DateTime? DeleteTime { get; set; }
+        public OriginType QuestionOwner { get { return OriginType.Organization; } }
         
         public OrganizationModel()
         {

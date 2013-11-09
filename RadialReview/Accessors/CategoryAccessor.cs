@@ -20,7 +20,7 @@ namespace RadialReview.Accessors
                     if (category.Id == 0)
                         category.Organization = user.Organization;
 
-                    if (!user.IsManagerCanEdit || category.Organization.Id != user.Organization.Id)
+                    if (!user.IsManagerCanEditOrganization || category.Organization.Id != user.Organization.Id)
                         throw new PermissionsException();
                     s.SaveOrUpdate(category);
                     tx.Commit();

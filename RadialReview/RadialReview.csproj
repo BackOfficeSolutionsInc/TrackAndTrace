@@ -207,8 +207,11 @@
     <Compile Include="Controllers\UrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Models\Enums\OriginType.cs" />
+    <Compile Include="Models\IndustryModel.cs" />
+    <Compile Include="Models\Interfaces\ILongIdentifiable.cs" />
     <Compile Include="Models\LongModel.cs" />
     <Compile Include="Models\ViewModels\ManageUserViewModel.cs" />
+    <Compile Include="Models\ViewModels\QuestionModalViewModel.cs" />
     <Compile Include="Properties\ErrorMessageStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -241,7 +244,7 @@
     <Compile Include="Models\Enums\Currency.cs" />
     <Compile Include="Models\Enums\NexusActions.cs" />
     <Compile Include="Models\GroupModels.cs" />
-    <Compile Include="Models\Interfaces\ICustomQuestion.cs" />
+    <Compile Include="Models\Interfaces\ICustomQuestions.cs" />
     <Compile Include="Models\InvoiceItemModel.cs" />
     <Compile Include="Models\InvoiceModel.cs" />
     <Compile Include="Models\Json\JsonObject.cs" />
@@ -297,6 +300,7 @@
     <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
     <Compile Include="Utilities\Extensions\SessionExtensions.cs" />
     <Compile Include="Utilities\HibernateSession.cs" />
+    <Compile Include="Utilities\PermissionsUtility.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
     <Compile Include="Utilities\ShortenerUtility.cs" />
   </ItemGroup>

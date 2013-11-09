@@ -79,6 +79,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This category isn&apos;t accessible..
+        /// </summary>
+        public static string CategoryAccessability {
+            get {
+                return ResourceManager.GetString("CategoryAccessability", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The resource you are looking for does not exist or was deleted..
         /// </summary>
         public static string DefaultExistanceException {

@@ -14,9 +14,10 @@ namespace RadialReview.Models
 {
     public class UserOrganizationModel : ICustomQuestions, IDeletable
     {
-        public virtual long Id { get; protected set; } 
+        public virtual long Id { get; protected set; }
         public virtual Boolean ManagerAtOrganization { get; set; }
         public virtual Boolean ManagingOrganization { get; set; }
+        public virtual Boolean IsRadialAdmin { get; set; }
         public virtual String Title { get; set; }
         public virtual DateTime AttachTime { get; set; }
         public virtual DateTime? DetachTime { get; set; }
@@ -37,8 +38,9 @@ namespace RadialReview.Models
             {
                 return ManagingUsers.Union(new List<UserOrganizationModel> { this }).ToList();
             }
-            public virtual Boolean IsManager { get { return ManagerAtOrganization || ManagingOrganization; } }
-            public virtual Boolean IsManagerCanEdit { get { return ManagingOrganization || (ManagerAtOrganization && Organization.ManagersCanEdit); } }
+            public virtual Boolean IsManager { get { return IsRadialAdmin || ManagerAtOrganization || ManagingOrganization; } }
+            public virtual Boolean IsManagerCanEditOrganization { get { return IsRadialAdmin || ManagingOrganization || (ManagerAtOrganization && Organization.ManagersCanEdit); } }
+            public OriginType QuestionOwner { get { return OriginType.User; } }
 
             public virtual List<OriginType> EditableQuestionOrigins
             {
@@ -49,7 +51,7 @@ namespace RadialReview.Models
                         origins.Add(OriginType.User);
                     if (ManagerAtOrganization)
                         origins.Add(OriginType.Group);
-                    if (IsManagerCanEdit)
+                    if (IsManagerCanEditOrganization)
                         origins.Add(OriginType.Organization);
                     return origins;
                 }
@@ -68,7 +70,6 @@ namespace RadialReview.Models
             AttachTime = DateTime.UtcNow;
             CreatedQuestions = new List<QuestionModel>();
         }
-
     }
 
     public class UserOrganizationModelMap: ClassMap<UserOrganizationModel>
@@ -78,9 +79,10 @@ namespace RadialReview.Models
             Id(x => x.Id);
             Map(x => x.Title);
 
-            Map(x => x.ManagerAtOrganization);
+            Map(x => x.IsRadialAdmin);
             Map(x => x.ManagingOrganization);
-            Map(x => x.AttachTime); 
+            Map(x => x.ManagerAtOrganization);
+            Map(x => x.AttachTime);
             Map(x => x.DetachTime);
             Map(x => x.DeleteTime);
 

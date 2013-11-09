@@ -123,6 +123,9 @@
   <data name="AnErrorOccured" xml:space="preserve">
     <value>An error has occured. If the problem persists, please contact us.</value>
   </data>
+  <data name="CategoryAccessability" xml:space="preserve">
+    <value>This category isn't accessible.</value>
+  </data>
   <data name="DefaultExistanceException" xml:space="preserve">
     <value>The resource you are looking for does not exist or was deleted.</value>
   </data>

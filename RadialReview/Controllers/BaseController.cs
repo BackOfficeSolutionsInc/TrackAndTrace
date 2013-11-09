@@ -23,7 +23,7 @@ namespace RadialReview.Controllers
 
         protected void EditableOrException(UserOrganizationModel user)
         {
-            if (!user.IsManagerCanEdit)
+            if (!user.IsManagerCanEditOrganization)
                 throw new PermissionsException();
         }
 

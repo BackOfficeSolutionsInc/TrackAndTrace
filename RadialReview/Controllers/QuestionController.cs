@@ -20,7 +20,7 @@ namespace RadialReview.Controllers
         protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
 
 
-        public JsonResult AddQuestion(long organizationId, String question, String questionType, long categoryId)
+        public JsonResult AddQuestion(long organizationId, String question,  long categoryId, String questionType, long forId)
         {
             try
             {
@@ -32,17 +32,15 @@ namespace RadialReview.Controllers
                     Category = category,
                     Question = question
                 };
+
                 switch(questionType)
                 {
                     case "Organization": _OrganizationAccessor.EditQuestion(user, q); break;
-                    case "User":         _UserAccessor.EditQuestion(user, q); break;
-                    case "Group":        _GroupAccessor.EditQuestion(user, q); break;
-
-
+                    case "User":         _UserAccessor.EditQuestion(user, q,forId); break;
+                    case "Group":        _GroupAccessor.EditQuestion(user, q, forId); break;
                     default: throw new InvalidOperationException();
                 }
 
-                _OrganizationAccessor.EditQuestion(user, q);
 
                 return Json(JsonObject.Success);
             }

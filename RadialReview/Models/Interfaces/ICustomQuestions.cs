@@ -1,4 +1,5 @@
 ﻿
+using RadialReview.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,6 @@ namespace RadialReview.Models.Interfaces
         /// <summary>
         /// Organization,User,Application,Group
         /// </summary>
-        String QuestionOwnerType { get; set; }
+        OriginType QuestionOwner { get; }
     }
 }

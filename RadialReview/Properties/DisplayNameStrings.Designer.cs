@@ -169,6 +169,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Industry.
+        /// </summary>
+        public static string industry {
+            get {
+                return ResourceManager.GetString("industry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid.
         /// </summary>
         public static string invalid {

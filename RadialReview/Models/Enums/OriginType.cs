@@ -18,8 +18,10 @@ namespace RadialReview.Models.Enums
         Group,
         [Display(Name = "organization", ResourceType = typeof(DisplayNameStrings))]
         Organization,
+        [Display(Name = "industry", ResourceType = typeof(DisplayNameStrings))]
+        Industry,
         [Display(Name = "default", ResourceType = typeof(DisplayNameStrings))]
-        Application
+        Application,
 
     }
 }
