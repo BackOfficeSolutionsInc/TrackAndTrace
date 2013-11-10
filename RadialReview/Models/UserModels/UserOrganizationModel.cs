@@ -38,6 +38,12 @@ namespace RadialReview.Models
         {
             return OriginType.User;
         }
+
+        public virtual Boolean IsAttached()
+        {
+            return User != null;
+        }
+
         public virtual String OriginCustomName
         {
             get
@@ -57,7 +63,7 @@ namespace RadialReview.Models
         public virtual String ImageUrl()
         {
             if (User == null)
-                return ConstantStrings.ImagePlaceholder;
+                return ConstantStrings.ImageUserPlaceholder;
             return User.ImageUrl;
         }
 

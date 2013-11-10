@@ -79,6 +79,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not attached.
+        /// </summary>
+        internal static string notAttached {
+            get {
+                return ResourceManager.GetString("notAttached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No user attached.
         /// </summary>
         internal static string noUserAttached {

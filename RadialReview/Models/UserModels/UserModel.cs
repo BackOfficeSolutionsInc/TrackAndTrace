@@ -27,7 +27,7 @@ namespace RadialReview.Models
         public virtual string LastName { get; set; }
         public virtual string ImageUrl
         {
-            get { return _ImageUrl ?? ConstantStrings.ImagePlaceholder; }
+            get { return _ImageUrl ?? ConstantStrings.ImageUserPlaceholder; }
             set { _ImageUrl = value; }
         }
         /*
@@ -48,7 +48,7 @@ namespace RadialReview.Models
         
         public UserModel()
         {
-            ImageUrl = ConstantStrings.ImagePlaceholder;
+            ImageUrl = ConstantStrings.ImageUserPlaceholder;
             UserOrganization = new List<UserOrganizationModel>();
         }
 

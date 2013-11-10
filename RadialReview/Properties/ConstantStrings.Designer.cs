@@ -63,9 +63,18 @@ namespace RadialReview.Properties {
         /// <summary>
         ///   Looks up a localized string similar to /img/orgPlaceholder.png.
         /// </summary>
-        public static string ImagePlaceholder {
+        public static string ImageOrganizationPlaceholder {
             get {
-                return ResourceManager.GetString("ImagePlaceholder", resourceCulture);
+                return ResourceManager.GetString("ImageOrganizationPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /img/Placeholder.png.
+        /// </summary>
+        public static string ImageUserPlaceholder {
+            get {
+                return ResourceManager.GetString("ImageUserPlaceholder", resourceCulture);
             }
         }
         

@@ -1,5 +1,6 @@
 ﻿using RadialReview.Models;
 using RadialReview.Models.ViewModels;
+using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,9 @@ namespace RadialReview.Utilities
             return users.Select(x => new DragDropItem{ 
                 Id=x.Id,
                 DisplayName=x.Name(),
-                ImageUrl=x.User.ImageUrl
+                ImageUrl=x.ImageUrl(),
+                Classes=x.IsAttached()?"attached":"unattached",
+                AltText = x.IsAttached() ? x.Name() :  x.Name() +" ("+ErrorMessageStrings.notAttached+")",
             }).ToList();
         }
     }

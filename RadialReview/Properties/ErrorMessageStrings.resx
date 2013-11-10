@@ -124,6 +124,9 @@
   <data name="newPasswordMatch" xml:space="preserve">
     <value>The new password and confirmation password do not match.</value>
   </data>
+  <data name="notAttached" xml:space="preserve">
+    <value>Not attached</value>
+  </data>
   <data name="noUserAttached" xml:space="preserve">
     <value>No user attached</value>
   </data>

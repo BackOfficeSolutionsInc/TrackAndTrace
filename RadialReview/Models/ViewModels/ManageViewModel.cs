@@ -22,8 +22,8 @@ namespace RadialReview.Models.ViewModels
         public List<QuestionCategoryModel> Categories { get; set; }
         public ManageViewModel(UserOrganizationModel orgUser)
         {
-            ManagedUsers = orgUser.ManagingUsers.Where(x => x.User != null).ToListAlive();
-            PendingUsers = orgUser.ManagingUsers.Where(x => x.User == null).ToListAlive();
+            ManagedUsers = orgUser.ManagingUsers.Where(x => x.IsAttached()).ToListAlive();
+            PendingUsers = orgUser.ManagingUsers.Where(x => !x.IsAttached()).ToListAlive();
             ManagingGroups = orgUser.ManagingGroups.ToListAlive();
             Organization = orgUser.Organization;
             /*PendingUsers = orgUser.CreatedNexuses

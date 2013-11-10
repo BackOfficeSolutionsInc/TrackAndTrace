@@ -22,7 +22,7 @@ namespace RadialReview.Models
         [Display(Name = "imageUrl", ResourceType = typeof(DisplayNameStrings))]
         public virtual string ImageUrl
         {
-            get { return _ImageUrl ?? ConstantStrings.ImagePlaceholder; }
+            get { return _ImageUrl ?? ConstantStrings.ImageOrganizationPlaceholder; }
             set { _ImageUrl = value; }
         }
         private string _ImageUrl { get; set; }

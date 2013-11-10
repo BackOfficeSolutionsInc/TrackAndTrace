@@ -88,6 +88,15 @@ namespace System.Web
         {
             return MvcHtmlString.Create(string.Join(Environment.NewLine, ScriptBlock.pageScripts.Select(s => s.ToString())));
         }
+        public static IDisposable BeginStyles(this HtmlHelper helper)
+        {
+            return new ScriptBlock((WebViewPage)helper.ViewDataContainer);
+        }
+
+        public static MvcHtmlString PageStyles(this HtmlHelper helper)
+        {
+            return MvcHtmlString.Create(string.Join(Environment.NewLine, ScriptBlock.pageScripts.Select(s => s.ToString())));
+        }
     }
 
 

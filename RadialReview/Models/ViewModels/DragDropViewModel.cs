@@ -28,5 +28,6 @@ namespace RadialReview.Models.ViewModels
         public String DisplayName { get; set; }
         public String AltText { get; set; }
         public String ImageUrl { get; set; }
+        public String Classes { get; set; }
     }
 }
