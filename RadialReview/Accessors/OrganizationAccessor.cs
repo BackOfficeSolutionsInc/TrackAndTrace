@@ -9,7 +9,7 @@ using System.Web;
 
 namespace RadialReview.Accessors
 {
-    public class OrganizationAccessor
+    public class OrganizationAccessor : BaseAccessor
     {
         public void CreateOrganization(UserModel user, OrganizationModel organization)
         {
@@ -65,6 +65,7 @@ namespace RadialReview.Accessors
                     user = db.Get<UserModel>(user.Id);
                     var userOrg = db.Get<UserOrganizationModel>(userOrgPlaceholder);
 
+                    userOrg.AttachTime = DateTime.UtcNow;
                     userOrg.User= user;
                     userOrg.Organization = organization;
 

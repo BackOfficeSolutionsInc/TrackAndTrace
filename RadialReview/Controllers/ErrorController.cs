@@ -17,5 +17,10 @@ namespace RadialReview.Controllers
             return View();
         }
 
+        public ActionResult Modal(Exception e)
+        {
+            return PartialView(e);
+        }
+
 	}
 }

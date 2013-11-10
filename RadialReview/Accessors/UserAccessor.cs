@@ -11,7 +11,7 @@ using NHibernate;
 namespace RadialReview.Accessors
 {
 
-    public class UserAccessor
+    public class UserAccessor : BaseAccessor
     {
         public UserModel GetUser(String userId)
         {
@@ -22,6 +22,18 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     return s.Get<UserModel>(userId);
+                }
+            }
+        }
+
+        public UserOrganizationModel GetUserOrganization(UserOrganizationModel caller, long userOrganizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.ViewUserOrganization(s, caller, userOrganizationId);
+                    return s.Get<UserOrganizationModel>(userOrganizationId);
                 }
             }
         }

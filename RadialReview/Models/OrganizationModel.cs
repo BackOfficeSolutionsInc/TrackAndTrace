@@ -12,7 +12,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class OrganizationModel : ICustomQuestions, IDeletable
+    public class OrganizationModel : IOrigin, IDeletable
     {
         public virtual long Id { get; set; }
 
@@ -22,7 +22,7 @@ namespace RadialReview.Models
         [Display(Name = "imageUrl", ResourceType = typeof(DisplayNameStrings))]
         public virtual string ImageUrl
         {
-            get { return _ImageUrl ?? "/img/orgPlaceholder.png"; }
+            get { return _ImageUrl ?? ConstantStrings.ImagePlaceholder; }
             set { _ImageUrl = value; }
         }
         private string _ImageUrl { get; set; }
@@ -37,7 +37,19 @@ namespace RadialReview.Models
         public virtual IList<IndustryModel> Industries { get; set; }
         public virtual IList<GroupModel> Groups { get;set;}
         public virtual DateTime? DeleteTime { get; set; }
-        public virtual OriginType QuestionOwner { get { return OriginType.Organization; } }
+        public virtual OriginType QuestionOwnerType()
+        {
+            return OriginType.Organization;
+        }
+
+        public virtual String OriginCustomName
+        {
+            get
+            {
+                return Name;
+            }
+        }
+
         
         public OrganizationModel()
         {

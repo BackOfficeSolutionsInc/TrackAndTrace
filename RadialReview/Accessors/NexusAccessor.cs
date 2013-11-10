@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace RadialReview.Accessors
 {
-    public class NexusAccessor
+    public class NexusAccessor : BaseAccessor
     {
         public static UrlAccessor _UrlAccessor = new UrlAccessor();
         public String JoinOrganizationUnderManager(UserOrganizationModel manager, OrganizationModel organization,Boolean isManager,String title, String email)
@@ -32,6 +32,7 @@ namespace RadialReview.Accessors
                     newUser.ManagedBy.Add(manager);
                     newUser.ManagerAtOrganization=isManager;
                     newUser.Organization = manager.Organization;
+                    newUser.EmailAtOrganization = email;
                     newUser.Title = title;
                     db.Save(newUser);
                     newUserId = newUser.Id;
@@ -52,6 +53,8 @@ namespace RadialReview.Accessors
                     nexus.SetArgs(new string[] { "" + organization.Id, email, "" + newUserId });
                     id = nexus.Id;
                     db.SaveOrUpdate(nexus);
+                    //var newUser=db.Get<UserOrganizationModel>(newUserId);
+                    //manager.ManagingUsers.Add(newUser);
                     manager.CreatedNexuses.Add(nexus);
                     db.SaveOrUpdate(manager);
                     tx.Commit();

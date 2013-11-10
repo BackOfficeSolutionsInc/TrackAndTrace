@@ -6,17 +6,15 @@
         <th>Question</th>
         <th style="width:120px">Type</th>
         <th style="width: 50px">
-            <a href="#questionModal" role="button" class="btn addButton" data-toggle="modal">+</a>
-        </th>
+            <button role="button" class="btn addButton" onclick='showModal("Add Question","/Question/Modal/0?organizationId=@(Model.Organization.Id)&origin=Organization&originId=@(Model.Organization.Id)","/Question/Edit/")'>+</button>
+</th>
     </tr>
     @foreach (var question in Model.Organization.CustomQuestions.OrderByDescending(x => x.DateCreated))
     {
         <tr>
             <td>@question.Question</td>
             <td>@question.Category.Category</td>
-            <td><a href="#" class="btn btn-info">Edit</a></td>
+            <td><button onclick='showModal("Add Question","/Question/Modal/@(question.Id)?organizationId=@(Model.Organization.Id)","/Question/Edit/")' class="btn btn-info">Edit</button></td>
         </tr>
     }
 </table>
-
-@Html.Partial("Partial/_QuestionModal", new QuestionModalViewModel(Model.Organization, Model.Organization))

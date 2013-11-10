@@ -9,7 +9,7 @@ using RadialReview.Properties;
 
 namespace RadialReview.Accessors
 {
-    public class UrlAccessor
+    public class UrlAccessor : BaseAccessor
     {/*
         public String GetUrl(String shortened,String ipAddress)
         {

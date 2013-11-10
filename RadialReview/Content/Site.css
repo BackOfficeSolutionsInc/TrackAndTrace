@@ -67,6 +67,25 @@ html, body {
     padding-top: 10px;
 }
 
+#alerts, #alerts *{
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+}
+
+.alert.start{
+    -webkit-box-shadow:  0px 0px 10px 0px #b94a48;
+    box-shadow:  0px 0px 10px 0px #b94a48;
+}
+
+.alert{
+    margin-bottom:4px;
+}
+
+.alert:last-child{
+    margin-bottom:10px;
+}
 
 .jumbotron {
     background-image: url("img/little_pluses.png");

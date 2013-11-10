@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Properties;
 using RadialReview.Utilities;
+using RadialReview;
 
 namespace RadialReview.Controllers
 {
@@ -20,7 +21,7 @@ namespace RadialReview.Controllers
         // GET: /Group/
         public ActionResult Index(long? organizationId)
         {
-            var userOrg=GetOneUserOrganization(organizationId,true);
+            var userOrg=GetOneUserOrganization(organizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
             IList<GroupModel> groups=userOrg.ManagingGroups;
             return View(groups);
         }
@@ -33,7 +34,7 @@ namespace RadialReview.Controllers
 
         public ActionResult Create(long? organizationId)
         {
-            var orgUser = GetOneUserOrganization(organizationId, true);
+            var orgUser = GetOneUserOrganization(organizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
             organizationId = orgUser.Organization.Id;
 
             if (!orgUser.IsManagerCanEditOrganization)
@@ -58,13 +59,13 @@ namespace RadialReview.Controllers
 
         }
 
-        public ActionResult Edit(long? id)
+        public ActionResult Edit(long? id,long? organizationId)
         {
             if (id == null)
                 return View("Create");
-            
-            var orgUsers=GetUserOrganization(true);
-            var orgUser=orgUsers.Where(x=>x.ManagingGroups.Any(y=>y.Id==id)).SingleOrDefault();
+
+            var orgUser = GetOneUserOrganization(organizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
+            //var orgUser=orgUsers.Where(x=>x.ManagingGroups.Any(y=>y.Id==id)).SingleOrDefault();
             if (orgUser==null)
                 throw new PermissionsException();
 
@@ -72,7 +73,7 @@ namespace RadialReview.Controllers
             if (found == null)
                 throw new PermissionsException();
 
-            var organizationId=orgUser.Organization.Id;
+            organizationId=orgUser.Organization.Id;
 
             var group=_GroupAccessor.Get(orgUser,id.Value);
             var possibleUsers = orgUser.GetManagingUsersAndSelf();
@@ -81,7 +82,7 @@ namespace RadialReview.Controllers
             var end = group.GroupUsers.ToDragDropList();
             
             var groupViewModel=new GroupViewModel(){
-                OrganizationId=organizationId,
+                OrganizationId=organizationId.Value,
                 Group = group,
                 DragDrop = new DragDropViewModel()
                 {
@@ -110,7 +111,7 @@ namespace RadialReview.Controllers
         [HttpPost]
         public ActionResult Edit(GroupViewModel model)
         {
-            var userOrg=GetUserOrganization(model.OrganizationId,true);
+            var userOrg=GetUserOrganization(model.OrganizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
 
             if (!userOrg.IsManagerCanEditOrganization)
                 throw new PermissionsException();
@@ -139,7 +140,7 @@ namespace RadialReview.Controllers
 
             _GroupAccessor.Edit(userOrg, group);
 
-            return RedirectToAction("Index");
+            return Redirect(Url.Action("Manage", "Organization") + "#groups");
         }
 
     }

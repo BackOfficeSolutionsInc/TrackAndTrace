@@ -2,6 +2,7 @@
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,19 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class ApplicationWideModel : ICustomQuestions
+    public class ApplicationWideModel : IOrigin
     {
         public virtual long Id { get; protected set; }
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
-        public virtual OriginType QuestionOwner { get { return OriginType.Application; } }
+        public virtual OriginType QuestionOwnerType()
+        {
+            return OriginType.Application;
+        }
+        public virtual String OriginCustomName { 
+            get {
+                return ProductStrings.ProductName;
+            } 
+        }
     }
 
     public class ApplicationWideModelMap : ClassMap<ApplicationWideModel>

@@ -176,6 +176,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accessors\BaseAccessor.cs" />
     <Compile Include="Accessors\CategoryAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
     <Compile Include="Accessors\DbWrapper.cs" />
@@ -184,6 +185,7 @@
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
     <Compile Include="Accessors\NexusAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
+    <Compile Include="Accessors\OriginAccessor.cs" />
     <Compile Include="Accessors\QuestionAccessor.cs" />
     <Compile Include="Accessors\UrlAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
@@ -396,7 +398,9 @@
     <Content Include="Views\Organization\Partials\ManageQuestions.cshtml" />
     <Content Include="Views\Organization\Partials\ManageGroups.cshtml" />
     <Content Include="Views\User\Manage.cshtml" />
-    <Content Include="Views\Shared\Partial\_QuestionModal.cshtml" />
+    <Content Include="Views\Shared\Partial\_Modal.cshtml" />
+    <Content Include="Views\Question\Modal.cshtml" />
+    <Content Include="Views\Error\Modal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -421,7 +425,7 @@
       <LastGenOutput>DisplayNameStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\MessageStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MessageStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\ConstantStrings.resx">

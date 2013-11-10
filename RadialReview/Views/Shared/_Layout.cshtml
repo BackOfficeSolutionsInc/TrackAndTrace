@@ -46,11 +46,6 @@
                             {
                                 <li>@Html.ActionLink("About", "About", "Home")</li>
                             }
-
-                            @*
-                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                                <li>@Html.ActionLink("About", "About", "Home")</li>
-                                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
                         </ul>
                         @Html.Partial("_LoginPartial")
                     </div>
@@ -58,11 +53,84 @@
             </div>
             @RenderSection("top", false)
             <div class="container body-content">
+                <div id="alerts">
+                </div>
                 @RenderBody()
                 <hr />
             </div>
             <div id="spinnerContainer"></div>
         </div>
+        @Html.Partial("Partial/_Modal")
+        @using(var s=Html.BeginScripts())
+        {
+            <script>
+                function showModal(title,pullUrl,pushUrl)
+                {
+                    $.ajax({
+                        url:pullUrl, 
+                        type: "GET",
+                        //Couldnt retrieve modal partial view
+                        error:function(jqxhr,status,error)
+                        {
+                            if (error == "timeout")
+                                showAlert("@RadialReview.Properties.ExceptionStrings.TimeoutException");
+                            else
+                                showAlert(status);
+                        },
+                        //Retrieved Partial Modal
+                        success: function (modal) {
+                            if (!modal) {
+                                showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
+                                return;
+                            }
+                            $('#modalBody').html(modal);
+                            $("#modalTitle").html(title);
+                            //Reregister submit button
+                            $("#modalForm").submit(function (e) {
+                                e.preventDefault();
+                                var serialized = $("#modalForm").serialize();
+                                $.ajax({
+                                    url: pushUrl,
+                                    type:"POST",
+                                    data: serialized,
+                                    success: function (data, status, jqxhr) {
+                                        if (!data) {
+                                            showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
+                                        } else if (data.error) {
+                                            showAlert(data.message);
+                                        } else {
+                                            location.reload();
+                                        }
+                                    },
+                                    error: function (jqxhr, status, error) {
+                                        if (error == "timeout") {
+                                            showAlert("@RadialReview.Properties.ExceptionStrings.TimeoutException");
+                                        } else {
+                                            showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
+                                        }
+                                        $("#modal").modal("hide");
+                                    },
+                                    dataType: "html"
+                                });
+                            });
+                            $('#modal').modal('show');
+                        }
+                        
+                       
+                    });
+                }
+
+                function showAlert(message, alertType) {
+                    if (alertType === undefined)
+                        alertType = "alert-danger";
+                    var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>@RadialReview.Properties.MessageStrings.Warning</strong> <span class=\"message\">" + message + "</span></div>");
+                    $("#alerts").prepend(alert);
+                    setTimeout(function () { alert.removeClass("start"); }, 1);
+                }
+
+            </script>
+            
+        }
 
     </div>
     <div id="footer">

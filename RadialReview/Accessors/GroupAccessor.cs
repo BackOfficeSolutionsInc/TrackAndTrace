@@ -9,7 +9,7 @@ using NHibernate.Linq;
 
 namespace RadialReview.Accessors
 {
-    public class GroupAccessor
+    public class GroupAccessor : BaseAccessor
     {
 
         public GroupModel Get(UserOrganizationModel caller, long groupId)

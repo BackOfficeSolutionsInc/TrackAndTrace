@@ -26,14 +26,40 @@ namespace RadialReview.Models
         public virtual GroupModel ForGroup { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
 
-        public virtual OriginType Origin { get {
-            if      (ForApplication != null)    return OriginType.Application;
-            else if (ForOrganization != null)   return OriginType.Organization;
-            else if (ForUser != null)           return OriginType.User;
-            else if (ForGroup != null)          return OriginType.Group;
-            else if (ForIndustry != null)       return OriginType.Industry;
-            else                                return OriginType.Invalid;
-        } }
+        public virtual IOrigin Origin
+        {
+            get
+            {
+                if (ForApplication != null) return ForApplication;
+                else if (ForIndustry != null) return ForIndustry;
+                else if (ForOrganization != null) return ForOrganization;
+                else if (ForGroup != null) return ForGroup;
+                else if (ForUser != null) return ForUser;
+                return null;
+            }
+        }
+
+        protected virtual OriginType? _OriginType { get; set; }
+
+        public virtual OriginType OriginType
+        {
+            get
+            {
+                if (_OriginType.HasValue)
+                    return _OriginType.Value;
+                if (ForApplication != null) return OriginType.Application;
+                else if (ForIndustry != null) return OriginType.Industry;
+                else if (ForOrganization != null) return OriginType.Organization;
+                else if (ForGroup != null) return OriginType.Group;
+                else if (ForUser != null) return OriginType.User;
+                else return OriginType.Invalid;
+            }
+            set
+            {
+                _OriginType = value;
+            }
+
+        }
 
 
         public QuestionModel()
@@ -41,6 +67,11 @@ namespace RadialReview.Models
             DateCreated = DateTime.UtcNow;
             KeyValues = new List<QuestionKeyValues>();
             DisabledFor = new List<LongModel>();
+        }
+
+        public virtual long CategoryId
+        {
+            get { return Category.NotNull(x => x.Id); }
         }
     }
 
@@ -68,7 +99,7 @@ namespace RadialReview.Models
             References(x => x.ForIndustry)
                 .Column("IndustryQuestion_Id")
                 .Cascade.SaveUpdate();
-            
+
             References(x => x.CreatedBy)
                 .Cascade.SaveUpdate()
                 .Column("CreatedQuestionsId");

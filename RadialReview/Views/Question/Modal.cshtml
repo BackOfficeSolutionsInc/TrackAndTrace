@@ -1,0 +1,17 @@
+﻿@model  RadialReview.Models.ViewModels.QuestionModalViewModel
+
+
+<!--Add Question-->
+<input type="hidden" name="questionId" value="@Model.Question.Id" />
+<input type="hidden" name="forOriginId" value="@Model.OriginId" />
+<input type="hidden" name="organizationId" value="@Model.OrganizationId" />
+<input type="hidden" name="questionType" value="@(Model.OriginType.ToString())" />
+<div class="row">
+    <div class="col-md-2"><label>Question: &nbsp;</label></div>
+    <div class="col-md-9">@Html.TextBox("question", Model.Question.Question, new { placeholder = "Question", @class = "fullWidth" })</div>
+</div>
+<div class="row">
+    <div class="col-md-2"><label>Type: &nbsp;</label></div>
+    <div class="col-md-7">@Html.DropDownList("categoryId", Model.Categories.Select((x, i) => new SelectListItem() { Selected = (x.Id == Model.Question.CategoryId), Text = x.Category, Value = "" + x.Id }), new { @class = "fullWidth" })</div>
+    <div class="col-md-2">@Html.ActionLink("Create", "Create", "Category")</div>
+</div>

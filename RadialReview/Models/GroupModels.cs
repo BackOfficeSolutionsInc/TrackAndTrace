@@ -12,7 +12,7 @@ using System.Text;
 
 namespace RadialReview.Models
 {
-    public class GroupModel : ICustomQuestions, IDeletable
+    public class GroupModel : IOrigin, IDeletable
     {
         [Key]
         public virtual long Id { get; set; }
@@ -24,7 +24,19 @@ namespace RadialReview.Models
         public virtual IList<UserOrganizationModel> Managers { get; set; }
 
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
-        public virtual OriginType QuestionOwner { get { return OriginType.Group; } }
+        public virtual OriginType QuestionOwnerType()
+        {
+            return OriginType.Group;
+        }
+
+        public virtual String OriginCustomName
+        {
+            get
+            {
+                return GroupName;
+            }
+        }
+
         public GroupModel()
         {
             GroupUsers = new List<UserOrganizationModel>();

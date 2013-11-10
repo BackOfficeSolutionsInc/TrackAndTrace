@@ -11,7 +11,7 @@ using System.Web;
 
 namespace RadialReview.Accessors
 {
-    public class QuestionAccessor
+    public class QuestionAccessor : BaseAccessor
     {
         public QuestionModel CreateQuestion(QuestionModel question)
         {
@@ -223,6 +223,20 @@ namespace RadialReview.Accessors
             }
             return question;
         }
+
+        public QuestionModel GetQuestion(UserOrganizationModel caller, long id)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var question=s.Get<QuestionModel>(id);
+                    PermissionsUtility.ViewQuestion(s, caller, question);
+                    return question;
+                }
+            }
+        }
+
 
     }
 }

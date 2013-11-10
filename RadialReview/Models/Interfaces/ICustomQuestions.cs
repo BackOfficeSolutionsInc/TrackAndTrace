@@ -7,12 +7,14 @@ using System.Text;
 
 namespace RadialReview.Models.Interfaces
 {
-    public interface ICustomQuestions : ILongIdentifiable
+    public interface IOrigin : ILongIdentifiable
     {
         IList<QuestionModel> CustomQuestions { get;set; }
         /// <summary>
         /// Organization,User,Application,Group
         /// </summary>
-        OriginType QuestionOwner { get; }
+        OriginType QuestionOwnerType();
+
+        String OriginCustomName { get; }
     }
 }

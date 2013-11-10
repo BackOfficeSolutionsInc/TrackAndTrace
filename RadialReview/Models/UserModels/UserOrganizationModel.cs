@@ -4,6 +4,7 @@ using FluentNHibernate.Automapping.Alterations;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,9 +13,10 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class UserOrganizationModel : ICustomQuestions, IDeletable
+    public class UserOrganizationModel : IOrigin, IDeletable
     {
         public virtual long Id { get; protected set; }
+        public virtual String EmailAtOrganization { get; set; }
         public virtual Boolean ManagerAtOrganization { get; set; }
         public virtual Boolean ManagingOrganization { get; set; }
         public virtual Boolean IsRadialAdmin { get; set; }
@@ -31,32 +33,56 @@ namespace RadialReview.Models
         public virtual IList<NexusModel> CreatedNexuses { get; set; }
         public virtual IList<QuestionModel> CreatedQuestions { get; set; }
 
-        public virtual DateTime? DeleteTime { get; set; }        
-        public virtual OriginType QuestionOwner { get { return OriginType.User; } }
+        public virtual DateTime? DeleteTime { get; set; }
+        public virtual OriginType QuestionOwnerType()
+        {
+            return OriginType.User;
+        }
+        public virtual String OriginCustomName
+        {
+            get
+            {
+                return DisplayNameStrings.user;
+            }
+        }
 
         #region Helpers
-            public virtual IList<UserOrganizationModel> GetManagingUsersAndSelf()
-            {
-                return ManagingUsers.Union(new List<UserOrganizationModel> { this }).ToList();
-            }
-            public virtual Boolean IsManager { get { return IsRadialAdmin || ManagerAtOrganization || ManagingOrganization; } }
-            public virtual Boolean IsManagerCanEditOrganization { get { return IsRadialAdmin || ManagingOrganization || (ManagerAtOrganization && Organization.ManagersCanEdit); } }
-            
 
-            public virtual List<OriginType> EditableQuestionOrigins
+        public virtual String Name()
+        {
+            if (User == null)
+                return EmailAtOrganization;
+            return User.Name();
+        }
+        public virtual String ImageUrl()
+        {
+            if (User == null)
+                return ConstantStrings.ImagePlaceholder;
+            return User.ImageUrl;
+        }
+
+        public virtual IList<UserOrganizationModel> GetManagingUsersAndSelf()
+        {
+            return ManagingUsers.Union(new List<UserOrganizationModel> { this }).ToList();
+        }
+        public virtual Boolean IsManager { get { return IsRadialAdmin || ManagerAtOrganization || ManagingOrganization; } }
+        public virtual Boolean IsManagerCanEditOrganization { get { return IsRadialAdmin || ManagingOrganization || (ManagerAtOrganization && Organization.ManagersCanEdit); } }
+
+
+        public virtual List<OriginType> EditableQuestionOrigins
+        {
+            get
             {
-                get
-                {
-                    var origins = new List<OriginType>();
-                    if (IsManager)
-                        origins.Add(OriginType.User);
-                    if (ManagerAtOrganization)
-                        origins.Add(OriginType.Group);
-                    if (IsManagerCanEditOrganization)
-                        origins.Add(OriginType.Organization);
-                    return origins;
-                }
+                var origins = new List<OriginType>();
+                if (IsManager)
+                    origins.Add(OriginType.User);
+                if (ManagerAtOrganization)
+                    origins.Add(OriginType.Group);
+                if (IsManagerCanEditOrganization)
+                    origins.Add(OriginType.Organization);
+                return origins;
             }
+        }
 
         #endregion
 
@@ -68,12 +94,12 @@ namespace RadialReview.Models
             ManagingGroups = new List<GroupModel>();
             CustomQuestions = new List<QuestionModel>();
             CreatedNexuses = new List<NexusModel>();
-            AttachTime = DateTime.UtcNow;
             CreatedQuestions = new List<QuestionModel>();
+            AttachTime = DateTime.UtcNow;
         }
     }
 
-    public class UserOrganizationModelMap: ClassMap<UserOrganizationModel>
+    public class UserOrganizationModelMap : ClassMap<UserOrganizationModel>
     {
         public UserOrganizationModelMap()
         {
@@ -86,6 +112,7 @@ namespace RadialReview.Models
             Map(x => x.AttachTime);
             Map(x => x.DetachTime);
             Map(x => x.DeleteTime);
+            Map(x => x.EmailAtOrganization);
 
             References(x => x.User)
                 .Cascade.SaveUpdate();
@@ -93,12 +120,12 @@ namespace RadialReview.Models
                 .Column("Organization_Id")
                 .Cascade.SaveUpdate();
             HasManyToMany(x => x.ManagedBy)
-                .Table("ManagedByMembers")
+                .Table("ManagedMembers")
                 .ParentKeyColumn("Subordinate")
                 .ChildKeyColumn("Manager")
                 .Cascade.SaveUpdate();
             HasManyToMany(x => x.ManagingUsers)
-                .Table("ManagingMembers")
+                .Table("ManagedMembers")
                 .ParentKeyColumn("Manager")
                 .ChildKeyColumn("Subordinate")
                 .Cascade.SaveUpdate();

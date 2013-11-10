@@ -13,7 +13,7 @@ namespace RadialReview.Utilities
         {
             return users.Select(x => new DragDropItem{ 
                 Id=x.Id,
-                DisplayName=x.User.Name(),
+                DisplayName=x.Name(),
                 ImageUrl=x.User.ImageUrl
             }).ToList();
         }

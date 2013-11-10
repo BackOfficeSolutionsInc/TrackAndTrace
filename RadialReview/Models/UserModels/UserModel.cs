@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using RadialReview.Models;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.UserModels;
+using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,7 +27,7 @@ namespace RadialReview.Models
         public virtual string LastName { get; set; }
         public virtual string ImageUrl
         {
-            get { return _ImageUrl ?? "/img/placeholder.png"; }
+            get { return _ImageUrl ?? ConstantStrings.ImagePlaceholder; }
             set { _ImageUrl = value; }
         }
         /*
@@ -47,7 +48,7 @@ namespace RadialReview.Models
         
         public UserModel()
         {
-            ImageUrl = "/img/placeholder.png";
+            ImageUrl = ConstantStrings.ImagePlaceholder;
             UserOrganization = new List<UserOrganizationModel>();
         }
 

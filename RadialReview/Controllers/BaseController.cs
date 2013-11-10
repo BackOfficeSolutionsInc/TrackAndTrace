@@ -17,8 +17,6 @@ namespace RadialReview.Controllers
     {
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-
-
         protected static UserAccessor _UserAccessor = new UserAccessor();
 
         protected void EditableOrException(UserOrganizationModel user)
@@ -119,7 +117,7 @@ namespace RadialReview.Controllers
                 filterContext.Controller.ViewBag.IsManager = false;
                 if (oneUser != null)
                 {
-                    filterContext.Controller.ViewBag.UserName = oneUser.User.Name();
+                    filterContext.Controller.ViewBag.UserName = oneUser.Name();
                     filterContext.Controller.ViewBag.IsManager = userOrgs.Any(x => x.ManagerAtOrganization || x.ManagingOrganization);
                 }
             }

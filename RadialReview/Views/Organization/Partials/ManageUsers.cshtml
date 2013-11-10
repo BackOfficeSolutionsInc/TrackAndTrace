@@ -41,11 +41,11 @@
                     <button data-target="#addUserModal" role="button" class="btn addButton" data-toggle="modal">+</button>
                 </th>
             </tr>
-            @foreach (var pending in Model.PendingUsers.OrderByDescending(x => x.Date))
+            @foreach (var pending in Model.PendingUsers.OrderByDescending(x => x.AttachTime))
             {
                 <tr>
-                    <td>@pending.EmailAddress</td>
-                    <td><span data-livestamp="@(pending.Date.ToString("o"))-00:00"></span></td>
+                    <td>@pending.EmailAtOrganization</td>
+                    <td><span data-livestamp="@(pending.AttachTime.ToString("o"))-00:00"></span></td>
                     <td><a href="@Url.Action("Manage", "User", new {id=pending.Id})" class="btn btn-info">Edit</a></td>
                 </tr>
             }

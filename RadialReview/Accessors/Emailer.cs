@@ -12,7 +12,7 @@ using System.Web;
 
 namespace RadialReview.Accessors
 {
-    public class Emailer
+    public class Emailer : BaseAccessor
     {
         private static String EmailBodyWrapper(String htmlBody)
         {

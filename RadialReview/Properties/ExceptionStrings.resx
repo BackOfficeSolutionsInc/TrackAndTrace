@@ -144,4 +144,10 @@
   <data name="InvalidEmail" xml:space="preserve">
     <value>E-mail address is invalid.</value>
   </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>Something went wrong. If the problem persists, please contact us.</value>
+  </data>
+  <data name="TimeoutException" xml:space="preserve">
+    <value>The request has timed out. If the problem persists, please contact us.</value>
+  </data>
 </root>

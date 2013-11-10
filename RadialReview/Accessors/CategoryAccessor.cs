@@ -8,7 +8,7 @@ using RadialReview.Exceptions;
 
 namespace RadialReview.Accessors
 {
-    public class CategoryAccessor
+    public class CategoryAccessor : BaseAccessor
     {
 
         public QuestionCategoryModel Edit(UserOrganizationModel user, QuestionCategoryModel category)
