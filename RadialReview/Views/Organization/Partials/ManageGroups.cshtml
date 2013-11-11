@@ -3,15 +3,17 @@
 <table class="table">
     <tr>
         <th>Group</th>
+        <th style="width:120px"># Questions</th>
         <th style="width:120px"># Members</th>
         <th style="width:50px">
-            <a href="@Url.Action("Create", "Group", new {organizationId=Model.Organization.Id})" role="button" class="btn addButton" data-toggle="modal">+</a>
+            <button onclick="window.location='@Url.Action("Create", "Group", new {organizationId=Model.Organization.Id})'" role="button" class="btn btn-default addButton" data-toggle="modal">+</button>
         </th>
     </tr>
     @foreach (var group in Model.ManagingGroups)
     {
         <tr>
             <td>@group.GroupName</td>
+            <td>@group.CustomQuestions.Count</td>
             <td>@group.GroupUsers.Count</td>
             <td><a href="@Url.Action("Edit", "Group", new {id=group.Id})" class="btn btn-info">Edit</a></td>
         </tr>

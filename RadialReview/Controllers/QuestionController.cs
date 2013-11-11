@@ -49,7 +49,7 @@ namespace RadialReview.Controllers
             }
             catch (Exception e)
             {
-                return Json(new JsonObject(true, e.Message));
+                return Json(new JsonObject(e));
             }
         }
 
@@ -57,7 +57,10 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var caller = GetOneUserOrganization(organizationId).Hydrate().Organization(questions: true).Execute();
+                var caller = GetOneUserOrganization(organizationId).Hydrate()
+                    .Organization(questions: true)
+                    .ManagingGroups(questions:true)
+                    .Execute();
                 QuestionModel q = null;
 
                 QuestionModalViewModel questionViewModel = null;
@@ -65,7 +68,7 @@ namespace RadialReview.Controllers
                 if (id != 0)
                 {
                     q = _QuestionAccessor.GetQuestion(caller, id);
-                    questionViewModel = new QuestionModalViewModel(caller.Organization, q.Origin.Id, q.OriginType, q);
+                    questionViewModel = new QuestionModalViewModel(caller.Organization, q.Origin.Id, q.OriginType,false, q);
                 }
                 else
                 {
@@ -75,69 +78,13 @@ namespace RadialReview.Controllers
                     q = new QuestionModel();
                     q.OriginType = originType;
                     _OriginAccessor.GetOrigin(caller, originType, originId.Value); //To ensure that we have access to this origin.
-                    questionViewModel = new QuestionModalViewModel(caller.Organization, originId.Value,originType, q);
+                    questionViewModel = new QuestionModalViewModel(caller.Organization, originId.Value,originType,true, q);
                 }
                 return PartialView(questionViewModel);
             }catch(Exception e)
             {
-                return RedirectToAction("Modal", "Error", e);
+                return PartialView("ModalError", e);
             }
         }
-
-        /*private ApplicationDbContext db = new ApplicationDbContext();
-
-        // GET: /Question/
-        public ActionResult Index()
-        {
-            return View(db.Questions.ToList());
-        }
-
-        // GET: /Question/Details/5
-        public ActionResult Details(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            QuestionModel questionmodel = db.Questions.Find(id);
-            if (questionmodel == null)
-            {
-                return HttpNotFound();
-            }
-            return View(questionmodel);
-        }
-
-        // GET: /Question/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: /Question/Create
-        // To protect from over posting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        // 
-        // Example: public ActionResult Update([Bind(Include="ExampleProperty1,ExampleProperty2")] Model model)
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(QuestionModel questionmodel)
-        {
-            GetUser();
-
-            if (ModelState.IsValid)
-            {
-                db.Questions.Add(questionmodel);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View(questionmodel);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            db.Dispose();
-            base.Dispose(disposing);
-        }*/
     }
 }

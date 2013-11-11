@@ -214,6 +214,7 @@
     <Compile Include="Models\LongModel.cs" />
     <Compile Include="Models\ViewModels\ManageUserViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionModalViewModel.cs" />
+    <Compile Include="Models\ViewModels\QuestionsViewModel.cs" />
     <Compile Include="Properties\ErrorMessageStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -298,6 +299,7 @@
     </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\DragDropUtility.cs" />
+    <Compile Include="Utilities\Extensions\DictionaryExtensions.cs" />
     <Compile Include="Utilities\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Utilities\Extensions\EnumExtensions.cs" />
     <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
@@ -395,12 +397,13 @@
     <Content Include="Views\Category\Edit.cshtml" />
     <Content Include="Views\Category\Index.cshtml" />
     <Content Include="Views\Organization\Partials\ManageUsers.cshtml" />
-    <Content Include="Views\Organization\Partials\ManageQuestions.cshtml" />
     <Content Include="Views\Organization\Partials\ManageGroups.cshtml" />
     <Content Include="Views\User\Manage.cshtml" />
     <Content Include="Views\Shared\Partial\_Modal.cshtml" />
     <Content Include="Views\Question\Modal.cshtml" />
-    <Content Include="Views\Error\Modal.cshtml" />
+    <Content Include="Views\Shared\ModalError.cshtml" />
+    <Content Include="Views\Shared\Partial\_QuestionTable.cshtml" />
+    <Content Include="Views\User\AddModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

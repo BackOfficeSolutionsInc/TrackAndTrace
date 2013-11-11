@@ -16,7 +16,7 @@ namespace RadialReview.Utilities
                 Id=x.Id,
                 DisplayName=x.Name(),
                 ImageUrl=x.ImageUrl(),
-                Classes=x.IsAttached()?"attached":"unattached",
+                Classes=(x.IsAttached()?"attached":"unattached")+" "+x.Properties.GetOrDefault("classes"),
                 AltText = x.IsAttached() ? x.Name() :  x.Name() +" ("+ErrorMessageStrings.notAttached+")",
             }).ToList();
         }

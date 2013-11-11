@@ -115,10 +115,16 @@ namespace RadialReview.Controllers
                 var oneUser = userOrgs.FirstOrDefault();
                 filterContext.Controller.ViewBag.UserName = MessageStrings.User;
                 filterContext.Controller.ViewBag.IsManager = false;
+                
                 if (oneUser != null)
                 {
                     filterContext.Controller.ViewBag.UserName = oneUser.Name();
                     filterContext.Controller.ViewBag.IsManager = userOrgs.Any(x => x.ManagerAtOrganization || x.ManagingOrganization);
+                }
+                else
+                {
+                    var user = GetUser();
+                    filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
                 }
             }
             base.OnActionExecuting(filterContext);

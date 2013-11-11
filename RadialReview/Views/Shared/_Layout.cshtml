@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - @RadialReview.Properties.ProductStrings.ProductName</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @RenderSection("styles", required: false)
@@ -62,21 +62,41 @@
             <div id="spinnerContainer"></div>
         </div>
         @Html.Partial("Partial/_Modal")
-        @using(var s=Html.BeginScripts())
+        @using (var s = Html.BeginScripts())
         {
             <script>
-                function showModal(title,pullUrl,pushUrl)
+                $(window).bind('beforeunload', function (event) {
+                    if ($(".unsaved").length>0)
+                        return "@RadialReview.Properties.DisplayNameStrings.unsavedItems";
+                    return;
+                });
+
+                $(".modifiable").change(modify);
+                $(".modifiable").bind('input',modify);
+
+                function modify()
                 {
+                    $(this).addClass("unsaved");
+                    $(".saveButton").addClass("unsaved");
+                }
+
+                function clearUnsaved()
+                {
+                    $(".unsaved").removeClass("unsaved");
+                }
+
+
+                function showModal(title, pullUrl, pushUrl) {
                     $.ajax({
-                        url:pullUrl, 
+                        url: pullUrl,
                         type: "GET",
                         //Couldnt retrieve modal partial view
-                        error:function(jqxhr,status,error)
-                        {
-                            if (error == "timeout")
+                        error: function (jqxhr, status, error) {
+                            $("#modalForm").unbind('submit');
+                            if (status == "timeout")
                                 showAlert("@RadialReview.Properties.ExceptionStrings.TimeoutException");
                             else
-                                showAlert(status);
+                                showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
                         },
                         //Retrieved Partial Modal
                         success: function (modal) {
@@ -87,19 +107,26 @@
                             $('#modalBody').html(modal);
                             $("#modalTitle").html(title);
                             //Reregister submit button
+                            $("#modalForm").unbind('submit');
+
                             $("#modalForm").submit(function (e) {
                                 e.preventDefault();
                                 var serialized = $("#modalForm").serialize();
                                 $.ajax({
                                     url: pushUrl,
-                                    type:"POST",
+                                    type: "POST",
                                     data: serialized,
                                     success: function (data, status, jqxhr) {
                                         if (!data) {
+                                            $("#modal").modal("hide");
                                             showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
-                                        } else if (data.error) {
-                                            showAlert(data.message);
+                                        } else if (data.Error) {
+                                            $("#modal").modal("hide");
+                                            console.log(data.Trace);
+                                            console.log(data.Message);
+                                            showAlert(data.Message);
                                         } else {
+                                            $("#modal").modal("hide");
                                             location.reload();
                                         }
                                     },
@@ -110,14 +137,13 @@
                                             showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
                                         }
                                         $("#modal").modal("hide");
-                                    },
-                                    dataType: "html"
+                                    }
                                 });
                             });
                             $('#modal').modal('show');
                         }
-                        
-                       
+
+
                     });
                 }
 
@@ -130,7 +156,7 @@
                 }
 
             </script>
-            
+
         }
 
     </div>

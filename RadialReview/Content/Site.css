@@ -21,6 +21,30 @@ html, body {
     min-height: 100%;
 }
 
+.btn {
+    -webkit-transition: all .25s ease;
+    -moz-transition: all .25s ease;
+    -ms-transition: all .25s ease;
+    -o-transition: all .25s ease;
+    transition: all .25s ease;
+}
+
+.addButton{
+    width:100%;
+}
+
+.btn-default {
+    color: #5e5e5e;
+}
+
+.btn.unsaved {
+    color: #FFF;
+    background-color: #5CB85C;
+    border-color: #4CAE4C;
+    -webkit-box-shadow: 0px 0px 3px 1px #4CAE4C;
+    box-shadow: 0px 0px 3px 1px #4CAE4C;
+}
+
 #main {
     overflow: auto;
     padding-top: 15px;
@@ -92,6 +116,10 @@ html, body {
     background-color: rgba(60, 104, 255, 0.14);
     -webkit-box-shadow: 0px 0px 3px 0px rgba(1, 1, 1, 0.25);
     box-shadow: 0px 0px 3px 0px rgba(1, 1, 1, 0.25);
+}
+
+.smallBreak {
+    height: 4px;
 }
 
 .fullWidth {
@@ -230,7 +258,6 @@ html, body {
     cursor: default;
 }
 
-
 .dragDropItem {
     font-size: 16px;
     text-transform: capitalize;
@@ -250,8 +277,9 @@ html, body {
     padding-right: 4px;
     text-align: justify;
     font-family: 'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
-    font-size: 11px;
-    width: 100px;
+    font-size: 10px;
+    width: 65px;
+    height: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -275,7 +303,7 @@ html, body {
 .drag ul, .drop ul {
     border: 2px solid #dbe3e5;
     padding: 10px;
-    height: 450px;
+    height: 250px;
     overflow-y: auto;
     overflow-x: hidden;
     margin-right: 10px;

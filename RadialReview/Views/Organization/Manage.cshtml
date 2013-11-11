@@ -19,7 +19,7 @@
     </style>
 }
 <!-- Button to trigger modal -->
-<h3>Manage @Model.Organization.Name <img src="@Model.Organization.ImageUrl" style="width: 32px; height: 32px; border: 1px solid #DADADA;" class="img-circle" alt="@Model.Organization.Name" /></h3>
+<h3>@RadialReview.Properties.DisplayNameStrings.manage @Model.Organization.Name <img src="@Model.Organization.ImageUrl" style="width: 32px; height: 32px; border: 1px solid #DADADA;" class="img-circle" alt="@Model.Organization.Name" /></h3>
 
 
 <div id="alertContainer">
@@ -41,13 +41,13 @@
        @Html.Partial("Partials/ManageGroups", Model)        
     </div>
     <div class="tab-pane" id="questions">
-       @Html.Partial("Partials/ManageQuestions",Model)
+       @Html.Partial("Partial/_QuestionTable", Model.OrganizationQuestions)
     </div>
 </div>
 
 @section modals
 {
-    <!-- Modal -->
+    <!--Update scrolling and tab-->
     <script type="text/javascript">
         function HashUpdate(){
             if(location.hash){

@@ -62,12 +62,12 @@ namespace RadialReview.Models
         {
             Id(x => x.Id).CustomType(typeof(string)).GeneratedBy.Custom(typeof(GuidStringGenerator)).Length(36);
             Map(x => x.UserName).Index("UserName_IDX");
-            Map(x => x.FirstName);
-            Map(x => x.LastName);
+            Map(x => x.FirstName).Not.LazyLoad();
+            Map(x => x.LastName).Not.LazyLoad();
             Map(x => x.PasswordHash);
             Map(x => x.SecurityStamp);
             Map(x => x.DeleteTime);
-            Map(x => x.ImageUrl);
+            Map(x => x.ImageUrl).Not.LazyLoad();
             HasMany(x => x.UserOrganization).Cascade.SaveUpdate();
             HasMany(x => x.Logins).Cascade.SaveUpdate();
             HasMany(x => x.Roles).Cascade.SaveUpdate();

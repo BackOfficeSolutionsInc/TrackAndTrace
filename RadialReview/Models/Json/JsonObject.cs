@@ -3,6 +3,7 @@ using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace RadialReview.Models.Json
@@ -17,6 +18,7 @@ namespace RadialReview.Models.Json
     public class JsonObject
     {
         public String Message { get; set; }
+        public String Trace { get; set; }
         public bool Error { get; set; }
 
         public static JsonObject Success= new JsonObject(false, "Success");
@@ -24,22 +26,36 @@ namespace RadialReview.Models.Json
         public JsonObject(Boolean error,String message)
         {
             Error = error;
-            Message = message;
+            Message = Capitalize(message);
         }
 
         public JsonObject(RedirectException e)
         {
             Error = true;
-            Message=e.Message;
+            Message = Capitalize(e.Message);
+            #if(DEBUG)
+            Trace = e.StackTrace;
+            #endif
+        }
+
+        private String Capitalize(String message)
+        {
+            StringBuilder builder = new StringBuilder(message);
+            if (builder.Length > 0)
+                builder[0] = char.ToUpper(message[0]);
+            return builder.ToString();
         }
 
         public JsonObject(Exception e)
         {
             Error = true;
             if(e is RedirectException)
-                Message = e.Message;
+                Message = Capitalize(e.Message);
             else
-                Message = ExceptionStrings.AnErrorOccured;
+                Message = Capitalize(ExceptionStrings.AnErrorOccured);
+            #if(DEBUG)
+            Trace = e.StackTrace;
+            #endif
         }
     }
 }

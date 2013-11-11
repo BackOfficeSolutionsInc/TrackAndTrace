@@ -79,6 +79,33 @@ namespace System.Web
             }
         }
 
+        private class StyleBlock : IDisposable
+        {
+            private const string styleKey = "styles";
+            public static List<string> pageStyles
+            {
+                get
+                {
+                    if (HttpContext.Current.Items[styleKey] == null)
+                        HttpContext.Current.Items[styleKey] = new List<string>();
+                    return (List<string>)HttpContext.Current.Items[styleKey];
+                }
+            }
+
+            WebViewPage webPageBase;
+
+            public StyleBlock(WebViewPage webPageBase)
+            {
+                this.webPageBase = webPageBase;
+                this.webPageBase.OutputStack.Push(new StringWriter());
+            }
+
+            public void Dispose()
+            {
+                pageStyles.Add(((StringWriter)this.webPageBase.OutputStack.Pop()).ToString());
+            }
+        }
+
         public static IDisposable BeginScripts(this HtmlHelper helper)
         {
             return new ScriptBlock((WebViewPage)helper.ViewDataContainer);
@@ -90,12 +117,12 @@ namespace System.Web
         }
         public static IDisposable BeginStyles(this HtmlHelper helper)
         {
-            return new ScriptBlock((WebViewPage)helper.ViewDataContainer);
+            return new StyleBlock((WebViewPage)helper.ViewDataContainer);
         }
 
         public static MvcHtmlString PageStyles(this HtmlHelper helper)
         {
-            return MvcHtmlString.Create(string.Join(Environment.NewLine, ScriptBlock.pageScripts.Select(s => s.ToString())));
+            return MvcHtmlString.Create(string.Join(Environment.NewLine, StyleBlock.pageStyles.Select(s => s.ToString())));
         }
     }
 

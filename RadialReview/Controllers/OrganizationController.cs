@@ -89,13 +89,16 @@ namespace RadialReview.Controllers
             {
                 var userOrg=GetUserOrganization(organizationId.Value)
                     .Hydrate()
-                    .ManagingGroups()
-                    .ManagingUsers()
+                    .ManagingGroups(questions:true)
+                    .ManagingUsers(subordinates:true)
                     .Organization(questions:true)
                     .Nexus()
                     .Execute();
 
                 if (userOrg == null)
+                    throw new PermissionsException();
+
+                if (!userOrg.IsManager)
                     throw new PermissionsException();
                 
                 return View(new ManageViewModel(userOrg));

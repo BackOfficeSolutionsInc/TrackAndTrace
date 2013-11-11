@@ -11,6 +11,7 @@
                     $(this).append(ui.draggable);
                     //var id = items.indexOf($(this).attr("id"));
                     //items = items.splice(id, 1);
+                    $(ui.draggable).change();
                     UpdateHidden();
                 }
             });
@@ -20,6 +21,7 @@
                 drop: function (event, ui) {
                     $(this).append(ui.draggable);
                     //items.push($(this).attr("id"));
+                    $(ui.draggable).change();
                     UpdateHidden();
                 }
             });

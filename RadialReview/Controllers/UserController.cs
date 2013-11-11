@@ -87,5 +87,12 @@ namespace RadialReview.Controllers
                 return Json(new JsonObject(e));
             }
         }
+
+        public ActionResult AddModal(long organizationId)
+        {
+            var caller = GetOneUserOrganization(organizationId);
+
+            return PartialView(caller.Organization);
+        }
     }
 }

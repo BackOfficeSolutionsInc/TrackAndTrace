@@ -18,13 +18,13 @@
             <fieldset class="form-horizontal">
                 <div class="control-group">
                     <div class="no-color pull-right">
-                        <input type="submit" value="Save" class="btn btn-success" />
+                        <input type="submit" value="Save" class="btn saveButton" onclick="clearUnsaved()" />
                     </div>
                     @Html.LabelFor(model => model.Group.GroupName, new { @class = "control-label" })
 
                     <div class="controls">
                         @Html.HiddenFor(model=>model.Group.Id)
-                        @Html.EditorFor(model => model.Group.GroupName)
+                        @Html.TextBoxFor(model => model.Group.GroupName, new { @class = "modifiable" })
                         @Html.ValidationMessageFor(model => model.Group.GroupName, null, new { @class = "help-inline" })
                     </div>
                 </div>
@@ -33,5 +33,6 @@
 
             </fieldset>
         }
+    @Html.Partial("Partial/_QuestionTable", Model.Questions)
     </div>
 </div>

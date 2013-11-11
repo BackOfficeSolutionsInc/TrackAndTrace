@@ -32,7 +32,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.ViewUserOrganization(s, caller, userOrganizationId);
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization( userOrganizationId);
                     return s.Get<UserOrganizationModel>(userOrganizationId);
                 }
             }

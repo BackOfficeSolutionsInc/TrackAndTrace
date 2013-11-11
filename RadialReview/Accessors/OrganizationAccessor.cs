@@ -70,8 +70,8 @@ namespace RadialReview.Accessors
                     userOrg.Organization = organization;
 
                     user.UserOrganization.Add(userOrg);
-                    manager.ManagingUsers.Add(userOrg);
-                    organization.Members.Add(userOrg);
+                    //manager.ManagingUsers.Add(userOrg);
+                    //organization.Members.Add(userOrg);
 
                     db.SaveOrUpdate(user);
 

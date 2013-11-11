@@ -19,7 +19,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.ViewOrigin(s, caller, originType, originId);
+                    PermissionsUtility.Create(s, caller).ViewOrigin(originType, originId);
                     switch (originType)
                     {
                         case OriginType.User:           return s.Get<UserOrganizationModel>(originId);

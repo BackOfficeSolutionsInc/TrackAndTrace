@@ -32,7 +32,7 @@ namespace RadialReview.Controllers
             }
             catch (RedirectException e)
             {
-                return Json(new JsonObject(true, e.Message));
+                return Json(new JsonObject(e));
             }
             catch (Exception)
             {

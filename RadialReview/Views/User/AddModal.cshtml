@@ -1,0 +1,18 @@
+﻿@model RadialReview.Models.OrganizationModel
+
+
+<input type="hidden" name="organizationId" value="@Model.Id" />
+<div class="row">
+    <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
+    <div class="col-xs-8">@Html.TextBox("emailAddress", null, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth" })</div>
+</div>      
+<div class="smallBreak"></div>   
+<div class="row">   
+    <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.jobTitle):</label></div>
+    <div class="col-xs-8">@Html.TextBox("jobTitle", null, new { placeholder = RadialReview.Properties.DisplayNameStrings.jobTitle, @class = "fullWidth" })</div>
+</div> 
+<div class="smallBreak"></div>            
+<div class="row">   
+    <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.isManager):</label></div>
+    <div class="col-xs-8">@Html.CheckBox("isManager", false, new { style = "padding-bottom: 7px;"  })</div>
+</div>

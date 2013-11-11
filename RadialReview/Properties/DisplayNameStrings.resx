@@ -186,4 +186,22 @@
   <data name="industry" xml:space="preserve">
     <value>Industry</value>
   </data>
+  <data name="addUser" xml:space="preserve">
+    <value>Add user</value>
+  </data>
+  <data name="jobTitle" xml:space="preserve">
+    <value>Job title</value>
+  </data>
+  <data name="isManager" xml:space="preserve">
+    <value>Manager</value>
+  </data>
+  <data name="unsavedItems" xml:space="preserve">
+    <value>There are items you have not saved. </value>
+  </data>
+  <data name="question" xml:space="preserve">
+    <value>Question</value>
+  </data>
+  <data name="manage" xml:space="preserve">
+    <value>Manage</value>
+  </data>
 </root>

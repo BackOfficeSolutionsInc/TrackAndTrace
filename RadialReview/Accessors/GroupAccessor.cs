@@ -35,7 +35,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
+        
         public GroupModel Edit(UserOrganizationModel createdBy,GroupModel group)
         {
             using(var session = HibernateSession.GetCurrentSession())

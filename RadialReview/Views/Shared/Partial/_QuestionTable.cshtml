@@ -1,0 +1,19 @@
+﻿@model RadialReview.Models.ViewModels.QuestionsViewModel
+
+<table class="table">
+    <tr>
+        <th>@RadialReview.Properties.DisplayNameStrings.question</th>
+        <th style="width:120px">@RadialReview.Properties.DisplayNameStrings.category</th>
+        <th style="width: 50px">
+            <button role="button" class="btn btn-default addButton" onclick="showModal('Add Question','/Question/Modal/0?organizationId=@(Model.OrganizationId)&origin=@(Model.OriginType.ToString())&originId=@(Model.OriginId)','/Question/Edit/')">+</button>
+        </th>
+    </tr>
+    @foreach (var question in Model.Questions.OrderByDescending(x => x.DateCreated))
+    {
+        <tr>
+            <td>@question.Question</td>
+            <td>@question.Category.Category</td>
+            <td><button onclick='showModal("Add Question","/Question/Modal/@(question.Id)?organizationId=@(Model.OrganizationId)","/Question/Edit/")' class="btn btn-info">Edit</button></td>
+        </tr>
+    }
+</table>

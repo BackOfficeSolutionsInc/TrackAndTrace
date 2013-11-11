@@ -2,6 +2,7 @@
 using FluentNHibernate.Automapping;
 using FluentNHibernate.Automapping.Alterations;
 using FluentNHibernate.Mapping;
+using NHibernate.Proxy;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
@@ -38,12 +39,7 @@ namespace RadialReview.Models
         {
             return OriginType.User;
         }
-
-        public virtual Boolean IsAttached()
-        {
-            return User != null;
-        }
-
+        
         public virtual String OriginCustomName
         {
             get
@@ -53,7 +49,12 @@ namespace RadialReview.Models
         }
 
         #region Helpers
-
+        public Dictionary<String, String> Properties = new Dictionary<string, string>();
+        public virtual Boolean IsAttached()
+        {
+            return User != null;
+        }
+        public virtual List<UserOrganizationModel> AllSubordinates { get; set; }        
         public virtual String Name()
         {
             if (User == null)
@@ -66,15 +67,17 @@ namespace RadialReview.Models
                 return ConstantStrings.ImageUserPlaceholder;
             return User.ImageUrl;
         }
-
         public virtual IList<UserOrganizationModel> GetManagingUsersAndSelf()
         {
             return ManagingUsers.Union(new List<UserOrganizationModel> { this }).ToList();
+        }        
+        public virtual List<UserOrganizationModel> AllSubordinatesAndSelf()
+        {
+            return AllSubordinates.Union(new List<UserOrganizationModel> { this }).ToList();
         }
         public virtual Boolean IsManager { get { return IsRadialAdmin || ManagerAtOrganization || ManagingOrganization; } }
         public virtual Boolean IsManagerCanEditOrganization { get { return IsRadialAdmin || ManagingOrganization || (ManagerAtOrganization && Organization.ManagersCanEdit); } }
-
-
+        /*
         public virtual List<OriginType> EditableQuestionOrigins
         {
             get
@@ -88,8 +91,7 @@ namespace RadialReview.Models
                     origins.Add(OriginType.Organization);
                 return origins;
             }
-        }
-
+        }*/
         #endregion
 
         public UserOrganizationModel()
@@ -102,6 +104,13 @@ namespace RadialReview.Models
             CreatedNexuses = new List<NexusModel>();
             CreatedQuestions = new List<QuestionModel>();
             AttachTime = DateTime.UtcNow;
+            AllSubordinates = new List<UserOrganizationModel>();
+        }
+
+
+        public override string ToString()
+        {
+            return Organization.NotNull(x=>x.Name)+" - "+ Name();
         }
     }
 
@@ -121,6 +130,7 @@ namespace RadialReview.Models
             Map(x => x.EmailAtOrganization);
 
             References(x => x.User)
+                .Not.LazyLoad()
                 .Cascade.SaveUpdate();
             References(x => x.Organization)
                 .Column("Organization_Id")

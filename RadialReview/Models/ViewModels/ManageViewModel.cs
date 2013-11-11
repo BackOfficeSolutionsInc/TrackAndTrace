@@ -16,10 +16,14 @@ namespace RadialReview.Models.ViewModels
     public class ManageViewModel
     {
         public List<UserOrganizationModel> ManagedUsers { get; set; }
+        public List<UserOrganizationModel> AllSubordinates { get; set; }
         public List<GroupModel> ManagingGroups { get; set; }
         public List<UserOrganizationModel> PendingUsers { get; set; }
         public OrganizationModel Organization { get; set; }
         public List<QuestionCategoryModel> Categories { get; set; }
+
+        public QuestionsViewModel OrganizationQuestions { get; set; }
+
         public ManageViewModel(UserOrganizationModel orgUser)
         {
             ManagedUsers = orgUser.ManagingUsers.Where(x => x.IsAttached()).ToListAlive();
@@ -32,6 +36,8 @@ namespace RadialReview.Models.ViewModels
                 .Select(x => new PendingUsers() { EmailAddress = x.GetArgs()[1],Date=x.DateCreated,Id=long.Parse(x.GetArgs()[2]) })
                 .ToList();*/
             Categories = orgUser.Organization.QuestionCategories.ToListAlive();
+            OrganizationQuestions = new QuestionsViewModel(Organization.Id, OriginType.Organization, Organization.Id, Organization.CustomQuestions);
+            AllSubordinates = orgUser.AllSubordinates;
         }
 
     }

@@ -166,7 +166,11 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
+
+
                     caller = s.Get<UserOrganizationModel>(caller.Id);
+                    if (question.CreatedBy.Id == caller.Id)
+                        question.CreatedBy = caller;
                     if (question.Id == 0) //Creating
                     {
                         question.DateCreated = DateTime.UtcNow;
@@ -181,35 +185,37 @@ namespace RadialReview.Accessors
                     {
                         case OriginType.User:
                             {
-                                PermissionsUtility.EditUserOrganization(s, caller, forOriginId);
+                                PermissionsUtility.Create(s, caller).EditUserOrganization( forOriginId);
                                 var user = s.Get<UserOrganizationModel>(forOriginId);
                                 question.ForUser = user;
                                 break;
                             }
                         case OriginType.Group:
                             {
-                                PermissionsUtility.EditGroup(s, caller, forOriginId);
+                                PermissionsUtility.Create(s, caller).EditGroup(forOriginId);
                                 var group = s.Get<GroupModel>(forOriginId);
                                 question.ForGroup = group;
                                 break;
                             }
                         case OriginType.Organization:
                             {
-                                PermissionsUtility.EditOrganization(s, caller, forOriginId);
-                                var org = s.Get<OrganizationModel>(forOriginId);
-                                question.ForOrganization = org;
+                                PermissionsUtility.Create(s, caller).EditOrganization(forOriginId);
+                                if (forOriginId!=caller.Organization.Id)
+                                    throw new PermissionsException();
+                                //var org = s.Get<OrganizationModel>(forOriginId);
+                                question.ForOrganization = caller.Organization;
                                 break;
                             }
                         case OriginType.Industry:
                             {
-                                PermissionsUtility.EditIndustry(s, caller, forOriginId);
+                                PermissionsUtility.Create(s, caller).EditIndustry(forOriginId);
                                 var ind = s.Get<IndustryModel>(forOriginId);
                                 question.ForIndustry = ind;
                                 break;
                             }
                         case OriginType.Application:
                             {
-                                PermissionsUtility.EditApplication(s, caller, forOriginId);
+                                PermissionsUtility.Create(s, caller).EditApplication(forOriginId);
                                 var app = s.Get<ApplicationWideModel>(forOriginId);
                                 question.ForApplication = app;
                                 break;
@@ -231,7 +237,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var question=s.Get<QuestionModel>(id);
-                    PermissionsUtility.ViewQuestion(s, caller, question);
+                    PermissionsUtility.Create(s, caller).ViewQuestion(question);
                     return question;
                 }
             }
