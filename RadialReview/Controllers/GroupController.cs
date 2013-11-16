@@ -38,13 +38,13 @@ namespace RadialReview.Controllers
             var orgUser = GetOneUserOrganization(organizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
             organizationId = orgUser.Organization.Id;
 
-            if (!orgUser.IsManagerCanEditOrganization)
+            if (!orgUser.IsManagerCanEditOrganization())
                 throw new PermissionsException();
 
-            var group = new GroupModel() { DeleteTime=DateTime.UtcNow };
+            var group = new GroupModel() { DeleteTime = DateTime.UtcNow };
 
-            group=_GroupAccessor.Edit(orgUser, group);
-            return RedirectToAction("Edit", new {id=group.Id});
+            group = _GroupAccessor.Edit(orgUser, group);
+            return RedirectToAction("Edit", new { id = group.Id });
         }
 
         public ActionResult Edit(long? id, long? organizationId)
@@ -55,7 +55,7 @@ namespace RadialReview.Controllers
             var orgUser = GetOneUserOrganization(organizationId)
                 .Hydrate()
                 .ManagingGroups()
-                .ManagingUsers(subordinates:true)
+                .ManagingUsers(subordinates: true)
                 .Execute();
             //var orgUser=orgUsers.Where(x=>x.ManagingGroups.Any(y=>y.Id==id)).SingleOrDefault();
             if (orgUser == null)
@@ -68,10 +68,23 @@ namespace RadialReview.Controllers
             organizationId = orgUser.Organization.Id;
 
             var group = _GroupAccessor.Get(orgUser, id.Value);
+            var directManage = orgUser.ManagingUsers;
             var possibleUsers = orgUser.AllSubordinatesAndSelf();
+            foreach (var p in possibleUsers)
+            {
+                if (directManage.Any(x => x.Id == p.Id))    p.Properties.Update("classes", new List<String>(), x => x.Add("directlyManaged"));
+                else                                        p.Properties.Update("classes", new List<String>(), x => x.Add("subordinate"));
+                if (p.Id == orgUser.Id)
+                {                                  
+                    p.Properties.Update("classes", new List<String>(), x => x.Add("self"));
+                    p.Properties.Update("altText", new List<String>(), x =>x.Add(DisplayNameStrings.you));
+                }
+                if (!p.IsAttached())     
+                    p.Properties.Update("altText", new List<String>(), x => x.Add(DisplayNameStrings.unattached));
+            }
 
-            var start = possibleUsers.Where(x => !group.GroupUsers.Any(y => x.Id == y.Id)).ToDragDropList();
-            var end = group.GroupUsers.ToDragDropList();
+            var start = possibleUsers.Where(x => !group.GroupUsers.Any(y => x.Id == y.Id)).OrderBy(x => x.Properties.GetOrDefault("parents", new List<String>()).Count).ToDragDropList();
+            var end   = possibleUsers.Where(x =>  group.GroupUsers.Any(y => x.Id == y.Id)).OrderBy(x => x.Properties.GetOrDefault("parents", new List<String>()).Count).ToDragDropList();
 
             var groupViewModel = new GroupViewModel()
             {
@@ -93,7 +106,7 @@ namespace RadialReview.Controllers
 
         private GroupViewModel ReconstructModel(UserOrganizationModel orgUser, GroupViewModel model)
         {
-            var g=_GroupAccessor.Get(orgUser, model.Group.Id);
+            var g = _GroupAccessor.Get(orgUser, model.Group.Id);
             var drags = (model.DragDrop.DragItems ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var drops = (model.DragDrop.DropItems ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -107,9 +120,9 @@ namespace RadialReview.Controllers
         [HttpPost]
         public ActionResult Edit(GroupViewModel model)
         {
-            var userOrg = GetUserOrganization(model.OrganizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
+            var userOrg = GetUserOrganization(model.OrganizationId).Hydrate().ManagingGroups().ManagingUsers(subordinates:true).Execute();
 
-            if (!userOrg.IsManagerCanEditOrganization)
+            if (!userOrg.IsManagerCanEditOrganization())
                 throw new PermissionsException();
 
             List<long> userIds = (model.DragDrop.DropItems ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x)).ToList();
@@ -127,14 +140,14 @@ namespace RadialReview.Controllers
             }
 
 
-            var users = userOrg.GetManagingUsersAndSelf().Where(x => userIds.Contains(x.Id)).ToList();
+            var users = userOrg.AllSubordinates.Where(x => userIds.Contains(x.Id)).ToList();
 
             var group = new GroupModel()
             {
                 GroupName = model.Group.GroupName,
                 GroupUsers = users,
                 Id = model.Group.Id,
-                DeleteTime=null
+                DeleteTime = null
             };
             group.Managers.Add(userOrg);
 

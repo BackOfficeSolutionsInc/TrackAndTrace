@@ -40,16 +40,16 @@ namespace RadialReview.Controllers
         {
             var caller=GetOneUserOrganization(organizationId)
                         .Hydrate()
-                        .ManagingUsers()
+                        .ManagingUsers(subordinates:true)
+                        .Organization()
                         .Execute();
-            var found=caller.ManagingUsers.FirstOrDefault(x => x.Id == id);
+
+            var found=caller.AllSubordinates.FirstOrDefault(x => x.Id == id);
             if (found == null)
                 throw new PermissionsException();
-
-
             return View(new ManagerUserViewModel()
             {
-                MatchingQuestions = _QuestionAccessor.GetQuestionsForUser(caller, found),
+                MatchingQuestions = _QuestionAccessor.GetQuestionsForUser(caller, found).ToListAlive(),
                 User = found,
                 OrganizationId=caller.Organization.Id
             });

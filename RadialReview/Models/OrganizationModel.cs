@@ -27,7 +27,7 @@ namespace RadialReview.Models
         }
         private string _ImageUrl { get; set; }
 
-        [Display(Name="managerCanAddQuestions",ResourceType=typeof(DisplayNameStrings))]
+        [Display(Name = "managerCanAddQuestions", ResourceType = typeof(DisplayNameStrings))]
         public virtual Boolean ManagersCanEdit { get; set; }
         public virtual IList<UserOrganizationModel> Members { get; set; }
         public virtual IList<PaymentModel> Payments { get; set; }

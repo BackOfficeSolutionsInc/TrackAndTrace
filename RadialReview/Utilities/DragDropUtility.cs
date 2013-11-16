@@ -16,9 +16,16 @@ namespace RadialReview.Utilities
                 Id=x.Id,
                 DisplayName=x.Name(),
                 ImageUrl=x.ImageUrl(),
-                Classes=(x.IsAttached()?"attached":"unattached")+" "+x.Properties.GetOrDefault("classes"),
-                AltText = x.IsAttached() ? x.Name() :  x.Name() +" ("+ErrorMessageStrings.notAttached+")",
+                Classes=(x.IsAttached()?"attached":"unattached")+" "+String.Join(" ",x.Properties.GetOrDefault("classes",new List<String>())),
+                AltText = x.Name()+AltTextBuilder(x.Properties.GetOrDefault("altText",new List<String>())),
             }).ToList();
+        }
+
+        private static string AltTextBuilder(List<String> alts)
+        {
+            if (alts.Count > 0)
+                return " (" + String.Join(",", alts) + ")";
+            return "";
         }
     }
 }

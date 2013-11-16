@@ -70,6 +70,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add question.
+        /// </summary>
+        public static string addQuestion {
+            get {
+                return ResourceManager.GetString("addQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add user.
         /// </summary>
         public static string addUser {
@@ -129,6 +138,15 @@ namespace RadialReview.Properties {
         public static string edit {
             get {
                 return ResourceManager.GetString("edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit question.
+        /// </summary>
+        public static string editQuestion {
+            get {
+                return ResourceManager.GetString("editQuestion", resourceCulture);
             }
         }
         
@@ -241,6 +259,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string New {
+            get {
+                return ResourceManager.GetString("New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New password.
         /// </summary>
         public static string newPassword {
@@ -295,6 +322,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unattached.
+        /// </summary>
+        public static string unattached {
+            get {
+                return ResourceManager.GetString("unattached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are items you have not saved. .
         /// </summary>
         public static string unsavedItems {
@@ -318,6 +354,15 @@ namespace RadialReview.Properties {
         public static string username {
             get {
                 return ResourceManager.GetString("username", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You.
+        /// </summary>
+        public static string you {
+            get {
+                return ResourceManager.GetString("you", resourceCulture);
             }
         }
     }

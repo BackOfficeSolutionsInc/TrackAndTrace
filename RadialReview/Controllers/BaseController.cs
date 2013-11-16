@@ -21,7 +21,7 @@ namespace RadialReview.Controllers
 
         protected void EditableOrException(UserOrganizationModel user)
         {
-            if (!user.IsManagerCanEditOrganization)
+            if (!user.IsManagerCanEditOrganization())
                 throw new PermissionsException();
         }
 
@@ -44,6 +44,12 @@ namespace RadialReview.Controllers
 
         protected UserOrganizationModel GetOneUserOrganization(long? organizationId, Boolean full = false)
         {
+            long sessionOrgId = 0;
+            if (organizationId==null && long.TryParse((string)Session["organizationId"],out sessionOrgId))
+            {
+                organizationId = sessionOrgId;
+            }
+
             if (organizationId == null)
             {
                 var found = GetUserOrganization(full);
@@ -71,9 +77,6 @@ namespace RadialReview.Controllers
             if (filterContext.ExceptionHandled)
                 return;
 
-            
-
-
             if (filterContext.Exception is LoginException)
             {
                 var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
@@ -84,19 +87,28 @@ namespace RadialReview.Controllers
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             }
-            else if (filterContext.Exception is RedirectException)
-            {
-                var returnUrl=((RedirectException)filterContext.Exception).RedirectUrl;
-                log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
-                filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
-                filterContext.ExceptionHandled = true;
-                filterContext.HttpContext.Response.Clear();
-            }
             else if (filterContext.Exception is OrganizationIdException)
             {
                 var redirectUrl=((RedirectException)filterContext.Exception).RedirectUrl;
                 log.Info("Organization: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
                 filterContext.Result = RedirectToAction("ManagingList", "Organization", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
+                filterContext.ExceptionHandled = true;
+                filterContext.HttpContext.Response.Clear();
+            }
+            else if (filterContext.Exception is PermissionsException)
+            {
+                var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
+                log.Info("Permissions: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
+                ViewBag.Message=filterContext.Exception.Message;
+                filterContext.Result = View("~/Views/Error/Index.cshtml");
+                filterContext.ExceptionHandled = true;
+                filterContext.HttpContext.Response.Clear();
+            }
+            else if (filterContext.Exception is RedirectException)
+            {
+                var returnUrl=((RedirectException)filterContext.Exception).RedirectUrl;
+                log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
+                filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             }

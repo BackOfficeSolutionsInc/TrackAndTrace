@@ -7,6 +7,22 @@
 <input type="hidden" name="organizationId" value="@Model.OrganizationId" />
 <input type="hidden" name="questionType" value="@(Model.OriginType.ToString())" />
 
+<script>
+    function deleteIt()
+    {
+        $.ajax({
+            url: '@Url.Action("Delete", "Question", new {id=Model.Question.Id,organizationId=Model.OrganizationId })',
+            error: function (jqxhr, status, error) {
+                showAlert("@RadialReview.Properties.ExceptionStrings.AnErrorOccured");
+            },
+            complete: function (data) {
+                $('#modal').modal('hide');
+            }
+        });
+    }
+</script>
+
+
 <div class="form-group">
     <div class="row">
         <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.question): &nbsp;</label></div>
@@ -15,14 +31,14 @@
     <div class="row">
         <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.category): &nbsp;</label></div>
         <div class="col-xs-6">@Html.DropDownList("categoryId", Model.Categories.Select((x, i) => new SelectListItem() { Selected = (x.Id == Model.Question.CategoryId), Text = x.Category, Value = "" + x.Id }), new { @class = "fullWidth form-control" })</div>
-        <div class="col-xs-3"><a class="btn btn-default fullWidth" href="@Url.Action("Create","Category")">Create</a></div>
+        <div class="col-xs-3"><a class="btn btn-default fullWidth" href="@Url.Action("Create","Category")">@RadialReview.Properties.DisplayNameStrings.New</a></div>
     </div>
     @if(!Model.New)
     { 
         <div class="smallBreak"></div>
         <div class="row">
             <div class="col-xs-2">
-                <a class="btn btn-danger">Delete</a>
+                <button class="btn btn-danger" onclick="deleteIt()">Delete</button>
             </div>
         </div>
     }

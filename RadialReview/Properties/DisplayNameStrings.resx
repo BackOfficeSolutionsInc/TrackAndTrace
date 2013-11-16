@@ -204,4 +204,19 @@
   <data name="manage" xml:space="preserve">
     <value>Manage</value>
   </data>
+  <data name="you" xml:space="preserve">
+    <value>You</value>
+  </data>
+  <data name="unattached" xml:space="preserve">
+    <value>Unattached</value>
+  </data>
+  <data name="addQuestion" xml:space="preserve">
+    <value>Add question</value>
+  </data>
+  <data name="editQuestion" xml:space="preserve">
+    <value>Edit question</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>New</value>
+  </data>
 </root>

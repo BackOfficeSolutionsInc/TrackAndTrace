@@ -37,8 +37,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     caller = s.Get<UserOrganizationModel>(caller.Id);
-                    if (!caller.ManagingUsers.Any(x => x.Id == forUserId))
-                        throw new PermissionsException();
+                    PermissionsUtility.Create(s, caller).OwnedBelowOrEqual(x => x.Id == forUserId);
 
                     //Enable
                     var foundEnabled = s.GetByMultipleIds<QuestionModel>(enabled);
@@ -80,7 +79,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    if (!caller.GetManagingUsersAndSelf().Any(x => x.Id == forUser.Id))
+                    if (!caller.AllSubordinatesAndSelf().Any(x => x.Id == forUser.Id))
                         throw new PermissionsException();
                     forUser = s.Get<UserOrganizationModel>(forUser.Id);
                     List<QuestionModel> questions = new List<QuestionModel>();
@@ -166,16 +165,14 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-
-
                     caller = s.Get<UserOrganizationModel>(caller.Id);
-                    if (question.CreatedBy.Id == caller.Id)
-                        question.CreatedBy = caller;
                     if (question.Id == 0) //Creating
                     {
                         question.DateCreated = DateTime.UtcNow;
                         question.CreatedBy = caller;
                     }
+                    if (question.CreatedBy.Id == caller.Id)
+                        question.CreatedBy = caller;
                     question.Category = s.Get<QuestionCategoryModel>(question.Category.Id);
 
                     if (question.Category.Organization.Id != caller.Organization.Id)

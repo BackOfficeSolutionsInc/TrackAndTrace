@@ -99,8 +99,8 @@ html, body {
 }
 
 .alert.start {
-    -webkit-box-shadow: 0px 0px 10px 0px #b94a48;
-    box-shadow: 0px 0px 10px 0px #b94a48;
+    -webkit-box-shadow: 0px 0px 10px 0px #bebebe;
+    box-shadow: 0px 0px 10px 0px #bebebe;
 }
 
 .alert {
@@ -278,10 +278,14 @@ html, body {
     text-align: justify;
     font-family: 'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
     font-size: 10px;
-    width: 65px;
+    width: 94px;
     height: 12px;
     overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align:justify;
 }
 
 

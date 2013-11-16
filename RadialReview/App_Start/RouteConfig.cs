@@ -16,7 +16,13 @@ namespace RadialReview
             routes.MapRoute(
                 name: "url",
                 url: "u/{id}",
-                defaults: new { controller = "Url", action = "Index",id="" }
+                defaults: new { controller = "Url", action = "Index", id = "" }
+            );
+
+            routes.MapRoute(
+                name: "image",
+                url: "i/{id}",
+                defaults: new { controller = "Image", action = "Index", id = "" }
             );
 
             routes.MapRoute(

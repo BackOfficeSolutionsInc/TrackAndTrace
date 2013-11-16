@@ -5,6 +5,21 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@using(var styles=Html.BeginStyles())
+{
+    <style>
+        .directlyManaged {
+            background-color: rgba(176, 176, 255, 0.47);
+        }
+        .subordinate {
+            background-color: rgba(176, 176, 255, 0.15);
+        }
+        .self {
+            background-color: rgba(192, 176, 255, 0.9);
+        }
+    </style>
+}
+
 <div class="row">
     <div class="col-md-12 ">
         @Html.AlertBoxDismissable((string)ViewBag.Message)

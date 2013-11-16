@@ -113,9 +113,9 @@
 
 <div class="row">
 
-    <div class="col-md-11"><h2>Manage @Model.User.Name()</h2></div>
+    <div class="col-xs-10"><h2>Manage @Model.User.Name()</h2></div>
 
-    <div class="col-md-1"><h2 id="saveStatus" class="progress active" style="height:inherit"><button onclick="save()" class="btn btn-success progress-bar progress-bar-success fullWidth">Save</button></h2></div>
+    <div class="col-xs-2"><h2 id="saveStatus" class="progress active" style="height:inherit"><button onclick="save()" class="btn btn-success progress-bar progress-bar-success fullWidth">Save</button></h2></div>
 </div>
 
 <table class="table table-condensed table-hover table-responsive">
@@ -126,7 +126,7 @@
         <th class="small-centered">Category</th>
         <th class="small-centered">Origin</th>
         <th></th>
-        <th><button class="btn fullWidth">+</button></th>
+        <th style="width:70px;"><button class="btn fullWidth" onclick="showModal('@RadialReview.Properties.DisplayNameStrings.addQuestion (@Model.User.Name())','/Question/Modal?organizationId=@Model.OrganizationId&origin=@RadialReview.Models.Enums.OriginType.User&originId=@Model.User.Id','/Question/Edit')">+</button></th>
     </tr>
     @foreach (var q in Model.MatchingQuestions)
     {
@@ -146,7 +146,9 @@
             <td class="small-centered">@(q.Category.Category)</td>
             <td class="small-centered">@(q.Origin.OriginCustomName)</td>
             <td class="small-centered"></td>
-            <td class="small-centered"><button class="btn  btn-primary">@RadialReview.Properties.DisplayNameStrings.edit</button></td>
+            <td class="small-centered"><button class="btn  btn-primary fullWidth" 
+                onclick="showModal('@RadialReview.Properties.DisplayNameStrings.editQuestion (@q.Origin.OriginCustomName)','/Question/Modal?id=@q.Id&organizationId=@Model.OrganizationId&origin=@q.OriginType&originId=@q.Origin.Id','/Question/Edit')"
+            >@RadialReview.Properties.DisplayNameStrings.edit</button></td>
         </tr>
     }
 </table>

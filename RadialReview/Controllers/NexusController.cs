@@ -36,7 +36,7 @@ namespace RadialReview.Controllers
             }
             catch (Exception)
             {
-                return Json(new JsonObject(true, ExceptionStrings.AnErrorOccured));
+                return Json(new JsonObject(true, ExceptionStrings.AnErrorOccuredContactUs));
             }
         }
 

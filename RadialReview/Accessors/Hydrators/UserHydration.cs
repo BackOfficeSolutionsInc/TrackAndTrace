@@ -111,7 +111,8 @@ namespace RadialReview
             {
                 using (var tx = Session.BeginTransaction())
                 {
-                    var children = Children(GetUnderlying());
+                    var user=GetUnderlying();
+                    var children = Children(user, new List<String> { ""+user.Id });
                     User.AllSubordinates = children;
                 }
             }
@@ -120,15 +121,18 @@ namespace RadialReview
         }
 
 
-        private List<UserOrganizationModel> Children(UserOrganizationModel parent)
+        private List<UserOrganizationModel> Children(UserOrganizationModel parent,List<String> parents)
         {
             var children = new List<UserOrganizationModel>();
             if (parent.ManagingUsers == null || parent.ManagingUsers.Count == 0)
                 return children;
             foreach (var c in parent.ManagingUsers)
             {
+                c.Properties["parents"] = parents;
                 children.Add(c);
-                children.AddRange(Children(c));
+                var copy=parents.Select(x=>x).ToList();
+                copy.Add(""+c.Id);
+                children.AddRange(Children(c, copy));
             }
             return children;
         }

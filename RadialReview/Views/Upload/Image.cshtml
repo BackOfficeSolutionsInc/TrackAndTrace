@@ -1,0 +1,30 @@
+﻿@model RadialReview.Models.ViewModels.ImageUploadViewModel
+
+@using (var s = Html.BeginScripts())
+{
+    <script>
+        function imageUploadComplete(data) {
+            showJsonAlert(data, true);
+            $("#uploaded").html("<img class='img-rounded' src='"+data.URL+"' data-src='holder.js/180%x180' />")
+        }
+    </script>
+}
+
+<div id="uploaded">
+    <img class='img-rounded' src='@Model.GetUrl()' data-src='holder.js/180%x180' />
+</div>
+
+@using (Html.BeginForm("Image", "Upload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{        
+    <input type="hidden" name="forType" value="@Model.ForType" />
+    <input type="file" name="file" />
+    <input type="submit" value="OK" />
+}
+
+@*
+    @using (Ajax.BeginForm("Image", "Upload", null, new AjaxOptions { HttpMethod = "POST", OnComplete = "imageUploadComplete" }, new { enctype = "multipart/form-data" }))
+    {
+        <input type="hidden" name="forType" value="@Model.ForType" />
+        <input type="file" name="file" />
+        <input type="submit" value="OK" />
+    }*@

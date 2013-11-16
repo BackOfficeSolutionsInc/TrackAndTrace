@@ -49,6 +49,9 @@
     <Reference Include="Iesi.Collections">
       <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
+    <Reference Include="ImageResizer">
+      <HintPath>..\packages\ImageResizer.3.4.1\lib\ImageResizer.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.2\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -183,6 +186,7 @@
     <Compile Include="Accessors\Emailer.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
+    <Compile Include="Accessors\ImageAccessor.cs" />
     <Compile Include="Accessors\NexusAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
@@ -200,18 +204,23 @@
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IdentityStore.cs" />
+    <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NexusController.cs" />
     <Compile Include="Controllers\OrganizationController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\QuestionController.cs" />
     <Compile Include="Controllers\SurveyController.cs" />
+    <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Controllers\UrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Models\Enums\OriginType.cs" />
+    <Compile Include="Models\Enums\UploadType.cs" />
+    <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\IndustryModel.cs" />
     <Compile Include="Models\Interfaces\ILongIdentifiable.cs" />
     <Compile Include="Models\LongModel.cs" />
+    <Compile Include="Models\ViewModels\ImageUploadViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageUserViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionModalViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionsViewModel.cs" />
@@ -304,6 +313,7 @@
     <Compile Include="Utilities\Extensions\EnumExtensions.cs" />
     <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
     <Compile Include="Utilities\Extensions\SessionExtensions.cs" />
+    <Compile Include="Utilities\Extensions\UserOrganizationExtensions.cs" />
     <Compile Include="Utilities\HibernateSession.cs" />
     <Compile Include="Utilities\PermissionsUtility.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
@@ -328,6 +338,8 @@
     <Content Include="Scripts\animations\circles.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery\jquery.hashchange.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
     <Content Include="Scripts\moment.min.js" />
@@ -404,11 +416,13 @@
     <Content Include="Views\Shared\ModalError.cshtml" />
     <Content Include="Views\Shared\Partial\_QuestionTable.cshtml" />
     <Content Include="Views\User\AddModal.cshtml" />
+    <Content Include="Views\Upload\Image.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="External\" />
     <Folder Include="Utilities\Attributes\" />
+    <Folder Include="Views\Img\" />
     <Folder Include="Views\Url\" />
   </ItemGroup>
   <ItemGroup>

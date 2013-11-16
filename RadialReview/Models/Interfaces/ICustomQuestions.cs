@@ -16,5 +16,6 @@ namespace RadialReview.Models.Interfaces
         OriginType QuestionOwnerType();
 
         String OriginCustomName { get; }
+
     }
 }

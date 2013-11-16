@@ -76,7 +76,7 @@ namespace RadialReview.Controllers
             if (organizationId == null)
             {
                 var userOrgs = GetUserOrganization();
-                var managing = userOrgs.Where(x => x.IsManager);
+                var managing = userOrgs.Where(x => x.IsManager());
                 var count = managing.Count();
                 if (count == 0)
                     throw new PermissionsException();
@@ -98,7 +98,7 @@ namespace RadialReview.Controllers
                 if (userOrg == null)
                     throw new PermissionsException();
 
-                if (!userOrg.IsManager)
+                if (!userOrg.IsManager())
                     throw new PermissionsException();
                 
                 return View(new ManageViewModel(userOrg));

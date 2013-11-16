@@ -70,11 +70,20 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error has occured. If the problem persists, please contact us..
+        ///   Looks up a localized string similar to An error has occured..
         /// </summary>
         public static string AnErrorOccured {
             get {
                 return ResourceManager.GetString("AnErrorOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error has occured. If the problem persists, please contact us..
+        /// </summary>
+        public static string AnErrorOccuredContactUs {
+            get {
+                return ResourceManager.GetString("AnErrorOccuredContactUs", resourceCulture);
             }
         }
         
@@ -138,6 +147,15 @@ namespace RadialReview.Properties {
         public static string InvalidEmail {
             get {
                 return ResourceManager.GetString("InvalidEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must specify an image..
+        /// </summary>
+        public static string MustSpecifyAnImage {
+            get {
+                return ResourceManager.GetString("MustSpecifyAnImage", resourceCulture);
             }
         }
         

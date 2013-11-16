@@ -147,12 +147,31 @@
                     });
                 }
 
-                function showAlert(message, alertType) {
+                function showAlert(message, alertType,preface) {
                     if (alertType === undefined)
                         alertType = "alert-danger";
-                    var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>@RadialReview.Properties.MessageStrings.Warning</strong> <span class=\"message\">" + message + "</span></div>");
+                    if (preface === undefined)
+                        preface = "@RadialReview.Properties.MessageStrings.Warning";
+                    var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>"+preface+"</strong> <span class=\"message\">" + message + "</span></div>");
                     $("#alerts").prepend(alert);
                     setTimeout(function () { alert.removeClass("start"); }, 1);
+                }
+
+                function showJsonAlert(data,showSuccess)
+                {
+                    var message = data.Message;
+                    if (message === undefined)
+                        message = "";
+
+                    if (!data) {
+                        showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
+                    } else if (data.Error) {
+                        console.log(data.Trace);
+                        console.log(data.Message);
+                        showAlert(message);
+                    } else if(showSuccess){
+                        showAlert(message, "alert-success", "@RadialReview.Properties.MessageStrings.Success");
+                    }
                 }
 
             </script>

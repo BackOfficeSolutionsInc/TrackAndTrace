@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using RadialReview.Models;
 using RadialReview.NHibernate;
+using RadialReview.Properties;
 
 namespace RadialReview.Controllers
 {
@@ -126,7 +127,7 @@ namespace RadialReview.Controllers
 
         //
         // GET: /Account/Manage
-        public ActionResult Manage(ManageMessageId? message)
+        public ActionResult Manage(ManageMessageId? message,long? organizationId)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
@@ -136,6 +137,14 @@ namespace RadialReview.Controllers
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
+            try
+            {
+                var user = GetOneUserOrganization(organizationId);
+                ViewBag.ImageUrl = user.ImageUrl();
+            }catch(Exception e)
+            {
+                ViewBag.ImageUrl = ConstantStrings.ImageUserPlaceholder;
+            }
             return View();
         }
 

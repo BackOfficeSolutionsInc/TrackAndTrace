@@ -49,34 +49,12 @@ namespace RadialReview.Models
         }
 
         #region Helpers
-        public Dictionary<String, String> Properties = new Dictionary<string, string>();
+        public virtual Dictionary<String, List<String>> Properties { get; set; }
         public virtual Boolean IsAttached()
         {
             return User != null;
         }
         public virtual List<UserOrganizationModel> AllSubordinates { get; set; }        
-        public virtual String Name()
-        {
-            if (User == null)
-                return EmailAtOrganization;
-            return User.Name();
-        }
-        public virtual String ImageUrl()
-        {
-            if (User == null)
-                return ConstantStrings.ImageUserPlaceholder;
-            return User.ImageUrl;
-        }
-        public virtual IList<UserOrganizationModel> GetManagingUsersAndSelf()
-        {
-            return ManagingUsers.Union(new List<UserOrganizationModel> { this }).ToList();
-        }        
-        public virtual List<UserOrganizationModel> AllSubordinatesAndSelf()
-        {
-            return AllSubordinates.Union(new List<UserOrganizationModel> { this }).ToList();
-        }
-        public virtual Boolean IsManager { get { return IsRadialAdmin || ManagerAtOrganization || ManagingOrganization; } }
-        public virtual Boolean IsManagerCanEditOrganization { get { return IsRadialAdmin || ManagingOrganization || (ManagerAtOrganization && Organization.ManagersCanEdit); } }
         /*
         public virtual List<OriginType> EditableQuestionOrigins
         {
@@ -105,12 +83,12 @@ namespace RadialReview.Models
             CreatedQuestions = new List<QuestionModel>();
             AttachTime = DateTime.UtcNow;
             AllSubordinates = new List<UserOrganizationModel>();
+            Properties = new Dictionary<string, List<String>>();
         }
-
 
         public override string ToString()
         {
-            return Organization.NotNull(x=>x.Name)+" - "+ Name();
+            return Organization.NotNull(x=>x.Name)+" - "+ User.NotNull(x=>x.Name());
         }
     }
 

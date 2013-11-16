@@ -120,6 +120,9 @@
   <data name="ImageOrganizationPlaceholder" xml:space="preserve">
     <value>/img/orgPlaceholder.png</value>
   </data>
+  <data name="ImagePlaceholder" xml:space="preserve">
+    <value>/img/orgPlaceholder.png</value>
+  </data>
   <data name="ImageUserPlaceholder" xml:space="preserve">
     <value>/img/Placeholder.png</value>
   </data>

@@ -25,11 +25,7 @@ namespace RadialReview.Models
         //public virtual String IdMapping { get; set; }
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
-        public virtual string ImageUrl
-        {
-            get { return _ImageUrl ?? ConstantStrings.ImageUserPlaceholder; }
-            set { _ImageUrl = value; }
-        }
+        public virtual ImageModel Image { get; set; }
         /*
         public ICollection<UserLogin> Logins { get; set; }
         */
@@ -48,7 +44,6 @@ namespace RadialReview.Models
         
         public UserModel()
         {
-            ImageUrl = ConstantStrings.ImageUserPlaceholder;
             UserOrganization = new List<UserOrganizationModel>();
         }
 
@@ -67,7 +62,7 @@ namespace RadialReview.Models
             Map(x => x.PasswordHash);
             Map(x => x.SecurityStamp);
             Map(x => x.DeleteTime);
-            Map(x => x.ImageUrl).Not.LazyLoad();
+            References(x => x.Image).Not.LazyLoad();
             HasMany(x => x.UserOrganization).Cascade.SaveUpdate();
             HasMany(x => x.Logins).Cascade.SaveUpdate();
             HasMany(x => x.Roles).Cascade.SaveUpdate();

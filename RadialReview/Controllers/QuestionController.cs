@@ -52,8 +52,24 @@ namespace RadialReview.Controllers
                 return Json(new JsonObject(e));
             }
         }
+                
+        public JsonResult Delete(long id, long organizationId)
+        {
+            try
+            {
+                var caller = GetOneUserOrganization(organizationId);
+                var q = _QuestionAccessor.GetQuestion(caller, id);
+                
+                q.DeleteTime = DateTime.UtcNow;
 
-        public ActionResult Modal(long id, long organizationId, String origin = null, long? originId = null)
+                _QuestionAccessor.EditQuestion(caller, q.OriginType, q.Origin.Id, q);
+                return Json(JsonObject.Success,JsonRequestBehavior.AllowGet);
+            }catch(Exception e){
+                return Json(new JsonObject(e), JsonRequestBehavior.AllowGet);
+            }
+        }
+        
+        public ActionResult Modal(long organizationId,long id=0, String origin = null, long? originId = null)
         {
             try
             {
