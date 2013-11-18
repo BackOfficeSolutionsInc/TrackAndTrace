@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
@@ -52,6 +53,7 @@ namespace System.Web
             return new HtmlString(output);
         }
 
+        #region Blocks
         private class ScriptBlock : IDisposable
         {
             private const string scriptsKey = "scripts";
@@ -124,6 +126,10 @@ namespace System.Web
         {
             return MvcHtmlString.Create(string.Join(Environment.NewLine, StyleBlock.pageStyles.Select(s => s.ToString())));
         }
+        #endregion
+
+
+
     }
 
 

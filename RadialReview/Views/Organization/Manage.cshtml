@@ -1,7 +1,7 @@
 ﻿@model RadialReview.Models.ViewModels.ManageViewModel
 
 @{
-    ViewBag.Title = "Manage";
+    ViewBag.Title = RadialReview.Properties.DisplayNameStrings.manageOrganization;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -19,7 +19,7 @@
     </style>
 }
 <!-- Button to trigger modal -->
-<h3>@RadialReview.Properties.DisplayNameStrings.manage @Model.Organization.Name <img src="@Model.Organization.ImageUrl" style="width: 32px; height: 32px; border: 1px solid #DADADA;" class="img-circle" alt="@Model.Organization.Name" /></h3>
+<h3>@RadialReview.Properties.DisplayNameStrings.manage @Model.Organization.Name.Translate() <img src="@Model.Organization.GetImage()" style="width: 32px; height: 32px; border: 1px solid #DADADA;" class="img-circle" alt="@Model.Organization.Name" /></h3>
 
 
 <div id="alertContainer">
@@ -28,9 +28,9 @@
 
 
 <ul class="nav nav-tabs" id="mainTab">
-    <li class="active"> <a data-toggle="" href="#users"     name="users">Users</a></li>
-    <li>                <a data-toggle="" href="#groups"    name="groups">Groups</a></li>
-    <li>                <a data-toggle="" href="#questions" name="questions">Questions</a></li>
+    <li class="active"> <a data-toggle="" href="#users"     name="users">@RadialReview.Properties.DisplayNameStrings.users</a></li>
+    <li>                <a data-toggle="" href="#groups"    name="groups">@RadialReview.Properties.DisplayNameStrings.groups</a></li>
+    <li>                <a data-toggle="" href="#questions" name="questions">@RadialReview.Properties.DisplayNameStrings.questions</a></li>
 </ul>
 
 <div class="tab-content">

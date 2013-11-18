@@ -17,15 +17,10 @@ namespace RadialReview.Models
         public virtual long Id { get; set; }
 
         [Display(Name = "organizationName", ResourceType = typeof(DisplayNameStrings))]
-        public virtual string Name { get; set; }
+        public virtual LocalizedStringModel Name { get; set; }
 
         [Display(Name = "imageUrl", ResourceType = typeof(DisplayNameStrings))]
-        public virtual string ImageUrl
-        {
-            get { return _ImageUrl ?? ConstantStrings.ImageOrganizationPlaceholder; }
-            set { _ImageUrl = value; }
-        }
-        private string _ImageUrl { get; set; }
+        public virtual ImageModel Image { get;set; }
 
         [Display(Name = "managerCanAddQuestions", ResourceType = typeof(DisplayNameStrings))]
         public virtual Boolean ManagersCanEdit { get; set; }
@@ -35,22 +30,22 @@ namespace RadialReview.Models
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
         public virtual IList<QuestionCategoryModel> QuestionCategories { get; set; }
         public virtual IList<IndustryModel> Industries { get; set; }
-        public virtual IList<GroupModel> Groups { get;set;}
+        public virtual IList<GroupModel> Groups { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
-        public virtual OriginType QuestionOwnerType()
+        public virtual DateTime CreationTime { get; set; }
+        public virtual OriginType GetOriginType()
         {
             return OriginType.Organization;
         }
 
-        public virtual String OriginCustomName
+        public virtual PaymentPlanModel PaymentPlan { get;set;}
+
+        public virtual String GetSpecificNameForOrigin()
         {
-            get
-            {
-                return Name;
-            }
+            return Name.Translate();
         }
 
-        
+
         public OrganizationModel()
         {
             Groups = new List<GroupModel>();
@@ -62,6 +57,23 @@ namespace RadialReview.Models
             QuestionCategories = new List<QuestionCategoryModel>();
         }
 
+        public virtual List<IOrigin> OwnsOrigins()
+        {
+            var owns = new List<IOrigin>();
+            owns.AddRange(CustomQuestions.Cast<IOrigin>().ToList());
+            owns.AddRange(QuestionCategories.Cast<IOrigin>().ToList());
+            owns.AddRange(Groups.Cast<IOrigin>().ToList());
+            owns.AddRange(Members.Cast<IOrigin>().ToList());
+            owns.AddRange(Members.Cast<IOrigin>().ToList());
+
+            return owns;
+        }
+
+        public virtual List<IOrigin> OwnedByOrigins()
+        {
+            var ownedBy = new List<IOrigin>();
+            return ownedBy;
+        }
     }
 
     public class OrganizationModelMap : ClassMap<OrganizationModel>
@@ -69,10 +81,15 @@ namespace RadialReview.Models
         public OrganizationModelMap()
         {
             Id(x => x.Id);
-            Map(x => x.Name);
             Map(x => x.ManagersCanEdit);
             Map(x => x.DeleteTime);
-            Map(x => x.ImageUrl);
+            Map(x=>x.CreationTime);
+            //Map(x => x.ImageUrl);
+
+            References(x => x.Image).Not.LazyLoad().Cascade.SaveUpdate();
+            References(x => x.Name).Not.LazyLoad().Cascade.SaveUpdate();
+            References(x => x.PaymentPlan).Cascade.SaveUpdate();
+
             HasMany(x => x.Members)
                 .KeyColumn("Organization_Id")
                 .Inverse();

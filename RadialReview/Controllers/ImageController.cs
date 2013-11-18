@@ -4,6 +4,7 @@ using RadialReview.Exceptions;
 using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -24,6 +25,11 @@ namespace RadialReview.Controllers
                 var imagePath = "";
                 if (id == "userplaceholder"){
                     imagePath = Server.MapPath("~/"+ConstantStrings.ImageUserPlaceholder);
+                }
+                else if (id == "placeholder")
+                {
+                    imagePath = Server.MapPath("~/" + ConstantStrings.ImagePlaceholder);
+
                 }else{
                     imagePath = _ImageAccessor.GetImagePath(user, Server, id);
                 }
@@ -37,12 +43,8 @@ namespace RadialReview.Controllers
                         var width = int.Parse(args[0]);
                         var height = int.Parse(args[1]);
                         var quality = 80;
-                        var settings = new ResizeSettings
-                        {
-                            MaxWidth = width,
-                            MaxHeight = height,
-                            Format = "png"
-                        };
+                        var settings = new ResizeSettings(width,height,FitMode.Pad,"png");
+                        settings.BackgroundColor = Color.FromArgb(180,Color.White);
                         settings.Add("quality", quality.ToString());
                         System.IO.MemoryStream outStream = new System.IO.MemoryStream();
                         ImageBuilder.Current.Build(System.IO.File.ReadAllBytes(imagePath), outStream, settings);

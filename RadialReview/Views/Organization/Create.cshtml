@@ -1,7 +1,5 @@
-﻿@model RadialReview.Models.OrganizationModel
-
-@{
-    ViewBag.Title = "Create";
+﻿@{
+    ViewBag.Title = RadialReview.Properties.DisplayNameStrings.createOrganization;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,8 +7,10 @@
     <div class="col-md-12 jumbotron">
         <div class="container">
 
-            <h2 class="text-center">Create Organization</h2>
-            <br />
+            <h2 class="text-center">@RadialReview.Properties.DisplayNameStrings.createOrganization</h2>
+            <div class="smallBreak"></div>
+            <div class="smallBreak"></div>
+            <div class="smallBreak"></div>
 
             @using (Html.BeginForm())
             {
@@ -18,15 +18,16 @@
                 @Html.ValidationSummary(true)
 
 
-                <div class="row col-md-6">
+                <div class="row col-md-6 col-md-offset-3">
                     <div class="col-md-12">
-                        <input type="text" class="form-control" name="@Html.NameFor(x=>x.Name)" placeholder="Organization Name" />
-                        @Html.ValidationMessageFor(model => model.Name, null, new { @class = "help-inline" })
+                        <input type="text" class="form-control" name="name" placeholder="@RadialReview.Properties.DisplayNameStrings.organizationName" />
                     </div>
                     <div class="col-md-12">
-                        <input type="checkbox" name="@Html.NameFor(x=>x.ManagersCanEdit)" />
-                        @Html.LabelFor(x => x.ManagersCanEdit)
-                        @Html.ValidationMessageFor(model => model.Name, null, new { @class = "help-inline" })
+                        @Html.CheckBox("managersCanEdit")
+                        @Html.Label(RadialReview.Properties.DisplayNameStrings.managerCanAddQuestions)
+                    </div>
+                    <div class="row col-md-12" >
+                        <button class="btn btn-success col-md-8 col-md-offset-2">@RadialReview.Properties.DisplayNameStrings.create</button>
                     </div>
                 </div>
                 <div class="row">

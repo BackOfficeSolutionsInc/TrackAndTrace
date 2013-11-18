@@ -120,6 +120,9 @@
   <data name="BaseUrl" xml:space="preserve">
     <value>http://localhost:2200/</value>
   </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>Radial Inc.</value>
+  </data>
   <data name="ProductName" xml:space="preserve">
     <value>Radial Review</value>
   </data>

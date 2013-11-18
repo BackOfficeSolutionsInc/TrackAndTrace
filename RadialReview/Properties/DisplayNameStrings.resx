@@ -219,4 +219,73 @@
   <data name="New" xml:space="preserve">
     <value>New</value>
   </data>
+  <data name="slider" xml:space="preserve">
+    <value>Slider</value>
+  </data>
+  <data name="relativeComparison" xml:space="preserve">
+    <value>Relative comparison</value>
+  </data>
+  <data name="feedback" xml:space="preserve">
+    <value>Feedback</value>
+  </data>
+  <data name="questionType" xml:space="preserve">
+    <value>Question type</value>
+  </data>
+  <data name="thumbs" xml:space="preserve">
+    <value>Thumbs</value>
+  </data>
+  <data name="type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="For" xml:space="preserve">
+    <value>For</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="yesDeleteIt" xml:space="preserve">
+    <value>Yes, delete it.</value>
+  </data>
+  <data name="application" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="createOrganization" xml:space="preserve">
+    <value>Create organization</value>
+  </data>
+  <data name="directlyManaging" xml:space="preserve">
+    <value>Directly managing</value>
+  </data>
+  <data name="groups" xml:space="preserve">
+    <value>Groups</value>
+  </data>
+  <data name="joined" xml:space="preserve">
+    <value>Joined</value>
+  </data>
+  <data name="manageOrganization" xml:space="preserve">
+    <value>Manage organization</value>
+  </data>
+  <data name="members" xml:space="preserve">
+    <value>Members</value>
+  </data>
+  <data name="questions" xml:space="preserve">
+    <value>Questions</value>
+  </data>
+  <data name="unverified" xml:space="preserve">
+    <value>Unverified</value>
+  </data>
+  <data name="users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="numberOfMembers" xml:space="preserve">
+    <value># Members</value>
+  </data>
+  <data name="numberOfQuestions" xml:space="preserve">
+    <value># Questions</value>
+  </data>
 </root>

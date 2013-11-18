@@ -141,6 +141,10 @@
                                 });
                             });
                             $('#modal').modal('show');
+                            var count = 0;
+                            setTimeout(function () {
+                                $('#modal input:not([type=hidden]):first').focus();
+                            }, 550);
                         }
 
 
@@ -174,13 +178,19 @@
                     }
                 }
 
+                (function ($) {
+                    $.fn.setCursorToTextEnd = function () {
+                        var $initialVal = this.val();
+                        this.val($initialVal);
+                    };
+                })(jQuery);
             </script>
 
         }
 
     </div>
     <div id="footer">
-        <p>&copy; @DateTime.Now.Year - Radial Enterprises</p>
+        <p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName</p>
     </div>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

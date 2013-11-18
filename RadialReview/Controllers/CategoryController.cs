@@ -1,6 +1,7 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,10 @@ namespace RadialReview.Controllers
         public ActionResult Create(long? organizationId)
         {
             var user = GetOneUserOrganization(organizationId);
-            return View("Edit", new QuestionCategoryModel() { Organization = user.Organization });
+            return View("Edit", new QuestionCategoryModel() { 
+                OriginType=OriginType.Organization,
+                OriginId = user.Organization.Id 
+            });
         }
         
         //
@@ -65,8 +69,10 @@ namespace RadialReview.Controllers
                 //collection.Organization.Id = long.Parse(Request.Params["Organization.Id"]);
 
                 var user=GetOneUserOrganization(organizationId);
-                EditableOrException(user);
-                _CategoryAccessor.Edit(user, collection);
+                //EditableOrException(user);
+                var category=_CategoryAccessor.Get(user,id);
+
+                _CategoryAccessor.Edit(user, id,collection.GetOrigin(),collection.Category,collection.Active);
                 return RedirectToAction("Index");
             }
             catch

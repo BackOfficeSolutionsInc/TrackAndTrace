@@ -20,30 +20,30 @@ namespace RadialReview.Controllers
     {
         protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
         protected static GroupAccessor _GroupAccessor = new GroupAccessor();
-        protected static UserAccessor _UserAccessor = new UserAccessor();
         protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
         protected static OriginAccessor _OriginAccessor = new OriginAccessor();
 
 
         [HttpPost]
-        public JsonResult Edit(String question, long categoryId, long questionId, long organizationId, String questionType, long forOriginId)
+        public JsonResult Edit(long questionId, long organizationId, String question, long categoryId, String originType, long forOriginId,String questionType)
         {
             try
             {
                 var caller = GetOneUserOrganization(organizationId);
                 var category = _QuestionAccessor.GetCategory(caller, categoryId, false);
 
-                QuestionModel q = null;
+                QuestionModel q = new QuestionModel();
                 if (questionId != 0)
                     q = _QuestionAccessor.GetQuestion(caller, questionId);
-
-                if (q == null)
-                    q = new QuestionModel();
-
+                
                 q.Category = category;
-                q.Question = question;
+                q.Question.UpdateDefault(question);
 
-                _QuestionAccessor.EditQuestion(caller, questionType.Parse<OriginType>(), forOriginId, q);
+                q.QuestionType = questionType.Parse<QuestionType>();
+                var origin=new Origin(originType.Parse<OriginType>(), forOriginId);
+                _QuestionAccessor.EditQuestion(caller, questionId, origin:      origin, 
+                                                                   question:    q.Question,
+                                                                   categoryId:  categoryId);
 
                 return Json(JsonObject.Success);
             }
@@ -58,11 +58,8 @@ namespace RadialReview.Controllers
             try
             {
                 var caller = GetOneUserOrganization(organizationId);
-                var q = _QuestionAccessor.GetQuestion(caller, id);
-                
-                q.DeleteTime = DateTime.UtcNow;
-
-                _QuestionAccessor.EditQuestion(caller, q.OriginType, q.Origin.Id, q);
+                //var q = _QuestionAccessor.GetQuestion(caller, id);
+                _QuestionAccessor.EditQuestion(caller,id, deleteTime: DateTime.UtcNow);
                 return Json(JsonObject.Success,JsonRequestBehavior.AllowGet);
             }catch(Exception e){
                 return Json(new JsonObject(e), JsonRequestBehavior.AllowGet);
@@ -78,13 +75,13 @@ namespace RadialReview.Controllers
                     .ManagingGroups(questions:true)
                     .Execute();
                 QuestionModel q = null;
-
                 QuestionModalViewModel questionViewModel = null;
 
                 if (id != 0)
                 {
                     q = _QuestionAccessor.GetQuestion(caller, id);
-                    questionViewModel = new QuestionModalViewModel(caller.Organization, q.Origin.Id, q.OriginType,false, q);
+                    questionViewModel = new QuestionModalViewModel(caller.Organization, q.OriginId, q.OriginType, false, q);
+                    throw new NotImplementedException();
                 }
                 else
                 {
@@ -92,7 +89,7 @@ namespace RadialReview.Controllers
                         throw new Exception("New question requires an origin information.");
                     var originType = origin.Parse<OriginType>();
                     q = new QuestionModel();
-                    q.OriginType = originType;
+                    q.OriginType=originType;
                     _OriginAccessor.GetOrigin(caller, originType, originId.Value); //To ensure that we have access to this origin.
                     questionViewModel = new QuestionModalViewModel(caller.Organization, originId.Value,originType,true, q);
                 }
@@ -102,5 +99,39 @@ namespace RadialReview.Controllers
                 return PartialView("ModalError", e);
             }
         }
+
+        public ActionResult Admin(long id=0,long? organizationId=null)
+        {
+            ViewBag.originType = OriginType.Invalid;
+            ViewBag.originId =   0;
+            if (id != 0)
+            {
+                var caller = GetOneUserOrganization(organizationId);
+                var question = _QuestionAccessor.GetQuestion(caller, id);
+                ViewBag.originType = question.OriginType;
+                ViewBag.originId = question.OriginId;
+                return View(question);
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Admin(QuestionModel model,String question,OriginType originType,long originId,long? organizationId)
+        {
+            if (originId == 0)
+                throw new Exception("Need origin id");
+            if (originType == OriginType.Invalid)
+                throw new Exception("Cannot be invalid");
+
+            var caller=GetOneUserOrganization(organizationId);
+            var origin=new Origin(originType, originId);
+            var q = _QuestionAccessor.GetQuestion(caller, model.Id);
+
+            q.Question.UpdateDefault(question);
+
+            _QuestionAccessor.EditQuestion(caller,model.Id,origin,q.Question,model.Category.Id);
+            return RedirectToAction("Admin", new { id = model.Id,organizationId=organizationId});
+        }
+
     }
 }

@@ -61,6 +61,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this?.
+        /// </summary>
+        public static string areYouSureDelete {
+            get {
+                return ResourceManager.GetString("areYouSureDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You need at least one member..
         /// </summary>
         public static string InsufficientNumberOfMembers {

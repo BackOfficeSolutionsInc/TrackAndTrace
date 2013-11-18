@@ -7,15 +7,16 @@
 
 <h2>Question Category</h2>
 
-@using (Html.BeginForm("Edit","Category"))
+@using (Html.BeginForm("Edit", "Category"))
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <hr />
         @Html.ValidationSummary(true)
         @Html.HiddenFor(model => model.Id)
-        @Html.HiddenFor(model => model.Organization.Id)
+        @Html.HiddenFor(model => model.OriginId)
+        @Html.HiddenFor(model => model.OriginType)
 
         <div class="form-group">
             @Html.LabelFor(model => model.Category, new { @class = "control-label col-md-2" })
@@ -26,9 +27,9 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(x=>x.Active, new { @class = "control-label col-md-2" })
+            @Html.LabelFor(x => x.Active, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.CheckBoxFor(x=>x.Active)
+                @Html.CheckBoxFor(x => x.Active)
             </div>
         </div>
 

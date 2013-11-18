@@ -142,7 +142,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public QuestionCategoryModel GetCategory(UserOrganizationModel user, long categoryId, Boolean overridePermissions)
+        public QuestionCategoryModel GetCategory(UserOrganizationModel caller, long categoryId, Boolean overridePermissions)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -151,80 +151,72 @@ namespace RadialReview.Accessors
                     var category = s.Get<QuestionCategoryModel>(categoryId);
                     if (!overridePermissions)
                     {
-                        if (user.Organization.Id != category.Organization.Id)
-                            throw new PermissionsException();
+                        PermissionsUtility.Create(s, caller).ViewOrigin(category.OriginType, category.OriginId);
                     }
                     return category;
                 }
             }
         }
 
-        public QuestionModel EditQuestion(UserOrganizationModel caller, OriginType origin, long forOriginId, QuestionModel question)
+        public QuestionModel EditQuestion(UserOrganizationModel caller, long questionId,Origin origin=null,
+                                                                                        LocalizedStringModel question=null,
+                                                                                        long? categoryId=null,
+                                                                                        DateTime? deleteTime=null)
         {
+            QuestionModel q;
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     caller = s.Get<UserOrganizationModel>(caller.Id);
-                    if (question.Id == 0) //Creating
+                    q = s.Get<QuestionModel>(questionId);
+
+                    var permissionUtility=PermissionsUtility.Create(s, caller);
+
+                    if (q.Id == 0) //Creating
                     {
-                        question.DateCreated = DateTime.UtcNow;
-                        question.CreatedBy = caller;
+                        q.DateCreated = DateTime.UtcNow;
+                        q.CreatedBy = caller;
                     }
-                    if (question.CreatedBy.Id == caller.Id)
-                        question.CreatedBy = caller;
-                    question.Category = s.Get<QuestionCategoryModel>(question.Category.Id);
-
-                    if (question.Category.Organization.Id != caller.Organization.Id)
-                        throw new PermissionsException(ExceptionStrings.CategoryAccessability);
-
-                    switch (origin)
+                    else
                     {
-                        case OriginType.User:
-                            {
-                                PermissionsUtility.Create(s, caller).EditUserOrganization( forOriginId);
-                                var user = s.Get<UserOrganizationModel>(forOriginId);
-                                question.ForUser = user;
-                                break;
-                            }
-                        case OriginType.Group:
-                            {
-                                PermissionsUtility.Create(s, caller).EditGroup(forOriginId);
-                                var group = s.Get<GroupModel>(forOriginId);
-                                question.ForGroup = group;
-                                break;
-                            }
-                        case OriginType.Organization:
-                            {
-                                PermissionsUtility.Create(s, caller).EditOrganization(forOriginId);
-                                if (forOriginId!=caller.Organization.Id)
-                                    throw new PermissionsException();
-                                //var org = s.Get<OrganizationModel>(forOriginId);
-                                question.ForOrganization = caller.Organization;
-                                break;
-                            }
-                        case OriginType.Industry:
-                            {
-                                PermissionsUtility.Create(s, caller).EditIndustry(forOriginId);
-                                var ind = s.Get<IndustryModel>(forOriginId);
-                                question.ForIndustry = ind;
-                                break;
-                            }
-                        case OriginType.Application:
-                            {
-                                PermissionsUtility.Create(s, caller).EditApplication(forOriginId);
-                                var app = s.Get<ApplicationWideModel>(forOriginId);
-                                question.ForApplication = app;
-                                break;
-                            }
-                        default: throw new PermissionsException();
+                        permissionUtility.EditQuestion(q);
+                    }
+
+                    /*if (question.CreatedBy.Id == caller.Id)
+                        question.CreatedBy = caller;*/
+     //Edit Origin
+                    if (origin!=null)
+                    {
+                        permissionUtility.EditOrigin(origin);
+                        q.OriginId=origin.OriginId;
+                        q.OriginType = origin.OriginType;
+                    }
+     //Edit Question
+                    if (question!=null)
+                    {
+                        q.Question = question;
+                    }
+     //Edit CategoryId
+                    if (categoryId!=null )
+                    {
+                        if(categoryId==0)
+                            throw new PermissionsException();
+                        permissionUtility.PairCategoryToQuestion(categoryId.Value,questionId);
+                        var category= s.Get<QuestionCategoryModel>(categoryId);
+                        q.Category=category;
+                    }             
+     //Edit DeleteTime
+                    if(deleteTime!=null)
+                    {
+                        q.DeleteTime = deleteTime.Value;
                     }
                     s.SaveOrUpdate(question);
                     tx.Commit();
                     s.Flush();
                 }
             }
-            return question;
+            return q;
         }
 
         public QuestionModel GetQuestion(UserOrganizationModel caller, long id)

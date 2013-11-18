@@ -5,23 +5,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Exceptions;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Accessors
 {
     public class CategoryAccessor : BaseAccessor
     {
 
-        public QuestionCategoryModel Edit(UserOrganizationModel user, QuestionCategoryModel category)
+        public QuestionCategoryModel Edit(UserOrganizationModel user,long categoryId,   Origin origin=null,
+                                                                                        LocalizedStringModel categoryName=null,
+                                                                                        Boolean? active=null,
+                                                                                        DateTime? deleteTime=null)
         {
+            QuestionCategoryModel category = new QuestionCategoryModel();
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    if (category.Id == 0)
-                        category.Organization = user.Organization;
+                    var permissions=PermissionsUtility.Create(s, user);
+                    permissions.EditOrganization(user.Organization.Id);
+                    
+                    if (categoryId != 0)
+                    {
+                        category = s.Get<QuestionCategoryModel>(categoryId);
+                    }else{
+                        if (origin == null || categoryName==null)
+                            throw new PermissionsException();
+                        category.Active = true;
+                    }
 
-                    if (!user.IsManagerCanEditOrganization() || category.Organization.Id != user.Organization.Id)
-                        throw new PermissionsException();
+                    if (origin != null){
+                        permissions.EditOrigin(origin);
+                        category.OriginType = origin.OriginType;
+                        category.OriginId = origin.OriginId;
+                    }
+
+                    if(categoryName!=null){
+                        category.Category = categoryName;
+                    }
+
+                    if (active!=null){
+                        category.Active = active.Value;
+                    }
+
+                    if (deleteTime!=null){
+                        category.DeleteTime = deleteTime;
+                    }
+
                     s.SaveOrUpdate(category);
                     tx.Commit();
                     s.Flush();
@@ -36,9 +66,9 @@ namespace RadialReview.Accessors
             {
                 using(var tx=s.BeginTransaction())
                 {
+                    PermissionsUtility.Create(s, user).ViewCategory(id);
+
                     var category=s.Get<QuestionCategoryModel>(id);
-                    if (category.Organization.Id != user.Organization.Id)
-                        throw new PermissionsException();
                     return category;
                 }
             }

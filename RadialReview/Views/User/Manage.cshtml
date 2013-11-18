@@ -120,11 +120,11 @@
 
 <table class="table table-condensed table-hover table-responsive">
     <tr>
-        <th class="small-centered">Enabled</th>
-        <th class="small-centered"></th>
-        <th>Question</th>
-        <th class="small-centered">Category</th>
-        <th class="small-centered">Origin</th>
+        <th class="small-centered">@RadialReview.Properties.DisplayNameStrings.enabled</th>
+        <th class="small-centered">@RadialReview.Properties.DisplayNameStrings.type</th>
+        <th>@RadialReview.Properties.DisplayNameStrings.question</th>
+        <th class="small-centered">@RadialReview.Properties.DisplayNameStrings.category</th>
+        <th class="small-centered">@RadialReview.Properties.DisplayNameStrings.For</th>
         <th></th>
         <th style="width:70px;"><button class="btn fullWidth" onclick="showModal('@RadialReview.Properties.DisplayNameStrings.addQuestion (@Model.User.Name())','/Question/Modal?organizationId=@Model.OrganizationId&origin=@RadialReview.Models.Enums.OriginType.User&originId=@Model.User.Id','/Question/Edit')">+</button></th>
     </tr>
@@ -141,13 +141,13 @@
                     <span data-id="@q.Id" data-type="questionEnabled" class="glyphicon glyphicon-ban-circle editable"></span>
                 }
             </td>
-            <td></td>
+            <td class="small-centered">@(q.QuestionType.GetIcon())</td>
             <td>@(q.Question)</td>
             <td class="small-centered">@(q.Category.Category)</td>
-            <td class="small-centered">@(q.Origin.OriginCustomName)</td>
+            <td class="small-centered">@(q.OriginType.GetDisplayName()</td>
             <td class="small-centered"></td>
             <td class="small-centered"><button class="btn  btn-primary fullWidth" 
-                onclick="showModal('@RadialReview.Properties.DisplayNameStrings.editQuestion (@q.Origin.OriginCustomName)','/Question/Modal?id=@q.Id&organizationId=@Model.OrganizationId&origin=@q.OriginType&originId=@q.Origin.Id','/Question/Edit')"
+                onclick="showModal('@RadialReview.Properties.DisplayNameStrings.editQuestion (@q.OriginType.GetDisplayName())','/Question/Modal?id=@q.Id&organizationId=@Model.OrganizationId&origin=@q.OriginType&originId=@q.OriginId','/Question/Edit')"
             >@RadialReview.Properties.DisplayNameStrings.edit</button></td>
         </tr>
     }

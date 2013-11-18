@@ -10,6 +10,9 @@ using RadialReview.Exceptions;
 using System.Web.Routing;
 using RadialReview.Properties;
 using log4net;
+using System.Threading;
+using Microsoft.Owin.Security;
+
 
 namespace RadialReview.Controllers
 {
@@ -79,6 +82,7 @@ namespace RadialReview.Controllers
 
             if (filterContext.Exception is LoginException)
             {
+                AuthenticationManager.SignOut();
                 var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                 if (redirectUrl == null)
                     redirectUrl = Request.Url.PathAndQuery;
@@ -121,6 +125,16 @@ namespace RadialReview.Controllers
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            // eat the cookie (if any) and set the culture
+            if (Request.Cookies["lang"] != null)
+            {
+                HttpCookie cookie = Request.Cookies["lang"];
+                string lang = cookie.Value;
+                var culture = new System.Globalization.CultureInfo(lang);
+                Thread.CurrentThread.CurrentCulture = culture;
+                Thread.CurrentThread.CurrentUICulture = culture;
+            }
+
             if (IsLoggedIn())
             {
                 var userOrgs= GetUserOrganization();
@@ -163,6 +177,12 @@ namespace RadialReview.Controllers
         {
             return User.Identity.GetUserId() != null;
         }
-
+        protected IAuthenticationManager AuthenticationManager
+        {
+            get
+            {
+                return HttpContext.GetOwinContext().Authentication;
+            }
+        }
     }
 }

@@ -2,9 +2,9 @@
 
 <table class="table">
     <tr>
-        <th>Group</th>
-        <th style="width:120px"># Questions</th>
-        <th style="width:120px"># Members</th>
+        <th>@RadialReview.Properties.DisplayNameStrings.group</th>
+        <th style="width:120px">@RadialReview.Properties.DisplayNameStrings.numberOfQuestions</th>
+        <th style="width:120px">@RadialReview.Properties.DisplayNameStrings.numberOfMembers</th>
         <th style="width:50px">
             <button onclick="window.location='@Url.Action("Create", "Group", new {organizationId=Model.Organization.Id})'" role="button" class="btn btn-default addButton" data-toggle="modal">+</button>
         </th>
@@ -15,7 +15,7 @@
             <td>@group.GroupName</td>
             <td>@group.CustomQuestions.Count</td>
             <td>@group.GroupUsers.Count</td>
-            <td><a href="@Url.Action("Edit", "Group", new {id=group.Id})" class="btn btn-info">Edit</a></td>
+            <td><a href="@Url.Action("Edit", "Group", new {id=group.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.edit</a></td>
         </tr>
     }
 </table>

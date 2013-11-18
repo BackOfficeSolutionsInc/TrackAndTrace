@@ -12,7 +12,7 @@ namespace RadialReview.Accessors
 {
     public class OriginAccessor
     {
-        [Obsolete("Want this to stand out.",false)]
+        /*[Obsolete("Want this to stand out.",false)]*/
         public IOrigin GetOrigin(UserOrganizationModel caller,OriginType originType,long originId)
         {
             using (var s = HibernateSession.GetCurrentSession())

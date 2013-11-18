@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using NHibernate.Linq;
 using RadialReview.Accessors;
+using RadialReview.Models.Enums;
 
 namespace RadialReview
 {
@@ -66,7 +67,7 @@ namespace RadialReview
                     var group = Session.Query<GroupModel>().Where(x => x.Id == g.Id).FetchMany(x => x.GroupUsers).FetchMany(x => x.CustomQuestions).SingleOrDefault();
                     if (questions)
                     {
-                        questionsResolved = Session.QueryOver<QuestionModel>().Where(x => x.ForGroup.Id == group.Id).List().ToList();
+                        questionsResolved = Session.QueryOver<QuestionModel>().Where(x => x.OriginType==OriginType.Group && x.OriginId == group.Id).List().ToList();
                         group.CustomQuestions = questionsResolved;
                         //orgQuery.Fetch(x => x.CustomQuestions).Eager.Future();
                         //orgQuery.Fetch(x => x.QuestionCategories).Eager.Future();
@@ -149,7 +150,11 @@ namespace RadialReview
                 var orgQuery = Session.QueryOver<OrganizationModel>().Where(x => x.Id == uOrg.Organization.Id);
                 if (questions)
                 {
-                    questionsResolved = Session.QueryOver<QuestionModel>().Where(x => x.ForOrganization.Id == uOrg.Organization.Id).List().ToList();
+                    questionsResolved = Session.QueryOver<QuestionModel>()
+                        .Where(x => x.OriginType==OriginType.Organization && x.OriginId == uOrg.Organization.Id)
+                        .Fetch(x=>x.Question).Eager
+                        .List()
+                        .ToList();
                     //orgQuery.Fetch(x => x.CustomQuestions).Eager.Future();
                     orgQuery.Fetch(x => x.QuestionCategories).Eager.Future();
                 }

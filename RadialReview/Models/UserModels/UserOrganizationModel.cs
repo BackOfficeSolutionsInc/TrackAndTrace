@@ -35,17 +35,14 @@ namespace RadialReview.Models
         public virtual IList<QuestionModel> CreatedQuestions { get; set; }
 
         public virtual DateTime? DeleteTime { get; set; }
-        public virtual OriginType QuestionOwnerType()
+        public virtual OriginType GetOriginType()
         {
             return OriginType.User;
         }
-        
-        public virtual String OriginCustomName
+
+        public virtual String GetSpecificNameForOrigin()
         {
-            get
-            {
-                return DisplayNameStrings.user;
-            }
+            return this.Name();
         }
 
         #region Helpers
@@ -54,7 +51,7 @@ namespace RadialReview.Models
         {
             return User != null;
         }
-        public virtual List<UserOrganizationModel> AllSubordinates { get; set; }        
+        public virtual List<UserOrganizationModel> AllSubordinates { get; set; }
         /*
         public virtual List<OriginType> EditableQuestionOrigins
         {
@@ -88,7 +85,25 @@ namespace RadialReview.Models
 
         public override string ToString()
         {
-            return Organization.NotNull(x=>x.Name)+" - "+ User.NotNull(x=>x.Name());
+            return Organization.NotNull(x => x.Name) + " - " + User.NotNull(x => x.Name());
+        }
+
+
+        public virtual List<IOrigin> OwnsOrigins()
+        {
+            var owns=new List<IOrigin>();
+            owns.AddRange(ManagingUsers.Cast<IOrigin>());
+            owns.AddRange(ManagingGroups.Cast<IOrigin>());
+            owns.AddRange(CreatedQuestions.Cast<IOrigin>());
+            return owns;
+        }
+
+        public virtual List<IOrigin> OwnedByOrigins()
+        {
+            var ownedBy = new List<IOrigin>();
+            ownedBy.AddRange(ManagedBy.Cast<IOrigin>());
+            ownedBy.Add(Organization);
+            return ownedBy;
         }
     }
 

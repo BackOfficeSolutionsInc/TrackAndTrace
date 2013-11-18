@@ -15,7 +15,7 @@ namespace RadialReview.Utilities
             return users.Select(x => new DragDropItem{ 
                 Id=x.Id,
                 DisplayName=x.Name(),
-                ImageUrl=x.ImageUrl(),
+                ImageUrl=x.ImageUrl(94,94),
                 Classes=(x.IsAttached()?"attached":"unattached")+" "+String.Join(" ",x.Properties.GetOrDefault("classes",new List<String>())),
                 AltText = x.Name()+AltTextBuilder(x.Properties.GetOrDefault("altText",new List<String>())),
             }).ToList();

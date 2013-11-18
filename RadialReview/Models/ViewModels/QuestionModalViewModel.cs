@@ -15,6 +15,8 @@ namespace RadialReview.Models.ViewModels
         public long OrganizationId { get; set; }
         public QuestionModel Question { get; set; }
 
+        public List<QuestionType> QuestionTypes { get; set; }
+
         public Boolean New { get; set; }
 
         public QuestionModalViewModel(OrganizationModel organization, long originId, OriginType originType,Boolean isNew, QuestionModel question=null)
@@ -25,6 +27,12 @@ namespace RadialReview.Models.ViewModels
             OriginType= originType;
             OrganizationId = organization.Id;
             New = isNew;
+            QuestionTypes = new List<QuestionType>{
+                QuestionType.Feedback,
+                QuestionType.RelativeComparison,
+                QuestionType.Slider,
+                QuestionType.Thumbs
+            };
         }
     }
 }

@@ -11,12 +11,21 @@ namespace RadialReview.Accessors
 {
     public class OrganizationAccessor : BaseAccessor
     {
-        public void CreateOrganization(UserModel user, OrganizationModel organization)
+
+        public OrganizationModel CreateOrganization(UserModel user, LocalizedStringModel name, Boolean managersCanAddQuestions, PaymentPlanModel paymentPlan)
         {
             using (var db = HibernateSession.GetCurrentSession())
             {
                 using (var tx = db.BeginTransaction())
                 {
+                    var organization = new OrganizationModel()
+                    {
+                        CreationTime = DateTime.UtcNow,
+                        PaymentPlan = paymentPlan,
+                        Name = name,
+                        ManagersCanEdit = managersCanAddQuestions,
+                    };
+
                     db.Save(organization);
                     //db.Organizations.Add(organization);
                     //db.SaveChanges();
@@ -43,7 +52,7 @@ namespace RadialReview.Accessors
                     db.Save(user);
                     tx.Commit();
                     db.Flush();
-
+                    return organization;
                     //db.UserOrganizationModels.Add(userOrgModel);
                     //db.SaveChanges();
 
@@ -51,6 +60,7 @@ namespace RadialReview.Accessors
                     //db.SaveChanges();
                 }
             }
+
         }
 
         public UserOrganizationModel JoinOrganization(UserModel user, long managerId,long userOrgPlaceholder)

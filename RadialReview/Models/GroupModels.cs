@@ -16,7 +16,7 @@ namespace RadialReview.Models
     {
         [Key]
         public virtual long Id { get; set; }
-        [Display(Name="groupName",ResourceType=typeof(DisplayNameStrings))]
+        [Display(Name = "groupName", ResourceType = typeof(DisplayNameStrings))]
         public virtual String GroupName { get; set; }
 
         public virtual IList<UserOrganizationModel> GroupUsers { get; set; }
@@ -24,17 +24,15 @@ namespace RadialReview.Models
         public virtual IList<UserOrganizationModel> Managers { get; set; }
 
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
-        public virtual OriginType QuestionOwnerType()
+        public virtual OriginType GetOriginType()
         {
             return OriginType.Group;
         }
+        public virtual DateTime? DeleteTime { get; set; }
 
-        public virtual String OriginCustomName
+        public virtual String GetSpecificNameForOrigin()
         {
-            get
-            {
-                return GroupName;
-            }
+            return GroupName;
         }
 
         public GroupModel()
@@ -45,7 +43,17 @@ namespace RadialReview.Models
         }
 
 
-        public virtual DateTime? DeleteTime { get; set; }
+
+
+        public virtual List<IOrigin> OwnsOrigins()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual List<IOrigin> OwnedByOrigins()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class GroupModelMap : ClassMap<GroupModel>

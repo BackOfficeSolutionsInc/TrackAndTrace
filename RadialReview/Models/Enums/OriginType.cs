@@ -20,7 +20,7 @@ namespace RadialReview.Models.Enums
         Organization,
         [Display(Name = "industry", ResourceType = typeof(DisplayNameStrings))]
         Industry,
-        [Display(Name = "default", ResourceType = typeof(DisplayNameStrings))]
+        [Display(Name = "application", ResourceType = typeof(DisplayNameStrings))]
         Application,
 
     }

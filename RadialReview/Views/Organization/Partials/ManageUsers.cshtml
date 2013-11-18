@@ -3,9 +3,9 @@
 
 
 <ul class="nav nav-tabs" id="userTab">
-    <li><a href="#managing" name="managing">Directly Managing</a></li>
-    <li><a href="#members" name="members">Members</a></li>
-    <li><a href="#pending" name="pending">Unverified @Html.Badge(x => x.PendingUsers.Count())</a></li>
+    <li class="active"><a href="#managing" name="managing">@RadialReview.Properties.DisplayNameStrings.directlyManaging</a></li>
+    <li><a href="#members" name="members">@RadialReview.Properties.DisplayNameStrings.members</a></li>
+    <li><a href="#pending" name="pending">@RadialReview.Properties.DisplayNameStrings.unverified @Html.Badge(x => x.PendingUsers.Count())</a></li>
 </ul>
 
 <!-- Tab panes -->
@@ -28,7 +28,7 @@
                     </td>
                     <td>@user.Name()</td>
                     <td><span data-livestamp="@(user.AttachTime.ToString("o"))-00:00"></span></td>
-                    <td><a href="@Url.Action("Manage", "User", new {id=user.Id})" class="btn btn-info">Edit</a></td>
+                    <td><a href="@Url.Action("Manage", "User", new {id=user.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.edit</a></td>
                 </tr>
             }
         </table>
@@ -37,9 +37,9 @@
     <div class="tab-pane" id="members">
         <table class="table">
             <tr>
-                <th>User</th>
+                <th>@RadialReview.Properties.DisplayNameStrings.user</th>
                 <th></th>
-                <th style="width:120px">Joined</th>
+                <th style="width:120px">@RadialReview.Properties.DisplayNameStrings.joined</th>
                 <th style="width: 50px">
                     <button role="button" class="btn addButton" onclick="showModal('@RadialReview.Properties.DisplayNameStrings.addUser','/User/AddModal?organizationId=@Model.Organization.Id','/nexus/AddManagedUserToOrganization')">+</button>
                 </th>
@@ -48,11 +48,11 @@
             {
                 <tr>
                     <td style="width: 80px; height: 60px;margin-left: auto; text-align: center; margin-right: auto;">
-                        <img style="max-width: 68px; max-height: 48px; " src="@user.ImageUrl(60,40)" alt="@user.Name()" class="img-thumbnail">
+                        <img style="" src="@user.ImageUrl(60,40)" alt="@user.Name()" class="img-thumbnail">
                     </td>
                     <td>@user.Name()</td>
                     <td><span data-livestamp="@(user.AttachTime.ToString("o"))-00:00"></span></td>
-                    <td><a href="@Url.Action("Manage", "User", new {id=user.Id})" class="btn btn-info">Edit</a></td>
+                    <td><a href="@Url.Action("Manage", "User", new {id=user.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.edit</a></td>
                 </tr>
             }
         </table>
@@ -64,7 +64,7 @@
                 <th>Email</th>
                 <th style="width:120px">Sent</th>
                 <th style="width: 50px">
-                    <button data-target="#addUserModal" role="button" class="btn addButton" data-toggle="modal">+</button>
+                    <button onclick="showModal('@RadialReview.Properties.DisplayNameStrings.addUser','/User/AddModal?organizationId=@Model.Organization.Id','/nexus/AddManagedUserToOrganization')" role="button" class="btn addButton" data-toggle="modal">+</button>
                 </th>
             </tr>
             @foreach (var pending in Model.PendingUsers.OrderByDescending(x => x.AttachTime))
@@ -72,7 +72,7 @@
                 <tr>
                     <td>@pending.EmailAtOrganization</td>
                     <td><span data-livestamp="@(pending.AttachTime.ToString("o"))-00:00"></span></td>
-                    <td><a href="@Url.Action("Manage", "User", new {id=pending.Id})" class="btn btn-info">Edit</a></td>
+                    <td><a href="@Url.Action("Manage", "User", new {id=pending.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.edit</a></td>
                 </tr>
             }
         </table>

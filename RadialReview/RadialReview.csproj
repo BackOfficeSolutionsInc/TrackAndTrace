@@ -179,6 +179,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accessors\ApplicationAccessor.cs" />
     <Compile Include="Accessors\BaseAccessor.cs" />
     <Compile Include="Accessors\CategoryAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="Accessors\NexusAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
+    <Compile Include="Accessors\PaymentAccessor.cs" />
     <Compile Include="Accessors\QuestionAccessor.cs" />
     <Compile Include="Accessors\UrlAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
@@ -210,16 +212,26 @@
     <Compile Include="Controllers\OrganizationController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\QuestionController.cs" />
+    <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\SurveyController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Controllers\UrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Helpers\SelectExtensions.cs" />
+    <Compile Include="Models\AnswerModel.cs" />
+    <Compile Include="Models\Enums\BootstrapGlyphs.cs" />
     <Compile Include="Models\Enums\OriginType.cs" />
+    <Compile Include="Models\Enums\QuestionType.cs" />
     <Compile Include="Models\Enums\UploadType.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\IndustryModel.cs" />
     <Compile Include="Models\Interfaces\ILongIdentifiable.cs" />
+    <Compile Include="Models\Interfaces\IOrigin.cs" />
+    <Compile Include="Models\LocalizedStringModel.cs" />
     <Compile Include="Models\LongModel.cs" />
+    <Compile Include="Models\Origin.cs" />
+    <Compile Include="Models\PaymentPlanModel.cs" />
+    <Compile Include="Models\ReviewModel.cs" />
     <Compile Include="Models\ViewModels\ImageUploadViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageUserViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionModalViewModel.cs" />
@@ -307,14 +319,19 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Startup.cs" />
+    <Compile Include="Utilities\Attributes\IconAttribute.cs" />
     <Compile Include="Utilities\DragDropUtility.cs" />
     <Compile Include="Utilities\Extensions\DictionaryExtensions.cs" />
     <Compile Include="Utilities\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Utilities\Extensions\EnumExtensions.cs" />
     <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
+    <Compile Include="Utilities\Extensions\OrganizationExtensions.cs" />
+    <Compile Include="Utilities\Extensions\OriginExtensions.cs" />
+    <Compile Include="Utilities\Extensions\QuestionModelExtensions.cs" />
     <Compile Include="Utilities\Extensions\SessionExtensions.cs" />
     <Compile Include="Utilities\Extensions\UserOrganizationExtensions.cs" />
     <Compile Include="Utilities\HibernateSession.cs" />
+    <Compile Include="Utilities\Extensions\LocalizationExtensions.cs" />
     <Compile Include="Utilities\PermissionsUtility.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
     <Compile Include="Utilities\ShortenerUtility.cs" />
@@ -398,11 +415,6 @@
     <Content Include="Views\Organization\ManageList.cshtml" />
     <Content Include="Views\Partial\_DragDropItem.cshtml" />
     <Content Include="Views\Payment\Index.cshtml" />
-    <Content Include="Views\Question\Create.cshtml" />
-    <Content Include="Views\Question\Delete.cshtml" />
-    <Content Include="Views\Question\Details.cshtml" />
-    <Content Include="Views\Question\Edit.cshtml" />
-    <Content Include="Views\Question\Index.cshtml" />
     <Content Include="Views\Home\Backend.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\DragDropViewModel.cshtml" />
     <Content Include="Views\Group\Details.cshtml" />
@@ -417,12 +429,13 @@
     <Content Include="Views\Shared\Partial\_QuestionTable.cshtml" />
     <Content Include="Views\User\AddModal.cshtml" />
     <Content Include="Views\Upload\Image.cshtml" />
+    <Content Include="Views\Question\Admin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="External\" />
-    <Folder Include="Utilities\Attributes\" />
     <Folder Include="Views\Img\" />
+    <Folder Include="Views\Review\" />
     <Folder Include="Views\Url\" />
   </ItemGroup>
   <ItemGroup>

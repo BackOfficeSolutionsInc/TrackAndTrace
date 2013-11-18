@@ -15,6 +15,7 @@ namespace RadialReview.Controllers
     public class OrganizationController : BaseController
     {
         private OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
+        private static PaymentAccessor _PaymentAccessor = new PaymentAccessor();
         private NexusAccessor _NexusAccessor = new NexusAccessor();
 
         //
@@ -33,13 +34,16 @@ namespace RadialReview.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(OrganizationModel organization)
+        public ActionResult Create(String name,Boolean managersCanEdit)
         {
             var user = GetUser();
-
-            _OrganizationAccessor.CreateOrganization(user, organization);
+            var basicPlan=_PaymentAccessor.BasicPaymentPlan();
+            var localizedName=new LocalizedStringModel(){Default=new LocalizedStringPairModel(name)};
+            var organization=_OrganizationAccessor.CreateOrganization(user, localizedName,managersCanEdit,basicPlan);
             return RedirectToAction("Manage", new { organizationId = organization.Id });
         }
+
+
 
         public ActionResult Join(String id)
         {

@@ -1,0 +1,62 @@
+﻿@model RadialReview.Models.QuestionModel
+
+@{
+    ViewBag.Title = "Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Admin</h2>
+
+@using (Html.BeginForm("Admin", "Question"))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal row">
+        <h4>QuestionModel</h4>
+        <hr />
+        @Html.ValidationSummary(true)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Id, new { @class = "control-label col-xs-2" })
+            <div class="col-xs-10">
+                @Html.TextBoxFor(model => model.Id, new { @class = "col-xs-10" })
+                @Html.ValidationMessageFor(model => model.Id)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Question, new { @class = "control-label col-xs-2" })
+            <div class="col-xs-10">
+                @Html.TextBoxFor(model => model.Question.Default.Value, new { @class = "col-xs-10" ,autocomplete="off"})
+                @Html.ValidationMessageFor(model => model.Question)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Category Id:", new { @class = "control-label col-xs-2" })
+            <div class="col-xs-10">
+                @Html.TextBoxFor(x => x.Category.Id, new { @class = "col-xs-10" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Origin:", new { @class = "control-label col-xs-2" })
+            <div class="col-xs-10">
+                <div class="col-xs-3 pull-left">
+                    @Html.EnumDropDownList("originType", (RadialReview.Models.Enums.OriginType)ViewBag.originType)
+                </div>
+                @Html.TextBox("originId", (long)ViewBag.originId, new { @class = "col-xs-6" })
+
+
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

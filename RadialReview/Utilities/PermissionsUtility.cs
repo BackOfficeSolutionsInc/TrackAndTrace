@@ -3,6 +3,7 @@ using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,9 +70,8 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin())
                 return this;
 
-            if (caller.AllSubordinates.Any(x => x.Id == groupId) && caller.IsManager()) //IsManager may be too much
+            if (caller.IsManager() && IsOwnedBelowOrEqual(caller,x=>x.ManagingGroups.Any(y=>y.Id==groupId)))
                 return this;
-            //Could do some cascading here if we want.
 
             throw new PermissionsException();
         }
@@ -89,16 +89,47 @@ namespace RadialReview.Utilities
                 return this;
             throw new PermissionsException();
         }
+        public PermissionsUtility EditQuestion(QuestionModel question)
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            var createdById=question.CreatedBy.Id;
+
+            if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == createdById))
+                return this;
+
+            throw new PermissionsException();
+        }
+        public PermissionsUtility EditOrigin(Origin origin)
+        {
+            return EditOrigin(origin.OriginType, origin.OriginId);
+        }
+
+        public PermissionsUtility EditOrigin(OriginType origin, long originId)
+        {
+            switch (origin)
+            {
+                case OriginType.User:           return EditUserOrganization(originId);
+                case OriginType.Group:          return EditGroup(originId);
+                case OriginType.Organization:   return EditOrganization(originId);
+                case OriginType.Industry:       return EditIndustry(originId);
+                case OriginType.Application:    return EditApplication(originId);
+                case OriginType.Invalid: throw new PermissionsException();
+                default: throw new PermissionsException();
+            }
+        }
 
         public PermissionsUtility ViewQuestion(QuestionModel question)
         {
             if (IsRadialAdmin())
                 return this;
+            
             switch (question.OriginType)
             {
                 case OriginType.User: if (!IsOwnedBelowOrEqual(caller,x => x.CustomQuestions.Any(y => y.Id == question.Id))) throw new PermissionsException(); break;
-                case OriginType.Group: if (!caller.ManagingGroups.Select(x => x.Id).Union(caller.Groups.Select(x => x.Id)).Any(x => question.Id == x)) throw new PermissionsException(); break;
-                case OriginType.Organization: if (caller.Organization.Id != question.ForOrganization.Id) throw new PermissionsException(); break;
+                case OriginType.Group: if (!IsOwnedBelowOrEqual(caller, x => x.Groups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)) || x.ManagingGroups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)))) throw new PermissionsException(); break;
+                case OriginType.Organization: if (caller.Organization.Id != question.OriginId) throw new PermissionsException(); break;
                 case OriginType.Industry: break;
                 case OriginType.Application: break;
                 case OriginType.Invalid: throw new PermissionsException();
@@ -209,7 +240,46 @@ namespace RadialReview.Utilities
             return false;
         }
 
+        protected bool IsOwnedBelowOrEqualOrganizational<T>(T start,Origin origin) where T : IOrigin
+        {
+            if (origin.AreEqual(start))
+                return true;
 
+            foreach(var sub in start.OwnsOrigins())
+            {
+                if (IsOwnedBelowOrEqualOrganizational(sub, origin))
+                    return true;
+            }
 
+            return false;
+        }
+        
+        public PermissionsUtility PairCategoryToQuestion(long categoryId, long questionId)
+        {
+            var category=session.Get<QuestionCategoryModel>(categoryId);
+            var question = session.Get<QuestionModel>(questionId);
+
+            //Cant attach questions to application categories
+            if (category.OriginType == OriginType.Application && !caller.IsRadialAdmin)
+                throw new PermissionsException();
+            //Belongs to the same organization
+            if (category.OriginType == OriginType.Organization && question.OriginType == OriginType.Organization && question.OriginId == category.OriginId)
+                return this;
+
+            //TODO any other special permissions here.
+
+            throw new PermissionsException();
+        }
+
+        public PermissionsUtility ViewCategory(long id)
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            var category=session.Get<QuestionCategoryModel>(id);
+            if (IsOwnedBelowOrEqualOrganizational(caller.Organization, category.GetOrigin()))
+                return this;
+            throw new PermissionsException();
+        }
     }
 }

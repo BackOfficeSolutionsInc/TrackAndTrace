@@ -62,12 +62,12 @@ namespace RadialReview.Accessors
                 }
             }
             //Send Email
-            var subject = String.Format(EmailStrings.JoinOrganizationUnderManager_Subject, organization.Name, ProductStrings.ProductName);
+            var subject = String.Format(EmailStrings.JoinOrganizationUnderManager_Subject, organization.Name.Translate(), ProductStrings.ProductName);
             //[OrganizationName,LinkUrl,LinkDisplay,ProductName]            
-            var url =  "Account/Login?message=Please%20login%20to%20join%20" + organization.Name + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
+            var url =  "Account/Login?message=Please%20login%20to%20join%20" + organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
             url = ProductStrings.BaseUrl + url;
             //var shorenedUrl = ProductStrings.BaseUrl + _UrlAccessor.RecordUrl(url, email);
-            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, organization.Name, url, url, ProductStrings.ProductName);
+            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, organization.Name.Translate(), url, url, ProductStrings.ProductName);
             subject = Regex.Replace(subject, @"[^A-Za-z0-9 \.\,&]", "");
             Emailer.SendEmail(email, subject, body);
             return nexusId.ToString();
