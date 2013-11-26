@@ -106,6 +106,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will send an e-mail to your {0} subordinates..
+        /// </summary>
+        public static string ThisWillSendAnEmailToSubordinates {
+            get {
+                return ResourceManager.GetString("ThisWillSendAnEmailToSubordinates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User.
         /// </summary>
         public static string User {

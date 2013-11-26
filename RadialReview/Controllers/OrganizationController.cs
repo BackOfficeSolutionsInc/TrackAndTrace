@@ -56,7 +56,7 @@ namespace RadialReview.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Account", new { returnUrl = "Organization/Join/" + id });
             try{
-                var userOrg = GetUserOrganization(orgId);
+                var userOrg = GetOneUserOrganization(orgId);
                 throw new RedirectException(ExceptionStrings.AlreadyMember);
             }
             catch (PermissionsException)
@@ -70,7 +70,7 @@ namespace RadialReview.Controllers
 
         public ActionResult ManageList()
         {
-            var userOrgs = GetUserOrganization();
+            var userOrgs = GetUserOrganizations();
             return View(userOrgs.Select(x => x.Organization).ToList());
         }
 
@@ -79,7 +79,7 @@ namespace RadialReview.Controllers
         {
             if (organizationId == null)
             {
-                var userOrgs = GetUserOrganization();
+                var userOrgs = GetUserOrganizations();
                 var managing = userOrgs.Where(x => x.IsManager());
                 var count = managing.Count();
                 if (count == 0)
@@ -91,11 +91,12 @@ namespace RadialReview.Controllers
             }
             else
             {
-                var userOrg=GetUserOrganization(organizationId.Value)
+                var userOrg = GetOneUserOrganization(organizationId.Value)
                     .Hydrate()
                     .ManagingGroups(questions:true)
                     .ManagingUsers(subordinates:true)
-                    .Organization(questions:true)
+                    .Organization(questions:true,reviews:true)
+                    .Reviews()
                     .Nexus()
                     .Execute();
 

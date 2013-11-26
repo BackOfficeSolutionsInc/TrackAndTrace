@@ -288,4 +288,58 @@
   <data name="numberOfQuestions" xml:space="preserve">
     <value># Questions</value>
   </data>
+  <data name="reviews" xml:space="preserve">
+    <value>Reviews</value>
+  </data>
+  <data name="completion" xml:space="preserve">
+    <value>Completion</value>
+  </data>
+  <data name="dateCreated" xml:space="preserve">
+    <value>Date created</value>
+  </data>
+  <data name="details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="due" xml:space="preserve">
+    <value>Due</value>
+  </data>
+  <data name="error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="review" xml:space="preserve">
+    <value>Review</value>
+  </data>
+  <data name="take" xml:space="preserve">
+    <value>Take</value>
+  </data>
+  <data name="hey" xml:space="preserve">
+    <value>Hey!</value>
+  </data>
+  <data name="remainingIsOptional" xml:space="preserve">
+    <value>Remaining questions are optional</value>
+  </data>
+  <data name="youveCompletedThisReview" xml:space="preserve">
+    <value>You've completed this review already</value>
+  </data>
+  <data name="done" xml:space="preserve">
+    <value>Done!</value>
+  </data>
+  <data name="max" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="min" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
 </root>

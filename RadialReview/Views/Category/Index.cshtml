@@ -30,7 +30,7 @@
 <table class="table">
     <tr>
         <th style="width:10px;">
-            @Html.DisplayNameFor(model => model.DeleteTime)
+            @RadialReview.Properties.DisplayNameStrings.active
         </th>
         <th style="">
             @Html.DisplayNameFor(model => model.Category)
@@ -51,7 +51,7 @@
             }
         </td>
         <td style="">
-            @Html.DisplayFor(modelItem => item.Category)
+            @item.Category.Translate()
         </td>
         <td style="">
             @Html.ActionLink("Edit", "Edit", new { id = item.Id })

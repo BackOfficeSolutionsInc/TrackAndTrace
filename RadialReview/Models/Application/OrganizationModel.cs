@@ -33,6 +33,9 @@ namespace RadialReview.Models
         public virtual IList<GroupModel> Groups { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual DateTime CreationTime { get; set; }
+
+        public virtual IList<ReviewsModel> Reviews { get; set; }
+
         public virtual OriginType GetOriginType()
         {
             return OriginType.Organization;
@@ -55,6 +58,7 @@ namespace RadialReview.Models
             Members = new List<UserOrganizationModel>();
             Industries = new List<IndustryModel>();
             QuestionCategories = new List<QuestionCategoryModel>();
+            Reviews = new List<ReviewsModel>();
         }
 
         public virtual List<IOrigin> OwnsOrigins()
@@ -65,7 +69,7 @@ namespace RadialReview.Models
             owns.AddRange(Groups.Cast<IOrigin>().ToList());
             owns.AddRange(Members.Cast<IOrigin>().ToList());
             owns.AddRange(Members.Cast<IOrigin>().ToList());
-
+            
             return owns;
         }
 
@@ -90,6 +94,8 @@ namespace RadialReview.Models
             References(x => x.Name).Not.LazyLoad().Cascade.SaveUpdate();
             References(x => x.PaymentPlan).Cascade.SaveUpdate();
 
+            HasMany(x => x.Reviews)
+                .Cascade.SaveUpdate();
             HasMany(x => x.Members)
                 .KeyColumn("Organization_Id")
                 .Inverse();

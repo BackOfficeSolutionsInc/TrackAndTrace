@@ -95,7 +95,7 @@ namespace RadialReview
             User.Groups = groups;
             return this;
         }
-
+        
         public UserHydration ManagingUsers(Boolean subordinates = false)
         {
             List<UserOrganizationModel> managing = new List<UserOrganizationModel>();
@@ -139,10 +139,11 @@ namespace RadialReview
         }
 
 
-        public UserHydration Organization(Boolean questions = false, Boolean memebers = false)
+        public UserHydration Organization(Boolean questions = false, Boolean memebers = false, Boolean reviews = false)
         {
             OrganizationModel org = null;
             List<QuestionModel> questionsResolved = null;
+            List<QuestionCategoryModel> categoriesResolved = null;
             using (var tx = Session.BeginTransaction())
             {
                 var uOrg = GetUnderlying();
@@ -156,16 +157,29 @@ namespace RadialReview
                         .List()
                         .ToList();
                     //orgQuery.Fetch(x => x.CustomQuestions).Eager.Future();
-                    orgQuery.Fetch(x => x.QuestionCategories).Eager.Future();
+                    var orgId=uOrg.Organization.Id;
+                    categoriesResolved=Session.QueryOver<QuestionCategoryModel>()
+                        .Where(x => x.OriginId == orgId && x.OriginType == OriginType.Organization)
+                        .Fetch(x=>x.Category).Eager
+                        .List().ToList();
+                    //orgQuery
+                   // orgQuery.Fetch(x => x.QuestionCategories).Eager.Future();
                 }
                 if (memebers)
                     orgQuery.Fetch(x => x.Members).Eager.Future();
+
+                if (reviews)
+                {
+                    orgQuery.Fetch(x => x.Reviews).Eager.Future();
+                }
 
                 org = orgQuery.SingleOrDefault();
             }
             User.Organization = org;
             if (questionsResolved != null)
                 User.Organization.CustomQuestions = questionsResolved;
+            if (categoriesResolved != null)
+                User.Organization.QuestionCategories = categoriesResolved;
             return this;
         }
         public UserHydration Nexus()
@@ -191,6 +205,25 @@ namespace RadialReview
         }
 
 
+        public UserHydration Reviews()
+        {
+            List<ReviewsModel> reviews = new List<ReviewsModel>();
+            using (var tx = Session.BeginTransaction())
+            {
+                var uOrg = GetUnderlying();
 
+                var uOrgId=uOrg.Id;
+
+                var query = Session.QueryOver<ReviewsModel>().Where(x => x.CreatedById == uOrgId).List().ToList();
+                reviews = query;
+                /*foreach (var g in uOrg.CreatedReviews)
+                {
+                    var nex = Session.Query<ReviewsModel>().Where(x => x.Id == g.Id).SingleOrDefault();
+                    reviews.Add(nex);
+                }*/
+            }
+            User.CreatedReviews = reviews;
+            return this;
+        }
     }
 }

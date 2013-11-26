@@ -1,0 +1,45 @@
+﻿@model RadialReview.Models.ViewModels.ReviewsListViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.AlertBoxDismissable((string)ViewBag.Message, "alert-info", RadialReview.Properties.DisplayNameStrings.hey)
+
+<h3>
+    @RadialReview.Properties.DisplayNameStrings.reviews
+</h3>
+
+
+<table class="table">
+    <tr>
+        <th>@RadialReview.Properties.DisplayNameStrings.name</th>
+        <th style="width: 100px; text-align: center">@RadialReview.Properties.DisplayNameStrings.due</th>
+        <th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>
+        <th style="width:10px;"></th>
+    </tr>
+    @foreach (var review in Model.Reviews)
+    {
+        <tr>
+            <td>@review.Name</td>
+            <td style="text-align: center">@review.DueDate.ToShortDateString()</td>
+            <td>
+                <div class="progress progress-striped" style="margin-top: 7px; margin-bottom: 0px;" title="@((int)review.Completion*100)%">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="@review.Completion" aria-valuemin="0" aria-valuemax="100" style="width: @((int)review.Completion * 100)%;">
+                        <span class="sr-only">@((int)review.Completion * 100)%</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                @if (review.FullyComplete)
+                {
+                    <div class="btn btn-default disabled fullWidth">@RadialReview.Properties.DisplayNameStrings.done</div>
+                }
+                else
+                {
+                    <a class="btn btn-primary fullWidth" href="@Url.Action("Take", new { id = review.Id})">@RadialReview.Properties.DisplayNameStrings.take</a>
+                }
+            </td>
+        </tr>
+    }
+</table>

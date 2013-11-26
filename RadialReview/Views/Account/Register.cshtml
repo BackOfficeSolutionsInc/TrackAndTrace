@@ -71,9 +71,6 @@
             filter: dropshadow(color=#888, offx=0, offy=0);
         }
     </style>
-
-
-
 }
 
 <div id="regTitle" class="visible-md visible-lg">Radial</div>
@@ -93,9 +90,15 @@
         @Html.ValidationSummary()
         <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl"/>
         <div class="form-group">
-            @Html.LabelFor(m => m.UserName, new { @class = "col-md-4 control-label"})
+            @Html.LabelFor(m => m.UserName, new { @class = "col-md-4 control-label" })
             <div class="col-md-8">
-                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control",placeholder=Html.DisplayNameFor(x=>x.UserName) })
+                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.UserName) })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email, new { @class = "col-md-4 control-label" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.Email) })
             </div>
         </div>
         <div class="form-group">

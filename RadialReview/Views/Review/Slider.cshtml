@@ -1,0 +1,68 @@
+﻿@model List<RadialReview.Models.AnswerModel>
+
+
+@using RadialReview.Models;
+@{
+    ViewBag.Title = RadialReview.Properties.DisplayNameStrings.review;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (var form = Html.BeginForm("Submit", "Review"))
+{ <div>
+        @foreach (var slider in Model.Where(x => x is SliderAnswer).Cast<SliderAnswer>())
+        {
+            <div>
+                <h4>@slider.Question.Question.Translate()</h4>
+                <div class="side">@RadialReview.Properties.DisplayNameStrings.min</div>
+                <input name="question_@slider.Id" type="text" class="sliderInput col-xs-8" value=""
+                       data-slider-min="0" data-slider-max="100" data-slider-step="1"
+                       data-slider-value="@((int)(slider.Percentage*100))" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
+                <div class="side">@RadialReview.Properties.DisplayNameStrings.max</div>
+            </div>
+        }
+        @foreach (var thumbs in Model.Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>())
+        {
+            <div>
+                <h4>@thumbs.Question.Question.Translate()</h4>
+
+                <input type="hidden" name="question_@thumbs.Id" id="question_@thumbs.Id" value="_@thumbs.Up" />
+                <div class="question_@thumbs.Id " onclick="Thumbs('question_@thumbs.Id')"><span class="glyphicon @(thumbs.Up ? "glyphicon-thumbs-down btn btn-danger" : "glyphicon-thumbs-up btn btn-success")"></span></div>
+            </div>
+        }
+    </div>
+    <br/>
+    <input type="button" class="btn btn-primary" value="@RadialReview.Properties.DisplayNameStrings.submit" />
+}
+
+@using (var styles = Html.BeginStyles())
+{
+    <style>
+        .side{
+            width:50px;
+            text-align:center;
+            display:inline-block;
+        }
+    </style>
+}
+
+
+@using(var scripts=Html.BeginScripts())
+{ 
+    <script>
+        $(function () {
+            $(".sliderInput").slider();
+        });
+
+        function Thumbs(id)
+        {
+            if($("#"+id).val()=="_True"){
+                $("#" + id).val("_False");
+                $("." + id).html("<span class='glyphicon glyphicon-thumbs-down btn btn-danger'></span>");
+            }else{
+                $("#"+id).val("_True");
+                $("." + id).html("<span class='glyphicon glyphicon-thumbs-up btn btn-success'></span>");
+            }
+        }
+    </script>
+}

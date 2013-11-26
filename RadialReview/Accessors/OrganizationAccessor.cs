@@ -38,6 +38,7 @@ namespace RadialReview.Accessors
                         User = user,
                         ManagerAtOrganization = true,
                         ManagingOrganization = true,
+                        EmailAtOrganization = user.Email,
                     };
 
                     //userOrgModel.ManagingOrganizations.Add(organization);

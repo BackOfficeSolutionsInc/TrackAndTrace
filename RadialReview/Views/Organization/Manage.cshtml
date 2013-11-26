@@ -31,6 +31,7 @@
     <li class="active"> <a data-toggle="" href="#users"     name="users">@RadialReview.Properties.DisplayNameStrings.users</a></li>
     <li>                <a data-toggle="" href="#groups"    name="groups">@RadialReview.Properties.DisplayNameStrings.groups</a></li>
     <li>                <a data-toggle="" href="#questions" name="questions">@RadialReview.Properties.DisplayNameStrings.questions</a></li>
+    <li>                <a data-toggle="" href="#reviews"   name="reviews">@RadialReview.Properties.DisplayNameStrings.reviews</a></li>
 </ul>
 
 <div class="tab-content">
@@ -41,7 +42,10 @@
        @Html.Partial("Partials/ManageGroups", Model)        
     </div>
     <div class="tab-pane" id="questions">
-       @Html.Partial("Partial/_QuestionTable", Model.OrganizationQuestions)
+        @Html.Partial("Partial/_QuestionTable", Model.OrganizationQuestions)
+    </div>
+    <div class="tab-pane" id="reviews">
+        @Html.Partial("Partials/ManageReviews", Model)
     </div>
 </div>
 

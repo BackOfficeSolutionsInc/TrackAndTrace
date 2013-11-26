@@ -22,7 +22,7 @@ namespace RadialReview.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ErrorMessageStrings {
+    public class ErrorMessageStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace RadialReview.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RadialReview.Properties.ErrorMessageStrings", typeof(ErrorMessageStrings).Assembly);
@@ -51,7 +51,7 @@ namespace RadialReview.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace RadialReview.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The {0} must be at least {2} characters long..
         /// </summary>
-        internal static string minCharLength {
+        public static string minCharLength {
             get {
                 return ResourceManager.GetString("minCharLength", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace RadialReview.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The new password and confirmation password do not match..
         /// </summary>
-        internal static string newPasswordMatch {
+        public static string newPasswordMatch {
             get {
                 return ResourceManager.GetString("newPasswordMatch", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace RadialReview.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Not attached.
         /// </summary>
-        internal static string notAttached {
+        public static string notAttached {
             get {
                 return ResourceManager.GetString("notAttached", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace RadialReview.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No user attached.
         /// </summary>
-        internal static string noUserAttached {
+        public static string noUserAttached {
             get {
                 return ResourceManager.GetString("noUserAttached", resourceCulture);
             }
@@ -99,9 +99,18 @@ namespace RadialReview.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The password and confirmation password do not match..
         /// </summary>
-        internal static string passwordMatch {
+        public static string passwordMatch {
             get {
                 return ResourceManager.GetString("passwordMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must supply all fields..
+        /// </summary>
+        public static string supplyAllFields {
+            get {
+                return ResourceManager.GetString("supplyAllFields", resourceCulture);
             }
         }
     }

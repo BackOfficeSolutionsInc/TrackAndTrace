@@ -23,6 +23,8 @@ namespace RadialReview.Controllers
                 .Organization(questions:true)
                 .Execute();
 
+
+
             EditableOrException(user);
 
             var categories = user.Organization.QuestionCategories;// _CategoryAccessor.GetForOrganization(user);
@@ -52,7 +54,7 @@ namespace RadialReview.Controllers
         // GET: /Category/Edit/5
         public ActionResult Edit(int id,long? organizationId)
         {
-            var user = GetOneUserOrganization(organizationId);
+            var user = GetOneUserOrganization(organizationId).Hydrate().Organization(questions:true).Execute();
             EditableOrException(user);
             var category=_CategoryAccessor.Get(user, id);
 
@@ -70,9 +72,9 @@ namespace RadialReview.Controllers
 
                 var user=GetOneUserOrganization(organizationId);
                 //EditableOrException(user);
-                var category=_CategoryAccessor.Get(user,id);
-
-                _CategoryAccessor.Edit(user, id,collection.GetOrigin(),collection.Category,collection.Active);
+                //var category=_CategoryAccessor.Get(user,id);
+                var origin = new Origin(collection.OriginType, collection.OriginId);
+                _CategoryAccessor.Edit(user, id, origin, collection.Category, collection.Active);
                 return RedirectToAction("Index");
             }
             catch

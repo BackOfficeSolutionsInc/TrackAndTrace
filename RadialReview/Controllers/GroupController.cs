@@ -35,7 +35,7 @@ namespace RadialReview.Controllers
 
         public ActionResult Create(long? organizationId)
         {
-            var orgUser = GetOneUserOrganization(organizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
+            var orgUser = GetOneUserOrganization(organizationId).Hydrate().ManagingGroups().ManagingUsers().Organization().Execute();
             organizationId = orgUser.Organization.Id;
 
             if (!orgUser.IsManagerCanEditOrganization())
@@ -55,6 +55,7 @@ namespace RadialReview.Controllers
             var orgUser = GetOneUserOrganization(organizationId)
                 .Hydrate()
                 .ManagingGroups()
+                .Organization()
                 .ManagingUsers(subordinates: true)
                 .Execute();
             //var orgUser=orgUsers.Where(x=>x.ManagingGroups.Any(y=>y.Id==id)).SingleOrDefault();
@@ -120,7 +121,7 @@ namespace RadialReview.Controllers
         [HttpPost]
         public ActionResult Edit(GroupViewModel model)
         {
-            var userOrg = GetUserOrganization(model.OrganizationId).Hydrate().ManagingGroups().ManagingUsers(subordinates:true).Execute();
+            var userOrg = GetOneUserOrganization(model.OrganizationId).Hydrate().Organization().ManagingGroups().ManagingUsers(subordinates: true).Execute();
 
             if (!userOrg.IsManagerCanEditOrganization())
                 throw new PermissionsException();

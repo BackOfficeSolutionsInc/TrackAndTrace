@@ -133,4 +133,7 @@
   <data name="passwordMatch" xml:space="preserve">
     <value>The password and confirmation password do not match.</value>
   </data>
+  <data name="supplyAllFields" xml:space="preserve">
+    <value>You must supply all fields.</value>
+  </data>
 </root>

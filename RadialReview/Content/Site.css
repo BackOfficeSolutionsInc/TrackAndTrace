@@ -126,6 +126,10 @@ html, body {
     width: 100%;
 }
 
+.bold{
+    font-weight:bold;
+}
+
 /*
 #footer{
 	text-align: center;

@@ -56,7 +56,9 @@ namespace RadialReview.Models
             Map(x => x.OriginType);
             Map(x => x.DeleteTime);
 
-            References(x => x.Category).Not.LazyLoad();
+            References(x => x.Category)
+                .Not.LazyLoad()
+                .Cascade.SaveUpdate();
 
             /*
             References(x => x.Organization)

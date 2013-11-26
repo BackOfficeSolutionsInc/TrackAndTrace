@@ -115,6 +115,24 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string close {
+            get {
+                return ResourceManager.GetString("close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completion.
+        /// </summary>
+        public static string completion {
+            get {
+                return ResourceManager.GetString("completion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm new password.
         /// </summary>
         public static string confirmNewPassword {
@@ -160,6 +178,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Date created.
+        /// </summary>
+        public static string dateCreated {
+            get {
+                return ResourceManager.GetString("dateCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default.
         /// </summary>
         public static string Default {
@@ -169,11 +196,38 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Details.
+        /// </summary>
+        public static string details {
+            get {
+                return ResourceManager.GetString("details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Directly managing.
         /// </summary>
         public static string directlyManaging {
             get {
                 return ResourceManager.GetString("directlyManaging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Done!.
+        /// </summary>
+        public static string done {
+            get {
+                return ResourceManager.GetString("done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Due.
+        /// </summary>
+        public static string due {
+            get {
+                return ResourceManager.GetString("due", resourceCulture);
             }
         }
         
@@ -210,6 +264,15 @@ namespace RadialReview.Properties {
         public static string enabled {
             get {
                 return ResourceManager.GetString("enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string error {
+            get {
+                return ResourceManager.GetString("error", resourceCulture);
             }
         }
         
@@ -264,6 +327,15 @@ namespace RadialReview.Properties {
         public static string groups {
             get {
                 return ResourceManager.GetString("groups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hey!.
+        /// </summary>
+        public static string hey {
+            get {
+                return ResourceManager.GetString("hey", resourceCulture);
             }
         }
         
@@ -358,11 +430,38 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Max.
+        /// </summary>
+        public static string max {
+            get {
+                return ResourceManager.GetString("max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Members.
         /// </summary>
         public static string members {
             get {
                 return ResourceManager.GetString("members", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Min.
+        /// </summary>
+        public static string min {
+            get {
+                return ResourceManager.GetString("min", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string name {
+            get {
+                return ResourceManager.GetString("name", resourceCulture);
             }
         }
         
@@ -399,6 +498,15 @@ namespace RadialReview.Properties {
         public static string numberOfQuestions {
             get {
                 return ResourceManager.GetString("numberOfQuestions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ok.
+        /// </summary>
+        public static string ok {
+            get {
+                return ResourceManager.GetString("ok", resourceCulture);
             }
         }
         
@@ -466,6 +574,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remaining questions are optional.
+        /// </summary>
+        public static string remainingIsOptional {
+            get {
+                return ResourceManager.GetString("remainingIsOptional", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remember me?.
         /// </summary>
         public static string rememberMe {
@@ -475,11 +592,47 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Review.
+        /// </summary>
+        public static string review {
+            get {
+                return ResourceManager.GetString("review", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reviews.
+        /// </summary>
+        public static string reviews {
+            get {
+                return ResourceManager.GetString("reviews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Slider.
         /// </summary>
         public static string slider {
             get {
                 return ResourceManager.GetString("slider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Submit.
+        /// </summary>
+        public static string submit {
+            get {
+                return ResourceManager.GetString("submit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Take.
+        /// </summary>
+        public static string take {
+            get {
+                return ResourceManager.GetString("take", resourceCulture);
             }
         }
         
@@ -570,6 +723,15 @@ namespace RadialReview.Properties {
         public static string you {
             get {
                 return ResourceManager.GetString("you", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve completed this review already.
+        /// </summary>
+        public static string youveCompletedThisReview {
+            get {
+                return ResourceManager.GetString("youveCompletedThisReview", resourceCulture);
             }
         }
     }

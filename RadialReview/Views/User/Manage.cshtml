@@ -144,7 +144,7 @@
             <td class="small-centered">@(q.QuestionType.GetIcon())</td>
             <td>@(q.Question)</td>
             <td class="small-centered">@(q.Category.Category)</td>
-            <td class="small-centered">@(q.OriginType.GetDisplayName()</td>
+            <td class="small-centered">@(q.OriginType.GetDisplayName())</td>
             <td class="small-centered"></td>
             <td class="small-centered"><button class="btn  btn-primary fullWidth" 
                 onclick="showModal('@RadialReview.Properties.DisplayNameStrings.editQuestion (@q.OriginType.GetDisplayName())','/Question/Modal?id=@q.Id&organizationId=@Model.OrganizationId&origin=@q.OriginType&originId=@q.OriginId','/Question/Edit')"

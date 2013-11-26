@@ -9,5 +9,6 @@ namespace RadialReview.Models.Enums
     {
         None = 0,
         JoinOrganizationUnderManager = 1, //[organizationId,EmailAddress]
+        TakeReview = 2, //[]
     }
 }

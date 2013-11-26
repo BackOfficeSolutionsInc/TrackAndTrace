@@ -28,10 +28,14 @@ namespace RadialReview
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
-                      "~/Scripts/respond.js"));
+                      "~/Scripts/respond.js",
+                      "~/Scripts/bootstrap-slider.js",
+                      "~/Scripts/bootstrap-datepicker.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
+                      "~/Content/datepicker.css",
                       "~/Content/bootstrap.css",
+                      "~/Content/slider.css",
                       "~/Content/site.css"));
         }
     }

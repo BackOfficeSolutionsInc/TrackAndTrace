@@ -22,6 +22,8 @@ namespace RadialReview.Models.ViewModels
         public OrganizationModel Organization { get; set; }
         public List<QuestionCategoryModel> Categories { get; set; }
 
+        public List<ReviewsViewModel> ManagingReviews {get;set;}
+
         public QuestionsViewModel OrganizationQuestions { get; set; }
 
         public ManageViewModel(UserOrganizationModel orgUser)
@@ -38,6 +40,9 @@ namespace RadialReview.Models.ViewModels
             Categories = orgUser.Organization.QuestionCategories.ToListAlive();
             OrganizationQuestions = new QuestionsViewModel(Organization.Id, OriginType.Organization, Organization.Id, Organization.CustomQuestions);
             AllSubordinates = orgUser.AllSubordinates;
+
+            //TODO calculate completion
+            ManagingReviews = orgUser.CreatedReviews.Select(x=>new ReviewsViewModel(){Completion=0.1m,Review=x}).ToList();
         }
 
     }

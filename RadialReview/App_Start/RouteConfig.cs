@@ -26,6 +26,12 @@ namespace RadialReview
             );
 
             routes.MapRoute(
+                name: "nexus",
+                url: "n/{id}",
+                defaults: new { controller = "Nexus", action = "Index", id = "" }
+            );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }

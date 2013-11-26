@@ -87,9 +87,24 @@ namespace RadialReview.Accessors
                     tx.Commit();
                     s.Flush();
                 }
+            }            
+        }
+
+        public NexusModel Put(NexusModel model)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    s.Save(model);
+                    tx.Commit();
+                    s.Flush();
+                }
             }
+            return model;
 
         }
+
 
         public NexusModel Get(String id)
         {

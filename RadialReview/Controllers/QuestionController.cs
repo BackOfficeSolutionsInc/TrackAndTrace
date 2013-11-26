@@ -43,7 +43,8 @@ namespace RadialReview.Controllers
                 var origin=new Origin(originType.Parse<OriginType>(), forOriginId);
                 _QuestionAccessor.EditQuestion(caller, questionId, origin:      origin, 
                                                                    question:    q.Question,
-                                                                   categoryId:  categoryId);
+                                                                   categoryId:  categoryId,
+                                                                   questionType: q.QuestionType);
 
                 return Json(JsonObject.Success);
             }
@@ -81,7 +82,7 @@ namespace RadialReview.Controllers
                 {
                     q = _QuestionAccessor.GetQuestion(caller, id);
                     questionViewModel = new QuestionModalViewModel(caller.Organization, q.OriginId, q.OriginType, false, q);
-                    throw new NotImplementedException();
+                    //throw new NotImplementedException();
                 }
                 else
                 {

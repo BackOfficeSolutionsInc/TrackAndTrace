@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Exceptions;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Properties;
 using System;
@@ -19,7 +20,7 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var user = GetUserOrganization(organizationId).Hydrate().Organization().Execute();
+                var user = GetOneUserOrganization(organizationId).Hydrate().Organization().Execute();
                 var org = user.Organization;
                 if (org == null)
                     throw new PermissionsException();
@@ -44,6 +45,19 @@ namespace RadialReview.Controllers
 
         public ActionResult Index(String id)
         {
+            if (id == null)
+                throw new PermissionsException();
+            var nexus=NexusAccessor.Get(id);
+            switch(nexus.ActionCode)
+            {
+                case NexusActions.JoinOrganizationUnderManager: return RedirectToAction("Join", "Organization", new { id = id });
+                case NexusActions.TakeReview: {
+                    SignOut();
+                    NexusAccessor.Execute(nexus);
+                    return RedirectToAction("Index", "Review");
+                };
+            }
+
             return View();
         }
     }

@@ -11,6 +11,8 @@ namespace RadialReview.Accessors
 {
     public class CategoryAccessor : BaseAccessor
     {
+        protected static OriginAccessor _OriginAccessor = new OriginAccessor();
+
 
         public QuestionCategoryModel Edit(UserOrganizationModel user,long categoryId,   Origin origin=null,
                                                                                         LocalizedStringModel categoryName=null,
@@ -35,7 +37,7 @@ namespace RadialReview.Accessors
                     }
 
                     if (origin != null){
-                        permissions.EditOrigin(origin);
+                        permissions.EditOrigin(origin);                        
                         category.OriginType = origin.OriginType;
                         category.OriginId = origin.OriginId;
                     }

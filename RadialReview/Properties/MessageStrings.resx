@@ -139,4 +139,8 @@
   <data name="Warning" xml:space="preserve">
     <value>Warning!</value>
   </data>
+  <data name="ThisWillSendAnEmailToSubordinates" xml:space="preserve">
+    <value>This will send an e-mail to your {0} subordinates.</value>
+    <comment>[numberOfSubordinates]</comment>
+  </data>
 </root>

@@ -86,7 +86,7 @@ namespace RadialReview.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new UserModel() { UserName = model.UserName, FirstName=model.FirstName,LastName=model.LastName };
+                var user = new UserModel() { UserName = model.UserName, FirstName=model.FirstName,LastName=model.LastName,Email=model.Email };
                 var resultx = UserManager.CreateAsync(user, model.Password);
                 var result = await resultx;
                 if (result.Succeeded)

@@ -66,27 +66,27 @@
         {
             <script>
                 $(window).bind('beforeunload', function (event) {
-                    if ($(".unsaved").length>0)
+                    if ($(".unsaved").length > 0)
                         return "@RadialReview.Properties.DisplayNameStrings.unsavedItems";
                     return;
                 });
 
                 $(".modifiable").change(modify);
-                $(".modifiable").bind('input',modify);
+                $(".modifiable").bind('input', modify);
 
-                function modify()
-                {
+                function modify() {
                     $(this).addClass("unsaved");
                     $(".saveButton").addClass("unsaved");
                 }
 
-                function clearUnsaved()
-                {
+                function clearUnsaved() {
                     $(".unsaved").removeClass("unsaved");
                 }
 
 
-                function showModal(title, pullUrl, pushUrl) {
+                function showModal(title, pullUrl, pushUrl, callback, validation) {
+                    $("#modalMessage").html("");
+                    $("#modalMessage").addClass("hidden");
                     $.ajax({
                         url: pullUrl,
                         type: "GET",
@@ -112,6 +112,21 @@
                             $("#modalForm").submit(function (e) {
                                 e.preventDefault();
                                 var serialized = $("#modalForm").serialize();
+
+                                if (validation) {
+                                    var message = eval(validation + '()');
+                                    if (message && message != true) {
+                                        if (message == false) {
+                                            $("#modalMessage").html("@RadialReview.Properties.DisplayNameStrings.error");
+                                        }
+                                        else {
+                                            $("#modalMessage").html(message);
+                                        }
+                                        $("#modalMessage").removeClass("hidden");
+                                        return;
+                                    }
+                                }
+
                                 $.ajax({
                                     url: pushUrl,
                                     type: "POST",
@@ -143,7 +158,11 @@
                             $('#modal').modal('show');
                             var count = 0;
                             setTimeout(function () {
-                                $('#modal input:not([type=hidden]):first').focus();
+                                if (callback) {
+                                    eval(callback + '()');
+                                } else {
+                                    $('#modal input:not([type=hidden]):first').focus();
+                                }
                             }, 550);
                         }
 
@@ -151,18 +170,17 @@
                     });
                 }
 
-                function showAlert(message, alertType,preface) {
+                function showAlert(message, alertType, preface) {
                     if (alertType === undefined)
                         alertType = "alert-danger";
                     if (preface === undefined)
                         preface = "@RadialReview.Properties.MessageStrings.Warning";
-                    var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>"+preface+"</strong> <span class=\"message\">" + message + "</span></div>");
+                    var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>" + preface + "</strong> <span class=\"message\">" + message + "</span></div>");
                     $("#alerts").prepend(alert);
                     setTimeout(function () { alert.removeClass("start"); }, 1);
                 }
 
-                function showJsonAlert(data,showSuccess)
-                {
+                function showJsonAlert(data, showSuccess) {
                     var message = data.Message;
                     if (message === undefined)
                         message = "";
@@ -173,7 +191,7 @@
                         console.log(data.Trace);
                         console.log(data.Message);
                         showAlert(message);
-                    } else if(showSuccess){
+                    } else if (showSuccess) {
                         showAlert(message, "alert-success", "@RadialReview.Properties.MessageStrings.Success");
                     }
                 }

@@ -15,7 +15,7 @@ namespace RadialReview.Models
         public virtual long Id { get; set; }
         public virtual DateTime DateCreated { get; set; }
         public virtual LocalizedStringModel Question { get; set; }
-        public virtual UserOrganizationModel CreatedBy { get; set; }
+        public virtual long CreatedById { get; set; }
         public virtual QuestionCategoryModel Category { get; set; }
         public virtual IList<QuestionKeyValues> KeyValues { get; set; }
         public virtual IList<LongModel> DisabledFor { get; set; }
@@ -36,6 +36,7 @@ namespace RadialReview.Models
             DateCreated = DateTime.UtcNow;
             KeyValues = new List<QuestionKeyValues>();
             DisabledFor = new List<LongModel>();
+            Question = new LocalizedStringModel();
         }
 
     }
@@ -51,7 +52,9 @@ namespace RadialReview.Models
             Map(x => x.OriginId);
             Map(x => x.OriginType);
 
-            References(x => x.Question).Not.LazyLoad();
+            References(x => x.Question)
+                .Not.LazyLoad()
+                .Cascade.SaveUpdate();
 
             /*
             References(x => x.ForOrganization)
@@ -76,9 +79,9 @@ namespace RadialReview.Models
                 .Cascade.SaveUpdate();
              */
 
-            References(x => x.CreatedBy)
-                .Cascade.SaveUpdate()
-                .Column("CreatedQuestionsId");
+            Map(x => x.CreatedById);
+               // .Cascade.SaveUpdate()
+               // .Column("CreatedQuestionsId");
             References(x => x.Category)
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();

@@ -25,6 +25,7 @@ namespace RadialReview.Models
         //public virtual String IdMapping { get; set; }
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
+        public virtual string Email { get; set; }
         public virtual ImageModel Image { get; set; }
         /*
         public ICollection<UserLogin> Logins { get; set; }
@@ -60,6 +61,7 @@ namespace RadialReview.Models
             Map(x => x.FirstName).Not.LazyLoad();
             Map(x => x.LastName).Not.LazyLoad();
             Map(x => x.PasswordHash);
+            Map(x => x.Email);
             Map(x => x.SecurityStamp);
             Map(x => x.DeleteTime);
             References(x => x.Image).Not.LazyLoad();

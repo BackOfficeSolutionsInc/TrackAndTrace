@@ -193,6 +193,7 @@
     <Compile Include="Accessors\OriginAccessor.cs" />
     <Compile Include="Accessors\PaymentAccessor.cs" />
     <Compile Include="Accessors\QuestionAccessor.cs" />
+    <Compile Include="Accessors\ReviewAccessor.cs" />
     <Compile Include="Accessors\UrlAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -218,24 +219,28 @@
     <Compile Include="Controllers\UrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
-    <Compile Include="Models\AnswerModel.cs" />
+    <Compile Include="Models\Reviews\AnswerModel.cs" />
     <Compile Include="Models\Enums\BootstrapGlyphs.cs" />
     <Compile Include="Models\Enums\OriginType.cs" />
     <Compile Include="Models\Enums\QuestionType.cs" />
     <Compile Include="Models\Enums\UploadType.cs" />
-    <Compile Include="Models\ImageModel.cs" />
-    <Compile Include="Models\IndustryModel.cs" />
+    <Compile Include="Models\Application\ImageModel.cs" />
+    <Compile Include="Models\Application\IndustryModel.cs" />
     <Compile Include="Models\Interfaces\ILongIdentifiable.cs" />
     <Compile Include="Models\Interfaces\IOrigin.cs" />
-    <Compile Include="Models\LocalizedStringModel.cs" />
-    <Compile Include="Models\LongModel.cs" />
-    <Compile Include="Models\Origin.cs" />
-    <Compile Include="Models\PaymentPlanModel.cs" />
-    <Compile Include="Models\ReviewModel.cs" />
+    <Compile Include="Models\Application\LocalizedStringModel.cs" />
+    <Compile Include="Models\Application\LongModel.cs" />
+    <Compile Include="Models\Application\Origin.cs" />
+    <Compile Include="Models\Payments\PaymentPlanModel.cs" />
+    <Compile Include="Models\Reviews\ReviewModel.cs" />
+    <Compile Include="Models\Reviews\ReviewsModel.cs" />
     <Compile Include="Models\ViewModels\ImageUploadViewModel.cs" />
+    <Compile Include="Models\ViewModels\IssueReviewViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageUserViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionModalViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionsViewModel.cs" />
+    <Compile Include="Models\ViewModels\ReviewsListViewModel.cs" />
+    <Compile Include="Models\ViewModels\ReviewsViewModel.cs" />
     <Compile Include="Properties\ErrorMessageStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -261,31 +266,30 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MessageStrings.resx</DependentUpon>
     </Compile>
-    <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\ApplicationWideModel.cs" />
+    <Compile Include="Models\ViewModels\AccountViewModels.cs" />
+    <Compile Include="Models\Application\ApplicationWideModel.cs" />
     <Compile Include="Models\Attributes\IndexAttribute.cs" />
-    <Compile Include="Models\EmailModel.cs" />
+    <Compile Include="Models\Application\EmailModel.cs" />
     <Compile Include="Models\Enums\Currency.cs" />
     <Compile Include="Models\Enums\NexusActions.cs" />
-    <Compile Include="Models\GroupModels.cs" />
+    <Compile Include="Models\Application\GroupModels.cs" />
     <Compile Include="Models\Interfaces\ICustomQuestions.cs" />
-    <Compile Include="Models\InvoiceItemModel.cs" />
-    <Compile Include="Models\InvoiceModel.cs" />
+    <Compile Include="Models\Payments\InvoiceItemModel.cs" />
+    <Compile Include="Models\Payments\InvoiceModel.cs" />
     <Compile Include="Models\Json\JsonObject.cs" />
-    <Compile Include="Models\NexusModels.cs" />
+    <Compile Include="Models\Application\NexusModels.cs" />
     <Compile Include="Models\NHibernateUtility\GuidStringGenerator.cs" />
-    <Compile Include="Models\OrganizationModel.cs" />
-    <Compile Include="Models\PaymentModel.cs" />
+    <Compile Include="Models\Application\OrganizationModel.cs" />
+    <Compile Include="Models\Payments\PaymentModel.cs" />
     <Compile Include="Models\QuestionModels\QuestionCategoryModel.cs" />
     <Compile Include="Models\QuestionModels\QuestionKeyValues.cs" />
     <Compile Include="Models\QuestionModels\QuestionModel.cs" />
-    <Compile Include="Models\UrlModel.cs" />
-    <Compile Include="Models\UserLogin.cs" />
+    <Compile Include="Models\Application\UrlModel.cs" />
+    <Compile Include="Models\Application\UserLogin.cs" />
     <Compile Include="Models\UserModels\UserClaim.cs" />
     <Compile Include="Models\UserModels\UserModel.cs" />
     <Compile Include="Models\UserModels\UserOrganizationModel.cs" />
     <Compile Include="Models\UserModels\UserRoleModel.cs" />
-    <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\ViewModels\DragDropViewModel.cs" />
     <Compile Include="Models\ViewModels\GroupViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageViewModel.cs" />
@@ -332,6 +336,7 @@
     <Compile Include="Utilities\Extensions\UserOrganizationExtensions.cs" />
     <Compile Include="Utilities\HibernateSession.cs" />
     <Compile Include="Utilities\Extensions\LocalizationExtensions.cs" />
+    <Compile Include="Utilities\HttpContextUtility.cs" />
     <Compile Include="Utilities\PermissionsUtility.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
     <Compile Include="Utilities\ShortenerUtility.cs" />
@@ -342,9 +347,11 @@
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\datepicker.css" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\img\footer.png" />
     <Content Include="Content\img\little_pluses.png" />
+    <Content Include="Content\slider.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -353,6 +360,8 @@
     <Content Include="img\placeholder.png" />
     <Content Include="Content\img\titlebarTiles.png" />
     <Content Include="Scripts\animations\circles.js" />
+    <Content Include="Scripts\bootstrap-datepicker.js" />
+    <Content Include="Scripts\bootstrap-slider.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
@@ -365,6 +374,9 @@
     </Content>
     <Content Include="x86\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\bootstrap.min.js.map">
+      <DependentUpon>bootstrap.js</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -430,12 +442,17 @@
     <Content Include="Views\User\AddModal.cshtml" />
     <Content Include="Views\Upload\Image.cshtml" />
     <Content Include="Views\Question\Admin.cshtml" />
+    <Content Include="Views\Organization\Partials\ManageReviews.cshtml" />
+    <Content Include="Views\Review\Create.cshtml" />
+    <Content Include="Views\Review\Index.cshtml" />
+    <Content Include="Views\Review\Take.cshtml" />
+    <Content Include="Views\Review\Slider.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\LocalizedStringModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="External\" />
     <Folder Include="Views\Img\" />
-    <Folder Include="Views\Review\" />
     <Folder Include="Views\Url\" />
   </ItemGroup>
   <ItemGroup>
@@ -447,7 +464,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\ErrorMessageStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessageStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\DisplayNameStrings.resx">

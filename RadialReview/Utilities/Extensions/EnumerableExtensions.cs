@@ -59,6 +59,16 @@ namespace RadialReview
         }
             
 
+        public static IEnumerable<TSource> UnionBy<TSource,TProp>(this IEnumerable<TSource> first,Func<TSource,TProp> keySelector,params IEnumerable<TSource>[] remaining)
+        {
+            var enumerables=first;
+            foreach(var r in remaining)
+            {
+                first = first.Concat(r);
+            }
+            return first.GroupBy(keySelector).Select(x => x.First());
+        }
+
         /*public static Boolean Contains<T>(this IEnumerable<T> enumerable, Func<T, Boolean> contains)
         {
             return enumerable.FirstOrDefault(contains) != null;

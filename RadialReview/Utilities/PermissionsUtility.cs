@@ -11,7 +11,7 @@ using System.Web;
 
 namespace RadialReview.Utilities
 {
-    [Obsolete("Not really obsolete. I just want this to stick out.", false)]
+    //[Obsolete("Not really obsolete. I just want this to stick out.", false)]
     public class PermissionsUtility
     {
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -94,7 +94,7 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin())
                 return this;
 
-            var createdById=question.CreatedBy.Id;
+            var createdById=question.CreatedById;
 
             if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == createdById))
                 return this;
@@ -142,6 +142,17 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin())
                 return this;
             if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
+                return this;
+            throw new PermissionsException();
+        }
+
+        [Obsolete("Confirm logic",false)]
+        public PermissionsUtility ManagesUserOrganization(long userOrganizationId)
+        {
+            if (IsRadialAdmin())
+                return this;
+            //Confirm this is correct. Do you want children to also be managers?
+            if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
                 return this;
             throw new PermissionsException();
         }
@@ -256,7 +267,13 @@ namespace RadialReview.Utilities
         
         public PermissionsUtility PairCategoryToQuestion(long categoryId, long questionId)
         {
+            if (IsRadialAdmin())
+                return this;
+
             var category=session.Get<QuestionCategoryModel>(categoryId);
+            if (questionId == 0 && category.OriginType == OriginType.Organization)
+                return this;
+
             var question = session.Get<QuestionModel>(questionId);
 
             //Cant attach questions to application categories
@@ -277,8 +294,20 @@ namespace RadialReview.Utilities
                 return this;
 
             var category=session.Get<QuestionCategoryModel>(id);
-            if (IsOwnedBelowOrEqualOrganizational(caller.Organization, category.GetOrigin()))
+            if (IsOwnedBelowOrEqualOrganizational(caller.Organization, new Origin(category.OriginType,category.OriginId)))
                 return this;
+            throw new PermissionsException();
+        }
+
+        public PermissionsUtility EditReview()
+        {                    
+            //TODO more permissions here?
+            if (IsRadialAdmin())
+                return this;
+
+            if (caller.ManagingOrganization)
+                return this;
+
             throw new PermissionsException();
         }
     }

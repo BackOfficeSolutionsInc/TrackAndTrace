@@ -17,11 +17,22 @@ namespace RadialReview.Models.Json
 
     public class JsonObject
     {
+        public object Object { get; set; }
         public String Message { get; set; }
         public String Trace { get; set; }
         public bool Error { get; set; }
 
-        public static JsonObject Success= new JsonObject(false, "Success");
+        public readonly static JsonObject Success= new JsonObject(false, "Success");
+
+        protected JsonObject()
+        {
+
+        }
+
+        public static JsonObject Create(object obj)
+        {
+            return new JsonObject() { Object = obj,Error=false, Message="Success"};
+        }
 
         public JsonObject(Boolean error,String message)
         {

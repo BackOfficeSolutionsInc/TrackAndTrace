@@ -12,5 +12,10 @@ namespace RadialReview
         {
             return obj != null ? f(obj) : default(R);
         }
+
+        public static int ToInt(this Boolean b)
+        {
+            return b ? 1 : 0;
+        }
     }
 }

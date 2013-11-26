@@ -12,6 +12,7 @@ namespace System.Web
 {
     public static class HtmlExtensions
     {
+        
         public static HtmlString Badge<T>(this HtmlHelper<T> html, Func<T, int> count)
         {
             var c = count(html.ViewData.Model);
@@ -19,16 +20,29 @@ namespace System.Web
                 return new HtmlString(@"<span class=""badge"">" + c + "</span>");
             return new HtmlString("");
         }
+        
+        public static HtmlString ShowModal(this HtmlHelper html,String title, String pullUrl,String pushUrl,String callbackFunction=null,String preSubmitCheck=null)
+        {
+            if (preSubmitCheck != null)
+                return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction +"','"+ preSubmitCheck+ "')");
+            else if (callbackFunction != null)
+                return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction + "')");
+            else
+                return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "')");
+        }
 
         public static HtmlString AlertBoxDismissableJavascript(this HtmlHelper html, String messageVariableName, String alertType = "alert-danger")
         {
             return new HtmlString("\"<div class=\\\"alert " + alertType + " alert-dismissable\\\"><button type=\\\"button\\\" class=\\\"close\\\" data-dismiss=\\\"alert\\\" aria-hidden=\\\"true\\\">&times;</button><strong>"+MessageStrings.Warning+"</strong> <span class=\\\"message\\\">\" + " + messageVariableName + " + \"</span></div>\"");
 
         }
-        public static HtmlString AlertBoxDismissable(this HtmlHelper html, String message, String alertType = "alert-danger")
+        public static HtmlString AlertBoxDismissable(this HtmlHelper html, String message, String alertType = "alert-danger",String alertMessage=null)
         {
+            if (String.IsNullOrWhiteSpace(alertMessage))
+                alertMessage = MessageStrings.Warning;
+
             if (!String.IsNullOrWhiteSpace(message))
-                return new HtmlString("<div class=\"alert " + alertType + " alert-dismissable\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>" + MessageStrings.Warning + "</strong> <span class=\"message\">" + message + "</span></div>");
+                return new HtmlString("<div class=\"alert " + alertType + " alert-dismissable\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>" + alertMessage + "</strong> <span class=\"message\">" + message + "</span></div>");
             return new HtmlString("");
         }
 

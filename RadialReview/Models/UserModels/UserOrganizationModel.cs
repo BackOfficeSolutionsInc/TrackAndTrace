@@ -33,6 +33,8 @@ namespace RadialReview.Models
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
         public virtual IList<NexusModel> CreatedNexuses { get; set; }
         public virtual IList<QuestionModel> CreatedQuestions { get; set; }
+        public virtual IList<ReviewModel> Reviews { get; set; }
+        public virtual List<ReviewsModel> CreatedReviews { get; set; }
 
         public virtual DateTime? DeleteTime { get; set; }
         public virtual OriginType GetOriginType()
@@ -79,8 +81,10 @@ namespace RadialReview.Models
             CreatedNexuses = new List<NexusModel>();
             CreatedQuestions = new List<QuestionModel>();
             AttachTime = DateTime.UtcNow;
-            AllSubordinates = new List<UserOrganizationModel>();
+            //AllSubordinates = new List<UserOrganizationModel>();
             Properties = new Dictionary<string, List<String>>();
+            //CreatedReviews = new List<ReviewsModel>();
+            Reviews = new List<ReviewModel>();
         }
 
         public override string ToString()
@@ -122,6 +126,11 @@ namespace RadialReview.Models
             Map(x => x.DeleteTime);
             Map(x => x.EmailAtOrganization);
 
+            //Reviews
+            HasMany(x => x.Reviews).Cascade.SaveUpdate();
+            //HasMany(x => x.CreatedReviews).Cascade.SaveUpdate();
+
+
             References(x => x.User)
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();
@@ -153,6 +162,8 @@ namespace RadialReview.Models
             HasManyToMany(x => x.CreatedNexuses)
                 .Cascade.SaveUpdate()
                 .Table("UserOrganizationNexuses");
+
+
         }
     }
 }

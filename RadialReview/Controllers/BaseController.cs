@@ -30,32 +30,42 @@ namespace RadialReview.Controllers
 
         protected UserModel GetUser()
         {
-            var id = User.Identity.GetUserId();
-            return _UserAccessor.GetUser(id);
+            return HttpContextUtility.Get(HttpContext, "User", x =>
+            {
+                var id = User.Identity.GetUserId();
+                return _UserAccessor.GetUser(id);
+            }, false);
         }
-        protected List<UserOrganizationModel> GetUserOrganization(Boolean full = false)
+        protected List<UserOrganizationModel> GetUserOrganizations(Boolean full = false)
         {
             var id = User.Identity.GetUserId();
             return _UserAccessor.GetUserOrganizations(id, full);
         }
 
-        protected UserOrganizationModel GetUserOrganization(long organizationId, Boolean full = false)
+        private UserOrganizationModel GetUserOrganization(long organizationId, Boolean full = false)
         {
-            var id = User.Identity.GetUserId();
-            return _UserAccessor.GetUserOrganizations(id, organizationId, full);
+            return HttpContextUtility.Get(HttpContext,"UserOrganization",x=>{
+                var id = User.Identity.GetUserId();
+                return _UserAccessor.GetUserOrganizations(id, organizationId, full);
+            },x=>x.Organization.Id!=organizationId);
         }
 
         protected UserOrganizationModel GetOneUserOrganization(long? organizationId, Boolean full = false)
         {
             long sessionOrgId = 0;
-            if (organizationId==null && long.TryParse((string)Session["organizationId"],out sessionOrgId))
+            if (organizationId!=null)
             {
-                organizationId = sessionOrgId;
+                Session["organizationId"] = organizationId.Value;
+            }
+
+            if (organizationId==null && Session["organizationId"]!=null )
+            {
+                organizationId = (long)Session["organizationId"];
             }
 
             if (organizationId == null)
             {
-                var found = GetUserOrganization(full);
+                var found = GetUserOrganizations(full);
                 if (found.Count == 0)
                     throw new PermissionsException();
                 else if (found.Count == 1)
@@ -75,6 +85,11 @@ namespace RadialReview.Controllers
             return _UserAccessor.GetUserOrganizations(user, organizationId);
         }*/
 
+        protected void SignOut()
+        {
+            AuthenticationManager.SignOut();
+        }
+
         protected override void OnException(ExceptionContext filterContext)
         {
             if (filterContext.ExceptionHandled)
@@ -82,7 +97,7 @@ namespace RadialReview.Controllers
 
             if (filterContext.Exception is LoginException)
             {
-                AuthenticationManager.SignOut();
+                SignOut();
                 var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                 if (redirectUrl == null)
                     redirectUrl = Request.Url.PathAndQuery;
@@ -137,7 +152,7 @@ namespace RadialReview.Controllers
 
             if (IsLoggedIn())
             {
-                var userOrgs= GetUserOrganization();
+                var userOrgs= GetUserOrganizations();
                 var oneUser = userOrgs.FirstOrDefault();
                 filterContext.Controller.ViewBag.UserName = MessageStrings.User;
                 filterContext.Controller.ViewBag.IsManager = false;
@@ -152,6 +167,8 @@ namespace RadialReview.Controllers
                     var user = GetUser();
                     filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
                 }
+
+                ViewBag.OrganizationId = Session["OrganizationId"];
             }
             base.OnActionExecuting(filterContext);
         }

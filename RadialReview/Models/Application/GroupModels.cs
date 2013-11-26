@@ -47,12 +47,12 @@ namespace RadialReview.Models
 
         public virtual List<IOrigin> OwnsOrigins()
         {
-            throw new NotImplementedException();
+            return new List<IOrigin>();
         }
 
         public virtual List<IOrigin> OwnedByOrigins()
         {
-            throw new NotImplementedException();
+            return new List<IOrigin>();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using NHibernate.Criterion;
+﻿using NHibernate;
+using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
@@ -73,26 +74,151 @@ namespace RadialReview.Accessors
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="caller"></param>
+        /// <param name="forUser"></param>
+        /// <returns></returns>
+        public ReviewModel GenerateReviewForUser(UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var questions = GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
+
+                    var reviewModel = new ReviewModel()
+                    {
+                        ForUserId = forUser.Id,
+                        ForReviewsId=reviewContainer.Id,
+                        DueDate=reviewContainer.DueDate,
+                        Name=reviewContainer.ReviewName,                        
+                    };
+
+                    s.Save(reviewModel);
+                    foreach (var q in questions)
+                    {
+                        switch (q.QuestionType)
+                        {
+                            case QuestionType.RelativeComparison:   GenerateRelativeComparisonAnswers(s,caller, forUser, q, reviewModel); break;
+                            case QuestionType.Slider:               GenerateSliderAnswers(s,caller, forUser, q, reviewModel); break;
+                            case QuestionType.Thumbs:               GenerateThumbsAnswers(s,caller, forUser, q, reviewModel); break;
+                            case QuestionType.Feedback:             GenerateFeedbackAnswers(s,caller, forUser, q, reviewModel); break;
+                            default: throw new ArgumentException("Unrecognized questionType(" + q.QuestionType + ")");
+                        }
+                    }
+                    s.SaveOrUpdate(reviewModel);
+                    tx.Commit();
+                    s.Flush();
+
+                    return reviewModel;
+                }
+            }
+        }
+
+
+
+        private void GenerateSliderAnswers(ISession session,UserOrganizationModel caller, UserOrganizationModel forUser, QuestionModel question, ReviewModel review)
+        {
+
+            var slider=new SliderAnswer()
+            {
+                Complete = false,
+                Percentage = 0,
+                Question = question,
+                Required = true,
+                ForReviewId = review.Id
+            };
+            session.Save(slider);
+
+        }
+        private void GenerateFeedbackAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, QuestionModel question, ReviewModel review)
+        {
+            var feedback = new FeedbackAnswer()
+            {
+                Complete = false,
+                Feedback = null,
+                Question = question,
+                Required = true,
+                ForReviewId = review.Id
+            };
+            session.Save(feedback);
+
+        }
+
+        private void GenerateThumbsAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, QuestionModel question, ReviewModel review)
+        {
+            var thumbs = new ThumbsAnswer()
+            {
+                Complete = false,
+                Up = false,
+                Question = question,
+                Required = true,
+                ForReviewId = review.Id
+            };
+            session.Save(thumbs);
+
+        }
+
+        private void GenerateRelativeComparisonAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, QuestionModel question, ReviewModel review)
+        {
+            var peers = forUser.ManagedBy.SelectMany(x => x.ManagingUsers).ToList();
+            var managers = forUser.ManagedBy.ToList();
+            var managing = forUser.ManagingUsers.ToList();
+
+            var union = peers.UnionBy(x => x.Id, managers, managing).ToList();
+
+            var len = union.Count();
+            for (int i = 0; i < len; i++)
+            {
+                for (int j = i + 1; j < len - 1; j++)
+                {
+                    var relComp=new RelativeComparisonAnswer()
+                    {
+                        Required = false,
+                        Question = question,
+                        Complete = false,
+                        First = union[i],
+                        Second = union[j],
+                        ChoiceId = -1,
+                        ForReviewId=review.Id
+                    };
+                    session.Save(relComp);
+                }
+            }
+
+        }
+
+        private List<QuestionModel> GetQuestionsForUser(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser,List<UserOrganizationModel> allSubordinates)
+        {
+            caller = session.Get<UserOrganizationModel>(caller.Id);
+            if (!allSubordinates.Any(x => x.Id == forUser.Id))
+                throw new PermissionsException();
+            forUser = session.Get<UserOrganizationModel>(forUser.Id);
+            List<QuestionModel> questions = new List<QuestionModel>();
+            //Self Questions
+            questions.AddRange(forUser.CustomQuestions);
+            //Group Questions
+            questions.AddRange(forUser.Groups.SelectMany(x => x.CustomQuestions));
+            //Organization Questions
+            var orgId=forUser.Organization.Id;
+            var orgQuestions = session.QueryOver<QuestionModel>().Where(x => x.OriginId == orgId && x.OriginType == OriginType.Organization).List().ToList();
+            questions.AddRange(orgQuestions);
+            //Application Questions
+            var applicationQuestions = session.QueryOver<ApplicationWideModel>().List().SelectMany(x => x.CustomQuestions).ToList();
+            questions.AddRange(applicationQuestions);
+            return questions;
+        }
+
         public List<QuestionModel> GetQuestionsForUser(UserOrganizationModel caller, UserOrganizationModel forUser)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    if (!caller.AllSubordinatesAndSelf().Any(x => x.Id == forUser.Id))
-                        throw new PermissionsException();
-                    forUser = s.Get<UserOrganizationModel>(forUser.Id);
-                    List<QuestionModel> questions = new List<QuestionModel>();
-                    //Self Questions
-                    questions.AddRange(forUser.CustomQuestions);
-                    //Group Questions
-                    questions.AddRange(forUser.Groups.SelectMany(x => x.CustomQuestions));
-                    //Organization Questions
-                    questions.AddRange(forUser.Organization.CustomQuestions);
-                    //Application Questions
-                    var applicationQuestions = s.QueryOver<ApplicationWideModel>().List().SelectMany(x => x.CustomQuestions).ToList();
-                    questions.AddRange(applicationQuestions);
-                    return questions;
+
+                    return GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
                 }
             }
         }
@@ -158,10 +284,11 @@ namespace RadialReview.Accessors
             }
         }
 
-        public QuestionModel EditQuestion(UserOrganizationModel caller, long questionId,Origin origin=null,
-                                                                                        LocalizedStringModel question=null,
-                                                                                        long? categoryId=null,
-                                                                                        DateTime? deleteTime=null)
+        public QuestionModel EditQuestion(UserOrganizationModel caller, long questionId, Origin origin = null,
+                                                                                        LocalizedStringModel question = null,
+                                                                                        long? categoryId = null,
+                                                                                        DateTime? deleteTime = null,
+                                                                                        QuestionType? questionType = null)
         {
             QuestionModel q;
             using (var s = HibernateSession.GetCurrentSession())
@@ -169,49 +296,57 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     caller = s.Get<UserOrganizationModel>(caller.Id);
-                    q = s.Get<QuestionModel>(questionId);
 
-                    var permissionUtility=PermissionsUtility.Create(s, caller);
+                    var permissionUtility = PermissionsUtility.Create(s, caller);
+                    q = new QuestionModel();
 
-                    if (q.Id == 0) //Creating
+                    if (questionId == 0) //Creating
                     {
                         q.DateCreated = DateTime.UtcNow;
-                        q.CreatedBy = caller;
+                        q.CreatedById = caller.Id;
                     }
                     else
                     {
+                        q = s.Get<QuestionModel>(questionId);
                         permissionUtility.EditQuestion(q);
                     }
 
                     /*if (question.CreatedBy.Id == caller.Id)
                         question.CreatedBy = caller;*/
-     //Edit Origin
-                    if (origin!=null)
+                    //Edit Origin
+                    if (origin != null)
                     {
                         permissionUtility.EditOrigin(origin);
-                        q.OriginId=origin.OriginId;
+                        q.OriginId = origin.OriginId;
                         q.OriginType = origin.OriginType;
                     }
-     //Edit Question
-                    if (question!=null)
+                    //Edit Question
+                    if (question != null)
                     {
-                        q.Question = question;
+                        q.Question.UpdateDefault(question.Default.Value);
+                        //q.Question = s.Get<LocalizedStringModel>(question.Id);
                     }
-     //Edit CategoryId
-                    if (categoryId!=null )
+                    //Edit CategoryId
+                    if (categoryId != null)
                     {
-                        if(categoryId==0)
+                        if (categoryId == 0)
                             throw new PermissionsException();
-                        permissionUtility.PairCategoryToQuestion(categoryId.Value,questionId);
-                        var category= s.Get<QuestionCategoryModel>(categoryId);
-                        q.Category=category;
-                    }             
-     //Edit DeleteTime
-                    if(deleteTime!=null)
+                        permissionUtility.PairCategoryToQuestion(categoryId.Value, questionId);
+                        var category = s.Get<QuestionCategoryModel>(categoryId);
+                        q.Category = category;
+                    }
+                    //Edit DeleteTime
+                    if (deleteTime != null)
                     {
                         q.DeleteTime = deleteTime.Value;
                     }
-                    s.SaveOrUpdate(question);
+                    //Edit questionType
+                    if(questionType!=null)
+                    {
+                        q.QuestionType = questionType.Value;
+                    }
+
+                    s.SaveOrUpdate(q);
                     tx.Commit();
                     s.Flush();
                 }
@@ -225,7 +360,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var question=s.Get<QuestionModel>(id);
+                    var question = s.Get<QuestionModel>(id);
                     PermissionsUtility.Create(s, caller).ViewQuestion(question);
                     return question;
                 }

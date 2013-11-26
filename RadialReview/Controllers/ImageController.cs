@@ -21,7 +21,6 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var user = GetOneUserOrganization(organizationId);
                 var imagePath = "";
                 if (id == "userplaceholder"){
                     imagePath = Server.MapPath("~/"+ConstantStrings.ImageUserPlaceholder);
@@ -31,6 +30,7 @@ namespace RadialReview.Controllers
                     imagePath = Server.MapPath("~/" + ConstantStrings.ImagePlaceholder);
 
                 }else{
+                    var user = GetOneUserOrganization(organizationId);
                     imagePath = _ImageAccessor.GetImagePath(user, Server, id);
                 }
 

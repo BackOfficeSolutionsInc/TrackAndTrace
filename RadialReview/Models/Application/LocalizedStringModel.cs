@@ -53,7 +53,13 @@ namespace RadialReview.Models
 
         public LocalizedStringModel()
         {
+            Default = new LocalizedStringPairModel();
             Localizations = new List<LocalizedStringPairModel>();
+        }
+
+        public override string ToString()
+        {
+            return this.Translate();
         }
     }
 
