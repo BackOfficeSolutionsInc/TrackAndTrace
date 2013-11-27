@@ -2,6 +2,7 @@
 using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.AccountabilityGroupModels;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using System;
@@ -25,11 +26,11 @@ namespace RadialReview.Utilities
             this.caller = caller;
         }
 
-        public static PermissionsUtility Create(ISession session,UserOrganizationModel caller)
+        public static PermissionsUtility Create(ISession session, UserOrganizationModel caller)
         {
-            var attached=caller;
-            if(!session.Contains(caller))
-                attached=session.Get<UserOrganizationModel>(caller.Id);
+            var attached = caller;
+            if (!session.Contains(caller))
+                attached = session.Get<UserOrganizationModel>(caller.Id);
             return new PermissionsUtility(session, attached);
         }
 
@@ -56,7 +57,7 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin())
                 return this;
 
-            if (caller.IsManager() && IsOwnedBelowOrEqual(caller,x=>x.Id==userId))
+            if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userId))
                 return this;
             //caller.AllSubordinates.Any(x => x.Id == userId) && caller.IsManager()) //IsManager may be too much
             //return this;
@@ -70,7 +71,7 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin())
                 return this;
 
-            if (caller.IsManager() && IsOwnedBelowOrEqual(caller,x=>x.ManagingGroups.Any(y=>y.Id==groupId)))
+            if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.ManagingGroups.Any(y => y.Id == groupId)))
                 return this;
 
             throw new PermissionsException();
@@ -94,7 +95,7 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin())
                 return this;
 
-            var createdById=question.CreatedById;
+            var createdById = question.CreatedById;
 
             if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == createdById))
                 return this;
@@ -110,11 +111,11 @@ namespace RadialReview.Utilities
         {
             switch (origin)
             {
-                case OriginType.User:           return EditUserOrganization(originId);
-                case OriginType.Group:          return EditGroup(originId);
-                case OriginType.Organization:   return EditOrganization(originId);
-                case OriginType.Industry:       return EditIndustry(originId);
-                case OriginType.Application:    return EditApplication(originId);
+                case OriginType.User: return EditUserOrganization(originId);
+                case OriginType.Group: return EditGroup(originId);
+                case OriginType.Organization: return EditOrganization(originId);
+                case OriginType.Industry: return EditIndustry(originId);
+                case OriginType.Application: return EditApplication(originId);
                 case OriginType.Invalid: throw new PermissionsException();
                 default: throw new PermissionsException();
             }
@@ -124,10 +125,10 @@ namespace RadialReview.Utilities
         {
             if (IsRadialAdmin())
                 return this;
-            
+
             switch (question.OriginType)
             {
-                case OriginType.User: if (!IsOwnedBelowOrEqual(caller,x => x.CustomQuestions.Any(y => y.Id == question.Id))) throw new PermissionsException(); break;
+                case OriginType.User: if (!IsOwnedBelowOrEqual(caller, x => x.CustomQuestions.Any(y => y.Id == question.Id))) throw new PermissionsException(); break;
                 case OriginType.Group: if (!IsOwnedBelowOrEqual(caller, x => x.Groups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)) || x.ManagingGroups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)))) throw new PermissionsException(); break;
                 case OriginType.Organization: if (caller.Organization.Id != question.OriginId) throw new PermissionsException(); break;
                 case OriginType.Industry: break;
@@ -146,7 +147,7 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }
 
-        [Obsolete("Confirm logic",false)]
+        [Obsolete("Confirm logic", false)]
         public PermissionsUtility ManagesUserOrganization(long userOrganizationId)
         {
             if (IsRadialAdmin())
@@ -175,7 +176,7 @@ namespace RadialReview.Utilities
         {
             if (IsRadialAdmin())
                 return this;
-            if (caller.Groups.Any(x=>x.Id==groupId))
+            if (caller.Groups.Any(x => x.Id == groupId))
                 return this;
             if (IsOwnedBelowOrEqual(caller, x => x.ManagingGroups.Any(y => y.Id == groupId)))
                 return this;
@@ -216,7 +217,7 @@ namespace RadialReview.Utilities
 
         public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)
         {
-            if(IsOwnedBelowOrEqual(caller,visiblility))
+            if (IsOwnedBelowOrEqual(caller, visiblility))
                 return this;
             throw new PermissionsException();
         }
@@ -227,7 +228,7 @@ namespace RadialReview.Utilities
             return false;
         }
 
-        protected bool IsOwnedBelowOrEqual(UserOrganizationModel caller,Predicate<UserOrganizationModel> visibility)
+        protected bool IsOwnedBelowOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility)
         {
             if (visibility(caller))
                 return true;
@@ -245,18 +246,18 @@ namespace RadialReview.Utilities
                 return true;
             foreach (var subordinate in caller.ManagedBy)
             {
-                if (IsOwnedAboveOrEqual(subordinate,visibility))
+                if (IsOwnedAboveOrEqual(subordinate, visibility))
                     return true;
             }
             return false;
         }
 
-        protected bool IsOwnedBelowOrEqualOrganizational<T>(T start,Origin origin) where T : IOrigin
+        protected bool IsOwnedBelowOrEqualOrganizational<T>(T start, Origin origin) where T : IOrigin
         {
             if (origin.AreEqual(start))
                 return true;
 
-            foreach(var sub in start.OwnsOrigins())
+            foreach (var sub in start.OwnsOrigins())
             {
                 if (IsOwnedBelowOrEqualOrganizational(sub, origin))
                     return true;
@@ -264,13 +265,13 @@ namespace RadialReview.Utilities
 
             return false;
         }
-        
+
         public PermissionsUtility PairCategoryToQuestion(long categoryId, long questionId)
         {
             if (IsRadialAdmin())
                 return this;
 
-            var category=session.Get<QuestionCategoryModel>(categoryId);
+            var category = session.Get<QuestionCategoryModel>(categoryId);
             if (questionId == 0 && category.OriginType == OriginType.Organization)
                 return this;
 
@@ -293,20 +294,62 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin())
                 return this;
 
-            var category=session.Get<QuestionCategoryModel>(id);
-            if (IsOwnedBelowOrEqualOrganizational(caller.Organization, new Origin(category.OriginType,category.OriginId)))
+            var category = session.Get<QuestionCategoryModel>(id);
+            if (IsOwnedBelowOrEqualOrganizational(caller.Organization, new Origin(category.OriginType, category.OriginId)))
                 return this;
             throw new PermissionsException();
         }
 
         public PermissionsUtility EditReview()
-        {                    
+        {
             //TODO more permissions here?
             if (IsRadialAdmin())
                 return this;
 
             if (caller.ManagingOrganization)
                 return this;
+
+            throw new PermissionsException();
+        }
+
+        public PermissionsUtility EditReview(long reviewId)
+        {
+            //TODO more permissions here?
+            if (IsRadialAdmin())
+                return this;
+            if (session.Get<ReviewModel>(reviewId).ForUserId == caller.Id)
+                return this;
+
+            throw new PermissionsException();
+        }
+
+        public PermissionsUtility ViewTeam(TeamModel team)
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            if (!team.Secret && team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
+                return this;
+
+            if (team.Secret && (team.CreatedBy == caller.Id || team.Members.Any(x => x.Id == caller.Id)))
+                return this;
+
+            throw new PermissionsException();
+        }
+
+        public PermissionsUtility EditTeam(TeamModel team)
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            if ( caller.IsManager() || !team.OnlyManagersEdit)
+            {
+                if (!team.Secret && team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
+                    return this;
+
+                if (team.Secret && (team.CreatedBy == caller.Id || team.Members.Any(x => x.Id == caller.Id)))
+                    return this;
+            }
 
             throw new PermissionsException();
         }

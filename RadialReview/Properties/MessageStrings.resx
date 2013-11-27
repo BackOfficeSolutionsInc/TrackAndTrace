@@ -143,4 +143,8 @@
     <value>This will send an e-mail to your {0} subordinates.</value>
     <comment>[numberOfSubordinates]</comment>
   </data>
+  <data name="helloUser" xml:space="preserve">
+    <value>Hello {0}!</value>
+    <comment>[Users name]</comment>
+  </data>
 </root>

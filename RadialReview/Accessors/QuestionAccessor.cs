@@ -87,7 +87,8 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var questions = GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
-
+                    forUser = s.Get<UserOrganizationModel>(forUser.Id);
+                    
                     var reviewModel = new ReviewModel()
                     {
                         ForUserId = forUser.Id,
@@ -152,7 +153,7 @@ namespace RadialReview.Accessors
             var thumbs = new ThumbsAnswer()
             {
                 Complete = false,
-                Up = false,
+                Thumbs = ThumbsType.None,
                 Question = question,
                 Required = true,
                 ForReviewId = review.Id
@@ -163,16 +164,19 @@ namespace RadialReview.Accessors
 
         private void GenerateRelativeComparisonAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, QuestionModel question, ReviewModel review)
         {
-            var peers = forUser.ManagedBy.SelectMany(x => x.ManagingUsers).ToList();
-            var managers = forUser.ManagedBy.ToList();
-            var managing = forUser.ManagingUsers.ToList();
+            var peers = forUser.ManagedBy.SelectMany(x => x.ManagingUsers);
+            var managers = forUser.ManagedBy;
+            var managing = forUser.ManagingUsers;
 
-            var union = peers.UnionBy(x => x.Id, managers, managing).ToList();
+            var groupMembers = forUser.Groups.SelectMany(x => x.GroupUsers);
+
+            var union = peers.UnionBy(x => x.Id, managers, managing, groupMembers).ToList();
 
             var len = union.Count();
-            for (int i = 0; i < len; i++)
+            List<Tuple<UserOrganizationModel, UserOrganizationModel>> items = new List<Tuple<UserOrganizationModel, UserOrganizationModel>>();
+            for (int i = 0; i < len- 1; i++)
             {
-                for (int j = i + 1; j < len - 1; j++)
+                for (int j = i + 1; j < len ; j++)
                 {
                     var relComp=new RelativeComparisonAnswer()
                     {
@@ -181,9 +185,10 @@ namespace RadialReview.Accessors
                         Complete = false,
                         First = union[i],
                         Second = union[j],
-                        ChoiceId = -1,
+                        Choice = RelativeComparisonType.Skip,
                         ForReviewId=review.Id
                     };
+                    items.Add(Tuple.Create(union[i],union[j]));
                     session.Save(relComp);
                 }
             }

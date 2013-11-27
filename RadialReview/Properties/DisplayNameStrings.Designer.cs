@@ -61,6 +61,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        public static string about {
+            get {
+                return ResourceManager.GetString("about", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Active.
         /// </summary>
         public static string active {
@@ -286,6 +295,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Finish.
+        /// </summary>
+        public static string finish {
+            get {
+                return ResourceManager.GetString("finish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to First name.
         /// </summary>
         public static string firstName {
@@ -399,6 +417,15 @@ namespace RadialReview.Properties {
         public static string lastName {
             get {
                 return ResourceManager.GetString("lastName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log in.
+        /// </summary>
+        public static string login {
+            get {
+                return ResourceManager.GetString("login", resourceCulture);
             }
         }
         
@@ -529,6 +556,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Organization questions.
+        /// </summary>
+        public static string organizationQuestions {
+            get {
+                return ResourceManager.GetString("organizationQuestions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password.
         /// </summary>
         public static string password {
@@ -565,6 +601,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Register.
+        /// </summary>
+        public static string register {
+            get {
+                return ResourceManager.GetString("register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Relative comparison.
         /// </summary>
         public static string relativeComparison {
@@ -579,6 +624,15 @@ namespace RadialReview.Properties {
         public static string remainingIsOptional {
             get {
                 return ResourceManager.GetString("remainingIsOptional", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some required questions are still unanswered.
+        /// </summary>
+        public static string remainingQuestions {
+            get {
+                return ResourceManager.GetString("remainingQuestions", resourceCulture);
             }
         }
         
@@ -606,6 +660,15 @@ namespace RadialReview.Properties {
         public static string reviews {
             get {
                 return ResourceManager.GetString("reviews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip.
+        /// </summary>
+        public static string skip {
+            get {
+                return ResourceManager.GetString("skip", resourceCulture);
             }
         }
         
@@ -727,7 +790,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You&apos;ve completed this review already.
+        ///   Looks up a localized string similar to Looks like you&apos;ve completed this review.
         /// </summary>
         public static string youveCompletedThisReview {
             get {

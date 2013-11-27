@@ -328,7 +328,7 @@
     <value>Remaining questions are optional</value>
   </data>
   <data name="youveCompletedThisReview" xml:space="preserve">
-    <value>You've completed this review already</value>
+    <value>Looks like you've completed this review</value>
   </data>
   <data name="done" xml:space="preserve">
     <value>Done!</value>
@@ -341,5 +341,26 @@
   </data>
   <data name="submit" xml:space="preserve">
     <value>Submit</value>
+  </data>
+  <data name="about" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="login" xml:space="preserve">
+    <value>Log in</value>
+  </data>
+  <data name="register" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="remainingQuestions" xml:space="preserve">
+    <value>Some required questions are still unanswered</value>
+  </data>
+  <data name="finish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="skip" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="organizationQuestions" xml:space="preserve">
+    <value>Organization questions</value>
   </data>
 </root>

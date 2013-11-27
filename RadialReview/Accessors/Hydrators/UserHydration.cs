@@ -139,7 +139,7 @@ namespace RadialReview
         }
 
 
-        public UserHydration Organization(Boolean questions = false, Boolean memebers = false, Boolean reviews = false)
+        public UserHydration Organization(Boolean questions = false, Boolean memebers = false/*, Boolean reviews = false*/)
         {
             OrganizationModel org = null;
             List<QuestionModel> questionsResolved = null;
@@ -168,10 +168,11 @@ namespace RadialReview
                 if (memebers)
                     orgQuery.Fetch(x => x.Members).Eager.Future();
 
-                if (reviews)
+                /*if (reviews)
                 {
                     orgQuery.Fetch(x => x.Reviews).Eager.Future();
-                }
+
+                }*/
 
                 org = orgQuery.SingleOrDefault();
             }
@@ -180,6 +181,17 @@ namespace RadialReview
                 User.Organization.CustomQuestions = questionsResolved;
             if (categoriesResolved != null)
                 User.Organization.QuestionCategories = categoriesResolved;
+            /*if(reviews)
+            {
+                using(var tx=Session.BeginTransaction())
+                {
+                    foreach(var r in org.Reviews)
+                    {
+                        r.Reviews=Session.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == r.Id).List().ToList();
+                    }
+                }
+            }*/
+
             return this;
         }
         public UserHydration Nexus()
@@ -204,8 +216,7 @@ namespace RadialReview
             return User;
         }
 
-
-        public UserHydration Reviews()
+        public UserHydration Reviews(bool answers=false)
         {
             List<ReviewsModel> reviews = new List<ReviewsModel>();
             using (var tx = Session.BeginTransaction())
@@ -216,6 +227,20 @@ namespace RadialReview
 
                 var query = Session.QueryOver<ReviewsModel>().Where(x => x.CreatedById == uOrgId).List().ToList();
                 reviews = query;
+                foreach(var rs in reviews)
+                {
+                    var reviewList=Session.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == rs.Id).List().ToList();
+                    rs.Reviews = reviewList;
+                    if (answers)
+                    {
+                        foreach (var r in reviewList)
+                        {
+                            var ans = Session.QueryOver<AnswerModel>().Where(x => x.ForReviewId == r.Id).List().ToList();
+                            r.Answers = ans;
+                        }
+                    }
+                }
+
                 /*foreach (var g in uOrg.CreatedReviews)
                 {
                     var nex = Session.Query<ReviewsModel>().Where(x => x.Id == g.Id).SingleOrDefault();

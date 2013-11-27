@@ -19,6 +19,27 @@ namespace RadialReview.Models
         /// </summary>
         public virtual List<ReviewModel> Reviews { get; set; }
 
+        public virtual decimal? GetCompletion()
+        {
+            if (Reviews == null)
+                return null;
+            decimal count = 0;
+            decimal sum = 0;
+            foreach (var r in Reviews)
+            {
+                var c = r.GetCompletion();
+                if (c!=null)
+                {
+                    count++;
+                    sum += Math.Min(1m,c.Value);
+                }
+            }
+            if (count == 0)
+                return 0;
+            return sum / count;
+
+        }
+
         public ReviewsModel()
         {
             Reviews = null;

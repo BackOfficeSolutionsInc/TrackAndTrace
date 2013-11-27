@@ -29,8 +29,16 @@ html, body {
     transition: all .25s ease;
 }
 
-.addButton{
-    width:100%;
+.alignRight {
+    text-align: right;
+}
+
+.alignCenter {
+    text-align: center;
+}
+
+.addButton {
+    width: 100%;
 }
 
 .btn-default {
@@ -126,9 +134,25 @@ html, body {
     width: 100%;
 }
 
-.bold{
-    font-weight:bold;
+.bold {
+    font-weight: bold;
 }
+
+.noOpacity{
+    opacity:0;
+}
+
+.startHidden {
+    opacity: .1;
+    -moz-transition: opacity .5s ease;
+    -o-transition: opacity .5s ease;
+    -webkit-transition: opacity .5s ease;
+    transition: opacity .5s ease;
+}
+
+    .startHidden.unhide {
+        opacity: 1 ;
+    }
 
 /*
 #footer{
@@ -289,14 +313,14 @@ html, body {
     -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-align:justify;
+    text-align: justify;
 }
 
 
 .dragableDragDropItem.unattached {
     background-color: rgba(31, 31, 78, 0.12);
 }
- 
+
 .userImage {
     /*background-image: linear-gradient(bottom, rgb(205, 235, 255) 24%, rgb(157, 198, 255) 100%);*/
     /*background-image: -o-linear-gradient(bottom, rgb(205, 235, 255) 24%, rgb(157, 198, 255) 100%);*/

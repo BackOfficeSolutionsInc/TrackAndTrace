@@ -95,8 +95,8 @@ namespace RadialReview.Controllers
                     .Hydrate()
                     .ManagingGroups(questions:true)
                     .ManagingUsers(subordinates:true)
-                    .Organization(questions:true,reviews:true)
-                    .Reviews()
+                    .Organization(questions:true)
+                    .Reviews(answers:true)
                     .Nexus()
                     .Execute();
 

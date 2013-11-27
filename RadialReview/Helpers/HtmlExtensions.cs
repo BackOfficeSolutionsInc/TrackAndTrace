@@ -36,8 +36,10 @@ namespace System.Web
             return new HtmlString("\"<div class=\\\"alert " + alertType + " alert-dismissable\\\"><button type=\\\"button\\\" class=\\\"close\\\" data-dismiss=\\\"alert\\\" aria-hidden=\\\"true\\\">&times;</button><strong>"+MessageStrings.Warning+"</strong> <span class=\\\"message\\\">\" + " + messageVariableName + " + \"</span></div>\"");
 
         }
-        public static HtmlString AlertBoxDismissable(this HtmlHelper html, String message, String alertType = "alert-danger",String alertMessage=null)
+        public static HtmlString AlertBoxDismissable(this HtmlHelper html, String message, String alertType = null,String alertMessage=null)
         {
+            if (String.IsNullOrWhiteSpace(alertType))
+                alertType = "alert-danger";
             if (String.IsNullOrWhiteSpace(alertMessage))
                 alertMessage = MessageStrings.Warning;
 

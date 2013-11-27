@@ -1,0 +1,36 @@
+﻿@model List<RadialReview.Models.FeedbackAnswer>
+@{
+    ViewBag.Title = "Feedback";
+    Layout = "~/Views/Shared/_ReviewLayout.cshtml";
+}
+
+
+<div class="startHiddenGroup">
+    @foreach (var f in Model)
+    {
+        <div class="startHidden row">
+            <div class="col-md-6 alignRight startHidden">
+                @if (f.Required)
+                {
+                    <div class="pull-left star @((ViewBag.Incomplete != null && !f.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
+                }
+                <h4>@f.Question.Question.Translate()</h4>
+            </div>
+            <div class="col-md-6 alignRight startHidden">
+                <textarea class="feedback" name="question_@(RadialReview.Models.Enums.QuestionType.Feedback)_@f.Id">@f.Feedback</textarea>
+            </div>
+        </div>
+        <hr />
+    }
+</div>
+
+@using (var s = Html.BeginStyles())
+{
+    <style>
+        .feedback {
+            width: 100%;
+            height: 200px;
+            resize: vertical;
+        }
+    </style>
+}

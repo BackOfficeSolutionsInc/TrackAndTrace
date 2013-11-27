@@ -31,16 +31,16 @@ namespace RadialReview.Models
     {
         public virtual UserOrganizationModel First { get;set;}
         public virtual UserOrganizationModel Second { get; set; }
-        public virtual long ChoiceId { get;set; }
+        public virtual RelativeComparisonType Choice { get;set; }
     }
 
     public class SliderAnswer : AnswerModel
     {
-        public virtual decimal Percentage { get; set; }
+        public virtual decimal? Percentage { get; set; }
     }
     public class ThumbsAnswer : AnswerModel
     {
-        public virtual bool Up { get; set; }
+        public virtual ThumbsType Thumbs { get; set; }
     }
     #endregion
 
@@ -69,7 +69,7 @@ namespace RadialReview.Models
     {
         public ThumbAnswerMap()
         {
-            Map(x => x.Up);
+            Map(x => x.Thumbs);
         }
     }
     public class SliderAnswerMap : SubclassMap<SliderAnswer>
@@ -83,9 +83,9 @@ namespace RadialReview.Models
     {
         public RelativeComparisonAnswerMap()
         {
-            Map(x => x.ChoiceId);
-            References(x => x.First);
-            References(x => x.Second);
+            Map(x => x.Choice);
+            References(x => x.First).Not.LazyLoad();
+            References(x => x.Second).Not.LazyLoad();
         }
     }
     #endregion

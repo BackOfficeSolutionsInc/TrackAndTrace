@@ -42,7 +42,7 @@ namespace RadialReview.Models.ViewModels
             AllSubordinates = orgUser.AllSubordinates;
 
             //TODO calculate completion
-            ManagingReviews = orgUser.CreatedReviews.Select(x=>new ReviewsViewModel(){Completion=0.1m,Review=x}).ToList();
+            ManagingReviews = orgUser.CreatedReviews.Select(x=>new ReviewsViewModel(x)).ToList();
         }
 
     }

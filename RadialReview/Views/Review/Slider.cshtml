@@ -1,68 +1,145 @@
 ﻿@model List<RadialReview.Models.AnswerModel>
 
+@using RadialReview.Models
+@using RadialReview.Models.Enums
 
-@using RadialReview.Models;
 @{
     ViewBag.Title = RadialReview.Properties.DisplayNameStrings.review;
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_ReviewLayout.cshtml";
+
+
+}
+@functions {
+
+    public string ConvertBool(ThumbsType b)
+    {
+        if (b == ThumbsType.None)
+            return "glyphicon glyphicon-hand-up     btn btn-lg  btn-default";
+        else if (b == ThumbsType.Up)
+            return "glyphicon glyphicon-thumbs-up   btn btn-lg btn-success";
+        else if (b == ThumbsType.Down)
+            return "glyphicon glyphicon-thumbs-down btn btn-lg btn-danger";
+        throw new Exception("Unknown Thumbs");
+    }
+
 }
 
-
-@using (var form = Html.BeginForm("Submit", "Review"))
-{ <div>
-        @foreach (var slider in Model.Where(x => x is SliderAnswer).Cast<SliderAnswer>())
-        {
-            <div>
+<div>
+    @foreach (var slider in Model.Where(x => x is SliderAnswer).Cast<SliderAnswer>())
+    {
+        <div class="row ">
+            <div i class="col-md-6 alignRight startHidden">
+                @if (slider.Required)
+                {
+                    <div class="pull-left star @((ViewBag.Incomplete != null && !slider.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
+                }
                 <h4>@slider.Question.Question.Translate()</h4>
-                <div class="side">@RadialReview.Properties.DisplayNameStrings.min</div>
-                <input name="question_@slider.Id" type="text" class="sliderInput col-xs-8" value=""
-                       data-slider-min="0" data-slider-max="100" data-slider-step="1"
-                       data-slider-value="@((int)(slider.Percentage*100))" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide">
-                <div class="side">@RadialReview.Properties.DisplayNameStrings.max</div>
             </div>
-        }
-        @foreach (var thumbs in Model.Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>())
-        {
-            <div>
-                <h4>@thumbs.Question.Question.Translate()</h4>
 
-                <input type="hidden" name="question_@thumbs.Id" id="question_@thumbs.Id" value="_@thumbs.Up" />
-                <div class="question_@thumbs.Id " onclick="Thumbs('question_@thumbs.Id')"><span class="glyphicon @(thumbs.Up ? "glyphicon-thumbs-down btn btn-danger" : "glyphicon-thumbs-up btn btn-success")"></span></div>
+            <div class="col-md-6 startHidden">
+
+                <div class="row">
+                    <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.min</h5></div>
+                    <div class="col-xs-6" style="padding:8px 0 0 0;">
+                        <input name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
+                               type="text"
+                               class="sliderInput"
+                               value="@((int)(slider.Percentage*100))"
+                               data-slider-min="0"
+                               data-slider-max="100"
+                               data-slider-step="1"
+                               data-slider-value="@((int)(slider.Percentage*100))"
+                               data-slider-orientation="horizontal"
+                               data-slider-selection="after">
+                    </div>
+                    <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.max</h5></div>
+                </div>
             </div>
-        }
-    </div>
-    <br/>
-    <input type="button" class="btn btn-primary" value="@RadialReview.Properties.DisplayNameStrings.submit" />
-}
+        </div>
+        <hr />
+    }
+
+    @foreach (var thumbs in Model.Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>())
+    {
+        <div class="row">
+
+            <div class="col-md-6 alignRight startHidden">
+                @if (thumbs.Required)
+                {
+                    <div class="pull-left star @((ViewBag.Incomplete!=null && !thumbs.Complete)?"red":"")"><span class="glyphicon glyphicon-asterisk"></span></div>
+                }
+                <h4>@thumbs.Question.Question.Translate()</h4>
+            </div>
+            <div class="col-md-6            startHidden">
+                <input type="radio" class="hidden" @(thumbs.Thumbs == ThumbsType.None?"checked":"") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.None" />
+                <div class="row">
+                    <div class="col-sm-4 col-sm-offset-4 alignCenter">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-lg btn-default successRadio @(thumbs.Thumbs == ThumbsType.Up ? "active" : "")">
+                                <input type="radio" @(thumbs.Thumbs == ThumbsType.Up ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.Up">
+                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                            </label>
+                            <label class="btn btn-lg btn-default dangerRadio @(thumbs.Thumbs == ThumbsType.Down ? "active" : "") ">
+                                <input type="radio" @(thumbs.Thumbs == ThumbsType.Down ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.Down">
+                                <span class="glyphicon glyphicon-thumbs-down"></span>
+                            </label>
+                        </div>
+
+                        @*<div class="question_@thumbs.Id alignCenter" onclick="Thumbs('question_@thumbs.Id')">
+                            <span class="@(ConvertBool(thumbs.Thumbs))"> </span>
+                        </div>*@
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+        <hr />
+    }
+</div>
+<br />
 
 @using (var styles = Html.BeginStyles())
 {
     <style>
-        .side{
-            width:50px;
-            text-align:center;
-            display:inline-block;
+        .side {
+            text-align: center;
+            display: inline-block;
         }
+
+        .dangerRadio.active {
+            color: #B94A48;
+            background-color: #F2DEDE;
+            border-color: #EED3D7;
+        }
+        .successRadio.active {
+            color: #468847;
+            background-color: #DFF0D8;
+            border-color: #D6E9C6;
+        }
+
+
     </style>
 }
 
 
-@using(var scripts=Html.BeginScripts())
-{ 
+@using (var scripts = Html.BeginScripts())
+{
     <script>
         $(function () {
             $(".sliderInput").slider();
+            $('.btn-group').button();
         });
-
-        function Thumbs(id)
-        {
-            if($("#"+id).val()=="_True"){
-                $("#" + id).val("_False");
-                $("." + id).html("<span class='glyphicon glyphicon-thumbs-down btn btn-danger'></span>");
-            }else{
-                $("#"+id).val("_True");
-                $("." + id).html("<span class='glyphicon glyphicon-thumbs-up btn btn-success'></span>");
+        @*
+        function Thumbs(id) {
+            if ($("#" + id).val() == "@ThumbsType.Up") {
+                $("#" + id).val("@ThumbsType.Down");
+                $("." + id).html("<span class='@ConvertBool(ThumbsType.Down)'></span>");
+            } else {
+                $("#" + id).val("@ThumbsType.Up");
+                $("." + id).html("<span class='@ConvertBool(ThumbsType.Up)'></span>");
             }
-        }
+        }*@
     </script>
 }

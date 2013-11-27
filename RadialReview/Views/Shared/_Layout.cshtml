@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNet.Identity
+@using RadialReview.Properties
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,14 +39,15 @@
                         <ul class="nav navbar-nav">
                             @if (Request.IsAuthenticated)
                             {
+                                <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.reviews, "Index", "Review")</li>
                                 if (ViewBag.IsManager)
                                 {
-                                    <li>@Html.ActionLink("Manage", "Manage", "Organization")</li>
+                                    <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.manage, "Manage", "Organization")</li>
                                 }
                             }
                             else
                             {
-                                <li>@Html.ActionLink("About", "About", "Home")</li>
+                                <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "About", "Home")</li>
                             }
                         </ul>
                         @Html.Partial("_LoginPartial")
@@ -81,6 +83,33 @@
 
                 function clearUnsaved() {
                     $(".unsaved").removeClass("unsaved");
+                }
+                
+                $(function () {
+                    ForceUnhide();
+                });
+
+                function ForceUnhide() {
+                    var speed = 40;
+                    $(".startHiddenGroup").each(function (i, e) {
+                        $(e).find(".startHidden").each(function (i, e2) {
+                            setTimeout(function () {
+                                $(e2).addClass("unhide");
+                            }, speed * i);
+                        });
+                    });
+                    /*$(".startHidden").each(function (i, e) {
+                        setTimeout(function () {
+                            $(e).addClass("unhide");
+                        }, speed * i);
+                    });*/
+                }
+
+                function ForceHide() {
+                    $(".startHidden")
+                        .removeClass("startHidden")
+                        .removeClass("unhide")
+                        .addClass("startHidden");
                 }
 
 

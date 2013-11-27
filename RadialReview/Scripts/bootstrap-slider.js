@@ -57,7 +57,7 @@
 			default:
 				this.picker
 					.addClass('slider-horizontal')
-					.css('width', this.element.outerWidth());
+					.css('width', "100%");
 				this.orientation = 'horizontal';
 				this.stylePos = 'left';
 				this.mousePos = 'pageX';
@@ -65,10 +65,9 @@
 				this.tooltip.addClass('top')[0].style.top = -this.tooltip.outerHeight() - 14 + 'px';
 				break;
 		}
-
 		this.min = this.element.data('slider-min')||options.min;
 		this.max = this.element.data('slider-max')||options.max;
-		this.step = this.element.data('slider-step')||options.step;
+		this.step = this.element.data('slider-step') || options.step;
 		this.value = this.element.data('slider-value')||options.value;
 		if (this.value[1]) {
 			this.range = true;
@@ -103,7 +102,7 @@
 			this.value[0] = Math.max(this.min, Math.min(this.max, this.value[0]));
 			this.value[1] = Math.max(this.min, Math.min(this.max, this.value[1]));
 		} else {
-			this.value = [ Math.max(this.min, Math.min(this.max, this.value))];
+		    this.value = [Math.max(this.min, Math.min(this.max, this.value))];
 			this.handle2.addClass('hide');
 			if (this.selection == 'after') {
 				this.value[1] = this.max;
@@ -144,6 +143,7 @@
 		} else {
 			this.tooltip.addClass('hide');
 		}
+		this.tooltip.addClass('finished');
 	};
 
 	Slider.prototype = {
@@ -337,7 +337,7 @@
 				this.value[0] = Math.max(this.min, Math.min(this.max, this.value[0]));
 				this.value[1] = Math.max(this.min, Math.min(this.max, this.value[1]));
 			} else {
-				this.value = [ Math.max(this.min, Math.min(this.max, this.value))];
+			    this.value = [Math.max(this.min, Math.min(this.max, this.value))];
 				this.handle2.addClass('hide');
 				if (this.selection == 'after') {
 					this.value[1] = this.max;
@@ -371,10 +371,10 @@
 
 	$.fn.slider.defaults = {
 		min: 0,
-		max: 10,
+		max: 100,
 		step: 1,
 		orientation: 'horizontal',
-		value: 5,
+		value: 0,
 		selection: 'before',
 		tooltip: 'show',
 		handle: 'round',

@@ -109,14 +109,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;p&gt;{0} has scheduled a new review due on {1}. You can link your account by clicking the following link:&lt;/p&gt;
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
+        ///&lt;p&gt;{1} has scheduled a new review due on {2}. You can take your review by clicking the following link:&lt;/p&gt;
         ///&lt;br&gt; 
-        ///    &lt;a href=&quot;{2}&quot;&gt;{3}&lt;/a&gt;
+        ///    &lt;a href=&quot;{3}&quot;&gt;{4}&lt;/a&gt;
         ///&lt;br /&gt;&lt;br /&gt;If you believe you have received this message in error, you may simply ignore this email. If you have any questions, feedback, or concerns, you can reply to this e-mail address.
         ///&lt;br /&gt;
         ///&lt;br /&gt;
         ///Sincerely,&lt;br/&gt;
-        ///The {4} Team.
+        ///The {5} Team.
         /// </summary>
         public static string NewReview_Body {
             get {

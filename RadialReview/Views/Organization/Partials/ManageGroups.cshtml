@@ -1,7 +1,7 @@
 ﻿@model RadialReview.Models.ViewModels.ManageViewModel
 
-<table class="table">
-    <tr>
+<table class="table startHiddenGroup">
+    <tr class="startHidden">
         <th>@RadialReview.Properties.DisplayNameStrings.group</th>
         <th style="width:120px">@RadialReview.Properties.DisplayNameStrings.numberOfQuestions</th>
         <th style="width:120px">@RadialReview.Properties.DisplayNameStrings.numberOfMembers</th>
@@ -11,7 +11,7 @@
     </tr>
     @foreach (var group in Model.ManagingGroups)
     {
-        <tr>
+        <tr class="startHidden">
             <td>@group.GroupName</td>
             <td>@group.CustomQuestions.Count</td>
             <td>@group.GroupUsers.Count</td>

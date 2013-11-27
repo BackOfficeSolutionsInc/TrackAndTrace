@@ -70,6 +70,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hello {0}!.
+        /// </summary>
+        public static string helloUser {
+            get {
+                return ResourceManager.GetString("helloUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You need at least one member..
         /// </summary>
         public static string InsufficientNumberOfMembers {

@@ -19,6 +19,37 @@ namespace RadialReview.Models
         public virtual Boolean Complete { get; set; }
         public virtual Boolean FullyComplete { get; set; }
 
+
+        private  decimal Divide(decimal numerator, decimal denomiator)
+        {
+            if (denomiator == 0)
+                return 1;
+            return numerator / denomiator;
+        }
+
+
+        public virtual decimal? GetCompletion()
+        {
+            if (Answers == null)
+                return null;
+            if (Answers.Count() == 0)
+                return 1m;
+            
+            decimal requiredComplete = Answers.Count(x => x.Required && x.Complete);
+            decimal required = Answers.Count(x => x.Required);
+            decimal total = Answers.Count();
+            if (requiredComplete < required)
+            {
+                return Divide(requiredComplete, required);
+            }
+            else
+            {
+                var complete = Answers.Count(x => x.Complete);
+                return Divide(complete, required);
+            }
+        }
+
+
         public ReviewModel()
         {
             Answers = null;//new List<AnswerModel>();

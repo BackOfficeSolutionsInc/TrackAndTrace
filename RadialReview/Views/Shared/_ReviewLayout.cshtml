@@ -1,0 +1,57 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (var styles = Html.BeginStyles())
+{
+    <style>
+        .review {
+            border: 1px solid #D1D1D1;
+            background-color: #FDFDFD;
+            padding: 30px 30px 50px 30px;
+            border-radius: 10px;
+        }
+
+        .star {
+            color: #CFCFCF;
+            left: -4px;
+            top: 12px;
+            position: absolute;
+        }
+
+        .red {
+            color: red;
+        }
+    </style>
+}
+
+
+<div class="startHiddenGroup">
+    <div class="row startHidden">
+        @Html.AlertBoxDismissable((string)ViewBag.Message,(string)ViewBag.AlertType,(string)ViewBag.AlertMessage)
+        <div class="review col-md-12">
+            @using (var form = Html.BeginForm("Take", "Review", FormMethod.Post, new {id="form" }))
+            {
+                <input type="hidden" name="reviewId" value="@ViewBag.ReviewId" />
+                <input type="hidden" name="organizationId" value="@ViewBag.OrganizationId" />
+                <input type="hidden" name="page" value="@ViewBag.Page" />
+                @RenderBody()
+                <br />
+                <div class="row startHidden">
+                    <div class="col-md-12 alignCenter">
+                        @if(ViewBag.NoSubmit==null)
+                        {
+                            <input type="submit" class="btn btn-primary btn-lg" value="@RadialReview.Properties.DisplayNameStrings.submit" />
+                        }
+                        @*else
+                        {
+                            <input type="submit" class="btn btn-primary btn-lg" value="@RadialReview.Properties.DisplayNameStrings.submit" />
+                            <input type="submit" class="btn btn-info btn-lg" value="@RadialReview.Properties.DisplayNameStrings.skip" />
+                        }*@
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -16,8 +16,22 @@
         .addButton {
             /*width: 24px;*/
         }
+
+        html {
+            overflow-y: scroll;
+        }
     </style>
 }
+
+@functions {
+    public string IsActive(String hash,String value){
+        if (hash==value)
+            return "active";
+        return "";                
+    }
+
+}
+
 <!-- Button to trigger modal -->
 <h3>@RadialReview.Properties.DisplayNameStrings.manage @Model.Organization.Name.Translate() <img src="@Model.Organization.GetImage()" style="width: 32px; height: 32px; border: 1px solid #DADADA;" class="img-circle" alt="@Model.Organization.Name" /></h3>
 
@@ -27,22 +41,22 @@
 </div>
 
 
-<ul class="nav nav-tabs" id="mainTab">
-    <li class="active"> <a data-toggle="" href="#users"     name="users">@RadialReview.Properties.DisplayNameStrings.users</a></li>
-    <li>                <a data-toggle="" href="#groups"    name="groups">@RadialReview.Properties.DisplayNameStrings.groups</a></li>
-    <li>                <a data-toggle="" href="#questions" name="questions">@RadialReview.Properties.DisplayNameStrings.questions</a></li>
-    <li>                <a data-toggle="" href="#reviews"   name="reviews">@RadialReview.Properties.DisplayNameStrings.reviews</a></li>
+<ul class="nav nav-tabs noOpacity" style="position: relative;left: 4px;" id="mainTab">
+    <li class="active">         <a data-toggle="" href="#users" name="users">@RadialReview.Properties.DisplayNameStrings.users</a></li>
+    <li class="">               <a data-toggle="" href="#groups" name="groups">@RadialReview.Properties.DisplayNameStrings.groups</a></li>
+    <li class="">               <a data-toggle="" href="#questions" name="questions">@RadialReview.Properties.DisplayNameStrings.questions</a></li>
+    <li class="">               <a data-toggle="" href="#reviews" name="reviews">@RadialReview.Properties.DisplayNameStrings.reviews</a></li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane active" id="users">
-       @Html.Partial("Partials/ManageUsers", Model)
+    <div class="tab-pane active" style="position: relative;top: -5px;" id="users">
+        @Html.Partial("Partials/ManageUsers", Model)
     </div>
-    <div class="tab-pane" id="groups">        
-       @Html.Partial("Partials/ManageGroups", Model)        
+    <div class="tab-pane" id="groups">
+        @Html.Partial("Partials/ManageGroups", Model)
     </div>
     <div class="tab-pane" id="questions">
-        @Html.Partial("Partial/_QuestionTable", Model.OrganizationQuestions)
+        @Html.Partial("Partial/_QuestionTable", Model.OrganizationQuestions,new ViewDataDictionary(){{"title",RadialReview.Properties.DisplayNameStrings.organizationQuestions}})
     </div>
     <div class="tab-pane" id="reviews">
         @Html.Partial("Partials/ManageReviews", Model)
@@ -55,13 +69,15 @@
     <script type="text/javascript">
         function HashUpdate(){
             if(location.hash){
-                $( "a[name="+location.hash.substr(1)+"]").trigger( "click" );
+                $("a[name=" + location.hash.substr(1) + "]").trigger("click");
             }
         }
 
         $('.nav-tabs a').click(function (e) {
             //e.preventDefault();
+            ForceHide();
             $(this).tab('show');
+            ForceUnhide();
             setTimeout(function() {
                 if (location.hash) {
                     window.scrollTo(0, 0);
@@ -69,13 +85,15 @@
             }, 1);
         })
 
-        setTimeout(function() {
+        $(function() {
             HashUpdate();
-        }, 1);
+            setTimeout(function () { $(".noOpacity").removeClass("noOpacity") }, 1);
+        });
 
         $(window).hashchange( function(){
             HashUpdate();
         });
+        HashUpdate();
     </script>
 
 }
