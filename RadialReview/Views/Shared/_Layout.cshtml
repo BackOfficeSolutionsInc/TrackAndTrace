@@ -42,7 +42,7 @@
                                 <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.reviews, "Index", "Review")</li>
                                 if (ViewBag.IsManager)
                                 {
-                                    <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.manage, "Manage", "Organization")</li>
+                                    <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.manage, "Index", "Manage")</li>
                                 }
                             }
                             else
@@ -50,7 +50,7 @@
                                 <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "About", "Home")</li>
                             }
                         </ul>
-                        @Html.Partial("_LoginPartial")
+                        @Html.Partial("_LoginPartial",(string)ViewBag.ReturnUrl)
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@
 using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
-using RadialReview.Models.AccountabilityGroupModels;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using System;
@@ -323,8 +323,10 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }
 
-        public PermissionsUtility ViewTeam(TeamModel team)
+        public PermissionsUtility ViewTeam(long teamId)
         {
+            var team = session.Get<OrganizationTeamModel>(teamId);
+
             if (IsRadialAdmin())
                 return this;
 
@@ -337,11 +339,18 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }
 
-        public PermissionsUtility EditTeam(TeamModel team)
+        public PermissionsUtility EditTeam(long teamId)
         {
+
             if (IsRadialAdmin())
                 return this;
 
+            //Creating
+            if (teamId == 0 && caller.IsManager())
+                return this;
+
+
+            var team = session.Get<OrganizationTeamModel>(teamId);
             if ( caller.IsManager() || !team.OnlyManagersEdit)
             {
                 if (!team.Secret && team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))

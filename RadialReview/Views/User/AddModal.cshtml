@@ -1,18 +1,29 @@
-﻿@model RadialReview.Models.OrganizationModel
+﻿@model RadialReview.Models.ViewModels.CreateUserOrganizationViewModel
 
 
-<input type="hidden" name="organizationId" value="@Model.Id" />
+<input type="hidden" name="organizationId" value="@Model.OrganizationId" />
 <div class="row">
     <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
-    <div class="col-xs-8">@Html.TextBox("emailAddress", null, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth" })</div>
+    <div class="col-xs-8">@Html.TextBoxFor(x=>x.Email,new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth" })</div>
 </div>      
 <div class="smallBreak"></div>   
 <div class="row">   
     <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.jobTitle):</label></div>
-    <div class="col-xs-8">@Html.TextBox("jobTitle", null, new { placeholder = RadialReview.Properties.DisplayNameStrings.jobTitle, @class = "fullWidth" })</div>
+    @{
+        var list = Model.Positions.Select<RadialReview.Models.Responsibilities.OrganizationPositionModel, SelectListItem>(
+            x => new SelectListItem
+                    {
+                            Selected=(Model.Position==x.ResponsibilityGroupId),
+                            Text=x.CustomName,
+                            Value = ""+x.ResponsibilityGroupId
+                    }).ToList();
+    }
+
+    <div class="col-xs-8">@Html.DropDownListFor(x => x.Position,list,new { placeholder = RadialReview.Properties.DisplayNameStrings.jobTitle, @class = "fullWidth" })
+</div>
 </div> 
 <div class="smallBreak"></div>            
 <div class="row">   
     <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.isManager):</label></div>
-    <div class="col-xs-8">@Html.CheckBox("isManager", false, new { style = "padding-bottom: 7px;"  })</div>
+    <div class="col-xs-8">@Html.CheckBoxFor(x=>x.Manager, new { style = "padding-bottom: 7px;"  })</div>
 </div>

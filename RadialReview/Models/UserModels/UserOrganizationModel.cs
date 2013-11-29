@@ -3,8 +3,10 @@ using FluentNHibernate.Automapping;
 using FluentNHibernate.Automapping.Alterations;
 using FluentNHibernate.Mapping;
 using NHibernate.Proxy;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.UserModels;
 using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
@@ -21,7 +23,7 @@ namespace RadialReview.Models
         public virtual Boolean ManagerAtOrganization { get; set; }
         public virtual Boolean ManagingOrganization { get; set; }
         public virtual Boolean IsRadialAdmin { get; set; }
-        public virtual String Title { get; set; }
+        //public virtual String Title { get; set; }
         public virtual DateTime AttachTime { get; set; }
         public virtual DateTime? DetachTime { get; set; }
         public virtual UserModel User { get; set; }
@@ -35,6 +37,10 @@ namespace RadialReview.Models
         public virtual IList<QuestionModel> CreatedQuestions { get; set; }
         public virtual IList<ReviewModel> Reviews { get; set; }
         public virtual List<ReviewsModel> CreatedReviews { get; set; }
+        public virtual IList<ResponsibilityModel> Accountabilities { get; set; }
+        
+        public virtual IList<PositionDurationModel> Positions { get; set; }
+
 
         public virtual DateTime? DeleteTime { get; set; }
         public virtual OriginType GetOriginType()
@@ -85,6 +91,8 @@ namespace RadialReview.Models
             Properties = new Dictionary<string, List<String>>();
             //CreatedReviews = new List<ReviewsModel>();
             Reviews = new List<ReviewModel>();
+            Accountabilities = new List<ResponsibilityModel>();
+            Positions = new List<PositionDurationModel>();
         }
 
         public override string ToString()
@@ -116,7 +124,7 @@ namespace RadialReview.Models
         public UserOrganizationModelMap()
         {
             Id(x => x.Id);
-            Map(x => x.Title);
+            //Map(x => x.Title);
 
             Map(x => x.IsRadialAdmin);
             Map(x => x.ManagingOrganization);
@@ -128,8 +136,14 @@ namespace RadialReview.Models
 
             //Reviews
             HasMany(x => x.Reviews).Cascade.SaveUpdate();
+            HasMany(x => x.Accountabilities)
+                .Not.LazyLoad()
+                .Cascade.SaveUpdate();
             //HasMany(x => x.CreatedReviews).Cascade.SaveUpdate();
 
+            HasMany(x => x.Positions)
+                .Not.LazyLoad()
+                .Cascade.SaveUpdate();
 
             References(x => x.User)
                 .Not.LazyLoad()

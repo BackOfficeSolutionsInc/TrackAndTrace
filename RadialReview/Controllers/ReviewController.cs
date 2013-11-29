@@ -25,7 +25,7 @@ namespace RadialReview.Controllers
         // GET: /Review/
         public ActionResult Index(String id, long? organizationId)
         {
-            var user = GetOneUserOrganization(organizationId);
+            var user = GetUser(organizationId);
             var reviews = _ReviewAccessor.GetReviewsForUser(user, user);
             var output = new ReviewsListViewModel() { ForUser = user, Reviews = reviews };
             return View(output);
@@ -65,7 +65,7 @@ namespace RadialReview.Controllers
                 organizationId = long.Parse(collection["organizationId"]);
                 currentPage = int.Parse(collection["page"]);
 
-                var user = GetOneUserOrganization(organizationId);
+                var user = GetUser(organizationId);
                 var allComplete = true;
 
                 var values = collection.AllKeys.Select(k => collection[k]).ToList();
@@ -98,7 +98,7 @@ namespace RadialReview.Controllers
         public ActionResult Take(long id, int? page, long? organizationId)
         {
             page = page ?? 1;
-            var user = GetOneUserOrganization(organizationId);
+            var user = GetUser(organizationId);
             var review = _ReviewAccessor.GetReviewForUser(user, id);
             ViewBag.ReviewId = id;
             ViewBag.OrganizationId = user.Organization.Id;
@@ -176,7 +176,7 @@ namespace RadialReview.Controllers
         {
             //TODO correct the time zone.
             var today = DateTime.UtcNow.ToLocalTime();
-            var user = GetOneUserOrganization(null).Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
+            var user = GetUser(null).Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
             return PartialView(new IssueReviewViewModel() { Today = today, ForUsers = user.AllSubordinates });
         }
 
@@ -186,7 +186,7 @@ namespace RadialReview.Controllers
             try
             {
                 var dueDate = DateTime.Parse(Date);
-                var user = GetOneUserOrganization(null).Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
+                var user = GetUser(null).Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
 
                 if (!user.ManagingOrganization)
                     throw new PermissionsException();

@@ -2,6 +2,7 @@
 using RadialReview.Exceptions;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
+using RadialReview.Models.ViewModels;
 using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
@@ -16,18 +17,18 @@ namespace RadialReview.Controllers
         public static NexusAccessor NexusAccessor = new NexusAccessor();
 
         [HttpPost]
-        public JsonResult AddManagedUserToOrganization(String emailAddress, Boolean isManager, String jobTitle, int organizationId)
+        public JsonResult AddManagedUserToOrganization(CreateUserOrganizationViewModel model)
         {
             try
             {
-                var user = GetOneUserOrganization(organizationId).Hydrate().Organization().Execute();
+                var user = GetUser(model.OrganizationId).Hydrate().Organization().Execute();
                 var org = user.Organization;
                 if (org == null)
                     throw new PermissionsException();
-                if (org.Id != organizationId)
+                if (org.Id != model.OrganizationId)
                     throw new PermissionsException();
 
-                var nexusId = NexusAccessor.JoinOrganizationUnderManager(user, org, isManager, jobTitle, emailAddress);
+                var nexusId = NexusAccessor.JoinOrganizationUnderManager(user, org, model.Manager, model.Position, model.Email);
 
                 return Json(new JsonObject(false,"Success"));
             }

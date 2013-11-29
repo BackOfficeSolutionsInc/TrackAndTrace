@@ -29,7 +29,7 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var caller = GetOneUserOrganization(organizationId);
+                var caller = GetUser(organizationId);
                 var category = _QuestionAccessor.GetCategory(caller, categoryId, false);
 
                 QuestionModel q = new QuestionModel();
@@ -58,7 +58,7 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var caller = GetOneUserOrganization(organizationId);
+                var caller = GetUser(organizationId);
                 //var q = _QuestionAccessor.GetQuestion(caller, id);
                 _QuestionAccessor.EditQuestion(caller,id, deleteTime: DateTime.UtcNow);
                 return Json(JsonObject.Success,JsonRequestBehavior.AllowGet);
@@ -71,7 +71,7 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var caller = GetOneUserOrganization(organizationId).Hydrate()
+                var caller = GetUser(organizationId).Hydrate()
                     .Organization(questions: true)
                     .ManagingGroups(questions:true)
                     .Execute();
@@ -107,7 +107,7 @@ namespace RadialReview.Controllers
             ViewBag.originId =   0;
             if (id != 0)
             {
-                var caller = GetOneUserOrganization(organizationId);
+                var caller = GetUser(organizationId);
                 var question = _QuestionAccessor.GetQuestion(caller, id);
                 ViewBag.originType = question.OriginType;
                 ViewBag.originId = question.OriginId;
@@ -124,7 +124,7 @@ namespace RadialReview.Controllers
             if (originType == OriginType.Invalid)
                 throw new Exception("Cannot be invalid");
 
-            var caller=GetOneUserOrganization(organizationId);
+            var caller=GetUser(organizationId);
             var origin=new Origin(originType, originId);
             var q = _QuestionAccessor.GetQuestion(caller, model.Id);
 

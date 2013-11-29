@@ -10,7 +10,7 @@ namespace RadialReview.Controllers
     {
         public ActionResult Index(int? count)
         {
-            GetUser();
+            GetUserModel();
 
             if (count == null)
                 return RedirectToAction("Index", "Organization");

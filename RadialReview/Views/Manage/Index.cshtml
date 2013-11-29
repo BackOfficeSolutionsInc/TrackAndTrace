@@ -4,42 +4,4 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Button to trigger modal -->
-@*if (Model.ManagerAtOrganization.Count > 0)
-{
-    <a href="#myModal" role="button" class="btn" data-toggle="modal">Add Managed Employee</a>
-}
-
-@section modals
-{
-    @if (Model.ManagerAtOrganization.Count > 0)
-    {
-        <!-- Modal -->
-        <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">Add Managed User</h3>
-            </div>
-            <div class="modal-body">
-                @using (Html.BeginForm("AddManagedUserToOrganization", "Nexus", FormMethod.Post, new { id = "submitAddManagedUserToOrganization" }))
-                {
-                    <table>
-                        <tr>
-                            <td>Email:</td>
-                            <td>@Html.TextBox("emailAddress", null, new { placeholder = "Email Address" })</td>
-                        </tr>
-                        <tr>
-                            <td>Organization:</td>
-                            <td>@Html.DropDownList("organization", Model.ManagerAtOrganization.Select((x, i) => new SelectListItem { Selected = (i == 0), Text = x.Name, Value = "" + x.Id }))</td>
-                        </tr>
-                    </table>
-                }
-
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                <button class="btn btn-primary" onclick="$('#submitAddManagedUserToOrganization').submit();">Save changes</button>
-            </div>
-        </div>
-    }
-}*@
+@Html.Partial("Partial/manageheader")

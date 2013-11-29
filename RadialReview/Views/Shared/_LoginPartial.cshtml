@@ -1,4 +1,6 @@
-﻿@using Microsoft.AspNet.Identity
+﻿@model object
+
+@using Microsoft.AspNet.Identity
 @using RadialReview.Properties
 @if (Request.IsAuthenticated)
 {
@@ -17,7 +19,7 @@
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink(DisplayNameStrings.register, "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        <li>@Html.ActionLink(DisplayNameStrings.register, "Register", "Account", routeValues: (Model != null ? new { returnUrl = Model } : null), htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
+        <li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account",       routeValues: (Model != null ? new { returnUrl = Model } : null), htmlAttributes: new { id = "loginLink", })</li>
     </ul>
 }

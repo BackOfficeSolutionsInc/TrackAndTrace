@@ -192,7 +192,9 @@
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
     <Compile Include="Accessors\PaymentAccessor.cs" />
+    <Compile Include="Accessors\PositionAccessor.cs" />
     <Compile Include="Accessors\QuestionAccessor.cs" />
+    <Compile Include="Accessors\ResponsibilitiesAccessor.cs" />
     <Compile Include="Accessors\ReviewAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
     <Compile Include="Accessors\UrlAccessor.cs" />
@@ -213,7 +215,9 @@
     <Compile Include="Controllers\NexusController.cs" />
     <Compile Include="Controllers\OrganizationController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
+    <Compile Include="Controllers\PositionController.cs" />
     <Compile Include="Controllers\QuestionController.cs" />
+    <Compile Include="Controllers\ResponsibilitiesController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\SurveyController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
@@ -221,10 +225,10 @@
     <Compile Include="Controllers\UrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
-    <Compile Include="Models\AccountabilityGroupModels\AccountabilitiesModel.cs" />
-    <Compile Include="Models\AccountabilityGroupModels\AccountabilityGroupModel.cs" />
+    <Compile Include="Models\Responsibilities\ResponsibilityModel.cs" />
+    <Compile Include="Models\Responsibilities\ResponsibilityGroups.cs" />
     <Compile Include="Models\Enums\ThumbsType.cs" />
-    <Compile Include="Models\AccountabilityGroupModels\PositionModel.cs" />
+    <Compile Include="Models\Responsibilities\PositionModel.cs" />
     <Compile Include="Models\Reviews\AnswerModels.cs" />
     <Compile Include="Models\Enums\BootstrapGlyphs.cs" />
     <Compile Include="Models\Enums\OriginType.cs" />
@@ -241,14 +245,20 @@
     <Compile Include="Models\Enums\RelativeComparisonType.cs" />
     <Compile Include="Models\Reviews\ReviewModel.cs" />
     <Compile Include="Models\Reviews\ReviewsModel.cs" />
-    <Compile Include="Models\AccountabilityGroupModels\TeamModel.cs" />
+    <Compile Include="Models\UserModels\PositionDuration.cs" />
+    <Compile Include="Models\ViewModels\CreateUserOrganizationViewModel.cs" />
     <Compile Include="Models\ViewModels\ImageUploadViewModel.cs" />
     <Compile Include="Models\ViewModels\IssueReviewViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageUserViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrganizationMembersViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrganizationPositionViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrganizationTeamViewModel.cs" />
+    <Compile Include="Models\ViewModels\PositionViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionModalViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionsViewModel.cs" />
     <Compile Include="Models\ViewModels\ReviewsListViewModel.cs" />
     <Compile Include="Models\ViewModels\ReviewsViewModel.cs" />
+    <Compile Include="Models\ViewModels\TeamResponsibilitiesViewModel.cs" />
     <Compile Include="Properties\ErrorMessageStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -459,12 +469,20 @@
     <Content Include="Views\Shared\_ReviewLayout.cshtml" />
     <Content Include="Views\Review\Feedback.cshtml" />
     <Content Include="Views\Review\RelativeComparison.cshtml" />
+    <Content Include="Views\Manage\Positions.cshtml" />
+    <Content Include="Views\Shared\Partial\ManageHeader.cshtml" />
+    <Content Include="Views\Position\Modal.cshtml" />
+    <Content Include="Views\Manage\Teams.cshtml" />
+    <Content Include="Views\Team\Modal.cshtml" />
+    <Content Include="Views\Manage\Members.cshtml" />
+    <Content Include="Views\Team\Responsibilities.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="External\" />
     <Folder Include="Views\Img\" />
-    <Folder Include="Views\Team\" />
+    <Folder Include="Views\Members\" />
+    <Folder Include="Views\Responsibilities\" />
     <Folder Include="Views\Url\" />
   </ItemGroup>
   <ItemGroup>

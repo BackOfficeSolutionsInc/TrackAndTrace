@@ -1,0 +1,36 @@
+﻿@model RadialReview.Models.ViewModels.OrganizationTeamViewModel
+
+@{
+    ViewBag.Title = "Teams";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Partial("Partial/manageheader")
+<br />
+<br />
+
+@Html.AlertBoxDismissable("The next step is adding teams to your organization. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
+
+
+
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th style="width:130px" class="alignCenter">Members</th>
+        <th style="width:130px" class="alignCenter">Responsibilities</th>
+        <th style="width:100px"><button class="btn btn-default fullWidth" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal")">+</button></th>
+    </tr>
+    @foreach (var p in Model.Teams)
+    {
+        <tr>
+            <td>@p.Name</td>
+            <td class=" alignCenter"><a href="#" class="fullWidth">Edit (@p.Members.Count())</a></td>
+            <td class=" alignCenter"><a href="#" class="fullWidth">Edit(@p.Responsibilities.Count())</a> </td>
+            <td></td>
+        </tr>
+    }
+
+</table>
+
+
+

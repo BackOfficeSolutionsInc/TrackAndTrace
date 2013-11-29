@@ -328,7 +328,7 @@ namespace RadialReview.Accessors
                     //Edit Question
                     if (question != null)
                     {
-                        q.Question.UpdateDefault(question.Default.Value);
+                        q.Question.UpdateDefault(question.Def.Value);
                         //q.Question = s.Get<LocalizedStringModel>(question.Id);
                     }
                     //Edit CategoryId

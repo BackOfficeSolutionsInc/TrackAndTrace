@@ -1,4 +1,6 @@
-﻿using System;
+﻿using RadialReview.Accessors;
+using RadialReview.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,13 +10,35 @@ namespace RadialReview.Controllers
 {
     public class ManageController : BaseController
     {
+        protected OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
         //
         // GET: /Manage/
         public ActionResult Index()
         {
-            var user = GetUser();
-            return View(user);
+            //Main page
+
+            return View();
         }
 
+        public ActionResult Positions()
+        {
+            var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
+            var model = new OrgPositionsViewModel() { Positions = orgPos.Select(x=>new OrgPosViewModel(x,0)).ToList() };
+            return View(model);
+        }
+
+        public ActionResult Teams()
+        {
+            var orgTeams = _OrganizationAccessor.GetOrganizationTeams( GetUser(),  GetUser().Organization.Id);
+            var model = new OrganizationTeamViewModel() { Teams = orgTeams };
+            return View(model);
+        }
+
+        public ActionResult Members()
+        {
+            var members=_OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
+            var model = new OrganizationMembersViewModel(){ Users=members };
+            return View(model);
+        }
     }
 }

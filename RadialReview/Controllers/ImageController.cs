@@ -30,7 +30,7 @@ namespace RadialReview.Controllers
                     imagePath = Server.MapPath("~/" + ConstantStrings.ImagePlaceholder);
 
                 }else{
-                    var user = GetOneUserOrganization(organizationId);
+                    var user = GetUser(organizationId);
                     imagePath = _ImageAccessor.GetImagePath(user, Server, id);
                 }
 

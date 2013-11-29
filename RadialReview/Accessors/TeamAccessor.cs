@@ -1,5 +1,6 @@
-﻿using RadialReview.Models;
-using RadialReview.Models.AccountabilityGroupModels;
+﻿using RadialReview.Exceptions;
+using RadialReview.Models;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,33 +11,62 @@ namespace RadialReview.Accessors
 {
     public class TeamAccessor : BaseAccessor
     {
-        public TeamModel GetTeam(UserOrganizationModel caller,long teamId)
+        public OrganizationTeamModel GetTeam(UserOrganizationModel caller,long teamId)
         {
+            if (teamId == 0)
+                return new OrganizationTeamModel() { };
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var team = s.Get<TeamModel>(teamId);
-                    PermissionsUtility.Create(s, caller).ViewTeam(team);
-                    team.Members = s.QueryOver<TeamMemberModel>().Where(x => x.TeamId == teamId).List().ToList();
+                    PermissionsUtility.Create(s, caller).ViewTeam(teamId);
+                    var team = s.Get<OrganizationTeamModel>(teamId);
+                    //team.Members = s.QueryOver<TeamMemberModel>().Where(x => x.TeamId == teamId).List().ToList();
                     return team;
                 }
             }
         }
 
-        public TeamModel EditTeam(UserOrganizationModel caller, long teamId,String name=null)
+        public OrganizationTeamModel EditTeam(UserOrganizationModel caller, long teamId,
+                                                                                        String name=null,
+                                                                                        bool? onlyManagerCanEdit=null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var team = s.Get<TeamModel>(teamId);
-                    PermissionsUtility.Create(s, caller).EditTeam(team);
+                    PermissionsUtility.Create(s, caller).EditTeam(teamId);
+                    caller = s.Get<UserOrganizationModel>(caller.Id);
+
+                    var team = s.Get<OrganizationTeamModel>(teamId) ;
+
+                    if (teamId == 0)
+                    {
+                        if (name == null || onlyManagerCanEdit == null)
+                            throw new PermissionsException();
+
+                        team = new OrganizationTeamModel()
+                        {
+                            CreatedBy = caller.Id,
+                            Organization = caller.Organization,
+                            OnlyManagersEdit = onlyManagerCanEdit.Value
+                        };
+                    }
+                        
                     if (name!=null)
                     {
                         team.Name = name;
                     }
-                    s.Update(team);
+
+                    if (onlyManagerCanEdit != null && onlyManagerCanEdit.Value!=team.OnlyManagersEdit) 
+                    {
+                        if (!caller.IsManager())
+                            throw new PermissionsException();
+                        team.OnlyManagersEdit = onlyManagerCanEdit.Value;
+                    }
+
+
+                    s.SaveOrUpdate(team);
 
                     tx.Commit();
                     s.Flush();
@@ -51,9 +81,13 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var team = s.Get<TeamModel>(teamId);
-                    PermissionsUtility.Create(s, user).EditTeam(team).EditUserOrganization(userOrgId);
-                    s.Save(new TeamMemberModel() { TeamId = teamId, UserOrganization = userOrgId });
+                    PermissionsUtility.Create(s, user).EditTeam(teamId).EditUserOrganization(userOrgId);
+                    var team = s.Get<OrganizationTeamModel>(teamId);
+                    var uOrg = s.Get<UserOrganizationModel>(userOrgId);
+
+                    team.Members.Add(new TeamMemberModel() { UserOrganization = uOrg });
+
+                    s.Update(team);
                     tx.Commit();
                     s.Flush();
                     return true;
@@ -67,12 +101,12 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var team = s.Get<TeamModel>(teamId);
-                    PermissionsUtility.Create(s, caller).EditTeam(team).EditUserOrganization(userOrgId);
+                    PermissionsUtility.Create(s, caller).EditTeam(teamId).EditUserOrganization(userOrgId);
+                    var team = s.Get<OrganizationTeamModel>(teamId);
 
-                    var member=s.QueryOver<TeamMemberModel>().Where(x => x.UserOrganization == userOrgId && x.TeamId == teamId).SingleOrDefault();
-                    member.DeleteTime = DateTime.UtcNow;
-                    s.Update(member);
+                    team.Members.FirstOrDefault(x => x.UserOrganization.Id == userOrgId).DeleteTime = DateTime.UtcNow;
+
+                    s.Update(team);
                     tx.Commit();
                     s.Flush();
                     return true;

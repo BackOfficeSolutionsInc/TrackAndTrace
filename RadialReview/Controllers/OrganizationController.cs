@@ -27,6 +27,7 @@ namespace RadialReview.Controllers
 
         public ActionResult Create(int? count)
         {
+            var user = GetUserModel();
             if (count == null)
                 return RedirectToAction("Index");
 
@@ -36,11 +37,11 @@ namespace RadialReview.Controllers
         [HttpPost]
         public ActionResult Create(String name,Boolean managersCanEdit)
         {
-            var user = GetUser();
+            var user = GetUserModel();
             var basicPlan=_PaymentAccessor.BasicPaymentPlan();
-            var localizedName=new LocalizedStringModel(){Default=new LocalizedStringPairModel(name)};
+            var localizedName=new LocalizedStringModel(){Def=new LocalizedStringPairModel(name)};
             var organization=_OrganizationAccessor.CreateOrganization(user, localizedName,managersCanEdit,basicPlan);
-            return RedirectToAction("Manage", new { organizationId = organization.Id });
+            return RedirectToAction("Index","Manage", new { organizationId = organization.Id });
         }
 
 
@@ -50,13 +51,13 @@ namespace RadialReview.Controllers
             var nexus = _NexusAccessor.Get(id);
             if (nexus.DateExecuted != null)
                 throw new RedirectException(ExceptionStrings.AlreadyMember);
-            var user = GetUser();
+            var user = GetUserModel();
             var orgId = int.Parse(nexus.GetArgs()[0]);
             var placeholderUserId = long.Parse(nexus.GetArgs()[2]);
             if (user == null)
                 return RedirectToAction("Login", "Account", new { returnUrl = "Organization/Join/" + id });
             try{
-                var userOrg = GetOneUserOrganization(orgId);
+                var userOrg = GetUser(orgId);
                 throw new RedirectException(ExceptionStrings.AlreadyMember);
             }
             catch (PermissionsException)
@@ -74,7 +75,7 @@ namespace RadialReview.Controllers
             return View(userOrgs.Select(x => x.Organization).ToList());
         }
 
-
+        /*
         public ActionResult Manage(int? organizationId)
         {
             if (organizationId == null)
@@ -108,7 +109,7 @@ namespace RadialReview.Controllers
                 
                 return View(new ManageViewModel(userOrg));
             }
-        }
+        }*/
 
         public ActionResult Begin(int? count = null)
         {

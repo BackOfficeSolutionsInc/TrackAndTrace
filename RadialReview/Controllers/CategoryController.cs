@@ -18,7 +18,7 @@ namespace RadialReview.Controllers
         // GET: /Category/
         public ActionResult Index(long? organizationId)
         {
-            var user=GetOneUserOrganization(organizationId)
+            var user=GetUser(organizationId)
                 .Hydrate()
                 .Organization(questions:true)
                 .Execute();
@@ -43,7 +43,7 @@ namespace RadialReview.Controllers
         // GET: /Category/Create
         public ActionResult Create(long? organizationId)
         {
-            var user = GetOneUserOrganization(organizationId);
+            var user = GetUser(organizationId);
             return View("Edit", new QuestionCategoryModel() { 
                 OriginType=OriginType.Organization,
                 OriginId = user.Organization.Id 
@@ -54,7 +54,7 @@ namespace RadialReview.Controllers
         // GET: /Category/Edit/5
         public ActionResult Edit(int id,long? organizationId)
         {
-            var user = GetOneUserOrganization(organizationId).Hydrate().Organization(questions:true).Execute();
+            var user = GetUser(organizationId).Hydrate().Organization(questions:true).Execute();
             EditableOrException(user);
             var category=_CategoryAccessor.Get(user, id);
 
@@ -70,7 +70,7 @@ namespace RadialReview.Controllers
             {
                 //collection.Organization.Id = long.Parse(Request.Params["Organization.Id"]);
 
-                var user=GetOneUserOrganization(organizationId);
+                var user=GetUser(organizationId);
                 //EditableOrException(user);
                 //var category=_CategoryAccessor.Get(user,id);
                 var origin = new Origin(collection.OriginType, collection.OriginId);

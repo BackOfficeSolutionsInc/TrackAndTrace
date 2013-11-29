@@ -22,20 +22,20 @@ namespace RadialReview.Controllers
         // GET: /Group/
         public ActionResult Index(long? organizationId)
         {
-            var userOrg = GetOneUserOrganization(organizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
+            var userOrg = GetUser(organizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
             IList<GroupModel> groups = userOrg.ManagingGroups;
             return View(groups);
         }
 
         public ActionResult Details(long id, long? organizationId)
         {
-            var group = _GroupAccessor.Get(GetOneUserOrganization(organizationId), id);
+            var group = _GroupAccessor.Get(GetUser(organizationId), id);
             return View(group);
         }
 
         public ActionResult Create(long? organizationId)
         {
-            var orgUser = GetOneUserOrganization(organizationId).Hydrate().ManagingGroups().ManagingUsers().Organization().Execute();
+            var orgUser = GetUser(organizationId).Hydrate().ManagingGroups().ManagingUsers().Organization().Execute();
             organizationId = orgUser.Organization.Id;
 
             if (!orgUser.IsManagerCanEditOrganization())
@@ -52,7 +52,7 @@ namespace RadialReview.Controllers
             if (id == null)
                 return View("Create");
 
-            var orgUser = GetOneUserOrganization(organizationId)
+            var orgUser = GetUser(organizationId)
                 .Hydrate()
                 .ManagingGroups()
                 .Organization()
@@ -121,7 +121,7 @@ namespace RadialReview.Controllers
         [HttpPost]
         public ActionResult Edit(GroupViewModel model)
         {
-            var userOrg = GetOneUserOrganization(model.OrganizationId).Hydrate().Organization().ManagingGroups().ManagingUsers(subordinates: true).Execute();
+            var userOrg = GetUser(model.OrganizationId).Hydrate().Organization().ManagingGroups().ManagingUsers(subordinates: true).Execute();
 
             if (!userOrg.IsManagerCanEditOrganization())
                 throw new PermissionsException();

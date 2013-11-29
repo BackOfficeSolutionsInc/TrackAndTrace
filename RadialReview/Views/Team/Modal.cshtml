@@ -1,0 +1,19 @@
+﻿@model RadialReview.Models.Responsibilities.OrganizationTeamModel
+
+
+<div class="row">
+    <div class="col-sm-4">
+        <label>Team Name:</label>
+    </div>
+    <div class="col-sm-8">
+        @Html.TextBoxFor(x => x.Name)
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <label>Only mangers edit:</label>
+    </div>
+    <div class="col-sm-8">
+        @Html.CheckBoxFor(x => x.OnlyManagersEdit)
+    </div>
+</div>

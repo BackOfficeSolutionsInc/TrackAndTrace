@@ -15,6 +15,8 @@ namespace RadialReview.Controllers
 
     public class UserController : BaseController
     {
+        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
+
         public class SaveUserModel{
             public class Tup {
                 public long Id { get; set; }
@@ -38,7 +40,7 @@ namespace RadialReview.Controllers
         
         public ActionResult Manage(long id,long? organizationId)
         {
-            var caller=GetOneUserOrganization(organizationId)
+            var caller=GetUser(organizationId)
                         .Hydrate()
                         .ManagingUsers(subordinates:true)
                         .Organization()
@@ -69,7 +71,7 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var user = GetOneUserOrganization(save.OrganizationId);
+                var user = GetUser(save.OrganizationId);
                 if (user == null)
                     return Json(new JsonObject(true, ExceptionStrings.DefaultPermissionsException));
                 if (save.toSave == null)
@@ -88,11 +90,12 @@ namespace RadialReview.Controllers
             }
         }
 
-        public ActionResult AddModal(long organizationId)
+        public ActionResult AddModal()
         {
-            var caller = GetOneUserOrganization(organizationId);
-
-            return PartialView(caller.Organization);
+            var caller = GetUser();
+            var positions =_OrganizationAccessor.GetOrganizationPositions(caller,caller.Organization.Id);
+            var model=new CreateUserOrganizationViewModel(){Positions=positions,OrganizationId=caller.Organization.Id};
+            return PartialView(model);
         }
     }
 }

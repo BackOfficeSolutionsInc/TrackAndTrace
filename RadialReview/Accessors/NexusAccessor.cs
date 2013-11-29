@@ -8,13 +8,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Text.RegularExpressions;
+using RadialReview.Models.Responsibilities;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Accessors
 {
     public class NexusAccessor : BaseAccessor
     {
         public static UrlAccessor _UrlAccessor = new UrlAccessor();
-        public String JoinOrganizationUnderManager(UserOrganizationModel manager, OrganizationModel organization,Boolean isManager,String title, String email)
+        public String JoinOrganizationUnderManager(UserOrganizationModel manager, OrganizationModel organization,Boolean isManager,long orgPositionId, String email)
         {
             if (!Emailer.IsValid(email))
                 throw new RedirectException(ExceptionStrings.InvalidEmail);
@@ -33,7 +35,18 @@ namespace RadialReview.Accessors
                     newUser.ManagerAtOrganization=isManager;
                     newUser.Organization = manager.Organization;
                     newUser.EmailAtOrganization = email;
-                    newUser.Title = title;
+
+                    var position=db.Get<OrganizationPositionModel>(orgPositionId);
+
+                    if (position.Organization.Id != newUser.Organization.Id)
+                        throw new PermissionsException();
+                    var positionDuration = new PositionDurationModel()
+                    {
+                        Position = position,
+                        Start = DateTime.UtcNow,
+                        PromotedBy=manager.Id,
+                    };
+                    newUser.Positions.Add(positionDuration);
                     db.Save(newUser);
                     newUserId = newUser.Id;
                     tx.Commit();

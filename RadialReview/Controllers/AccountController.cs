@@ -139,7 +139,7 @@ namespace RadialReview.Controllers
             ViewBag.ReturnUrl = Url.Action("Manage");
             try
             {
-                var user = GetOneUserOrganization(organizationId);
+                var user = GetUser(organizationId);
                 ViewBag.ImageUrl = user.ImageUrl();
             }catch(Exception e)
             {

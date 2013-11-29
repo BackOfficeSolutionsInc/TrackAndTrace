@@ -1,5 +1,6 @@
 ﻿using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Interfaces;
 using RadialReview.Utilities;
 using System;
@@ -93,5 +94,66 @@ namespace RadialReview.Accessors
             }
         }
 
+        public List<OrganizationPositionModel> GetOrganizationPositions(UserOrganizationModel caller, long organizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+                    var positions = s.QueryOver<OrganizationPositionModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+                    return positions;
+                }
+            }
+        }
+
+        public void AddOrganizationPosition(UserOrganizationModel caller,long organizationId,long positionId,String customName)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).EditOrganization(organizationId);
+
+                    var existing = s.QueryOver<OrganizationPositionModel>()
+                        .Where(x=>x.Organization.Id==organizationId && positionId==x.Position.Id)
+                        .List().ToList().FirstOrDefault();
+                    /*if (existing!=null)
+                        throw new PermissionsException();*/
+
+                    var org=s.Get<OrganizationModel>(organizationId);
+                    var position=s.Get<PositionModel>(positionId);
+
+                    s.Save(new OrganizationPositionModel() { Organization = org, Position = position,CustomName=customName });
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public List<UserOrganizationModel> GetOrganizationMembers(UserOrganizationModel caller,long organizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+                    return s.Get<OrganizationModel>(organizationId).Members.ToList();
+                }
+            }
+        }
+
+
+        public List<OrganizationTeamModel> GetOrganizationTeams(UserOrganizationModel caller, long organizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+                    return s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+                }
+            }
+        }
     }
 }

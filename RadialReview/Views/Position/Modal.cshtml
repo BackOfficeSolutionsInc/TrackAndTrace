@@ -1,0 +1,30 @@
+﻿@model RadialReview.Models.ViewModels.PositionViewModel
+
+
+<div class="row">
+    <div class="col-sm-3">
+        <label>Job Class:</label>
+    </div>
+    <div class="col-sm-9">
+        @Html.DropDownListFor(x => x.Position, Model.Positions.Select(x => new SelectListItem() { Selected = (x.Id == Model.Position), Text = x.Name.Translate(), Value = "" + x.Id }), new { id="positionSelector"})
+    </div>
+</div>
+<div class="smallBreak"></div>
+<div class="smallBreak"></div>
+<div class="row">
+    <div class="col-sm-3">
+        <label>Job Title:</label>
+    </div>
+    <div class="col-sm-9">
+        @Html.TextBoxFor(x => x.PositionName, new { id="customPosition" })
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("#positionSelector").change(function () {
+                $("#customPosition").val($("#positionSelector option:selected").text());
+                $("#customPosition")[0].select();
+        })
+    });
+</script>

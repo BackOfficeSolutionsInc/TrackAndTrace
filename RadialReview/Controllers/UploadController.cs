@@ -25,7 +25,7 @@ namespace RadialReview.Controllers
         [HttpPost]
         public ActionResult Image(HttpPostedFileBase file, String forType)
         {
-            var user=GetUser();
+            var user=GetUserModel();
             if (user == null)
                 throw new PermissionsException();
 

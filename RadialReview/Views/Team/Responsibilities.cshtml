@@ -1,0 +1,26 @@
+﻿@model RadialReview.Models.ViewModels.TeamResponsibilitiesViewModel
+
+@{
+    ViewBag.Title = "Responsibilities";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<table>
+    <tr>
+        <th>Responsibility</th>
+        <th style="width:100px;"><a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add Responsibility", Url.Action("Modal","Responsiblities"),Url.Action("Add","Responsibilities"))">+</a></th>
+    </tr>
+    @foreach(var r in Model.Responsibilities)
+    {
+        <tr>
+            <td>
+                @r.Responsibility
+            </td>
+            <td>
+                <a href="#" class="btn btn-primary fullWidth">Edit</a>
+            </td>
+        </tr>
+    }
+
+</table>
+

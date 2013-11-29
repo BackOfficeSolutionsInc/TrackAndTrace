@@ -41,6 +41,22 @@ namespace RadialReview
             return value.ToString();
         }
 
+        public static HtmlString GetIcon(this bool value) 
+        {
+            /*var fieldInfo = value.GetType().GetField(value.ToString());
+            var iconAttr = fieldInfo.GetCustomAttributes(typeof(IconAttribute), false) as IconAttribute[];
+            if (iconAttr == null) return new HtmlString(string.Empty);
+            if (iconAttr.Length > 0)
+            {
+                var name = GetDisplayName(value);
+                return iconAttr[0].AsHtml(name);
+            }
+            return new HtmlString(string.Empty);*/
+            if (value)
+                return new HtmlString("<span class='glyphicon glyphicon-ok-sign' style='color:#468847'></span>");
+            return new HtmlString("<span class='glyphicon glyphicon-minus-sign' style='color:#B94A48'></span>");
+        }
+
         public static HtmlString GetIcon<T>(this T value) where T : struct, IConvertible
         {
             var fieldInfo = value.GetType().GetField(value.ToString());
