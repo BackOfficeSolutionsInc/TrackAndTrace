@@ -1,4 +1,4 @@
-﻿@model RadialReview.Models.ViewModels.OrganizationMembersViewModel
+﻿@model RadialReview.Models.ViewModels.OrgMembersViewModel
 
 @{
     ViewBag.Title = "Members";
@@ -10,27 +10,46 @@
 <br />
 <br />
 
-@Html.AlertBoxDismissable("The next step is adding teams to your organization. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
+@Html.AlertBoxDismissable("The next step is adding members to your organization. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
 
 
 
 <table class="table">
     <tr>
-        <th style="width:100px" class="alignCenter">Verified</th>
+        <th style="width:71px" class="alignCenter">Verified</th>
         <th>Name</th>
         <th>Email</th>
+        <th style="width:150px" class="alignCenter">Positions</th>
+        <th style="width:100px" class="alignCenter">Teams</th>
         <th style="width:150px" class="alignCenter">Responsibilities</th>
-        <th style="width:100px">
+        <th style="width:50px">
             <button class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">+</button>
         </th>
     </tr>
     @foreach (var p in Model.Users)
     {
         <tr>
-            <td class="alignCenter">@((p.User!=null).GetIcon())</td>
-            <td>@p.Name()</td>
-            <td><a href="mailto:@p.EmailAtOrganization">@p.EmailAtOrganization</a></td>
-            <td class="alignCenter"><a href="#" class="fullWidth">Edit (@p.Accountabilities.Count())</a></td>
+            <td class="alignCenter">@((p.Verified).GetIcon())</td>
+            <td>@p.Name</td>
+            <td><a href="mailto:@p.Email">@p.Email</a></td>
+            <td class="alignCenter">
+                <a href="@Url.Action("Positions","User",new {id = p.Id})" class="fullWidth">
+                    @if (p.NumPositions == 1)
+                    {
+                        @p.PositionTitle
+                    }else{
+                        @:Edit (@p.NumPositions)
+                    }
+                </a>
+
+            </td>
+            <td class="alignCenter"><a href="@Url.Action("Teams","User",new {id = p.Id})" class="fullWidth">Edit (<span title="Number of Teams">@p.NumTeams</span>)</a></td>
+            <td class="alignCenter">
+                <a href="@Url.Action("Edit", "Responsibilities", new { id = p.Id })" class="fullWidth">
+                Edit (<span title="Number of Individual Responsibilities">@(p.NumIndividualResponsibilities)</span>+<span title="Number of Other Responsibilities">@(p.NumTotalResponsibilities - p.NumIndividualResponsibilities)</span>)
+                </a>
+            </td>
+           
             <td></td>
         </tr>
     }

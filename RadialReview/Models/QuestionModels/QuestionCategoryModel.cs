@@ -44,6 +44,11 @@ namespace RadialReview.Models
         {
             return new List<IOrigin>();
         }
+
+        public QuestionCategoryModel()
+        {
+            Category = new LocalizedStringModel();
+        }
     }
 
     public class QuestionCategoryModelMap : ClassMap<QuestionCategoryModel>

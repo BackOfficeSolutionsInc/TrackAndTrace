@@ -1,0 +1,73 @@
+﻿@model RadialReview.Models.UserOrganizationModel
+
+@{
+    ViewBag.Title = "Teams - " + Model.GetName();
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@Html.Partial("Partial/manageheader")
+<br />
+<br />
+
+
+<h2>Edit teams: <i>@Model.GetName()</i></h2>
+
+<table class="table">
+    <tr>
+        <th>Team</th>
+        <th style="width: 150px;" class="alignCenter">Start</th>
+        <th style="width: 150px;" class="alignCenter">End</th>
+        <th style="width:100px;">
+            <a class="btn btn-default fullWidth"
+               onclick="@Html.ShowModal(
+                        "Add Team",
+                        Url.Action("TeamModal", "User", new {userId=Model.Id}),
+                        Url.Action("TeamModal", "User")
+                    )">+</a>
+        </th>
+    </tr>
+    @foreach (var p in Model.Teams.OrderBy(x => x.DeleteTime))
+    {
+        <tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
+            <td class="position">@p.Team.Name</td>
+            <td class="alignCenter">@p.Start.ToShortDateString()</td>
+            <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
+            <td class="deleteButton">
+                @if (p.DeleteTime == null)
+                {
+                    <a onclick="Delete(@p.Id)" class="btn btn-danger fullWidth">Delete</a>
+                }
+                else
+                {
+                    <div class="fullWidth alignCenter" style="color: #929292">Deleted</div>
+                }
+            </td>
+        </tr>
+    }
+</table>
+@using (var s = Html.BeginScripts())
+{
+    <script>
+        function Delete(id)
+        {
+            $.ajax({
+                url: "/User/RemoveTeam/" + id + "?userId=@Model.Id",
+                success: function (data) {
+                    $("#row_" + id).addClass("danger");
+                    $("#row_" + id + " .deleteButton").html("<div class='fullWidth alignCenter' style='color: #929292'>Deleted</div>");
+                    $("#row_" + id + " .endTime").html("Just now");
+                }
+            })
+        }
+    </script>
+}
+
+@using (var s = Html.BeginStyles())
+{
+    <style>
+        tr.danger .position {
+            text-decoration: line-through;
+        }
+    </style>
+}

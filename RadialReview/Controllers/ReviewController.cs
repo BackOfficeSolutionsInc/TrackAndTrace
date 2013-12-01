@@ -221,7 +221,7 @@ namespace RadialReview.Controllers
                         //_ReviewAccessor.UpdateIndividualReview(user, review);
 
                         var subject = String.Format(RadialReview.Properties.EmailStrings.NewReview_Subject, organization.Name.Translate());
-                        var body = String.Format(EmailStrings.NewReview_Body,s.Name(), user.Name(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
+                        var body = String.Format(EmailStrings.NewReview_Body,s.GetName(), user.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
 
                         Emailer.SendEmail(s.EmailAtOrganization, subject, body);
                     }

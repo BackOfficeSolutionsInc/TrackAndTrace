@@ -7,7 +7,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class ReviewModel : ILongIdentifiable
+    public class ReviewModel
     {
         public virtual long Id { get; protected set; }
         public virtual long ForReviewsId { get;set;}

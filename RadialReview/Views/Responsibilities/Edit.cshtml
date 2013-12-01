@@ -1,0 +1,46 @@
+﻿@model RadialReview.Models.ViewModels.ResponsibilityTablesViewModel
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Partial("Partial/manageheader")
+
+<br />
+<br />
+<h2>Edit responsibilities</h2>
+    @foreach (var table in Model.ResponsibilityTables)
+{
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 class="panel-title">@table.GroupType: <b>@table.Name</b></h2>
+        </div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <tr>
+                    <th>Responsibility</th>
+                    <th class="alignCenter" style="width:200px;">Category</th>
+                    <th class="alignCenter" style="width:100px;">
+                        <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
+                Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),
+                Url.Action("Modal", "Responsibilities"))">
+                            +
+                        </a>
+                    </th>
+                </tr>
+                @foreach (var r in table.Responsibilities)
+                {
+                    <tr>
+                        <td>@r.Responsibility</td>
+                        <td class="alignCenter">@r.Category</td>
+                        <td class="alignCenter">
+                            <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Edit responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
+                        Url.Action("Modal", "Responsibilities", new {id=r.Id }),
+                        Url.Action("Modal", "Responsibilities"))">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+}

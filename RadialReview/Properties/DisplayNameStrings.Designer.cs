@@ -169,6 +169,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new.
+        /// </summary>
+        public static string createNew {
+            get {
+                return ResourceManager.GetString("createNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create organization.
         /// </summary>
         public static string createOrganization {
@@ -574,6 +583,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Position.
+        /// </summary>
+        public static string position {
+            get {
+                return ResourceManager.GetString("position", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Question.
         /// </summary>
         public static string question {
@@ -696,6 +714,15 @@ namespace RadialReview.Properties {
         public static string take {
             get {
                 return ResourceManager.GetString("take", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team.
+        /// </summary>
+        public static string team {
+            get {
+                return ResourceManager.GetString("team", resourceCulture);
             }
         }
         

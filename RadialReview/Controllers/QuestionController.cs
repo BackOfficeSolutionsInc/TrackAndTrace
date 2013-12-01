@@ -130,7 +130,7 @@ namespace RadialReview.Controllers
 
             q.Question.UpdateDefault(question);
 
-            _QuestionAccessor.EditQuestion(caller,model.Id,origin,q.Question,model.Category.Id);
+            _QuestionAccessor.EditQuestion(caller, model.Id, origin, q.Question, model.Category.Id);
             return RedirectToAction("Admin", new { id = model.Id,organizationId=organizationId});
         }
 

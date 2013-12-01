@@ -330,18 +330,18 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin())
                 return this;
 
-            if (!team.Secret && team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
+            if (!team.Secret && team.Organization.Id==caller.Organization.Id)//&& team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
                 return this;
 
-            if (team.Secret && (team.CreatedBy == caller.Id || team.Members.Any(x => x.Id == caller.Id)))
-                return this;
+            if (team.Secret)// && (team.CreatedBy == caller.Id || team.Members.Any(x => x.Id == caller.Id)))
+                throw new NotImplementedException();
+                //return this;
 
             throw new PermissionsException();
         }
 
         public PermissionsUtility EditTeam(long teamId)
         {
-
             if (IsRadialAdmin())
                 return this;
 
@@ -353,11 +353,15 @@ namespace RadialReview.Utilities
             var team = session.Get<OrganizationTeamModel>(teamId);
             if ( caller.IsManager() || !team.OnlyManagersEdit)
             {
-                if (!team.Secret && team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
-                    return this;
+                if (team.Organization.Id == caller.Organization.Id)
+                {
+                    if (!team.Secret)// && team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
+                        return this;
 
-                if (team.Secret && (team.CreatedBy == caller.Id || team.Members.Any(x => x.Id == caller.Id)))
-                    return this;
+                    if (team.Secret)// && (team.CreatedBy == caller.Id || team.Members.Any(x => x.Id == caller.Id)))
+                        throw new NotImplementedException();
+                    /*return this;*/
+                }
             }
 
             throw new PermissionsException();

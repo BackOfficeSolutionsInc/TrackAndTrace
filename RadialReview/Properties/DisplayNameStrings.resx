@@ -363,4 +363,13 @@
   <data name="organizationQuestions" xml:space="preserve">
     <value>Organization questions</value>
   </data>
+  <data name="team" xml:space="preserve">
+    <value>Team</value>
+  </data>
+  <data name="position" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="createNew" xml:space="preserve">
+    <value>Create new</value>
+  </data>
 </root>

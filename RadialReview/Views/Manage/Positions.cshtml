@@ -26,7 +26,7 @@
         <tr>
             <td>@p.Name</td>
             <td>@p.SimilarTo</td>
-            <td><a href="#" class="btn btn-primary fullWidth">Edit</a></td>
+            <td class="alignCenter"><a href="@Url.Action("Edit", "Responsibilities", new { id=p.Id})" class="fullWidth alignCenter">Edit (@p.NumAccountabilities)</a></td>
             <td class="alignCenter">@p.NumPeople</td>
             <td><a href="#" class="btn btn-primary fullWidth">Edit</a></td>
         </tr>

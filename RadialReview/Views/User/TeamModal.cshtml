@@ -1,0 +1,57 @@
+﻿@model RadialReview.Controllers.UserController.UserTeamViewModel
+
+
+@Html.HiddenFor(x => x.UserId)
+<div class="row">
+    <div class="col-sm-3">
+        <label>Team:</label>
+    </div>
+    <div class="col-sm-9">
+        @Html.DropDownListFor(x => x.TeamId, Model.OrgTeams, new { id = "teamSelector", @class = "form-control" })
+    </div>
+</div>
+<div class="hidden" id="newTeam">
+    <hr />
+    <div class="smallBreak"></div>
+    <div class="row">
+        <div class="col-sm-3">
+            <label>New team:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.TextBoxFor(x => x.CustomTeam, new { id = "newTeamInput", @class = "form-control", placeholder = "New team name" })
+        </div>
+    </div>
+    <div class="smallBreak"></div>
+    <div class="row">
+        <div class="col-sm-3">
+            <label>Only managers edit:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.CheckBoxFor(x => x.CustomOnlyManagersEdit, new {  @class = "checkbox" })
+        </div>
+    </div>
+</div>
+
+<script>
+    function Update() {
+        if ($("#teamSelector").val() == -1) {
+            $("#newTeam").removeClass("hidden");
+        } else {
+            $("#newTeam").addClass("hidden");
+            $("#newTeamInput").val(null);
+        }
+    }
+
+    $(function () {
+        $("#teamSelector").change(function () {
+            Update();
+        })
+
+        $("#newteamSelector").change(function () {
+            $("#newTeamInput").val($("#newteamSelector option:selected").text());
+            setTimeout(function () { $("#newTeamInput")[0].select(); }, 10);
+        });
+
+        Update();
+    });
+</script>

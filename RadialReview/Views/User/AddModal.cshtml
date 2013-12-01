@@ -13,9 +13,9 @@
         var list = Model.Positions.Select<RadialReview.Models.Responsibilities.OrganizationPositionModel, SelectListItem>(
             x => new SelectListItem
                     {
-                            Selected=(Model.Position==x.ResponsibilityGroupId),
+                            Selected=(Model.Position==x.Id),
                             Text=x.CustomName,
-                            Value = ""+x.ResponsibilityGroupId
+                            Value = "" + x.Id
                     }).ToList();
     }
 

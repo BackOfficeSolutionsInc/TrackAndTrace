@@ -92,7 +92,7 @@ namespace RadialReview.Accessors
             var found=session.QueryOver<PositionModel>().List().ToList();
             foreach(var p in positions)
             {
-                if (!found.Any(x=>x.Name.Def.Value==p))
+                if (!found.Any(x=>x.Name.Default.Value==p))
                 {
                     session.Save(new PositionModel() { Name = new LocalizedStringModel(p) });
                 }

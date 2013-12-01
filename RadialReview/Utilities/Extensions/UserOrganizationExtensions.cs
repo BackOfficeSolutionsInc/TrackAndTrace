@@ -8,12 +8,12 @@ namespace RadialReview
 {
     public static partial class UserOrganizationExtensions
     {
-        public static String Name(this UserOrganizationModel self)
+        /*public static String Name(this UserOrganizationModel self)
         {
             if (self.User == null)
                 return self.EmailAtOrganization;
             return self.User.Name();
-        }
+        }*/
         public static String ImageUrl(this UserOrganizationModel self)
         {
             if (self.User == null || self.User.Image == null)

@@ -1,0 +1,56 @@
+﻿@model RadialReview.Controllers.UserController.UserPositionViewModel
+
+@Html.HiddenFor(x => x.UserId)
+<div class="row">
+    <div class="col-sm-3">
+        <label>Position:</label>
+    </div>
+    <div class="col-sm-9">
+        @Html.DropDownListFor(x => x.PositionId, Model.OrgPositions, new { id = "positionSelector", @class = "form-control" })
+    </div>
+</div>
+<div class="hidden" id="newPosition">
+    <hr />
+    <div class="smallBreak"></div>
+    <div class="row">
+        <div class="col-sm-3">
+            <label>New position:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.DropDownListFor(x => x.CustomPositionId, Model.Positions, new { id = "newPositionSelector", @class = "form-control" })
+        </div>
+    </div>
+    <div class="smallBreak"></div>
+    <div class="row">
+        <div class="col-sm-3">
+            <label>Custom name:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.TextBoxFor(x => x.CustomPosition, new { id = "newPositionInput", @class = "form-control", placeholder = "New position name" })
+        </div>
+    </div>
+</div>
+
+<script>
+    function Update() {
+        if ($("#positionSelector").val() == -1) {
+            $("#newPosition").removeClass("hidden");
+        } else {
+            $("#newPosition").addClass("hidden");
+            $("#newPositionInput").val(null);
+        }
+    }
+
+    $(function () {
+        $("#positionSelector").change(function () {
+            Update();
+        })
+
+        $("#newPositionSelector").change(function () {
+            $("#newPositionInput").val($("#newPositionSelector option:selected").text());
+            setTimeout(function () { $("#newPositionInput")[0].select(); }, 10);
+        });
+
+        Update();
+    });
+</script>

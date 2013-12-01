@@ -3,8 +3,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="SHORTCUT ICON" href="/content/favicon.ico" />
+
     <title>@ViewBag.Title - @RadialReview.Properties.ProductStrings.ProductName</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
@@ -238,6 +241,7 @@
     </div>
     <div id="footer">
         <p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName</p>
+        @Html.Partial("Partial/Footer")
     </div>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

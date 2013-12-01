@@ -92,7 +92,7 @@ namespace RadialReview.Accessors
                     var reviewModel = new ReviewModel()
                     {
                         ForUserId = forUser.Id,
-                        ForReviewsId=reviewContainer.Id,
+                        ForReviewsId = reviewContainer.Id,
                         DueDate=reviewContainer.DueDate,
                         Name=reviewContainer.ReviewName,                        
                     };
@@ -328,7 +328,7 @@ namespace RadialReview.Accessors
                     //Edit Question
                     if (question != null)
                     {
-                        q.Question.UpdateDefault(question.Def.Value);
+                        q.Question.UpdateDefault(question.Default.Value);
                         //q.Question = s.Get<LocalizedStringModel>(question.Id);
                     }
                     //Edit CategoryId
@@ -371,7 +371,6 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
 
     }
 }

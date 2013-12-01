@@ -211,6 +211,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IdentityStore.cs" />
     <Compile Include="Controllers\ImageController.cs" />
+    <Compile Include="Controllers\LegalController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NexusController.cs" />
     <Compile Include="Controllers\OrganizationController.cs" />
@@ -246,6 +247,7 @@
     <Compile Include="Models\Reviews\ReviewModel.cs" />
     <Compile Include="Models\Reviews\ReviewsModel.cs" />
     <Compile Include="Models\UserModels\PositionDuration.cs" />
+    <Compile Include="Models\UserModels\TeamDuration.cs" />
     <Compile Include="Models\ViewModels\CreateUserOrganizationViewModel.cs" />
     <Compile Include="Models\ViewModels\ImageUploadViewModel.cs" />
     <Compile Include="Models\ViewModels\IssueReviewViewModel.cs" />
@@ -256,6 +258,8 @@
     <Compile Include="Models\ViewModels\PositionViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionModalViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionsViewModel.cs" />
+    <Compile Include="Models\ViewModels\ResponsibilitiesViewModel.cs" />
+    <Compile Include="Models\ViewModels\ResponsibilityViewModel.cs" />
     <Compile Include="Models\ViewModels\ReviewsListViewModel.cs" />
     <Compile Include="Models\ViewModels\ReviewsViewModel.cs" />
     <Compile Include="Models\ViewModels\TeamResponsibilitiesViewModel.cs" />
@@ -366,6 +370,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\datepicker.css" />
+    <Content Include="Content\favicon.ico" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\img\footer.png" />
     <Content Include="Content\img\little_pluses.png" />
@@ -476,13 +481,21 @@
     <Content Include="Views\Team\Modal.cshtml" />
     <Content Include="Views\Manage\Members.cshtml" />
     <Content Include="Views\Team\Responsibilities.cshtml" />
+    <Content Include="Views\Responsibilities\Edit.cshtml" />
+    <Content Include="Views\Responsibilities\Modal.cshtml" />
+    <Content Include="Views\Shared\Partial\Footer.cshtml" />
+    <Content Include="Views\Legal\TOS.cshtml" />
+    <Content Include="Views\Legal\Privacy.cshtml" />
+    <Content Include="Views\User\Positions.cshtml" />
+    <Content Include="Views\User\PositionModal.cshtml" />
+    <Content Include="Views\User\Teams.cshtml" />
+    <Content Include="Views\User\TeamModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="External\" />
     <Folder Include="Views\Img\" />
     <Folder Include="Views\Members\" />
-    <Folder Include="Views\Responsibilities\" />
     <Folder Include="Views\Url\" />
   </ItemGroup>
   <ItemGroup>

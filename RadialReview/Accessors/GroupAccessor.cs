@@ -18,17 +18,17 @@ namespace RadialReview.Accessors
             {
                 using (var db = session.BeginTransaction())
                 {
-                    var owner=session.Get<UserOrganizationModel>(caller.Id);
+                    var owner = session.Get<UserOrganizationModel>(caller.Id);
 
                     var group = owner.Groups.FirstOrDefault(x => x.Id == groupId);
                     if (group == null)
                     {
-                        group=owner.ManagingGroups.FirstOrDefault(x=>x.Id==groupId);
+                        group = owner.ManagingGroups.FirstOrDefault(x => x.Id == groupId);
                         if (group==null)
                             throw new PermissionsException();
                     }
 
-                    var result = session.Query<GroupModel>().Where(x => x.Id == groupId).FetchMany(x => x.GroupUsers).ThenFetch(x=>x.User).ToFuture();
+                    var result = session.Query<GroupModel>().Where(x => x.Id == groupId).FetchMany(x => x.GroupUsers).ThenFetch(x => x.User).ToFuture();
                     session.Query<GroupModel>().Where(x => x.Id == groupId).FetchMany(x => x.CustomQuestions).ToFuture();
                     session.Query<GroupModel>().Where(x => x.Id == groupId).FetchMany(x => x.Managers).ToFuture();
                     return result.AsEnumerable().SingleOrDefault();
@@ -45,7 +45,8 @@ namespace RadialReview.Accessors
                     if (group.Id != 0 && !createdBy.ManagingGroups.Any(x => x.Id == group.Id))
                         throw new PermissionsException();
 
-                    if (group.Id == 0 && !group.Managers.Any(x=>x.Id==createdBy.Id)){
+                    if (group.Id == 0 && !group.Managers.Any(x => x.Id == createdBy.Id))
+                    {
                         group.Managers.Add(createdBy);
                     }
 

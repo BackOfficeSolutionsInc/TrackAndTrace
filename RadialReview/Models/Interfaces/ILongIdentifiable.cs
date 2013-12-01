@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace RadialReview.Models.Interfaces
 {
+    
     public interface ILongIdentifiable
     {
         long Id { get; }

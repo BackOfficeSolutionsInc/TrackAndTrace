@@ -12,6 +12,10 @@
     position: relative;
 }
 
+html {
+    overflow-y: scroll;
+}
+
 html, body {
     height: 100%;
     position: relative;
@@ -82,11 +86,12 @@ html, body {
 #footer {
     text-align: center;
     position: relative;
-    margin-top: -150px; /* negative value of footer height */
-    height: 150px;
+    margin-top: -40px; /* negative value of footer height */
+    height: 300px;
     clear: both;
     background-color: rgba(0, 0, 0, 0.41);
     color: #c9c8d8;
+    overflow-y: hidden;
     border-top: 1px solid #505050;
     background: url('img/footer.png');
     background: url('img/footer.png'),-moz-linear-gradient(top, #1c2235 0%,#262e4a 6%, #000000 100%); /* FF3.6+ */
@@ -124,6 +129,7 @@ html, body {
     background-color: rgba(60, 104, 255, 0.14);
     -webkit-box-shadow: 0px 0px 3px 0px rgba(1, 1, 1, 0.25);
     box-shadow: 0px 0px 3px 0px rgba(1, 1, 1, 0.25);
+    margin-bottom: -30px;
 }
 
 .smallBreak {
@@ -138,8 +144,8 @@ html, body {
     font-weight: bold;
 }
 
-.noOpacity{
-    opacity:0;
+.noOpacity {
+    opacity: 0;
 }
 
 .startHidden {
@@ -151,7 +157,7 @@ html, body {
 }
 
     .startHidden.unhide {
-        opacity: 1 ;
+        opacity: 1;
     }
 
 /*
@@ -391,4 +397,28 @@ input[type="checkbox"].input-validation-error {
 
 .validation-summary-valid {
     display: none;
+}
+
+.review {
+    border: 1px solid #D1D1D1;
+    background-color: #FDFDFD;
+    padding: 30px 30px 40px 30px;
+    border-radius: 10px;
+}
+
+.noBullet li {
+    list-style-type: none;
+}
+
+.noBullet{
+
+    padding:0px;
+}
+
+.footer.container {
+    color: #C9C8D8;
+}
+
+.footer a {
+    color: #C9C8D8;
 }

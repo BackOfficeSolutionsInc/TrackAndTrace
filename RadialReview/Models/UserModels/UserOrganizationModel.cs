@@ -16,9 +16,8 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class UserOrganizationModel : IOrigin, IDeletable
+    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable
     {
-        public virtual long Id { get; protected set; }
         public virtual String EmailAtOrganization { get; set; }
         public virtual Boolean ManagerAtOrganization { get; set; }
         public virtual Boolean ManagingOrganization { get; set; }
@@ -27,7 +26,6 @@ namespace RadialReview.Models
         public virtual DateTime AttachTime { get; set; }
         public virtual DateTime? DetachTime { get; set; }
         public virtual UserModel User { get; set; }
-        public virtual OrganizationModel Organization { get; set; }
         public virtual IList<UserOrganizationModel> ManagingUsers { get; set; }
         public virtual IList<UserOrganizationModel> ManagedBy { get; set; }
         public virtual IList<GroupModel> Groups { get; set; }
@@ -37,11 +35,8 @@ namespace RadialReview.Models
         public virtual IList<QuestionModel> CreatedQuestions { get; set; }
         public virtual IList<ReviewModel> Reviews { get; set; }
         public virtual List<ReviewsModel> CreatedReviews { get; set; }
-        public virtual IList<ResponsibilityModel> Accountabilities { get; set; }
-        
         public virtual IList<PositionDurationModel> Positions { get; set; }
-
-
+        public virtual IList<TeamDurationModel> Teams { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual OriginType GetOriginType()
         {
@@ -50,7 +45,7 @@ namespace RadialReview.Models
 
         public virtual String GetSpecificNameForOrigin()
         {
-            return this.Name();
+            return this.GetName();
         }
 
         #region Helpers
@@ -77,7 +72,7 @@ namespace RadialReview.Models
         }*/
         #endregion
 
-        public UserOrganizationModel()
+        public UserOrganizationModel() : base()
         {
             ManagedBy = new List<UserOrganizationModel>();
             ManagingUsers = new List<UserOrganizationModel>();
@@ -91,8 +86,8 @@ namespace RadialReview.Models
             Properties = new Dictionary<string, List<String>>();
             //CreatedReviews = new List<ReviewsModel>();
             Reviews = new List<ReviewModel>();
-            Accountabilities = new List<ResponsibilityModel>();
             Positions = new List<PositionDurationModel>();
+            Teams = new List<TeamDurationModel>();
         }
 
         public override string ToString()
@@ -117,13 +112,24 @@ namespace RadialReview.Models
             ownedBy.Add(Organization);
             return ownedBy;
         }
+
+        public override string GetName()
+        {
+            if (this.User == null)
+                return this.EmailAtOrganization;
+            return this.User.Name();
+        }
+
+        public override string GetGroupType()
+        {
+            return DisplayNameStrings.user;
+        }
     }
 
-    public class UserOrganizationModelMap : ClassMap<UserOrganizationModel>
+    public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
     {
         public UserOrganizationModelMap()
         {
-            Id(x => x.Id);
             //Map(x => x.Title);
 
             Map(x => x.IsRadialAdmin);
@@ -135,10 +141,11 @@ namespace RadialReview.Models
             Map(x => x.EmailAtOrganization);
 
             //Reviews
-            HasMany(x => x.Reviews).Cascade.SaveUpdate();
-            HasMany(x => x.Accountabilities)
-                .Not.LazyLoad()
+            HasMany(x => x.Reviews)
                 .Cascade.SaveUpdate();
+            /*HasMany(x => x.Responsibilities)
+                .Not.LazyLoad()
+                .Cascade.SaveUpdate();*/
             //HasMany(x => x.CreatedReviews).Cascade.SaveUpdate();
 
             HasMany(x => x.Positions)
@@ -148,9 +155,12 @@ namespace RadialReview.Models
             References(x => x.User)
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();
-            References(x => x.Organization)
+            /*References(x => x.Organization)
                 .Column("Organization_Id")
+                .Cascade.SaveUpdate();*/
+            HasMany(x => x.Teams)
                 .Cascade.SaveUpdate();
+
             HasManyToMany(x => x.ManagedBy)
                 .Table("ManagedMembers")
                 .ParentKeyColumn("Subordinate")

@@ -2,6 +2,7 @@
 using NHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,8 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class OrganizationModel : IOrigin, IDeletable
+    public class OrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable
     {
-        public virtual long Id { get; set; }
-
         [Display(Name = "organizationName", ResourceType = typeof(DisplayNameStrings))]
         public virtual LocalizedStringModel Name { get; set; }
 
@@ -78,13 +77,22 @@ namespace RadialReview.Models
             var ownedBy = new List<IOrigin>();
             return ownedBy;
         }
+
+        public override string GetName()
+        {
+            return Name.Translate();
+        }
+
+        public override string GetGroupType()
+        {
+            return DisplayNameStrings.organization;
+        }
     }
 
-    public class OrganizationModelMap : ClassMap<OrganizationModel>
+    public class OrganizationModelMap : SubclassMap<OrganizationModel>
     {
         public OrganizationModelMap()
         {
-            Id(x => x.Id);
             Map(x => x.ManagersCanEdit);
             Map(x => x.DeleteTime);
             Map(x=>x.CreationTime);
@@ -98,14 +106,14 @@ namespace RadialReview.Models
                 .Cascade.SaveUpdate();
             HasMany(x => x.Members)
                 .KeyColumn("Organization_Id")
-                .Inverse();
+                .Cascade.SaveUpdate();
             HasMany(x => x.Payments)
                 .Cascade.SaveUpdate();
             HasMany(x => x.Invoices)
                 .Cascade.SaveUpdate();
             HasMany(x => x.Industries)
                 .KeyColumn("OrganizationId")
-                .Cascade.SaveUpdate();
+                .Inverse();
             HasMany(x => x.QuestionCategories)
                 .KeyColumn("OrganizationId")
                 .Inverse();

@@ -9,7 +9,7 @@ namespace RadialReview.Models
 {
     public class ReviewsModel : ILongIdentifiable
     {
-        public virtual long Id { get;protected set; }
+        public virtual long Id { get; protected set; }
         public virtual long CreatedById { get; set; }
         public virtual DateTime DateCreated { get; set; }
         public virtual DateTime DueDate { get; set; }

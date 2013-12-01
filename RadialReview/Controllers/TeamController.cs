@@ -32,10 +32,10 @@ namespace RadialReview.Controllers
         public JsonResult Modal(OrganizationTeamModel model)
         {
             var user = GetUser();
-            var team = _TeamAccessor.EditTeam(user, model.ResponsibilityGroupId,model.Name,model.OnlyManagersEdit);
+            var team = _TeamAccessor.EditTeam(user, model.Id,model.Name,model.OnlyManagersEdit);
             return Json(JsonObject.Success);
         }
-
+        /*
         public ActionResult Responsibilities(long id)
         {
             var teamId = id;
@@ -49,7 +49,7 @@ namespace RadialReview.Controllers
             };
             return View(model);
         }
-        
+        */
         /*
         public ActionResult Create()
         {

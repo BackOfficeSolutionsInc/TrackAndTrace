@@ -12,12 +12,12 @@ namespace RadialReview.Utilities
     {
         public static List<DragDropItem> ToDragDropList(this IEnumerable<UserOrganizationModel> users)
         {
-            return users.Select(x => new DragDropItem{ 
-                Id=x.Id,
-                DisplayName=x.Name(),
+            return users.Select(x => new DragDropItem{
+                Id = x.Id,
+                DisplayName=x.GetName(),
                 ImageUrl=x.ImageUrl(94,94),
                 Classes=(x.IsAttached()?"attached":"unattached")+" "+String.Join(" ",x.Properties.GetOrDefault("classes",new List<String>())),
-                AltText = x.Name()+AltTextBuilder(x.Properties.GetOrDefault("altText",new List<String>())),
+                AltText = x.GetName()+AltTextBuilder(x.Properties.GetOrDefault("altText",new List<String>())),
             }).ToList();
         }
 

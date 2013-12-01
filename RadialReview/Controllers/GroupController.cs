@@ -73,7 +73,7 @@ namespace RadialReview.Controllers
             var possibleUsers = orgUser.AllSubordinatesAndSelf();
             foreach (var p in possibleUsers)
             {
-                if (directManage.Any(x => x.Id == p.Id))    p.Properties.Update("classes", new List<String>(), x => x.Add("directlyManaged"));
+                if (directManage.Any(x => x.Id == p.Id)) p.Properties.Update("classes", new List<String>(), x => x.Add("directlyManaged"));
                 else                                        p.Properties.Update("classes", new List<String>(), x => x.Add("subordinate"));
                 if (p.Id == orgUser.Id)
                 {                                  
@@ -85,7 +85,7 @@ namespace RadialReview.Controllers
             }
 
             var start = possibleUsers.Where(x => !group.GroupUsers.Any(y => x.Id == y.Id)).OrderBy(x => x.Properties.GetOrDefault("parents", new List<String>()).Count).ToDragDropList();
-            var end   = possibleUsers.Where(x =>  group.GroupUsers.Any(y => x.Id == y.Id)).OrderBy(x => x.Properties.GetOrDefault("parents", new List<String>()).Count).ToDragDropList();
+            var end = possibleUsers.Where(x => group.GroupUsers.Any(y => x.Id == y.Id)).OrderBy(x => x.Properties.GetOrDefault("parents", new List<String>()).Count).ToDragDropList();
 
             var groupViewModel = new GroupViewModel()
             {

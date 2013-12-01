@@ -39,7 +39,7 @@ namespace RadialReview.Controllers
         {
             var user = GetUserModel();
             var basicPlan=_PaymentAccessor.BasicPaymentPlan();
-            var localizedName=new LocalizedStringModel(){Def=new LocalizedStringPairModel(name)};
+            var localizedName=new LocalizedStringModel(){Default=new LocalizedStringPairModel(name)};
             var organization=_OrganizationAccessor.CreateOrganization(user, localizedName,managersCanEdit,basicPlan);
             return RedirectToAction("Index","Manage", new { organizationId = organization.Id });
         }

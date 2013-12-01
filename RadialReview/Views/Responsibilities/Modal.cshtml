@@ -1,0 +1,62 @@
+﻿@model RadialReview.Models.ViewModels.ResponsibilityViewModel
+
+@{
+    ViewBag.Title = "Modal";
+}
+
+<div class="form">        
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.ResponsibilityGroupId)
+    <div class="row">
+        <div class="col-sm-3">
+            <label>Responsibility:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.TextBoxFor(x => x.Responsibility, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="smallBreak"></div>
+    <div class="smallBreak"></div>
+    <div class="row">
+        <div class="col-sm-3">
+            <label>Category:</label>
+        </div>
+        <div class="col-sm-4">
+            @Html.DropDownListFor(x => x.CategoryId, Model.Categories.Select(x =>
+                    new SelectListItem()
+                    {
+                        Selected = (x.Id == Model.CategoryId),
+                        Text = x.Category.Translate(),
+                        Value = "" + x.Id
+                    }), new { id = "positionSelector", @class = "form-control" })
+        </div>
+        <div class="col-sm-5 hidden" id="newCategory">
+            @Html.TextBoxFor(x => x.NewCategory, new { id = "newCategoryInput", placeholder = "New category name", @class = "form-control" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <label>Active:</label>
+        </div>
+        <div class="col-sm-1">
+            @Html.CheckBoxFor(x => x.Active, new { @class = "checkbox" })
+        </div>
+    </div>
+</div>
+<script>
+    function Update() {
+        if ($("#positionSelector").val() == -1) {
+            $("#newCategory").removeClass("hidden");
+        } else {
+            $("#newCategory").addClass("hidden");
+            $("#newCategoryInput").val(null);
+        }
+    }
+
+    $(function () {
+        $("#positionSelector").change(function () {
+            Update();
+        })
+        Update();
+    });
+</script>

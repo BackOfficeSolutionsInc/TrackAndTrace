@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace RadialReview
 {
@@ -28,6 +29,15 @@ namespace RadialReview
 
     public static class EnumerableExtensions
     {
+        public static IEnumerable<SelectListItem> ToSelectList<T, TId>(this IEnumerable<T> self, Func<T, String> textSelector, Func<T, TId> idSelector, TId selected = default(TId))
+        {
+            return self.Select(x=>{
+                var id=idSelector(x);
+                var text=textSelector(x);
+                return new SelectListItem(){Selected=(id.Equals(selected)),Text=text,Value=id.ToString()};
+            });
+        }
+
         public static List<T> AsList<T>(this T first,params T[] after){
             var output=new List<T>{first};
             output.AddRange(after);
@@ -58,7 +68,6 @@ namespace RadialReview
             return source.Alive().ToList();
         }
             
-
         public static IEnumerable<TSource> UnionBy<TSource,TProp>(this IEnumerable<TSource> first,Func<TSource,TProp> keySelector,params IEnumerable<TSource>[] remaining)
         {
             var enumerables=first;

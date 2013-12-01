@@ -40,12 +40,7 @@ namespace RadialReview.Accessors
 
                     if (position.Organization.Id != newUser.Organization.Id)
                         throw new PermissionsException();
-                    var positionDuration = new PositionDurationModel()
-                    {
-                        Position = position,
-                        Start = DateTime.UtcNow,
-                        PromotedBy=manager.Id,
-                    };
+                    var positionDuration = new PositionDurationModel(position,manager.Id);
                     newUser.Positions.Add(positionDuration);
                     db.Save(newUser);
                     newUserId = newUser.Id;

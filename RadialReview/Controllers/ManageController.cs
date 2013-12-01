@@ -29,15 +29,19 @@ namespace RadialReview.Controllers
 
         public ActionResult Teams()
         {
-            var orgTeams = _OrganizationAccessor.GetOrganizationTeams( GetUser(),  GetUser().Organization.Id);
+            var orgTeams = _OrganizationAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
             var model = new OrganizationTeamViewModel() { Teams = orgTeams };
             return View(model);
         }
 
         public ActionResult Members()
         {
-            var members=_OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
-            var model = new OrganizationMembersViewModel(){ Users=members };
+            var members = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
+            for(int i=0;i<members.Count();i++)
+            {
+                members[i] = members[i].Hydrate().Teams().Execute();
+            }
+            var model = new OrgMembersViewModel(members);
             return View(model);
         }
     }

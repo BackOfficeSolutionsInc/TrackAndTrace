@@ -24,9 +24,9 @@
     {
         <tr>
             <td>@p.Name</td>
-            <td class=" alignCenter"><a href="#" class="fullWidth">Edit (@p.Members.Count())</a></td>
-            <td class=" alignCenter"><a href="#" class="fullWidth">Edit(@p.Responsibilities.Count())</a> </td>
-            <td></td>
+            <td class=" alignCenter"><a href="#" class="fullWidth">Edit</a></td>
+            <td class=" alignCenter"><a href="@Url.Action("Edit", "Responsibilities", new { id=p.Id })" class="fullWidth">Edit(@p.Responsibilities.Count())</a> </td>
+            <td><a href="#" class="fullWidth btn btn-primary" >Edit</a></td>
         </tr>
     }
 

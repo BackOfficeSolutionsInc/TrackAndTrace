@@ -13,6 +13,7 @@ namespace RadialReview.Controllers
     {
         protected static PositionAccessor _PositionAccessor = new PositionAccessor();
         protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
+        protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
 
         //
         // GET: /Position/
@@ -20,11 +21,23 @@ namespace RadialReview.Controllers
         {
             return View();
         }
+        /*
+        public ActionResult Responsiblities(long id)
+        {
+            var responsibilities = _ResponsibilitiesAccessor.GetResponsibilities(GetUser(), id);
+            return View(responsibilities);
+        }
+
+        public ActionResult Edit(long id)
+        {
+            var positionId = id;
+            var position=_OrganizationAccessor.GetOrganizationPosition(GetUser(), id);
+        }*/
 
         public ActionResult Modal()
         {
-            var positions = _PositionAccessor.AllPositions().OrderBy(x=>x.Name).ToList();
-            var model = new PositionViewModel() { Positions = positions };
+            var positions = _PositionAccessor.AllPositions().ToList();
+            var model = new PositionViewModel() { Positions = positions.OrderBy(x=>x.Name.Translate()).ToList() };
             return PartialView(model);
         }
 

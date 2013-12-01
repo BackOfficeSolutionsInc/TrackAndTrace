@@ -16,6 +16,11 @@ namespace RadialReview.Models.Responsibilities
         public virtual QuestionCategoryModel Category {get;set;}
 
         public virtual DateTime? DeleteTime { get; set; }
+
+        public ResponsibilityModel()
+        {
+            Category = new QuestionCategoryModel();
+        }
     }
 
     public class ResponsibilityModelMap : ClassMap<ResponsibilityModel>

@@ -8,6 +8,7 @@ using System.Web;
 using NHibernate.Linq;
 using RadialReview.Accessors;
 using RadialReview.Models.Enums;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview
 {
@@ -67,7 +68,7 @@ namespace RadialReview
                     var group = Session.Query<GroupModel>().Where(x => x.Id == g.Id).FetchMany(x => x.GroupUsers).FetchMany(x => x.CustomQuestions).SingleOrDefault();
                     if (questions)
                     {
-                        questionsResolved = Session.QueryOver<QuestionModel>().Where(x => x.OriginType==OriginType.Group && x.OriginId == group.Id).List().ToList();
+                        questionsResolved = Session.QueryOver<QuestionModel>().Where(x => x.OriginType == OriginType.Group && x.OriginId == group.Id).List().ToList();
                         group.CustomQuestions = questionsResolved;
                         //orgQuery.Fetch(x => x.CustomQuestions).Eager.Future();
                         //orgQuery.Fetch(x => x.QuestionCategories).Eager.Future();
@@ -113,7 +114,7 @@ namespace RadialReview
                 using (var tx = Session.BeginTransaction())
                 {
                     var user=GetUnderlying();
-                    var children = Children(user, new List<String> { ""+user.Id });
+                    var children = Children(user, new List<String> { "" + user.Id });
                     User.AllSubordinates = children;
                 }
             }
@@ -152,12 +153,12 @@ namespace RadialReview
                 if (questions)
                 {
                     questionsResolved = Session.QueryOver<QuestionModel>()
-                        .Where(x => x.OriginType==OriginType.Organization && x.OriginId == uOrg.Organization.Id)
+                        .Where(x => x.OriginType == OriginType.Organization && x.OriginId == uOrg.Organization.Id)
                         .Fetch(x=>x.Question).Eager
                         .List()
                         .ToList();
                     //orgQuery.Fetch(x => x.CustomQuestions).Eager.Future();
-                    var orgId=uOrg.Organization.Id;
+                    var orgId = uOrg.Organization.Id;
                     categoriesResolved=Session.QueryOver<QuestionCategoryModel>()
                         .Where(x => x.OriginId == orgId && x.OriginType == OriginType.Organization)
                         .Fetch(x=>x.Category).Eager
@@ -223,13 +224,13 @@ namespace RadialReview
             {
                 var uOrg = GetUnderlying();
 
-                var uOrgId=uOrg.Id;
+                var uOrgId = uOrg.Id;
 
                 var query = Session.QueryOver<ReviewsModel>().Where(x => x.CreatedById == uOrgId).List().ToList();
                 reviews = query;
                 foreach(var rs in reviews)
                 {
-                    var reviewList=Session.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == rs.Id).List().ToList();
+                    var reviewList = Session.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == rs.Id).List().ToList();
                     rs.Reviews = reviewList;
                     if (answers)
                     {
@@ -248,6 +249,26 @@ namespace RadialReview
                 }*/
             }
             User.CreatedReviews = reviews;
+            return this;
+        }
+
+        public UserHydration Teams()
+        {
+            using(var tx = Session.BeginTransaction())
+            {
+                var uOrg = GetUnderlying();
+                User.Teams = uOrg.Teams.ToList();
+            }            
+            return this;
+        }
+
+        public UserHydration  Position()
+        {
+            using (var tx = Session.BeginTransaction())
+            {
+                var uOrg = GetUnderlying();
+                User.Positions = uOrg.Positions.ToList();
+            }
             return this;
         }
     }

@@ -14,6 +14,7 @@ namespace RadialReview.Models.ViewModels
 
     public class OrgPosViewModel
     {
+        public long Id { get; set; }
         public String Name {get;set;}
         public String SimilarTo { get; set; }
         public int NumAccountabilities { get; set; }
@@ -21,6 +22,7 @@ namespace RadialReview.Models.ViewModels
 
         public OrgPosViewModel(OrganizationPositionModel model,int numPeople)
         {
+            Id = model.Id;
             Name = model.CustomName;
             SimilarTo = model.Position.Name.Translate();
             NumAccountabilities = model.Responsibilities.Count();

@@ -180,7 +180,7 @@ namespace RadialReview.Controllers
                 
                 if (oneUser != null)
                 {
-                    filterContext.Controller.ViewBag.UserName = oneUser.Name();
+                    filterContext.Controller.ViewBag.UserName = oneUser.GetName();
                     filterContext.Controller.ViewBag.IsManager = userOrgs.Any(x => x.ManagerAtOrganization || x.ManagingOrganization);
                 }
                 else

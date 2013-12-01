@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace RadialReview.Models.Interfaces
 {
-    public interface IOrigin : ILongIdentifiable
-    { 
+    public interface IOrigin: ILongIdentifiable
+    {
+
         /// <summary>
         /// Organization,User,Application,Group
         /// </summary>

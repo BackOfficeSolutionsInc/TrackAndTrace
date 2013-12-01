@@ -52,6 +52,8 @@ namespace RadialReview.Accessors
                     organization.Members.Add(userOrgModel);
 
                     db.Save(user);
+                    db.Save(organization);
+
                     tx.Commit();
                     db.Flush();
                     return organization;
@@ -107,29 +109,20 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void AddOrganizationPosition(UserOrganizationModel caller,long organizationId,long positionId,String customName)
+        public OrganizationPositionModel GetOrganizationPosition(UserOrganizationModel caller, long positionId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditOrganization(organizationId);
-
-                    var existing = s.QueryOver<OrganizationPositionModel>()
-                        .Where(x=>x.Organization.Id==organizationId && positionId==x.Position.Id)
-                        .List().ToList().FirstOrDefault();
-                    /*if (existing!=null)
-                        throw new PermissionsException();*/
-
-                    var org=s.Get<OrganizationModel>(organizationId);
-                    var position=s.Get<PositionModel>(positionId);
-
-                    s.Save(new OrganizationPositionModel() { Organization = org, Position = position,CustomName=customName });
-                    tx.Commit();
-                    s.Flush();
+                    var position = s.Get<OrganizationPositionModel>(positionId);
+                    PermissionsUtility.Create(s, caller).ViewOrganization(position.Organization.Id);
+                    return position;
                 }
             }
         }
+
+      
 
         public List<UserOrganizationModel> GetOrganizationMembers(UserOrganizationModel caller,long organizationId)
         {
@@ -152,6 +145,65 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
                     return s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+                }
+            }
+        }
+        public OrganizationPositionModel AddOrganizationPosition(UserOrganizationModel caller, long organizationId, long positionId, String customName)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).EditOrganization(organizationId);
+
+                    /*var existing = s.QueryOver<OrganizationPositionModel>()
+                        .Where(x=>x.Organization.Id==organizationId && positionId==x.Position.Id)
+                        .List().ToList().FirstOrDefault();
+                    if (existing!=null)
+                        throw new PermissionsException();*/
+
+                    var org=s.Get<OrganizationModel>(organizationId);
+                    var position=s.Get<PositionModel>(positionId);
+
+                    var orgPos = new OrganizationPositionModel() { Organization = org,CreatedBy=caller.Id, Position = position, CustomName = customName };
+
+                    s.Save(orgPos);
+                    tx.Commit();
+                    s.Flush();
+
+                    return orgPos;
+                }
+            }
+        }
+        public OrganizationTeamModel AddOrganizationTeam(UserOrganizationModel caller, long organizationId, string teamName,bool onlyManagersEdit,bool secret)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).EditOrganization(organizationId);
+
+                    /*var existing = s.QueryOver<OrganizationPositionModel>()
+                        .Where(x => x.Organization.Id == organizationId && positionId == x.Position.Id)
+                        .List().ToList().FirstOrDefault();
+                    if (existing!=null)
+                        throw new PermissionsException();*/
+
+                    var org = s.Get<OrganizationModel>(organizationId);
+
+                    var orgTeam = new OrganizationTeamModel() { 
+                            Organization = org,
+                            CreatedBy=caller.Id,
+                            Name=teamName,
+                            OnlyManagersEdit=onlyManagersEdit,
+                            Secret=secret,
+                        };
+
+                    s.Save(orgTeam);
+                    tx.Commit();
+                    s.Flush();
+
+                    return orgTeam;
                 }
             }
         }
