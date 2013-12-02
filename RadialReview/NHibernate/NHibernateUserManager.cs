@@ -16,8 +16,12 @@ namespace RadialReview.NHibernate
             : base(store)
         {
             NHibernateStore = store;
-
+            this.UserValidator = new UserValidator<UserModel>(this)
+            {
+                AllowOnlyAlphanumericUserNames = false
+            };
         }
+
         /*
         public async override Task<IdentityResult> CreateAsync(UserModel user, string password)
         {

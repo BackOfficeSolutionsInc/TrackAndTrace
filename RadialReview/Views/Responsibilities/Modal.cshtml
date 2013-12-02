@@ -59,4 +59,13 @@
         })
         Update();
     });
+
+    function verify()
+    {
+        if ($("[name='CategoryId']").val() == -1 && !$("[name='NewCategory']").val())
+            return "New category name is required.";
+        if (!$("[name='Responsibility']").val())
+            return "Responsibility is required.";
+        return true;
+    }
 </script>

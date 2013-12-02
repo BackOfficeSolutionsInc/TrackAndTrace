@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
 using System;
@@ -40,7 +41,7 @@ namespace RadialReview.Models.Responsibilities
 
     public class OrganizationTeamModel : ResponsibilityGroupModel
     {
-
+        public virtual TeamType Type { get; set; }
         public virtual String Name { get; set; }
         public virtual long CreatedBy { get; set; }
         public virtual Boolean OnlyManagersEdit { get; set; }
@@ -85,6 +86,7 @@ namespace RadialReview.Models.Responsibilities
             Map(x => x.Name);
             Map(x => x.CreatedBy);
             Map(x => x.Secret);
+            Map(x => x.Type);
             Map(x => x.OnlyManagersEdit);
             //HasMany(x => x.Members).Not.LazyLoad().Cascade.SaveUpdate();
         }
@@ -105,7 +107,7 @@ namespace RadialReview.Models.Responsibilities
         public ResponsibilityGroupModelMap()
         {
             Id(x => x.Id);
-            References(x => x.Organization);
+            References(x => x.Organization).Not.LazyLoad();
             HasMany(x => x.Responsibilities)
                 .Cascade.SaveUpdate()
                 .Not.LazyLoad();

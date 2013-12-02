@@ -14,6 +14,7 @@
 
 html {
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 html, body {
@@ -58,7 +59,7 @@ html, body {
 }
 
 #main {
-    overflow: auto;
+    /*overflow: auto;*/
     padding-top: 15px;
     /*padding-bottom: 150px;*/
 }
@@ -421,4 +422,14 @@ input[type="checkbox"].input-validation-error {
 
 .footer a {
     color: #C9C8D8;
+}
+
+.smallPad{
+    padding-left:5px !important; 
+    padding-right:5px !important; 
+}
+
+.noPad{
+    padding-left:0px !important; 
+    padding-right:0px !important; 
 }

@@ -20,6 +20,7 @@ namespace RadialReview.Controllers
 
         //
         // GET: /Group/
+        [Access(AccessLevel.Manager)]
         public ActionResult Index(long? organizationId)
         {
             var userOrg = GetUser(organizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
@@ -27,12 +28,14 @@ namespace RadialReview.Controllers
             return View(groups);
         }
 
+        [Access(AccessLevel.Manager)]
         public ActionResult Details(long id, long? organizationId)
         {
             var group = _GroupAccessor.Get(GetUser(organizationId), id);
             return View(group);
         }
 
+        [Access(AccessLevel.Manager)]
         public ActionResult Create(long? organizationId)
         {
             var orgUser = GetUser(organizationId).Hydrate().ManagingGroups().ManagingUsers().Organization().Execute();
@@ -47,6 +50,7 @@ namespace RadialReview.Controllers
             return RedirectToAction("Edit", new { id = group.Id });
         }
 
+        [Access(AccessLevel.Manager)]
         public ActionResult Edit(long? id, long? organizationId)
         {
             if (id == null)
@@ -105,6 +109,7 @@ namespace RadialReview.Controllers
             return View(groupViewModel);
         }
 
+        [Access(AccessLevel.Manager)]
         private GroupViewModel ReconstructModel(UserOrganizationModel orgUser, GroupViewModel model)
         {
             var g = _GroupAccessor.Get(orgUser, model.Group.Id);
@@ -119,6 +124,7 @@ namespace RadialReview.Controllers
 
 
         [HttpPost]
+        [Access(AccessLevel.Manager)]
         public ActionResult Edit(GroupViewModel model)
         {
             var userOrg = GetUser(model.OrganizationId).Hydrate().Organization().ManagingGroups().ManagingUsers(subordinates: true).Execute();

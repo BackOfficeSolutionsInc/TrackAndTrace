@@ -31,15 +31,20 @@ namespace RadialReview
     {
         public static IEnumerable<SelectListItem> ToSelectList<T, TId>(this IEnumerable<T> self, Func<T, String> textSelector, Func<T, TId> idSelector, TId selected = default(TId))
         {
-            return self.Select(x=>{
-                var id=idSelector(x);
-                var text=textSelector(x);
-                return new SelectListItem(){Selected=(id.Equals(selected)),Text=text,Value=id.ToString()};
+            return self.Select((x, i) =>
+            {
+                var id = idSelector(x);
+                var text = textSelector(x);
+                var isSelected = id.Equals(selected);
+                if (selected.Equals(default(TId)))
+                    isSelected = i == 0;
+                return new SelectListItem() { Selected = isSelected, Text = text, Value = id.ToString() };
             });
         }
 
-        public static List<T> AsList<T>(this T first,params T[] after){
-            var output=new List<T>{first};
+        public static List<T> AsList<T>(this T first, params T[] after)
+        {
+            var output = new List<T> { first };
             output.AddRange(after);
             return output;
         }
@@ -53,25 +58,25 @@ namespace RadialReview
             return source.Alive().Select(selector);
         }
 
-        public static IEnumerable<T> Alive<T>(this IEnumerable<T> source) where T :IDeletable
+        public static IEnumerable<T> Alive<T>(this IEnumerable<T> source) where T : IDeletable
         {
             if (source == null)
                 return null;
 
             if (source is AliveEnumerable<T>)
                 return source;
-            return new AliveEnumerable<T>(source.Where(x=>x.DeleteTime==null));
+            return new AliveEnumerable<T>(source.Where(x => x.DeleteTime == null));
         }
 
         public static List<TSource> ToListAlive<TSource>(this IEnumerable<TSource> source) where TSource : IDeletable
         {
             return source.Alive().ToList();
         }
-            
-        public static IEnumerable<TSource> UnionBy<TSource,TProp>(this IEnumerable<TSource> first,Func<TSource,TProp> keySelector,params IEnumerable<TSource>[] remaining)
+
+        public static IEnumerable<TSource> UnionBy<TSource, TProp>(this IEnumerable<TSource> first, Func<TSource, TProp> keySelector, params IEnumerable<TSource>[] remaining)
         {
-            var enumerables=first;
-            foreach(var r in remaining)
+            var enumerables = first;
+            foreach (var r in remaining)
             {
                 first = first.Concat(r);
             }

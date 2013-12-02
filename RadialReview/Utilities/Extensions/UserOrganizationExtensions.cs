@@ -14,6 +14,34 @@ namespace RadialReview
                 return self.EmailAtOrganization;
             return self.User.Name();
         }*/
+        public static void SetPersonallyManaging(this UserOrganizationModel self, Boolean personallyManaging)
+        {
+            self.Set("_managing",personallyManaging.ToString());
+        }
+        public static bool GetPersonallyManaging(this UserOrganizationModel self)
+        {
+            return bool.Parse(self.GetSingle("_managing"));
+        }
+
+        public static void Set(this UserOrganizationModel self,String key,String value)
+        {
+            self.Properties[key] = new List<string>();
+            self.Properties[key].Add(value);
+        }
+
+        public static String GetSingle(this UserOrganizationModel self,String key)
+        {
+            if (self.Properties.ContainsKey(key))
+                return self.Properties[key].NotNull(x=>x.FirstOrDefault());
+            return null;
+        }
+
+
+        public static String GetNameAndTitle(this UserOrganizationModel self,Boolean fullTitle=false,long youId=-1)
+        {
+            return self.GetName() + self.GetTitles(fullTitle, youId).Surround(" (",")");
+        }
+
         public static String ImageUrl(this UserOrganizationModel self)
         {
             if (self.User == null || self.User.Image == null)

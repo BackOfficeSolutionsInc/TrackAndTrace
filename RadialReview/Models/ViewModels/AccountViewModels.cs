@@ -46,10 +46,11 @@ namespace RadialReview.Models
 
     public class RegisterViewModel
     {
+        /*
         [Required]
         [Display(Name = "username", ResourceType = typeof(DisplayNameStrings))]
         public string UserName { get; set; }
-
+        */
         [Required]
         [DataType(DataType.EmailAddress)]
         [Display(Name = "email", ResourceType = typeof(DisplayNameStrings))]
@@ -60,19 +61,19 @@ namespace RadialReview.Models
         [DataType(DataType.Password)]
         [Display(Name = "password", ResourceType = typeof(DisplayNameStrings))]
         public string Password { get; set; }
-
+        /*
         [DataType(DataType.Password)]
         [Display(Name = "confirmPassword", ResourceType = typeof(DisplayNameStrings))]
         [Compare("Password", ErrorMessageResourceName = "passwordMatch", ErrorMessageResourceType = typeof(ErrorMessageStrings))]
-        public string ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; }*/
 
         [Display(Name = "firstName", ResourceType = typeof(DisplayNameStrings))]
         [Required]
-        public string FirstName {get;set;}
+        public string fname {get;set;}
 
         [Display(Name = "lastName", ResourceType = typeof(DisplayNameStrings))]
         [Required]
-        public string LastName {get;set;}
+        public string lname {get;set;}
 
         public string ReturnUrl { get; set; }
 

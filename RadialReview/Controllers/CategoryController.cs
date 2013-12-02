@@ -16,6 +16,7 @@ namespace RadialReview.Controllers
 
         //
         // GET: /Category/
+        [Access(AccessLevel.Manager)]
         public ActionResult Index(long? organizationId)
         {
             var user=GetUser(organizationId)
@@ -25,7 +26,7 @@ namespace RadialReview.Controllers
 
 
 
-            EditableOrException(user);
+            ManagerAndCanEditOrException(user);
 
             var categories = user.Organization.QuestionCategories;// _CategoryAccessor.GetForOrganization(user);
 
@@ -41,6 +42,7 @@ namespace RadialReview.Controllers
 
         //
         // GET: /Category/Create
+        [Access(AccessLevel.Manager)]
         public ActionResult Create(long? organizationId)
         {
             var user = GetUser(organizationId);
@@ -52,10 +54,11 @@ namespace RadialReview.Controllers
         
         //
         // GET: /Category/Edit/5
+        [Access(AccessLevel.Manager)]
         public ActionResult Edit(int id,long? organizationId)
         {
             var user = GetUser(organizationId).Hydrate().Organization(questions:true).Execute();
-            EditableOrException(user);
+            ManagerAndCanEditOrException(user);
             var category=_CategoryAccessor.Get(user, id);
 
             return View(category);
@@ -64,6 +67,7 @@ namespace RadialReview.Controllers
         //
         // POST: /Category/Edit/5
         [HttpPost]
+        [Access(AccessLevel.Manager)]
         public ActionResult Edit(int id, QuestionCategoryModel collection,long? organizationId)
         {
             try

@@ -12,6 +12,9 @@ using RadialReview.Properties;
 using log4net;
 using System.Threading;
 using Microsoft.Owin.Security;
+using System.Reflection;
+using RadialReview.Models.Json;
+using RadialReview.Utilities.Attributes;
 
 
 namespace RadialReview.Controllers
@@ -22,7 +25,7 @@ namespace RadialReview.Controllers
 
         protected static UserAccessor _UserAccessor = new UserAccessor();
 
-        protected void EditableOrException(UserOrganizationModel user)
+        protected void ManagerAndCanEditOrException(UserOrganizationModel user)
         {
             if (!user.IsManagerCanEditOrganization())
                 throw new PermissionsException();
@@ -111,8 +114,28 @@ namespace RadialReview.Controllers
             AuthenticationManager.SignOut();
         }
 
+        private static MethodInfo GetActionMethod(ExceptionContext filterContext)
+        {
+
+            Type controllerType = filterContext.Controller.GetType();// Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(x => x.Name == requestContext.RouteData.Values["controller"].ToString());
+            ControllerContext controllerContext = new ControllerContext(filterContext.RequestContext, Activator.CreateInstance(controllerType) as ControllerBase);
+            ControllerDescriptor controllerDescriptor = new ReflectedControllerDescriptor(controllerType);
+            ActionDescriptor actionDescriptor = controllerDescriptor.FindAction(controllerContext, controllerContext.RouteData.Values["action"].ToString());
+            return (actionDescriptor as ReflectedActionDescriptor).MethodInfo;
+        }
+
         protected override void OnException(ExceptionContext filterContext)
         {
+            var action = GetActionMethod(filterContext);
+
+            if (typeof(JsonResult).IsAssignableFrom(action.ReturnType))
+            {
+                filterContext.Result = Json(new JsonObject(filterContext.Exception),JsonRequestBehavior.AllowGet);
+                filterContext.ExceptionHandled = true;
+                return;
+            }
+
+
             if (filterContext.ExceptionHandled)
                 return;
 
@@ -177,6 +200,7 @@ namespace RadialReview.Controllers
                 var oneUser = userOrgs.FirstOrDefault();
                 filterContext.Controller.ViewBag.UserName = MessageStrings.User;
                 filterContext.Controller.ViewBag.IsManager = false;
+                filterContext.Controller.ViewBag.Organizations = userOrgs.Count();
                 
                 if (oneUser != null)
                 {
@@ -191,6 +215,21 @@ namespace RadialReview.Controllers
 
                 ViewBag.OrganizationId = Session["OrganizationId"];
             }
+
+            //Access Level Filtering
+            var accessAttributes = filterContext.ActionDescriptor.GetCustomAttributes(typeof(AccessAttribute), false).Cast<AccessAttribute>();
+            if (accessAttributes.Count() == 0)
+                throw new NotImplementedException("Access attribute missing.");
+
+            switch ((AccessLevel)accessAttributes.Min(x => (int)x.AccessLevel))
+            {
+                case AccessLevel.Any: break;
+                case AccessLevel.User: GetUserModel(); break;
+                case AccessLevel.UserOrganization: GetUser(); break;
+                case AccessLevel.Manager: if (!GetUser().IsManager()) throw new PermissionsException("You must be a manager to view this resource."); break;
+                default: throw new Exception("Unknown Access Type");
+            }
+
             base.OnActionExecuting(filterContext);
         }
 

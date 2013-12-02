@@ -16,7 +16,7 @@ namespace RadialReview.Accessors
     public class NexusAccessor : BaseAccessor
     {
         public static UrlAccessor _UrlAccessor = new UrlAccessor();
-        public String JoinOrganizationUnderManager(UserOrganizationModel manager, OrganizationModel organization,Boolean isManager,long orgPositionId, String email)
+        public String JoinOrganizationUnderManager(UserOrganizationModel caller,long managerId,Boolean isManager,long orgPositionId, String email)
         {
             if (!Emailer.IsValid(email))
                 throw new RedirectException(ExceptionStrings.InvalidEmail);
@@ -28,19 +28,33 @@ namespace RadialReview.Accessors
                 long newUserId = 0;
                 using (var tx = db.BeginTransaction())
                 {
-                    if (!manager.ManagerAtOrganization)
+                    var manager= db.Get<UserOrganizationModel>(managerId);
+
+                    //Strict Hierarchy stuff
+                    if (caller.Organization.StrictHierarchy && caller.Id != managerId)
                         throw new PermissionsException();
+                    //Manager and Caller are in the same organization
+                    if (manager.Organization.Id != caller.Organization.Id)
+                        throw new PermissionsException();
+                    //Both are managers at the organization
+                    if (!caller.ManagerAtOrganization || !manager.ManagerAtOrganization)
+                        throw new PermissionsException();
+
+
                     var newUser=new UserOrganizationModel();
                     newUser.ManagedBy.Add(manager);
                     newUser.ManagerAtOrganization=isManager;
-                    newUser.Organization = manager.Organization;
+                    newUser.Organization = caller.Organization;
                     newUser.EmailAtOrganization = email;
 
                     var position=db.Get<OrganizationPositionModel>(orgPositionId);
 
                     if (position.Organization.Id != newUser.Organization.Id)
                         throw new PermissionsException();
-                    var positionDuration = new PositionDurationModel(position,manager.Id);
+
+
+
+                    var positionDuration = new PositionDurationModel(position,caller.Id);
                     newUser.Positions.Add(positionDuration);
                     db.Save(newUser);
                     newUserId = newUser.Id;
@@ -50,32 +64,32 @@ namespace RadialReview.Accessors
                 using (var tx = db.BeginTransaction())
                 {
                     //Attach 
-                    manager = db.Get<UserOrganizationModel>(manager.Id);
+                    caller = db.Get<UserOrganizationModel>(caller.Id);
                     var nexus = new NexusModel(nexusId)
                     {
                         ActionCode = NexusActions.JoinOrganizationUnderManager,
-                        ByUserId = manager.Id,
+                        ByUserId = caller.Id,
                         ForUserId = newUserId,
                     };
 
-                    nexus.SetArgs(new string[] { "" + organization.Id, email, "" + newUserId });
+                    nexus.SetArgs(new string[] { "" + caller.Organization.Id, email, "" + newUserId });
                     id = nexus.Id;
                     db.SaveOrUpdate(nexus);
                     //var newUser=db.Get<UserOrganizationModel>(newUserId);
                     //manager.ManagingUsers.Add(newUser);
-                    manager.CreatedNexuses.Add(nexus);
-                    db.SaveOrUpdate(manager);
+                    caller.CreatedNexuses.Add(nexus);
+                    db.SaveOrUpdate(caller);
                     tx.Commit();
                     db.Flush();
                 }
             }
             //Send Email
-            var subject = String.Format(EmailStrings.JoinOrganizationUnderManager_Subject, organization.Name.Translate(), ProductStrings.ProductName);
+            var subject = String.Format(EmailStrings.JoinOrganizationUnderManager_Subject, caller.Organization.Name.Translate(), ProductStrings.ProductName);
             //[OrganizationName,LinkUrl,LinkDisplay,ProductName]            
-            var url =  "Account/Login?message=Please%20login%20to%20join%20" + organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
+            var url = "Account/Login?message=Please%20login%20to%20join%20" + caller.Organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
             url = ProductStrings.BaseUrl + url;
             //var shorenedUrl = ProductStrings.BaseUrl + _UrlAccessor.RecordUrl(url, email);
-            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, organization.Name.Translate(), url, url, ProductStrings.ProductName);
+            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName);
             subject = Regex.Replace(subject, @"[^A-Za-z0-9 \.\,&]", "");
             Emailer.SendEmail(email, subject, body);
             return nexusId.ToString();

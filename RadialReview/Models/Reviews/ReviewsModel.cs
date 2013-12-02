@@ -17,7 +17,9 @@ namespace RadialReview.Models
         /// <summary>
         /// UserOrganization Id
         /// </summary>
-        public virtual List<ReviewModel> Reviews { get; set; }
+        //public virtual List<ReviewModel> Reviews { get; set; }
+
+        public virtual OrganizationModel ForOrganization { get; set; }
 
         public virtual decimal? GetCompletion()
         {
@@ -57,6 +59,8 @@ namespace RadialReview.Models
             Map(x => x.DateCreated);
             Map(x => x.DueDate);
             Map(x => x.CreatedById);
+            References(x => x.ForOrganization)
+                .Not.LazyLoad();
         }
     }
 }

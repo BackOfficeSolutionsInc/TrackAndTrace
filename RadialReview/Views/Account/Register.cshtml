@@ -9,7 +9,7 @@
     @Scripts.Render("~/bundles/animations")
     <script type="text/javascript">
         $(document).ready(function () {
-            circle(200, 300, "glowSpin", 80, 130, 23, -.5, 12, -1, "visible-md visible-lg", "glow2");
+            circle(200, 220, "glowSpin", 80, 130, 23, -.5, 12, -1, "visible-md visible-lg", "glow2");
             //circle(230, 300, "c1", 80, 130, 20, -1, 12, 0, "orange");
             //circle(50, 30, "c2", 90, 100, 10, 1, 10, -1, "orange");
         });
@@ -21,7 +21,7 @@
     <style>
         .glowSpin {
             position: relative;
-            left:17% !important;
+            left: 17% !important;
         }
 
         .glow2 > div {
@@ -43,7 +43,7 @@
             font-family: 'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
             position: absolute;
             left: calc(17% + 77px) !important;
-            top: 240px;
+            top: 160px;
             /*
                 position: absolute;
                 top: 240px;
@@ -60,7 +60,7 @@
             font-size: 36px;
             position: absolute;
             left: calc(17% + 193px) !important;
-            top: 321px;
+            top: 241px;
             /*position: absolute;
             left: 272px;*/
             z-index: 100000;
@@ -76,62 +76,58 @@
 <div id="regTitle" class="visible-md visible-lg">Radial</div>
 <div id="regSubtitle" class="visible-md visible-lg">Review</div>
 
-<h2>@ViewBag.Title</h2>
-
 @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
-    <div class="row col-md-6">
-        <div id="regCircle"></div>
-    </div>
-    <div class="row col-md-6">
-        <h3 class="col-md-offset-4">Create a new account.</h3>
-        @Html.AntiForgeryToken()
-        <hr />
-        @Html.ValidationSummary()
-        <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl"/>
-        <div class="form-group">
-            @Html.LabelFor(m => m.UserName, new { @class = "col-md-4 control-label" })
-            <div class="col-md-8">
-                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.UserName) })
-            </div>
+    <fieldset>
+        <div class="row col-md-6">
+            <div id="regCircle"></div>
         </div>
-        <div class="form-group">
-            @Html.LabelFor(m => m.Email, new { @class = "col-md-4 control-label" })
-            <div class="col-md-8">
-                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.Email) })
+        <div class="row col-md-6">
+            <h3 class="col-md-offset-4">Register</h3>
+            @Html.AntiForgeryToken()
+            <hr />
+            @Html.ValidationSummary()
+            <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
+            <div class="form-group">
+                @Html.Label("Name", new { @class = "col-md-4 control-label" })
+                <div class="col-md-4" style="padding-right:2px;">
+                    @Html.TextBoxFor(m => m.fname, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.fname), autocomplete = "given-name" })
+                </div>
+                <div class=" col-md-4" style="padding-left:2px;">
+                    @Html.TextBoxFor(m => m.lname, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.lname), autocomplete = "family-name" })
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(m => m.Password, new { @class = "col-md-4 control-label" })
-            <div class=" col-md-8">
-                @Html.PasswordFor(m => m.Password, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.Password) })
+            @*<div class="form-group">
+                    @Html.LabelFor(m => m.UserName, new { @class = "col-md-4 control-label" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.UserName) })
+                    </div>
+                </div>*@
+            <div class="form-group">
+                @Html.LabelFor(m => m.Email, new { @class = "col-md-4 control-label" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.Email), xAutocompletetype = "email", type = "email", autocomplete = "email" })
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
-            <div class=" col-md-8">
-                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.ConfirmPassword) })
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password, new { @class = "col-md-4 control-label" })
+                <div class=" col-md-8">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.Password) })
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(m => m.FirstName, new { @class = "col-md-4 control-label" })
-            <div class="col-md-8">
-                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.FirstName) })
+            @*<div class="form-group">
+                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
+                    <div class=" col-md-8">
+                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.ConfirmPassword) })
+                    </div>
+                </div>*@
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-offset-5 col-md-8">
+                    <input type="submit" class="btn btn-default" value="Register" />
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(m => m.LastName, new { @class = "col-md-4 control-label" })
-            <div class=" col-md-8">
-                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.LastName) })
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-offset-5 col-md-8">
-                <input type="submit" class="btn btn-default" value="Register" />
-            </div>
-        </div>
 
-    </div>
-
+        </div>
+    </fieldset>
 }
 

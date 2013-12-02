@@ -17,12 +17,14 @@ namespace RadialReview.Controllers
         private static ImageAccessor _ImageAccessor = new ImageAccessor();
         //
         // GET: /Upload/
+        [Access(AccessLevel.User)]
         public ActionResult Index()
         {
             return View();
         }
 
         [HttpPost]
+        [Access(AccessLevel.User)]
         public ActionResult Image(HttpPostedFileBase file, String forType)
         {
             var user=GetUserModel();

@@ -120,6 +120,28 @@ namespace RadialReview.Models
             return this.User.Name();
         }
 
+        public virtual string GetTitles(Boolean full=true,long callerUserId=-1)
+        {
+            if (this.Positions == null)
+                return "";
+
+            var count=this.Positions.Count();
+
+            String titles = null;
+            var actualPositions=Positions.ToListAlive().Select(x=>x.Position.CustomName).ToList();
+            if (callerUserId == Id)
+                actualPositions.Insert(0, "You");
+
+            if (full) { titles = String.Join(", ", actualPositions); }
+            else     {
+                titles = String.Join(", ", actualPositions.Take(2));
+                if (actualPositions.Count > 2)
+                    titles += ",...";
+            }
+
+            return titles;
+        }
+
         public override string GetGroupType()
         {
             return DisplayNameStrings.user;

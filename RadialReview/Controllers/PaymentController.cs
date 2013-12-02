@@ -8,6 +8,7 @@ namespace RadialReview.Controllers
 {
     public class PaymentController :BaseController
     {
+        [Access(AccessLevel.Any)]
         public ActionResult Index(int? count)
         {
             GetUserModel();

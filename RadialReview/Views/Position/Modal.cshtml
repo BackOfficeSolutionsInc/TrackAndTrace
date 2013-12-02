@@ -6,7 +6,12 @@
         <label>Job Class:</label>
     </div>
     <div class="col-sm-9">
-        @Html.DropDownListFor(x => x.Position, Model.Positions.Select(x => new SelectListItem() { Selected = (x.Id == Model.Position), Text = x.Name.Translate(), Value = "" + x.Id }), new { id="positionSelector"})
+        @Html.DropDownListFor(x => x.Position, Model.Positions.Select(x => new SelectListItem() {
+           Selected = (x.Id == Model.Position),
+           Text = x.Name.Translate(),
+           Value = "" + x.Id 
+       }),
+        new { id="positionSelector",@class="form-control"})
     </div>
 </div>
 <div class="smallBreak"></div>
@@ -16,7 +21,7 @@
         <label>Job Title:</label>
     </div>
     <div class="col-sm-9">
-        @Html.TextBoxFor(x => x.PositionName, new { id="customPosition" })
+        @Html.TextBoxFor(x => x.PositionName, new { id = "customPosition", @class = "form-control" })
     </div>
 </div>
 

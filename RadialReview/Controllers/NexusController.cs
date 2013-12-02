@@ -15,8 +15,10 @@ namespace RadialReview.Controllers
     public class NexusController : BaseController
     {
         public static NexusAccessor NexusAccessor = new NexusAccessor();
+        public static OrganizationAccessor OrganizationAccessor = new OrganizationAccessor();
 
         [HttpPost]
+        [Access(AccessLevel.Manager)]
         public JsonResult AddManagedUserToOrganization(CreateUserOrganizationViewModel model)
         {
             try
@@ -28,7 +30,13 @@ namespace RadialReview.Controllers
                 if (org.Id != model.OrganizationId)
                     throw new PermissionsException();
 
-                var nexusId = NexusAccessor.JoinOrganizationUnderManager(user, org, model.Manager, model.Position, model.Email);
+                if (model.Position.CustomPosition!=null)
+                {
+                    var newPosition = OrganizationAccessor.AddOrganizationPosition(user, user.Organization.Id, model.Position.CustomPositionId, model.Position.CustomPosition);
+                    model.Position.PositionId = newPosition.Id;
+                }
+
+                var nexusId = NexusAccessor.JoinOrganizationUnderManager(user,model.ManagerId, model.IsManager, model.Position.PositionId, model.Email);
 
                 return Json(new JsonObject(false,"Success"));
             }
@@ -41,9 +49,8 @@ namespace RadialReview.Controllers
                 return Json(new JsonObject(true, ExceptionStrings.AnErrorOccuredContactUs));
             }
         }
-
-
-
+        
+        [Access(AccessLevel.Any)]
         public ActionResult Index(String id)
         {
             if (id == null)

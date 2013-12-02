@@ -1,15 +1,12 @@
 ﻿@model RadialReview.Models.UserOrganizationModel
 
 @{
-    ViewBag.Title = "Positions - "+Model.GetName();
+    ViewBag.Title = "Positions - " + Model.GetName();
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @Html.Partial("Partial/manageheader")
-<br />
-<br />
 
-
-<h2>Edit positions: <i>@Model.GetName()</i></h2>
+<h2>Edit positions: <i>@Model.GetNameAndTitle()</i></h2>
 
 <table class="table">
     <tr >

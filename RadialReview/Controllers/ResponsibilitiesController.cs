@@ -17,14 +17,17 @@ namespace RadialReview.Controllers
 
         protected ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
         protected CategoryAccessor _CategoryAccessor = new CategoryAccessor();
+        protected TeamAccessor _TeamAccessor = new TeamAccessor();
 
         //
         // GET: /Responsibilities/
+        [Access(AccessLevel.Manager)]
         public ActionResult Index()
         {
             return View();
         }
 
+        [Access(AccessLevel.Manager)]
         public ActionResult Modal(long responsibilityGroupId=0,long id=0)
         {
             var caller=GetUser();
@@ -51,6 +54,7 @@ namespace RadialReview.Controllers
         }*/
 
         [HttpPost]
+        [Access(AccessLevel.Manager)]
         public JsonResult Modal(ResponsibilityViewModel model)
         {
             var caller = GetUser();
@@ -63,16 +67,17 @@ namespace RadialReview.Controllers
             return Json(JsonObject.Success);
         }
 
+        [Access(AccessLevel.Manager)]
         public ActionResult Edit(long id)
         {
             var responsibilityGroupId = id;
             var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), responsibilityGroupId);
             var model = new ResponsibilityTablesViewModel(r);
 
-
             if (r is UserOrganizationModel)
             {
-                var userResponsibility = ((UserOrganizationModel)r).Hydrate().Position().Teams().Execute();
+                var teams = _TeamAccessor.GetUsersTeams(GetUser(), responsibilityGroupId);
+                var userResponsibility = ((UserOrganizationModel)r).Hydrate().Position().SetTeams(teams).Execute();
                 foreach (var rgId in userResponsibility.Positions.ToListAlive().Select(x => x.Position.Id))
                 {
                     var positionResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), rgId);
@@ -84,11 +89,6 @@ namespace RadialReview.Controllers
                     model.ResponsibilityTables.Add(new ResponsibilityTableViewModel(false, teamResp));
                 }
             }
-
-
-
-
-
             return View(model);
         }
 	}

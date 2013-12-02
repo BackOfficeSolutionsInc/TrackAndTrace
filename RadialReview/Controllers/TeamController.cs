@@ -7,20 +7,27 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.ViewModels;
+using RadialReview.Models.UserModels;
+using RadialReview.Models;
 
 namespace RadialReview.Controllers
 {
     public class TeamController : BaseController
     {
         protected TeamAccessor _TeamAccessor = new TeamAccessor();
+        protected OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
         protected ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
+        
+        
         //
         // GET: /Team/
+        [Access(AccessLevel.Manager)]
         public ActionResult Index()
         {
             return View();
         }
-        
+
+        [Access(AccessLevel.Manager)]
         public ActionResult Modal(long id=0)
         {
             var user = GetUser();
@@ -29,6 +36,7 @@ namespace RadialReview.Controllers
         }
 
         [HttpPost]
+        [Access(AccessLevel.Manager)]
         public JsonResult Modal(OrganizationTeamModel model)
         {
             var user = GetUser();
@@ -56,14 +64,65 @@ namespace RadialReview.Controllers
             return View("Edit", new OrganizationTeamModel());
         }
 
+        */
 
-        public ActionResult Edit(long id, long? organizationId)
+        public class TeamViewModel
         {
-            var user=GetOneUserOrganization(organizationId);
-            var team = _TeamAccessor.GetTeam(user, id);
-            return View(team);
+            public OrganizationTeamModel Team { get;set;}
+            public List<TeamDurationModel> Members { get; set; }
         }
 
+        [Access(AccessLevel.Manager)]
+        public ActionResult Edit(long id)
+        {
+            var teamId = id;
+
+            var team = _TeamAccessor.GetTeam(GetUser(), teamId);
+            var members = _TeamAccessor.GetTeamMembers(GetUser(), teamId);
+
+            var model = new TeamViewModel()
+            {
+                Members = members,
+                Team = team
+            };
+
+            return View(model);
+        }
+
+        public class AddModalViewModel
+        {
+            public long TeamId { get;set;}
+            public List<SelectListItem> Users { get; set; }
+
+            public long SelectedUserId { get; set; }
+        }
+
+        [Access(AccessLevel.Manager)]
+        public ActionResult AddModal(long id)
+        {
+            var teamId = id;
+            var members = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
+            var alreadyMember=_TeamAccessor.GetTeamMembers(GetUser(), teamId).ToListAlive();
+
+            var notMembers=members.Where(x=>!alreadyMember.Any(y=>y.User.Id==x.Id));
+
+            var model = new AddModalViewModel(){
+                TeamId = id,
+                Users = notMembers.ToSelectList(x => x.GetName(), x => x.Id).ToList(),
+            };
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        [Access(AccessLevel.Manager)]
+        public JsonResult AddModal(AddModalViewModel model)
+        {
+            if (model.SelectedUserId == 0)
+                return Json(new JsonObject(true, "Id of zero is not allowed."));
+            _TeamAccessor.AddMember(GetUser(), model.TeamId, model.SelectedUserId);
+            return Json(JsonObject.Success);
+        }
+        /*
         [HttpPost]
         public ActionResult Edit(long id, String name, long? organizationId)
         {
@@ -72,6 +131,7 @@ namespace RadialReview.Controllers
             return View(team);
         }*/
 
+        [Access(AccessLevel.Manager)]
         public JsonResult AddMember(long teamId,long userId)
         {
             var user=GetUser();

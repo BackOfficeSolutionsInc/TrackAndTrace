@@ -23,9 +23,12 @@ namespace RadialReview.Models.ViewModels
         public bool Verified { get; set; }
         public int NumIndividualResponsibilities { get; set; }
         public int NumTotalResponsibilities { get; set; }
-        public int NumTeams { get; set; }
-        public int NumPositions { get; set; }
-        public String PositionTitle { get; set; }
+        //public int NumTeams { get; set; }
+        //public int NumPositions { get; set; }
+        public Boolean Managing { get; set; }
+
+        public List<String> PositionTitles { get; set; }
+        public List<String> TeamsTitles { get; set; }
 
         public OrgMemberViewModel(UserOrganizationModel userOrg)
         {
@@ -33,10 +36,14 @@ namespace RadialReview.Models.ViewModels
             Name = userOrg.GetName();
             Email = userOrg.EmailAtOrganization;
             Verified = userOrg.User != null;
-            NumTeams = userOrg.Teams.ToListAlive().Count();
-            NumPositions = userOrg.Positions.ToListAlive().Count();
+            TeamsTitles = userOrg.Teams.ToListAlive().Select(x => x.Team.Name).ToList();
+            PositionTitles = userOrg.Positions.ToListAlive().Select(x=>x.Position.CustomName).ToList();
             NumIndividualResponsibilities = userOrg.Responsibilities.ToListAlive().Count();
-            PositionTitle = userOrg.Positions.ToListAlive().FirstOrDefault().NotNull(x => x.Position.CustomName);
+
+            Managing = userOrg.GetPersonallyManaging();
+
+
+            //PositionTitle = userOrg.Positions.ToListAlive().FirstOrDefault().NotNull(x => x.Position.CustomName);
 
             NumTotalResponsibilities =
                 userOrg.Responsibilities.ToListAlive().Count() +

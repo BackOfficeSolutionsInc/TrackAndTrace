@@ -12,6 +12,14 @@ namespace System.Web
 {
     public static class HtmlExtensions
     {
+
+        public static HtmlString EditFirstButton(this HtmlHelper html,List<string> items)
+        {
+            var count=items.Count();
+            if (count != 1)
+                return new HtmlString("Edit (" + count + ")");
+            return new HtmlString("Edit (" + items.First()+ ")");
+        }
         
         public static HtmlString Badge<T>(this HtmlHelper<T> html, Func<T, int> count)
         {

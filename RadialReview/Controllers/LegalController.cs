@@ -10,10 +10,12 @@ namespace RadialReview.Controllers
     {
         //
         // GET: /Legal/
+        [Access(AccessLevel.Any)]
         public ActionResult Privacy()
         {
             return View();
         }
+        [Access(AccessLevel.Any)]
         public ActionResult TOS()
         {
             return View();

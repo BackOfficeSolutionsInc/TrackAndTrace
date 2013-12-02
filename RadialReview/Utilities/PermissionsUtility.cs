@@ -63,7 +63,7 @@ namespace RadialReview.Utilities
             //return this;
             //Could do some cascading here if we want.
 
-            throw new PermissionsException();
+            throw new PermissionsException("You don't manage this user.");
         }
 
         public PermissionsUtility EditGroup(long groupId)
@@ -142,6 +142,10 @@ namespace RadialReview.Utilities
         {
             if (IsRadialAdmin())
                 return this;
+            var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
+            if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
+                return this;
+
             if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
                 return this;
             throw new PermissionsException();
@@ -327,15 +331,19 @@ namespace RadialReview.Utilities
         {
             var team = session.Get<OrganizationTeamModel>(teamId);
 
+
+            if (team == null)
+                throw new PermissionsException();
+
             if (IsRadialAdmin())
                 return this;
 
-            if (!team.Secret && team.Organization.Id==caller.Organization.Id)//&& team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
+            if (!team.Secret && team.Organization.Id == caller.Organization.Id)//&& team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
                 return this;
 
             if (team.Secret)// && (team.CreatedBy == caller.Id || team.Members.Any(x => x.Id == caller.Id)))
                 throw new NotImplementedException();
-                //return this;
+            //return this;
 
             throw new PermissionsException();
         }
@@ -351,7 +359,10 @@ namespace RadialReview.Utilities
 
 
             var team = session.Get<OrganizationTeamModel>(teamId);
-            if ( caller.IsManager() || !team.OnlyManagersEdit)
+            if (team.Type != TeamType.Standard)
+                throw new PermissionsException("Cannot edit auto-populated team.");
+
+            if (caller.IsManager() || !team.OnlyManagersEdit)
             {
                 if (team.Organization.Id == caller.Organization.Id)
                 {

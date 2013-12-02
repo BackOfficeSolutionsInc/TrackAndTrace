@@ -25,6 +25,7 @@ namespace RadialReview.Controllers
 
 
         [HttpPost]
+        [Access(AccessLevel.Manager)]
         public JsonResult Edit(long questionId, long organizationId, String question, long categoryId, String originType, long forOriginId,String questionType)
         {
             try
@@ -53,7 +54,8 @@ namespace RadialReview.Controllers
                 return Json(new JsonObject(e));
             }
         }
-                
+
+        [Access(AccessLevel.Manager)]
         public JsonResult Delete(long id, long organizationId)
         {
             try
@@ -66,7 +68,8 @@ namespace RadialReview.Controllers
                 return Json(new JsonObject(e), JsonRequestBehavior.AllowGet);
             }
         }
-        
+
+        [Access(AccessLevel.Manager)]
         public ActionResult Modal(long organizationId,long id=0, String origin = null, long? originId = null)
         {
             try
@@ -101,6 +104,7 @@ namespace RadialReview.Controllers
             }
         }
 
+        [Access(AccessLevel.Manager)]
         public ActionResult Admin(long id=0,long? organizationId=null)
         {
             ViewBag.originType = OriginType.Invalid;
@@ -117,6 +121,7 @@ namespace RadialReview.Controllers
         }
 
         [HttpPost]
+        [Access(AccessLevel.Manager)]
         public ActionResult Admin(QuestionModel model,String question,OriginType originType,long originId,long? organizationId)
         {
             if (originId == 0)

@@ -42,8 +42,11 @@
                         <ul class="nav navbar-nav">
                             @if (Request.IsAuthenticated)
                             {
+                                if(((int?)ViewBag.Organizations??0)>0)
+                                { 
                                 <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.reviews, "Index", "Review")</li>
-                                if (ViewBag.IsManager)
+                                }
+                                if (ViewBag.IsManager??false)
                                 {
                                     <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.manage, "Index", "Manage")</li>
                                 }
@@ -53,16 +56,17 @@
                                 <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "About", "Home")</li>
                             }
                         </ul>
-                        @Html.Partial("_LoginPartial",(string)ViewBag.ReturnUrl)
+                        @Html.Partial("_LoginPartial", (string)ViewBag.ReturnUrl)
                     </div>
                 </div>
             </div>
             @RenderSection("top", false)
-            <div class="container body-content">
+            <div class="container body-content">                
+                @RenderSection("header", false)
                 <div id="alerts">
                 </div>
-                @RenderBody()
-                <hr />
+                    @RenderBody()
+                @*<hr/>*@
             </div>
             <div id="spinnerContainer"></div>
         </div>
@@ -87,9 +91,18 @@
                 function clearUnsaved() {
                     $(".unsaved").removeClass("unsaved");
                 }
-                
+
                 $(function () {
                     ForceUnhide();
+                    @if(ViewBag.Alert!=null)
+                    {
+                        @:showAlert("@ViewBag.Alert");
+                                                            }
+                    @if(ViewBag.Success!=null)
+                    {
+                        @:showAlert("@ViewBag.Success", "alert-success", "Success!");
+                                        }
+
                 });
 
                 function ForceUnhide() {
@@ -147,7 +160,7 @@
 
                                 if (validation) {
                                     var message = eval(validation + '()');
-                                    if (message && message != true) {
+                                    if (message!==undefined && message != true) {
                                         if (message == false) {
                                             $("#modalMessage").html("@RadialReview.Properties.DisplayNameStrings.error");
                                         }

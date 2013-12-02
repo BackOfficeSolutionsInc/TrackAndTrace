@@ -10,11 +10,13 @@ namespace RadialReview.Controllers
     {
         //
         // GET: /Survey/
+        [Access(AccessLevel.UserOrganization)]
         public ActionResult Index()
         {
             return View();
         }
 
+        [Access(AccessLevel.Manager)]
         public ActionResult Create()
         {
             return View();

@@ -20,11 +20,13 @@ namespace RadialReview.Controllers
 
         //
         // GET: /Organization/
+        [Access(AccessLevel.Any)]
         public ActionResult Index()
         {
             return View();
         }
 
+        [Access(AccessLevel.Any)]
         public ActionResult Create(int? count)
         {
             var user = GetUserModel();
@@ -35,6 +37,7 @@ namespace RadialReview.Controllers
         }
 
         [HttpPost]
+        [Access(AccessLevel.Any)]
         public ActionResult Create(String name,Boolean managersCanEdit)
         {
             var user = GetUserModel();
@@ -44,8 +47,7 @@ namespace RadialReview.Controllers
             return RedirectToAction("Index","Manage", new { organizationId = organization.Id });
         }
 
-
-
+        [Access(AccessLevel.Any)]
         public ActionResult Join(String id)
         {
             var nexus = _NexusAccessor.Get(id);
@@ -69,6 +71,7 @@ namespace RadialReview.Controllers
             }
         }
 
+        [Access(AccessLevel.UserOrganization)]
         public ActionResult ManageList()
         {
             var userOrgs = GetUserOrganizations();
@@ -111,6 +114,7 @@ namespace RadialReview.Controllers
             }
         }*/
 
+        [Access(AccessLevel.Any)]
         public ActionResult Begin(int? count = null)
         {
             ViewBag.Count = count;
@@ -131,6 +135,7 @@ namespace RadialReview.Controllers
             return View();
         }
 
+        [Access(AccessLevel.Any)]
         public ActionResult Redirect(int organizationId, string returnUrl)
         {
             if (returnUrl.Contains("?"))

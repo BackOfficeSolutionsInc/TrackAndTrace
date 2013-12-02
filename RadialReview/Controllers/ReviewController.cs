@@ -23,15 +23,17 @@ namespace RadialReview.Controllers
 
         //
         // GET: /Review/
-        public ActionResult Index(String id, long? organizationId)
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Index(String id)
         {
-            var user = GetUser(organizationId);
+            var user = GetUser();
             var reviews = _ReviewAccessor.GetReviewsForUser(user, user);
             var output = new ReviewsListViewModel() { ForUser = user, Reviews = reviews };
             return View(output);
         }
 
         [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
         public ActionResult Skip(FormCollection collection)
         {
             long reviewId =-1;
@@ -42,6 +44,7 @@ namespace RadialReview.Controllers
         }
 
         [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
         public ActionResult Take(FormCollection collection)
         {
             long reviewId =-1;
@@ -95,6 +98,7 @@ namespace RadialReview.Controllers
         }
 
         [HttpGet]
+        [Access(AccessLevel.UserOrganization)]
         public ActionResult Take(long id, int? page, long? organizationId)
         {
             page = page ?? 1;
@@ -172,6 +176,7 @@ namespace RadialReview.Controllers
         }
 
         [HttpGet]
+        [Access(AccessLevel.Manager)]
         public ActionResult Create()
         {
             //TODO correct the time zone.
@@ -181,6 +186,7 @@ namespace RadialReview.Controllers
         }
 
         [HttpPost]
+        [Access(AccessLevel.Manager)]
         public JsonResult Create(String Date, String name)
         {
             try

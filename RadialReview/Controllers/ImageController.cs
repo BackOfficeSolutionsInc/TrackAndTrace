@@ -17,6 +17,7 @@ namespace RadialReview.Controllers
         private static ImageAccessor _ImageAccessor = new ImageAccessor();
         //
         // GET: /Img/
+        [Access(AccessLevel.Any)]
         public ActionResult Index(string id,long? organizationId,string dim=null)
         {
             try

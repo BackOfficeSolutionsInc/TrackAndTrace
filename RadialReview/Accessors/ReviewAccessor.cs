@@ -185,6 +185,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
         public ReviewModel GetReviewForUser(UserOrganizationModel caller, long reviewId)
         {
             var output = new ReviewModel();
@@ -208,6 +209,16 @@ namespace RadialReview.Accessors
             }
         }
 
-
+        public List<ReviewsModel> GetReviewsForOrganization(UserOrganizationModel caller,long organizationid)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).EditReview().ViewOrganization(organizationid);
+                    return s.QueryOver<ReviewsModel>().Where(x => x.ForOrganization.Id == organizationid).List().ToList();
+                }
+            }
+        }
     }
 }

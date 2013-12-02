@@ -10,6 +10,7 @@ namespace RadialReview.Controllers
     {
         //
         // GET: /Error/
+        [Access(AccessLevel.Any)]
         public ActionResult Index(String message=null,String redirectUrl=null)
         {
             ViewBag.Message = message;
@@ -17,6 +18,7 @@ namespace RadialReview.Controllers
             return View();
         }
 
+        [Access(AccessLevel.Any)]
         public ActionResult Modal(Exception e)
         {
             return PartialView("ModalError",e);

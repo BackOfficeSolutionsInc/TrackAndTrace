@@ -8,6 +8,7 @@ namespace RadialReview.Controllers
 {
     public class HomeController : BaseController
     {
+        [Access(AccessLevel.Any)]
         public ActionResult Index()
         {
             if (IsLoggedIn())
@@ -16,6 +17,7 @@ namespace RadialReview.Controllers
         }
 
 
+        [Access(AccessLevel.Any)]
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
@@ -23,6 +25,7 @@ namespace RadialReview.Controllers
             return View();
         }
 
+        [Access(AccessLevel.Any)]
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";

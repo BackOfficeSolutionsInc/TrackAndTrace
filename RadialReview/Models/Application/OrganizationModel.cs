@@ -23,6 +23,7 @@ namespace RadialReview.Models
 
         [Display(Name = "managerCanAddQuestions", ResourceType = typeof(DisplayNameStrings))]
         public virtual Boolean ManagersCanEdit { get; set; }
+        public virtual bool StrictHierarchy { get; set; }
         public virtual IList<UserOrganizationModel> Members { get; set; }
         public virtual IList<PaymentModel> Payments { get; set; }
         public virtual IList<InvoiceModel> Invoices { get; set; }
@@ -87,6 +88,7 @@ namespace RadialReview.Models
         {
             return DisplayNameStrings.organization;
         }
+
     }
 
     public class OrganizationModelMap : SubclassMap<OrganizationModel>
@@ -95,7 +97,8 @@ namespace RadialReview.Models
         {
             Map(x => x.ManagersCanEdit);
             Map(x => x.DeleteTime);
-            Map(x=>x.CreationTime);
+            Map(x => x.CreationTime);
+            Map(x => x.StrictHierarchy);
             //Map(x => x.ImageUrl);
 
             References(x => x.Image).Not.LazyLoad().Cascade.SaveUpdate();

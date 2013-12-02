@@ -31,6 +31,7 @@ namespace RadialReview.Controllers
         //
         // GET: /Account/Login
         [AllowAnonymous]
+        [Access(AccessLevel.Any)]
         public ActionResult Login(string returnUrl,String message)
         {
             if (User.Identity.GetUserId() != null)
@@ -48,6 +49,7 @@ namespace RadialReview.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [Access(AccessLevel.Any)]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
@@ -71,6 +73,7 @@ namespace RadialReview.Controllers
         //
         // GET: /Account/Register
         [AllowAnonymous]
+        [Access(AccessLevel.Any)]
         public ActionResult Register(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
@@ -82,11 +85,12 @@ namespace RadialReview.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [Access(AccessLevel.Any)]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new UserModel() { UserName = model.UserName, FirstName=model.FirstName,LastName=model.LastName,Email=model.Email };
+                var user = new UserModel() { UserName = model.Email, FirstName=model.fname,LastName=model.lname };
                 var resultx = UserManager.CreateAsync(user, model.Password);
                 var result = await resultx;
                 if (result.Succeeded)
@@ -110,6 +114,7 @@ namespace RadialReview.Controllers
         // POST: /Account/Disassociate
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Access(AccessLevel.Any)]
         public async Task<ActionResult> Disassociate(string loginProvider, string providerKey)
         {
             ManageMessageId? message = null;
@@ -127,6 +132,7 @@ namespace RadialReview.Controllers
 
         //
         // GET: /Account/Manage
+        [Access(AccessLevel.User)]
         public ActionResult Manage(ManageMessageId? message,long? organizationId)
         {
             ViewBag.StatusMessage =
@@ -152,6 +158,7 @@ namespace RadialReview.Controllers
         // POST: /Account/Manage
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Access(AccessLevel.User)]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
             bool hasPassword = HasPassword();
@@ -204,6 +211,7 @@ namespace RadialReview.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [Access(AccessLevel.Any)]
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
             // Request a redirect to the external login provider
@@ -213,6 +221,7 @@ namespace RadialReview.Controllers
         //
         // GET: /Account/ExternalLoginCallback
         [AllowAnonymous]
+        [Access(AccessLevel.Any)]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
@@ -241,6 +250,7 @@ namespace RadialReview.Controllers
         // POST: /Account/LinkLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Access(AccessLevel.Any)]
         public ActionResult LinkLogin(string provider)
         {
             // Request a redirect to the external login provider to link a login for the current user
@@ -269,6 +279,7 @@ namespace RadialReview.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [Access(AccessLevel.Any)]
         public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
         {
             if (User.Identity.IsAuthenticated)
@@ -306,6 +317,7 @@ namespace RadialReview.Controllers
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Access(AccessLevel.Any)]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
@@ -315,12 +327,14 @@ namespace RadialReview.Controllers
         //
         // GET: /Account/ExternalLoginFailure
         [AllowAnonymous]
+        [Access(AccessLevel.Any)]
         public ActionResult ExternalLoginFailure()
         {
             return View();
         }
 
         [ChildActionOnly]
+        [Access(AccessLevel.Any)]
         public ActionResult RemoveAccountList()
         {
             var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());

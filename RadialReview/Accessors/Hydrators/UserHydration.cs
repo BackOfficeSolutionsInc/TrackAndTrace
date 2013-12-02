@@ -9,6 +9,7 @@ using NHibernate.Linq;
 using RadialReview.Accessors;
 using RadialReview.Models.Enums;
 using RadialReview.Models.UserModels;
+using RadialReview.Exceptions;
 
 namespace RadialReview
 {
@@ -251,14 +252,14 @@ namespace RadialReview
             User.CreatedReviews = reviews;
             return this;
         }
-
-        public UserHydration Teams()
+        public UserHydration SetTeams(List<TeamDurationModel> teams)
         {
-            using(var tx = Session.BeginTransaction())
+            /*using(var tx = Session.BeginTransaction())
             {
                 var uOrg = GetUnderlying();
                 User.Teams = uOrg.Teams.ToList();
-            }            
+            }    */
+            User.Teams = teams;
             return this;
         }
 
@@ -268,6 +269,29 @@ namespace RadialReview
             {
                 var uOrg = GetUnderlying();
                 User.Positions = uOrg.Positions.ToList();
+            }
+            return this;
+        }
+
+        public UserHydration PersonallyManaging(UserOrganizationModel self)
+        {
+            using (var tx = Session.BeginTransaction())
+            {
+                var uOrg = GetUnderlying();
+                var uOrgId = uOrg.Id;
+                bool owned = false;
+                //Blah blah blah this is bad.. 
+                try
+                {
+                    PermissionsUtility.Create(Session, self).OwnedBelowOrEqual(x => x.Id == uOrgId);
+                    owned = true;
+                }
+                catch(PermissionsException e)
+                {
+                    owned = false;
+                }
+
+                User.SetPersonallyManaging(owned);
             }
             return this;
         }

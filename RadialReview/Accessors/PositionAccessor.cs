@@ -76,5 +76,18 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
+        public List<PositionDurationModel> GetUsersWithPosition(UserOrganizationModel caller,long orgPositionId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var orgPos=s.Get<OrganizationPositionModel>(orgPositionId);
+                    PermissionsUtility.Create(s, caller).ViewOrganization(orgPos.Organization.Id);
+                    return s.QueryOver<PositionDurationModel>().Where(x => x.Position.Id == orgPositionId).List().ToList();
+                }
+            }
+        }
     }
 }

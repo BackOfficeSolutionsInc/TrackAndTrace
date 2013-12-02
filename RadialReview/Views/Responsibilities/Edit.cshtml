@@ -4,43 +4,53 @@
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@Html.Partial("Partial/manageheader")
-
-<br />
-<br />
+@section header{
+    @Html.Partial("Partial/manageheader")
+}
 <h2>Edit responsibilities</h2>
-    @foreach (var table in Model.ResponsibilityTables)
+@foreach (var table in Model.ResponsibilityTables)
 {
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h2 class="panel-title">@table.GroupType: <b>@table.Name</b></h2>
         </div>
         <div class="panel-body">
-            <table class="table table-condensed">
-                <tr>
-                    <th>Responsibility</th>
-                    <th class="alignCenter" style="width:200px;">Category</th>
-                    <th class="alignCenter" style="width:100px;">
-                        <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
-                Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),
-                Url.Action("Modal", "Responsibilities"))">
-                            +
-                        </a>
-                    </th>
-                </tr>
-                @foreach (var r in table.Responsibilities)
-                {
+            @if (table.Responsibilities.Any())
+            {
+                <table class="table table-condensed">
                     <tr>
-                        <td>@r.Responsibility</td>
-                        <td class="alignCenter">@r.Category</td>
-                        <td class="alignCenter">
-                            <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Edit responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
-                        Url.Action("Modal", "Responsibilities", new {id=r.Id }),
-                        Url.Action("Modal", "Responsibilities"))">Edit</a>
-                        </td>
+                        <th>Responsibility</th>
+                        <th class="alignCenter" style="width:200px;">Category</th>
+                        <th class="alignCenter" style="width:100px;">
+                            <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
+                Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),
+                Url.Action("Modal", "Responsibilities"),null,"verify")">
+                                
+                                +
+                            </a>
+                        </th>
                     </tr>
-                }
-            </table>
+                    @foreach (var r in table.Responsibilities)
+                    {
+                        <tr>
+                            <td>@r.Responsibility</td>
+                            <td class="alignCenter">@r.Category</td>
+                            <td class="alignCenter">
+                                <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Edit responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
+                        Url.Action("Modal", "Responsibilities", new { id = r.Id }),
+Url.Action("Modal", "Responsibilities"),null,"verify")">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+            else
+            {
+                <div class="btn btn-default pull-right" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
+                Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),
+Url.Action("Modal", "Responsibilities"), null, "verify")" style="width:100px;">+</div>
+                <div style="color: #B6B6B6">No @table.GroupType.ToLower() responsibilies. Click the button to the right to add some.</div>
+            }
         </div>
     </div>
 }

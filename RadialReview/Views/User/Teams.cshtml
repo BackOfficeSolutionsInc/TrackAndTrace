@@ -5,16 +5,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section header{
+    @Html.Partial("Partial/manageheader")
+}
 
-@Html.Partial("Partial/manageheader")
-<br />
-<br />
-
-
-<h2>Edit teams: <i>@Model.GetName()</i></h2>
+<h2>Edit teams: <i>@Model.GetNameAndTitle()</i></h2>
 
 <table class="table">
     <tr>
+        <th style="width: 10px;"></th>
         <th>Team</th>
         <th style="width: 150px;" class="alignCenter">Start</th>
         <th style="width: 150px;" class="alignCenter">End</th>
@@ -30,17 +29,31 @@
     @foreach (var p in Model.Teams.OrderBy(x => x.DeleteTime))
     {
         <tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
+            <td class="">
+                @if (p.Team.Type != RadialReview.Models.Enums.TeamType.Standard)
+                {
+                    <span class="glyphicon glyphicon-refresh" title="Auto-generated"></span>
+                }
+            </td>
             <td class="position">@p.Team.Name</td>
+
             <td class="alignCenter">@p.Start.ToShortDateString()</td>
             <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
             <td class="deleteButton">
-                @if (p.DeleteTime == null)
+                @if (p.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
                 {
-                    <a onclick="Delete(@p.Id)" class="btn btn-danger fullWidth">Delete</a>
+                    if (p.DeleteTime == null)
+                    {
+                        <a onclick="Delete(@p.Id)" class="btn btn-danger fullWidth">Delete</a>
+                    }
+                    else
+                    {
+                        <div class="fullWidth alignCenter" style="color: #929292">Deleted</div>
+                    }
                 }
                 else
                 {
-                    <div class="fullWidth alignCenter" style="color: #929292">Deleted</div>
+                    <a class="btn btn-default disabled fullWidth">Delete</a>
                 }
             </td>
         </tr>
@@ -49,8 +62,7 @@
 @using (var s = Html.BeginScripts())
 {
     <script>
-        function Delete(id)
-        {
+        function Delete(id) {
             $.ajax({
                 url: "/User/RemoveTeam/" + id + "?userId=@Model.Id",
                 success: function (data) {

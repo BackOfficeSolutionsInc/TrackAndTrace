@@ -17,6 +17,7 @@ namespace RadialReview.Controllers
 
         //
         // GET: /Position/
+        [Access(AccessLevel.Any)]
         public ActionResult Index()
         {
             return View();
@@ -34,6 +35,7 @@ namespace RadialReview.Controllers
             var position=_OrganizationAccessor.GetOrganizationPosition(GetUser(), id);
         }*/
 
+        [Access(AccessLevel.Manager)]
         public ActionResult Modal()
         {
             var positions = _PositionAccessor.AllPositions().ToList();
@@ -42,12 +44,14 @@ namespace RadialReview.Controllers
         }
 
         [HttpPost]
+        [Access(AccessLevel.Manager)]
         public JsonResult Modal(PositionViewModel model)
         {
             var caller=GetUser();
             _OrganizationAccessor.AddOrganizationPosition(caller, caller.Organization.Id, model.Position.Value,model.PositionName);
             return Json(JsonObject.Success);
         }
+
         /*
         public ActionResult EditAccountabilities(long positionId)
         {

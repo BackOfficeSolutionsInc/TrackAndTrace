@@ -3,27 +3,40 @@
 
 <input type="hidden" name="organizationId" value="@Model.OrganizationId" />
 <div class="row">
-    <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
-    <div class="col-xs-8">@Html.TextBoxFor(x=>x.Email,new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth" })</div>
+    <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
+    <div class="col-xs-9">@Html.TextBoxFor(x=>x.Email,new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control" })</div>
 </div>      
 <div class="smallBreak"></div>   
-<div class="row">   
-    <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.jobTitle):</label></div>
-    @{
-        var list = Model.Positions.Select<RadialReview.Models.Responsibilities.OrganizationPositionModel, SelectListItem>(
-            x => new SelectListItem
-                    {
-                            Selected=(Model.Position==x.Id),
-                            Text=x.CustomName,
-                            Value = "" + x.Id
-                    }).ToList();
-    }
 
-    <div class="col-xs-8">@Html.DropDownListFor(x => x.Position,list,new { placeholder = RadialReview.Properties.DisplayNameStrings.jobTitle, @class = "fullWidth" })
-</div>
-</div> 
+@Html.EditorFor(x=>x.Position,"~/Views/User/EditorTemplates/UserPositionViewModel.cshtml")
+
+@if(Model.StrictlyHierarchical)
+{
+    @Html.HiddenFor(x=>x.ManagerId)
+}
+else
+{
+    <div class="smallBreak"></div>
+    <div class="row">
+        <div class="col-xs-3"><label>Manager:</label></div>
+        <div class="col-xs-9">@Html.DropDownListFor(x=>x.ManagerId,Model.PotentialManagers ,new { @class = "fullWidth form-control" })</div>
+    </div>   
+}
+
+
+
+
+<script>
+    $(function () {
+        $("#positionSelector").change(function () {
+            $("#customPosition").val($("#positionSelector option:selected").text());
+            setTimeout(function () { $("#customPosition")[0].select(); }, 10);
+        })
+    });
+</script>
+
 <div class="smallBreak"></div>            
 <div class="row">   
-    <div class="col-xs-2"><label>@(RadialReview.Properties.DisplayNameStrings.isManager):</label></div>
-    <div class="col-xs-8">@Html.CheckBoxFor(x=>x.Manager, new { style = "padding-bottom: 7px;"  })</div>
+    <div class="col-xs-3"><label>Is Manager:</label></div>
+    <div class="col-xs-9">@Html.CheckBoxFor(x=>x.IsManager, new { style = "padding-bottom: 7px;",@class="checkbox"  })</div>
 </div>
