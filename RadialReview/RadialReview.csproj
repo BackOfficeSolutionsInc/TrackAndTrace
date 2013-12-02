@@ -226,6 +226,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Models\Enums\TeamType.cs" />
+    <Compile Include="Models\Responsibilities\Askable.cs" />
     <Compile Include="Models\Responsibilities\ResponsibilityModel.cs" />
     <Compile Include="Models\Responsibilities\ResponsibilityGroups.cs" />
     <Compile Include="Models\Enums\ThumbsType.cs" />
@@ -256,6 +257,7 @@
     <Compile Include="Models\ViewModels\OrganizationPositionViewModel.cs" />
     <Compile Include="Models\ViewModels\OrganizationTeamViewModel.cs" />
     <Compile Include="Models\ViewModels\OrganizationViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrgReviewsViewModel.cs" />
     <Compile Include="Models\ViewModels\PositionViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionModalViewModel.cs" />
     <Compile Include="Models\ViewModels\QuestionsViewModel.cs" />
@@ -499,6 +501,7 @@
     <Content Include="Views\Team\Edit.cshtml" />
     <Content Include="Views\Team\AddModal.cshtml" />
     <Content Include="Views\User\EditorTemplates\UserPositionViewModel.cshtml" />
+    <Content Include="Views\Manage\Reviews.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

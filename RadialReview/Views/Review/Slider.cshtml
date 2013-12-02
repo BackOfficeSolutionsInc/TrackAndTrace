@@ -33,7 +33,7 @@
                 {
                     <div class="pull-left star @((ViewBag.Incomplete != null && !slider.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
                 }
-                <h4>@slider.Question.Question.Translate()</h4>
+                <h4>@slider.Askable.GetQuestion()</h4>
             </div>
 
             <div class="col-md-6 startHidden">
@@ -68,7 +68,7 @@
                 {
                     <div class="pull-left star @((ViewBag.Incomplete!=null && !thumbs.Complete)?"red":"")"><span class="glyphicon glyphicon-asterisk"></span></div>
                 }
-                <h4>@thumbs.Question.Question.Translate()</h4>
+                <h4>@thumbs.Askable.GetQuestion()</h4>
             </div>
             <div class="col-md-6            startHidden">
                 <input type="radio" class="hidden" @(thumbs.Thumbs == ThumbsType.None?"checked":"") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.None" />

@@ -106,8 +106,9 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditReview();
+                    PermissionsUtility.Create(s, caller).EditReviews(caller.Organization.Id);
                     reviewContainer.CreatedById = caller.Id;
+                    reviewContainer.ForOrganization = caller.Organization;
                     s.SaveOrUpdate(reviewContainer);
                     tx.Commit();
                     s.Flush();
@@ -209,14 +210,14 @@ namespace RadialReview.Accessors
             }
         }
 
-        public List<ReviewsModel> GetReviewsForOrganization(UserOrganizationModel caller,long organizationid)
+        public List<ReviewsModel> GetReviewsForOrganization(UserOrganizationModel caller,long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditReview().ViewOrganization(organizationid);
-                    return s.QueryOver<ReviewsModel>().Where(x => x.ForOrganization.Id == organizationid).List().ToList();
+                    PermissionsUtility.Create(s, caller).EditReviews(organizationId);
+                    return s.QueryOver<ReviewsModel>().Where(x => x.ForOrganization.Id == organizationId).List().ToList();
                 }
             }
         }

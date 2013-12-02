@@ -304,13 +304,15 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }
 
-        public PermissionsUtility EditReview()
+        public PermissionsUtility EditReviews(long organizationId)
         {
             //TODO more permissions here?
             if (IsRadialAdmin())
                 return this;
 
-            if (caller.ManagingOrganization)
+            EditOrganization(organizationId);
+
+            if (caller.ManagerAtOrganization || caller.ManagingOrganization)
                 return this;
 
             throw new PermissionsException();

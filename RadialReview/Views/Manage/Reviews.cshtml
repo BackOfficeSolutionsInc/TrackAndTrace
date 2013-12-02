@@ -1,0 +1,41 @@
+﻿@model RadialReview.Models.ViewModels.OrgReviewsViewModel
+@{
+    ViewBag.Title = "Reviews";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section header{
+    @Html.Partial("Partial/manageheader")
+}
+
+<div class="panel panel-primary startHiddenGroup">
+    <div class="panel-heading">
+        <h3 class="panel-title">Reviews</h3>
+    </div>
+    <div class="panel-body">
+        <table class="table">
+            <tr>
+                <th style="min-width: 120px">@RadialReview.Properties.DisplayNameStrings.name</th>
+                <th style="width:200px">@RadialReview.Properties.DisplayNameStrings.dateCreated</th>
+                <th style="width:120px">@RadialReview.Properties.DisplayNameStrings.completion</th>
+                <th style="width:50px">
+                    <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton" data-toggle="modal">+</button>
+                </th>
+            </tr>
+            @foreach (var review in Model.Reviews)
+            {
+                <tr class="startHidden">
+                    <td>@review.Review.ReviewName</td>
+                    <td>@review.Review.DateCreated</td>
+                    <td>
+                        <div class="progress progress-striped" style="margin-top: 7px; margin-bottom: 0px;" title="@((int)(review.Completion*100))%">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="@((int)(review.Completion * 100))" aria-valuemin="0" aria-valuemax="100" style="width: @((int)(review.Completion * 100))%;">
+                                <span class="sr-only">@((int)(review.Completion * 100))%</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><a href="@Url.Action("Details", "Review", new {id=review.Review.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.details</a></td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

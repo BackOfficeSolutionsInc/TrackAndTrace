@@ -57,7 +57,7 @@ namespace RadialReview.Controllers
                 throw new PermissionsException();
             return View(new ManagerUserViewModel()
             {
-                MatchingQuestions = _QuestionAccessor.GetQuestionsForUser(caller, found).ToListAlive(),
+                MatchingQuestions = _QuestionAccessor.GetQuestionsForUser(caller, id).ToListAlive(),
                 User = found,
                 OrganizationId = caller.Organization.Id
             });

@@ -10,9 +10,10 @@ namespace RadialReview.Controllers
 {
     public class ManageController : BaseController
     {
-        protected OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected TeamAccessor _TeamAccessor = new TeamAccessor();
-        protected PositionAccessor _PositionAccessor = new PositionAccessor();
+        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
+        protected static TeamAccessor _TeamAccessor = new TeamAccessor();
+        protected static PositionAccessor _PositionAccessor = new PositionAccessor();
+        protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
         //
         // GET: /Manage/
         [Access(AccessLevel.Manager)]
@@ -85,9 +86,13 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Reviews()
         {
+            var reviews=_ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id);
+            var model = new OrgReviewsViewModel()
+            {
+                Reviews = reviews.Select(x => new ReviewsViewModel(x)).ToList()
+            };
 
-
-            return View();
+            return View(model);
         }
     }
 }

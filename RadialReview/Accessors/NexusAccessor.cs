@@ -52,11 +52,13 @@ namespace RadialReview.Accessors
                     if (position.Organization.Id != newUser.Organization.Id)
                         throw new PermissionsException();
 
-
-
-                    var positionDuration = new PositionDurationModel(position,caller.Id);
-                    newUser.Positions.Add(positionDuration);
                     db.Save(newUser);
+
+                    var positionDuration = new PositionDurationModel(position,caller.Id,newUser.Id);
+                    newUser.Positions.Add(positionDuration);
+
+                    db.Update(newUser);
+                    
                     newUserId = newUser.Id;
                     tx.Commit();
                 }

@@ -17,7 +17,7 @@ namespace RadialReview.Models
         /// <summary>
         /// UserOrganization Id
         /// </summary>
-        //public virtual List<ReviewModel> Reviews { get; set; }
+        public virtual List<ReviewModel> Reviews { get; set; }
 
         public virtual OrganizationModel ForOrganization { get; set; }
 

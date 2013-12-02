@@ -11,6 +11,7 @@ namespace RadialReview.Models.UserModels
     public class PositionDurationModel:IDeletable
     {
         public virtual long Id { get; set; }
+        public virtual long UserId { get; set; }
         public virtual OrganizationPositionModel Position { get; set; }
         public virtual DateTime Start { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
@@ -22,11 +23,12 @@ namespace RadialReview.Models.UserModels
 
         }
 
-        public PositionDurationModel(OrganizationPositionModel position,long promotedBy)
+        public PositionDurationModel(OrganizationPositionModel position, long promotedBy, long forUserId)
         {
             Position = position;
             PromotedBy = promotedBy;
             Start = DateTime.UtcNow;
+            UserId = forUserId;
         }
     }
 
@@ -39,6 +41,7 @@ namespace RadialReview.Models.UserModels
             Map(x => x.DeletedBy);
             Map(x => x.DeleteTime);
             Map(x => x.PromotedBy);
+            Map(x => x.UserId);
             References(x => x.Position).Not.LazyLoad();
         }
     }

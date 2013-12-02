@@ -3,6 +3,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Models.ViewModels;
 using RadialReview.Properties;
 using System;
@@ -18,8 +19,10 @@ namespace RadialReview.Controllers
     public class ReviewController : BaseController
     {
         protected static NexusAccessor _NexusAccessor = new NexusAccessor();
-        protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
         protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
+        protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
+        protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
+
 
         //
         // GET: /Review/
@@ -192,44 +195,59 @@ namespace RadialReview.Controllers
             try
             {
                 var dueDate = DateTime.Parse(Date);
-                var user = GetUser(null).Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
+                var caller = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
 
-                if (!user.ManagingOrganization)
-                    throw new PermissionsException();
+                /*if (!caller.ManagingOrganization)
+                    throw new PermissionsException();*/
 
-                var organization = user.Organization;
-                var subordinates = user.AllSubordinatesAndSelf();
+                var organization = caller.Organization;
+                var subordinates = caller.AllSubordinatesAndSelf();
                 var reviewContainer = new ReviewsModel()
                 {
                     DateCreated = DateTime.UtcNow,
                     DueDate = dueDate,
                     ReviewName = name,
-                    CreatedById = user.Id,
+                    CreatedById = caller.Id,
                 };
-                _ReviewAccessor.CreateReviewContainer(user, reviewContainer);
+                _ReviewAccessor.CreateReviewContainer(caller, reviewContainer);
 
                 List<Exception> exceptions = new List<Exception>();
 
-                foreach (var s in subordinates)
+                foreach (var subordinate in subordinates)
                 {
                     try
                     {
                         Guid guid = Guid.NewGuid();
                         NexusModel nexus = new NexusModel(guid);
-                        nexus.ForUserId = s.Id;
+                        nexus.ForUserId = subordinate.Id;
                         nexus.ActionCode = NexusActions.TakeReview;
                         _NexusAccessor.Put(nexus);
 
+                        /** Old questions way to do things.
                         var review = _QuestionAccessor.GenerateReviewForUser(user, s, reviewContainer);
                         //review.ForReviewsId = reviewContainer.Id;
                         //review.DueDate = reviewContainer.DueDate;
                         //review.Name = reviewContainer.ReviewName;
                         //_ReviewAccessor.UpdateIndividualReview(user, review);
+                        */
+
+                        var responsibilityGroups = _ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(GetUser(),subordinate.Id);
+
+                        var responsibilities = responsibilityGroups.SelectMany(x => x.Responsibilities).ToList();
+                        var questions = _QuestionAccessor.GetQuestionsForUser(GetUser(), subordinate.Id);
+
+                        var askable = new List<Askable>();
+
+                        askable.AddRange(responsibilities);
+                        askable.AddRange(questions);
+                        
+                        var review = _QuestionAccessor.GenerateReviewForUser(caller, subordinate, reviewContainer, askable);
+
 
                         var subject = String.Format(RadialReview.Properties.EmailStrings.NewReview_Subject, organization.Name.Translate());
-                        var body = String.Format(EmailStrings.NewReview_Body,s.GetName(), user.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
+                        var body = String.Format(EmailStrings.NewReview_Body,subordinate.GetName(), caller.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
 
-                        Emailer.SendEmail(s.EmailAtOrganization, subject, body);
+                        Emailer.SendEmail(subordinate.EmailAtOrganization, subject, body);
                     }
                     catch (Exception e)
                     {

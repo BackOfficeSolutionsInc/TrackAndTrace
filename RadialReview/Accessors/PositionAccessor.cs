@@ -46,7 +46,7 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).EditUserOrganization(forUserId);
                     var position = s.Get<OrganizationPositionModel>(positionId);
 
-                    var pd=new PositionDurationModel(position,caller.Id);
+                    var pd = new PositionDurationModel(position, caller.Id, forUserId);
 
                     var forUser=s.Get<UserOrganizationModel>(forUserId);
                     forUser.Positions.Add(pd);

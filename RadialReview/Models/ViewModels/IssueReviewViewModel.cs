@@ -9,6 +9,10 @@ namespace RadialReview.Models.ViewModels
     {
         public DateTime Today { get; set; }
         public List<UserOrganizationModel> ForUsers { get; set; }
+        
+        public long ForTeamId { get; set; }
 
+
+        
     }
 }

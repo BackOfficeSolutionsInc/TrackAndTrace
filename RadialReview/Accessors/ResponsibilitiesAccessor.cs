@@ -1,6 +1,7 @@
 ﻿using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,33 @@ namespace RadialReview.Accessors
                         permissions.ViewOrganization(oId);
                     }
                     return responsibilities;
+                }
+            }
+        }
+
+        private static TeamAccessor _TeamAccessor = new TeamAccessor();
+        private static PositionAccessor _PositionAccessor = new PositionAccessor();
+
+        public List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(UserOrganizationModel caller, long userId)
+        {
+            var teams = _TeamAccessor.GetUsersTeams(caller, userId);
+
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(userId);
+                    var user=s.Get<UserOrganizationModel>(userId);
+
+                    List<ResponsibilityGroupModel> responsibilityGroups = new List<ResponsibilityGroupModel>();
+                    //User
+                    responsibilityGroups.Add(user);
+                    //Positions
+                    responsibilityGroups.AddRange(user.Positions.ToListAlive().Select(x=>x.Position));
+                    //Teams
+                    responsibilityGroups.AddRange(teams.ToListAlive().Select(x => x.Team));
+
+                    return responsibilityGroups;
                 }
             }
         }
@@ -124,6 +152,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
 
     }
 }

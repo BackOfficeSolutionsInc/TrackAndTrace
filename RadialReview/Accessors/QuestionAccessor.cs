@@ -3,6 +3,7 @@ using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Properties;
 using RadialReview.Utilities;
 using System;
@@ -14,6 +15,8 @@ namespace RadialReview.Accessors
 {
     public class QuestionAccessor : BaseAccessor
     {
+
+
         public QuestionModel CreateQuestion(QuestionModel question)
         {
             using (var db = HibernateSession.GetCurrentSession())
@@ -80,14 +83,18 @@ namespace RadialReview.Accessors
         /// <param name="caller"></param>
         /// <param name="forUser"></param>
         /// <returns></returns>
-        public ReviewModel GenerateReviewForUser(UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer)
+        public ReviewModel GenerateReviewForUser(UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer,List<Askable> askables)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var questions = GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
+                    //var questions = GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
+                    //var responsibilities =
+
                     forUser = s.Get<UserOrganizationModel>(forUser.Id);
+
+                    var askable = new List<Askable>();
                     
                     var reviewModel = new ReviewModel()
                     {
@@ -98,15 +105,15 @@ namespace RadialReview.Accessors
                     };
 
                     s.Save(reviewModel);
-                    foreach (var q in questions)
+                    foreach (var q in askables)
                     {
-                        switch (q.QuestionType)
+                        switch (q.GetQuestionType())
                         {
                             case QuestionType.RelativeComparison:   GenerateRelativeComparisonAnswers(s,caller, forUser, q, reviewModel); break;
                             case QuestionType.Slider:               GenerateSliderAnswers(s,caller, forUser, q, reviewModel); break;
                             case QuestionType.Thumbs:               GenerateThumbsAnswers(s,caller, forUser, q, reviewModel); break;
                             case QuestionType.Feedback:             GenerateFeedbackAnswers(s,caller, forUser, q, reviewModel); break;
-                            default: throw new ArgumentException("Unrecognized questionType(" + q.QuestionType + ")");
+                            default: throw new ArgumentException("Unrecognized questionType(" + q.GetQuestionType() + ")");
                         }
                     }
                     s.SaveOrUpdate(reviewModel);
@@ -118,29 +125,70 @@ namespace RadialReview.Accessors
             }
         }
 
+        /*
+        public ReviewModel GenerateResponsibilitiesReview(UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer,List<ResponsibilityGroupModel> responsibilityGroup)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    forUser = s.Get<UserOrganizationModel>(forUser.Id);
+
+                    var reviewModel = new ReviewModel()
+                    {
+                        ForUserId = forUser.Id,
+                        ForReviewsId = reviewContainer.Id,
+                        DueDate = reviewContainer.DueDate,
+                        Name = reviewContainer.ReviewName,
+                    };
+
+                    s.Save(reviewModel);
+                    foreach (var rg in responsibilityGroup)
+                    {
+                        foreach (var r in rg.Responsibilities)
+                        {
+                            GenerateSliderAnswers(s, caller, forUser, r, reviewModel);
+                            /*switch (q.QuestionType)
+                            {
+                                case QuestionType.RelativeComparison: GenerateRelativeComparisonAnswers(s, caller, forUser, q, reviewModel); break;
+                                case QuestionType.Slider: GenerateSliderAnswers(s, caller, forUser, q, reviewModel); break;
+                                case QuestionType.Thumbs: GenerateThumbsAnswers(s, caller, forUser, q, reviewModel); break;
+                                case QuestionType.Feedback: GenerateFeedbackAnswers(s, caller, forUser, q, reviewModel); break;
+                                default: throw new ArgumentException("Unrecognized questionType(" + q.QuestionType + ")");
+                            }
+                        }
+                    }
+                    s.SaveOrUpdate(reviewModel);
+                    tx.Commit();
+                    s.Flush();
+
+                    return reviewModel;
+                }
+            }
+        }*/
 
 
-        private void GenerateSliderAnswers(ISession session,UserOrganizationModel caller, UserOrganizationModel forUser, QuestionModel question, ReviewModel review)
+        private void GenerateSliderAnswers(ISession session,UserOrganizationModel caller, UserOrganizationModel forUser, Askable askable, ReviewModel review)
         {
 
             var slider=new SliderAnswer()
             {
                 Complete = false,
                 Percentage = 0,
-                Question = question,
+                Askable = askable,
                 Required = true,
                 ForReviewId = review.Id
             };
             session.Save(slider);
 
         }
-        private void GenerateFeedbackAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, QuestionModel question, ReviewModel review)
+        private void GenerateFeedbackAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, Askable askable, ReviewModel review)
         {
             var feedback = new FeedbackAnswer()
             {
                 Complete = false,
                 Feedback = null,
-                Question = question,
+                Askable = askable,
                 Required = true,
                 ForReviewId = review.Id
             };
@@ -148,13 +196,13 @@ namespace RadialReview.Accessors
 
         }
 
-        private void GenerateThumbsAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, QuestionModel question, ReviewModel review)
+        private void GenerateThumbsAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, Askable askable, ReviewModel review)
         {
             var thumbs = new ThumbsAnswer()
             {
                 Complete = false,
                 Thumbs = ThumbsType.None,
-                Question = question,
+                Askable = askable,
                 Required = true,
                 ForReviewId = review.Id
             };
@@ -162,7 +210,7 @@ namespace RadialReview.Accessors
 
         }
 
-        private void GenerateRelativeComparisonAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, QuestionModel question, ReviewModel review)
+        private void GenerateRelativeComparisonAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, Askable askable, ReviewModel review)
         {
             var peers = forUser.ManagedBy.SelectMany(x => x.ManagingUsers);
             var managers = forUser.ManagedBy;
@@ -181,7 +229,7 @@ namespace RadialReview.Accessors
                     var relComp=new RelativeComparisonAnswer()
                     {
                         Required = false,
-                        Question = question,
+                        Askable = askable,
                         Complete = false,
                         First = union[i],
                         Second = union[j],
@@ -216,14 +264,15 @@ namespace RadialReview.Accessors
             return questions;
         }
 
-        public List<QuestionModel> GetQuestionsForUser(UserOrganizationModel caller, UserOrganizationModel forUser)
+        public List<QuestionModel> GetQuestionsForUser(UserOrganizationModel caller, long forUserId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-
-                    return GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forUserId);
+                    var forUser = s.Get<UserOrganizationModel>(forUserId);
+                    return GetQuestionsForUser(s, caller, forUser, caller.AllSubordinatesAndSelf());
                 }
             }
         }

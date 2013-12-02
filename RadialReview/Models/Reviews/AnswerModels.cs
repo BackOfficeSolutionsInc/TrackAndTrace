@@ -1,6 +1,7 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.Responsibilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace RadialReview.Models
     {
         public virtual long Id { get; set; }
         public virtual long ForReviewId { get; set; }
-        public virtual QuestionModel Question { get; set; }
+        public virtual Askable Askable { get; set; }
         public virtual bool Required { get; set; }
         public virtual bool Complete { get; set; }
 
@@ -50,8 +51,7 @@ namespace RadialReview.Models
         public AnswerModelMap()
         {
             Id(x => x.Id);
-            References(x => x.Question)
-                .Not.LazyLoad();
+            References(x => x.Askable).Not.LazyLoad();
             //.Cascade.SaveUpdate();
             Map(x => x.Required);
             Map(x => x.ForReviewId);

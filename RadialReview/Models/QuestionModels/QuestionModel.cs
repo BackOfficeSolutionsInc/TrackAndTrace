@@ -2,6 +2,7 @@
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,8 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class QuestionModel : IDeletable
+    public class QuestionModel : Askable, IDeletable
     {
-        public virtual long Id { get; set; }
         public virtual DateTime DateCreated { get; set; }
         public virtual LocalizedStringModel Question { get; set; }
         public virtual long CreatedById { get; set; }
@@ -39,13 +39,22 @@ namespace RadialReview.Models
             Question = new LocalizedStringModel();
         }
 
+
+        public override QuestionType GetQuestionType()
+        {
+            return QuestionType;
+        }
+
+        public override string GetQuestion()
+        {
+            return Question.Translate();
+        }
     }
 
-    public class QuestionModelMap : ClassMap<QuestionModel>
+    public class QuestionModelMap : SubclassMap<QuestionModel>
     {
         public QuestionModelMap()
         {
-            Id(x => x.Id);
             Map(x => x.DateCreated);
             Map(x => x.DeleteTime);
             Map(x => x.QuestionType);
