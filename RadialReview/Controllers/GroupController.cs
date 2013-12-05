@@ -21,25 +21,25 @@ namespace RadialReview.Controllers
         //
         // GET: /Group/
         [Access(AccessLevel.Manager)]
-        public ActionResult Index(long? organizationId)
+        public ActionResult Index()
         {
-            var userOrg = GetUser(organizationId).Hydrate().ManagingGroups().ManagingUsers().Execute();
+            var userOrg = GetUser().Hydrate().ManagingGroups().ManagingUsers().Execute();
             IList<GroupModel> groups = userOrg.ManagingGroups;
             return View(groups);
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Details(long id, long? organizationId)
+        public ActionResult Details(long id)
         {
-            var group = _GroupAccessor.Get(GetUser(organizationId), id);
+            var group = _GroupAccessor.Get(GetUser(), id);
             return View(group);
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Create(long? organizationId)
+        public ActionResult Create()
         {
-            var orgUser = GetUser(organizationId).Hydrate().ManagingGroups().ManagingUsers().Organization().Execute();
-            organizationId = orgUser.Organization.Id;
+            var orgUser = GetUser().Hydrate().ManagingGroups().ManagingUsers().Organization().Execute();
+            //organizationId = orgUser.Organization.Id;
 
             if (!orgUser.IsManagerCanEditOrganization())
                 throw new PermissionsException();
@@ -51,12 +51,12 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Edit(long? id, long? organizationId)
+        public ActionResult Edit(long? id)
         {
             if (id == null)
                 return View("Create");
 
-            var orgUser = GetUser(organizationId)
+            var orgUser = GetUser()
                 .Hydrate()
                 .ManagingGroups()
                 .Organization()
@@ -70,10 +70,10 @@ namespace RadialReview.Controllers
             if (found == null)
                 throw new PermissionsException();
 
-            organizationId = orgUser.Organization.Id;
+            //organizationId = orgUser.Organization.Id;
 
             var group = _GroupAccessor.Get(orgUser, id.Value);
-            var directManage = orgUser.ManagingUsers;
+            var directManage = orgUser.ManagingUsers.ToListAlive();
             var possibleUsers = orgUser.AllSubordinatesAndSelf();
             foreach (var p in possibleUsers)
             {
@@ -93,7 +93,7 @@ namespace RadialReview.Controllers
 
             var groupViewModel = new GroupViewModel()
             {
-                OrganizationId = organizationId.Value,
+                OrganizationId = orgUser.Organization.Id,
                 Group = group,
                 DragDrop = new DragDropViewModel()
                 {
@@ -102,7 +102,7 @@ namespace RadialReview.Controllers
                     StartName = "Exclude",
                     EndName = "Include"
                 },
-                Questions = new QuestionsViewModel(organizationId.Value, OriginType.Group, group.Id, group.CustomQuestions)
+                Questions = new QuestionsViewModel(orgUser.Organization.Id, OriginType.Group, group.Id, group.CustomQuestions)
 
 
             };
@@ -127,7 +127,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Edit(GroupViewModel model)
         {
-            var userOrg = GetUser(model.OrganizationId).Hydrate().Organization().ManagingGroups().ManagingUsers(subordinates: true).Execute();
+            var userOrg = GetUser().Hydrate().Organization().ManagingGroups().ManagingUsers(subordinates: true).Execute();
 
             if (!userOrg.IsManagerCanEditOrganization())
                 throw new PermissionsException();

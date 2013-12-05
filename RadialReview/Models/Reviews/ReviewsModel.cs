@@ -7,7 +7,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class ReviewsModel : ILongIdentifiable
+    public class ReviewsModel : ILongIdentifiable, ICompletable
     {
         public virtual long Id { get; protected set; }
         public virtual long CreatedById { get; set; }
@@ -21,25 +21,21 @@ namespace RadialReview.Models
 
         public virtual OrganizationModel ForOrganization { get; set; }
 
-        public virtual decimal? GetCompletion()
+        public virtual CompletionModel GetCompletion()
         {
             if (Reviews == null)
                 return null;
-            decimal count = 0;
-            decimal sum = 0;
-            foreach (var r in Reviews)
+            return CompletionModel.FromList(Reviews.Select(x => x.GetCompletion()));
+            /*foreach (var r in Reviews)
             {
                 var c = r.GetCompletion();
                 if (c!=null)
                 {
                     count++;
-                    sum += Math.Min(1m,c.Value);
+                    sum += Math.Min(1,c.Value);
                 }
             }
-            if (count == 0)
-                return 0;
-            return sum / count;
-
+            return new CompletionModel(sum, count);*/
         }
 
         public ReviewsModel()

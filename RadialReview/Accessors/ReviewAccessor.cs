@@ -142,27 +142,10 @@ namespace RadialReview.Accessors
             return numerator / denomiator;
         }
 
-        private void PopulateCompletion(ISession session, ReviewModel review)
+        private void PopulateAnswers(ISession session, ReviewModel review)
         {
             var answers = session.QueryOver<AnswerModel>().Where(x => x.ForReviewId == review.Id).List().ToList();
             review.Answers = answers;
-
-            decimal requiredComplete = review.Answers.Count(x => x.Required && x.Complete);
-            decimal required = review.Answers.Count(x => x.Required);
-            decimal total = review.Answers.Count();
-            if (requiredComplete < required)
-            {
-                review.Completion = Completion(requiredComplete, required);
-                review.Complete = true;
-                review.FullyComplete = (requiredComplete == total);
-            }
-            else
-            {
-                var complete = review.Answers.Count(x => x.Complete);
-                review.Completion = Completion(complete, required);
-                review.Complete = true;
-                review.FullyComplete = (total == complete);
-            }
         }
 
         public List<ReviewModel> GetReviewsForUser(UserOrganizationModel caller, UserOrganizationModel forUser)
@@ -181,43 +164,101 @@ namespace RadialReview.Accessors
                         .List().ToList();
 
                     for (int i = 0; i < reviews.Count; i++)
-                        PopulateCompletion(s, reviews[i]);
+                        PopulateAnswers(s, reviews[i]);
                     return reviews;
                 }
             }
         }
 
-        public ReviewModel GetReviewForUser(UserOrganizationModel caller, long reviewId)
+        public ReviewModel GetReview(UserOrganizationModel caller, long reviewId)
         {
             var output = new ReviewModel();
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    //var review = s.Get<ReviewModel>(reviewId);
                     var reviewPopulated = s.QueryOver<ReviewModel>()
                        .Where(x => x.Id == reviewId)
                        .Fetch(x => x.Answers).Eager
                        .SingleOrDefault();
 
-                    //foreach(var a in reviews.Answers)
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(reviewPopulated.ForUserId).ViewReview(reviewId);
 
 
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(reviewPopulated.ForUserId);
-                    PopulateCompletion(s, reviewPopulated);
+                    PopulateAnswers(s, reviewPopulated);
                     return reviewPopulated;
                 }
             }
         }
 
-        public List<ReviewsModel> GetReviewsForOrganization(UserOrganizationModel caller,long organizationId)
+        private void PopulateReviewContainer(ISession s,ReviewsModel reviewContainer)
+        {
+            var reviewContainerId = reviewContainer.Id;
+            var reviewsQuery = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId);
+            reviewsQuery.Fetch(x=>x.ForUser).Eager.Future();
+            var reviews = reviewsQuery.List().ToList();
+
+            foreach (var r in reviews)
+            {
+                PopulateAnswers(s, r);
+            }
+
+            reviewContainer.Reviews = reviews;
+        }
+
+
+        public List<ReviewsModel> GetReviewsCreatedByUser(UserOrganizationModel caller, long userOrganizationId, bool populate)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditReviews(organizationId);
-                    return s.QueryOver<ReviewsModel>().Where(x => x.ForOrganization.Id == organizationId).List().ToList();
+                    PermissionsUtility.Create(s, caller).EditReviews(userOrganizationId);
+                    var reviewContainers = s.QueryOver<ReviewsModel>().Where(x => x.CreatedById == userOrganizationId).List().ToList();
+                    if (populate)
+                    {
+                        foreach (var rc in reviewContainers)
+                        {
+                            PopulateReviewContainer(s, rc);
+                        }
+                    }
+                    return reviewContainers;
+                }
+            }
+        }
+
+        public List<ReviewsModel> GetReviewsForOrganization(UserOrganizationModel caller, long organizationId, bool populate)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id,organizationId);
+                    var reviewContainers = s.QueryOver<ReviewsModel>().Where(x => x.ForOrganization.Id == organizationId).List().ToList();
+                    if (populate)
+                    {
+                        foreach (var rc in reviewContainers)
+                        {
+                            PopulateReviewContainer(s, rc);
+                        }
+                    }
+                    return reviewContainers;
+                }
+            }
+        }  
+
+        public ReviewsModel GetReviewContainer(UserOrganizationModel caller, long reviewContainerId,bool populate)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId);
+                    var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+                    if (populate)
+                        PopulateReviewContainer(s, reviewContainer);
+
+                    return reviewContainer;
                 }
             }
         }

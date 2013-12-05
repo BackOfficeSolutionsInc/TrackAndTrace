@@ -236,7 +236,7 @@ namespace RadialReview.Utilities
         {
             if (visibility(caller))
                 return true;
-            foreach (var manager in caller.ManagingUsers)
+            foreach (var manager in caller.ManagingUsers.ToListAlive().Select(x => x.Subordinate))
             {
                 if (IsOwnedBelowOrEqual(manager, visibility))
                     return true;
@@ -248,7 +248,7 @@ namespace RadialReview.Utilities
         {
             if (visibility(caller))
                 return true;
-            foreach (var subordinate in caller.ManagedBy)
+            foreach (var subordinate in caller.ManagedBy.ToListAlive().Select(x => x.Manager))
             {
                 if (IsOwnedAboveOrEqual(subordinate, visibility))
                     return true;
@@ -304,18 +304,30 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }
 
-        public PermissionsUtility EditReviews(long organizationId)
+        public PermissionsUtility ManagerAtOrganization(long userOrganizationId, long organizationId)
+        {
+            var user= session.Get<UserOrganizationModel>(userOrganizationId);
+            //var org = session.Get<OrganizationModel>(organizationId);
+
+            if (user.Organization.Id == organizationId && (user.ManagerAtOrganization || user.ManagingOrganization))
+                return this;
+
+            throw new PermissionsException();
+        }
+        
+        public PermissionsUtility EditReviews(long userOrganizationId)
         {
             //TODO more permissions here?
             if (IsRadialAdmin())
                 return this;
 
-            EditOrganization(organizationId);
+            var user=session.Get<UserOrganizationModel>(userOrganizationId);
+            if (user.Id != caller.Id)
+                throw new PermissionsException();
 
-            if (caller.ManagerAtOrganization || caller.ManagingOrganization)
-                return this;
+            ManagerAtOrganization(caller.Id,caller.Organization.Id);
 
-            throw new PermissionsException();
+            return this;
         }
 
         public PermissionsUtility EditReview(long reviewId)
@@ -378,6 +390,45 @@ namespace RadialReview.Utilities
             }
 
             throw new PermissionsException();
+        }
+
+        public PermissionsUtility ViewReviews(long reviewContainerId)
+        {
+            if (IsRadialAdmin())
+                return this;
+            var review = session.Get<ReviewsModel>(reviewContainerId);
+            var orgId=review.ForOrganization.Id;
+
+            ManagerAtOrganization(caller.Id, orgId);
+
+            if (orgId == caller.Organization.Id)
+                return this;
+
+            /*
+            if(IsOwnedBelowOrEqual(caller,x=>x.Id==review.CreatedById))
+                return this;*/
+
+            throw new PermissionsException();
+        }
+
+
+        public PermissionsUtility ViewReview(long reviewId)
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            var review=session.Get<ReviewModel>(reviewId);
+            var reviewUserId=review.ForUserId;
+
+            if (reviewUserId == caller.Id)
+                return this;
+
+            if (IsOwnedBelowOrEqual(caller, x => x.Id == reviewUserId))
+                return this;
+
+            throw new PermissionsException();
+
+
         }
     }
 }

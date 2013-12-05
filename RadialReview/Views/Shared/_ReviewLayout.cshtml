@@ -16,6 +16,21 @@
         .red {
             color: red;
         }
+
+        hr{
+            margin-top:0px;
+            margin-bottom:0px;
+        }
+
+        .slider {
+            padding-top:10px;
+        }
+
+        .side {
+            padding-top:25px;
+            text-align: center;
+            display: inline-block;
+        }
     </style>
 }
 
@@ -27,7 +42,6 @@
             @using (var form = Html.BeginForm("Take", "Review", FormMethod.Post, new {id="form" }))
             {
                 <input type="hidden" name="reviewId" value="@ViewBag.ReviewId" />
-                <input type="hidden" name="organizationId" value="@ViewBag.OrganizationId" />
                 <input type="hidden" name="page" value="@ViewBag.Page" />
                 @RenderBody()
                 <br />

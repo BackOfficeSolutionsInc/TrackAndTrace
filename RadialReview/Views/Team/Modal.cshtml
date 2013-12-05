@@ -1,20 +1,30 @@
-﻿@model RadialReview.Models.Responsibilities.OrganizationTeamModel
+﻿@model RadialReview.Models.ViewModels.OrganizationTeamCreateViewModel
 
 
-@Html.HiddenFor(x=>x.Id)
+@Html.HiddenFor(x=>x.TeamId)
 <div class="row">
     <div class="col-sm-4">
         <label>Team Name:</label>
     </div>
     <div class="col-sm-8">
-        @Html.TextBoxFor(x => x.Name)
+        @Html.TextBoxFor(x => x.TeamName, new { @class = "form-control" })
     </div>
 </div>
+<div class="smallBreak"></div>
 <div class="row">
     <div class="col-sm-4">
-        <label>Only mangers edit:</label>
+        <label>Managed By:</label>
     </div>
     <div class="col-sm-8">
-        @Html.CheckBoxFor(x => x.OnlyManagersEdit)
+        @Html.DropDownListFor(x => x.ManagerId, Model.PotentialManagers, new { @class = "form-control" })
+    </div>
+</div>
+<div class="smallBreak"></div>
+<div class="row">
+    <div class="col-sm-4">
+        <label>Inter-Review:</label>
+    </div>
+    <div class="col-sm-8">
+        @Html.CheckBoxFor(x => x.InterReview, new {@class="checkbox"})
     </div>
 </div>

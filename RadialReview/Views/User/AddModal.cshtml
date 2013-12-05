@@ -1,7 +1,6 @@
 ﻿@model RadialReview.Models.ViewModels.CreateUserOrganizationViewModel
 
-
-<input type="hidden" name="organizationId" value="@Model.OrganizationId" />
+@Html.HiddenFor(x=>x.OrgId)
 <div class="row">
     <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
     <div class="col-xs-9">@Html.TextBoxFor(x=>x.Email,new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control" })</div>

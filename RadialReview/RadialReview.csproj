@@ -219,12 +219,19 @@
     <Compile Include="Controllers\QuestionController.cs" />
     <Compile Include="Controllers\ResponsibilitiesController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
+    <Compile Include="Controllers\ReviewsController.cs" />
     <Compile Include="Controllers\SurveyController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Controllers\UrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Exceptions\NoUserOrganizationException.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
+    <Compile Include="Models\Interfaces\ICompletable.cs" />
+    <Compile Include="Models\Enums\AboutType.cs" />
+    <Compile Include="Models\Responsibilities\AskableAbout.cs" />
+    <Compile Include="Models\UserModels\ManagerDuration.cs" />
+    <Compile Include="Models\ViewModels\CompletionViewModel.cs" />
     <Compile Include="Models\Enums\TeamType.cs" />
     <Compile Include="Models\Responsibilities\Askable.cs" />
     <Compile Include="Models\Responsibilities\ResponsibilityModel.cs" />
@@ -249,13 +256,13 @@
     <Compile Include="Models\Reviews\ReviewsModel.cs" />
     <Compile Include="Models\UserModels\PositionDuration.cs" />
     <Compile Include="Models\UserModels\TeamDuration.cs" />
-    <Compile Include="Models\ViewModels\CreateUserOrganizationViewModel.cs" />
+    <Compile Include="Models\ViewModels\UserOrganizationViewModel.cs" />
     <Compile Include="Models\ViewModels\ImageUploadViewModel.cs" />
     <Compile Include="Models\ViewModels\IssueReviewViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageUserViewModel.cs" />
     <Compile Include="Models\ViewModels\OrganizationMembersViewModel.cs" />
     <Compile Include="Models\ViewModels\OrganizationPositionViewModel.cs" />
-    <Compile Include="Models\ViewModels\OrganizationTeamViewModel.cs" />
+    <Compile Include="Models\ViewModels\OrganizationTeamViewModels.cs" />
     <Compile Include="Models\ViewModels\OrganizationViewModel.cs" />
     <Compile Include="Models\ViewModels\OrgReviewsViewModel.cs" />
     <Compile Include="Models\ViewModels\PositionViewModel.cs" />
@@ -350,6 +357,7 @@
     </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="Models\Enums\AccessLevel.cs" />
+    <Compile Include="Utilities\AskableUtility.cs" />
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
     <Compile Include="Utilities\Attributes\AccessAttribute.cs" />
     <Compile Include="Utilities\DragDropUtility.cs" />
@@ -363,6 +371,7 @@
     <Compile Include="Utilities\Extensions\SessionExtensions.cs" />
     <Compile Include="Utilities\Extensions\StringExtensions.cs" />
     <Compile Include="Utilities\Extensions\UserOrganizationExtensions.cs" />
+    <Compile Include="Utilities\HeatMapBinner.cs" />
     <Compile Include="Utilities\HibernateSession.cs" />
     <Compile Include="Utilities\Extensions\LocalizationExtensions.cs" />
     <Compile Include="Utilities\HttpContextUtility.cs" />
@@ -454,7 +463,7 @@
     <Content Include="Views\Organization\Create.cshtml" />
     <Content Include="Views\Organization\Index.cshtml" />
     <Content Include="Views\Organization\Manage.cshtml" />
-    <Content Include="Views\Organization\ManageList.cshtml" />
+    <Content Include="Views\Account\Role.cshtml" />
     <Content Include="Views\Partial\_DragDropItem.cshtml" />
     <Content Include="Views\Payment\Index.cshtml" />
     <Content Include="Views\Home\Backend.cshtml" />
@@ -502,10 +511,15 @@
     <Content Include="Views\Team\AddModal.cshtml" />
     <Content Include="Views\User\EditorTemplates\UserPositionViewModel.cshtml" />
     <Content Include="Views\Manage\Reviews.cshtml" />
+    <Content Include="Views\Reviews\Details.cshtml" />
+    <Content Include="Views\Shared\_Completion.cshtml" />
+    <Content Include="Views\Review\Details.cshtml" />
+    <Content Include="Views\Review\Thumbs.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="External\" />
+    <Folder Include="Views\Data\" />
     <Folder Include="Views\Img\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Url\" />

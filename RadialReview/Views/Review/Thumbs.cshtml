@@ -1,0 +1,36 @@
+﻿@model List<RadialReview.Models.ThumbsAnswer>
+
+@using RadialReview.Models
+@using RadialReview.Models.Enums
+
+@foreach (var thumbs in Model)
+{
+    <div class="row">
+
+        <div class="col-md-6 alignRight startHidden">
+            @if (thumbs.Required)
+            {
+                <div class="pull-left star @((ViewBag.Incomplete!=null && !thumbs.Complete)?"red":"")"><span class="glyphicon glyphicon-asterisk"></span></div>
+            }
+            <h4>@thumbs.Askable.GetQuestion()</h4>
+        </div>
+        <div class="col-md-6            startHidden">
+            <input type="radio" class="hidden" @(thumbs.Thumbs == ThumbsType.None ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.None" />
+            <div class="row">
+                <div class="col-sm-4 col-sm-offset-4 alignCenter">
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-lg btn-default successRadio @(thumbs.Thumbs == ThumbsType.Up ? "active" : "")">
+                            <input type="radio" @(thumbs.Thumbs == ThumbsType.Up ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.Up">
+                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                        </label>
+                        <label class="btn btn-lg btn-default dangerRadio @(thumbs.Thumbs == ThumbsType.Down ? "active" : "") ">
+                            <input type="radio" @(thumbs.Thumbs == ThumbsType.Down ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.Down">
+                            <span class="glyphicon glyphicon-thumbs-down"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+}

@@ -1,0 +1,24 @@
+﻿@model List<RadialReview.Models.UserOrganizationModel>
+@{
+    ViewBag.Title = "Change Role";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel panel-primary">
+    <!-- Default panel contents -->
+    <div class="panel-heading"><b>Choose a role:</b></div>
+    <!-- Table -->
+    <table class="table">
+
+    @foreach (var userOrg in Model)
+    {
+        <tr>
+            <td width="10px;"></td>
+            <td>
+                <a href="@(Url.Action("SetRole","Account", new { id = userOrg.Id }))">@userOrg.GetTitles().Surround(""," at ")@(userOrg.Organization.Name)</a>
+            </td>
+        </tr>
+    }
+
+    </table>
+</div>

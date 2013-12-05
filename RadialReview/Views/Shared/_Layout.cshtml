@@ -15,6 +15,11 @@
     @Html.PageStyles()
 
 </head>
+@if (ViewBag.HasBaseController==null)
+{
+    throw new Exception("You must extend from the base controller.");
+}
+
 <body>
     <div id="wrap">
         <div id="main">
@@ -65,6 +70,9 @@
                 @RenderSection("header", false)
                 <div id="alerts">
                 </div>
+                    <div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
+                        @RenderSection("hints",false)
+                    </div>
                     @RenderBody()
                 @*<hr/>*@
             </div>
@@ -171,7 +179,6 @@
                                         return;
                                     }
                                 }
-
                                 $.ajax({
                                     url: pushUrl,
                                     type: "POST",

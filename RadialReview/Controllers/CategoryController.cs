@@ -17,9 +17,9 @@ namespace RadialReview.Controllers
         //
         // GET: /Category/
         [Access(AccessLevel.Manager)]
-        public ActionResult Index(long? organizationId)
+        public ActionResult Index()
         {
-            var user=GetUser(organizationId)
+            var user=GetUser()
                 .Hydrate()
                 .Organization(questions:true)
                 .Execute();
@@ -43,9 +43,9 @@ namespace RadialReview.Controllers
         //
         // GET: /Category/Create
         [Access(AccessLevel.Manager)]
-        public ActionResult Create(long? organizationId)
+        public ActionResult Create()
         {
-            var user = GetUser(organizationId);
+            var user = GetUser();
             return View("Edit", new QuestionCategoryModel() { 
                 OriginType=OriginType.Organization,
                 OriginId = user.Organization.Id 
@@ -55,9 +55,9 @@ namespace RadialReview.Controllers
         //
         // GET: /Category/Edit/5
         [Access(AccessLevel.Manager)]
-        public ActionResult Edit(int id,long? organizationId)
+        public ActionResult Edit(int id)
         {
-            var user = GetUser(organizationId).Hydrate().Organization(questions:true).Execute();
+            var user = GetUser().Hydrate().Organization(questions:true).Execute();
             ManagerAndCanEditOrException(user);
             var category=_CategoryAccessor.Get(user, id);
 
@@ -68,13 +68,13 @@ namespace RadialReview.Controllers
         // POST: /Category/Edit/5
         [HttpPost]
         [Access(AccessLevel.Manager)]
-        public ActionResult Edit(int id, QuestionCategoryModel collection,long? organizationId)
+        public ActionResult Edit(int id, QuestionCategoryModel collection)
         {
             try
             {
                 //collection.Organization.Id = long.Parse(Request.Params["Organization.Id"]);
 
-                var user=GetUser(organizationId);
+                var user=GetUser();
                 //EditableOrException(user);
                 //var category=_CategoryAccessor.Get(user,id);
                 var origin = new Origin(collection.OriginType, collection.OriginId);

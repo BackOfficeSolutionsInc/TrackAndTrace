@@ -100,13 +100,13 @@ namespace RadialReview
         
         public UserHydration ManagingUsers(Boolean subordinates = false)
         {
-            List<UserOrganizationModel> managing = new List<UserOrganizationModel>();
+            List<ManagerDuration> managing = new List<ManagerDuration>();
             using (var tx = Session.BeginTransaction())
             {
                 var uOrg = GetUnderlying();
-                foreach (var g in uOrg.ManagingUsers)
+                foreach (var g in uOrg.ManagingUsers.ToListAlive())
                 {
-                    var user = Session.Query<UserOrganizationModel>().Where(x => x.Id == g.Id).Fetch(x => x.User).SingleOrDefault();
+                    var user = Session.Query<ManagerDuration>().Where(x => x.Id == g.Id).SingleOrDefault();
                     managing.Add(user);
                 }
             }
@@ -119,7 +119,7 @@ namespace RadialReview
                     User.AllSubordinates = children;
                 }
             }
-            User.ManagingUsers = managing;
+            User.ManagingUsers = managing.ToListAlive();
             return this;
         }
 
@@ -129,7 +129,7 @@ namespace RadialReview
             var children = new List<UserOrganizationModel>();
             if (parent.ManagingUsers == null || parent.ManagingUsers.Count == 0)
                 return children;
-            foreach (var c in parent.ManagingUsers)
+            foreach (var c in parent.ManagingUsers.ToListAlive().Select(x => x.Subordinate))
             {
                 c.Properties["parents"] = parents;
                 children.Add(c);

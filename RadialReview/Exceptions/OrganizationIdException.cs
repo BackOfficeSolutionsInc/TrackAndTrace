@@ -12,11 +12,11 @@ namespace RadialReview.Exceptions
 
         public OrganizationIdException(String message): base(message)
         {
-            RedirectUrl = "/Organization/ManageList";
+            RedirectUrl = "/Account/Role";
         }
         public OrganizationIdException() : base(ExceptionStrings.DefaultOrganizationIdException)
         {
-            RedirectUrl = "/Organization/ManageList";
+            RedirectUrl = "/Account/Role";
         }
     }
 }

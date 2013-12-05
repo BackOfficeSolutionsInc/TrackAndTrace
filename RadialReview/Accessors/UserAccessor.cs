@@ -63,6 +63,45 @@ namespace RadialReview.Accessors
             }
         }
 
+        public List<UserOrganizationModel> GetPeers(UserOrganizationModel caller, long forId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forId);
+                    var forUser=s.Get<UserOrganizationModel>(forId);
+                    return forUser.ManagedBy.ToListAlive().Select(x => x.Manager).SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate)).ToList();
+                }
+            }
+        }
+
+        public List<UserOrganizationModel> GetManagers(UserOrganizationModel caller, long forId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forId);
+                    var forUser = s.Get<UserOrganizationModel>(forId);
+                    return forUser.ManagedBy.ToListAlive().Select(x => x.Manager).ToList();
+                }
+            }
+        }
+
+        public List<UserOrganizationModel> GetSubordinates(UserOrganizationModel caller, long forId)
+        {
+
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forId);
+                    var forUser = s.Get<UserOrganizationModel>(forId);
+                    return forUser.ManagingUsers.ToListAlive().Select(x => x.Subordinate).ToListAlive();
+                }
+            }
+        }
        
 
         private UserOrganizationModel GetUserOrganizationModel(ISession session, long id, Boolean full )
@@ -130,7 +169,7 @@ namespace RadialReview.Accessors
             }*/
         }
 
-        public UserOrganizationModel GetUserOrganizations(String userId, long organizationId,Boolean full=false)
+        public UserOrganizationModel GetUserOrganizations(String userId, long userOrganizationId,Boolean full=false)
         {
             if (userId == null)
                 throw new LoginException();
@@ -146,9 +185,9 @@ namespace RadialReview.Accessors
 //                    var user = db.UserModels.Include(x => x.UserOrganization.Select(y => y.Organization)).FirstOrDefault(x => x.IdMapping == userId);
                     if (user == null)
                         throw new LoginException();
-                    var match = user.UserOrganization.SingleOrDefault(x => x.Organization.Id == organizationId && x.DetachTime == null);
+                    var match = user.UserOrganization.SingleOrDefault(x => x.Id == userOrganizationId && x.DetachTime == null);
                     if (match == null)
-                        throw new PermissionsException();
+                        throw new OrganizationIdException();
                     return GetUserOrganizationModel(s, match.Id, full);
                 }
             }
@@ -169,5 +208,51 @@ namespace RadialReview.Accessors
             }
         }
 
+
+        public void SetHints(UserModel caller, bool turnedOn)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var user=s.Get<UserModel>(caller.Id);
+                    user.Hints = turnedOn;
+                    s.Update(user);
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public void EditUser(UserOrganizationModel caller,long userOrganizationId, bool? isManager=null, long? managerId=null)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var perm=PermissionsUtility.Create(s, caller).EditUserOrganization(userOrganizationId);
+                    var found=s.Get<UserOrganizationModel>(userOrganizationId);
+
+                    if (isManager != null)
+                    {
+                        perm.ManagesUserOrganization(userOrganizationId);
+                        found.ManagerAtOrganization = isManager.Value;
+                    }
+
+                    if (managerId != null)
+                    {
+                        perm.ManagesUserOrganization(userOrganizationId);
+                        var manager=s.Get<UserOrganizationModel>(managerId.Value);
+
+                        found. = isManager.Value;
+                    }
+
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
     }
 }

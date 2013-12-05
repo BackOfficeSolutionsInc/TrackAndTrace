@@ -231,8 +231,13 @@ namespace RadialReview.Accessors
                     var org = s.Get<OrganizationModel>(organizationId);
                     if (organizationName != null)
                         org.Name.UpdateDefault(organizationName);
-                    if (managersCanEdit != null)
-                        org.ManagersCanEdit = managersCanEdit.Value;
+                    if (managersCanEdit != null && managersCanEdit.Value!=org.ManagersCanEdit)
+                    {
+                        if (caller.ManagingOrganization)
+                            org.ManagersCanEdit = managersCanEdit.Value;
+                        else
+                            throw new PermissionsException();
+                    }
                     if (organizationName != null)
                         org.StrictHierarchy = strictHierarchy.Value;
 

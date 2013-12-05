@@ -1,9 +1,4 @@
 ﻿@model List<RadialReview.Models.FeedbackAnswer>
-@{
-    ViewBag.Title = "Feedback";
-    Layout = "~/Views/Shared/_ReviewLayout.cshtml";
-}
-
 
 <div class="startHiddenGroup">
     @foreach (var f in Model)
@@ -14,7 +9,7 @@
                 {
                     <div class="pull-left star @((ViewBag.Incomplete != null && !f.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
                 }
-                <h4>@f.Question.Question.Translate()</h4>
+                <h4>@f.Askable.GetQuestion()</h4>
             </div>
             <div class="col-md-6 alignRight startHidden">
                 <textarea class="feedback" name="question_@(RadialReview.Models.Enums.QuestionType.Feedback)_@f.Id">@f.Feedback</textarea>

@@ -32,7 +32,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    return s.QueryOver<PositionModel>().List().ToList();
+                    return s.QueryOver<PositionModel>().List().OrderBy(x=>x.Name.Translate()).ToList();
                 }
             }
         }

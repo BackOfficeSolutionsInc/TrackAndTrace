@@ -27,6 +27,7 @@ namespace RadialReview.Models
         [Display(Name = "confirmPassword", ResourceType = typeof(DisplayNameStrings))]
         [Compare("NewPassword", ErrorMessageResourceName = "newPasswordMatch", ErrorMessageResourceType=typeof(ErrorMessageStrings))]
         public string ConfirmPassword { get; set; }
+
     }
 
     public class LoginViewModel

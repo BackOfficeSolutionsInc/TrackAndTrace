@@ -44,7 +44,7 @@ namespace RadialReview.Controllers
             var basicPlan=_PaymentAccessor.BasicPaymentPlan();
             var localizedName=new LocalizedStringModel(){Default=new LocalizedStringPairModel(name)};
             var organization=_OrganizationAccessor.CreateOrganization(user, localizedName,managersCanEdit,basicPlan);
-            return RedirectToAction("Index","Manage", new { organizationId = organization.Id });
+            return RedirectToAction("Index","Manage");
         }
 
         [Access(AccessLevel.Any)]
@@ -59,10 +59,10 @@ namespace RadialReview.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Account", new { returnUrl = "Organization/Join/" + id });
             try{
-                var userOrg = GetUser(orgId);
+                var userOrg = GetUser(placeholderUserId);
                 throw new RedirectException(ExceptionStrings.AlreadyMember);
             }
-            catch (PermissionsException)
+            catch (OrganizationIdException)
             {
                 //We want to hit this exception.
                 var org = _OrganizationAccessor.JoinOrganization(user, nexus.ByUserId, placeholderUserId);
@@ -70,13 +70,11 @@ namespace RadialReview.Controllers
                 return RedirectToAction("Index", "Home", new { message =String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name)});
             }
         }
-
+        /*
         [Access(AccessLevel.UserOrganization)]
         public ActionResult ManageList()
         {
-            var userOrgs = GetUserOrganizations();
-            return View(userOrgs.Select(x => x.Organization).ToList());
-        }
+        }*/
 
         /*
         public ActionResult Manage(int? organizationId)

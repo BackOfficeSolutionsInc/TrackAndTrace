@@ -71,12 +71,7 @@ namespace RadialReview.Controllers
             {
                 organizationId = (long)Session["organizationId"];
             }
-
-            if (organizationId!=null)
-            {
-                Session["organizationId"] = organizationId.Value;
-            }
-
+            
             if (_CurrentUser != null && organizationId == _CurrentUserOrganizationId)
                 return _CurrentUser;
 
@@ -84,11 +79,11 @@ namespace RadialReview.Controllers
             {
                 var found = GetUserOrganizations();
                 if (found.Count == 0)
-                    throw new PermissionsException();
+                    throw new NoUserOrganizationException();
                 else if (found.Count == 1)
                 {
                     _CurrentUser=found.First();
-                    _CurrentUserOrganizationId = _CurrentUser.Organization.Id;
+                    _CurrentUserOrganizationId = _CurrentUser.Id;
                     Session["organizationId"] = _CurrentUserOrganizationId;
                     return _CurrentUser;
                 }
@@ -98,7 +93,8 @@ namespace RadialReview.Controllers
             else
             {
                 _CurrentUser = GetUserOrganization(organizationId.Value);
-                _CurrentUserOrganizationId = _CurrentUser.Organization.Id;
+                _CurrentUserOrganizationId = _CurrentUser.Id;
+                Session["organizationId"] = organizationId.Value;
                 return _CurrentUser;
             }
         }
@@ -111,6 +107,7 @@ namespace RadialReview.Controllers
 
         protected void SignOut()
         {
+            Session["organizationId"] = null;
             AuthenticationManager.SignOut();
         }
 
@@ -154,7 +151,7 @@ namespace RadialReview.Controllers
             {
                 var redirectUrl=((RedirectException)filterContext.Exception).RedirectUrl;
                 log.Info("Organization: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
-                filterContext.Result = RedirectToAction("ManageList", "Organization", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
+                filterContext.Result = RedirectToAction("Role", "Account", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             }
@@ -163,7 +160,7 @@ namespace RadialReview.Controllers
                 var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                 log.Info("Permissions: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
                 ViewBag.Message=filterContext.Exception.Message;
-                filterContext.Result = View("~/Views/Error/Index.cshtml");
+                filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             }
@@ -194,18 +191,41 @@ namespace RadialReview.Controllers
                 Thread.CurrentThread.CurrentUICulture = culture;
             }
 
+            filterContext.Controller.ViewBag.HasBaseController = true;
             if (IsLoggedIn())
             {
                 var userOrgs= GetUserOrganizations();
-                var oneUser = userOrgs.FirstOrDefault();
+                UserOrganizationModel oneUser = null;
+                try
+                {
+                    oneUser = GetUser();
+                }
+                catch (OrganizationIdException)
+                {
+                }
+                catch (NoUserOrganizationException)
+                {
+                }
+
                 filterContext.Controller.ViewBag.UserName = MessageStrings.User;
                 filterContext.Controller.ViewBag.IsManager = false;
                 filterContext.Controller.ViewBag.Organizations = userOrgs.Count();
+                filterContext.Controller.ViewBag.Hints = GetUserModel().Hints;
+                filterContext.Controller.ViewBag.ManagingOrganization = false;
                 
                 if (oneUser != null)
                 {
-                    filterContext.Controller.ViewBag.UserName = oneUser.GetName();
-                    filterContext.Controller.ViewBag.IsManager = userOrgs.Any(x => x.ManagerAtOrganization || x.ManagingOrganization);
+                    var name=oneUser.GetName();
+
+                    if (userOrgs.Count>1)
+                    {
+                        name = oneUser.GetNameAndTitle(1);
+                    }
+
+                    //filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
+                    filterContext.Controller.ViewBag.UserName = name;
+                    filterContext.Controller.ViewBag.IsManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization;
+                    filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization;                        
                 }
                 else
                 {

@@ -10,12 +10,18 @@ namespace RadialReview.Models.ViewModels
     public class CreateUserOrganizationViewModel
     {
         public UserPositionViewModel Position { get; set; }
-        public String Email { get; set; } 
+        public String Email { get; set; }
         public bool IsManager { get; set; }
-        public long OrganizationId { get; set; }
-
-        public bool StrictlyHierarchical { get;set; }
+        public long OrgId { get; set; }
+        public bool StrictlyHierarchical { get; set; }
         public long ManagerId { get; set; }
+        public List<SelectListItem> PotentialManagers { get; set; }
+    }
+    public class EditUserOrganizationViewModel
+    {
+        public bool IsManager { get; set; }
+        public long ManagerId { get; set; }
+        public bool StrictlyHierarchical { get; set; }
         public List<SelectListItem> PotentialManagers { get; set; }
     }
 }

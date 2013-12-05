@@ -16,7 +16,7 @@ namespace RadialReview.Accessors
     public class NexusAccessor : BaseAccessor
     {
         public static UrlAccessor _UrlAccessor = new UrlAccessor();
-        public String JoinOrganizationUnderManager(UserOrganizationModel caller,long managerId,Boolean isManager,long orgPositionId, String email)
+        public String JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email)
         {
             if (!Emailer.IsValid(email))
                 throw new RedirectException(ExceptionStrings.InvalidEmail);
@@ -28,37 +28,51 @@ namespace RadialReview.Accessors
                 long newUserId = 0;
                 using (var tx = db.BeginTransaction())
                 {
-                    var manager= db.Get<UserOrganizationModel>(managerId);
 
-                    //Strict Hierarchy stuff
-                    if (caller.Organization.StrictHierarchy && caller.Id != managerId)
-                        throw new PermissionsException();
-                    //Manager and Caller are in the same organization
-                    if (manager.Organization.Id != caller.Organization.Id)
-                        throw new PermissionsException();
-                    //Both are managers at the organization
-                    if (!caller.ManagerAtOrganization || !manager.ManagerAtOrganization)
-                        throw new PermissionsException();
+                    var newUser = new UserOrganizationModel();
+                    if (managerId == -3)
+                    {
+                        if (!caller.ManagingOrganization)
+                            throw new PermissionsException();
+                        newUser.ManagingOrganization = true;
+                    }
+                    else
+                    {
+                        var manager = db.Get<UserOrganizationModel>(managerId);
+                        //Manager and Caller are in the same organization
+                        if (manager.Organization.Id != caller.Organization.Id)
+                            throw new PermissionsException();
+                        //Strict Hierarchy stuff
+                        if (caller.Organization.StrictHierarchy && caller.Id != managerId)
+                            throw new PermissionsException();
+                        //Both are managers at the organization
+                        if (!(caller.ManagerAtOrganization || caller.ManagingOrganization) || !(manager.ManagerAtOrganization || manager.ManagingOrganization))
+                            throw new PermissionsException();
 
+                    }
 
-                    var newUser=new UserOrganizationModel();
-                    newUser.ManagedBy.Add(manager);
-                    newUser.ManagerAtOrganization=isManager;
+                    newUser.ManagerAtOrganization = isManager;
                     newUser.Organization = caller.Organization;
                     newUser.EmailAtOrganization = email;
 
-                    var position=db.Get<OrganizationPositionModel>(orgPositionId);
+                    var position = db.Get<OrganizationPositionModel>(orgPositionId);
 
                     if (position.Organization.Id != newUser.Organization.Id)
                         throw new PermissionsException();
 
                     db.Save(newUser);
 
-                    var positionDuration = new PositionDurationModel(position,caller.Id,newUser.Id);
+                    var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id);
                     newUser.Positions.Add(positionDuration);
 
+                    if (managerId > 0)
+                    {
+                        var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id);
+                        newUser.ManagedBy.Add(managerDuration);
+                    }
+
                     db.Update(newUser);
-                    
+
                     newUserId = newUser.Id;
                     tx.Commit();
                 }
@@ -111,7 +125,7 @@ namespace RadialReview.Accessors
                     tx.Commit();
                     s.Flush();
                 }
-            }            
+            }
         }
 
         public NexusModel Put(NexusModel model)

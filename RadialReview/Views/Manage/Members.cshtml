@@ -11,46 +11,57 @@
     @Html.Partial("Partial/manageheader")
 }
 
-@Html.AlertBoxDismissable("The next step is adding members to your organization. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
+@section hints{
+    @Html.AlertBoxDismissable("The next step is adding members to your organization. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
+}
+<div class="panel panel-primary">
+    <div style="width:54px;float:right;padding:2px;">
+        <button class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
+        +
+        </button>
+    </div>
+    <div class="panel-heading">
+        
+        <h3 class="panel-title">Manage members</h3>
 
-
-<div class="table-responsive">
-    <table class="table">
-        <tr>
-            <th style="width:15px;" class="alignCenter smallPad" title="Has this user joined?">Join</th>
-            <th style="width:15px;" class="alignCenter smallPad" title="Users you manage">Own</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th style="min-width:150px" class="NalignCenter">Positions</th>
-            <th style="min-width:150px" class="NalignCenter">Teams</th>
-            <th style="min-width:150px" class="NalignCenter">Responsibilities</th>
-            <th style="width:50px">
-                <button class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">+</button>
-            </th>
-        </tr>
-        @foreach (var p in Model.Users.OrderByDescending(x => x.Managing).ThenByDescending(x => x.Verified).ThenBy(x => x.Name))
-        {
+    </div>
+    <div class="table-responsive">
+        <table class="table">
             <tr>
-                <td class="alignCenter">@((p.Verified).GetIcon())</td>
-                <td class="alignCenter">@((p.Managing).GetIcon())</td>
-                <td>@p.Name</td>
-                <td><a href="mailto:@p.Email">@p.Email</a></td>
-                <td class="NalignCenter">
-                    <a href="@Url.Action("Positions","User",new {id = p.Id})" class="fullWidth">@Html.EditFirstButton(p.PositionTitles)</a>
-                </td>
-                <td class="NalignCenter">
-                    <a href="@Url.Action("Teams","User",new {id = p.Id})" class="fullWidth">@Html.EditFirstButton(p.TeamsTitles)</a>
-                </td>
-                <td class="NalignCenter">
-                    <a href="@Url.Action("Edit", "Responsibilities", new { id = p.Id })" class="fullWidth">
-                        Edit (<span title="Number of Individual Responsibilities">@(p.NumIndividualResponsibilities)</span>+<span title="Number of Other Responsibilities">@(p.NumTotalResponsibilities - p.NumIndividualResponsibilities)</span>)
-                    </a>
-                </td>
-
-                <td></td>
+                <th style="width:15px;" class="alignCenter smallPad" title="Has this user joined?">Join</th>
+                <th style="width:15px;" class="alignCenter smallPad" title="Users you manage">Own</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th style="min-width:150px" class="NalignCenter">Positions</th>
+                <th style="min-width:150px" class="NalignCenter">Teams</th>
+                <th style="min-width:150px" class="NalignCenter">Responsibilities</th>
+                <th style="min-width:50px" class="NalignCenter"></th>
             </tr>
-        }
+            @foreach (var p in Model.Users.OrderByDescending(x => x.Managing).ThenByDescending(x => x.Verified).ThenBy(x => x.Name))
+            {
+                <tr>
+                    <td class="alignCenter">@((p.Verified).GetIcon())</td>
+                    <td class="alignCenter">@((p.Managing).GetIcon())</td>
+                    <td>@p.Name</td>
+                    <td><a href="mailto:@p.Email">@p.Email</a></td>
+                    <td class="NalignCenter">
+                        <a href="@Url.Action("Positions","User",new {id = p.Id})" class="fullWidth">@Html.EditFirstButton(p.PositionTitles)</a>
+                    </td>
+                    <td class="NalignCenter">
+                        <a href="@Url.Action("Teams","User",new {id = p.Id})" class="fullWidth">@Html.EditFirstButton(p.TeamsTitles)</a>
+                    </td>
+                    <td class="NalignCenter">
+                        <a href="@Url.Action("Edit", "Responsibilities", new { id = p.Id })" class="fullWidth">
+                            Edit (<span title="Number of Individual Responsibilities">@(p.NumIndividualResponsibilities)</span>+<span title="Number of Other Responsibilities">@(p.NumTotalResponsibilities - p.NumIndividualResponsibilities)</span>)
+                        </a>
+                    </td>
+                    <td style="padding:1px;">
+                        <a href="#" class="btn btn-primary">Edit</a>
+                    </td>
+                </tr>
+            }
 
-    </table>
+        </table>
 
+    </div>
 </div>

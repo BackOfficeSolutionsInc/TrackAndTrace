@@ -26,6 +26,7 @@ namespace RadialReview.Models
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
         public virtual string Email { get { return UserName;  } }
+        public virtual bool Hints { get; set; }
         public virtual ImageModel Image { get; set; }
         /*
         public ICollection<UserLogin> Logins { get; set; }
@@ -46,6 +47,7 @@ namespace RadialReview.Models
         public UserModel()
         {
             UserOrganization = new List<UserOrganizationModel>();
+            Hints = true;
         }
 
 
@@ -61,6 +63,7 @@ namespace RadialReview.Models
             Map(x => x.FirstName).Not.LazyLoad();
             Map(x => x.LastName).Not.LazyLoad();
             Map(x => x.PasswordHash);
+            Map(x => x.Hints);
             //Map(x => x.Email);
             Map(x => x.SecurityStamp);
             Map(x => x.DeleteTime);

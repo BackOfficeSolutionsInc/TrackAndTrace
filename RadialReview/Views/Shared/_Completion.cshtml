@@ -1,0 +1,17 @@
+﻿@model RadialReview.Models.Interfaces.ICompletable
+
+@{
+    var completion = Model.GetCompletion();
+}
+
+@if (completion != null)
+{
+    <div class="progress  @(!completion.FullyComplete ? "active progress-striped" : "")" style="margin-top: 7px; margin-bottom: 0px;" title="@(completion.Completion)%@(completion.Illegal?" (nothing to complete)":"")">
+        <div class="progress-bar @(completion.RequiredComplete ? "progress-bar-success" : "") @(completion.Illegal ? "progress-bar-warning" : "")" role="progressbar" aria-valuenow="@(completion.Completion)" aria-valuemin="0" aria-valuemax="100" style="width: @(completion.Completion)%;">
+            <span class="sr-only">@(completion.Completion))%</span>
+        </div>
+    </div>
+}
+else{
+    <!--Completion was null--> 
+}

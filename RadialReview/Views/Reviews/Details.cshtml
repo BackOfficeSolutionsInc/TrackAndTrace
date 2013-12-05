@@ -1,0 +1,35 @@
+﻿@model RadialReview.Models.ViewModels.ReviewsViewModel
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Review : @Model.Review.ReviewName</h3>
+    </div>
+    <div class="panel-body">
+        <table class="table">
+            <tr>
+                <th>User</th>
+                <th style="width:120px" class="alignCenter">Completion</th>
+                <th style="width:100px"></th>
+            </tr>
+            @foreach(var r in Model.Review.Reviews)
+            {
+                <tr class="@(r.ForUser.GetPersonallyManaging()?"managing":"not-managing")">
+                    <td>@r.ForUser.GetNameAndTitle()</td>
+                    <td>
+                        @Html.Partial("_Completion",r)
+                    </td>
+                    <td>
+                        @if (r.ForUser.GetPersonallyManaging())
+                        {
+                        <a class="btn btn-primary" href="@Url.Action("Details", "Review", new { id=r.Id })">View</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

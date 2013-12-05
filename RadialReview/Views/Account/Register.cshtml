@@ -90,11 +90,13 @@
             <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
             <div class="form-group">
                 @Html.Label("Name", new { @class = "col-md-4 control-label" })
-                <div class="col-md-4" style="padding-right:2px;">
-                    @Html.TextBoxFor(m => m.fname, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.fname), autocomplete = "given-name" })
-                </div>
-                <div class=" col-md-4" style="padding-left:2px;">
-                    @Html.TextBoxFor(m => m.lname, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.lname), autocomplete = "family-name" })
+                <div class="col-md-8">
+                    <div class="col-xs-6" style="padding:0 2px 0 0;">
+                        @Html.TextBoxFor(m => m.fname, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.fname), autocomplete = "given-name" })
+                    </div>
+                    <div class="col-xs-6" style="padding:0 0 0 2px;">
+                        @Html.TextBoxFor(m => m.lname, new { @class = "form-control", placeholder = Html.DisplayNameFor(x => x.lname), autocomplete = "family-name" })
+                    </div>
                 </div>
             </div>
             @*<div class="form-group">
@@ -121,12 +123,13 @@
                         @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.ConfirmPassword) })
                     </div>
                 </div>*@
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-offset-5 col-md-8">
-                    <input type="submit" class="btn btn-default" value="Register" />
+            <div class="smallBreak"></div>
+            <div class="smallBreak"></div>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-4">
+                    <input type="submit" class="btn btn-default col-md-4 col-md-offset-4 col-xs-12" value="Register" />
                 </div>
             </div>
-
         </div>
     </fieldset>
 }

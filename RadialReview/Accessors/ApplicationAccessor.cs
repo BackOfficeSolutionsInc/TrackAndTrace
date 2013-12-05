@@ -23,7 +23,7 @@ namespace RadialReview.Accessors
                 }
                 using (var tx = s.BeginTransaction())
                 {
-                    var application=s.Get<ApplicationWideModel>(1L);
+                    var application = s.Get<ApplicationWideModel>(1L);
                     if (application == null)
                     {
                         s.Save(new ApplicationWideModel(1));
@@ -38,11 +38,13 @@ namespace RadialReview.Accessors
 
         private void ConstructPositions(ISession session)
         {
-            string[] positions=new String[]{
+            string[] positions = new String[]{
                 "Account Coordinator",
                 "Account Manager",
                 "Accountant",
+                "Accounting",
                 "Art Director",
+                "Business Development",
                 "CEO",
                 "CFO",
                 "Client Retention",
@@ -51,33 +53,48 @@ namespace RadialReview.Accessors
                 "COO",
                 "Copywriter",
                 "Creative Director",
+                "Cross Media Programmer",
                 "Cross Media Strategist",
                 "Data Developer",
                 "Database Administrator",
+                "Delivery",
+                "Developer",
                 "Direct Sales",
-                "Director of IT",
-                "Director of marketing",
+                "Director",
                 "Executive Assistant",
                 "Executive Director",
-                "Facilities Manager",
+                "Facilities",
+                "Finance",
+                "Graphic Designer",
                 "Help Desk Technician",
+                "Human Relations",
+                "Information Technology",
                 "Inside Sales",
                 "Intern",
+                "Mailing Services",
                 "Manager",
+                "Marketing ",
                 "Marketing Coordinator",
                 "Marketing Publications Writer",
                 "Multimedia Strategist",
                 "Online Marketing Strategist",
+                "Operator",
                 "Produciton Manager",
                 "Project Manager",
                 "Project Strategist",
                 "Quality Assurance Engineer",
                 "Receptionist",
                 "Relationship Manager",
+                "Sales",
                 "Seminar Coordinator",
+                "Shift Supervisor",
+                "Shipping",
+                "Signage",
                 "Social Media Strategist",
                 "Software Engineer",
                 "Solutions Coordinator",
+                "Strategist",
+                "Supervisor",
                 "Support",
                 "System Administrator",
                 "Team Lead",
@@ -88,11 +105,12 @@ namespace RadialReview.Accessors
                 "VP of Technology",
                 "Web Application Engineer",
                 "Web Developer",
+
             };
-            var found=session.QueryOver<PositionModel>().List().ToList();
-            foreach(var p in positions)
+            var found = session.QueryOver<PositionModel>().List().ToList();
+            foreach (var p in positions)
             {
-                if (!found.Any(x=>x.Name.Default.Value==p))
+                if (!found.Any(x => x.Name.Default.Value == p))
                 {
                     session.Save(new PositionModel() { Name = new LocalizedStringModel(p) });
                 }

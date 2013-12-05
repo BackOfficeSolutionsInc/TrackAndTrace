@@ -44,9 +44,9 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Manage(long id, long? organizationId)
+        public ActionResult Manage(long id)
         {
-            var caller = GetUser(organizationId)
+            var caller = GetUser()
                         .Hydrate()
                         .ManagingUsers(subordinates: true)
                         .Organization()
@@ -68,7 +68,7 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var user = GetUser(save.OrganizationId);
+                var user = GetUser();
                 if (user == null)
                     return Json(new JsonObject(true, ExceptionStrings.DefaultPermissionsException));
                 if (save.toSave == null)
@@ -115,21 +115,60 @@ namespace RadialReview.Controllers
                 CustomPosition = null
             };
 
-            List<UserOrganizationModel> managers = new List<UserOrganizationModel>();
+            List<SelectListItem> managers = new List<SelectListItem>();
             var strictHierarchy = caller.Organization.StrictHierarchy;
             if (!strictHierarchy)
-                managers=_OrganizationAccessor.GetOrganizationManagers(GetUser(),GetUser().Organization.Id);
+                managers=_OrganizationAccessor.GetOrganizationManagers(GetUser(),GetUser().Organization.Id)
+                                                .ToSelectList(x=>x.GetName()+x.GetTitles(3,caller.Id).Surround(" (",")"), x=>x.Id)
+                                                .ToList();
+
+            if (caller.ManagingOrganization)
+            {
+                managers.Add(new SelectListItem() { Selected = false, Text = "[Manage Organization]", Value = "-3" });
+            }
 
 
             var model = new CreateUserOrganizationViewModel() {
                 Position = posModel,
-                OrganizationId = caller.Organization.Id,
+                OrgId = caller.Organization.Id,
                 StrictlyHierarchical = strictHierarchy,
                 ManagerId = caller.Id,
-                PotentialManagers = managers.ToSelectList(x=>x.GetName()+x.GetTitles(false,caller.Id).Surround(" (",")"), x=>x.Id).ToList(),
+                PotentialManagers = managers,
             };
             return PartialView(model);
         }
+
+        public ActionResult EditModal(long userId)
+        {
+
+            var found=_UserAccessor.GetUserOrganization(GetUser(),userId);
+            
+            var strictHierarchy = GetUser().Organization.StrictHierarchy;
+            List<SelectListItem> managers = new List<SelectListItem>();
+            if (!strictHierarchy)
+                managers=_OrganizationAccessor.GetOrganizationManagers(GetUser(),GetUser().Organization.Id)
+                                                .ToSelectList(x=>x.GetName()+x.GetTitles(3, GetUser().Id).Surround(" (",")"), x=>x.Id)
+                                                .ToList();
+
+            var model = new EditUserOrganizationViewModel(){
+                IsManager=found.ManagerAtOrganization,
+                ManagerId = found.ManagedBy.ToListAlive().FirstOrDefault().NotNull(x => x.Id),
+                PotentialManagers=managers,
+                StrictlyHierarchical = strictHierarchy
+            };
+
+
+            return View("AddModal", model);
+        }
+
+        [HttpPost]
+        public JsonResult EditModal(EditUserOrganizationViewModel model)
+        {
+            _UserAccessor.EditUser(GetUser(), model.IsManager, model.ManagerId);
+
+            return Json(JsonObject.Success);
+        }
+
         #endregion
 
         #region Positions
@@ -236,7 +275,7 @@ namespace RadialReview.Controllers
             var teams = _TeamAccessor.GetUsersTeams(GetUser(), userId);
             var user = _UserAccessor.GetUserOrganization(GetUser(), userId).Hydrate().SetTeams(teams).Execute();
             var team = user.Teams.FirstOrDefault(x => x.Id == id);
-            var orgTeam = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id)
+            var orgTeam = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id)
                             .ToSelectList(x => x.Name, x => x.Id, id).ToList();
             orgTeam.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
             

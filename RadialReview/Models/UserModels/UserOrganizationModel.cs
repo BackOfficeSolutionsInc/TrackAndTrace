@@ -26,8 +26,8 @@ namespace RadialReview.Models
         public virtual DateTime AttachTime { get; set; }
         public virtual DateTime? DetachTime { get; set; }
         public virtual UserModel User { get; set; }
-        public virtual IList<UserOrganizationModel> ManagingUsers { get; set; }
-        public virtual IList<UserOrganizationModel> ManagedBy { get; set; }
+        public virtual IList<ManagerDuration> ManagingUsers { get; set; }
+        public virtual IList<ManagerDuration> ManagedBy { get; set; }
         public virtual IList<GroupModel> Groups { get; set; }
         public virtual IList<GroupModel> ManagingGroups { get; set; }
         public virtual IList<QuestionModel> CustomQuestions { get; set; }
@@ -72,10 +72,11 @@ namespace RadialReview.Models
         }*/
         #endregion
 
-        public UserOrganizationModel() : base()
+        public UserOrganizationModel()
+            : base()
         {
-            ManagedBy = new List<UserOrganizationModel>();
-            ManagingUsers = new List<UserOrganizationModel>();
+            ManagedBy = new List<ManagerDuration>();
+            ManagingUsers = new List<ManagerDuration>();
             Groups = new List<GroupModel>();
             ManagingGroups = new List<GroupModel>();
             CustomQuestions = new List<QuestionModel>();
@@ -98,7 +99,7 @@ namespace RadialReview.Models
 
         public virtual List<IOrigin> OwnsOrigins()
         {
-            var owns=new List<IOrigin>();
+            var owns = new List<IOrigin>();
             owns.AddRange(ManagingUsers.Cast<IOrigin>());
             owns.AddRange(ManagingGroups.Cast<IOrigin>());
             owns.AddRange(CreatedQuestions.Cast<IOrigin>());
@@ -120,24 +121,21 @@ namespace RadialReview.Models
             return this.User.Name();
         }
 
-        public virtual string GetTitles(Boolean full=true,long callerUserId=-1)
+        public virtual string GetTitles(int numToShow = int.MaxValue, long callerUserId = -1)
         {
             if (this.Positions == null)
                 return "";
 
-            var count=this.Positions.Count();
+            var count = this.Positions.Count();
 
             String titles = null;
-            var actualPositions=Positions.ToListAlive().Select(x=>x.Position.CustomName).ToList();
+            var actualPositions = Positions.ToListAlive().Select(x => x.Position.CustomName).ToList();
             if (callerUserId == Id)
                 actualPositions.Insert(0, "You");
 
-            if (full) { titles = String.Join(", ", actualPositions); }
-            else     {
-                titles = String.Join(", ", actualPositions.Take(2));
-                if (actualPositions.Count > 2)
-                    titles += ",...";
-            }
+            titles = String.Join(", ", actualPositions.Take(numToShow));
+            if (actualPositions.Count > numToShow)
+                titles += ",...";
 
             return titles;
         }

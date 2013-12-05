@@ -26,11 +26,11 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.Manager)]
-        public JsonResult Edit(long questionId, long organizationId, String question, long categoryId, String originType, long forOriginId,String questionType)
+        public JsonResult Edit(long questionId, String question, long categoryId, String originType, long forOriginId,String questionType)
         {
             try
             {
-                var caller = GetUser(organizationId);
+                var caller = GetUser();
                 var category = _QuestionAccessor.GetCategory(caller, categoryId, false);
 
                 QuestionModel q = new QuestionModel();
@@ -56,11 +56,11 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public JsonResult Delete(long id, long organizationId)
+        public JsonResult Delete(long id)
         {
             try
             {
-                var caller = GetUser(organizationId);
+                var caller = GetUser();
                 //var q = _QuestionAccessor.GetQuestion(caller, id);
                 _QuestionAccessor.EditQuestion(caller,id, deleteTime: DateTime.UtcNow);
                 return Json(JsonObject.Success,JsonRequestBehavior.AllowGet);
@@ -70,11 +70,11 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Modal(long organizationId,long id=0, String origin = null, long? originId = null)
+        public ActionResult Modal(long id=0, String origin = null, long? originId = null)
         {
             try
             {
-                var caller = GetUser(organizationId).Hydrate()
+                var caller = GetUser().Hydrate()
                     .Organization(questions: true)
                     .ManagingGroups(questions:true)
                     .Execute();
@@ -105,13 +105,13 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Admin(long id=0,long? organizationId=null)
+        public ActionResult Admin(long id=0)
         {
             ViewBag.originType = OriginType.Invalid;
             ViewBag.originId =   0;
             if (id != 0)
             {
-                var caller = GetUser(organizationId);
+                var caller = GetUser();
                 var question = _QuestionAccessor.GetQuestion(caller, id);
                 ViewBag.originType = question.OriginType;
                 ViewBag.originId = question.OriginId;
@@ -122,21 +122,21 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.Manager)]
-        public ActionResult Admin(QuestionModel model,String question,OriginType originType,long originId,long? organizationId)
+        public ActionResult Admin(QuestionModel model,String question,OriginType originType,long originId)
         {
             if (originId == 0)
                 throw new Exception("Need origin id");
             if (originType == OriginType.Invalid)
                 throw new Exception("Cannot be invalid");
 
-            var caller=GetUser(organizationId);
+            var caller=GetUser();
             var origin=new Origin(originType, originId);
             var q = _QuestionAccessor.GetQuestion(caller, model.Id);
 
             q.Question.UpdateDefault(question);
 
             _QuestionAccessor.EditQuestion(caller, model.Id, origin, q.Question, model.Category.Id);
-            return RedirectToAction("Admin", new { id = model.Id,organizationId=organizationId});
+            return RedirectToAction("Admin", new { id = model.Id});
         }
 
     }

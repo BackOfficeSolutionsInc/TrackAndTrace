@@ -32,15 +32,21 @@ namespace RadialReview.Controllers
         {
             var user = GetUser();
             var team = _TeamAccessor.GetTeam(user, id);
-            return PartialView("Modal",team);
+            var managers = _OrganizationAccessor.GetOrganizationManagers(GetUser(), GetUser().Organization.Id)
+                                                .ToListAlive()
+                                                .ToSelectList(x=>x.GetNameAndTitle(2,user.Id),x=>x.Id)
+                                                .ToList();
+
+            var modal = new OrganizationTeamCreateViewModel(team, managers);
+            return PartialView("Modal", modal);
         }
 
         [HttpPost]
         [Access(AccessLevel.Manager)]
-        public JsonResult Modal(OrganizationTeamModel model)
+        public JsonResult Modal(OrganizationTeamCreateViewModel model)
         {
             var user = GetUser();
-            var team = _TeamAccessor.EditTeam(user, model.Id,model.Name,model.OnlyManagersEdit);
+            var team = _TeamAccessor.EditTeam(user, model.TeamId,model.TeamName,model.InterReview,true,model.ManagerId);
             return Json(JsonObject.Success);
         }
         /*

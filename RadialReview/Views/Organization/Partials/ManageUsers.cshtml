@@ -24,9 +24,9 @@
             {
                 <tr class="startHidden">
                     <td style="width: 80px; height: 60px; margin-left: auto; text-align: center; margin-right: auto;">
-                        <img style="width:60px;height:40px;" src="@user.ImageUrl(60,40)" alt="@user.Name()" class="img-thumbnail">
+                        <img style="width:60px;height:40px;" src="@user.ImageUrl(60,40)" alt="@user.GetName()" class="img-thumbnail">
                     </td>
-                    <td>@user.Name()</td>
+                    <td>@user.GetName()</td>
                     <td><span data-livestamp="@(user.AttachTime.ToString("o"))-00:00"></span></td>
                     <td><a href="@Url.Action("Manage", "User", new {id=user.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.edit</a></td>
                 </tr>
@@ -48,9 +48,9 @@
             {
                 <tr class="startHidden">
                     <td style="width: 80px; height: 60px;margin-left: auto; text-align: center; margin-right: auto;">
-                        <img style="width:60px;height:40px;" src="@user.ImageUrl(60,40)" alt="@user.Name()" class="img-thumbnail">
+                        <img style="width:60px;height:40px;" src="@user.ImageUrl(60,40)" alt="@user.GetName()" class="img-thumbnail">
                     </td>
-                    <td>@user.Name()</td>
+                    <td>@user.GetName()</td>
                     <td><span data-livestamp="@(user.AttachTime.ToString("o"))-00:00"></span></td>
                     <td><a href="@Url.Action("Manage", "User", new {id=user.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.edit</a></td>
                 </tr>

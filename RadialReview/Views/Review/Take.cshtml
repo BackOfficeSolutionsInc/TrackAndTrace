@@ -1,11 +1,15 @@
-﻿@model RadialReview.Models.AnswerModel
+﻿@model List<RadialReview.Models.AnswerModel>
 
 @{
-    ViewBag.Title = "Take";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Review";
+    Layout = "~/Views/Shared/_ReviewLayout.cshtml";
 }
 
-<h2>@RadialReview.Properties.DisplayNameStrings.review</h2>
+@using RadialReview.Models
+
+@Html.Partial("Slider", Model.Where(x => x is SliderAnswer)     .Cast<SliderAnswer>().ToList())
+@Html.Partial("Thumbs", Model.Where(x => x is ThumbsAnswer)     .Cast<ThumbsAnswer>().ToList())
+@Html.Partial("Feedback", Model.Where(x => x is FeedbackAnswer) .Cast<FeedbackAnswer>().ToList())
 
 
 

@@ -9,56 +9,62 @@
     @Html.Partial("Partial/manageheader")
 }
 
-<h2>
-    Edit team: <i>@Model.Team.GetName()</i>
-    @if (Model.Team.Type != RadialReview.Models.Enums.TeamType.Standard)
-    {
-        <small>(Auto-generated)</small>
-    }
-</h2>
 
-<table class="table">
-    <tr>
-        <th>Team</th>
-        <th style="width: 150px;" class="alignCenter">Start</th>
-        <th style="width: 150px;" class="alignCenter">End</th>
-        @if (Model.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
-        {
-            <th style="width:100px;">
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            Edit team: <i>@Model.Team.GetName()</i>
+            @if (Model.Team.Type != RadialReview.Models.Enums.TeamType.Standard)
+            {
+                <small>(Auto-generated)</small>
+            }
+        </h3>
+    </div>
+    <table class="table">
+        <tr>
+            <th>Team</th>
+            <th style="width: 150px;" class="alignCenter">Start</th>
+            <th style="width: 150px;" class="alignCenter">End</th>
+            @if (Model.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
+            {
+                <th style="width:100px;">
 
-                <a class="btn btn-default fullWidth" onclick="@Html.ShowModal(
+                    <a class="btn btn-default fullWidth" onclick="@Html.ShowModal(
                         "Add user to "+Model.Team.GetName(),
                         Url.Action("AddModal", "Team", new { id = Model.Team.Id }),
                         Url.Action("AddModal", "Team")
                     )">+</a>
 
-            </th>
-        }
-    </tr>
-    @foreach (var p in Model.Members.OrderBy(x => x.DeleteTime).ThenBy(x => x.Start))
-    {
-        <tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
-            <td class="position">@p.User.GetName()</td>
-            <td class="alignCenter">@p.Start.ToShortDateString()</td>
-            <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
-            @if (Model.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
-            {
-                <td class="deleteButton">
-
-                    if (p.DeleteTime == null)
-                    {
-                    <a onclick="Delete(@p.Id)" class="btn btn-danger fullWidth">Delete</a>
-                    }
-                    else
-                    {
-                    <div class="fullWidth alignCenter" style="color: #929292">Deleted</div>
-                    }
-
-                </td>
+                </th>
             }
         </tr>
-    }
-</table>
+        @foreach (var p in Model.Members.OrderBy(x => x.DeleteTime).ThenBy(x => x.Start))
+        {
+            <tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
+                <td class="position">@p.User.GetName()</td>
+                <td class="alignCenter">@p.Start.ToShortDateString()</td>
+                <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
+                @if (Model.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
+                {
+                    <td class="deleteButton">
+
+                        @if (p.DeleteTime == null)
+                        {
+                            <a onclick="Delete(@p.Id)" class="btn btn-danger fullWidth">Delete</a>
+                        }
+                        else
+                        {
+                            <div class="fullWidth alignCenter" style="color: #929292">Deleted</div>
+                        }
+
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+</div>
+
+
 @using (var s = Html.BeginScripts())
 {
     <script>

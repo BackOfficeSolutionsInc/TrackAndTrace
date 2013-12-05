@@ -23,11 +23,11 @@ namespace RadialReview.Controllers
         {
             try
             {
-                var user = GetUser(model.OrganizationId).Hydrate().Organization().Execute();
+                var user = GetUser().Hydrate().Organization().Execute();
                 var org = user.Organization;
                 if (org == null)
                     throw new PermissionsException();
-                if (org.Id != model.OrganizationId)
+                if (org.Id != model.OrgId)
                     throw new PermissionsException();
 
                 if (model.Position.CustomPosition!=null)

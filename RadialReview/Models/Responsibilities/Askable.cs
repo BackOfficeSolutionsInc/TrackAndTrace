@@ -15,7 +15,11 @@ namespace RadialReview.Models.Responsibilities
         public abstract QuestionType GetQuestionType();
 
         public abstract String GetQuestion();
+
+
+
     }
+
 
 
     public class AskableMap : ClassMap<Askable>

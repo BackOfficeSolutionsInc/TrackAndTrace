@@ -18,6 +18,10 @@ namespace RadialReview.Models
         public virtual Askable Askable { get; set; }
         public virtual bool Required { get; set; }
         public virtual bool Complete { get; set; }
+        public virtual long AboutUserId { get; set; }
+        public virtual UserOrganizationModel AboutUser { get; set; }
+        public virtual long ByUserId { get; set; }
+        public virtual UserOrganizationModel ByUser { get; set; }
 
     }
     #endregion
@@ -56,6 +60,12 @@ namespace RadialReview.Models
             Map(x => x.Required);
             Map(x => x.ForReviewId);
             Map(x => x.Complete);
+
+            Map(x => x.AboutUserId).Column("AboutUserId");
+            References(x => x.AboutUser).Column("AboutUserId").Not.LazyLoad().ReadOnly();
+
+            Map(x => x.ByUserId).Column("ByUserId");
+            References(x => x.ByUser).Column("ByUserId").Not.LazyLoad().ReadOnly();
         }
     }
     public class FeedbackAnswerMap : SubclassMap<FeedbackAnswer>

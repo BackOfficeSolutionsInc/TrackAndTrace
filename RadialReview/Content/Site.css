@@ -433,3 +433,35 @@ input[type="checkbox"].input-validation-error {
     padding-left:0px !important; 
     padding-right:0px !important; 
 }
+
+.btn-group{
+    -webkit-transition: all .35s ease;
+	-moz-transition: all .35s ease;
+    -ms-transition: all .35s ease;
+    -o-transition: all .35s ease;
+	transition: all .35s ease;
+}
+
+.btn-group.heading:hover{
+    opacity:1;
+}
+
+.btn.heading:not(.open){
+    background-color:transparent;
+    border-color:transparent;
+    color: #98C7FF;
+    /*text-shadow: 0px -1px 10px #286D9B;
+    filter: dropshadow(color=#286D9B, offx=0, offy=-1);*/
+}
+
+.btn-group.heading:hover .btn,
+.btn-group.heading.open .btn
+{
+    
+    color: #333333;
+    background-color: #ffffff;
+    border-color: #cccccc;
+    text-shadow: inherit;
+    filter: inherit;
+}
+

@@ -37,9 +37,9 @@ namespace RadialReview
         }
 
 
-        public static String GetNameAndTitle(this UserOrganizationModel self,Boolean fullTitle=false,long youId=-1)
+        public static String GetNameAndTitle(this UserOrganizationModel self,int positions=int.MaxValue,long youId=-1)
         {
-            return self.GetName() + self.GetTitles(fullTitle, youId).Surround(" (",")");
+            return self.GetName() + self.GetTitles(positions, youId).Surround(" (", ")");
         }
 
         public static String ImageUrl(this UserOrganizationModel self)
@@ -56,7 +56,7 @@ namespace RadialReview
         }
         public static IList<UserOrganizationModel> GetManagingUsersAndSelf(this UserOrganizationModel self)
         {
-            return self.ManagingUsers.Union(new List<UserOrganizationModel> { self }).ToList();
+            return self.ManagingUsers.ToListAlive().Select(x => x.Subordinate).Union(self.AsList()).ToList();
         }
         public static List<UserOrganizationModel> AllSubordinatesAndSelf(this UserOrganizationModel self)
         {

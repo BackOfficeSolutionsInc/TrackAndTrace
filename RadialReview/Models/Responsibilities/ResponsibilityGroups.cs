@@ -44,13 +44,16 @@ namespace RadialReview.Models.Responsibilities
         public virtual TeamType Type { get; set; }
         public virtual String Name { get; set; }
         public virtual long CreatedBy { get; set; }
+        public virtual long ManagedBy { get; set; }
         public virtual Boolean OnlyManagersEdit { get; set; }
+        public virtual Boolean InterReview { get; set; }
         public virtual Boolean Secret { get; set; }
        // public virtual IList<TeamMemberModel> Members { get; set; }
         public OrganizationTeamModel():base()
         {
            // Members = new List<TeamMemberModel>();
             OnlyManagersEdit = true;
+            InterReview = true;
         }
         public override string GetName()
         {
@@ -87,6 +90,7 @@ namespace RadialReview.Models.Responsibilities
             Map(x => x.CreatedBy);
             Map(x => x.Secret);
             Map(x => x.Type);
+            Map(x => x.ManagedBy);
             Map(x => x.OnlyManagersEdit);
             //HasMany(x => x.Members).Not.LazyLoad().Cascade.SaveUpdate();
         }

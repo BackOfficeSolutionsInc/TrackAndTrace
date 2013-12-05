@@ -2,9 +2,13 @@
         <ul class="pull-left nav nav-pills fullWidth alignCenter">
             <li style="min-width:90px" class="@(ViewBag.Page=="Positions"  ?"active":"")"><a href="/Manage/Positions">Positions</a></li>
             <li style="min-width:90px" class="@(ViewBag.Page=="Teams"      ?"active":"")"><a href="/Manage/Teams">Teams        </a></li>
-            <li style="min-width:90px" class="@(ViewBag.Page=="Settings"   ?"active":"") pull-right"><a href="/Manage/Organization">Settings</a></li>
             <li style="min-width:90px" class="@(ViewBag.Page=="Members"    ?"active":"")"><a href="/Manage/Members">Members    </a></li>
             <li style="min-width:90px" class="@(ViewBag.Page=="Reviews"    ?"active":"")"><a href="/Manage/Reviews">Reviews    </a></li>
+            @if(((bool?)ViewBag.ManagingOrganization)??false)
+            { 
+                <li style="min-width:90px" class="@(ViewBag.Page=="Settings"   ?"active":"") pull-right"><a href="/Manage/Organization">Settings</a></li>
+            }
+
         </ul>
     </div>
     <div class="clearfix" style="padding-bottom:10px;"></div>

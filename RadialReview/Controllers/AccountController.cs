@@ -11,6 +11,7 @@ using Microsoft.Owin.Security;
 using RadialReview.Models;
 using RadialReview.NHibernate;
 using RadialReview.Properties;
+using RadialReview.Models.Json;
 
 namespace RadialReview.Controllers
 {
@@ -24,6 +25,21 @@ namespace RadialReview.Controllers
         public AccountController(NHibernateUserManager userManager)
         {
             UserManager = userManager;
+        }
+
+
+        [Access(AccessLevel.Any)]
+        public ActionResult Role()
+        {
+            var userOrgs = GetUserOrganizations();
+            return View(userOrgs.ToList());
+        }
+
+        [Access(AccessLevel.Any)]
+        public ActionResult SetRole(long id)
+        {
+            GetUser(id);
+            return RedirectToAction("Index", "Home");
         }
 
         public NHibernateUserManager UserManager { get; private set; }
@@ -133,7 +149,7 @@ namespace RadialReview.Controllers
         //
         // GET: /Account/Manage
         [Access(AccessLevel.User)]
-        public ActionResult Manage(ManageMessageId? message,long? organizationId)
+        public ActionResult Manage(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
@@ -145,12 +161,13 @@ namespace RadialReview.Controllers
             ViewBag.ReturnUrl = Url.Action("Manage");
             try
             {
-                var user = GetUser(organizationId);
+                var user = GetUser();
                 ViewBag.ImageUrl = user.ImageUrl();
             }catch(Exception e)
             {
                 ViewBag.ImageUrl = ConstantStrings.ImageUserPlaceholder;
             }
+
             return View();
         }
 
@@ -320,7 +337,9 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public ActionResult LogOff()
         {
-            AuthenticationManager.SignOut();
+            this.SignOut();
+            //AuthenticationManager.SignOut();
+            //Session["organizationId"] = null;
             return RedirectToAction("Index", "Home");
         }
 
@@ -340,6 +359,13 @@ namespace RadialReview.Controllers
             var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
             ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
             return (ActionResult)PartialView("_RemoveAccountPartial", linkedAccounts);
+        }
+
+        [Access(AccessLevel.User)]
+        public JsonResult SetHint(bool? hint)
+        {
+            _UserAccessor.SetHints(GetUserModel(), hint.Value);
+            return Json(JsonObject.Success,JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

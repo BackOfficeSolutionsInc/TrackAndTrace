@@ -18,7 +18,7 @@ namespace RadialReview.Controllers
         //
         // GET: /Img/
         [Access(AccessLevel.Any)]
-        public ActionResult Index(string id,long? organizationId,string dim=null)
+        public ActionResult Index(string id,string dim=null)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace RadialReview.Controllers
                     imagePath = Server.MapPath("~/" + ConstantStrings.ImagePlaceholder);
 
                 }else{
-                    var user = GetUser(organizationId);
+                    var user = GetUser();
                     imagePath = _ImageAccessor.GetImagePath(user, Server, id);
                 }
 

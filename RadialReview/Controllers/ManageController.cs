@@ -1,4 +1,5 @@
 ﻿using RadialReview.Accessors;
+using RadialReview.Exceptions;
 using RadialReview.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Teams()
         {
-            var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
+            var orgTeams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id);
             var model = new OrganizationTeamViewModel() { Teams = orgTeams };
             return View(model);
         }
@@ -63,6 +64,8 @@ namespace RadialReview.Controllers
         public ActionResult Organization()
         {
             var user = GetUser().Hydrate().Organization().Execute();
+            if (!user.ManagingOrganization)
+                throw new PermissionsException();
 
             var model=new OrganizationViewModel(){
                 Id=user.Organization.Id,
@@ -86,7 +89,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Reviews()
         {
-            var reviews=_ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id);
+            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, true);
             var model = new OrgReviewsViewModel()
             {
                 Reviews = reviews.Select(x => new ReviewsViewModel(x)).ToList()

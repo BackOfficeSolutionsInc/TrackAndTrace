@@ -6,20 +6,70 @@
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
-    @Html.AntiForgeryToken()
+        @Html.AntiForgeryToken()
 
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            @Html.ActionLink(String.Format(MessageStrings.helloUser,(string)(ViewBag.UserName)), "Manage", "Account", routeValues: null, htmlAttributes: new { title = DisplayNameStrings.manage })
-        </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-    </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <div class="btn-group heading" style="padding:8px;">
+                    @Html.ActionLink((string)(ViewBag.UserName ?? "Manage"), "Manage", "Account",
+                        routeValues: null,
+                        htmlAttributes: new
+                        {
+                            title = DisplayNameStrings.manage,
+                            @class = "btn btn-default heading"
+                        })
+                    <button type="button" class="btn btn-default heading dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")">
+                            @if (((int?)ViewBag.Organizations ?? 0) > 1)
+                            { 
+                                @Html.ActionLink("Change Roles", "Role", "Account")
+                            }else{
+                                <a href="#">Change Roles</a>
+                            }
+                        </li>
+                        <li>@Html.ActionLink("Settings", "Manage", "Account")</li>
+                        <li>
+                            <a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
+                                Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                    </ul>
+                </div>
+
+
+            </li>
+            <li></li>
+        </ul>
+    }
+
+    using (var s = Html.BeginScripts())
+    {
+        <script>
+            function setHints(b) {
+                //TODO hit hints url
+                $.ajax({
+                    url: "@Url.Action("SetHint", "Account")",
+                    data: { hint: b },
+                    success:function(data){
+                        location.reload();
+                    }
+                });
+            }
+        </script>
     }
 }
 else
 {
     <ul class="nav navbar-nav navbar-right">
         <li>@Html.ActionLink(DisplayNameStrings.register, "Register", "Account", routeValues: (Model != null ? new { returnUrl = Model } : null), htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
-        <li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account",       routeValues: (Model != null ? new { returnUrl = Model } : null), htmlAttributes: new { id = "loginLink", })</li>
+        <li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: (Model != null ? new { returnUrl = Model } : null), htmlAttributes: new { id = "loginLink", })</li>
     </ul>
 }
+
+

@@ -32,7 +32,28 @@ namespace RadialReview.Accessors
             }
         }*/
 
+        public List<OrganizationTeamModel> GetTeamsDirectlyManaged(UserOrganizationModel caller,long userOrganizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId);
+                    var directlyManaging=s.QueryOver<OrganizationTeamModel>()
+                            .Where(x => x.ManagedBy == userOrganizationId)
+                            .List().ToList();
+                    var user = s.Get<UserOrganizationModel>(userOrganizationId);
+                    if (user.ManagingOrganization)
+                    {
+                        directlyManaging.AddRange(s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == user.Organization.Id && x.Type!=TeamType.Standard).List().ToList());
+                    }
+                    return directlyManaging;
+                }
+            }
 
+        }
+
+        [Obsolete("",true)]
         public List<OrganizationTeamModel> GetOrganizationTeams(UserOrganizationModel caller, long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -121,8 +142,10 @@ namespace RadialReview.Accessors
             }
         }
 
-        public OrganizationTeamModel EditTeam(UserOrganizationModel caller, long teamId, String name = null,
-                                                                                        bool? onlyManagerCanEdit = null)
+        public OrganizationTeamModel EditTeam(UserOrganizationModel caller, long teamId,    String name = null,
+                                                                                            bool? interReview = null,
+                                                                                            bool? onlyManagerCanEdit = null,
+                                                                                            long? managerId=null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -135,7 +158,7 @@ namespace RadialReview.Accessors
 
                     if (teamId == 0)
                     {
-                        if (name == null || onlyManagerCanEdit == null)
+                        if (name == null || onlyManagerCanEdit == null || managerId==null || interReview==null)
                             throw new PermissionsException();
 
                         team = new OrganizationTeamModel()
@@ -145,6 +168,7 @@ namespace RadialReview.Accessors
                             OnlyManagersEdit = onlyManagerCanEdit.Value
                         };
                     }
+
 
                     if (name != null)
                     {
@@ -159,8 +183,12 @@ namespace RadialReview.Accessors
                     }
 
 
-                    s.SaveOrUpdate(team);
+                    if (interReview!=null)
+                    {
+                        team.InterReview = interReview.Value;
+                    }
 
+                    s.SaveOrUpdate(team);
                     tx.Commit();
                     s.Flush();
                     return team;
@@ -228,5 +256,6 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
     }
 }
