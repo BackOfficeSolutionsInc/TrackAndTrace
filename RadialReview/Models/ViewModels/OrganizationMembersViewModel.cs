@@ -29,6 +29,7 @@ namespace RadialReview.Models.ViewModels
 
         public List<String> PositionTitles { get; set; }
         public List<String> TeamsTitles { get; set; }
+        public List<string> ManagersTitles { get; set; }
 
         public OrgMemberViewModel(UserOrganizationModel userOrg)
         {
@@ -38,10 +39,10 @@ namespace RadialReview.Models.ViewModels
             Verified = userOrg.User != null;
             TeamsTitles = userOrg.Teams.ToListAlive().Select(x => x.Team.Name).ToList();
             PositionTitles = userOrg.Positions.ToListAlive().Select(x=>x.Position.CustomName).ToList();
+            ManagersTitles = userOrg.ManagedBy.ToListAlive().Select(x => x.Manager.GetName()).ToList();
             NumIndividualResponsibilities = userOrg.Responsibilities.ToListAlive().Count();
 
             Managing = userOrg.GetPersonallyManaging();
-
 
             //PositionTitle = userOrg.Positions.ToListAlive().FirstOrDefault().NotNull(x => x.Position.CustomName);
 
@@ -51,5 +52,6 @@ namespace RadialReview.Models.ViewModels
                 userOrg.Teams.ToListAlive().Sum(x => x.Team.Responsibilities.Count());
 
         }
+
     }
 }

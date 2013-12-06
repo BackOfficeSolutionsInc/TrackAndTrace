@@ -16,7 +16,7 @@ namespace RadialReview.Accessors
     public class NexusAccessor : BaseAccessor
     {
         public static UrlAccessor _UrlAccessor = new UrlAccessor();
-        public String JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email)
+        public String JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email,String firstName,String lastName)
         {
             if (!Emailer.IsValid(email))
                 throw new RedirectException(ExceptionStrings.InvalidEmail);
@@ -54,12 +54,18 @@ namespace RadialReview.Accessors
                     newUser.ManagerAtOrganization = isManager;
                     newUser.Organization = caller.Organization;
                     newUser.EmailAtOrganization = email;
+                    newUser.TempUser = new TempUserModel()
+                    {
+                        FirstName = firstName,
+                        LastName = lastName,
+                        Email = email,
+                    };
 
                     var position = db.Get<OrganizationPositionModel>(orgPositionId);
 
                     if (position.Organization.Id != newUser.Organization.Id)
                         throw new PermissionsException();
-
+                    
                     db.Save(newUser);
 
                     var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id);
@@ -88,7 +94,7 @@ namespace RadialReview.Accessors
                         ForUserId = newUserId,
                     };
 
-                    nexus.SetArgs(new string[] { "" + caller.Organization.Id, email, "" + newUserId });
+                    nexus.SetArgs(new string[] { "" + caller.Organization.Id, email, "" + newUserId, firstName, lastName });
                     id = nexus.Id;
                     db.SaveOrUpdate(nexus);
                     //var newUser=db.Get<UserOrganizationModel>(newUserId);

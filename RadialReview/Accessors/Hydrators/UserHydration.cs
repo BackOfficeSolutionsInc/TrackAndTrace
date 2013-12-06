@@ -283,15 +283,26 @@ namespace RadialReview
                 //Blah blah blah this is bad.. 
                 try
                 {
-                    PermissionsUtility.Create(Session, self).OwnedBelowOrEqual(x => x.Id == uOrgId);
+                    PermissionsUtility.Create(Session, self).ManagesUserOrganization(uOrgId);
                     owned = true;
                 }
-                catch(PermissionsException e)
+                catch (PermissionsException e)
                 {
                     owned = false;
                 }
-
                 User.SetPersonallyManaging(owned);
+            }
+            return this;
+        }
+
+        public UserHydration Managers()
+        {
+            using (var tx = Session.BeginTransaction())
+            {
+                var uOrg = GetUnderlying();
+                var uOrgId = uOrg.Id;
+
+                User.ManagedBy=uOrg.ManagedBy.ToList();
             }
             return this;
         }

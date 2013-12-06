@@ -155,7 +155,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var forUserId = forUser.Id;
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forUserId);
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forUserId,true);
 
                     var reviews = s.QueryOver<ReviewModel>()
                         .Where(x => x.ForUserId == forUserId)
@@ -182,7 +182,7 @@ namespace RadialReview.Accessors
                        .Fetch(x => x.Answers).Eager
                        .SingleOrDefault();
 
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(reviewPopulated.ForUserId).ViewReview(reviewId);
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(reviewPopulated.ForUserId,true).ViewReview(reviewId);
 
 
                     PopulateAnswers(s, reviewPopulated);

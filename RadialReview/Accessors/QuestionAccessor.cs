@@ -278,7 +278,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forUserId);
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forUserId,false);
                     var forUser = s.Get<UserOrganizationModel>(forUserId);
                     return GetQuestionsForUser(s, caller, forUser, caller.AllSubordinatesAndSelf());
                 }

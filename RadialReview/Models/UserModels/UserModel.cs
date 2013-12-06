@@ -27,6 +27,7 @@ namespace RadialReview.Models
         public virtual string LastName { get; set; }
         public virtual string Email { get { return UserName;  } }
         public virtual bool Hints { get; set; }
+        public virtual long CurrentRole { get; set; }
         public virtual ImageModel Image { get; set; }
         /*
         public ICollection<UserLogin> Logins { get; set; }
@@ -50,8 +51,16 @@ namespace RadialReview.Models
             Hints = true;
         }
 
+        public virtual long? GetCurrentRole()
+        {
+            if (UserOrganization.Any(x => x.Id == CurrentRole))
+                return CurrentRole;
+            return null;
+        }
+
 
         public virtual DateTime? DeleteTime { get; set; }
+
     }
 
     public class UserModelMap : ClassMap<UserModel>
@@ -64,11 +73,12 @@ namespace RadialReview.Models
             Map(x => x.LastName).Not.LazyLoad();
             Map(x => x.PasswordHash);
             Map(x => x.Hints);
+            Map(x => x.CurrentRole);
             //Map(x => x.Email);
             Map(x => x.SecurityStamp);
             Map(x => x.DeleteTime);
             References(x => x.Image).Not.LazyLoad();
-            HasMany(x => x.UserOrganization).Cascade.SaveUpdate();
+            HasMany(x => x.UserOrganization).Not.LazyLoad().Cascade.SaveUpdate();
             HasMany(x => x.Logins).Cascade.SaveUpdate();
             HasMany(x => x.Roles).Cascade.SaveUpdate();
             HasMany(x => x.Claims).Cascade.SaveUpdate();

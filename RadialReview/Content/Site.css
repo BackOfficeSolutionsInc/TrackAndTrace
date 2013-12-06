@@ -429,9 +429,11 @@ input[type="checkbox"].input-validation-error {
     padding-right:5px !important; 
 }
 
-.noPad{
-    padding-left:0px !important; 
+.noPad:not(.right){
     padding-right:0px !important; 
+}
+.noPad:not(.left){
+    padding-left:0px !important; 
 }
 
 .btn-group{
@@ -465,3 +467,9 @@ input[type="checkbox"].input-validation-error {
     filter: inherit;
 }
 
+td.noOverflow {
+    overflow-x: hidden;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

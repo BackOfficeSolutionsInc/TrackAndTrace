@@ -1,0 +1,25 @@
+﻿@model RadialReview.Models.ViewModels.EditUserOrganizationViewModel
+
+@Html.HiddenFor(x => x.UserId)
+
+<div class="row">
+    <div class="col-xs-3"><label>New Manager:</label></div>
+    <div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerId, Model.PotentialManagers, new { @class = "fullWidth form-control" })</div>
+</div>
+
+<div class="smallBreak"></div>
+<div class="row">
+    <div class="col-xs-3"><label>Is Manager:</label></div>
+    <div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox" })</div>
+</div>
+
+
+
+<script>
+    $(function () {
+        $("#positionSelector").change(function () {
+            $("#customPosition").val($("#positionSelector option:selected").text());
+            setTimeout(function () { $("#customPosition")[0].select(); }, 10);
+        })
+    });
+</script>

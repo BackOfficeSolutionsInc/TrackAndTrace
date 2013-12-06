@@ -54,7 +54,7 @@ namespace RadialReview.Controllers
             {
                 var u = members[i];
                 var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
-                members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Execute();
+                members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Managers().Execute();
             }
             var model = new OrgMembersViewModel(members);
             return View(model);

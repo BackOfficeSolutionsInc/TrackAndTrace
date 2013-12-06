@@ -138,26 +138,43 @@ namespace RadialReview.Utilities
             }
             return this;
         }
-        public PermissionsUtility ViewUserOrganization(long userOrganizationId)
+        public PermissionsUtility ViewUserOrganization(long userOrganizationId,Boolean sensitive)
         {
             if (IsRadialAdmin())
                 return this;
             var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
-            if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
-                return this;
 
-            if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
-                return this;
+            if (sensitive)
+            {
+                /*if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
+                    return this;*/
+
+                if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
+                    return this;
+            }
+            else
+            {
+                if (userOrg.Organization.Id == caller.Organization.Id)
+                    return this;
+            }
+
             throw new PermissionsException();
         }
 
-        [Obsolete("Confirm logic", false)]
         public PermissionsUtility ManagesUserOrganization(long userOrganizationId)
         {
             if (IsRadialAdmin())
                 return this;
+
+            if (caller.ManagingOrganization)
+            {
+                var subordinate=session.Get<UserOrganizationModel>(userOrganizationId);
+                if (subordinate.Organization.Id == caller.Organization.Id)
+                    return this;
+            }
+
             //Confirm this is correct. Do you want children to also be managers?
-            if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
+            if ( (userOrganizationId!= caller.Id) && caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId) )
                 return this;
             throw new PermissionsException();
         }
@@ -167,7 +184,7 @@ namespace RadialReview.Utilities
         {
             switch (originType)
             {
-                case OriginType.User: return ViewUserOrganization(originId);
+                case OriginType.User: return ViewUserOrganization(originId,false);
                 case OriginType.Group: return ViewGroup(originId);
                 case OriginType.Organization: return ViewOrganization(originId);
                 case OriginType.Industry: return ViewIndustry(originId);
@@ -429,6 +446,17 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
 
 
+        }
+
+        public PermissionsUtility ManagingOrganization()
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            if (caller.ManagingOrganization)
+                return this;
+
+            throw new PermissionsException();
         }
     }
 }

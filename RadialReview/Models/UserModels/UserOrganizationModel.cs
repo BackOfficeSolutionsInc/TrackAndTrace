@@ -18,6 +18,7 @@ namespace RadialReview.Models
 {
     public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable
     {
+        public virtual TempUserModel TempUser { get; set; }
         public virtual String EmailAtOrganization { get; set; }
         public virtual Boolean ManagerAtOrganization { get; set; }
         public virtual Boolean ManagingOrganization { get; set; }
@@ -89,6 +90,7 @@ namespace RadialReview.Models
             Reviews = new List<ReviewModel>();
             Positions = new List<PositionDurationModel>();
             Teams = new List<TeamDurationModel>();
+            TempUser = null;
         }
 
         public override string ToString()
@@ -116,9 +118,13 @@ namespace RadialReview.Models
 
         public override string GetName()
         {
-            if (this.User == null)
-                return this.EmailAtOrganization;
-            return this.User.Name();
+            if (this.User != null)
+                return this.User.Name();
+
+            if (TempUser != null)
+                return this.TempUser.Name();
+
+            return this.EmailAtOrganization;
         }
 
         public virtual string GetTitles(int numToShow = int.MaxValue, long callerUserId = -1)
@@ -159,6 +165,8 @@ namespace RadialReview.Models
             Map(x => x.DetachTime);
             Map(x => x.DeleteTime);
             Map(x => x.EmailAtOrganization);
+
+            References(x => x.TempUser).Not.LazyLoad().Cascade.All();
 
             //Reviews
             HasMany(x => x.Reviews)

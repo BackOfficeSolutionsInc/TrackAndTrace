@@ -107,6 +107,11 @@ namespace RadialReview.Accessors
                     userOrg.Organization = organization;
 
                     user.UserOrganization.Add(userOrg);
+
+                    db.Delete(userOrg.TempUser);
+
+                    userOrg.TempUser = null;
+
                     //manager.ManagingUsers.Add(userOrg);
                     //organization.Members.Add(userOrg);
 

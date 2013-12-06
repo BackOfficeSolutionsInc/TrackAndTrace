@@ -13,12 +13,17 @@ namespace System.Web
     public static class HtmlExtensions
     {
 
-        public static HtmlString EditFirstButton(this HtmlHelper html,List<string> items)
+        public static HtmlString EditFirstButton(this HtmlHelper html,List<string> items,bool edit=true)
         {
+            var text = "Edit";
+            if (!edit)
+                text = "View";
+
             var count=items.Count();
-            if (count != 1)
-                return new HtmlString("Edit (" + count + ")");
-            return new HtmlString("Edit (" + items.First()+ ")");
+            var name = ""+count;
+            if (count == 1)
+                name = items.First();
+            return new HtmlString(text + " (<span title='"+name+"'>" +name+"</span>)");
         }
         
         public static HtmlString Badge<T>(this HtmlHelper<T> html, Func<T, int> count)

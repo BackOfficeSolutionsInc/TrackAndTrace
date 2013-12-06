@@ -7,6 +7,7 @@ using RadialReview.Exceptions;
 using RadialReview.Utilities;
 using NHibernate.Linq;
 using NHibernate;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Accessors
 {
@@ -26,13 +27,18 @@ namespace RadialReview.Accessors
             }
         }
 
-        public UserOrganizationModel GetUserOrganization(UserOrganizationModel caller, long userOrganizationId)
+        public UserOrganizationModel GetUserOrganization(UserOrganizationModel caller, long userOrganizationId,bool asManager,bool sensitive)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization( userOrganizationId);
+                    var perm=PermissionsUtility.Create(s, caller).ViewUserOrganization(userOrganizationId,sensitive);
+                    if (asManager)
+                    {
+                        perm.ManagesUserOrganization(userOrganizationId);
+                    }
+
                     return s.Get<UserOrganizationModel>(userOrganizationId);
                 }
             }
@@ -69,7 +75,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forId);
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forId,false);
                     var forUser=s.Get<UserOrganizationModel>(forId);
                     return forUser.ManagedBy.ToListAlive().Select(x => x.Manager).SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate)).ToList();
                 }
@@ -82,7 +88,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forId);
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forId,false);
                     var forUser = s.Get<UserOrganizationModel>(forId);
                     return forUser.ManagedBy.ToListAlive().Select(x => x.Manager).ToList();
                 }
@@ -96,7 +102,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forId);
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forId,false);
                     var forUser = s.Get<UserOrganizationModel>(forId);
                     return forUser.ManagingUsers.ToListAlive().Select(x => x.Subordinate).ToListAlive();
                 }
@@ -224,7 +230,13 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
+        /// <summary>
+        /// -3 for managerId sets the user as an organization manager
+        /// </summary>
+        /// <param name="caller"></param>
+        /// <param name="userOrganizationId"></param>
+        /// <param name="isManager"></param>
+        /// <param name="managerId"></param>
         public void EditUser(UserOrganizationModel caller,long userOrganizationId, bool? isManager=null, long? managerId=null)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -234,20 +246,111 @@ namespace RadialReview.Accessors
                     var perm=PermissionsUtility.Create(s, caller).EditUserOrganization(userOrganizationId);
                     var found=s.Get<UserOrganizationModel>(userOrganizationId);
 
-                    if (isManager != null)
+                    DateTime deleteTime = DateTime.UtcNow;
+
+                    if (isManager != null && (isManager.Value!=found.ManagerAtOrganization))
                     {
                         perm.ManagesUserOrganization(userOrganizationId);
                         found.ManagerAtOrganization = isManager.Value;
+                        if (isManager==false)
+                        {
+                            foreach(var m in found.ManagingUsers.ToListAlive())
+                            {
+                                m.DeleteTime = deleteTime;
+                                m.DeletedBy = caller.Id;
+                                s.Update(m);
+                            }
+                        }
                     }
 
-                    if (managerId != null)
+                    if (managerId != null && (!found.ManagedBy.ToListAlive().Any(x=>x.ManagerId==managerId.Value)))
                     {
                         perm.ManagesUserOrganization(userOrganizationId);
-                        var manager=s.Get<UserOrganizationModel>(managerId.Value);
 
-                        found. = isManager.Value;
+                        if (managerId.Value == -3)
+                        {
+                            perm.ManagingOrganization();
+                            found.ManagingOrganization = true;
+                        }
+                        else
+                        {
+                            var manager = s.Get<UserOrganizationModel>(managerId.Value);
+                            foreach (var m in found.ManagedBy.ToListAlive())
+                            {
+                                m.DeletedBy = caller.Id;
+                                m.DeleteTime = deleteTime;
+                                s.Update(m);
+                            }
+                            found.ManagedBy.Add(new ManagerDuration(managerId.Value, found.Id, caller.Id));
+                        }
                     }
 
+                    s.Update(found);
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public void RemoveManager(UserOrganizationModel caller, long managerDurationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var managerDuration=s.Get<ManagerDuration>(managerDurationId);
+
+                    PermissionsUtility.Create(s, caller).ManagesUserOrganization(managerDuration.SubordinateId);
+
+                    managerDuration.DeletedBy = caller.Id;
+                    managerDuration.DeleteTime = DateTime.UtcNow;
+
+                    s.Update(managerDuration);
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+
+        }
+
+        public void AddManager(UserOrganizationModel caller, long userId, long managerId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId);
+
+                    var user = s.Get<UserOrganizationModel>(userId);
+                    var manager = user.ManagedBy.ToListAlive().Where(x => x.ManagerId == managerId).FirstOrDefault();
+
+                    if (manager != null)
+                        throw new PermissionsException("Already a manager of this user.");
+
+                    user.ManagedBy.Add(new ManagerDuration(managerId,userId,caller.Id));
+
+                    s.Update(user);
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public void ChangeRole(UserModel caller, long roleId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    caller=s.Get<UserModel>(caller.Id);
+                    if (caller.UserOrganization.Any(x => x.Id == roleId))
+                        caller.CurrentRole = roleId;
+                    else
+                        throw new PermissionsException();
+                    s.Update(caller);
 
                     tx.Commit();
                     s.Flush();

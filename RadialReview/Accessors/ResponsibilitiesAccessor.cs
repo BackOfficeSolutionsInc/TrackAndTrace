@@ -72,7 +72,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(userId);
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(userId,false);
                     var user=s.Get<UserOrganizationModel>(userId);
 
                     List<ResponsibilityGroupModel> responsibilityGroups = new List<ResponsibilityGroupModel>();

@@ -1,25 +1,34 @@
 ﻿@model RadialReview.Models.ViewModels.CreateUserOrganizationViewModel
 
-@Html.HiddenFor(x=>x.OrgId)
+@Html.HiddenFor(x => x.OrgId)
+
+<div class="row">
+    <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.name):</label></div>
+    <div class="row col-xs-9 noPad left">
+        <div class="col-xs-6 noPad left">@Html.TextBoxFor(x => x.FirstName, new { placeholder = RadialReview.Properties.DisplayNameStrings.firstName, @class = "fullWidth form-control" })</div>
+        <div class="col-xs-6 noPad ">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>
+    </div>
+</div>
+<div class="smallBreak"></div>
 <div class="row">
     <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
-    <div class="col-xs-9">@Html.TextBoxFor(x=>x.Email,new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control" })</div>
-</div>      
-<div class="smallBreak"></div>   
+    <div class="col-xs-9">@Html.TextBoxFor(x => x.Email, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control" })</div>
+</div>
+<div class="smallBreak"></div>
 
-@Html.EditorFor(x=>x.Position,"~/Views/User/EditorTemplates/UserPositionViewModel.cshtml")
+@Html.EditorFor(x => x.Position, "~/Views/User/EditorTemplates/UserPositionViewModel.cshtml")
 
-@if(Model.StrictlyHierarchical)
+@if (Model.StrictlyHierarchical)
 {
-    @Html.HiddenFor(x=>x.ManagerId)
+    @Html.HiddenFor(x => x.ManagerId)
 }
 else
 {
     <div class="smallBreak"></div>
     <div class="row">
         <div class="col-xs-3"><label>Manager:</label></div>
-        <div class="col-xs-9">@Html.DropDownListFor(x=>x.ManagerId,Model.PotentialManagers ,new { @class = "fullWidth form-control" })</div>
-    </div>   
+        <div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerId, Model.PotentialManagers, new { @class = "fullWidth form-control" })</div>
+    </div>
 }
 
 
@@ -34,8 +43,8 @@ else
     });
 </script>
 
-<div class="smallBreak"></div>            
-<div class="row">   
+<div class="smallBreak"></div>
+<div class="row">
     <div class="col-xs-3"><label>Is Manager:</label></div>
-    <div class="col-xs-9">@Html.CheckBoxFor(x=>x.IsManager, new { style = "padding-bottom: 7px;",@class="checkbox"  })</div>
+    <div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox" })</div>
 </div>

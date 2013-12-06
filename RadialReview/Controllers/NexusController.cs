@@ -36,7 +36,7 @@ namespace RadialReview.Controllers
                     model.Position.PositionId = newPosition.Id;
                 }
 
-                var nexusId = NexusAccessor.JoinOrganizationUnderManager(user,model.ManagerId, model.IsManager, model.Position.PositionId, model.Email);
+                var nexusId = NexusAccessor.JoinOrganizationUnderManager(user,model.ManagerId, model.IsManager, model.Position.PositionId, model.Email,model.FirstName,model.LastName);
 
                 return Json(new JsonObject(false,"Success"));
             }

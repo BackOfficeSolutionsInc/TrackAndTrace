@@ -43,10 +43,10 @@ namespace RadialReview.Models.UserModels
             Map(x => x.DeletedBy);
             Map(x => x.PromotedBy);
 
-            Map(x => x.ManagerId).Column("ManagerId").Not.LazyLoad().ReadOnly(); ;
+            Map(x => x.ManagerId).Column("ManagerId");
             References(x => x.Manager).Column("ManagerId").Not.LazyLoad().ReadOnly();
 
-            Map(x => x.SubordinateId).Column("SubordinateId").Not.LazyLoad().ReadOnly();
+            Map(x => x.SubordinateId).Column("SubordinateId");
             References(x => x.Subordinate).Column("SubordinateId").Not.LazyLoad().ReadOnly();
         }
     }

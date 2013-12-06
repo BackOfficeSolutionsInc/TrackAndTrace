@@ -1,0 +1,9 @@
+﻿@model RadialReview.Controllers.UserController.AddManagerViewModel
+
+
+@Html.HiddenFor(x=>x.UserId)
+<div class="smallBreak"></div>
+<div class="row">
+    <div class="col-xs-3"><label>Manager:</label></div>
+    <div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerId, Model.PotentialManagers, new { @class = "fullWidth form-control" })</div>
+</div>   

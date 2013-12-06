@@ -29,17 +29,20 @@ namespace RadialReview.Controllers
 
 
         [Access(AccessLevel.Any)]
-        public ActionResult Role()
+        public ActionResult Role(String ReturnUrl)
         {
             var userOrgs = GetUserOrganizations();
+            ViewBag.ReturnUrl = ReturnUrl;
             return View(userOrgs.ToList());
         }
 
         [Access(AccessLevel.Any)]
-        public ActionResult SetRole(long id)
+        public ActionResult SetRole(long id,String ReturnUrl=null)
         {
             GetUser(id);
-            return RedirectToAction("Index", "Home");
+            if (ReturnUrl==null)
+                return RedirectToAction("Index", "Home");
+            return RedirectToLocal(ReturnUrl);
         }
 
         public NHibernateUserManager UserManager { get; private set; }
