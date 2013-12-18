@@ -1,0 +1,26 @@
+﻿@model RadialReview.Models.UserModels.TempUserModel
+
+
+
+
+<div class="row">
+    <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.name):</label></div>
+    <div class="row col-xs-9 noPadLeft">
+        <div class="col-xs-6 noPadLeft">@Html.TextBoxFor(x => x.FirstName, new { placeholder = RadialReview.Properties.DisplayNameStrings.firstName, @class = "fullWidth form-control" })</div>
+        <div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>
+    </div>
+</div>
+<div class="smallBreak"></div>
+<div class="row">
+    <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
+    <div class="col-xs-9">@Html.TextBoxFor(x => x.Email, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control" })</div>
+</div>
+<div class="smallBreak"></div>
+<div class="smallBreak"></div>
+<div class="row">
+    <div class="col-xs-12">
+        <h4 style="color: #CC2424">Last sent : @Model.LastSent.ToShortDateString() @Model.LastSent.ToShortTimeString()</h4>
+    </div>
+</div>
+@Html.HiddenFor(x => x.Id)
+@Html.HiddenFor(x => x.Guid)

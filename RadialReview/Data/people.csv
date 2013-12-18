@@ -1,0 +1,11 @@
+FirstName,LastName,Position,Email,Manager,IsManager
+Kevin,Thomas,CEO,Kevin.Thomas@gmail.com,,TRUE
+Kevin,Thomas,Sales and Marketing,Kevin.Thomas2@gmail.com,Kevin.Thomas@gmail.com,TRUE
+Dustin,Behrens,CFO,Dustin.Behrens@gmail.com,Kevin.Thomas@gmail.com,TRUE
+Curt,Pikschus,Production Supervisor,Curt.Pikschus@gmail.com,Kevin.Thomas@gmail.com,TRUE
+Travis,Gueret,Director of Digital Print,Travis.Gueret@gmail.com,Kevin.Thomas@gmail.com,TRUE
+Alisha,Parpart,Client Support Supervisor,Alisha.Parpart@gmail.com,Kevin.Thomas@gmail.com,TRUE
+Nia,Nielsen,Director of Marketing & Business Development,Nia.Nielsen@gmail.com,Kevin.Thomas2@gmail.com,TRUE
+Tim,Meader,Sales,Tim.Meader@gmail.com,Kevin.Thomas2@gmail.com,FALSE
+Carol,Hulas,HR,Carol.Hulas@gmail.com,Dustin.Behrens@gmail.com,TRUE
+Kyle,Stuefer,Facilities,Kyle.Stuefer@gmail.com,Carol.Hulas@gmail.com,FALSE

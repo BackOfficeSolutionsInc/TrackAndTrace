@@ -429,10 +429,17 @@ input[type="checkbox"].input-validation-error {
     padding-right:5px !important; 
 }
 
-.noPad:not(.right){
+.noPad{
+    padding:0px !important;
+}
+.noMargin{
+    margin:0px !important;
+}
+
+.noPadLeft{
     padding-right:0px !important; 
 }
-.noPad:not(.left){
+.noPadRight{
     padding-left:0px !important; 
 }
 
@@ -472,4 +479,107 @@ td.noOverflow {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.icon{
+    opacity:1;
+}
+
+.notManaging .icon {
+    opacity:.55;
+}
+
+
+.inlineBlock{
+    display: inline-block;
+}
+
+.nav-pills a{
+    background-color:#E9E9E9;
+    border:1px solid #D8D8D8;
+}
+
+.clickThrough{
+    pointer-events:none;
+    background:none !important;
+}
+
+.rightButton
+{
+    width:69px;
+    padding:2px ! important;
+}
+
+
+tr.danger .strikable{
+    text-decoration:line-through;
+}
+
+.strokeBlack{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}
+.strokeGreen{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #3C763D;
+}
+.strokeRed{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #BF8F90;
+}
+.strokeGray{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: rgb(193, 193, 193);
+}
+.strokeGold{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #BFA970;
+}
+.strokeBlue{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #859BAD;
+}
+.strokeLightGreen{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #96B88A;
+}
+
+.green{
+color:#CCFABB;/*#A7E2A8;#468847;*/
+}
+
+.red
+{
+color: #FFBFC0;
+}
+
+.gold{
+    color:#FFE296;
+}
+
+.blue{
+    color:#BAD9F3;
+}
+
+.gray{
+    color:#BDBDBD;
+}
+
+.clickable{
+    cursor:pointer;
+}
+
+.team{
+    background-color:rgba(235, 235, 235, 0.42);
+    color:#393939;
+}
+
+.team.AllMembers{
+    background-color:rgba(235, 216, 184, 0.42);
+}
+.team.Managers{
+    background-color:rgba(235, 231, 184, 0.42);
+}
+.team.Subordinates{
+    background-color:rgba(203, 235, 184, 0.42);
 }

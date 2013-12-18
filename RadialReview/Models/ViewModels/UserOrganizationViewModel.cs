@@ -1,4 +1,5 @@
-﻿using RadialReview.Models.Responsibilities;
+﻿using RadialReview.Models.Interfaces;
+using RadialReview.Models.Responsibilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +20,35 @@ namespace RadialReview.Models.ViewModels
         public long ManagerId { get; set; }
         public List<SelectListItem> PotentialManagers { get; set; }
     }
+
     public class EditUserOrganizationViewModel
     {
         public long UserId { get; set; }
         public bool IsManager { get; set; }
-        public long ManagerId { get; set; }
-        public bool StrictlyHierarchical { get; set; }
-        public List<SelectListItem> PotentialManagers { get; set; }
+        //public long ManagerId { get; set; }
+        public Boolean ManagingOrganization { get; set; }
+        public Boolean CanSetManagingOrganization { get; set; }
+
+        //public bool StrictlyHierarchical { get; set; }
+        //public List<SelectListItem> PotentialManagers { get; set; }
+    }
+
+    public class UserOrganizationViewModel : ICompletable
+    {
+        public UserOrganizationModel User { get; set; }
+
+        public int ReviewToComplete { get; set; }
+
+        public CompletionModel GetCompletion()
+        {
+            int complete = 1;
+            int total = 1;
+
+            complete += (User.User.ImageGuid != null).ToInt(); 
+            total++;
+
+            return new CompletionModel(complete, total);
+
+        }
     }
 }

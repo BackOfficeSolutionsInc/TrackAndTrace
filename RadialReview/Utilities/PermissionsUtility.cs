@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Utilities
 {
@@ -42,6 +43,17 @@ namespace RadialReview.Utilities
         }
 
 
+        public PermissionsUtility EditUserModel(string userId)
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            if (caller.User.Id == userId)
+                return this;
+            throw new PermissionsException();
+        }
+
+
         public PermissionsUtility EditOrganization(long organizationId)
         {
             if (IsRadialAdmin())
@@ -54,7 +66,14 @@ namespace RadialReview.Utilities
 
         public PermissionsUtility EditUserOrganization(long userId)
         {
+            return ManagesUserOrganization(userId);
+
+            /*
             if (IsRadialAdmin())
+                return this;
+
+            var user = session.Get<UserOrganizationModel>(userId);
+            if (IsManagingOrganization(user.Organization.Id))
                 return this;
 
             if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userId))
@@ -63,7 +82,14 @@ namespace RadialReview.Utilities
             //return this;
             //Could do some cascading here if we want.
 
-            throw new PermissionsException("You don't manage this user.");
+            throw new PermissionsException("You don't manage this user.");*/
+        }
+
+        private bool IsManagingOrganization(long organizationId)
+        {
+            if (caller.Organization.Id==organizationId)
+                return caller.ManagingOrganization;
+            return false;
         }
 
         public PermissionsUtility EditGroup(long groupId)
@@ -144,6 +170,9 @@ namespace RadialReview.Utilities
                 return this;
             var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
 
+            if (IsManagingOrganization(userOrg.Organization.Id))
+                return this;
+
             if (sensitive)
             {
                 /*if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
@@ -223,18 +252,18 @@ namespace RadialReview.Utilities
             log.Info("ViewIndustry always returns true.");
             return this;
         }
-        public PermissionsUtility ViewImage(string imageId)
+        /*public PermissionsUtility ViewImage(string imageId)
         {
             if (imageId == null)
                 throw new PermissionsException();
-            Predicate<UserOrganizationModel> p = x => x.User.NotNull(y => y.Image.NotNull(z => z.Id.ToString() == imageId));
+            Predicate<UserOrganizationModel> p = x => x.User.NotNull(y => y.ImageUrl.NotNull(z => z.Id.ToString() == imageId));
 
             if (IsOwnedBelowOrEqual(caller, p) || IsOwnedAboveOrEqual(caller, p))
             {
                 return this;
             }
             throw new PermissionsException();
-        }
+        }*/
 
         public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)
         {
@@ -316,8 +345,12 @@ namespace RadialReview.Utilities
                 return this;
 
             var category = session.Get<QuestionCategoryModel>(id);
-            if (IsOwnedBelowOrEqualOrganizational(caller.Organization, new Origin(category.OriginType, category.OriginId)))
+            if (category.OriginType == OriginType.Application)
                 return this;
+
+            if (category.OriginType == OriginType.Organization && IsOwnedBelowOrEqualOrganizational(caller.Organization, new Origin(category.OriginType, category.OriginId)))
+                return this;
+
             throw new PermissionsException();
         }
 
@@ -360,20 +393,32 @@ namespace RadialReview.Utilities
 
         public PermissionsUtility ViewTeam(long teamId)
         {
+            // Subordinates Team
+            //if (teamId == -5 && caller.IsManager()) 
+            //    return this;
+
+            if (IsRadialAdmin())
+                return this;
+
             var team = session.Get<OrganizationTeamModel>(teamId);
 
 
             if (team == null)
                 throw new PermissionsException();
 
-            if (IsRadialAdmin())
-                return this;
 
             if (!team.Secret && team.Organization.Id == caller.Organization.Id)//&& team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
                 return this;
 
-            if (team.Secret)// && (team.CreatedBy == caller.Id || team.Members.Any(x => x.Id == caller.Id)))
-                throw new NotImplementedException();
+                
+            if (team.Secret && (team.CreatedBy == caller.Id || team.ManagedBy ==caller.Id))
+                return this;
+
+            var members = session.QueryOver<TeamDurationModel>().Where(x => x.TeamId == teamId && x.UserId == caller.Id).List().ToList();
+            if (team.Secret && members.Any())
+                return this;
+
+
             //return this;
 
             throw new PermissionsException();
@@ -388,6 +433,8 @@ namespace RadialReview.Utilities
             if (teamId == 0 && caller.IsManager())
                 return this;
 
+            //if (teamId == -5 && caller.IsManager()) // Subordinates Team
+            //    return this;
 
             var team = session.Get<OrganizationTeamModel>(teamId);
             if (team.Type != TeamType.Standard)
@@ -400,8 +447,16 @@ namespace RadialReview.Utilities
                     if (!team.Secret)// && team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
                         return this;
 
-                    if (team.Secret)// && (team.CreatedBy == caller.Id || team.Members.Any(x => x.Id == caller.Id)))
-                        throw new NotImplementedException();
+
+                    if (team.Secret && (team.CreatedBy == caller.Id || team.ManagedBy == caller.Id))
+                        return this;
+
+                    if (!team.OnlyManagersEdit)
+                    {
+                        var members = session.QueryOver<TeamDurationModel>().Where(x => x.TeamId == teamId && x.UserId == caller.Id).List().ToList();
+                        if (team.Secret && members.Any())
+                            return this;
+                    }
                     /*return this;*/
                 }
             }
@@ -428,6 +483,16 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }
 
+        public PermissionsUtility ManageReview(long reviewId)
+        {
+            ViewReview(reviewId);
+            var review=session.Get<ReviewModel>(reviewId);
+            var userId=review.ForUserId;
+
+            ManagesUserOrganization(userId);
+
+            return this;
+        }
 
         public PermissionsUtility ViewReview(long reviewId)
         {
@@ -437,6 +502,11 @@ namespace RadialReview.Utilities
             var review=session.Get<ReviewModel>(reviewId);
             var reviewUserId=review.ForUserId;
 
+            //Is this correct?
+            if (IsManagingOrganization(review.ForUser.Organization.Id))
+                return this;
+
+            //Cannot be viewed by the user
             if (reviewUserId == caller.Id)
                 return this;
 
@@ -453,10 +523,67 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin())
                 return this;
 
-            if (caller.ManagingOrganization)
+            if (IsManagingOrganization(caller.Organization.Id))
                 return this;
 
             throw new PermissionsException();
+        }
+
+        public PermissionsUtility ManagingTeam(long teamId)
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            //if (teamId == -5 && caller.IsManager())
+            //    return this;
+
+            var team=session.Get<OrganizationTeamModel>(teamId);
+
+            if (IsManagingOrganization(team.Organization.Id))
+                return this;
+
+            if (team.OnlyManagersEdit && team.ManagedBy == caller.Id)
+                return this;
+            
+            var members=session.QueryOver<TeamDurationModel>().Where(x=>x.Team.Id == teamId).List().ToListAlive();
+
+            if (!team.OnlyManagersEdit && members.Any(x => x.User.Id == caller.Id))
+                return this;
+
+            throw new PermissionsException();
+        }
+
+        public PermissionsUtility ManagingPosition(long positionId)
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            if (positionId == 0)
+                return this;
+
+            var position = session.Get<OrganizationPositionModel>(positionId);
+
+            if (IsManagingOrganization(position.Organization.Id))
+                return this;
+
+            if (caller.Organization.ManagersCanEditPositions && caller.ManagerAtOrganization && position.Organization.Id==caller.Organization.Id)
+                return this;
+            
+            throw new PermissionsException();
+        }
+
+        public PermissionsUtility EditPositions()
+        {
+            if (IsRadialAdmin())
+                return this;
+            
+            if (IsManagingOrganization(caller.Organization.Id))
+                return this;
+
+            if (caller.Organization.ManagersCanEditPositions && caller.ManagerAtOrganization)
+                return this;
+
+            throw new PermissionsException();            
         }
     }
 }

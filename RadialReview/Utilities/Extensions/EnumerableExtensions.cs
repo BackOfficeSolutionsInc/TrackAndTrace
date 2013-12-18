@@ -29,7 +29,7 @@ namespace RadialReview
 
     public static class EnumerableExtensions
     {
-        public static IEnumerable<SelectListItem> ToSelectList<T, TId>(this IEnumerable<T> self, Func<T, String> textSelector, Func<T, TId> idSelector, TId selected = default(TId))
+        public static List<SelectListItem> ToSelectList<T, TId>(this IEnumerable<T> self, Func<T, String> textSelector, Func<T, TId> idSelector, TId selected = default(TId))
         {
             return self.Select((x, i) =>
             {
@@ -39,7 +39,7 @@ namespace RadialReview
                 if (selected.Equals(default(TId)))
                     isSelected = i == 0;
                 return new SelectListItem() { Selected = isSelected, Text = text, Value = id.ToString() };
-            });
+            }).ToList();
         }
 
         public static List<T> AsList<T>(this T first, params T[] after)

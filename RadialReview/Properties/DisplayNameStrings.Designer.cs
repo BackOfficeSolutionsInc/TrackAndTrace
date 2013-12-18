@@ -367,6 +367,24 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to High.
+        /// </summary>
+        public static string high {
+            get {
+                return ResourceManager.GetString("high", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Highest.
+        /// </summary>
+        public static string highest {
+            get {
+                return ResourceManager.GetString("highest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Image URL.
         /// </summary>
         public static string imageUrl {
@@ -439,6 +457,24 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Low.
+        /// </summary>
+        public static string low {
+            get {
+                return ResourceManager.GetString("low", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lowest.
+        /// </summary>
+        public static string lowest {
+            get {
+                return ResourceManager.GetString("lowest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage.
         /// </summary>
         public static string manage {
@@ -471,6 +507,15 @@ namespace RadialReview.Properties {
         public static string max {
             get {
                 return ResourceManager.GetString("max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medium.
+        /// </summary>
+        public static string medium {
+            get {
+                return ResourceManager.GetString("medium", resourceCulture);
             }
         }
         
@@ -516,6 +561,24 @@ namespace RadialReview.Properties {
         public static string newPassword {
             get {
                 return ResourceManager.GetString("newPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string no {
+            get {
+                return ResourceManager.GetString("no", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal.
+        /// </summary>
+        public static string normal {
+            get {
+                return ResourceManager.GetString("normal", resourceCulture);
             }
         }
         

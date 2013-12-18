@@ -1,4 +1,4 @@
-﻿@model List<RadialReview.Models.AnswerModel>
+﻿@model RadialReview.Controllers.ReviewController.TakeViewModel
 
 @{
     ViewBag.Title = "Review";
@@ -7,10 +7,29 @@
 
 @using RadialReview.Models
 
-@Html.Partial("Slider", Model.Where(x => x is SliderAnswer)     .Cast<SliderAnswer>().ToList())
-@Html.Partial("Thumbs", Model.Where(x => x is ThumbsAnswer)     .Cast<ThumbsAnswer>().ToList())
-@Html.Partial("Feedback", Model.Where(x => x is FeedbackAnswer) .Cast<FeedbackAnswer>().ToList())
-
+<div class="row">
+    <div class="col-md-4">
+        @Html.Partial("_User", Model.ForUser)
+    </div>
+    <div class="col-md-8">
+        <div>
+            <div class="smallBreak"></div>
+            @foreach (var group in Model.Answers.GroupBy(x => x.Askable.Category.Id))
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">@group.FirstOrDefault().NotNull(x => x.Askable.Category.Category.Translate())</h3>
+                    </div>
+                    <div class="panel-body">
+                        @Html.Partial("Slider", group.ToList().Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList())
+                        @Html.Partial("Thumbs", group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList())
+                        @Html.Partial("Feedback", group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList())
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
 
 
 

@@ -36,10 +36,18 @@ namespace RadialReview.Controllers
         }*/
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Modal()
+        public ActionResult Modal(long id=0)
         {
             var positions = _PositionAccessor.AllPositions().ToList();
-            var model = new PositionViewModel() { Positions = positions.OrderBy(x=>x.Name.Translate()).ToList() };
+
+            PositionViewModel model = new PositionViewModel() { Positions = positions.OrderBy(x => x.Name.Translate()).ToList(),Id=id };
+            if (id != 0)
+            {
+                var found= _OrganizationAccessor.GetOrganizationPosition(GetUser(), id);
+                model.PositionName = found.CustomName;
+                model.Position = found.Position.Id;
+            }
+
             return PartialView(model);
         }
 
@@ -48,8 +56,8 @@ namespace RadialReview.Controllers
         public JsonResult Modal(PositionViewModel model)
         {
             var caller=GetUser();
-            _OrganizationAccessor.AddOrganizationPosition(caller, caller.Organization.Id, model.Position.Value,model.PositionName);
-            return Json(JsonObject.Success);
+            _OrganizationAccessor.EditOrganizationPosition(caller,model.Id, caller.Organization.Id, model.Position.Value,model.PositionName);
+            return Json(ResultObject.Success);
         }
 
         /*

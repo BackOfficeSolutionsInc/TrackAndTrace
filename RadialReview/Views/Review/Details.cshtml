@@ -1,124 +1,282 @@
-﻿@model RadialReview.Models.ReviewModel
-
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+@using RadialReview.Models;
 @{
     ViewBag.Title = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
-
-@Html.DisplayForModel()
-@using (Html.BeginStyles())
-{
-    <style>
-        body {
-            position: relative;
-        }
-
-        svg,
-        canvas {
-            position: absolute;
-        }
-
-        .axis text {
-            font: 10px sans-serif;
-        }
-
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: #000;
-            shape-rendering: crispEdges;
-        }
-
-        .axis path {
-            display: none;
-        }
-    </style>
-}
-<div id="draw"></div>
-
 @using (Html.BeginScripts())
 {
     <script>
+    function SetFeedback(id, on) {
+        var dat = new Object();
+        dat.feedbackId = id;
+        dat.reviewId = "@Model.Review.Id";
+            if (on === undefined) {
+                on = !$(".feedback_" + id + " .check").hasClass("on");
+            }
+            dat.on = on;
 
-        var width = 960,
-            height = 500;
+            $.ajax({
+                url: "/Review/SetFeedback",
+                data: dat,
+                method: "GET",
+                success: function (data) {
+                    if (data.Object) {
+                        if (data.Object.On) {
+                            $(".feedback_" + data.Object.FeedbackId + " .check").addClass("on");
+                            var text = $(".feedback_" + data.Object.FeedbackId + " .text").html();
+                            var toAppend = '<li class="feedback feedback_' + data.Object.FeedbackId + '">' + text + '<span onclick="SetFeedback(' + data.Object.FeedbackId + ',false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></li>';
+                            $("#feedbacks").append(toAppend);
+                        } else {
+                            $(".feedback_" + data.Object.FeedbackId + " .check").removeClass("on");
+                            $("#feedbacks .feedback_" + data.Object.FeedbackId).remove();
+                        }
+                    }
+                },
+                complete: function () {
+                    UpdateFeedbacks();
+                }
+            })
+        }
 
-        d3.json("heatmap.json", function (error, heatmap) {
-            var dx = heatmap[0].length,
-                dy = heatmap.length;
+        function UpdateFeedbacks() {
+            $(".feedback .check").each(function (i, e) {
+                if ($(e).hasClass("on"))
+                    $(e).html('<span title="Included" class="glyphicon glyphicon glyphicon-ok   green strokeGreen"></span>');
+                else
+                    $(e).html('<span title="Excluded" class="glyphicon glyphicon-ban-circle     red strokeRed"></span>');
+            });
+        }
 
-            // Fix the aspect ratio.
-            // var ka = dy / dx, kb = height / width;
-            // if (ka < kb) height = width * ka;
-            // else width = height / ka;
+        function setAuthorize()
+        {
+            var auth=!$("#Authorized").hasClass("on");
+            var dat = new Object();
+            dat.Authorized = auth;
+            dat.ReviewId = "@Model.Review.Id";
 
-            var x = d3.scale.linear()
-                .domain([0, dx])
-                .range([0, width]);
+            $.ajax({
+                url: "/Review/Authorize",
+                data: dat,
+                method: "GET",
+                success: function (data) {
+                    showJsonAlert(data,false);
+                    if (data.Object.Authorized)
+                    {
+                        $("#Authorized").addClass("on");
+                        $("#Authorized").addClass("active");
+                        $("#Authorized").addClass("btn-success");
+                        $("#Authorized").removeClass("btn-danger");
+                        $("#Authorized").html("Authorized!");
 
-            var y = d3.scale.linear()
-                .domain([0, dy])
-                .range([height, 0]);
-
-            var color = d3.scale.linear()
-                .domain([95, 115, 135, 155, 175, 195])
-                .range(["#0a0", "#6c0", "#ee0", "#eb4", "#eb9", "#fff"]);
-
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("top")
-                .ticks(20);
-
-            var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient("right");
-
-            d3.select("body").append("canvas")
-                .attr("width", dx)
-                .attr("height", dy)
-                .style("width", width + "px")
-                .style("height", height + "px")
-                .call(drawImage);
-
-            var svg = d3.select("body").append("svg")
-                .attr("width", width)
-                .attr("height", height);
-
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis)
-                .call(removeZero);
-
-            svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .call(removeZero);
-
-            // Compute the pixel colors; scaled by CSS.
-            function drawImage(canvas) {
-                var context = canvas.node().getContext("2d"),
-                    image = context.createImageData(dx, dy);
-
-                for (var y = 0, p = -1; y < dy; ++y) {
-                    for (var x = 0; x < dx; ++x) {
-                        var c = d3.rgb(color(heatmap[y][x]));
-                        image.data[++p] = c.r;
-                        image.data[++p] = c.g;
-                        image.data[++p] = c.b;
-                        image.data[++p] = 255;
+                    }else{
+                        $("#Authorized").removeClass("on");
+                        $("#Authorized").removeClass("active");
+                        $("#Authorized").removeClass("btn-success");
+                        $("#Authorized").addClass("btn-danger");
+                        $("#Authorized").html("Not Authorized");
                     }
                 }
 
-                context.putImageData(image, 0, 0);
-            }
+            })
+        }
 
-            function removeZero(axis) {
-                axis.selectAll("g").filter(function (d) { return !d; }).remove();
-            }
+        $(function () {
+            UpdateFeedbacks();
         });
 
+        function IncludeChart() {
+            var xId = $("#xAxis").val();
+            var yId = $("#yAxis").val();
+
+            var dat = new Object();
+            dat.X = xId;
+            dat.Y = yId;
+            dat.ReviewId = "@Model.Review.Id";
+
+        $.ajax({
+            url: "/Review/AddChart",
+            data: dat,
+            method: "GET",
+            success: function (data) {
+                var toAppend = '<li class="chart_' + data.Object.ChartId + '">' + data.Object.XTitle + " vs " + data.Object.YTitle + '<span onclick="RemoveChart(' + data.Object.ChartId + ')" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></li>';
+                $("#charts").append(toAppend);
+            }
+
+        })
+    }
+
+    function RemoveChart(chartId) {
+        var dat = new Object();
+        dat.chartId = chartId;
+        dat.reviewId = "@Model.Review.Id";
+
+        $.ajax({
+            url: "/Review/RemoveChart",
+            data: dat,
+            method: "GET",
+            success: function (data) {
+                $(".chart_" + data.Object.ChartId).remove();
+            }
+        })
+    }
+
     </script>
+}
+
+@using (Html.BeginStyles())
+{
+    <style>
+        .chartButton {
+            top: 39px;
+            position: absolute;
+            right: 39px;
+        }
+
+        .sidebar {
+            padding: 10px;
+            font-size: 12px;
+            background-color: #FDFDFD;
+            border: 1px solid #DFDFDF;
+            -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
+            box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
+        }
+    </style>
+    <link href="~/Content/chart.css" rel="stylesheet" />
+}
+
+
+
+<div class="row">
+    <div class="col-lg-10">
+        <div class="row" style="height: 0px;">
+            <div class="col-sm-1 col-sm-offset-11" style="height: 0px; position: relative; top: 10px; left: -10px; z-index: 1000;">
+                <a class="btn btn-default pull-right" href="@Url.Action("Details", "Reviews", new {id=Model.Review.ForReviewsId })">
+                    Back
+                </a>
+            </div>
+        </div>
+        <div class="review " style=" min-width: 650px;">
+            <div class="row">
+                <div class="col-md-4" style="padding-bottom:20px;">
+                    @Html.Partial("_User", Model.Review.ForUser)
+                </div>
+                <div class="col-md-8 ">
+                    <div class="row noselect">
+                        <form id="controls">
+                            <div class="col-xs-6 alignRight ">
+                                <div class="inlineBlock">
+                                    <div class="alignCenter"><h4 class="axisTitle">X-Axis</h4></div>
+                                    <div style="top:10px;"> @Html.DropDownListFor(x => x.xAxis, Model.Axis, new { @class = "form-control" })</div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 alignLeft">
+                                <div class="inlineBlock">
+                                    <div class="alignCenter"><h4 class="axisTitle">Y-Axis</h4></div>
+                                    <div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
+                                </div>
+                                <div class="pull-right btn btn-default clickable chartButton" onclick="IncludeChart()">
+                                    Add
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row noselect">
+                        <div class="col-md-12">
+                            <div style="height:500px">
+                                <svg id="visualisation"></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Feedback</h3>
+                        </div>
+                        <table class="fullWidth">
+                            <tr>
+                                <th></th>
+                                <th style="width:120px">By</th>
+                                <th>Feedback</th>
+                                <th class="rightButton alignCenter">Include</th>
+                            </tr>
+                            @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>())
+                            {
+                                <tr class="feedback feedback_@feedback.Id">
+                                    <td></td>
+                                    <td>@feedback.ByUser.GetName()</td>
+                                    <td class="text">@feedback.Feedback</td>
+                                    <td class="alignCenter clickable">
+                                        @{
+                                var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Long == feedback.Id) != null;
+                                        }
+                                        <div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="smallBreak"></div>
+    </div>
+    <div class="col-lg-2 noPad ">
+        <div class="sidebar" style="padding:10px;font-size:12px">
+            <h4 class="alignCenter">Charts</h4>
+            <ul class="noBullet" id="charts">
+                @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
+                {
+                    <li class="chart_@chart.Id">
+                        @Model.Categories[chart.Item1] vs @Model.Categories[chart.Item2]
+                        <span onclick="RemoveChart(@chart.Id)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
+                    </li>
+                }
+            </ul>
+            <hr />
+            <h4 class="alignCenter">Feedback</h4>
+            <ul class="noBullet" id="feedbacks">
+                @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete && Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Long == x.Id)).Cast<FeedbackAnswer>())
+                {
+                    <li class="feedback feedback_@feedback.Id">
+                        @feedback.Feedback
+                        <span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
+                    </li>
+                }
+            </ul>
+            <hr />
+            <div class="alignCenter">
+                <a href="/Review/ClientDetails/@Model.Review.Id" class="btn btn-default" style="width:120px;">View</a>
+                <div class="smallBreak"></div>
+                <div title="Authorize the user to view this review.">
+                    @*Html.CheckBox("Authorized", , new { onclick = "setAuthorize()" })*@
+                    @if (Model.Review.ClientReview.Visible)
+                    {
+                        <div style="width:120px;" class="btn btn-success active on" onclick="setAuthorize()" id="Authorized">Authorized!</div>
+
+                    }
+                    else
+                    {
+                        <div style="width:120px;" class="btn btn-danger" onclick="setAuthorize()" id="Authorized">Not Authorized</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginScripts())
+{
+    <script>
+        ReviewId    = @Model.Review.ForReviewsId;
+        LegendData  = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
+        AxisSelect   = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+        AxisLabel  = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
+        ForUserId = @Model.Review.ForUserId;
+    </script>
+    <script src="/scripts/d3/d3.js"></script>
+    <script src="/scripts/d3/d3.csv.js"></script>
+    <script src="/scripts/d3/ScatterChart.js"></script>
 }

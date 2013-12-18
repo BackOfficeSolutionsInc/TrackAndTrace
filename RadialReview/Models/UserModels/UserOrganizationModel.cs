@@ -95,7 +95,7 @@ namespace RadialReview.Models
 
         public override string ToString()
         {
-            return Organization.NotNull(x => x.Name) + " - " + User.NotNull(x => x.Name());
+            return Organization.NotNull(x => x.Name) + " - " + this.GetNameAndTitle();
         }
 
 
@@ -150,6 +150,7 @@ namespace RadialReview.Models
         {
             return DisplayNameStrings.user;
         }
+
     }
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
@@ -189,7 +190,16 @@ namespace RadialReview.Models
             HasMany(x => x.Teams)
                 .Cascade.SaveUpdate();
 
-            HasManyToMany(x => x.ManagedBy)
+            HasMany(x => x.ManagedBy)
+                .KeyColumn("SubordinateId")
+                .Cascade.SaveUpdate();
+
+            HasMany(x => x.ManagingUsers)
+                .KeyColumn("ManagerId")
+                .Cascade.SaveUpdate();
+
+
+            /*HasManyToMany(x => x.ManagedBy)
                 .Table("ManagedMembers")
                 .ParentKeyColumn("Subordinate")
                 .ChildKeyColumn("Manager")
@@ -198,7 +208,9 @@ namespace RadialReview.Models
                 .Table("ManagedMembers")
                 .ParentKeyColumn("Manager")
                 .ChildKeyColumn("Subordinate")
-                .Cascade.SaveUpdate();
+                .Cascade.SaveUpdate();*/
+
+
             HasManyToMany(x => x.Groups)
                 .Table("GroupMembers")
                 .Inverse();

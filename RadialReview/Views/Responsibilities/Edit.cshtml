@@ -1,4 +1,5 @@
 ﻿@model RadialReview.Models.ViewModels.ResponsibilityTablesViewModel
+@using RadialReview.Models.Responsibilities;
 
 @{
     ViewBag.Title = "Edit";
@@ -14,43 +15,64 @@
         <div class="panel-heading">
             <h2 class="panel-title">@table.GroupType: <b>@table.Name</b></h2>
         </div>
+
         <div class="panel-body">
             @if (table.Responsibilities.Any())
             {
-                <table class="table table-condensed">
+                <table class="table table-condensed" style="margin-bottom:0px">
                     <tr>
+                        <th class="alignCenter" style="width:10px;">Active</th>
                         <th>Responsibility</th>
-                        <th class="alignCenter" style="width:200px;">Category</th>
-                        <th class="alignCenter" style="width:100px;">
-                            <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
+                        <th class="" style="max-width:200px;">Category</th>
+                        <th class="" style="width:89px;">Importance</th>
+                        <th class="alignCenter rightButton">
+                            @if (table.Editable)
+                            {
+                                <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
                 Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),
                 Url.Action("Modal", "Responsibilities"),null,"verify")">
-                                
-                                +
-                            </a>
+                                    +
+                                </a>
+                            }
                         </th>
                     </tr>
-                    @foreach (var r in table.Responsibilities)
+                    @foreach (var r in table.Responsibilities.OrderBy(x => !x.Active).ThenBy(x => x.Category).ThenBy(x => x.Responsibility))
                     {
-                        <tr>
-                            <td>@r.Responsibility</td>
-                            <td class="alignCenter">@r.Category</td>
+                        <tr class="@(r.Active?"":"danger")">
+                            <td class="alignCenter">@r.Active.GetIcon()</td>
+                            <td class="strikable">@r.Responsibility</td>
+                            <td class="" >@r.Category</td>
                             <td class="alignCenter">
-                                <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Edit responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
-                        Url.Action("Modal", "Responsibilities", new { id = r.Id }),
-Url.Action("Modal", "Responsibilities"),null,"verify")">Edit</a>
+                                @for (int i = 0; i < 5; i++){<span style="color: @(((int)r.Weight) > i ? "#3276B1" : "#D3D3D3");" class="glyphicon glyphicon-star@(((int)r.Weight)>i?"":"-empty")"></span>}
                             </td>
+                            <td class="alignCenter rightButton" style="padding: 2px;">
+                                @if (table.Editable)
+                                {
+                                    <a class="btn btn-primary fullWidth" onclick="@Html.ShowModal("Edit responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
+                        Url.Action("Modal", "Responsibilities", new { id = r.Id }),
+Url.Action("Modal", "Responsibilities"),null,"verify")">
+                                        Edit
+                                    </a>
+                                }
+                            </td>
+
                         </tr>
                     }
                 </table>
             }
             else
             {
-                <div class="btn btn-default pull-right" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
-                Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),
-Url.Action("Modal", "Responsibilities"), null, "verify")" style="width:100px;">+</div>
-                <div style="color: #B6B6B6">No @table.GroupType.ToLower() responsibilies. Click the button to the right to add some.</div>
+                if (table.Editable)
+                {
+                    <div class="btn btn-default pull-right" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),Url.Action("Modal", "Responsibilities"), null, "verify")" style="width:66px;">+</div>
+                    <div style="color: #B6B6B6">No @table.GroupType.ToLower() responsibilies. Click the button to the right to add some.</div>
+                }
+                else
+                {
+                    <div style="color: #B6B6B6">No @table.GroupType.ToLower() responsibilies.</div>
+                }
             }
         </div>
     </div>
 }
+

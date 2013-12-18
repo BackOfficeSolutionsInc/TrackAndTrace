@@ -21,6 +21,7 @@ namespace RadialReview.Models.ViewModels
         public String Name { get; set; }
         public String Email { get; set; }
         public bool Verified { get; set; }
+        public bool Manager { get; set; }
         public int NumIndividualResponsibilities { get; set; }
         public int NumTotalResponsibilities { get; set; }
         //public int NumTeams { get; set; }
@@ -36,6 +37,7 @@ namespace RadialReview.Models.ViewModels
             Id = userOrg.Id;
             Name = userOrg.GetName();
             Email = userOrg.EmailAtOrganization;
+            Manager = userOrg.IsManager();
             Verified = userOrg.User != null;
             TeamsTitles = userOrg.Teams.ToListAlive().Select(x => x.Team.Name).ToList();
             PositionTitles = userOrg.Positions.ToListAlive().Select(x=>x.Position.CustomName).ToList();

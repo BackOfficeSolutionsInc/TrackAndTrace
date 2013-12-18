@@ -1,72 +1,127 @@
-﻿using RadialReview.Exceptions;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon.S3.Transfer;
+using ImageResizer;
+using NHibernate;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
+using RadialReview.Properties;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Accessors
 {
-    public class ImageAccessor :BaseAccessor
+    public class ImageAccessor : BaseAccessor
     {
-        public String GetImagePath(UserOrganizationModel caller, HttpServerUtilityBase server,String imageId)
+        public String GetImagePath(UserModel caller, String imageId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewImage(imageId);
-                    return GetPath(server, imageId);
+                    //PermissionsUtility.Create(s, caller).ViewImage(imageId);
+
+                    if (imageId == null)
+                        return ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder;
+                    return ConstantStrings.AmazonS3Location + s.Get<ImageModel>(Guid.Parse(imageId)).Url;
                 }
             }
         }
-
-
-
-        public String UploadImageImage(UserModel user, HttpServerUtilityBase server,HttpPostedFileBase file,UploadType uploadType)
+        /*
+        public static String GetUrl(ISession session, Guid guid)
         {
+            return session.Get<ImageModel>(guid).Url;
+        }
+        */
+
+        public async Task<String> UploadImage(UserModel user, HttpServerUtilityBase server, HttpPostedFileBase file, UploadType uploadType)
+        {
+            var img = new ImageModel()
+            {
+                OriginalName = Path.GetFileName(file.FileName),
+                UploadedBy = user,
+                UploadType = uploadType
+            };
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var img = new ImageModel()
-                    {
-                        OriginalName = Path.GetFileName(file.FileName),
-                        UploadedBy = user,
-                        UploadType = uploadType
-                    };
                     s.Save(img);
-                    var guid = img.Id.ToString();
-                    var path = GetPath(server, guid);
-                    file.SaveAs(path);
-                    switch (uploadType)
-                    {
-                        case UploadType.ProfileImage: {
-                            user=s.Get<UserModel>(user.Id);
-                            var old = user.Image;
-                            if (old != null)
-                            {
-                                try
-                                {
-                                    File.Move(GetPath(server, old.Id.ToString()), GetOldPath(server, old.Id.ToString()));
-                                }catch(Exception e)
-                                {
-                                    log.Error("Move Error", e);
-                                }
-                            }
-                            user.Image = img;
-                            s.SaveOrUpdate(user);
-                        }; break;
-                        default: throw new PermissionsException();
-                    }
                     tx.Commit();
                     s.Flush();
-                    return path;
                 }
             }
+            var guid = img.Id.ToString();
+            var path = "img/" + guid + ".png";
+
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        ImageJob i = new ImageJob(file.InputStream, ms, new Instructions("width=256;height=256;format=png;mode=max"));
+                        i.Build();
+                        ms.Seek(0, SeekOrigin.Begin);
+
+                        TransferUtilityUploadRequest fileTransferUtilityRequest = new TransferUtilityUploadRequest
+                        {
+                            BucketName = "Radial",
+                            InputStream = ms,
+                            StorageClass = S3StorageClass.ReducedRedundancy,
+                            Key = path,
+                            CannedACL = S3CannedACL.PublicRead
+                        };
+
+
+                        TransferUtility fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.USEast1));
+                        fileTransferUtility.Upload(fileTransferUtilityRequest);
+                    }
+
+
+                    img.Url = path;
+                    s.Update(img);
+
+                    switch (uploadType)
+                    {
+                        case UploadType.ProfileImage:
+                            {
+                                user = s.Get<UserModel>(user.Id);
+                                var old = user.ImageGuid;
+                                user.ImageGuid = img.Id.ToString();
+                                s.Update(user);
+                            }; break;
+                        default: throw new PermissionsException();
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+
+            return ConstantStrings.AmazonS3Location + path;
+            /*
+            TransferUtility utility = new TransferUtility("AKIAJYCO3OR34HOFIQTQ", "HKotVY6T302RWUcHbDu+zyQlwBILKcp+99on8bs9",);
+            utility.Upload(file.InputStream, "Radial", path);	
+
+            using (var client = Amazon.AWSClientFactory.CreateAmazonS3Client(AWS.Key, AWS.Secret))
+            {
+                        
+                MemoryStream ms = new MemoryStream();
+                PutObjectRequest request = new PutObjectRequest();
+                request.BucketName="Radial";
+                request.CannedACL = S3CannedACL.PublicRead;
+                request.Key = path;
+                request.InputStream = file.InputStream;
+                PutObjectResponse response = client.PutObject(request);
+            }                   
+            */
         }
 
         private String GetPath(HttpServerUtilityBase server, String imageId)
@@ -80,12 +135,12 @@ namespace RadialReview.Accessors
             return path;
         }
 
-        private String GetOldPath(HttpServerUtilityBase server,String imageId)
+        private String GetOldPath(HttpServerUtilityBase server, String imageId)
         {
             var fileName = imageId + ".png";
             // store the file inside ~/App_Data/uploads folder
-            var dir=server.MapPath("~/App_Data/uploads/old");
-            if(!Directory.Exists(dir))
+            var dir = server.MapPath("~/App_Data/uploads/old");
+            if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
             var path = Path.Combine(dir, fileName);
             return path;

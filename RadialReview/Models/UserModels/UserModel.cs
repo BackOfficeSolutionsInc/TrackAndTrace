@@ -28,7 +28,7 @@ namespace RadialReview.Models
         public virtual string Email { get { return UserName;  } }
         public virtual bool Hints { get; set; }
         public virtual long CurrentRole { get; set; }
-        public virtual ImageModel Image { get; set; }
+        public virtual string ImageGuid { get; set; }
         /*
         public ICollection<UserLogin> Logins { get; set; }
         */
@@ -77,7 +77,7 @@ namespace RadialReview.Models
             //Map(x => x.Email);
             Map(x => x.SecurityStamp);
             Map(x => x.DeleteTime);
-            References(x => x.Image).Not.LazyLoad();
+            Map(x => x.ImageGuid);
             HasMany(x => x.UserOrganization).Not.LazyLoad().Cascade.SaveUpdate();
             HasMany(x => x.Logins).Cascade.SaveUpdate();
             HasMany(x => x.Roles).Cascade.SaveUpdate();

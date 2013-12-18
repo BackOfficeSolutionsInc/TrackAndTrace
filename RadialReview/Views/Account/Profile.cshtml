@@ -1,0 +1,56 @@
+﻿@model RadialReview.Models.ViewModels.ProfileViewModel
+
+@{
+    ViewBag.Title = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Profile</h3>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("Profile", "Account", FormMethod.Post))
+                {
+                    <div class="row">
+                        <div class="col-md-2">  First Name:</div>
+                        <div class="col-md-10">  @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control" })</div>
+                    </div>
+                    <div class="smallBreak"></div>
+                    <div class="row">
+                        <div class="col-md-2">  Last Name:</div>
+                        <div class="col-md-10">  @Html.TextBoxFor(x => x.LastName, new { @class = "form-control" })</div>
+                    </div>
+                    <div class="smallBreak"></div>
+                    <div class="row">
+                        <div class="col-md-offset-2 col-md-10"  >
+                            <div class="row">
+
+                                <button class="btn btn-default col-md-3 col-md-offset-4" value="Save">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Profile Image</h3>
+            </div>
+            <div class="panel-body alignCenter">
+                @Html.Partial("~/Views/Upload/Image.cshtml", new RadialReview.Models.ViewModels.ImageUploadViewModel()
+                    {
+                        ForType = RadialReview.Models.Enums.UploadType.ProfileImage.ToString(),
+                        Url = Model.ImageUrl,
+                        Width = 200,
+                        Height = 200,
+                    })
+            </div>
+        </div>
+    </div>
+</div>

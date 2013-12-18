@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -24,15 +25,15 @@ namespace RadialReview.Controllers
             {
                 var imagePath = "";
                 if (id == "userplaceholder"){
-                    imagePath = Server.MapPath("~/"+ConstantStrings.ImageUserPlaceholder);
+                    imagePath = ConstantStrings.AmazonS3Location +ConstantStrings.ImageUserPlaceholder;
                 }
                 else if (id == "placeholder")
                 {
-                    imagePath = Server.MapPath("~/" + ConstantStrings.ImagePlaceholder);
+                    imagePath = ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder; //Server.MapPath("~/" + ConstantStrings.ImagePlaceholder);
 
                 }else{
-                    var user = GetUser();
-                    imagePath = _ImageAccessor.GetImagePath(user, Server, id);
+                    var user = GetUserModel();
+                    imagePath = _ImageAccessor.GetImagePath(user, id);
                 }
 
                 if (dim!=null)
@@ -48,7 +49,16 @@ namespace RadialReview.Controllers
                         settings.BackgroundColor = Color.FromArgb(180,Color.White);
                         settings.Add("quality", quality.ToString());
                         System.IO.MemoryStream outStream = new System.IO.MemoryStream();
-                        ImageBuilder.Current.Build(System.IO.File.ReadAllBytes(imagePath), outStream, settings);
+
+                        HttpWebRequest httpWebRequest = (HttpWebRequest)HttpWebRequest.Create(imagePath);
+                        using (HttpWebResponse httpWebReponse = (HttpWebResponse)httpWebRequest.GetResponse())
+                        {
+                            using (Stream stream = httpWebReponse.GetResponseStream())
+                            {
+                                ImageBuilder.Current.Build(stream, outStream, settings);
+                            }
+                        }
+
                         return File(outStream.ToArray(),"image/png");
 
                     }catch(Exception e)
@@ -58,12 +68,12 @@ namespace RadialReview.Controllers
                 }
 
 
-                return File(imagePath, "image/png");
-
+                return Redirect(imagePath);
 
             }catch(PermissionsException e)
             {
-                return File(ConstantStrings.ImagePlaceholder, "image/png");
+                return Redirect(ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder);
+                //return File(ConstantStrings.ImagePlaceholder, "image/png");
             }
         }
 	}

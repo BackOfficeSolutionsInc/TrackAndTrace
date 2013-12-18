@@ -16,7 +16,6 @@ namespace RadialReview.Models
         public virtual DateTime DateCreated { get; set; }
         public virtual LocalizedStringModel Question { get; set; }
         public virtual long CreatedById { get; set; }
-        public virtual QuestionCategoryModel Category { get; set; }
         public virtual IList<QuestionKeyValues> KeyValues { get; set; }
         public virtual IList<LongModel> DisabledFor { get; set; }
         /*public virtual ApplicationWideModel ForApplication { get; set; }
@@ -24,20 +23,31 @@ namespace RadialReview.Models
         public virtual UserOrganizationModel ForUser { get; set; }
         public virtual IndustryModel ForIndustry { get; set; }
         public virtual GroupModel ForGroup { get; set; }*/
-        public virtual DateTime? DeleteTime { get; set; }
         public virtual QuestionType QuestionType { get;set;}
         public virtual OriginType OriginType { get; set; }
         public virtual long OriginId { get; set; }
 
-
-
-        public QuestionModel()
+        public QuestionModel() :base()
         {
             DateCreated = DateTime.UtcNow;
             KeyValues = new List<QuestionKeyValues>();
             DisabledFor = new List<LongModel>();
             Question = new LocalizedStringModel();
         }
+        /*
+        public static QuestionModel CreateFeedbackQuestion(UserOrganizationModel caller, LocalizedStringModel question, QuestionCategoryModel category)
+        {
+            return new QuestionModel()
+            {
+                Category=category,
+                CreatedById=caller.Id,
+                OriginId = caller.Organization.Id,
+                OriginType = OriginType.Organization,
+                Question=question,
+                QuestionType=QuestionType.Feedback,
+                Weight=WeightType.No,                
+            };
+        }*/
 
 
         public override QuestionType GetQuestionType()
@@ -56,7 +66,6 @@ namespace RadialReview.Models
         public QuestionModelMap()
         {
             Map(x => x.DateCreated);
-            Map(x => x.DeleteTime);
             Map(x => x.QuestionType);
             Map(x => x.OriginId);
             Map(x => x.OriginType);

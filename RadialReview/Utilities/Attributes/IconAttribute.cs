@@ -21,7 +21,7 @@ namespace RadialReview.Utilities.Attributes
         public HtmlString AsHtml(string title="")
         {
             var clss=Glyph.ToString().Replace("_", "-").Replace("@","");
-            return new HtmlString("<span title=\""+title+"\" class=\"glyphicon glyphicon-"+clss+"\"></span>");
+            return new HtmlString("<span title=\"" + title + "\" class=\"icon glyphicon glyphicon-" + clss + "\"></span>");
         }
     }
 }

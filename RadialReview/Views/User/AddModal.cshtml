@@ -4,9 +4,9 @@
 
 <div class="row">
     <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.name):</label></div>
-    <div class="row col-xs-9 noPad left">
-        <div class="col-xs-6 noPad left">@Html.TextBoxFor(x => x.FirstName, new { placeholder = RadialReview.Properties.DisplayNameStrings.firstName, @class = "fullWidth form-control" })</div>
-        <div class="col-xs-6 noPad ">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>
+    <div class="row col-xs-9 noPadLeft">
+        <div class="col-xs-6 noPadLeft">@Html.TextBoxFor(x => x.FirstName, new { placeholder = RadialReview.Properties.DisplayNameStrings.firstName, @class = "fullWidth form-control" })</div>
+        <div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>
     </div>
 </div>
 <div class="smallBreak"></div>

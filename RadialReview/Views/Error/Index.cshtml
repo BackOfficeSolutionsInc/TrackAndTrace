@@ -12,6 +12,6 @@
 @if (Context.IsDebuggingEnabled)
 {
     <div class="review">
-        @Model.StackTrace
+        @Model.NotNull(x=>x.StackTrace)
     </div>
 }

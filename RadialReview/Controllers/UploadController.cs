@@ -23,7 +23,7 @@ namespace RadialReview.Controllers
             return View();
         }
 
-        [HttpPost]
+       /* [HttpPost]
         [Access(AccessLevel.User)]
         public ActionResult Image(HttpPostedFileBase file, String forType)
         {
@@ -36,12 +36,30 @@ namespace RadialReview.Controllers
             { 
                 // extract only the fielname
                 UploadType uploadType=forType.Parse<UploadType>();
-                _ImageAccessor.UploadImageImage(user, Server, file, uploadType);
+                _ImageAccessor.UploadImage(user, Server, file, uploadType);
                 return Redirect(Request.UrlReferrer.ToString());
             }
-            int b = 0;
             ViewBag.AlertMessage = ExceptionStrings.SomethingWentWrong;
             return Redirect(Request.UrlReferrer.ToString());            
+        }*/
+
+        [HttpPost]
+        [Access(AccessLevel.User)]
+        public JsonResult Image(HttpPostedFileBase file, String forType)
+        {
+            var user = GetUserModel();
+            if (user == null)
+                throw new PermissionsException();
+
+            //you can put your existing save code here
+            if (file != null && file.ContentLength > 0)
+            {
+                // extract only the fielname
+                UploadType uploadType = forType.Parse<UploadType>();
+                var url=_ImageAccessor.UploadImage(user, Server, file, uploadType);
+                return Json(ResultObject.Create(url));
+            }
+            return Json(new ResultObject(true,ExceptionStrings.SomethingWentWrong));            
         }
 	}
 }

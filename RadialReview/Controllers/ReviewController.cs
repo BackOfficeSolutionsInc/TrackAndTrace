@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -23,6 +24,9 @@ namespace RadialReview.Controllers
         protected static NexusAccessor _NexusAccessor = new NexusAccessor();
         protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
         protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
+        protected static CategoryAccessor _CategoryAccessor = new CategoryAccessor();
+        protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
+        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
         protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
 
 
@@ -42,7 +46,6 @@ namespace RadialReview.Controllers
         public ActionResult Skip(FormCollection collection)
         {
             long reviewId = -1;
-            long organizationId = -1;
             int page = -1;
             ParseAndSave(collection, out reviewId, out page);
             return Take(reviewId, page + 1);
@@ -53,16 +56,15 @@ namespace RadialReview.Controllers
         public ActionResult Take(FormCollection collection)
         {
             long reviewId = -1;
-            long organizationId = -1;
             int page = -1;
 
             if (ParseAndSave(collection, out reviewId, out page))
             {
-                return Take(reviewId, page + 1);
+                return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
             }
             TempData["Message"] = DisplayNameStrings.remainingQuestions;
             ViewBag.Incomplete = true;
-            return Take(reviewId, page);
+            return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
         }
 
         private Boolean ParseAndSave(FormCollection collection, out long reviewId, out int currentPage)
@@ -71,6 +73,11 @@ namespace RadialReview.Controllers
             {
                 reviewId = long.Parse(collection["reviewId"]);
                 currentPage = int.Parse(collection["page"]);
+
+                if (collection.AllKeys.Contains("back"))
+                {
+                    currentPage = currentPage - 2;
+                }
 
                 var user = GetUser();
                 var allComplete = true;
@@ -85,7 +92,14 @@ namespace RadialReview.Controllers
                         var questionId = long.Parse(args[2]);
                         switch (args[1].Parse<QuestionType>())
                         {
-                            case QuestionType.Slider: allComplete = allComplete && _ReviewAccessor.UpdateSliderAnswer(user, questionId, decimal.Parse(collection[k]) / 100.0m); break;
+                            case QuestionType.Slider:
+                                {
+                                    decimal value = 0;
+                                    decimal? output = null;
+                                    if (decimal.TryParse(collection[k], out value))
+                                        output = value / 100.0m;
+                                    allComplete = allComplete && _ReviewAccessor.UpdateSliderAnswer(user, questionId, output);
+                                } break;
                             case QuestionType.Thumbs: allComplete = allComplete && _ReviewAccessor.UpdateThumbsAnswer(user, questionId, collection[k].Parse<ThumbsType>()); break;
                             case QuestionType.Feedback: allComplete = allComplete && _ReviewAccessor.UpdateFeedbackAnswer(user, questionId, collection[k]); break;
                             case QuestionType.RelativeComparison: allComplete = allComplete && _ReviewAccessor.UpdateRelativeComparisonAnswer(user, questionId, collection[k].Parse<RelativeComparisonType>()); break;
@@ -93,12 +107,20 @@ namespace RadialReview.Controllers
                         }
                     }
                 }
+
                 return allComplete;
             }
             catch (Exception)
             {
                 throw new PermissionsException();
             }
+        }
+
+        public class TakeViewModel
+        {
+            public List<AnswerModel> Answers { get; set; }
+            public UserOrganizationModel ForUser { get; set; }
+
         }
 
         [HttpGet]
@@ -113,12 +135,29 @@ namespace RadialReview.Controllers
 
             var pages = review.Answers.GroupBy(x => x.AboutUserId).ToList();
 
-            var p=pages[page??0].ToList();
+            try
+            {
+                var p = pages[page ?? 0].ToList();
+                if (p.Any(x => x.Complete && x.Required) && !p.All(x => x.Complete && x.Required))
+                {
+                    TempData["Message"] = DisplayNameStrings.remainingQuestions;
+                    ViewBag.Incomplete = true;
+                }
 
-            return View(p);
+                var model = new TakeViewModel()
+                {
+                    Answers = p,
+                    ForUser = p.FirstOrDefault().NotNull(x => x.AboutUser)
+                };
 
 
-
+                return View(model);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return RedirectToAction("Index");
+            }
+            #region Comment
             /*
             //Required followed by not required
             switch (page)
@@ -184,6 +223,7 @@ namespace RadialReview.Controllers
                 //Relative Comparison not complete and required      
                 ViewBag.Message = RadialReview.Properties.DisplayNameStrings.remainingIsOptional;
             }*/
+            #endregion
         }
 
         [HttpGet]
@@ -196,7 +236,14 @@ namespace RadialReview.Controllers
 
             var teams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), user.Id).ToSelectList(x => x.Name, x => x.Id).ToList();
 
-            return PartialView(new IssueReviewViewModel() { Today = today, ForUsers = user.AllSubordinates, PotentialTeams = teams });
+            // teams.Add(new SelectListItem() { Text = "Subordinates", Value = "-5" });
+
+            return PartialView(new IssueReviewViewModel()
+            {
+                Today = today,
+                ForUsers = user.AllSubordinates,
+                PotentialTeams = teams
+            });
         }
 
         [HttpPost]
@@ -206,172 +253,116 @@ namespace RadialReview.Controllers
             try
             {
                 var dueDate = DateTime.Parse(model.Date);
-                var caller = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
+                //var caller = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
 
                 /*if (!caller.ManagingOrganization)
                     throw new PermissionsException();*/
 
-                var organization = caller.Organization;
-
-                var usersToReview = _TeamAccessor.GetTeamMembers(GetUser(), model.ForTeamId).ToListAlive();
-
-                var reviewContainer = new ReviewsModel()
-                {
-                    DateCreated = DateTime.UtcNow,
-                    DueDate = dueDate,
-                    ReviewName = model.Name,
-                    CreatedById = caller.Id,
-                };
-                _ReviewAccessor.CreateReviewContainer(caller, reviewContainer);
-
-                List<Exception> exceptions = new List<Exception>();
-                int sent = 0;
-                int errors = 0;
-                foreach (var beingReviewed in usersToReview)
-                {
-                    var beingReviewedUser = beingReviewed.User;
-                    try
-                    {
-                        /*about self
-                        var askable = new List<AskableAbout>();
-                        askable.AddRange(responsibilities.Select(x => new AskableAbout() { Askable = x, AboutUserId = beingReviewed.Id, AboutType = AboutType.Self }));
-                        askable.AddRange(questions.Select(x => new AskableAbout() { Askable = x, AboutUserId = beingReviewed.Id, AboutType = AboutType.Self }));
-                        */
-
-                        //Generate Askables
-                        var askables = GetAskables(GetUser(), beingReviewedUser);
-                        //Create the Review
-                        var review = _QuestionAccessor.GenerateReviewForUser(caller, beingReviewedUser, reviewContainer, askables);
-                        //Generate Review Nexus
-                        Guid guid = Guid.NewGuid();
-                        NexusModel nexus = new NexusModel(guid) {
-                                                                    ForUserId = beingReviewed.Id,
-                                                                    ActionCode = NexusActions.TakeReview
-                                                                };
-                        _NexusAccessor.Put(nexus);
-                        //Send email
-                        var subject = String.Format(RadialReview.Properties.EmailStrings.NewReview_Subject, organization.Name.Translate());
-                        var body = String.Format(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
-                        Emailer.SendEmail(beingReviewedUser.EmailAtOrganization, subject, body);
-                        sent++;
-
-                    }
-                    catch (Exception e)
-                    {
-                        exceptions.Add(e);
-                        errors++;
-                    }
-                }
-                return Json(JsonObject.Create(new { due = dueDate, sent = sent, errors = errors }));
+                //TODO HERE
+                var result = _ReviewAccessor.CreateCompleteReview(GetUser(), model.ForTeamId, dueDate, model.Name);
+                return Json(result);
             }
             catch (Exception e)
             {
-                return Json(new JsonObject(e));
+                return Json(new ResultObject(e));
             }
         }
 
-        private List<AskableAbout> GetAskables(UserOrganizationModel caller, UserOrganizationModel beingReviewed)
+        public class ReviewDetailsViewModel
         {
-            #region comment
-            /** Old questions way to do things.
-            var review = _QuestionAccessor.GenerateReviewForUser(user, s, reviewContainer);
-            //review.ForReviewsId = reviewContainer.Id;
-            //review.DueDate = reviewContainer.DueDate;
-            //review.Name = reviewContainer.ReviewName;
-            //_ReviewAccessor.UpdateIndividualReview(user, review);
-            */
-            #endregion
+            public ReviewModel Review { get; set; }
+            public List<SelectListItem> Axis { get; set; }
+            public long xAxis { get; set; }
+            public long yAxis { get; set; }
+            public List<AnswerModel> AnswersAbout { get; set; }
+            public Dictionary<long, String> Categories { get; set; }
+        }
 
-            var responsibilityGroups = _ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(GetUser(), beingReviewed.Id);
-
-            var askable = new AskableUtility();
-
-            // Personal Responsibilities 
+        private ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
+        {
+            var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
+            var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId);
+            var model = new ReviewDetailsViewModel()
             {
-                var responsibilities = responsibilityGroups.SelectMany(x => x.Responsibilities).ToList();
-                var questions = _QuestionAccessor.GetQuestionsForUser(GetUser(), beingReviewed.Id);
-
-                askable.AddUnique(responsibilities, AboutType.Self, beingReviewed.Id);
-                askable.AddUnique(questions, AboutType.Self, beingReviewed.Id);
-            }
-            // Team members 
-            {
-                var teams = responsibilityGroups.Where(x => x is OrganizationTeamModel).Cast<OrganizationTeamModel>().Where(x => x.InterReview).ToList();
-
-                foreach (var team in teams)
-                {
-                    var teamMembers = _TeamAccessor.GetTeamMembers(GetUser(), team.Id).ToListAlive();
-                    foreach (var teammember in teamMembers)
-                    {
-                        var teamMemberResponsibilities = _ResponsibilitiesAccessor
-                                                            .GetResponsibilityGroupsForUser(GetUser(), teammember.Id)
-                                                            .SelectMany(x => x.Responsibilities)
-                                                            .ToList();
-                        askable.AddUnique(teamMemberResponsibilities, AboutType.Teammate, teammember.User.Id);
-                    }
-                }
-            }
-            // Peers
-            {
-                var peers = _UserAccessor.GetPeers(GetUser(), beingReviewed.Id);
-                foreach (var peer in peers)
-                {
-                    var peerResponsibilities = _ResponsibilitiesAccessor
-                                                        .GetResponsibilityGroupsForUser(GetUser(), beingReviewed.Id)
-                                                        .SelectMany(x => x.Responsibilities)
-                                                        .ToList();
-                    askable.AddUnique(peerResponsibilities, AboutType.Peer, peer.Id);
-                }
-            }
-            // Managers
-            {
-                var managers = _UserAccessor.GetManagers(GetUser(), beingReviewed.Id);
-                foreach (var manager in managers)
-                {
-                    var managerResponsibilities = _ResponsibilitiesAccessor
-                                                        .GetResponsibilityGroupsForUser(GetUser(), beingReviewed.Id)
-                                                        .SelectMany(x => x.Responsibilities)
-                                                        .ToList();
-                    askable.AddUnique(managerResponsibilities, AboutType.Manager, manager.Id);
-                }
-            }
-            // Subordinates
-            {
-                var subordinates = _UserAccessor.GetSubordinates(GetUser(), beingReviewed.Id);
-                foreach (var subordinate in subordinates)
-                {
-                    var subordinateResponsibilities = _ResponsibilitiesAccessor
-                                                        .GetResponsibilityGroupsForUser(GetUser(), beingReviewed.Id)
-                                                        .SelectMany(x => x.Responsibilities)
-                                                        .ToList();
-                    askable.AddUnique(subordinateResponsibilities, AboutType.Subordinate, subordinate.Id);
-                }
-            }
-
-            return askable.Askables;
+                Review = review,
+                Axis = categories.ToSelectList(x => x.Category.Translate(), x => x.Id),
+                xAxis = categories.FirstOrDefault().NotNull(x => x.Id),
+                yAxis = categories.Skip(1).FirstOrDefault().NotNull(x => x.Id),
+                AnswersAbout = answers,
+                Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate())
+            };
+            return model;
         }
 
 
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Details(long id)
         {
-            var model = _ReviewAccessor.GetReview(GetUser(), id);
+            var review = _ReviewAccessor.GetReview(GetUser(), id);
 
-            return View(model);
+            //Clients View
+            if (GetUser().Id == review.ForUserId && !GetUser().ManagingOrganization)
+            {
+                return RedirectToAction("ClientDetails", new { id = id });
+
+            }
+            //Managers View
+            else
+            {
+                _PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId));
+                var model = GetReviewDetails(review);
+                return View(model);
+            }
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult Data(long id, long category1Id, long category2Id)
+        public ActionResult ClientDetails(long id)
         {
-            var model = _ReviewAccessor.GetReview(GetUser(), id);
+            var review = _ReviewAccessor.GetReview(GetUser(), id);
 
-            //HeatMapBinner.Bin(model.Answers
-            //model.
-
-            return null;
+            if (review.ClientReview.Visible)
+            {
+                var model = GetReviewDetails(review);
+                return View(model);
+            }
+            else
+            {
+                throw new PermissionsException("This review is not visible at this time. If you feel this is in error, please contact your reviewing manager.");
+            }
         }
 
 
+        [Access(AccessLevel.Manager)]
+        public JsonResult SetFeedback(long feedbackId, long reviewId, bool on)
+        {
+            if (on) _ReviewAccessor.AddFeedbackToReview(GetUser(), reviewId, feedbackId);
+            else _ReviewAccessor.RemoveFeedbackFromReview(GetUser(), reviewId, feedbackId);
+            return Json(ResultObject.Create(new { FeedbackId = feedbackId, On = on }), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult AddChart(long x, long y, long reviewId)
+        {
+            var chartId = _ReviewAccessor.AddChartToReview(GetUser(), reviewId, x, y);
+            var xTitle = _CategoryAccessor.Get(GetUser(), x).Category.Translate();
+            var yTitle = _CategoryAccessor.Get(GetUser(), y).Category.Translate();
+
+            return Json(ResultObject.Create(new { XTitle = xTitle, YTitle = yTitle, ChartId = chartId }), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult RemoveChart(long chartId, long reviewId)
+        {
+            _ReviewAccessor.RemoveChartFromReview(GetUser(), reviewId, chartId);
+            return Json(ResultObject.Create(new { ChartId = chartId }), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult Authorize(bool authorized, long reviewId)
+        {
+            _ReviewAccessor.Authorize(GetUser(), reviewId, authorized);
+            return Json(ResultObject.Create(new { Authorized = authorized }, authorized ? "Authorized" : "Unauthorized"), JsonRequestBehavior.AllowGet);
+        }
 
     }
 }

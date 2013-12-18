@@ -372,4 +372,25 @@
   <data name="createNew" xml:space="preserve">
     <value>Create new</value>
   </data>
+  <data name="high" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="medium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="no" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="highest" xml:space="preserve">
+    <value>Highest</value>
+  </data>
+  <data name="lowest" xml:space="preserve">
+    <value>Lowest</value>
+  </data>
+  <data name="normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
 </root>

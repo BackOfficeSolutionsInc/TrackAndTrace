@@ -8,7 +8,7 @@ namespace RadialReview.Models.Enums
     public enum NexusActions : int
     {
         None = 0,
-        JoinOrganizationUnderManager = 1, //[organizationId,EmailAddress,Firstname,Lastname]
+        JoinOrganizationUnderManager = 1, //[organizationId,EmailAddress,userOrgId,Firstname,Lastname]
         TakeReview = 2, //[]
     }
 }

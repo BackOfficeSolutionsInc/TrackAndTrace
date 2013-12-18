@@ -47,11 +47,11 @@ namespace RadialReview.Controllers
                                                                    categoryId:  categoryId,
                                                                    questionType: q.QuestionType);
 
-                return Json(JsonObject.Success);
+                return Json(ResultObject.Success);
             }
             catch (Exception e)
             {
-                return Json(new JsonObject(e));
+                return Json(new ResultObject(e));
             }
         }
 
@@ -63,15 +63,17 @@ namespace RadialReview.Controllers
                 var caller = GetUser();
                 //var q = _QuestionAccessor.GetQuestion(caller, id);
                 _QuestionAccessor.EditQuestion(caller,id, deleteTime: DateTime.UtcNow);
-                return Json(JsonObject.Success,JsonRequestBehavior.AllowGet);
+                return Json(ResultObject.Success,JsonRequestBehavior.AllowGet);
             }catch(Exception e){
-                return Json(new JsonObject(e), JsonRequestBehavior.AllowGet);
+                return Json(new ResultObject(e), JsonRequestBehavior.AllowGet);
             }
         }
 
         [Access(AccessLevel.Manager)]
         public ActionResult Modal(long id=0, String origin = null, long? originId = null)
         {
+            throw new NotImplementedException();
+
             try
             {
                 var caller = GetUser().Hydrate()

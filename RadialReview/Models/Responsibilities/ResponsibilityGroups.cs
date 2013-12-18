@@ -16,6 +16,16 @@ namespace RadialReview.Models.Responsibilities
         public abstract String GetGroupType();
         public virtual OrganizationModel Organization { get; set; }
         public virtual IList<ResponsibilityModel> Responsibilities { get; set; }
+        protected virtual Boolean? _Editable { get; set; }
+
+        public virtual Boolean GetEditable()
+        {
+            return _Editable.Value;
+        }
+        public virtual void SetEditable(bool editable)
+        {
+            _Editable = editable;
+        }
 
         public ResponsibilityGroupModel()
         {
@@ -63,6 +73,22 @@ namespace RadialReview.Models.Responsibilities
         {
             return DisplayNameStrings.team;
         }
+
+        public static OrganizationTeamModel SubordinateTeam(UserOrganizationModel creator,UserOrganizationModel manager)
+        {
+            return new OrganizationTeamModel() {
+                CreatedBy = creator.Id,
+                InterReview = false,
+                ManagedBy = manager.Id,
+                Name = manager.GetNameAndTitle() + " Subordinates",
+                OnlyManagersEdit=true,
+                Organization = manager.Organization,
+                Responsibilities = new List<ResponsibilityModel>(),
+                Secret = true,
+                Type = TeamType.Subordinates,
+                _Editable= false,
+            };
+        }
     }
     /*
     public class TeamMemberModel : ILongIdentifiable, IDeletable
@@ -91,6 +117,7 @@ namespace RadialReview.Models.Responsibilities
             Map(x => x.Secret);
             Map(x => x.Type);
             Map(x => x.ManagedBy);
+            Map(x => x.InterReview);
             Map(x => x.OnlyManagersEdit);
             //HasMany(x => x.Members).Not.LazyLoad().Cascade.SaveUpdate();
         }

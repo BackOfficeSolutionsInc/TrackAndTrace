@@ -23,18 +23,13 @@ namespace RadialReview
                 log.Error("LocalizedStringModel is null in translate");
                 return null;
             }
-            if (model.Default == null)
+            if (model.Standard == null)
             {
                 log.Error("Default is null for LocalizedStringModel (" + model.Id + ")");
                 return "�";
             }
-            if (model.Default.Value == null)
-            {
-                log.Error("Value is null for LocalizedStringModel (" + model.Id + ")");
-                return "�";
-            }
 
-            return model.Default.Value;
+            return model.Standard;
         }
 
         public static void Update(this LocalizedStringModel model, LocalizedStringModel update)
@@ -59,7 +54,7 @@ namespace RadialReview
 
         public static void UpdateDefault(this LocalizedStringModel model,String value)
         {
-            if (model.Default.Locale == null)
+            /*if (model.Default.Locale == null)
             {
                 model.Default.Locale = Thread.CurrentThread.CurrentCulture.Name;
                 model.Localizations.Add(new LocalizedStringPairModel() { Locale = model.Default.Locale, Value = value });
@@ -67,8 +62,9 @@ namespace RadialReview
             else
             {
                 model.Localizations.FirstOrDefault(x => x.Locale == model.Default.Locale).NotNull(x => x.Value = value);
-            }
-            model.Default.Value = value;
+            }*/
+            model.Standard = value;
+            model.StandardLocale = Thread.CurrentThread.CurrentCulture.Name;
         }
 
 

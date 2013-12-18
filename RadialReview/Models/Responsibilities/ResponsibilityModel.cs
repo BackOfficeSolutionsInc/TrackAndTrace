@@ -8,17 +8,14 @@ using System.Web;
 
 namespace RadialReview.Models.Responsibilities
 {
-    public class ResponsibilityModel : Askable, ILongIdentifiable, IDeletable
+    public class ResponsibilityModel : Askable, ILongIdentifiable
     {
         public virtual long ForOrganizationId { get;set; }
         public virtual long ForResponsibilityGroup { get; set; }
         public virtual String Responsibility { get; set; }
-        public virtual QuestionCategoryModel Category {get;set;}
-        public virtual DateTime? DeleteTime { get; set; }
-
-        public ResponsibilityModel()
+        
+        public ResponsibilityModel() :base()
         {
-            Category = new QuestionCategoryModel();
         }
 
         public override QuestionType GetQuestionType()
@@ -36,7 +33,6 @@ namespace RadialReview.Models.Responsibilities
     {
         public ResponsibilityModelMap()
         {
-            Map(x => x.DeleteTime);
             Map(x => x.Responsibility);
             Map(x => x.ForOrganizationId);
             Map(x => x.ForResponsibilityGroup);

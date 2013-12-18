@@ -1,6 +1,7 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
@@ -70,20 +71,20 @@ namespace RadialReview.Controllers
             {
                 var user = GetUser();
                 if (user == null)
-                    return Json(new JsonObject(true, ExceptionStrings.DefaultPermissionsException));
+                    return Json(new ResultObject(true, ExceptionStrings.DefaultPermissionsException));
                 if (save.toSave == null)
-                    return Json(JsonObject.Success);
+                    return Json(ResultObject.Success);
 
                 var questionsToEdit = save.toSave.Where(x => x.Type == "questionEnabled").ToList();
                 var enabledQuestions = questionsToEdit.Where(x => x.Value == "true").Select(x => x.Id).ToList();
                 var disabledQuestions = questionsToEdit.Where(x => x.Value == "false").Select(x => x.Id).ToList();
                 _QuestionAccessor.SetQuestionsEnabled(user, save.forUser, enabledQuestions, disabledQuestions);
 
-                return Json(JsonObject.Success);
+                return Json(ResultObject.Success);
             }
             catch (Exception e)
             {
-                return Json(new JsonObject(e));
+                return Json(new ResultObject(e));
             }
         }
 
@@ -99,7 +100,10 @@ namespace RadialReview.Controllers
                             .GetOrganizationPositions(GetUser(), GetUser().Organization.Id)
                             .OrderBy(x=>x.CustomName)
                             .ToSelectList(x => x.CustomName, x => x.Id).ToList();
-            orgPos.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
+            if (caller.Organization.ManagersCanEditPositions || caller.ManagingOrganization)
+            {
+                orgPos.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
+            }
 
             var positions = _PositionAccessor
                                 .AllPositions()
@@ -144,27 +148,28 @@ namespace RadialReview.Controllers
             var userId = id;
             var found=_UserAccessor.GetUserOrganization(GetUser(),userId,true,false);
             
-            var strictHierarchy = GetUser().Organization.StrictHierarchy;
+            /*var strictHierarchy = GetUser().Organization.StrictHierarchy;
             List<SelectListItem> potentialManagers = new List<SelectListItem>();
             if (!strictHierarchy)
                 potentialManagers=_OrganizationAccessor.GetOrganizationManagers(GetUser(),GetUser().Organization.Id)
                                                 .ToSelectList(x=>x.GetName()+x.GetTitles(3, GetUser().Id).Surround(" (",")"), x=>x.Id)
                                                 .ToList();
-
-            if (GetUser().ManagingOrganization)
+            if ()
             {
                 potentialManagers.Add(new SelectListItem() { Selected = false, Text = "[Manage Organization]", Value = "-3" });
-            }
+            }*/
 
 
             var managers = _UserAccessor.GetManagers(GetUser(), id);
 
             var model = new EditUserOrganizationViewModel(){
                 IsManager=found.ManagerAtOrganization,
-                ManagerId = managers.FirstOrDefault().NotNull(x => x.Id),
-                PotentialManagers=potentialManagers,
-                StrictlyHierarchical = strictHierarchy,
-                UserId =userId
+                //ManagerId = managers.FirstOrDefault().NotNull(x => x.Id),
+                //PotentialManagers=potentialManagers,
+                //StrictlyHierarchical = strictHierarchy,
+                UserId =userId,
+                CanSetManagingOrganization=GetUser().ManagingOrganization && userId!=GetUser().Id,
+                ManagingOrganization = found.ManagingOrganization
             };
 
 
@@ -175,9 +180,9 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public JsonResult EditModal(EditUserOrganizationViewModel model)
         {
-            _UserAccessor.EditUser(GetUser(),model.UserId, model.IsManager, model.ManagerId);
+            _UserAccessor.EditUser(GetUser(),model.UserId, model.IsManager, model.ManagingOrganization);
 
-            return Json(JsonObject.Success);
+            return Json(ResultObject.Success);
         }
 
         #endregion
@@ -188,16 +193,16 @@ namespace RadialReview.Controllers
         public ActionResult Positions(long id)
         {
             var userId = id;
-            var user = _UserAccessor.GetUserOrganization(GetUser(), userId,false,false);
+            var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().PersonallyManaging(GetUser()).Execute();
 
             return View(user);
         }
 
         [Access(AccessLevel.Manager)]
-        public JsonResult RemovePosition(long id,long userId)
+        public JsonResult RemovePosition(long id)
         {
-            _PositionAccessor.RemovePositionFromUser(GetUser(), userId, id);
-            return Json(JsonObject.Success,JsonRequestBehavior.AllowGet);
+            _PositionAccessor.RemovePositionFromUser(GetUser(), id);
+            return Json(ResultObject.Success,JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]
@@ -210,7 +215,10 @@ namespace RadialReview.Controllers
                             .GetOrganizationPositions(GetUser(),GetUser().Organization.Id)
                             .OrderBy(x => x.CustomName)
                             .ToSelectList(x => x.CustomName, x => x.Id, id).ToList();
-            orgPos.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
+            if (GetUser().ManagingOrganization || GetUser().Organization.ManagersCanEditPositions)
+            {
+                orgPos.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
+            }
 
             var positions = _PositionAccessor
                                 .AllPositions()
@@ -234,13 +242,13 @@ namespace RadialReview.Controllers
         {
             if (model.CustomPosition!=null)
             {
-                var orgPos=_OrganizationAccessor.AddOrganizationPosition(GetUser(), GetUser().Organization.Id, model.CustomPositionId, model.CustomPosition);
+                var orgPos=_OrganizationAccessor.EditOrganizationPosition(GetUser(),0, GetUser().Organization.Id, model.CustomPositionId, model.CustomPosition);
                 model.PositionId=orgPos.Id;
             }
 
             _PositionAccessor.AddPositionToUser(GetUser(), model.UserId, model.PositionId);
 
-            return Json(JsonObject.Success);
+            return Json(ResultObject.Success);
         }
 
         #endregion
@@ -251,7 +259,7 @@ namespace RadialReview.Controllers
         {
             var userId = id;
             var teams = _TeamAccessor.GetUsersTeams(GetUser(), userId);
-            var user = _UserAccessor.GetUserOrganization(GetUser(), userId,false,false).Hydrate().SetTeams(teams).Execute();
+            var user = _UserAccessor.GetUserOrganization(GetUser(), userId,false,false).Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Execute();
 
 
             return View(user);
@@ -261,7 +269,7 @@ namespace RadialReview.Controllers
         public JsonResult RemoveTeam(long id)
         {
             _TeamAccessor.RemoveMember(GetUser(), id);
-            return Json(JsonObject.Success,JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success,JsonRequestBehavior.AllowGet);
         }
         
         public class UserTeamViewModel
@@ -284,9 +292,12 @@ namespace RadialReview.Controllers
         public ActionResult TeamModal(long userId, long id = 0)
         {
             var teams = _TeamAccessor.GetUsersTeams(GetUser(), userId);
+            var aliveTeams = teams.ToListAlive();
             var user = _UserAccessor.GetUserOrganization(GetUser(), userId,false,false).Hydrate().SetTeams(teams).Execute();
             var team = user.Teams.FirstOrDefault(x => x.Id == id);
-            var orgTeam = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id)
+            var orgTeam = _TeamAccessor.GetOrganizationTeams(GetUser(),GetUser().Organization.Id)
+                            .Where(x => !aliveTeams.Any(y => y.Team.Id == x.Id))//_TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id)
+                            .Where(x=>x.Type==TeamType.Standard)
                             .ToSelectList(x => x.Name, x => x.Id, id).ToList();
             orgTeam.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
             
@@ -313,7 +324,7 @@ namespace RadialReview.Controllers
 
             _TeamAccessor.AddMember(GetUser(),model.TeamId, model.UserId);
 
-            return Json(JsonObject.Success);
+            return Json(ResultObject.Success);
         }
         #endregion
 
@@ -321,7 +332,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Managers(long id)
         {
-            var user = _UserAccessor.GetUserOrganization(GetUser(), id,true, false).Hydrate().Managers().Execute();
+            var user = _UserAccessor.GetUserOrganization(GetUser(), id,false, false).Hydrate().Managers().PersonallyManaging(GetUser()).Execute();
 
             return View(user);
         }
@@ -353,20 +364,27 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public JsonResult DeleteManger(long id)
+        public JsonResult DeleteManager(long id)
         {
             _UserAccessor.RemoveManager(GetUser(), id);
-            return Json(JsonObject.Success);
+            return Json(ResultObject.Success);
         }
 
         [Access(AccessLevel.Manager)]
         [HttpPost]
-        public JsonResult AddManger(AddManagerViewModel model)
+        public JsonResult AddManager(AddManagerViewModel model)
         {
             _UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId);
-            return Json(JsonObject.Success);
+            return Json(ResultObject.Success);
         }
         #endregion
+
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Details(long id)
+        {
+            var found=_UserAccessor.GetUserOrganization(GetUser(), id, false, false);
+            return View(found);
+        }
 
     }
 }

@@ -2,6 +2,7 @@
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Json;
+using RadialReview.Models.UserModels;
 using RadialReview.Models.ViewModels;
 using RadialReview.Properties;
 using System;
@@ -38,11 +39,12 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.Any)]
-        public ActionResult Create(String name,Boolean managersCanEdit)
+        public ActionResult Create(String name)
         {
+            Boolean managersCanEdit = true;
             var user = GetUserModel();
             var basicPlan=_PaymentAccessor.BasicPaymentPlan();
-            var localizedName=new LocalizedStringModel(){Default=new LocalizedStringPairModel(name)};
+            var localizedName=new LocalizedStringModel(){Standard=name};
             var organization=_OrganizationAccessor.CreateOrganization(user, localizedName,managersCanEdit,basicPlan);
             return RedirectToAction("Index","Manage");
         }
@@ -65,6 +67,7 @@ namespace RadialReview.Controllers
             catch (OrganizationIdException)
             {
                 //We want to hit this exception.
+                Session["OrganizationId"] = null;
                 var org = _OrganizationAccessor.JoinOrganization(user, nexus.ByUserId, placeholderUserId);
                 _NexusAccessor.Execute(nexus);
                 return RedirectToAction("Index", "Home", new { message =String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name)});
@@ -140,6 +143,45 @@ namespace RadialReview.Controllers
                 return RedirectToLocal(returnUrl + "&organizationId=" + organizationId);
             else
                 return RedirectToLocal(returnUrl + "?organizationId=" + organizationId);
+        }
+
+
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Tree(string type = "cartesian")
+        {
+            if (type.ToLower() == "radial")
+            {
+                return View("RadialTree", GetUser().Organization.Id);
+            }
+            else
+            {
+                return View("Tree", GetUser().Organization.Id);
+            }
+        }
+
+        [Access(AccessLevel.Manager)]
+        public ActionResult ResendJoin(long id)
+        {
+            var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false);
+
+            if (found.TempUser == null)
+                throw new PermissionsException("User is already a part of the organization");
+
+            return PartialView(found.TempUser);
+        }
+
+        [Access(AccessLevel.Manager)]
+        [HttpPost]
+        public JsonResult ResendJoin(long id,TempUserModel model)
+        {
+            var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false);
+            if (found.TempUser==null)
+                throw new PermissionsException("User is already a part of the organization");
+
+            _UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email,model.LastSent);
+            _NexusAccessor.SendJoinEmailToGuid(GetUser(), model);
+
+            return Json(ResultObject.Success);
         }
     }
 }

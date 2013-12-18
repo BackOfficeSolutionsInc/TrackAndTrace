@@ -13,17 +13,19 @@ namespace System.Web
     public static class HtmlExtensions
     {
 
+        public static String ViewOrEdit(this HtmlHelper html, bool edit)
+        {
+            return edit ? "Edit" : "View";
+        }
+
         public static HtmlString EditFirstButton(this HtmlHelper html,List<string> items,bool edit=true)
         {
-            var text = "Edit";
-            if (!edit)
-                text = "View";
-
             var count=items.Count();
             var name = ""+count;
+            var joined = String.Join(", ", items);
             if (count == 1)
                 name = items.First();
-            return new HtmlString(text + " (<span title='"+name+"'>" +name+"</span>)");
+            return new HtmlString(ViewOrEdit(html, edit) + " (<span title='" + joined + "'>" + name + "</span>)");
         }
         
         public static HtmlString Badge<T>(this HtmlHelper<T> html, Func<T, int> count)
@@ -33,11 +35,13 @@ namespace System.Web
                 return new HtmlString(@"<span class=""badge"">" + c + "</span>");
             return new HtmlString("");
         }
-        
-        public static HtmlString ShowModal(this HtmlHelper html,String title, String pullUrl,String pushUrl,String callbackFunction=null,String preSubmitCheck=null)
+
+        public static HtmlString ShowModal(this HtmlHelper html, String title, String pullUrl, String pushUrl, String callbackFunction = null, String preSubmitCheck = null, String onComplete = null)
         {
+            if (onComplete != null)
+                return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction + "','" + preSubmitCheck + "','" + onComplete + "')");
             if (preSubmitCheck != null)
-                return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction +"','"+ preSubmitCheck+ "')");
+                return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction + "','" + preSubmitCheck + "')");
             else if (callbackFunction != null)
                 return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction + "')");
             else

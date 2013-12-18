@@ -63,7 +63,7 @@ namespace RadialReview.Controllers
 
         protected UserOrganizationModel GetUser(long? organizationId = null)//long? organizationId, Boolean full = false)
         {
-
+            /**/
             if (organizationId == null)
             {
                 var orgIdParam = Request.Params.Get("organizationId");
@@ -71,11 +71,15 @@ namespace RadialReview.Controllers
                     organizationId = long.Parse(orgIdParam);
             }
 
-
             if (organizationId==null && Session["organizationId"]!=null )
             {
                 organizationId = (long)Session["organizationId"];
             }
+            if (organizationId == null)
+            {
+                organizationId = GetUserModel().GetCurrentRole();
+            }
+
             
             if (_CurrentUser != null && organizationId == _CurrentUserOrganizationId)
                 return _CurrentUser;
@@ -132,7 +136,7 @@ namespace RadialReview.Controllers
 
             if (typeof(JsonResult).IsAssignableFrom(action.ReturnType))
             {
-                filterContext.Result = Json(new JsonObject(filterContext.Exception),JsonRequestBehavior.AllowGet);
+                filterContext.Result = Json(new ResultObject(filterContext.Exception),JsonRequestBehavior.AllowGet);
                 filterContext.ExceptionHandled = true;
                 return;
             }
@@ -252,6 +256,7 @@ namespace RadialReview.Controllers
                 case AccessLevel.User: GetUserModel(); break;
                 case AccessLevel.UserOrganization: GetUser(); break;
                 case AccessLevel.Manager: if (!GetUser().IsManager()) throw new PermissionsException("You must be a manager to view this resource."); break;
+                case AccessLevel.Radial: if (!GetUser().IsRadialAdmin) throw new PermissionsException("You must be a Radial Admin to view this resource."); break;
                 default: throw new Exception("Unknown Access Type");
             }
 

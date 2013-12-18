@@ -15,7 +15,7 @@
     @Html.AlertBoxDismissable("The next step is adding members to your organization. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
 }
 <div class="panel panel-primary">
-    <div style="width:54px;float:right;padding:2px;">
+    <div style="float:right;" class="rightButton">
         <button class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
             +
         </button>
@@ -28,27 +28,36 @@
     <div class="table-responsive">
         <table class="table">
             <tr>
-                <th style="width:15px;" class="alignCenter smallPad" title="Has this user joined?">Join</th>
-                <th style="width:15px;" class="alignCenter smallPad" title="Users you manage">Own</th>
+                <th style="width:15px;" class="alignCenter smallPad"></th>
                 <th>Name</th>
                 <th>Email</th>
                 <th style="min-width:150px" class="NalignCenter">Positions</th>
-                <th style="min-width:150px" class="NalignCenter">Teams</th>
+                <th style="min-width:80px" class="NalignCenter">Teams</th>
                 <th style="min-width:150px" class="NalignCenter">Managers</th>
-                <th style="min-width:150px" class="NalignCenter">Responsibilities</th>
-                <th style="min-width:50px" class="NalignCenter"></th>
+                <th style="width:0px" class="NalignCenter">Responsibilities</th>
+                <th style="" class="NalignCenter"></th>
             </tr>
             @foreach (var p in Model.Users.OrderByDescending(x => x.Managing).ThenByDescending(x => x.Verified).ThenBy(x => x.Name))
             {
-                <tr>
-                    <td class="alignCenter">@((p.Verified).GetIcon())</td>
-                    <td class="alignCenter">@((p.Managing).GetIcon())</td>
-                    <td>@p.Name</td>
-                    <td class="noOverflow" style="max-width: 180px;"><a href="mailto:@p.Email">@p.Email</a></td>
-                    <td class="NalignCenter noOverflow" style="max-width: 180px;">
+                <tr class="@(p.Managing?"managing":"notManaging")">
+                    <td class="alignCenter noselect">
+                        @((p.Managing).GetIcon("glyphicon-eye-open strokeLightGreen", "glyphicon-eye-close gray", "You are managing", "You are not managing"))
+                        @if (p.Verified || !p.Managing)
+                        {
+                            @p.Verified.GetIcon("glyphicon-ok-sign strokeGray gray", "glyphicon-envelope strokeGray gray", "Joined", "Has not joined")
+                        }
+                        else
+                        {
+                            @(p.Verified.GetIcon("", "glyphicon-envelope strokeRed red clickable", "Joined", "Resend Email","","onclick=\""+Html.ShowModal("Resend Email", "/Organization/ResendJoin/"+p.Id, "/Organization/ResendJoin/"+p.Id)+"\""))
+                        }
+                        @((p.Manager).GetIcon("glyphicon-tower gold strokeGold", "glyphicon-user blue strokeBlue", "A manager", "Not a manager"))
+                    </td>
+                    <td class="noOverflow" style="max-width: 160px;" title="@p.Name">@p.Name</td>
+                    <td class="noOverflow" style="max-width: 160px;" title="@p.Email"><a href="mailto:@p.Email">@p.Email</a></td>
+                    <td class="NalignCenter noOverflow" style="max-width: 200px;">
                         <a href="@Url.Action("Positions","User",new {id = p.Id})" class="fullWidth">@Html.EditFirstButton(p.PositionTitles, p.Managing)</a>
                     </td>
-                    <td class="NalignCenter noOverflow" style="max-width: 180px;">
+                    <td class="NalignCenter noOverflow" style="max-width: 80px;">
                         <a href="@Url.Action("Teams","User",new {id = p.Id})" class="fullWidth">@Html.EditFirstButton(p.TeamsTitles, p.Managing)</a>
                     </td>
                     <td class="NalignCenter noOverflow" style="max-width: 180px;">
@@ -58,24 +67,17 @@
                     </td>
                     <td class="NalignCenter noOverflow">
                         <a href="@Url.Action("Edit", "Responsibilities", new { id = p.Id })" class="fullWidth">
-                            @if (p.Managing)
-                            {
-                                @:Edit
-                            }
-                            else
-                            {
-                                @:View
-                            }
+                            @Html.ViewOrEdit(p.Managing)
                             (<span title="Number of Individual Responsibilities">@(p.NumIndividualResponsibilities)</span>+<span title="Number of Other Responsibilities">@(p.NumTotalResponsibilities - p.NumIndividualResponsibilities)</span>)
                         </a>
                     </td>
-                    <td style="padding:1px; ">
+                    <td class="rightButton noselect">
                         @if (p.Managing)
                         {
-                            <button onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))" class="btn btn-primary">Edit</button>
+                            <button onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))" class="btn btn-primary fullWidth">Edit</button>
                         }
-                </td>
-            </tr>
+                    </td>
+                </tr>
             }
 
         </table>
@@ -83,3 +85,15 @@
     </div>
 </div>
 
+
+@using (Html.BeginStyles())
+{
+    <style>
+        tr.managing {
+        }
+
+        tr.notManaging {
+            background-color: #F1F1F1;
+        }
+    </style>
+}

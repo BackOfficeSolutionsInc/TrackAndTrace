@@ -7,9 +7,15 @@ using System.Web.Mvc;
 
 namespace RadialReview.Models.ViewModels
 {
+    public class OrganizationTeamsViewModel
+    {
+        public List<OrganizationTeamViewModel> Teams { get; set; }
+    }
+
     public class OrganizationTeamViewModel
     {
-        public List<OrganizationTeamModel> Teams { get; set; }
+        public OrganizationTeamModel Team {get;set;}
+        public int Members { get; set; }
     }
 
     public class OrganizationTeamCreateViewModel
@@ -25,11 +31,13 @@ namespace RadialReview.Models.ViewModels
                     
         }
 
-        public OrganizationTeamCreateViewModel(OrganizationTeamModel team, List<SelectListItem> potentialManagers)
+        public OrganizationTeamCreateViewModel(UserOrganizationModel caller, OrganizationTeamModel team, List<SelectListItem> potentialManagers)
         {
             TeamId = team.Id;
             TeamName = team.Name;
-            ManagerId = team.ManagedBy;
+            ManagerId = caller.Id;
+            if (team.ManagedBy != 0)
+                ManagerId = team.ManagedBy;
             InterReview = team.InterReview;
             PotentialManagers = potentialManagers;
 

@@ -84,14 +84,14 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;p&gt;{0} would like to link to your account. Simply click the following link:&lt;/p&gt;
+        ///   Looks up a localized string similar to &lt;p&gt;{0}, {1} would like to link to your account. Simply click the following link:&lt;/p&gt;
         ///&lt;br&gt; 
-        ///    &lt;a href=&quot;{1}&quot;&gt;{2}&lt;/a&gt;
+        ///    &lt;a href=&quot;{2}&quot;&gt;{3}&lt;/a&gt;
         ///&lt;br /&gt;&lt;br /&gt;If you believe you have received this message in error, you may simply ignore this email. If you have any questions, feedback, or concerns, you can reply to this e-mail address.
         ///&lt;br /&gt;
         ///&lt;br /&gt;
         ///Sincerely,&lt;br/&gt;
-        ///The {3} Team.
+        ///The {4} Team.
         /// </summary>
         public static string JoinOrganizationUnderManager_Body {
             get {
@@ -100,7 +100,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Join {0} on {1}.
+        ///   Looks up a localized string similar to {0}, join {1} on {2}.
         /// </summary>
         public static string JoinOrganizationUnderManager_Subject {
             get {

@@ -15,7 +15,7 @@
     @Html.PageStyles()
 
 </head>
-@if (ViewBag.HasBaseController==null)
+@if (ViewBag.HasBaseController == null)
 {
     throw new Exception("You must extend from the base controller.");
 }
@@ -47,11 +47,11 @@
                         <ul class="nav navbar-nav">
                             @if (Request.IsAuthenticated)
                             {
-                                if(((int?)ViewBag.Organizations??0)>0)
-                                { 
-                                <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.reviews, "Index", "Review")</li>
+                                if (((int?)ViewBag.Organizations ?? 0) > 0)
+                                {
+                                    <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.reviews, "Index", "Review")</li>
                                 }
-                                if (ViewBag.IsManager??false)
+                                if (ViewBag.IsManager ?? false)
                                 {
                                     <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.manage, "Index", "Manage")</li>
                                 }
@@ -66,14 +66,14 @@
                 </div>
             </div>
             @RenderSection("top", false)
-            <div class="container body-content">                
+            <div class="container body-content">
                 @RenderSection("header", false)
                 <div id="alerts">
                 </div>
-                    <div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
-                        @RenderSection("hints",false)
-                    </div>
-                    @RenderBody()
+                <div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
+                    @RenderSection("hints", false)
+                </div>
+                @RenderBody()
                 @*<hr/>*@
             </div>
             <div id="spinnerContainer"></div>
@@ -105,11 +105,11 @@
                     @if(ViewBag.Alert!=null)
                     {
                         @:showAlert("@ViewBag.Alert");
-                                                            }
+                                                                                                    }
                     @if(ViewBag.Success!=null)
                     {
                         @:showAlert("@ViewBag.Success", "alert-success", "Success!");
-                                        }
+                                                                                }
 
                 });
 
@@ -137,7 +137,7 @@
                 }
 
 
-                function showModal(title, pullUrl, pushUrl, callback, validation) {
+                function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
                     $("#modalMessage").html("");
                     $("#modalMessage").addClass("hidden");
                     $.ajax({
@@ -168,7 +168,7 @@
 
                                 if (validation) {
                                     var message = eval(validation + '()');
-                                    if (message!==undefined && message != true) {
+                                    if (message !== undefined && message != true) {
                                         if (message == false) {
                                             $("#modalMessage").html("@RadialReview.Properties.DisplayNameStrings.error");
                                         }
@@ -187,14 +187,23 @@
                                         if (!data) {
                                             $("#modal").modal("hide");
                                             showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
-                                        } else if (data.Error) {
-                                            $("#modal").modal("hide");
-                                            console.log(data.Trace);
-                                            console.log(data.Message);
-                                            showAlert(data.Message);
                                         } else {
-                                            $("#modal").modal("hide");
-                                            location.reload();
+                                            if (onSuccess) {
+                                                eval(onSuccess + "(data)");
+                                                $("#modal").modal("hide");
+                                            }
+                                            else {
+
+                                                if (data.Error) {
+                                                    $("#modal").modal("hide");
+                                                    console.log(data.Trace);
+                                                    console.log(data.Message);
+                                                    showAlert(data.Message);
+                                                } else {
+                                                    $("#modal").modal("hide");
+                                                    location.reload();
+                                                }
+                                            }
                                         }
                                     },
                                     error: function (jqxhr, status, error) {

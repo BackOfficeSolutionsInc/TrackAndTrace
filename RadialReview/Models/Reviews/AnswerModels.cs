@@ -15,6 +15,7 @@ namespace RadialReview.Models
     {
         public virtual long Id { get; set; }
         public virtual long ForReviewId { get; set; }
+        public virtual long ForReviewContainerId { get; set; }
         public virtual Askable Askable { get; set; }
         public virtual bool Required { get; set; }
         public virtual bool Complete { get; set; }
@@ -22,6 +23,8 @@ namespace RadialReview.Models
         public virtual UserOrganizationModel AboutUser { get; set; }
         public virtual long ByUserId { get; set; }
         public virtual UserOrganizationModel ByUser { get; set; }
+        public virtual AboutType AboutType { get; set; }
+
 
     }
     #endregion
@@ -59,7 +62,10 @@ namespace RadialReview.Models
             //.Cascade.SaveUpdate();
             Map(x => x.Required);
             Map(x => x.ForReviewId);
+            Map(x => x.ForReviewContainerId);
             Map(x => x.Complete);
+
+            Map(x=> x.AboutType).CustomType(typeof(Int64));
 
             Map(x => x.AboutUserId).Column("AboutUserId");
             References(x => x.AboutUser).Column("AboutUserId").Not.LazyLoad().ReadOnly();

@@ -1,4 +1,5 @@
-﻿using RadialReview.Exceptions;
+﻿using NHibernate;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
@@ -25,17 +26,17 @@ namespace RadialReview.Accessors
             }
         }
 
-        public ResponsibilityGroupModel GetResponsibilityGroup(UserOrganizationModel caller,long responsibilityGroupId)
+        public ResponsibilityGroupModel GetResponsibilityGroup(UserOrganizationModel caller, long responsibilityGroupId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var resGroup=s.Get<ResponsibilityGroupModel>(responsibilityGroupId);
+                    var resGroup = s.Get<ResponsibilityGroupModel>(responsibilityGroupId);
                     long orgId;
 
-                    if (resGroup is OrganizationModel)  orgId = resGroup.Id;
-                    else                                orgId = resGroup.Organization.Id;
+                    if (resGroup is OrganizationModel) orgId = resGroup.Id;
+                    else orgId = resGroup.Organization.Id;
 
                     PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
                     return resGroup;
@@ -43,17 +44,18 @@ namespace RadialReview.Accessors
             }
         }
 
-        public List<ResponsibilityModel> GetResponsibilities(UserOrganizationModel caller,long responsibilityGroupId)
+        public List<ResponsibilityModel> GetResponsibilities(UserOrganizationModel caller, long responsibilityGroupId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var responsibilities=s.QueryOver<ResponsibilityModel>().Where(x=>x.ForResponsibilityGroup==responsibilityGroupId).List().ToList();
-                    
-                    var orgs=responsibilities.Select(x=>x.ForOrganizationId).Distinct().ToList();
-                    var permissions=PermissionsUtility.Create(s,caller);
-                    foreach(var oId in orgs){
+                    var responsibilities = s.QueryOver<ResponsibilityModel>().Where(x => x.ForResponsibilityGroup == responsibilityGroupId).List().ToList();
+
+                    var orgs = responsibilities.Select(x => x.ForOrganizationId).Distinct().ToList();
+                    var permissions = PermissionsUtility.Create(s, caller);
+                    foreach (var oId in orgs)
+                    {
                         permissions.ViewOrganization(oId);
                     }
                     return responsibilities;
@@ -66,29 +68,37 @@ namespace RadialReview.Accessors
 
         public List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(UserOrganizationModel caller, long userId)
         {
-            var teams = _TeamAccessor.GetUsersTeams(caller, userId);
-
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(userId,false);
-                    var user=s.Get<UserOrganizationModel>(userId);
-
-                    List<ResponsibilityGroupModel> responsibilityGroups = new List<ResponsibilityGroupModel>();
-                    //User
-                    responsibilityGroups.Add(user);
-                    //Positions
-                    responsibilityGroups.AddRange(user.Positions.ToListAlive().Select(x=>x.Position));
-                    //Teams
-                    responsibilityGroups.AddRange(teams.ToListAlive().Select(x => x.Team));
-
-                    return responsibilityGroups;
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetResponsibilityGroupsForUser(s, perms, caller, userId);
                 }
             }
         }
 
-        public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null,long? categoryId = null,long? responsibilityGroupId = null)
+        public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(ISession s, PermissionsUtility permissions, UserOrganizationModel caller, long userId)
+        {
+            var teams = TeamAccessor.GetUsersTeams(s, permissions, caller, userId);
+            /*}
+            using (var tx = s.BeginTransaction())
+            {*/
+            PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
+            var user = s.Get<UserOrganizationModel>(userId);
+
+            List<ResponsibilityGroupModel> responsibilityGroups = new List<ResponsibilityGroupModel>();
+            //User
+            responsibilityGroups.Add(user);
+            //Positions
+            responsibilityGroups.AddRange(user.Positions.ToListAlive().Select(x => x.Position));
+            //Teams
+            responsibilityGroups.AddRange(teams.ToListAlive().Select(x => x.Team));
+
+            return responsibilityGroups;
+        }
+
+        public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null, long? categoryId = null, long? responsibilityGroupId = null, bool? active = null, WeightType? weight = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -107,14 +117,17 @@ namespace RadialReview.Accessors
                         permissions.ViewOrganization(rg.Organization.Id);
                         r.ForResponsibilityGroup = responsibilityGroupId.Value;
                         r.Responsibility = responsibility;
+                        r.Required = true;
                         s.Save(r);
                         rg.Responsibilities.Add(r);
                         s.Update(rg);
 
-                    }else{
-                        r=s.Get<ResponsibilityModel>(responsibilityId);
+                    }
+                    else
+                    {
+                        r = s.Get<ResponsibilityModel>(responsibilityId);
 
-                        if (responsibilityGroupId != null && responsibilityGroupId!=r.ForResponsibilityGroup)//Cant change responsibilty Group
+                        if (responsibilityGroupId != null && responsibilityGroupId != r.ForResponsibilityGroup)//Cant change responsibilty Group
                             throw new PermissionsException();
                     }
 
@@ -124,8 +137,21 @@ namespace RadialReview.Accessors
                     if (categoryId != null)
                     {
                         permissions.ViewCategory(categoryId.Value);
-                        var cat=s.Get<QuestionCategoryModel>(categoryId.Value);
+                        var cat = s.Get<QuestionCategoryModel>(categoryId.Value);
                         r.Category = cat;
+                    }
+
+                    if (active != null)
+                    {
+                        if (active == true)
+                            r.DeleteTime = null;
+                        else
+                            r.DeleteTime = DateTime.UtcNow;
+                    }
+
+                    if (weight != null)
+                    {
+                        r.Weight = weight.Value;
                     }
 
                     permissions.EditOrganization(r.ForOrganizationId);

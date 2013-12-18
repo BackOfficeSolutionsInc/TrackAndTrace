@@ -2,18 +2,24 @@
 @{
     ViewBag.Title = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Reviews";
+}
+
+@section header{
+    @Html.Partial("Partial/manageheader")
 }
 
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title">Review : @Model.Review.ReviewName</h3>
+        <div class="pull-right"></div>
     </div>
     <div class="panel-body">
         <table class="table">
             <tr>
                 <th>User</th>
                 <th style="width:120px" class="alignCenter">Completion</th>
-                <th style="width:100px"></th>
+                <th style="width:50px"></th>
             </tr>
             @foreach(var r in Model.Review.Reviews)
             {
@@ -22,10 +28,10 @@
                     <td>
                         @Html.Partial("_Completion",r)
                     </td>
-                    <td>
+                    <td style="padding: 2px;">
                         @if (r.ForUser.GetPersonallyManaging())
                         {
-                        <a class="btn btn-primary" href="@Url.Action("Details", "Review", new { id=r.Id })">View</a>
+                            <a class="btn btn-primary fullWidth" href="@Url.Action("Details", "Review", new { id=r.Id })">View</a>
                         }
                     </td>
                 </tr>

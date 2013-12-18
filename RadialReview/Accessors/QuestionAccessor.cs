@@ -4,6 +4,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Models.Reviews;
 using RadialReview.Properties;
 using RadialReview.Utilities;
 using System;
@@ -89,41 +90,53 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    //var questions = GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
-                    //var responsibilities =
-
-                    forUser = s.Get<UserOrganizationModel>(forUser.Id);
-
-                    var askable = new List<Askable>();
-
-                    var reviewModel = new ReviewModel()
-                    {
-                        ForUserId = forUser.Id,
-                        ForReviewsId = reviewContainer.Id,
-                        DueDate = reviewContainer.DueDate,
-                        Name = reviewContainer.ReviewName,
-                    };
-
-                    s.Save(reviewModel);
-                    foreach (var q in askables)
-                    {
-                        switch (q.Askable.GetQuestionType())
-                        {
-                            case QuestionType.RelativeComparison:   GenerateRelativeComparisonAnswers(  s, caller, forUser, q.AboutUserId, q.Askable, reviewModel); break;
-                            case QuestionType.Slider:               GenerateSliderAnswers(              s, caller, forUser, q.AboutUserId, q.Askable, reviewModel); break;
-                            case QuestionType.Thumbs:               GenerateThumbsAnswers(              s, caller, forUser, q.AboutUserId, q.Askable, reviewModel); break;
-                            case QuestionType.Feedback:             GenerateFeedbackAnswers(            s, caller, forUser, q.AboutUserId, q.Askable, reviewModel); break;
-                            default: throw new ArgumentException("Unrecognized questionType(" + q.Askable.GetQuestionType() + ")");
-                        }
-                    }
-                    s.SaveOrUpdate(reviewModel);
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var reviewModel=GenerateReviewForUser(s, perms, caller, forUser, reviewContainer, askables);
                     tx.Commit();
                     s.Flush();
-
                     return reviewModel;
                 }
             }
         }
+
+        public static ReviewModel GenerateReviewForUser(ISession s, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
+        {
+            //var questions = GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
+            //var responsibilities =
+
+            forUser = s.Get<UserOrganizationModel>(forUser.Id);
+
+            var askable = new List<Askable>();
+
+            var reviewModel = new ReviewModel()
+            {
+                ForUserId = forUser.Id,
+                ForReviewsId = reviewContainer.Id,
+                DueDate = reviewContainer.DueDate,
+                Name = reviewContainer.ReviewName,
+            };
+
+            s.Save(reviewModel);
+
+            reviewModel.ClientReview.ReviewId = reviewModel.Id;
+
+            s.Update(reviewModel);
+
+            foreach (var q in askables)
+            {
+                switch (q.Askable.GetQuestionType())
+                {
+                    case QuestionType.RelativeComparison: GenerateRelativeComparisonAnswers(s, caller, forUser, q, reviewModel); break;
+                    case QuestionType.Slider: GenerateSliderAnswers(s, caller, forUser, q, reviewModel); break;
+                    case QuestionType.Thumbs: GenerateThumbsAnswers(s, caller, forUser, q, reviewModel); break;
+                    case QuestionType.Feedback: GenerateFeedbackAnswers(s, caller, forUser, q, reviewModel); break;
+                    default: throw new ArgumentException("Unrecognized questionType(" + q.Askable.GetQuestionType() + ")");
+                }
+            }
+            s.SaveOrUpdate(reviewModel);
+            return reviewModel;
+        }
+
 
         /*
         public ReviewModel GenerateResponsibilitiesReview(UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer,List<ResponsibilityGroupModel> responsibilityGroup)
@@ -168,55 +181,62 @@ namespace RadialReview.Accessors
         }*/
 
 
-        private void GenerateSliderAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, long aboutUserId, Askable askable, ReviewModel review)
+        private static void GenerateSliderAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
         {
 
             var slider = new SliderAnswer()
             {
                 Complete = false,
-                Percentage = 0,
-                Askable = askable,
-                Required = true,
+                Percentage = null,
+                Askable = askable.Askable,
+                Required = askable.Askable.Required,
                 ForReviewId = review.Id,
                 ByUserId = forUser.Id,
-                AboutUserId = aboutUserId,
+                AboutUserId = askable.AboutUserId,
+                ForReviewContainerId = review.ForReviewsId,
+                AboutType = askable.AboutType
+
             };
             session.Save(slider);
 
         }
-        private void GenerateFeedbackAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, long aboutUserId, Askable askable, ReviewModel review)
+        private static void GenerateFeedbackAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
         {
             var feedback = new FeedbackAnswer()
             {
                 Complete = false,
                 Feedback = null,
-                Askable = askable,
-                Required = true,
+                Askable = askable.Askable,
+                Required = askable.Askable.Required,
                 ForReviewId = review.Id,
                 ByUserId = forUser.Id,
-                AboutUserId = aboutUserId,
+                AboutUserId = askable.AboutUserId,
+                ForReviewContainerId = review.ForReviewsId,
+                AboutType = askable.AboutType
             };
             session.Save(feedback);
 
         }
 
-        private void GenerateThumbsAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, long aboutUserId, Askable askable, ReviewModel review)
+        private static void GenerateThumbsAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
         {
             var thumbs = new ThumbsAnswer()
             {
                 Complete = false,
                 Thumbs = ThumbsType.None,
-                Askable = askable,
-                Required = true,
+                Askable = askable.Askable,
+                Required = askable.Askable.Required,
                 ForReviewId = review.Id,
                 ByUserId = forUser.Id,
-                AboutUserId = aboutUserId,
+                AboutUserId = askable.AboutUserId,
+                ForReviewContainerId = review.ForReviewsId,
+                AboutType = askable.AboutType
             };
             session.Save(thumbs);
 
         }
 
-        private void GenerateRelativeComparisonAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, long aboutUserId, Askable askable, ReviewModel review)
+        private static void GenerateRelativeComparisonAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
         {
             var peers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager).SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate));
             var managers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager);
@@ -234,15 +254,17 @@ namespace RadialReview.Accessors
                 {
                     var relComp = new RelativeComparisonAnswer()
                     {
-                        Required = false,
-                        Askable = askable,
+                        Required = askable.Askable.Required,
+                        Askable = askable.Askable,
                         Complete = false,
                         First = union[i],
                         Second = union[j],
                         Choice = RelativeComparisonType.Skip,
                         ForReviewId = review.Id,
                         ByUserId = forUser.Id,
-                        AboutUserId = aboutUserId,
+                        AboutUserId = askable.AboutUserId,
+                        ForReviewContainerId = review.ForReviewsId,
+                        AboutType = askable.AboutType
                     };
                     items.Add(Tuple.Create(union[i], union[j]));
                     session.Save(relComp);
@@ -251,12 +273,13 @@ namespace RadialReview.Accessors
 
         }
 
-        private List<QuestionModel> GetQuestionsForUser(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, List<UserOrganizationModel> allSubordinates)
+        public static List<QuestionModel> GetQuestionsForUser(ISession s,PermissionsUtility perms, UserOrganizationModel caller, long forUserId)
         {
-            caller = session.Get<UserOrganizationModel>(caller.Id);
-            if (!allSubordinates.Any(x => x.Id == forUser.Id))
-                throw new PermissionsException();
-            forUser = session.Get<UserOrganizationModel>(forUser.Id);
+            perms.ViewUserOrganization(forUserId, false);
+            var forUser = s.Get<UserOrganizationModel>(forUserId);
+
+            caller = s.Get<UserOrganizationModel>(caller.Id);
+            forUser = s.Get<UserOrganizationModel>(forUser.Id);
             List<QuestionModel> questions = new List<QuestionModel>();
             //Self Questions
             questions.AddRange(forUser.CustomQuestions);
@@ -264,10 +287,10 @@ namespace RadialReview.Accessors
             questions.AddRange(forUser.Groups.SelectMany(x => x.CustomQuestions));
             //Organization Questions
             var orgId = forUser.Organization.Id;
-            var orgQuestions = session.QueryOver<QuestionModel>().Where(x => x.OriginId == orgId && x.OriginType == OriginType.Organization).List().ToList();
+            var orgQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == orgId && x.OriginType == OriginType.Organization).List().ToList();
             questions.AddRange(orgQuestions);
             //Application Questions
-            var applicationQuestions = session.QueryOver<ApplicationWideModel>().List().SelectMany(x => x.CustomQuestions).ToList();
+            var applicationQuestions = s.QueryOver<ApplicationWideModel>().List().SelectMany(x => x.CustomQuestions).ToList();
             questions.AddRange(applicationQuestions);
             return questions;
         }
@@ -278,9 +301,8 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forUserId,false);
-                    var forUser = s.Get<UserOrganizationModel>(forUserId);
-                    return GetQuestionsForUser(s, caller, forUser, caller.AllSubordinatesAndSelf());
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetQuestionsForUser(s, perms, caller, forUserId);
                 }
             }
         }
@@ -385,7 +407,7 @@ namespace RadialReview.Accessors
                     //Edit Question
                     if (question != null)
                     {
-                        q.Question.UpdateDefault(question.Default.Value);
+                        q.Question.UpdateDefault(question.Standard);
                         //q.Question = s.Get<LocalizedStringModel>(question.Id);
                     }
                     //Edit CategoryId

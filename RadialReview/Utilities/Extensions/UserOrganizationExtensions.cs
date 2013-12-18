@@ -16,11 +16,19 @@ namespace RadialReview
         }*/
         public static void SetPersonallyManaging(this UserOrganizationModel self, Boolean personallyManaging)
         {
-            self.Set("_managing",personallyManaging.ToString());
+            self.Set("_managing", personallyManaging.ToString());
         }
         public static bool GetPersonallyManaging(this UserOrganizationModel self)
         {
             return bool.Parse(self.GetSingle("_managing"));
+        }
+        public static void SetEditPosition(this UserOrganizationModel self, Boolean editPosition)
+        {
+            self.Set("_EditPosition", editPosition.ToString());
+        }
+        public static bool GetEditPosition(this UserOrganizationModel self)
+        {
+            return bool.Parse(self.GetSingle("_EditPosition"));
         }
 
         public static void Set(this UserOrganizationModel self,String key,String value)
@@ -44,15 +52,15 @@ namespace RadialReview
 
         public static String ImageUrl(this UserOrganizationModel self)
         {
-            if (self.User == null || self.User.Image == null)
+            if (self.User == null || self.User.ImageGuid == null)
                 return "/i/userplaceholder";
-            return "/i/" + self.User.Image.Id;
+            return "/i/" + self.User.ImageGuid;
         }
         public static String ImageUrl(this UserOrganizationModel self, int width, int height)
         {
-            if (self.User == null || self.User.Image == null)
+            if (self.User == null || self.User.ImageGuid == null)
                 return "/i/userplaceholder?dim=" + width + "x" + height;
-            return "/i/" + self.User.Image.Id + "?dim=" + width + "x" + height;
+            return "/i/" + self.User.ImageGuid + "?dim=" + width + "x" + height;
         }
         public static IList<UserOrganizationModel> GetManagingUsersAndSelf(this UserOrganizationModel self)
         {

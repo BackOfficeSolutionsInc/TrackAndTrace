@@ -10,9 +10,10 @@ namespace RadialReview.Models.ViewModels
     {
         public List<ResponsibilityTableViewModel> ResponsibilityTables { get; set; }
 
+        //<ResponsibilityGroup,Editable>
         public ResponsibilityTablesViewModel(params ResponsibilityGroupModel[] responsibilities)
         {
-            ResponsibilityTables=responsibilities.Select(x=>new ResponsibilityTableViewModel(false,x)).ToList();
+            ResponsibilityTables=responsibilities.Select(x=>new ResponsibilityTableViewModel(false, x)).ToList();
         }
     }
 
@@ -22,6 +23,8 @@ namespace RadialReview.Models.ViewModels
         public String GroupType { get; set; }
         public String Name { get; set; }
         public Boolean Activatable { get; set; }
+        public bool Editable { get; set; }
+        public int Weight { get; set; }
         public List<ResponsibilityRowViewModel> Responsibilities {get;set;}
 
         public ResponsibilityTableViewModel(Boolean activatable,ResponsibilityGroupModel rg)
@@ -30,6 +33,7 @@ namespace RadialReview.Models.ViewModels
             ResponsibilityGroupId = rg.Id;
             GroupType = rg.GetGroupType();
             Activatable = activatable;
+            Editable = rg.GetEditable();
             Responsibilities = rg.Responsibilities.Select(x => new ResponsibilityRowViewModel(x)).ToList();
         }
 
@@ -46,6 +50,7 @@ namespace RadialReview.Models.ViewModels
         public String Responsibility {get;set;}
         public String Category { get; set; }
         public Boolean Active {get;set;}
+        public WeightType Weight { get; set; }
         public ResponsibilityRowViewModel()
         {
 
@@ -55,8 +60,8 @@ namespace RadialReview.Models.ViewModels
             Id = r.Id;
             Responsibility = r.Responsibility;
             Category = r.Category.Category.Translate();
-            Active = r.DeleteTime != null;
-
+            Active = r.DeleteTime == null;
+            Weight = r.Weight;
         }
         
     }

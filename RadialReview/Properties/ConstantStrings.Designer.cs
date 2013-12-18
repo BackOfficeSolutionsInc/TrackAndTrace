@@ -61,7 +61,16 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /img/orgPlaceholder.png.
+        ///   Looks up a localized string similar to https://s3.amazonaws.com/Radial/.
+        /// </summary>
+        public static string AmazonS3Location {
+            get {
+                return ResourceManager.GetString("AmazonS3Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to placeholder/orgPlaceholder.png.
         /// </summary>
         public static string ImageOrganizationPlaceholder {
             get {
@@ -70,7 +79,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /img/orgPlaceholder.png.
+        ///   Looks up a localized string similar to placeholder/orgPlaceholder.png.
         /// </summary>
         public static string ImagePlaceholder {
             get {
@@ -79,7 +88,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /img/Placeholder.png.
+        ///   Looks up a localized string similar to placeholder/placeholder.png.
         /// </summary>
         public static string ImageUserPlaceholder {
             get {

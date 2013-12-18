@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.Reviews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,9 @@ namespace RadialReview.Models
         public virtual UserOrganizationModel ForUser { get; set; }
         public virtual long ForUserId { get; set; }
         public virtual String Name { get; set; }
+        public virtual DateTime CreatedAt { get; set; }
         public virtual DateTime DueDate { get; set; }
+        public virtual ClientReviewModel ClientReview { get; set; }
         public virtual List<AnswerModel> Answers { get; set; }
 
         /*public virtual decimal Completion { get; set; }
@@ -56,6 +59,8 @@ namespace RadialReview.Models
         public ReviewModel()
         {
             Answers = null;//new List<AnswerModel>();
+            CreatedAt = DateTime.UtcNow;
+            ClientReview = new ClientReviewModel();
         }
         
     }
@@ -76,7 +81,12 @@ namespace RadialReview.Models
                 .ReadOnly();
             Map(x => x.ForReviewsId);
             Map(x => x.Name);
+            Map(x => x.CreatedAt);
             Map(x => x.DueDate);
+            References(x => x.ClientReview)
+                .Not.LazyLoad()
+                .Cascade.SaveUpdate();
+
             /*HasMany(x => x.Answers)
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();*/

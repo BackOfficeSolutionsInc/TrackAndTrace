@@ -32,7 +32,8 @@ namespace RadialReview.Models
                 RequiredPercentage = RequiredCompleted / (decimal)TotalRequired;
             else
             {
-                Illegal = true;
+                if (TotalOptional==0)
+                    Illegal = true;
                 RequiredPercentage = 1m;
             }
 

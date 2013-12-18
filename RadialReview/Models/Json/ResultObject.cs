@@ -9,39 +9,39 @@ using System.Web.Mvc;
 
 namespace RadialReview.Models.Json
 {
-    public class JsonObject<T>
+    public class ResultObject<T>
     {
         public String ErrorMessage { get; set; }
         public bool Error { get; set; }
         public T Data { get;set;}
     }
 
-    public class JsonObject
+    public class ResultObject
     {
         public object Object { get; set; }
         public String Message { get; set; }
         public String Trace { get; set; }
         public bool Error { get; set; }
 
-        public readonly static JsonObject Success= new JsonObject(false, "Success");
+        public readonly static ResultObject Success= new ResultObject(false, "Success");
         
-        protected JsonObject()
+        protected ResultObject()
         {
 
         }
 
-        public static JsonObject Create(object obj)
+        public static ResultObject Create(object obj,String message="Success")
         {
-            return new JsonObject() { Object = obj,Error=false, Message="Success"};
+            return new ResultObject() { Object = obj, Error = false, Message = message };
         }
 
-        public JsonObject(Boolean error,String message)
+        public ResultObject(Boolean error,String message)
         {
             Error = error;
             Message = Capitalize(message);
         }
 
-        public JsonObject(RedirectException e)
+        public ResultObject(RedirectException e)
         {
             Error = true;
             Message = Capitalize(e.Message);
@@ -58,7 +58,7 @@ namespace RadialReview.Models.Json
             return builder.ToString();
         }
 
-        public JsonObject(Exception e)
+        public ResultObject(Exception e)
         {
             Error = true;
             if(e is RedirectException)

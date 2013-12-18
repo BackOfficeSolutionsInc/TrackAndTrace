@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Models.ViewModels;
 
 namespace RadialReview.Controllers
 {
@@ -12,7 +13,11 @@ namespace RadialReview.Controllers
         public ActionResult Index()
         {
             if (IsLoggedIn())
-                return View("Backend");
+            {
+                
+
+                return View("Backend", new UserOrganizationViewModel() { User = GetUser() });
+            }
             return View();
         }
 

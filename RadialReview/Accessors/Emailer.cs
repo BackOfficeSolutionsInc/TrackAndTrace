@@ -1,4 +1,5 @@
-﻿using RadialReview.Exceptions;
+﻿using NHibernate;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Properties;
 using RadialReview.Utilities;
@@ -110,7 +111,29 @@ namespace RadialReview.Accessors
             }
 
             SendEmail(toAddress, subject, body, emailId);
+        }
 
+        public static void SendEmail(ISession s, String toAddress, String subject, String htmlBody)
+        {
+            if (!IsValid(toAddress))
+                throw new RedirectException(ExceptionStrings.InvalidEmail);
+
+            var body = EmailBodyWrapper(htmlBody);
+            int emailId = -1;
+            var email = new EmailModel()
+            {
+                Body = body,
+                Sent = false,
+                SentTime = DateTime.UtcNow,
+                Subject = subject,
+                ToAddress = toAddress
+            };
+            s.Save(email);
+
+            //db.SaveChanges();
+            emailId = email.Id;
+
+            SendEmail(toAddress, subject, body, emailId);
         }
     }
 }

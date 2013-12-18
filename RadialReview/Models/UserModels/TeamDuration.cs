@@ -11,6 +11,9 @@ namespace RadialReview.Models.UserModels
     public class TeamDurationModel : IDeletable
     {
         public virtual long Id { get; set; }
+        public virtual long UserId { get; set; }
+        public virtual long TeamId {get;set;}
+
         public virtual UserOrganizationModel User { get; set; }
         public virtual OrganizationTeamModel Team { get; set; }
         public virtual DateTime Start { get; set; }
@@ -41,10 +44,18 @@ namespace RadialReview.Models.UserModels
             Map(x => x.AddedBy);
             Map(x => x.DeletedBy);
             Map(x => x.DeleteTime);
+
+            Map(x => x.UserId).Column("User_id");
+            Map(x => x.TeamId).Column("Team_id");
+
             References(x => x.User)
-                .Not.LazyLoad();
+                .Column("User_id")
+                .Not.LazyLoad()
+                .ReadOnly();
             References(x => x.Team)
-                .Not.LazyLoad();
+                .Column("Team_id")
+                .Not.LazyLoad()
+                .ReadOnly();
         }
     }
 }

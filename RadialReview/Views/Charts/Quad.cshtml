@@ -1,0 +1,220 @@
+﻿
+<div id="vis">
+
+</div>
+
+<script>
+$(function(){
+  makePlot();
+    // $('#zoomReset').on('click',function(e){
+    //  e.preventDefault();
+    //  //$('#chart').empty();
+    //  console.log("sadf");
+    //  makePlot();
+    // });
+});
+
+var makePlot = function() {
+    d3.json("scatter-data-2010.json", function(dataset) {
+
+    //Width and height
+    var margin = {top: 80, right: 10, bottom: 60, left: 80},
+    width = 600 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+    var centered = undefined;
+
+	//Create SVG element
+	tooltip = d3.select("body").append("div")
+				.attr("class", "plan_tooltip")
+				.style("position", "absolute")
+				.style("z-index", "10")
+				.style("visibility", "hidden")
+				.text("");
+
+
+	var svg = d3.select("#vis")
+				.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.append("defs").append("clipPath")
+        .attr("id", "clip")
+      .append("rect")
+        .attr("width", width)
+        .attr("height", height);
+
+/// Set Scales and Distortions
+
+	var xScale = d3.scale.linear()
+					             .domain([d3.min(dataset, function(d) { return d['n_workers_change']; }), d3.max(dataset, function(d) { return d['n_workers_change']; })])
+								 .range([0, width]);
+	var yScale = d3.scale.linear()
+					             .domain([d3.min(dataset, function(d) { return d['earnings_change']; }), d3.max(dataset, function(d) { return d['earnings_change']; })])
+								 .range([height,0]);
+
+    var color_scale = d3.scale.category20();
+
+    //Add 2 more colors to category 20 because there are 22 parent industry categories
+    var color_scale_range = color_scale.range();
+    color_scale_range.push("#e6550d","#6baed6")
+
+	radiusScale = d3.scale.sqrt()
+		.domain([d3.min(dataset, function(d) { return d['n_workers_y']; }), d3.max(dataset, function(d) { return d['n_workers_y']; }) ])
+		.range([3, 15]);
+
+
+
+	var rect = svg.append("rect")
+        .attr("class", "background")
+        .attr("pointer-events", "all")
+        .attr("fill","none")
+        .attr("width", width)
+        .attr("height", height)
+    	.call(d3.behavior.zoom().x(xScale).y(yScale).on("zoom", redraw));
+
+
+// Tooltips for Dots
+    set_tooltip_label = function (d) {
+        var company_name;
+        tooltip.html(d.category + "<br><strong>N Workers in 2010 (thousands)</strong>: " + d['n_workers_y']  + "<br><strong>Med. Wkly Earnings in 2010 ($)</strong>: " + d.earnings_y + "<br><strong> Category</strong>: " + d.parent_name );
+        if (!(event === undefined)) {
+            tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px")
+        }
+    };
+
+	var circles = svg.selectAll("circle")
+	   .data(dataset)
+	   .enter()
+	   .append("circle")
+	   .attr("clip-path", "url(#clip)")
+       // Set cx, cy in the redraw function
+	   .attr("r", function(d) {
+	   		return radiusScale(d['n_workers_y']);
+	   })
+	   .attr("fill", function(d) {
+		return color_scale(d.parent_id)
+		})
+		.on("mouseover", function () {
+           return tooltip.style("visibility", "visible")
+       }).on("mousemove", function (d) {
+           set_tooltip_label(d);
+       }).on("mouseout", function () {
+           tooltip.style("visibility", "hidden");
+       });
+
+
+	// Define X axis
+	var xAxis = d3.svg.axis()
+					  .scale(xScale)
+					  .orient("bottom")
+					  .ticks(5)
+					  .tickSize(-height)
+					  .tickFormat(d3.format("s"));
+
+	// Define Y axis
+	var yAxis = d3.svg.axis()
+					  .scale(yScale)
+					  .orient("left")
+					  .ticks(10)
+					 .tickFormat(function(d) { return d + " %"; })
+					 .tickSize(-width);
+
+	   // Create X axis
+	svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + (height) + ")")
+		.call(xAxis);
+	// Create Y axis
+	svg.append("g")
+		.attr("class", "y axis")
+		.attr("transform", "translate(" + 0 + ",0)")
+		.call(yAxis);
+
+	// Add Label to X Axis
+
+	svg.append("text")
+	    .attr("class", "x label")
+	    .attr("text-anchor", "middle")
+	    .attr("x", width - width/2)
+	    .attr("y", height + margin.bottom/2)
+	    .text("Percent Change in Number of Workers in Industry");
+
+
+	// Add label to Y Axis
+	svg.append("text")
+	    .attr("class", "y label")
+	    .attr("text-anchor", "middle")
+	    .attr("y", -margin.left + 5)
+		.attr("x", 0 - (height/2))
+	    .attr("dy", "1em")
+	    .attr("transform", "rotate(-90)")
+	    .text("Percent Change in Inflation Adjusted Median Weekly Earnings");
+
+	// Add title
+	svg.append("text")
+		.attr("class", " title")
+		.attr("text-anchor","middle")
+		.attr("x", width/2)
+		.attr("y", -margin.top/2)
+		.text("Changes in Employment and Salary by Industry, 2003 - 2010");
+
+    	// Add subtitle
+	svg.append("text")
+		.attr("class", "subtitle")
+		.attr("text-anchor","middle")
+		.attr("x", width/2)
+		.attr("y", -margin.top/2 + 15)
+		.text("Scroll and drag to zoom/pan, hover for details.");
+
+		var objects = svg.append("svg")
+			.attr("class", "objects")
+			.attr("width", width)
+			.attr("height", height);
+
+		//Create main 0,0 axis lines:
+		hAxisLine = objects.append("svg:line")
+			.attr("class", "axisLine hAxisLine");
+		vAxisLine = objects.append("svg:line")
+			.attr("class", "axisLine vAxisLine");
+
+
+    // Zoom/pan behavior:
+	function redraw(duration) {
+	  var duration = typeof duration !== 'undefined' ? duration : 0;
+	  if (d3.event){
+	    //console.log("In the zoom function now");
+	    //console.log(d3.event.scale);
+	    //console.log(d3.event.translate);
+		  svg.select(".x.axis").call(xAxis);
+		  svg.select(".y.axis").call(yAxis);
+		}
+
+
+		hAxisLine.transition().duration(duration)
+			.attr("x1",0)
+			.attr("y1",0)
+			.attr("x2",width)
+			.attr("y2",0)
+			.attr("transform", "translate(0," + (yScale(0)) + ")");
+		vAxisLine.transition().duration(duration)
+			.attr("x1",xScale(0))
+			.attr("y1",yScale(height))
+			.attr("x2",xScale(0))
+			.attr("y2",yScale(-height));
+
+
+		circles.transition().duration(duration)
+	   .attr("cx", function(d) {
+	   		return xScale(d['n_workers_change']);
+	   })
+	   .attr("cy", function(d) {
+	   		return yScale(d['earnings_change']);
+	   })
+
+	}; // <-------- end of zoom function
+                  redraw(0); // call zoom to place elements
+}); // end of json loading section
+};
+</script>

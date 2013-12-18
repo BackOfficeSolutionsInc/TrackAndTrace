@@ -1,9 +1,12 @@
 ﻿using NHibernate;
+using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -11,34 +14,35 @@ namespace RadialReview.Accessors
 {
     public class ApplicationAccessor : BaseAccessor
     {
-        public Boolean EnsureApplicationExists()
+        private const long APPLICATION_ID = 1;
+
+        public const string FEEDBACK = "Feedback";
+
+        private static string[] ApplicationCategories = new string[]{ 
+                "Feedback",
+                "Performance",
+                "Culture"
+        };
+
+        private class Q
         {
-            using (var s = HibernateSession.GetCurrentSession())
+            public String Question;
+            public QuestionType Type;
+            public String Category;
+            public Q(QuestionType type,String question,String category)
             {
-                using (var tx = s.BeginTransaction())
-                {
-                    ConstructPositions(s);
-                    tx.Commit();
-                    s.Flush();
-                }
-                using (var tx = s.BeginTransaction())
-                {
-                    var application = s.Get<ApplicationWideModel>(1L);
-                    if (application == null)
-                    {
-                        s.Save(new ApplicationWideModel(1));
-                        tx.Commit();
-                        s.Flush();
-                        return true;
-                    }
-                    return false;
-                }
+                this.Question = question;
+                this.Type = type;
+                this.Category = category;
             }
         }
 
-        private void ConstructPositions(ISession session)
-        {
-            string[] positions = new String[]{
+        private static Q[] ApplicationQuestions = new Q[]{
+            new Q(QuestionType.Feedback,"Feedback","Feedback")
+        };
+
+
+        private static string[] ApplicationPositions = new String[]{
                 "Account Coordinator",
                 "Account Manager",
                 "Accountant",
@@ -67,7 +71,7 @@ namespace RadialReview.Accessors
                 "Finance",
                 "Graphic Designer",
                 "Help Desk Technician",
-                "Human Relations",
+                "Human Resources",
                 "Information Technology",
                 "Inside Sales",
                 "Intern",
@@ -79,7 +83,7 @@ namespace RadialReview.Accessors
                 "Multimedia Strategist",
                 "Online Marketing Strategist",
                 "Operator",
-                "Produciton Manager",
+                "Production Manager",
                 "Project Manager",
                 "Project Strategist",
                 "Quality Assurance Engineer",
@@ -105,16 +109,179 @@ namespace RadialReview.Accessors
                 "VP of Technology",
                 "Web Application Engineer",
                 "Web Developer",
+                "Digital Print",
 
             };
-            var found = session.QueryOver<PositionModel>().List().ToList();
-            foreach (var p in positions)
+
+        public Boolean EnsureApplicationExists()
+        {
+            using (var s = HibernateSession.GetCurrentSession())
             {
-                if (!found.Any(x => x.Name.Default.Value == p))
+                /*using (var tx = s.BeginTransaction())
+                {
+                    Temp(s);
+                    tx.Commit();
+                    s.Flush();
+                }*/
+
+                using (var tx = s.BeginTransaction())
+                {
+                    ConstructPositions(s);
+                    tx.Commit();
+                    s.Flush();
+                }
+                List<QuestionCategoryModel> applicationCategories;
+                using (var tx = s.BeginTransaction())
+                {
+                    applicationCategories=ConstructApplicationCategories(s);
+                    tx.Commit();
+                    s.Flush();
+                }
+                using (var tx = s.BeginTransaction())
+                {
+                    ConstructApplicationQuestions(s, applicationCategories);
+                    tx.Commit();
+                    s.Flush();
+                }
+
+                using (var tx = s.BeginTransaction())
+                {
+                    var application = s.Get<ApplicationWideModel>(APPLICATION_ID);
+                    if (application == null)
+                    {
+                        s.Save(new ApplicationWideModel(APPLICATION_ID));
+                        tx.Commit();
+                        s.Flush();
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        }
+        /*
+        private static void Temp(ISession session)
+        {
+            var all = session.QueryOver<LocalizedStringModel>().List();
+
+            File.WriteAllLines(@"C:\Users\Clay\Desktop\tempDB\newTable.csv",all.Select(x => String.Join(",", x.Id, x.Default.Value, x.Default.Locale)));
+            
+            /*foreach (var a in all)
+            {
+                //a.Standard = a.Default.Value;
+                //a.StandardLocale = a.Default.Locale;
+                //session.Update(a);
+            }*
+
+        }*/
+
+        private static void ConstructApplicationQuestions(ISession session,List<QuestionCategoryModel> applicationCategories)
+        {
+            var found = session.QueryOver<QuestionModel>().Where(x=>x.OriginType==OriginType.Application && x.OriginId == APPLICATION_ID).List().ToList();
+            foreach (var appQ in ApplicationQuestions)
+            {
+                if (!found.Any(x => x.GetQuestion() == appQ.Question && x.GetQuestionType()==appQ.Type))
+                {
+                    var newQuestion = new QuestionModel()
+                    {
+                        Category= applicationCategories.First(x=>x.Category.Standard==appQ.Category),
+                        Question = new LocalizedStringModel(appQ.Question),
+                        QuestionType = appQ.Type,
+                        Weight = WeightType.No,
+                        OriginId = APPLICATION_ID,
+                        OriginType = OriginType.Application,
+                        CreatedById = -1,
+                        DateCreated =DateTime.UtcNow,
+                        Required = false,
+                    };
+                    session.Save(newQuestion);
+                }
+            }
+        }
+
+        public static QuestionModel GetApplicationQuestion(ISession session,String question)
+        {
+            var found = ApplicationQuestions.FirstOrDefault(x => x.Question.ToLower() == question.ToLower());
+            if (found == null)
+                throw new PermissionsException("No application category for " + question);
+            var foundQList = session.QueryOver<QuestionModel>().Where(x =>
+                    x.OriginId == APPLICATION_ID &&
+                    x.OriginType == OriginType.Application
+                ).List().ToList();
+            var foundQ = foundQList.Where(x => x.Question.Standard == question).FirstOrDefault();
+            if (foundQ == null)
+                throw new PermissionsException("Application was not initialized. Category was missing. " + question);
+            return foundQ;
+        }
+
+        public static QuestionCategoryModel GetApplicationCategory(ISession session, String category)
+        {
+            var found = ApplicationCategories.FirstOrDefault(x => x.ToLower() == category.ToLower());
+            if (found == null)
+                throw new PermissionsException("No application category for " + category);
+            var foundCatList = session.QueryOver<QuestionCategoryModel>().Where(x =>
+                    x.OriginId == APPLICATION_ID &&
+                    x.OriginType == OriginType.Application
+                ).List().ToList();
+            var foundCat = foundCatList.Where(x=>x.Category.Standard == found).FirstOrDefault();
+            if (foundCat == null)
+                throw new PermissionsException("Application was not initialized. Category was missing. " + category);
+            return foundCat;
+        }
+
+        public static LocalizedStringModel GetApplicationLocalizedStringModel(ISession session, String deflt)
+        {
+            var found = ApplicationPositions.Union(ApplicationCategories).FirstOrDefault(x => x.ToLower() == deflt.ToLower());
+            if (found == null)
+                throw new PermissionsException("No application localized string for " + deflt);
+
+
+            var foundLSMList = session.QueryOver<LocalizedStringModel>().Where(x => x.Standard == deflt).List().ToList();
+            var foundLSM = foundLSMList.OrderBy(x => x.Id).FirstOrDefault();
+            if (foundLSM == null)
+                throw new PermissionsException("Application was not initialized. LocalizedStringModel was missing. " + deflt);
+            return foundLSM;
+        }
+
+
+        private List<QuestionCategoryModel> ConstructApplicationCategories(ISession session)
+        {
+            var found = session.QueryOver<QuestionCategoryModel>().List().ToList();
+
+            var complete = found.ToList();
+
+            foreach (var cat in ApplicationCategories)
+            {
+                if (!found.Any(x => x.Category.Standard == cat))
+                {
+                    var newCat = new QuestionCategoryModel()
+                    {
+                        Active = true,
+                        OriginId = APPLICATION_ID,
+                        OriginType = OriginType.Application,
+                        Category = new LocalizedStringModel(cat)
+                    };
+                    complete.Add(newCat);
+                    session.Save(newCat);
+                }
+            }
+            return complete;
+        }
+
+        private void ConstructPositions(ISession session)
+        {
+            var found = session.QueryOver<PositionModel>().List().ToList();
+            foreach (var p in ApplicationPositions)
+            {
+                if (!found.Any(x => x.Name.Standard == p))
                 {
                     session.Save(new PositionModel() { Name = new LocalizedStringModel(p) });
                 }
             }
+        }
+
+        public static List<QuestionCategoryModel> GetApplicationCategories(ISession session)
+        {
+            return session.QueryOver<QuestionCategoryModel>().Where(x => x.OriginId == APPLICATION_ID && x.OriginType == OriginType.Application).List().ToList();
         }
     }
 }

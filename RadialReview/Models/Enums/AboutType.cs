@@ -5,14 +5,14 @@ using System.Text;
 
 namespace RadialReview.Models.Enums
 {
+    [Flags]
     public enum AboutType : long
     {
-        None        = 0,
         Self        = 1,
-        Peer        = 2,
+        Subordinate = 2,
         Teammate    = 4,
-        Manager     = 8,
-        Subordinate = 16,
+        Peer        = 8,
+        Manager     = 16,
     }
 
 }

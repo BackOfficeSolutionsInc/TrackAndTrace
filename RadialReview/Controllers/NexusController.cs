@@ -32,21 +32,21 @@ namespace RadialReview.Controllers
 
                 if (model.Position.CustomPosition!=null)
                 {
-                    var newPosition = OrganizationAccessor.AddOrganizationPosition(user, user.Organization.Id, model.Position.CustomPositionId, model.Position.CustomPosition);
+                    var newPosition = OrganizationAccessor.EditOrganizationPosition(user,0, user.Organization.Id, model.Position.CustomPositionId, model.Position.CustomPosition);
                     model.Position.PositionId = newPosition.Id;
                 }
 
                 var nexusId = NexusAccessor.JoinOrganizationUnderManager(user,model.ManagerId, model.IsManager, model.Position.PositionId, model.Email,model.FirstName,model.LastName);
 
-                return Json(new JsonObject(false,"Success"));
+                return Json(new ResultObject(false,"Success"));
             }
             catch (RedirectException e)
             {
-                return Json(new JsonObject(e));
+                return Json(new ResultObject(e));
             }
             catch (Exception)
             {
-                return Json(new JsonObject(true, ExceptionStrings.AnErrorOccuredContactUs));
+                return Json(new ResultObject(true, ExceptionStrings.AnErrorOccuredContactUs));
             }
         }
         

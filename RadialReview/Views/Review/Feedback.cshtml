@@ -9,10 +9,10 @@
                 {
                     <div class="pull-left star @((ViewBag.Incomplete != null && !f.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
                 }
-                <h4>@f.Askable.GetQuestion()</h4>
+                <h4 class="alignCenter question">@f.Askable.GetQuestion()</h4>
             </div>
             <div class="col-md-6 alignRight startHidden">
-                <textarea class="feedback" name="question_@(RadialReview.Models.Enums.QuestionType.Feedback)_@f.Id">@f.Feedback</textarea>
+                <textarea placeholder="@(f.Required?"":"Optional")" class="feedback" name="question_@(RadialReview.Models.Enums.QuestionType.Feedback)_@f.Id">@f.Feedback</textarea>
             </div>
         </div>
         <hr />

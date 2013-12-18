@@ -57,20 +57,21 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void RemovePositionFromUser(UserOrganizationModel caller,long forUserId,long positionDurationId)
+        public void RemovePositionFromUser(UserOrganizationModel caller,long positionDurationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditUserOrganization(forUserId);
-                    var positionDuration = s.Get<PositionDurationModel>(positionDurationId);
-
-                    if (positionDuration.DeleteTime != null)
+                    var posDur=s.Get<PositionDurationModel>(positionDurationId);
+                    PermissionsUtility.Create(s, caller).EditUserOrganization(posDur.UserId);
+                    if (posDur.DeleteTime != null)
                         throw new PermissionsException();
 
-                    positionDuration.DeleteTime = DateTime.UtcNow;
-                    positionDuration.DeletedBy = caller.Id;
+                    posDur.DeleteTime = DateTime.UtcNow;
+                    posDur.DeletedBy = caller.Id;
+                    s.Update(posDur);
+
                     tx.Commit();
                     s.Flush();
                 }

@@ -63,32 +63,45 @@ namespace RadialReview.Controllers
                 var category=_CategoryAccessor.Edit(caller, 0, new Origin(OriginType.Organization, caller.Organization.Id), new LocalizedStringModel(model.NewCategory), true);
                 model.CategoryId = category.Id;
             }
-            _ResponsibilitiesAccessor.EditResponsibility(caller, model.Id, model.Responsibility, model.CategoryId, model.ResponsibilityGroupId);
-            return Json(JsonObject.Success);
+            _ResponsibilitiesAccessor.EditResponsibility(caller, model.Id, model.Responsibility, model.CategoryId, model.ResponsibilityGroupId,model.Active,model.Weight);
+            return Json(ResultObject.Success);
         }
 
         [Access(AccessLevel.Manager)]
         public ActionResult Edit(long id)
         {
             var responsibilityGroupId = id;
-            var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), responsibilityGroupId);
+            var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), responsibilityGroupId).HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
             var model = new ResponsibilityTablesViewModel(r);
+
+
+
 
             if (r is UserOrganizationModel)
             {
+                ViewBag.Page = "Members";
                 var teams = _TeamAccessor.GetUsersTeams(GetUser(), responsibilityGroupId);
                 var userResponsibility = ((UserOrganizationModel)r).Hydrate().Position().SetTeams(teams).Execute();
                 foreach (var rgId in userResponsibility.Positions.ToListAlive().Select(x => x.Position.Id))
                 {
-                    var positionResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), rgId);
+                    var positionResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), rgId).HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
                     model.ResponsibilityTables.Add(new ResponsibilityTableViewModel(false, positionResp));
                 }
                 foreach (var teamId in userResponsibility.Teams.ToListAlive().Select(x => x.Team.Id))
                 {
-                    var teamResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), teamId);
+                    var teamResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), teamId).HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
                     model.ResponsibilityTables.Add(new ResponsibilityTableViewModel(false, teamResp));
                 }
             }
+            else if (r is OrganizationPositionModel)
+            {
+                ViewBag.Page = "Positions";
+            }
+            else if (r is OrganizationTeamModel)
+            {
+                ViewBag.Page = "Teams";
+            }
+
             return View(model);
         }
 	}

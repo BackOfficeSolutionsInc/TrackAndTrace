@@ -7,19 +7,75 @@
             showJsonAlert(data, true);
             $("#uploaded").html("<img class='img-rounded' src='"+data.URL+"' data-src='holder.js/180%x180' />")
         }
+        
+        function uploadImage() {
+            var oOutput = document.getElementById("output"),
+                oData = new FormData(document.forms.namedItem("fileinfo"));
+
+            var oReq = new XMLHttpRequest();
+            oReq.open("POST", "/upload/image", true);
+            oReq.onload = function (oEvent) {
+                if (oReq.status == 200) {
+                    oOutput.innerHTML = "Uploaded!";
+                } else {
+                    oOutput.innerHTML = "Error " + oReq.status + " occurred uploading your file.<br \/>";
+                }
+            };
+
+            oReq.onload = function () {
+                var result=JSON.parse(this.response).Object;
+                if(result!=null)
+                {
+                    $("#uploadedImg").attr("src", result.Result);
+                } else {
+                    $('.new_Btn').addClass("progress-danger");
+                    $('.new_Btn').removeClass("progress-bar-success");
+                }
+                $('.new_Btn').removeClass("progress-striped");
+            };
+
+            oReq.send(oData);
+            var resp = oReq.response;
+        }
+
+        $('#html_btn').change(function () {
+            if ($('#html_btn').val()) {
+                uploadImage();
+                $('.new_Btn').addClass("progress-bar-success");
+                $('.new_Btn').addClass("progress-striped");
+            }
+        });
+
+
+        $('.new_Btn').bind("click", function () {
+            $('#html_btn').click();
+        });
     </script>
 }
 
 <div id="uploaded">
-    <img class='img-rounded' src='@Model.GetUrl()' data-src='holder.js/180%x180' />
+    <img id="uploadedImg" class="thumbnail" style="margin-left:auto;margin-right:auto;"  width="@Model.Width" height="@Model.Height" src="@Model.GetUrl()" />
 </div>
 
-@using (Html.BeginForm("Image", "Upload", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{        
+
+
+@*using (Html.BeginForm("Image", "Upload", FormMethod.Post, new { enctype = "multipart/form-data", }))
+{*@
+<div id="output"></div>
+<form id="fileinfo">
+    @Html.AntiForgeryToken()
     <input type="hidden" name="forType" value="@Model.ForType" />
-    <input type="file" name="file" />
-    <input type="submit" value="OK" />
-}
+    <div class="smallBreak"></div>
+    <div class="smallBreak"></div>
+    <div class="new_Btn progress active clickable" style="width: 100px; height: 32px; margin-left: auto; margin-right: auto;">
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%; padding: 8px;">Upload Image</div>
+    </div>
+    <input style="display:none;" id="html_btn" type='file' name="file" />
+        <!--div onclick="" class="btn btn-default">Upload div-->
+</form>
+
+
+
 
 @*
     @using (Ajax.BeginForm("Image", "Upload", null, new AjaxOptions { HttpMethod = "POST", OnComplete = "imageUploadComplete" }, new { enctype = "multipart/form-data" }))

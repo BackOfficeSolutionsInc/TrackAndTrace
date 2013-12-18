@@ -117,14 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AmazonS3Location" xml:space="preserve">
+    <value>https://s3.amazonaws.com/Radial/</value>
+  </data>
   <data name="ImageOrganizationPlaceholder" xml:space="preserve">
-    <value>/img/orgPlaceholder.png</value>
+    <value>placeholder/orgPlaceholder.png</value>
   </data>
   <data name="ImagePlaceholder" xml:space="preserve">
-    <value>/img/orgPlaceholder.png</value>
+    <value>placeholder/orgPlaceholder.png</value>
   </data>
   <data name="ImageUserPlaceholder" xml:space="preserve">
-    <value>/img/Placeholder.png</value>
+    <value>placeholder/placeholder.png</value>
   </data>
   <data name="SmtpFromAddress" xml:space="preserve">
     <value>clay.upton@gmail.com</value>

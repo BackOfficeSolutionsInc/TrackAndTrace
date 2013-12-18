@@ -84,6 +84,7 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
                     var category = s.QueryOver<QuestionCategoryModel>().Where(x=> x.OriginId==organizationId && x.OriginType==OriginType.Organization).List().ToList();
+                    category.AddRange(ApplicationAccessor.GetApplicationCategories(s));
                     return category;
                 }
             }

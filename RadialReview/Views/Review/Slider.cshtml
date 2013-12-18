@@ -17,61 +17,54 @@
     }
 
 }
+@foreach (var slider in Model.OrderBy(x => x.Askable.GetQuestion()))
+{
+    <div class="row ">
+        <div i class="col-md-6 alignCenter startHidden">
+            @if (slider.Required)
+            {
+                <div class="pull-left star @((ViewBag.Incomplete != null && !slider.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
+            }
+            <h4 class="question">@slider.Askable.GetQuestion()</h4>
+        </div>
 
-<div>
-    <hr />
-    @foreach (var slider in Model)
-    {
-        <div class="row ">
-            <div i class="col-md-6 alignCenter startHidden">
-                @if (slider.Required)
-                {
-                    <div class="pull-left star @((ViewBag.Incomplete != null && !slider.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
-                }
-                <h4 style="padding:10px 0px 10px 0px; ">@slider.Askable.GetQuestion()</h4>
-            </div>
+        <div class="col-md-6 startHidden">
 
-            <div class="col-md-6 startHidden">
-
-                <div class="row">
-                    <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.min</h5></div>
-                    <div class="col-xs-6" style="padding:30px 0 15px 0;">
-                        <input name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
-                               type="text"
-                               class="sliderInput"
-                               value="@((int)(slider.Percentage*100))"
-                               data-slider-min="0"
-                               data-slider-max="100"
-                               data-slider-step="1"
-                               data-slider-value="@((int)(slider.Percentage*100))"
-                               data-slider-orientation="horizontal"
-                               data-slider-selection="after">
-                    </div>
-                    <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.max</h5></div>
+            <div class="row">
+                <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.min</h5></div>
+                <div class="col-xs-6" style="padding:30px 0 15px 0;">
+                    <input name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
+                           type="text"
+                           class="sliderInput"
+                           value="@((int?)(slider.Percentage*100))"
+                           data-slider-min="0"
+                           data-slider-max="100"
+                           data-slider-step="1"
+                           data-slider-value="@((int?)(slider.Percentage*100))"
+                           data-slider-orientation="horizontal"
+                           data-slider-selection="after">
                 </div>
+                <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.max</h5></div>
             </div>
         </div>
-        <hr />
-    }
-</div>
+    </div>
+}
 <br />
 
 @using (var styles = Html.BeginStyles())
 {
     <style>
-
         .dangerRadio.active {
             color: #B94A48;
             background-color: #F2DEDE;
             border-color: #EED3D7;
         }
+
         .successRadio.active {
             color: #468847;
             background-color: #DFF0D8;
             border-color: #D6E9C6;
         }
-
-
     </style>
 }
 

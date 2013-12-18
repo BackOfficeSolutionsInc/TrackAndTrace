@@ -10,5 +10,6 @@ namespace RadialReview.Models.Enums
         Standard = 0,
         AllMembers = 1,
         Managers = 2,
+        Subordinates = 3,
     }
 }

@@ -12,12 +12,17 @@ using RadialReview.Models;
 using RadialReview.NHibernate;
 using RadialReview.Properties;
 using RadialReview.Models.Json;
+using RadialReview.Accessors;
+using RadialReview.Models.ViewModels;
 
 namespace RadialReview.Controllers
 {
     [Authorize]
-    public class AccountController : BaseController
+    public partial class AccountController : BaseController
     {
+        protected static NexusAccessor _NexusAccessor = new NexusAccessor();
+        protected static ImageAccessor _ImageAccessor = new ImageAccessor();
+
         public AccountController() : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
         {
         }
@@ -39,8 +44,9 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public ActionResult SetRole(long id,String ReturnUrl=null)
         {
+            _UserAccessor.ChangeRole(GetUserModel(), id);
             GetUser(id);
-            if (ReturnUrl==null)
+            if (ReturnUrl == null || ReturnUrl.StartsWith("/Account/Role"))
                 return RedirectToAction("Index", "Home");
             return RedirectToLocal(ReturnUrl);
         }
@@ -73,7 +79,8 @@ namespace RadialReview.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindAsync(model.UserName, model.Password);
+
+                var user = await UserManager.FindAsync(model.UserName.ToLower(), model.Password);
                 if (user != null)
                 {
                     await SignInAsync(user, model.RememberMe);
@@ -81,7 +88,7 @@ namespace RadialReview.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Invalid username or password.");
+                    ModelState.AddModelError("", "Invalid email or password.");
                 }
             }
 
@@ -95,8 +102,25 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public ActionResult Register(string returnUrl)
         {
+
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+            var model = new RegisterViewModel() { ReturnUrl=returnUrl };
+            if (returnUrl!=null && returnUrl.StartsWith("/Organization/Join/"))
+            {
+                try
+                {
+                    var guid = returnUrl.Substring(19);
+                    var nexus = _NexusAccessor.Get(guid);//[organizationId,EmailAddress,userOrgId,Firstname,Lastname]
+                    model.Email = nexus.GetArgs()[1];
+                    model.fname = nexus.GetArgs()[3];
+                    model.lname = nexus.GetArgs()[4];
+                }
+                catch (Exception e)
+                {
+                    log.Info(e);
+                }
+            }
+            return View(model);
         }
 
         //
@@ -107,8 +131,11 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
+
             if (ModelState.IsValid)
             {
+                model.Email=model.Email.ToLower();
+
                 var user = new UserModel() { UserName = model.Email, FirstName=model.fname,LastName=model.lname };
                 var resultx = UserManager.CreateAsync(user, model.Password);
                 var result = await resultx;
@@ -368,7 +395,27 @@ namespace RadialReview.Controllers
         public JsonResult SetHint(bool? hint)
         {
             _UserAccessor.SetHints(GetUserModel(), hint.Value);
-            return Json(JsonObject.Success,JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success,JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.User)]
+        public ActionResult Profile()
+        {
+            var user=GetUser();
+
+            return View(new ProfileViewModel() { 
+                FirstName = user.User.FirstName,
+                LastName = user.User.LastName,
+                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(),user.User.ImageGuid)
+            });
+        }
+
+        [HttpPost]
+        [Access(AccessLevel.User)]
+        public ActionResult Profile(ProfileViewModel model)
+        {
+            _UserAccessor.EditUserModel(GetUserModel(), GetUserModel().Id, model.FirstName,model.LastName,null);
+            return RedirectToAction("Profile");
         }
 
         protected override void Dispose(bool disposing)

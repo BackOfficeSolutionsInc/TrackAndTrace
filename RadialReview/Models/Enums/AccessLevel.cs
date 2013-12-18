@@ -11,5 +11,6 @@ namespace RadialReview.Controllers
         User = 2,
         UserOrganization = 3,
         Manager = 4,
+        Radial = 5,
     }
 }

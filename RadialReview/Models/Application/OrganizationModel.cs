@@ -48,6 +48,7 @@ namespace RadialReview.Models
             return Name.Translate();
         }
 
+        public virtual bool ManagersCanEditPositions { get; set; }
 
         public OrganizationModel()
         {
@@ -59,6 +60,8 @@ namespace RadialReview.Models
             Industries = new List<IndustryModel>();
             QuestionCategories = new List<QuestionCategoryModel>();
             Reviews = new List<ReviewsModel>();
+            ManagersCanEditPositions = true;
+
         }
 
         public virtual List<IOrigin> OwnsOrigins()
@@ -89,6 +92,7 @@ namespace RadialReview.Models
             return DisplayNameStrings.organization;
         }
 
+
     }
 
     public class OrganizationModelMap : SubclassMap<OrganizationModel>
@@ -99,6 +103,7 @@ namespace RadialReview.Models
             Map(x => x.DeleteTime);
             Map(x => x.CreationTime);
             Map(x => x.StrictHierarchy);
+            Map(x => x.ManagersCanEditPositions);
             //Map(x => x.ImageUrl);
 
             References(x => x.Image).Not.LazyLoad().Cascade.SaveUpdate();

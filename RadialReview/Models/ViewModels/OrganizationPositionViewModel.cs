@@ -10,6 +10,8 @@ namespace RadialReview.Models.ViewModels
     {
         public List<OrgPosViewModel> Positions { get; set; }
 
+        public bool CanEdit { get; set; }
+
     }
 
     public class OrgPosViewModel

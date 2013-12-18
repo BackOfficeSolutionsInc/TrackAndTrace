@@ -1,0 +1,111 @@
+﻿
+.bordered {
+    border: 1px solid gray;
+}
+
+body {
+    position: relative;
+}
+
+svg,
+canvas {
+    position: absolute;
+}
+
+.axisTitle.red {
+    color: red;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.axis path {
+    display: none;
+}
+
+.axis text {
+    opacity: .2;
+    -moz-transition: all .5s ease;
+    -o-transition: all .5s ease;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+}
+
+.axis:hover text {
+    opacity: .8;
+    cursor: default;
+}
+
+.legendTitle {
+    font-weight: bold;
+}
+
+
+#xAxis, #yAxis, #rAxis {
+    list-style-type: none;
+    font-family: "Lato", serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    margin: 2px;
+    width: 185px;
+}
+
+
+.clr {
+    clear: both;
+}
+
+#visualisation {
+    height: 500px;
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: block;
+    position: relative;
+}
+
+.axis line, .axis path, .axis .domain {
+    stroke: #aaa;
+    fill: none;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    fill: #000;
+    font-family: "Lato", serif;
+    font-size: 12px;
+}
+
+.datapoint {
+    fill-opacity: 0.7;
+    stroke: #000000;
+    stroke-width: 1px;
+    cursor: pointer;
+}
+
+
+.Self {
+    fill: #BEAF11;
+}
+
+.Peer {
+    fill: #2d8716;
+}
+
+.Manager {
+    fill: #3577c8;
+}
+
+.Teammate {
+    fill: #be5705;
+}
+
+.Subordinate {
+    fill: #be0527;
+}

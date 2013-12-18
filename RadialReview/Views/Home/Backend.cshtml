@@ -1,9 +1,31 @@
-﻿
+﻿@model RadialReview.Models.ViewModels.UserOrganizationViewModel
+
 @{
-    ViewBag.Title = "Backend";
+    ViewBag.Title = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Backend</h2>
-<br/>
-<h3>@ViewBag.Message</h3>
+
+<div class="row">
+    <div class="col-md-3 col-sm-4 alignCenter hidden-xs">
+        <div class="" onclick="window.location='@Url.Action("Profile","Account")'">
+            <div>
+                @Html.Partial("_User", Model.User)
+            </div>
+            @if (!Model.GetCompletion().FullyComplete)
+            {
+                <div class="clickable" onclick="window.location='@Url.Action("Profile","Account")'">
+                    <h4>Profile Completion</h4>
+                    @Html.Partial("_Completion", Model)
+                </div>
+            }
+        </div>
+        <div class="smallBreak hidden-md"></div>
+    </div>
+    <div class="col-md-9 col-sm-8">
+        <div class="review" style="min-height:800px">
+            <h2 class="alignCenter">Welcome to Radial Review</h2>
+
+        </div>
+    </div>
+</div>

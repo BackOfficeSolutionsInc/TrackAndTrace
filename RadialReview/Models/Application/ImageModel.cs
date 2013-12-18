@@ -13,6 +13,8 @@ namespace RadialReview.Models
         public virtual String OriginalName { get;set;}
         public virtual UserModel UploadedBy { get; set; }
         public virtual UploadType UploadType { get; set; }
+        public virtual long OrganizationId {get;set;}
+        public virtual String Url {get;set;}
 
     }
 
@@ -23,6 +25,8 @@ namespace RadialReview.Models
             Id(x => x.Id).GeneratedBy.GuidComb();
             Map(x => x.UploadType);
             Map(x => x.OriginalName);
+            Map(x => x.OrganizationId);
+            Map(x => x.Url);
             References(x => x.UploadedBy);
         }
     }

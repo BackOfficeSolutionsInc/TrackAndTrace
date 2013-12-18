@@ -19,7 +19,9 @@
  
 !function( $ ) {
 
-	var Slider = function(element, options) {
+    var Slider = function (element, options) {
+
+
 		this.element = $(element);
 		this.picker = $('<div class="slider">'+
 							'<div class="slider-track">'+
@@ -124,6 +126,14 @@
 
 		this.layout();
 
+		var layoutFunc = this.layout;
+		var that = this;
+
+		$(window).resize(function () {
+		    //debugger;
+		    that.layout();
+		});
+
 		if (this.touchCapable) {
 			// Touch: Bind touch events:
 			this.picker.on({
@@ -147,6 +157,8 @@
 	};
 
 	Slider.prototype = {
+	    
+
 		constructor: Slider,
 
 		over: false,
@@ -166,7 +178,8 @@
 			this.over = false;
 		},
 
-		layout: function(){
+		layout: function () {
+		    this.size = this.picker[0][this.sizePos];
 			this.handle1Stype[this.stylePos] = this.percentage[0]+'%';
 			this.handle2Stype[this.stylePos] = this.percentage[1]+'%';
 			if (this.orientation == 'vertical') {
@@ -182,17 +195,18 @@
 					' : ' + 
 					this.formater(this.value[1])
 				);
+				//debugger;
 				this.tooltip[0].style[this.stylePos] = this.size * (this.percentage[0] + (this.percentage[1] - this.percentage[0])/2)/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) +'px';
 			} else {
 				this.tooltipInner.text(
 					this.formater(this.value[0])
 				);
+				//debugger;
 				this.tooltip[0].style[this.stylePos] = this.size * this.percentage[0]/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) +'px';
 			}
 		},
 
 		mousedown: function(ev) {
-
 			// Touch: Get the original event:
 			if (this.touchCapable && ev.type === 'touchstart') {
 				ev = ev.originalEvent;
@@ -212,6 +226,7 @@
 			}
 
 			this.percentage[this.dragged] = percentage;
+			this.value[0] = percentage;
 			this.layout();
 
 			if (this.touchCapable) {
@@ -384,5 +399,7 @@
 	};
 
 	$.fn.slider.Constructor = Slider;
+
+	
 
 }( window.jQuery );

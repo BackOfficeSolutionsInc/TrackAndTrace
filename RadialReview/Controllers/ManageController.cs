@@ -21,34 +21,57 @@ namespace RadialReview.Controllers
         public ActionResult Index()
         {
             //Main page
-            return View();
+            var page = (string)Session["Manage"] ?? "Positions";
+            return RedirectToAction(page);
+            /*
+            switch (page)
+            {
+                case "Positions":  Positions();
+                case "Teams": return Teams();
+                case "Members": return Members();
+                case "Reviews": return Reviews();
+                default: return Positions();
+            }*/
+
         }
 
         [Access(AccessLevel.Manager)]
         public ActionResult Positions()
         {
+            Session["Manage"] = "Positions";
             var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
 
             var positions = orgPos.Select(x=>
                 new OrgPosViewModel(x, _PositionAccessor.GetUsersWithPosition(GetUser(), x.Id).Count())
             ).ToList();
 
+            var caller = GetUser().Hydrate().EditPositions().Execute();
 
-            var model = new OrgPositionsViewModel() { Positions = positions};
+            var model = new OrgPositionsViewModel() { Positions = positions, CanEdit = caller.GetEditPosition()};
             return View(model);
         }
 
         [Access(AccessLevel.Manager)]
         public ActionResult Teams()
         {
-            var orgTeams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id);
-            var model = new OrganizationTeamViewModel() { Teams = orgTeams };
+            Session["Manage"] = "Teams";
+            var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);            
+            var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x,Members=-1 }).ToList();
+
+            for(int i=0;i<orgTeams.Count();i++)
+            {
+                teams[i].Team = teams[i].Team.HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
+                teams[i].Members = _TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id).ToListAlive().Count();
+
+            }
+            var model = new OrganizationTeamsViewModel() { Teams = teams };
             return View(model);
         }
 
         [Access(AccessLevel.Manager)]
         public ActionResult Members()
         {
+            Session["Manage"] = "Members";
             var members = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
             for(int i=0;i<members.Count();i++)
             {
@@ -70,8 +93,9 @@ namespace RadialReview.Controllers
             var model=new OrganizationViewModel(){
                 Id=user.Organization.Id,
                 ManagersCanEdit = user.Organization.ManagersCanEdit,
-                OrganizationName = user.Organization.Name.Default.Value,
-                StrictHierarchy = user.Organization.StrictHierarchy
+                OrganizationName = user.Organization.Name.Standard,
+                StrictHierarchy = user.Organization.StrictHierarchy,
+                ManagersCanEditPositions = user.Organization.ManagersCanEditPositions,
             };
 
             return View(model);
@@ -81,7 +105,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Organization(OrganizationViewModel model)
         {
-            _OrganizationAccessor.Edit(GetUser(),model.Id, model.OrganizationName, model.ManagersCanEdit, model.StrictHierarchy);
+            _OrganizationAccessor.Edit(GetUser(),model.Id, model.OrganizationName, model.ManagersCanEdit, model.StrictHierarchy,model.ManagersCanEditPositions);
             ViewBag.Success = "Successfully Saved.";
             return View(model);
         }
@@ -89,6 +113,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Reviews()
         {
+            Session["Manage"] = "Reviews";
             var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, true);
             var model = new OrgReviewsViewModel()
             {

@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "Reviews";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Reviews";
+    
 }
 @section header{
     @Html.Partial("Partial/manageheader")
@@ -15,29 +17,71 @@
     <div class="panel-heading">
         <h3 class="panel-title">Reviews</h3>
     </div>
-    <div class="panel-body">
+    <table class="table">
+        <tr>
+            <th style="min-width: 120px">@RadialReview.Properties.DisplayNameStrings.name</th>
+            <th style="width:100px" class="alignCenter">Created</th>
+            <th style="width:100px" class="alignCenter">Due</th>
+            <th style="width:120px" class="alignCenter">@RadialReview.Properties.DisplayNameStrings.completion</th>
+            <th class="rightButton">
+                <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton" data-toggle="modal">+</button>
+            </th>
+        </tr>
+        @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
+        {
+            <tr class="startHidden">
+                <td>@review.Review.ReviewName</td>
+                <td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>
+                <td class="alignCenter">@review.Review.DueDate.ToShortDateString()</td>
+                <td>
+                    @Html.Partial("_Completion", review.Review)
+                </td>
+                <td class="rightButton"><a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.details</a></td>
+            </tr>
+        }
+    </table>
+</div>
+@*
+    <div class="panel panel-primary startHiddenGroup">
+        <div class="panel-heading">
+            <h3 class="panel-title">Review Templates</h3>
+        </div>
         <table class="table">
             <tr>
                 <th style="min-width: 120px">@RadialReview.Properties.DisplayNameStrings.name</th>
                 <th style="width:100px" class="alignCenter">Created</th>
                 <th style="width:100px" class="alignCenter">Due</th>
                 <th style="width:120px" class="alignCenter">@RadialReview.Properties.DisplayNameStrings.completion</th>
-                <th style="width:50px">
-                    <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton" data-toggle="modal">+</button>
+                <th class="rightButton">
+                    <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check","onCompleteIssue")" role="button" class="btn btn-default addButton" data-toggle="modal">+</button>
                 </th>
             </tr>
-            @foreach (var review in Model.Reviews.OrderByDescending(x=>x.Review.DueDate))
+            @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
             {
                 <tr class="startHidden">
                     <td>@review.Review.ReviewName</td>
                     <td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>
                     <td class="alignCenter">@review.Review.DueDate.ToShortDateString()</td>
                     <td>
-                      @Html.Partial("_Completion",review.Review)
+                        @Html.Partial("_Completion", review.Review)
                     </td>
-                    <td><a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.details</a></td>
+                    <td class="rightButton"><a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.details</a></td>
                 </tr>
             }
         </table>
     </div>
-</div>
+*@
+
+
+
+
+
+@using(Html.BeginScripts())
+{
+    <script>
+        function onCompleteIssue(data)
+        {
+            showJsonAlert(data, true);
+        }
+    </script>    
+}

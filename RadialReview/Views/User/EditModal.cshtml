@@ -2,15 +2,18 @@
 
 @Html.HiddenFor(x => x.UserId)
 
-<div class="row">
-    <div class="col-xs-3"><label>New Manager:</label></div>
-    <div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerId, Model.PotentialManagers, new { @class = "fullWidth form-control" })</div>
-</div>
+@if(Model.CanSetManagingOrganization)
+{ 
+    <div class="row">
+        <div class="col-xs-5"><label>Managing Organization:</label></div>
+        <div class="col-xs-7">@Html.CheckBoxFor(x => x.ManagingOrganization, new { @class = "checkbox" })</div>
+    </div>
+}
 
 <div class="smallBreak"></div>
 <div class="row">
-    <div class="col-xs-3"><label>Is Manager:</label></div>
-    <div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox" })</div>
+    <div class="col-xs-5"><label>Is Manager:</label></div>
+    <div class="col-xs-7">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox" })</div>
 </div>
 
 

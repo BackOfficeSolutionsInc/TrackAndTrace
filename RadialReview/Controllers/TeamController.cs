@@ -37,7 +37,7 @@ namespace RadialReview.Controllers
                                                 .ToSelectList(x=>x.GetNameAndTitle(2,user.Id),x=>x.Id)
                                                 .ToList();
 
-            var modal = new OrganizationTeamCreateViewModel(team, managers);
+            var modal = new OrganizationTeamCreateViewModel(GetUser(),team, managers);
             return PartialView("Modal", modal);
         }
 
@@ -47,7 +47,7 @@ namespace RadialReview.Controllers
         {
             var user = GetUser();
             var team = _TeamAccessor.EditTeam(user, model.TeamId,model.TeamName,model.InterReview,true,model.ManagerId);
-            return Json(JsonObject.Success);
+            return Json(ResultObject.Success);
         }
         /*
         public ActionResult Responsibilities(long id)
@@ -124,9 +124,9 @@ namespace RadialReview.Controllers
         public JsonResult AddModal(AddModalViewModel model)
         {
             if (model.SelectedUserId == 0)
-                return Json(new JsonObject(true, "Id of zero is not allowed."));
+                return Json(new ResultObject(true, "Id of zero is not allowed."));
             _TeamAccessor.AddMember(GetUser(), model.TeamId, model.SelectedUserId);
-            return Json(JsonObject.Success);
+            return Json(ResultObject.Success);
         }
         /*
         [HttpPost]
@@ -142,7 +142,7 @@ namespace RadialReview.Controllers
         {
             var user=GetUser();
             _TeamAccessor.AddMember(user,teamId,userId);
-            return Json(JsonObject.Success, JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success, JsonRequestBehavior.AllowGet);
         }
 
 	}

@@ -1,0 +1,25 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+
+@{
+    ViewBag.Title = "ClientDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using(Html.BeginScripts())
+{
+    <script>
+        ReviewId    = @Model.Review.ForReviewsId;
+        LegendData  = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
+        AxisSelect   = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+        AxisLabel  = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
+        ForUserId = @Model.Review.ForUserId;
+    </script>
+    <script src="/scripts/d3/d3.js"></script>
+    <script src="/scripts/d3/d3.csv.js"></script>
+    <script src="/scripts/d3/ScatterChart.js"></script>
+}
+
+@foreach(var chart in Model.Review.ClientReview.Charts)
+{
+    
+}

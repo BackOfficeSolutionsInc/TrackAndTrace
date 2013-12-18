@@ -40,6 +40,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK, Version=2.0.3.0, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\AWSSDK.2.0.3.0\lib\net45\AWSSDK.dll</HintPath>
+    </Reference>
     <Reference Include="Elmah">
       <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
     </Reference>
@@ -186,16 +190,19 @@
     <Compile Include="Accessors\DbWrapper.cs" />
     <Compile Include="Accessors\Emailer.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
+    <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
     <Compile Include="Accessors\ImageAccessor.cs" />
     <Compile Include="Accessors\NexusAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
     <Compile Include="Accessors\PaymentAccessor.cs" />
+    <Compile Include="Accessors\PermissionsAccessor.cs" />
     <Compile Include="Accessors\PositionAccessor.cs" />
     <Compile Include="Accessors\QuestionAccessor.cs" />
     <Compile Include="Accessors\ResponsibilitiesAccessor.cs" />
     <Compile Include="Accessors\ReviewAccessor.cs" />
+    <Compile Include="Accessors\S3Response.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
     <Compile Include="Accessors\UrlAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
@@ -203,9 +210,16 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Data.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Data.resx</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\DataController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -222,6 +236,7 @@
     <Compile Include="Controllers\ReviewsController.cs" />
     <Compile Include="Controllers\SurveyController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
+    <Compile Include="Controllers\TemplateController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Controllers\UrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -230,6 +245,13 @@
     <Compile Include="Models\Interfaces\ICompletable.cs" />
     <Compile Include="Models\Enums\AboutType.cs" />
     <Compile Include="Models\Responsibilities\AskableAbout.cs" />
+    <Compile Include="Models\Enums\WeightType.cs" />
+    <Compile Include="Models\Reviews\ClientReviewModel.cs" />
+    <Compile Include="Models\Template\TemplateItem.cs" />
+    <Compile Include="Models\Template\TemplateItemChart.cs" />
+    <Compile Include="Models\Template\TemplateItemFeedback.cs" />
+    <Compile Include="Models\Template\TemplateItemGroup.cs" />
+    <Compile Include="Models\Template\TemplateModel.cs" />
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
     <Compile Include="Models\ViewModels\CompletionViewModel.cs" />
@@ -257,6 +279,8 @@
     <Compile Include="Models\Reviews\ReviewsModel.cs" />
     <Compile Include="Models\UserModels\PositionDuration.cs" />
     <Compile Include="Models\UserModels\TeamDuration.cs" />
+    <Compile Include="Models\ViewModels\ProfileViewModel.cs" />
+    <Compile Include="Models\ViewModels\TemplateViewModel.cs" />
     <Compile Include="Models\ViewModels\UserOrganizationViewModel.cs" />
     <Compile Include="Models\ViewModels\ImageUploadViewModel.cs" />
     <Compile Include="Models\ViewModels\IssueReviewViewModel.cs" />
@@ -310,7 +334,7 @@
     <Compile Include="Models\Interfaces\ICustomQuestions.cs" />
     <Compile Include="Models\Payments\InvoiceItemModel.cs" />
     <Compile Include="Models\Payments\InvoiceModel.cs" />
-    <Compile Include="Models\Json\JsonObject.cs" />
+    <Compile Include="Models\Json\ResultObject.cs" />
     <Compile Include="Models\Application\NexusModels.cs" />
     <Compile Include="Models\NHibernateUtility\GuidStringGenerator.cs" />
     <Compile Include="Models\Application\OrganizationModel.cs" />
@@ -361,6 +385,7 @@
     <Compile Include="Utilities\AskableUtility.cs" />
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
     <Compile Include="Utilities\Attributes\AccessAttribute.cs" />
+    <Compile Include="Utilities\DataTypes\Tree.cs" />
     <Compile Include="Utilities\DragDropUtility.cs" />
     <Compile Include="Utilities\Extensions\DictionaryExtensions.cs" />
     <Compile Include="Utilities\Extensions\EnumerableExtensions.cs" />
@@ -379,6 +404,7 @@
     <Compile Include="Utilities\PermissionsUtility.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
     <Compile Include="Utilities\ShortenerUtility.cs" />
+    <Compile Include="Utilities\SubordinateUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
@@ -386,6 +412,7 @@
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\chart.css" />
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\favicon.ico" />
     <Content Include="Content\Home.css" />
@@ -404,11 +431,14 @@
     <Content Include="Scripts\bootstrap-slider.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\d3\d3.csv.js" />
+    <Content Include="Scripts\d3\d3.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery\jquery.hashchange.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\d3\ScatterChart.js" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -417,6 +447,9 @@
     </Content>
     <Content Include="Scripts\bootstrap.min.js.map">
       <DependentUpon>bootstrap.js</DependentUpon>
+    </Content>
+    <Content Include="Data\people.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -519,10 +552,20 @@
     <Content Include="Views\User\EditModal.cshtml" />
     <Content Include="Views\User\Managers.cshtml" />
     <Content Include="Views\User\ManagerModal.cshtml" />
+    <Content Include="Views\Shared\_User.cshtml" />
+    <Content Include="Views\Organization\RadialTree.cshtml" />
+    <Content Include="Views\Organization\Tree.cshtml" />
+    <Content Include="Views\Charts\Quad.cshtml" />
+    <Content Include="Views\User\Details.cshtml" />
+    <Content Include="Views\Template\Edit.cshtml" />
+    <Content Include="Views\Organization\ResendJoin.cshtml" />
+    <Content Include="Views\Account\Profile.cshtml" />
+    <Content Include="Views\Review\ClientDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="External\" />
+    <Folder Include="Views\Admin\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\Img\" />
     <Folder Include="Views\Members\" />
@@ -536,6 +579,11 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Data.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Data.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\ErrorMessageStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessageStrings.Designer.cs</LastGenOutput>

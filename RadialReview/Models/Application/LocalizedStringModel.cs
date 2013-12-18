@@ -47,8 +47,8 @@ namespace RadialReview.Models
     public class LocalizedStringModel : ILongIdentifiable
     {
         public virtual long Id { get; protected set; }
-
-        public virtual LocalizedStringPairModel Default { get; set; }
+        public virtual String Standard { get; set; }
+        public virtual String StandardLocale { get; set; }
         public virtual IList<LocalizedStringPairModel> Localizations { get; set; }
 
 
@@ -59,7 +59,6 @@ namespace RadialReview.Models
 
         public LocalizedStringModel()
         {
-            Default = new LocalizedStringPairModel();
             Localizations = new List<LocalizedStringPairModel>();
         }
 
@@ -74,7 +73,8 @@ namespace RadialReview.Models
         public LocalizedStringModelMap()
         {
             Id(x => x.Id);
-            References(x => x.Default).Not.LazyLoad().Cascade.SaveUpdate();
+            Map(x => x.Standard);
+            Map(x => x.StandardLocale);
             HasMany(x => x.Localizations).Not.LazyLoad().Cascade.SaveUpdate();
         }
     }

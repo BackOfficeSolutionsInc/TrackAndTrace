@@ -39,21 +39,24 @@ namespace System.Web
             return expression.Object.ToString();
         }
 
-        public static MvcHtmlString EnumDropDownListFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression) where TModel : class
+        public static MvcHtmlString EnumDropDownListFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null) where TModel : class
         {
+            if (htmlAttributes == null)
+                htmlAttributes = new { };
+
             string inputName = GetInputName(expression);
             var value = htmlHelper.ViewData.Model == null
                 ? default(TProperty)
                 : expression.Compile()(htmlHelper.ViewData.Model);
-
-            return htmlHelper.DropDownList(inputName, ToSelectList(typeof(TProperty), value.ToString()));
+            //return htmlHelper.DropDownListFor(expression,ToSelectList(typeof(TProperty), value.ToString()));
+            return htmlHelper.DropDownList(inputName, ToSelectList(typeof(TProperty), value.ToString()), htmlAttributes);
         }
         public static MvcHtmlString EnumDropDownList<TModel,TEnum>(this HtmlHelper<TModel> htmlHelper,String name, TEnum selected) where TModel : class where TEnum : struct, IConvertible
         {
             return htmlHelper.DropDownList(name, ToSelectList(typeof(TEnum), selected.ToString()));
         }
 
-        public static SelectList ToSelectList(Type enumType, string selectedItem)
+        public static List<SelectListItem> ToSelectList(Type enumType, string selectedItem)
         {
             List<SelectListItem> items = new List<SelectListItem>();
             foreach (var item in Enum.GetValues(enumType))
@@ -67,14 +70,14 @@ namespace System.Web
                 
                 var listItem = new SelectListItem
                 {
-                    Value = ((int)item).ToString(),
+                    Value = item.ToString(),
                     Text = title,
                     Selected = selectedItem == (item).ToString()
                 };
                 items.Add(listItem);
             }
 
-            return new SelectList(items, "Value", "Text", selectedItem);
+            return items;
         }
     }
 }

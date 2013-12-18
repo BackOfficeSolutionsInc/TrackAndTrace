@@ -4,24 +4,14 @@
     ViewBag.Title = "Modal";
 }
 
-<div class="form">        
+<div class="form">
     @Html.HiddenFor(x => x.Id)
     @Html.HiddenFor(x => x.ResponsibilityGroupId)
     <div class="row">
         <div class="col-sm-3">
-            <label>Responsibility:</label>
-        </div>
-        <div class="col-sm-9">
-            @Html.TextBoxFor(x => x.Responsibility, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="smallBreak"></div>
-    <div class="smallBreak"></div>
-    <div class="row">
-        <div class="col-sm-3">
             <label>Category:</label>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-9 catContainer">
             @Html.DropDownListFor(x => x.CategoryId, Model.Categories.Select(x =>
                     new SelectListItem()
                     {
@@ -34,6 +24,29 @@
             @Html.TextBoxFor(x => x.NewCategory, new { id = "newCategoryInput", placeholder = "New category name", @class = "form-control" })
         </div>
     </div>
+    <div class="smallBreak"></div>
+    <div class="smallBreak"></div>
+    <div class="row">
+        <div class="col-sm-3">
+            <label>Importance:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.EnumDropDownListFor(x => x.Weight,new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="smallBreak"></div>
+    <div class="smallBreak"></div>
+    <div class="row">
+        <div class="col-sm-3">
+            <label>Responsibility:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.TextBoxFor(x => x.Responsibility, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="smallBreak"></div>
+    <div class="smallBreak"></div>
+
     <div class="row">
         <div class="col-sm-3">
             <label>Active:</label>
@@ -47,9 +60,13 @@
     function Update() {
         if ($("#positionSelector").val() == -1) {
             $("#newCategory").removeClass("hidden");
+            $(".catContainer").addClass("col-sm-4")
+            $(".catContainer").removeClass("col-sm-9")
         } else {
             $("#newCategory").addClass("hidden");
             $("#newCategoryInput").val(null);
+            $(".catContainer").addClass("col-sm-9")
+            $(".catContainer").removeClass("col-sm-4")
         }
     }
 
@@ -60,8 +77,7 @@
         Update();
     });
 
-    function verify()
-    {
+    function verify() {
         if ($("[name='CategoryId']").val() == -1 && !$("[name='NewCategory']").val())
             return "New category name is required.";
         if (!$("[name='Responsibility']").val())

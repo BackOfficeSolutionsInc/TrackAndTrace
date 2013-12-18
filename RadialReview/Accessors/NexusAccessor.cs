@@ -10,19 +10,23 @@ using System.Web;
 using System.Text.RegularExpressions;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
+using NHibernate;
 
 namespace RadialReview.Accessors
 {
     public class NexusAccessor : BaseAccessor
     {
         public static UrlAccessor _UrlAccessor = new UrlAccessor();
-        public String JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email,String firstName,String lastName)
+
+        public TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName)
         {
             if (!Emailer.IsValid(email))
                 throw new RedirectException(ExceptionStrings.InvalidEmail);
 
             var nexusId = Guid.NewGuid();
             String id = null;
+
+            TempUserModel tempUser;
             using (var db = HibernateSession.GetCurrentSession())
             {
                 long newUserId = 0;
@@ -54,18 +58,21 @@ namespace RadialReview.Accessors
                     newUser.ManagerAtOrganization = isManager;
                     newUser.Organization = caller.Organization;
                     newUser.EmailAtOrganization = email;
-                    newUser.TempUser = new TempUserModel()
+                    tempUser = new TempUserModel()
                     {
                         FirstName = firstName,
                         LastName = lastName,
                         Email = email,
+                        Guid = nexusId.ToString(),
+                        LastSent = DateTime.UtcNow
                     };
+                    newUser.TempUser = tempUser;
 
                     var position = db.Get<OrganizationPositionModel>(orgPositionId);
 
                     if (position.Organization.Id != newUser.Organization.Id)
                         throw new PermissionsException();
-                    
+
                     db.Save(newUser);
 
                     var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id);
@@ -78,6 +85,12 @@ namespace RadialReview.Accessors
                     }
 
                     db.Update(newUser);
+
+                    if (isManager)
+                    {
+                        var subordinateTeam = OrganizationTeamModel.SubordinateTeam(caller, newUser);
+                        db.Save(subordinateTeam);
+                    }
 
                     newUserId = newUser.Id;
                     tx.Commit();
@@ -105,17 +118,35 @@ namespace RadialReview.Accessors
                     db.Flush();
                 }
             }
+            return tempUser;
+        }
+
+        public String JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email,String firstName,String lastName)
+        {
+            var tempUser=CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName);
+            return SendJoinEmailToGuid(caller,tempUser);
+        }
+
+        public String SendJoinEmailToGuid(UserOrganizationModel caller, TempUserModel tempUser)
+        {
+
+            var email = tempUser.Email;
+            var firstName = tempUser.FirstName;
+            var lastName = tempUser.LastName;
+            var id = tempUser.Guid;
+
             //Send Email
-            var subject = String.Format(EmailStrings.JoinOrganizationUnderManager_Subject, caller.Organization.Name.Translate(), ProductStrings.ProductName);
+            var subject = String.Format(EmailStrings.JoinOrganizationUnderManager_Subject, firstName, caller.Organization.Name.Translate(), ProductStrings.ProductName);
             //[OrganizationName,LinkUrl,LinkDisplay,ProductName]            
             var url = "Account/Login?message=Please%20login%20to%20join%20" + caller.Organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
             url = ProductStrings.BaseUrl + url;
             //var shorenedUrl = ProductStrings.BaseUrl + _UrlAccessor.RecordUrl(url, email);
-            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName);
+            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName);
             subject = Regex.Replace(subject, @"[^A-Za-z0-9 \.\,&]", "");
             Emailer.SendEmail(email, subject, body);
-            return nexusId.ToString();
+            return id;
         }
+
 
         public void Execute(NexusModel nexus)
         {
@@ -140,13 +171,18 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    s.Save(model);
+                    model = Put(s, model);
                     tx.Commit();
                     s.Flush();
                 }
             }
             return model;
+        }
 
+        public static NexusModel Put(ISession s,NexusModel model)
+        {
+            s.Save(model);
+            return model;
         }
 
 

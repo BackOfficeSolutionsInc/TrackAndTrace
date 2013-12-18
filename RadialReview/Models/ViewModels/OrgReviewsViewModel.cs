@@ -8,5 +8,6 @@ namespace RadialReview.Models.ViewModels
     public class OrgReviewsViewModel
     {
         public List<ReviewsViewModel> Reviews { get; set; }
+        public List<TemplateViewModel> Templates { get; set; }
     }
 }

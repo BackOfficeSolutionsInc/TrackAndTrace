@@ -11,6 +11,7 @@ namespace RadialReview.Models.ViewModels
         public String OrganizationName { get; set; }
         public Boolean ManagersCanEdit { get; set; }
         public Boolean StrictHierarchy { get; set; }
+        public Boolean ManagersCanEditPositions { get; set; }
         public String ImageUrl { get; set; }
     }
 }

@@ -16,6 +16,7 @@ namespace RadialReview.Models.ViewModels
         public long ResponsibilityGroupId { get; set; }
         public Boolean Active { get;set;}
         public String NewCategory { get; set; }
+        public WeightType Weight { get; set; }
 
         public ResponsibilityViewModel()
         {
@@ -25,13 +26,13 @@ namespace RadialReview.Models.ViewModels
         public ResponsibilityViewModel(long responsibilityGroupId, ResponsibilityModel model, List<QuestionCategoryModel> categories)
         {
             Id=model.Id;
-            Active = true;
+            Active = model.DeleteTime==null;
             Categories = categories;
             Categories.Add(new QuestionCategoryModel() { Id = -1, Category = new LocalizedStringModel("<" + DisplayNameStrings.createNew + ">") });
             Responsibility = model.Responsibility;
             CategoryId = model.Category.Id;
             ResponsibilityGroupId = responsibilityGroupId;
-
+            Weight = model.Weight;
         }
 
     }

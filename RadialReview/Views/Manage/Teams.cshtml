@@ -1,4 +1,4 @@
-﻿@model RadialReview.Models.ViewModels.OrganizationTeamViewModel
+﻿@model RadialReview.Models.ViewModels.OrganizationTeamsViewModel
 
 @{
     ViewBag.Title = "Teams";
@@ -22,21 +22,26 @@
             <th style="width:10px" class="alignCenter"></th>
             <th style="width:130px" class="alignCenter">Members</th>
             <th style="width:130px" class="alignCenter">Responsibilities</th>
-            <th style="width:100px"><button class="btn btn-default fullWidth" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal")">+</button></th>
+            <th class="rightButton"><button class="btn btn-default fullWidth" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal")">+</button></th>
         </tr>
-        @foreach (var p in Model.Teams)
+        @foreach (var p in Model.Teams.OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
         {
-            <tr>
-                <td>@p.Name</td>
+            <tr class="team @p.Team.Type" >
+                <td>@p.Team.Name</td>
                 <td style="width:10px" class="alignCenter">
-                    @if (p.Type != RadialReview.Models.Enums.TeamType.Standard)
+                    @if (p.Team.Type != RadialReview.Models.Enums.TeamType.Standard)
                     {
                         <span title="Auto-generated" class="glyphicon glyphicon-refresh"></span>
                     }
                 </td>
-                <td class=" alignCenter"><a href="@Url.Action("Edit", "Team", new { id=p.Id })" class="fullWidth">Edit</a></td>
-                <td class=" alignCenter"><a href="@Url.Action("Edit", "Responsibilities", new { id=p.Id })" class="fullWidth">Edit(@p.Responsibilities.Count())</a> </td>
-                <td><a onclick="@Html.ShowModal("Edit Team", "/Team/Modal/"+p.Id, "/Team/Modal")" class="fullWidth btn btn-primary">Edit</a></td>
+                <td class=" alignCenter"><a href="@Url.Action("Edit", "Team", new { id = p.Team.Id })" class="fullWidth">@Html.ViewOrEdit(p.Team.GetEditable() && p.Team.Type == RadialReview.Models.Enums.TeamType.Standard) (@p.Members)</a></td>
+                <td class=" alignCenter"><a href="@Url.Action("Edit", "Responsibilities", new { id = p.Team.Id })" class="fullWidth">@Html.ViewOrEdit(p.Team.GetEditable()) (@p.Team.Responsibilities.Count())</a> </td>
+                <td class="rightButton">
+                    @if (p.Team.GetEditable())
+                    {
+                        <a onclick="@Html.ShowModal("Edit Team", "/Team/Modal/" + p.Team.Id, "/Team/Modal")" class="fullWidth btn btn-primary">Edit</a>
+                    }
+                </td>
             </tr>
         }
 

@@ -83,8 +83,8 @@
 {
     <div class="col-md-8 col-md-offset-2 jumbotron">
         <div class="center">
-            <h4>First things first:</h4><br />
-            <h5>How many employees does your organization have?</h5>
+            <h2>First things first:</h2>
+            <h3>How many employees does your organization have?</h3>
         </div><br />
         @using (Html.BeginForm("Begin", "Organization", FormMethod.Get))
         {
@@ -105,7 +105,7 @@
             </div>
             <br />
             <div class="row">
-                <a class="btn btn-success col-md-6 col-md-offset-3" href="@Url.Action("Create", "Organization", new { count = ViewBag.Count })">Let's get started &#187;</a>
+                <a class="btn btn-success col-xs-6 col-sm-offset-3" href="@Url.Action("Create", "Organization", new { count = ViewBag.Count })">Let's get started &#187;</a>
             </div>
         </div>
     }
@@ -154,7 +154,7 @@
                 </div>
                 <div class="col-md-6 center">
                     <div class="buttonContainer row">
-                        <a class="btn btn-success col-md-6 col-md-offset-3" href="@Url.Action("Index", "Payment", new { count = ViewBag.Count })">Let's get started &#187;</a>
+                        <a class="btn btn-success col-xs-6 col-sm-offset-3" href="@Url.Action("Index", "Payment", new { count = ViewBag.Count })">Let's get started &#187;</a>
                     </div>
                 </div>
             </div>

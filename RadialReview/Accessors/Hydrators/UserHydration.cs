@@ -15,9 +15,9 @@ namespace RadialReview
 {
     public static partial class UserOrganizationExtensions
     {
-        public static UserHydration Hydrate(this UserOrganizationModel user)
+        public static UserHydration Hydrate(this UserOrganizationModel user,ISession session=null)
         {
-            return UserHydration.Hydrate(user);
+            return UserHydration.Hydrate(user, session);
         }
     }
 }
@@ -30,18 +30,19 @@ namespace RadialReview
         private UserOrganizationModel User { get; set; }
         private UserOrganizationModel _UnderlyingUser { get; set; }
         private ISession Session { get; set; }
-
+        private bool Dispose { get; set; }
 
         private UserHydration()
         {
         }
 
-        public static UserHydration Hydrate(UserOrganizationModel user)
+        public static UserHydration Hydrate(UserOrganizationModel user, ISession session=null)
         {
             return new UserHydration()
             {
                 User = user,
-                Session = HibernateSession.GetCurrentSession()
+                Dispose = session==null,
+                Session = session??HibernateSession.GetCurrentSession()
             };
         }
 
@@ -115,29 +116,12 @@ namespace RadialReview
                 using (var tx = Session.BeginTransaction())
                 {
                     var user=GetUnderlying();
-                    var children = Children(user, new List<String> { "" + user.Id });
+                    var children = SubordinateUtility.GetSubordinates(user,true);
                     User.AllSubordinates = children;
                 }
             }
             User.ManagingUsers = managing.ToListAlive();
             return this;
-        }
-
-
-        private List<UserOrganizationModel> Children(UserOrganizationModel parent,List<String> parents)
-        {
-            var children = new List<UserOrganizationModel>();
-            if (parent.ManagingUsers == null || parent.ManagingUsers.Count == 0)
-                return children;
-            foreach (var c in parent.ManagingUsers.ToListAlive().Select(x => x.Subordinate))
-            {
-                c.Properties["parents"] = parents;
-                children.Add(c);
-                var copy=parents.Select(x=>x).ToList();
-                copy.Add(""+c.Id);
-                children.AddRange(Children(c, copy));
-            }
-            return children;
         }
 
 
@@ -214,7 +198,10 @@ namespace RadialReview
 
         public UserOrganizationModel Execute()
         {
-            Session.Dispose();
+            if (Dispose)
+            {
+                Session.Dispose();
+            }
             return User;
         }
 
@@ -303,6 +290,29 @@ namespace RadialReview
                 var uOrgId = uOrg.Id;
 
                 User.ManagedBy=uOrg.ManagedBy.ToList();
+            }
+            return this;
+        }
+
+        public UserHydration EditPositions()
+        {
+            using (var tx = Session.BeginTransaction())
+            {
+                var uOrg = GetUnderlying();
+                var uOrgId = uOrg.Id;
+                bool editPosition = false;
+                //Blah blah blah this is bad.. 
+                try
+                {
+                    PermissionsUtility.Create(Session, uOrg).EditPositions();
+                    editPosition = true;
+                }
+                catch (PermissionsException e)
+                {
+                    editPosition = false;
+                }
+                             
+                User.SetEditPosition(editPosition);
             }
             return this;
         }

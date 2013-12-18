@@ -3,62 +3,74 @@
 @{
     ViewBag.Title = "Teams - " + Model.GetName();
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Members";
 }
 
 @section header{
     @Html.Partial("Partial/manageheader")
 }
 
-<h2>Edit teams: <i>@Model.GetNameAndTitle()</i></h2>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">@Html.ViewOrEdit(Model.GetPersonallyManaging()) teams: <i>@Model.GetNameAndTitle()</i></h3>
+    </div>
 
-<table class="table">
-    <tr>
-        <th style="width: 10px;"></th>
-        <th>Team</th>
-        <th style="width: 150px;" class="alignCenter">Start</th>
-        <th style="width: 150px;" class="alignCenter">End</th>
-        <th style="width:100px;">
-            <a class="btn btn-default fullWidth"
-               onclick="@Html.ShowModal(
+    <table class="table">
+        <tr>
+            <th style="width: 10px;"></th>
+            <th>Team</th>
+            <th style="width: 150px;" class="alignCenter">Start</th>
+            <th class="alignCenter rightButton">End</th>
+            @if (Model.GetPersonallyManaging())
+            {
+                <th class="rightButton">
+                    <a class="btn btn-default fullWidth"
+                       onclick="@Html.ShowModal(
                         "Add Team",
                         Url.Action("TeamModal", "User", new {userId=Model.Id}),
                         Url.Action("TeamModal", "User")
                     )">+</a>
-        </th>
-    </tr>
-    @foreach (var p in Model.Teams.OrderBy(x => x.DeleteTime))
-    {
-        <tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
-            <td class="">
-                @if (p.Team.Type != RadialReview.Models.Enums.TeamType.Standard)
-                {
-                    <span class="glyphicon glyphicon-refresh" title="Auto-generated"></span>
-                }
-            </td>
-            <td class="position">@p.Team.Name</td>
-
-            <td class="alignCenter">@p.Start.ToShortDateString()</td>
-            <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
-            <td class="deleteButton">
-                @if (p.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
-                {
-                    if (p.DeleteTime == null)
-                    {
-                        <a onclick="Delete(@p.Id)" class="btn btn-danger fullWidth">Delete</a>
-                    }
-                    else
-                    {
-                        <div class="fullWidth alignCenter" style="color: #929292">Deleted</div>
-                    }
-                }
-                else
-                {
-                    <a class="btn btn-default disabled fullWidth">Delete</a>
-                }
-            </td>
+                </th>
+            }
         </tr>
-    }
-</table>
+        @foreach (var p in Model.Teams.OrderBy(x => x.DeleteTime).ThenBy(x => x.Team.Type != RadialReview.Models.Enums.TeamType.Standard).ThenBy(x => x.Team.Name))
+        {
+            <tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
+                <td class="">
+                    @if (p.Team.Type != RadialReview.Models.Enums.TeamType.Standard)
+                    {
+                        <span class="glyphicon glyphicon-refresh" title="Auto-generated"></span>
+                    }
+                </td>
+                <td class="position">@p.Team.Name</td>
+
+                <td class="alignCenter">@p.Start.ToShortDateString()</td>
+                <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
+                @if (Model.GetPersonallyManaging())
+                {
+                    <td class="deleteButton rightButton">
+                        @if (p.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
+                        {
+                            if (p.DeleteTime == null)
+                            {
+                                <a onclick="Delete(@p.Id)" class="btn btn-danger fullWidth">Delete</a>
+                            }
+                            else
+                            {
+                                <div class="fullWidth alignCenter" style="color: #929292">Deleted</div>
+                            }
+                        }
+                        else
+                        {
+                            <a class="btn btn-default disabled fullWidth">Delete</a>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+
+</div>
 @using (var s = Html.BeginScripts())
 {
     <script>

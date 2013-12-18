@@ -15,8 +15,8 @@ namespace RadialReview.Models.ViewModels
         public String GetUrl()
         {
             var dim = "";
-            if (Width != 0 && Height != 0)
-                dim= "?dim="+Width + "x" + Height;
+            /*if (Width != 0 && Height != 0)
+                dim= "?dim="+Width + "x" + Height;*/
             return Url + dim;
 
         }
