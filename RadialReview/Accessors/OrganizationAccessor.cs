@@ -9,6 +9,7 @@ using System.Linq;
 using System.Web;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities.DataTypes;
+using NHibernate;
 
 namespace RadialReview.Accessors
 {
@@ -128,7 +129,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public List<OrganizationPositionModel> GetOrganizationPositions(UserOrganizationModel caller, long organizationId)
+        public List<OrganizationPositionModel> GetOrganizationPositions( UserOrganizationModel caller, long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -318,19 +319,26 @@ namespace RadialReview.Accessors
                                         .List()
                                         .ToList();
 
-                    return Children(org.Name.Translate(),"",-1, managers);
+                    var classes="organizations".AsList("admin");
+
+                    return Children(org.Name.Translate(),"",-1,classes, managers);
                 }
             }
         }
 
-        private Tree Children(String name,String subtext,long id, List<UserOrganizationModel> users)
+        private Tree Children(String name,String subtext,long id,List<String> classes, List<UserOrganizationModel> users)
         {
+            var newClasses = classes.ToList();
+            if (classes.Count>0)
+                newClasses.RemoveAt(0);
+
             return new Tree()
             {
                 name = name,
                 id=id,
                 subtext=subtext,
-                children = users.Select(x => Children(x.GetName(),x.GetTitles(),x.Id, x.ManagingUsers.Select(y => y.Subordinate).ToList())).ToList()
+                @class=classes.FirstOrDefault(),
+                children = users.ToListAlive().Select(x => Children(x.GetName(), x.GetTitles(), x.Id, newClasses, x.ManagingUsers.ToListAlive().Select(y => y.Subordinate).ToList())).ToList()
             };
         }
 

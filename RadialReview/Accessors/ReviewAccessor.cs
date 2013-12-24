@@ -234,7 +234,7 @@ namespace RadialReview.Accessors
                     if (review.ForUserId != feedback.AboutUserId)
                         throw new PermissionsException("Feedback and Review do not match.");
 
-                    review.ClientReview.FeedbackIds.Add(new LongModel() { Long = feedbackId });
+                    review.ClientReview.FeedbackIds.Add(new LongModel() { Value = feedbackId });
                     s.Update(review);
                     tx.Commit();
                     s.Flush();
@@ -256,7 +256,7 @@ namespace RadialReview.Accessors
 
                     foreach (var id in review.ClientReview.FeedbackIds)
                     {
-                        if (id.Long == feedbackId)
+                        if (id.Value == feedbackId)
                             id.DeleteTime = DateTime.UtcNow;
                     }
                     s.Update(review);

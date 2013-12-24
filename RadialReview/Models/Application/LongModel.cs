@@ -10,7 +10,7 @@ namespace RadialReview.Models
     public class LongModel : IDeletable
     {
         public virtual long Id { get; set; }
-        public virtual long Long { get;set; }
+        public virtual long Value { get;set; }
         public virtual DateTime? DeleteTime { get; set; }
     }
     public class LongModelMap : ClassMap<LongModel>
@@ -18,7 +18,7 @@ namespace RadialReview.Models
         public LongModelMap()
         {
             Id(x => x.Id);
-            Map(x => x.Long);
+            Map(x => x.Value);
             Map(x => x.DeleteTime);
         }
     }

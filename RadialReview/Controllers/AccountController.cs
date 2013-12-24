@@ -44,7 +44,17 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public ActionResult SetRole(long id,String ReturnUrl=null)
         {
-            _UserAccessor.ChangeRole(GetUserModel(), id);
+            UserOrganizationModel userOrg=null;
+            try
+            {
+                userOrg = GetUser();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            _UserAccessor.ChangeRole(GetUserModel(),userOrg, id);
             GetUser(id);
             if (ReturnUrl == null || ReturnUrl.StartsWith("/Account/Role"))
                 return RedirectToAction("Index", "Home");
@@ -401,12 +411,12 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.User)]
         public ActionResult Profile()
         {
-            var user=GetUser();
+            var user=GetUserModel();
 
             return View(new ProfileViewModel() { 
-                FirstName = user.User.FirstName,
-                LastName = user.User.LastName,
-                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(),user.User.ImageGuid)
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(),user.ImageGuid)
             });
         }
 

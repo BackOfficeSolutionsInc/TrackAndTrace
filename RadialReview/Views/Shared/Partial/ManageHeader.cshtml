@@ -22,7 +22,7 @@
         </ul>
     </div>
 *@
-<div class="nav-arrows flat pull-left">
+<div class="nav-arrows flat pull-left noselect">
     <a href="/Manage/Positions" class="@(ViewBag.Page == "Positions" ? "active" : "")">Positions</a>
     <a href="/Manage/Members"   class="@(ViewBag.Page == "Members"   ? "active" : "")">Members</a>
     <a href="/Manage/Teams"     class="@(ViewBag.Page == "Teams"     ? "active" : "")">Teams</a>
@@ -30,7 +30,7 @@
 </div>
 @if (((bool?)ViewBag.ManagingOrganization) ?? false)
 {
-    <div class="pull-right nav-arrows flat">
+    <div class="pull-right nav-arrows flat noselect">
         <a href="/Manage/Organization" class="@(ViewBag.Page == "Settings" ? "active" : "")">Settings</a>
     </div>
 }

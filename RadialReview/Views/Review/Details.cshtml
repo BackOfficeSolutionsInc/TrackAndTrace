@@ -8,10 +8,29 @@
 @using (Html.BeginScripts())
 {
     <script>
-    function SetFeedback(id, on) {
-        var dat = new Object();
-        dat.feedbackId = id;
-        dat.reviewId = "@Model.Review.Id";
+        function allowed() {
+            return ($("#charts li").size() != 0 || $("#feedbacks li").size() != 0);
+        }
+
+        function clickDetails() {
+            if (allowed() || confirm("You need to include data in the review. Add some feedback and charts before viewing. Continue anyway?")) {
+                window.location = "/Review/ClientDetails/@Model.Review.Id";
+            }
+
+        }
+        function clickAuthorize() {
+            if (allowed() ||  $("#Authorized").hasClass("on") || confirm("You need to include data in the review. You should add some feedback and charts before authroizing. Continue anyway?")) {
+                setAuthorize();
+            } else {
+                ;
+            }
+
+        }
+
+        function SetFeedback(id, on) {
+            var dat = new Object();
+            dat.feedbackId = id;
+            dat.reviewId = "@Model.Review.Id";
             if (on === undefined) {
                 on = !$(".feedback_" + id + " .check").hasClass("on");
             }
@@ -49,9 +68,8 @@
             });
         }
 
-        function setAuthorize()
-        {
-            var auth=!$("#Authorized").hasClass("on");
+        function setAuthorize() {
+            var auth = !$("#Authorized").hasClass("on");
             var dat = new Object();
             dat.Authorized = auth;
             dat.ReviewId = "@Model.Review.Id";
@@ -61,16 +79,15 @@
                 data: dat,
                 method: "GET",
                 success: function (data) {
-                    showJsonAlert(data,false);
-                    if (data.Object.Authorized)
-                    {
+                    showJsonAlert(data, false);
+                    if (data.Object.Authorized) {
                         $("#Authorized").addClass("on");
                         $("#Authorized").addClass("active");
                         $("#Authorized").addClass("btn-success");
                         $("#Authorized").removeClass("btn-danger");
                         $("#Authorized").html("Authorized!");
 
-                    }else{
+                    } else {
                         $("#Authorized").removeClass("on");
                         $("#Authorized").removeClass("active");
                         $("#Authorized").removeClass("btn-success");
@@ -95,32 +112,32 @@
             dat.Y = yId;
             dat.ReviewId = "@Model.Review.Id";
 
-        $.ajax({
-            url: "/Review/AddChart",
-            data: dat,
-            method: "GET",
-            success: function (data) {
-                var toAppend = '<li class="chart_' + data.Object.ChartId + '">' + data.Object.XTitle + " vs " + data.Object.YTitle + '<span onclick="RemoveChart(' + data.Object.ChartId + ')" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></li>';
-                $("#charts").append(toAppend);
-            }
+            $.ajax({
+                url: "/Review/AddChart",
+                data: dat,
+                method: "GET",
+                success: function (data) {
+                    var toAppend = '<li class="chart_' + data.Object.ChartId + '">' + data.Object.XTitle + " vs " + data.Object.YTitle + '<span onclick="RemoveChart(' + data.Object.ChartId + ')" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></li>';
+                    $("#charts").append(toAppend);
+                }
 
-        })
-    }
+            })
+        }
 
-    function RemoveChart(chartId) {
-        var dat = new Object();
-        dat.chartId = chartId;
-        dat.reviewId = "@Model.Review.Id";
+        function RemoveChart(chartId) {
+            var dat = new Object();
+            dat.chartId = chartId;
+            dat.reviewId = "@Model.Review.Id";
 
-        $.ajax({
-            url: "/Review/RemoveChart",
-            data: dat,
-            method: "GET",
-            success: function (data) {
-                $(".chart_" + data.Object.ChartId).remove();
-            }
-        })
-    }
+            $.ajax({
+                url: "/Review/RemoveChart",
+                data: dat,
+                method: "GET",
+                success: function (data) {
+                    $(".chart_" + data.Object.ChartId).remove();
+                }
+            })
+        }
 
     </script>
 }
@@ -176,7 +193,7 @@
                                     <div class="alignCenter"><h4 class="axisTitle">Y-Axis</h4></div>
                                     <div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
                                 </div>
-                                <div class="pull-right btn btn-default clickable chartButton" onclick="IncludeChart()">
+                                <div title="Add this chart to the review." class="pull-right btn btn-default clickable chartButton" onclick="IncludeChart()">
                                     Add
                                 </div>
 
@@ -210,7 +227,7 @@
                                     <td class="text">@feedback.Feedback</td>
                                     <td class="alignCenter clickable">
                                         @{
-                                var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Long == feedback.Id) != null;
+                                var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
                                         }
                                         <div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">
                                         </div>
@@ -226,6 +243,8 @@
     </div>
     <div class="col-lg-2 noPad ">
         <div class="sidebar" style="padding:10px;font-size:12px">
+            <h3 class="alignCenter"><u>Build Report</u></h3>
+            <div class="smallBreak"></div>
             <h4 class="alignCenter">Charts</h4>
             <ul class="noBullet" id="charts">
                 @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
@@ -239,7 +258,7 @@
             <hr />
             <h4 class="alignCenter">Feedback</h4>
             <ul class="noBullet" id="feedbacks">
-                @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete && Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Long == x.Id)).Cast<FeedbackAnswer>())
+                @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete && Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())
                 {
                     <li class="feedback feedback_@feedback.Id">
                         @feedback.Feedback
@@ -249,18 +268,17 @@
             </ul>
             <hr />
             <div class="alignCenter">
-                <a href="/Review/ClientDetails/@Model.Review.Id" class="btn btn-default" style="width:120px;">View</a>
+                <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View</div>
                 <div class="smallBreak"></div>
                 <div title="Authorize the user to view this review.">
                     @*Html.CheckBox("Authorized", , new { onclick = "setAuthorize()" })*@
                     @if (Model.Review.ClientReview.Visible)
                     {
-                        <div style="width:120px;" class="btn btn-success active on" onclick="setAuthorize()" id="Authorized">Authorized!</div>
-
+                        <div style="width:120px;" class="btn btn-success active on" onclick="clickAuthorize()" id="Authorized">Authorized!</div>
                     }
                     else
                     {
-                        <div style="width:120px;" class="btn btn-danger" onclick="setAuthorize()" id="Authorized">Not Authorized</div>
+                        <div style="width:120px;" class="btn btn-danger" onclick="clickAuthorize()" id="Authorized">Not Authorized</div>
                     }
                 </div>
             </div>
@@ -269,14 +287,48 @@
 </div>
 @using (Html.BeginScripts())
 {
-    <script>
-        ReviewId    = @Model.Review.ForReviewsId;
-        LegendData  = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
-        AxisSelect   = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
-        AxisLabel  = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
-        ForUserId = @Model.Review.ForUserId;
-    </script>
     <script src="/scripts/d3/d3.js"></script>
     <script src="/scripts/d3/d3.csv.js"></script>
     <script src="/scripts/d3/ScatterChart.js"></script>
+    <script>
+        var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+        var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
+        var legendData = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
+        var getAxis = function () {
+            var a = document.getElementById("xAxis"),
+                b = document.getElementById("yAxis");
+            //c = document.getElementById("r-axis");
+            var x = a.options[a.selectedIndex].value,
+                y = b.options[b.selectedIndex].value;
+            //r = c.options[c.selectedIndex].value;
+            var xindex = axisSelect.indexOf(x),
+                yindex = axisSelect.indexOf(y);
+            var xlabel = axisLabels[xindex],
+                ylabel = axisLabels[yindex];
+            return {
+                xAxis: x,
+                yAxis: y,
+                //radiusAxis: r,
+                xAxisLabel: xlabel,
+                yAxisLabel: ylabel
+            };
+        };
+
+        var dataUrl = "/Data/ReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId";
+        var dataFunc = function (dd, redrawFunc) {
+            d3.csv(dataUrl, function (data) {
+                // store data in the appropriate variables
+                dd.data = data;
+                redrawFunc();
+            });
+        };
+
+
+        var chart = new Chart("#visualisation", getAxis, dataFunc, legendData);
+
+        document.getElementById("controls").addEventListener("click", chart.update, false);
+        document.getElementById("controls").addEventListener("keyup", chart.update, false);
+        document.getElementById("xAxis").addEventListener("change", chart.update, false);
+        document.getElementById("yAxis").addEventListener("change", chart.update, false);
+    </script>
 }

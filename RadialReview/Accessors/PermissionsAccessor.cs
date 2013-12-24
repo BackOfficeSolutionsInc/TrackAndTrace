@@ -20,5 +20,17 @@ namespace RadialReview.Accessors
                 }
             }
         }
+        public bool IsPermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted)
+        {
+            try
+            {
+                Permitted(caller, ensurePermitted);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

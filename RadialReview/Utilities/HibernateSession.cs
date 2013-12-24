@@ -17,26 +17,57 @@ namespace RadialReview.Utilities
     {
         private static ISessionFactory factory;
         private static String DbFile = null;
-        public static void SetDbFile(string file)
+        /*public static void SetDbFile(string file)
         {
             DbFile = file;
-        }
+        }*/
 
         public static ISessionFactory GetDatabaseSessionFactory()
         {
             if (factory == null)
             {
-                DbFile = DbFile ?? System.Configuration.ConfigurationManager.AppSettings["DbFile"];
-                factory = Fluently.Configure().Database(SQLiteConfiguration.Standard.UsingFile(DbFile))
-                .Mappings(m =>
+                var config = System.Configuration.ConfigurationManager.AppSettings;
+                var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
+                var dbType = config["DbType"];
+                switch (dbType.ToLower())
                 {
-                    m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
-                    m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-                    //m.AutoMappings.Add(CreateAutomappings);
-                    //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                    case "sqlite":
+                        {
+                            var connectionString = connectionStrings["DefaultConnection"].ConnectionString;
+                            var file = connectionString.Split(new String[]{"Data Source="},StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
+                            DbFile = file;
+                            factory = Fluently.Configure().Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                            .Mappings(m =>
+                            {
+                                m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
+                                m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                //m.AutoMappings.Add(CreateAutomappings);
+                                //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-                }).ExposeConfiguration(BuildSchema)
-                .BuildSessionFactory();
+                            }).ExposeConfiguration(BuildSchema)
+                            .BuildSessionFactory();
+                            break;
+                        }
+                    case "mysql":
+                        {
+                            factory = Fluently.Configure().Database(
+                                        MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnection"].ConnectionString).ShowSql())
+                               .Mappings(m =>
+                               {
+                                   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
+                                   //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                   //m.AutoMappings.Add(CreateAutomappings);
+                                   //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                               }).ExposeConfiguration(BuildMySqlSchema)
+                               .BuildSessionFactory();
+                            break;
+                        }
+                    /*case "connectionString":
+                        {
+                            factory = Fluently.Configure().
+                        }*/
+                    default: throw new Exception("No database type");
+                }
             }
             return factory;
         }
@@ -67,13 +98,32 @@ namespace RadialReview.Utilities
             }
             else
             {
-                new SchemaUpdate(config).Execute(false, true); 
+                new SchemaUpdate(config).Execute(false, true);
             }
 
             // this NHibernate tool takes a configuration (with mapping info in)
             // and exports a database schema from it
         }
-        
-       
+        private static void BuildMySqlSchema(Configuration config)
+        {
+            // delete the existing db on each run
+            /*if (!File.Exists(DbFile))
+            {
+                new SchemaExport(config).Create(false, true);
+            }
+            else
+            {
+                new SchemaUpdate(config).Execute(false, true);
+            }*/
+
+            //Update Database:
+            //new SchemaUpdate(config).Execute(true, true);
+            
+            //Kill/Create Database:
+            //new SchemaExport(config).Execute(true, true, false);
+
+        }
+
+
     }
 }

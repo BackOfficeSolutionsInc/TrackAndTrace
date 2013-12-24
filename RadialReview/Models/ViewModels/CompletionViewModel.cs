@@ -77,7 +77,7 @@ namespace RadialReview.Models
             Calculate();
         }
 
-        public CompletionModel(int RequiredCompleted, int TotalRequired):this(RequiredCompleted,TotalRequired,1,1)
+        public CompletionModel(int RequiredCompleted, int TotalRequired):this(RequiredCompleted,TotalRequired,0,0)
         {
 
         }

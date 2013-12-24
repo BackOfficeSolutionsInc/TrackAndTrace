@@ -19,9 +19,9 @@ namespace RadialReview.Accessors
         public const string FEEDBACK = "Feedback";
 
         private static string[] ApplicationCategories = new string[]{ 
-                "Feedback",
                 "Performance",
-                "Culture"
+                "Culture",
+                "Feedback",
         };
 
         private class Q
@@ -46,7 +46,6 @@ namespace RadialReview.Accessors
                 "Account Coordinator",
                 "Account Manager",
                 "Accountant",
-                "Accounting",
                 "Art Director",
                 "Business Development",
                 "CEO",
@@ -83,6 +82,7 @@ namespace RadialReview.Accessors
                 "Multimedia Strategist",
                 "Online Marketing Strategist",
                 "Operator",
+                "President",
                 "Production Manager",
                 "Project Manager",
                 "Project Strategist",

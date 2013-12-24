@@ -1,4 +1,4 @@
-﻿@model RadialReview.Models.ViewModels.UserOrganizationViewModel
+﻿@model RadialReview.Models.ViewModels.UserViewModel
 
 @{
     ViewBag.Title = "Home";
@@ -10,7 +10,7 @@
     <div class="col-md-3 col-sm-4 alignCenter hidden-xs">
         <div class="" onclick="window.location='@Url.Action("Profile","Account")'">
             <div>
-                @Html.Partial("_User", Model.User)
+                @Html.Partial("_UserModel", Model.User)
             </div>
             @if (!Model.GetCompletion().FullyComplete)
             {
@@ -25,7 +25,23 @@
     <div class="col-md-9 col-sm-8">
         <div class="review" style="min-height:800px">
             <h2 class="alignCenter">Welcome to Radial Review</h2>
-
+            <div id="lipsum">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi semper molestie mauris in cursus. Vestibulum auctor mauris eget ornare cursus. In quis enim libero. Nullam auctor ultricies consectetur. Integer mollis venenatis odio, eget semper lorem tristique vel. Donec bibendum libero quis metus rhoncus iaculis. Sed eleifend nisl et enim consequat hendrerit.
+                </p>
+                <p>
+                    Integer sed odio arcu. Nunc gravida lectus ut augue tincidunt, quis euismod sapien feugiat. Duis a nulla at diam lobortis hendrerit. Aliquam vitae luctus ipsum, at sodales neque. Integer fermentum gravida est, et tempor dolor vehicula vel. Sed purus ligula, adipiscing ac eros at, malesuada ultrices sem. Aenean non risus tempor arcu tempor eleifend a vitae ligula.
+                </p>
+                <p>
+                    Pellentesque accumsan, lacus ac suscipit adipiscing, urna neque luctus massa, placerat faucibus urna leo ut quam. Integer euismod felis quis lacus venenatis, sed porttitor elit ornare. Sed porttitor purus a leo porta, ac rutrum turpis sollicitudin. Phasellus nec tellus fringilla, mollis augue non, semper augue. Nulla pharetra lorem non nisl semper molestie. Sed lobortis gravida arcu, sit amet luctus diam tincidunt in. Pellentesque euismod, mi a iaculis faucibus, felis enim sollicitudin augue, et dapibus arcu augue id dolor. Aliquam quis urna non justo sodales sodales. Sed euismod est augue, et varius lectus auctor pharetra. Aenean viverra sit amet justo sed mollis. Praesent sodales lacus sit amet mauris tempus, placerat consectetur elit bibendum.
+                </p>
+                <p>
+                    Donec sit amet sodales nunc. Etiam a purus porta, porttitor augue ut, ultricies ante. Pellentesque porttitor pretium justo, ac aliquam odio. Phasellus ac interdum eros. Curabitur a congue est, quis sodales dolor. Aenean vehicula, elit quis dictum tempor, quam justo mollis erat, sit amet bibendum velit magna eget ipsum. Sed sit amet consectetur purus. Morbi vehicula sodales odio, mattis dictum nisl egestas id. Quisque id fringilla elit. Integer lobortis nunc vitae lorem fringilla, vel sodales elit egestas.
+                </p>
+                <p>
+                    Vivamus nec pretium tellus. Duis porta libero a congue volutpat. Nunc lacinia, nibh vel facilisis elementum, dui nulla luctus nibh, in egestas lacus elit a magna. Maecenas sagittis ac tortor vel bibendum. Donec non diam vitae odio viverra pretium. Donec non hendrerit nulla. Sed consectetur nunc vel justo rutrum gravida. Nam id tortor ligula. Mauris nec tempor felis. Curabitur id ultrices quam, vel consequat augue. Aenean et sem id orci scelerisque lobortis sit amet suscipit lorem. Integer congue imperdiet tortor, sed sollicitudin arcu pulvinar at. Donec varius quam eu orci iaculis blandit. Cras in vehicula tortor, in suscipit nulla. Etiam nulla velit, elementum eu tempor non, facilisis id justo. Fusce hendrerit augue imperdiet dignissim tempus.
+                </p>
+            </div>
         </div>
     </div>
 </div>

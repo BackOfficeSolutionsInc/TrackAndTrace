@@ -1,38 +1,666 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Home Page"; 
+    Layout = null;
+    var radialworks = "@radialworks";
 }
 
 @section scripts{
     @Scripts.Render("~/bundles/animations")
 }
 
-@section top{
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Title and metadata -->
+    <meta charset="utf-8">
+    <title>Radial</title>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <meta name="description" content="Conduct peer performance assessments efficiently with Radial">
+    <meta name="author" content="RadialWorks">
+    <!-- Styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <!--<link href="/static/css/bootstrap-responsive.css" rel="stylesheet">-->
+    <link href="~/Content/home/docs.css" rel="stylesheet" />
+    <link href="~/Content/home/prettify.css" rel="stylesheet" />
+    <link href="~/Content/home/custom.css" rel="stylesheet" />
+    <link href="~/Content/home/magnific-popup.css" rel="stylesheet" />
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
-</div>
-    }
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="/static/js/html5shiv.js"></script>
+    <![endif]-->
+    <!-- Le fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/static/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+    <!-- Google Analytics -->
+    <!--<script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-XXXXX-X']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.locatio  n.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>-->
+    <script id="twitter-wjs" src="/Radial_files/widgets.js"></script>
+    <script async="" src="/Radial_files/analytics.js"></script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-44741232-2', 'radialworks.com');
+        ga('send', 'pageview');
+    </script>
+    <style type="text/css"></style>
+    <style id="holderjs-style" type="text/css">
+        .holderjs-fluid {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            font-family: sans-serif;
+            margin: 0;
+        }
+    </style>
+</head>
+<body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
+    <!-------------- DON'T -------------->
+    <!-------------- LOOK --------------->
+    <!--------------  AT ---------------->
+    <!--------------  ME ---------------->
+    <!-------------- I'M ---------------->
+    <!-------------- SHY ---------------->
+    <!-------------- NAVBAR HOME -------------->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand anchorLink" href="#jumbo" rel="" id="anchor1">Radial</a>
+                <div id="circle"></div>
+                <!--<a href="../signup/" rel="" id="anchor1" class="anchorLink try">Try us Free</a>-->
+                <a href="#register" rel="" id="anchor1" class="anchorLink try">Register</a>
+                <div class="nav-collapse collapse pull-right">
+                    <ul class="nav">
+                        <li class="">
+                            <a href="#features" rel="" id="anchor1" class="anchorLink">Features</a>
+                        </li>
+                        <li class="">
+                            <a href="#testimonial" rel="" id="anchor1" class="anchorLink">Customers</a>
+                        </li>
+                        <li class="">
+                            <a href="#price" rel="" id="anchor1" class="anchorLink">Pricing</a>
+                        </li>
+                        <li class="">
+                            <a href="http://medium.com/@radialworks" target="_blank">Blog</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------- JUMBOTRON -------------->
+    <div class="jumbotron masthead" style="margin-top: -20px; height: 750px;">
+        <a name="jumbo" id="jumbo"></a>
+        <br>
+        <div class="container">
+            <br><br><br>
+            <a class="popup-vimeo" href="https://vimeo.com/22439234">
+                <img src="/Radial_files/radial2.png" style="max-height: 300px;">
+            </a>
+            <br><br>
+            <h3 class="visible-phone"><text style="color: #5b9bd5">Discover</text> your potential.</h3>
+            <h2 class="hidden-phone"><text style="color: #5b9bd5">Discover</text> your potential.</h2><br>
+            <p class="visible-phone" style="font-size: 15px; color: white; margin-bottom: 15px;">
+                <text style="color: #5b9bd5">Performance development done right.</text><br><br>
+                Streamline feedback gathering and rapidly complete 360 reviews.<br>
+                See your growth profile and watch your team improve.
+            </p>
+            <p class="hidden-phone" style="color:white; margin-bottom: 20px;">
+                <text style="color: #5b9bd5">Performance development done right.</text><br><br>
+                Streamline feedback gathering and rapidly complete 360 reviews.<br>
+                See your growth profile and watch your team improve.
+            </p>
+            <a class="popup-vimeo" href="https://vimeo.com/22439234">
+                <button class="btn btn-primary" type="button" href="https://vimeo.com/22439234"><i class="fa fa-play-circle-o"></i> Watch Video</button>
+            </a>
+            <a href="#features" rel="" id="anchor1" class="anchorLink">
+                <button class="btn btn-primary" type="button"><i class="fa fa-angle-double-down"></i> Tour Radial</button>
+            </a>
+            <br><br>
+            <ul class="masthead-links">
+                <li>
+                    <!--<a href="../signup/" rel="" id="anchor1" class="anchorLink"><span style="text-decoration: underline">Subscribe now</span>: Receive <text id="pop">early access</text> and locked <text id="pop">lifetime</text> rates.</a>-->
+                    <a href="#register" rel="" id="anchor1" class="anchorLink"><span style="text-decoration: underline">Register now</span>: Receive <text id="pop">early access</text>, lifetime <text id="pop">priority</text>, premium <text id="pop">rates</text>.</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-------------- BRANDS -------------->
+    <div class="bs-docs-social">
+        <div class="container">
+            <ul class="bs-docs-social-buttons">
+                <!--<a href="../customers/" style="text-decoration: none">-->
+                <li><img src="/Radial_files/placelogo1.png"></li>
+                <li><img src="/Radial_files/placelogo2.png"></li>
+                <li><img src="/Radial_files/placelogo3.png"></li>
+                <li><img src="/Radial_files/placelogo4.png"></li>
+                <li><img src="/Radial_files/placelogo5.png"></li>
+                <li><img src="/Radial_files/placelogo6.png"></li>
+                <li><img src="/Radial_files/placelogo7.png"></li>
+                <li><img src="/Radial_files/placelogo8.png"></li>
+                <!--</a>-->
+            </ul>
+            <blockquote>
+                <p>There's a compelling reason to learn more about the benefits of this software</p>
+                <small>Arnold Grear</small>
+            </blockquote>
+        </div>
+    </div>
+    <!-------------- FEATURES -------------->
+    <!--<div class="container">
+      <a name="features" id="features"></a>
+      <div class="marketing">
+        <br><h1>For the fast and the focused.</h1>
+        <p class="marketing-byline">Simple setup, instant feedback, fast followups.</p>
+        <div class="row-fluid">
+          <div class="span4 thumbnail">
+        <h2>Start simple.</h2>
+        <a class="anchorLink" href="../features/" rel="" id="anchor1">
+          <img class="marketing-img" src="/static/img/features/features1.png">
+        </a>
+        <p class="marketing-byline">Less is more</p>
+        <p>Reduce procedure to focus on your work. Easily manage teams, position requirements, and divide objectives into distributed goals for your entire team.</p>
+        <p><a class="anchorLink" href="../features/#features1" rel="" id="anchor1">Find out More</a></p>
+          </div>
+          <div class="span4 thumbnail">
+        <h2>360 Radial review.</h2>
+        <a class="anchorLink" href="../features/#features2" rel="" id="anchor1">
+          <img class="marketing-img" src="/static/img/features/features2.png">
+        </a>
+        <p class="marketing-byline">Feedback from  your circles</p>
+        <p>Rapidly deploy reviews with scaled slider questions. Radial anonymously aggregates ratings and feedback from each affiliated circle. </p>
+        <p><a class="anchorLink" href="../features/#features2" rel="" id="anchor1">Find out More</a></p>
+          </div>
+          <div class="span4 thumbnail">
+        <h2>Fast follow up.</h2>
+        <a class="anchorLink" href="../features/#features3" rel="" id="anchor1">
+          <img class="marketing-img" src="/static/img/features/features3.png">
+        </a>
+        <p class="marketing-byline">Track process, measure progress</p>
+        <p>Everyone on board. Follow the review process from the smallest team to the entire company. Automate reminder alerts for completion and followups.</p>
+        <p><a class="anchorLink" href="../features/#features3" rel="" id="anchor1">Find out More</a></p>
+          </div>
+        </div>
+      </div>
+      <br><br>-->
+    <div class="container">
+        <a name="features" id="features"></a>
+        <div class="marketing">
+            <br><h1><text id="pop">Fast</text> and <text id="pop">focused</text> reviews.</h1>
+            <h2 class="marketing-byline" style="color: #5a5a5a;">Because simplicity is better than procedure.<br>Put the <text id="pop">focus</text> back on your objectives.</h2>
+            <br>
+            <div class="row-fluid" id="equalize">
+                <div class="span4 thumbnail">
+                    <h2><text id="pop">Streamlined</text>.</h2>
+                    <p class="marketing-byline">Simple to setup</p>
+                    <!--<a class="anchorLink" href="../features/" rel="" id="anchor1">-->
+                    <a class="anchorLink" href="#features2" rel="" id="anchor1">
+                        <img class="marketing-img" src="/Radial_files/features1.png">
+                    </a>
+                    <p>Reduce procedure to focus on your work. Easily manage teams, position requirements, and divide objectives into goals for your entire team.</p>
+                    <!--<p><a class="anchorLink" href="../features/#features1" rel="" id="anchor1">Find out More</a></p>-->
+                    <p><a class="anchorLink" href="#features2" rel="" id="anchor1">Find out More</a></p>
+                </div>
+                <div class="span4 thumbnail">
+                    <h2><text id="pop">360 Radial</text> review.</h2>
+                    <p class="marketing-byline">Instant peer feedback</p>
+                    <!--<a class="anchorLink" href="../features/#features2" rel="" id="anchor1">-->
+                    <a class="anchorLink" href="#features2" rel="" id="anchor1">
+                        <img class="marketing-img" src="/Radial_files/features2.png">
+                    </a>
+                    <p>Rapidly deploy reviews with scaled slider questions. Radial anonymously aggregates ratings and feedback from each affiliated circle. </p>
+                    <!--<p><a class="anchorLink" href="../features/#features2" rel="" id="anchor1">Find out More</a></p>-->
+                    <p><a class="anchorLink" href="#features2" rel="" id="anchor1">Find out More</a></p>
+                </div>
+                <div class="span4 thumbnail">
+                    <h2><text id="pop">Fast</text> follow up.</h2>
+                    <p class="marketing-byline">100% completion rates</p>
+                    <!--<a class="anchorLink" href="../features/features3" rel="" id="anchor1">-->
+                    <a class="anchorLink" href="#features2" rel="" id="anchor1">
+                        <img class="marketing-img" src="/Radial_files/features3.png">
+                    </a>
+                    <p>Everyone on board. Follow the review process from the smallest team to the entire company. Automate reminder alerts for completion and followup.</p>
+                    <!--<p><a class="anchorLink" href="../features/#features3" rel="" id="anchor1">Find out More</a></p>-->
+                    <p><a class="anchorLink" href="#features2" rel="" id="anchor1">Find out More</a></p>
+                </div>
+            </div>
+            <i class="fa fa-angle-double-down fa-5x"></i>
+            <a name="features2" id="features2"></a>
+        </div>
+        <!-------------- MORE FEATURES -------------->
+        <div class="marketing">
+            <h1><text id="pop">Clarity</text> in <text id="pop">action</text>.</h1>
+            <h2 class="marketing-byline" style="color: #5a5a5a;">Because performance development isn't about the review.<br>It's about what we <text id="pop">accomplish</text> afterwards.</h2>
+            <br>
+            <div class="row-fluid">
+                <div class="span4 thumbnail">
+                    <h2><text id="pop">Growth</text> profiles.</h2>
+                    <p class="marketing-byline">Personal trend analysis</p>
+                    <!--<a class="anchorLink" href="../features/features4" rel="" id="anchor1">-->
+                    <a class="anchorLink" href="#testimonial" rel="" id="anchor1">
+                        <img class="marketing-img" src="/Radial_files/features4.png">
+                    </a>
+                    <p>Align personal and organization goals every quarter. Build your timeline of peer-recognized achievements, or identify complaints before they occur.</p>
+                    <!--<p><a class="anchorLink" href="../features/#features4" rel="" id="anchor1">Find out More</a></p>-->
+                    <p><a class="anchorLink" href="#testimonial" rel="" id="anchor1">Find out More</a></p>
+                </div>
+                <div class="span4 thumbnail">
+                    <h2><text id="pop">Action</text> reporting.</h2>
+                    <p class="marketing-byline">Insights at every level</p>
+                    <!--<a class="anchorLink" href="../features/features5" rel="" id="anchor1">-->
+                    <a class="anchorLink" href="#testimonial" rel="" id="anchor1">
+                        <img class="marketing-img" src="/Radial_files/features5.png">
+                    </a>
+                    <p>Connect review with action. Radial generates tailored action reports for every level from executive direction to team management.</p>
+                    <!--<p><a class="anchorLink" href="../features/#features5" rel="" id="anchor1">Find out More</a></p>-->
+                    <p><a class="anchorLink" href="#testimonial" rel="" id="anchor1">Find out More</a></p>
+                </div>
+                <div class="span4 thumbnail">
+                    <h2><text id="pop">Targeted</text> growth.</h2>
+                    <p class="marketing-byline">Visualize and calibrate</p>
+                    <!--<a class="anchorLink" href="../features/features6" rel="" id="anchor1">-->
+                    <a class="anchorLink" href="#testimonial" rel="" id="anchor1">
+                        <img class="marketing-img" src="/Radial_files/features6.png">
+                    </a>
+                    <p>Visualize performance on a weighted quadrant that calibrates as your team progresses. See where every member falls on the charts. </p>
+                    <!--<p><a class="anchorLink" href="../features/#features6" rel="" id="anchor1">Find out More</a></p>-->
+                    <p><a class="anchorLink" href="#testimonial" rel="" id="anchor1">Find out More</a></p>
+                </div>
+            </div>
+            <i class="fa fa-angle-double-down fa-5x"></i>
+        </div>
+        <br><br><br>
+    </div>
+    <br>
+    <!-------------- TESTIMONIAL BRANDS -------------->
+    <a name="testimonial" id="testimonial"></a>
+    <!--<div class="testimonialbrand">-->
+    <div style="background: url('/content/home/denim.png') repeat center center;">
+        <div class="container">
+            <div class="marketing">
+                <div class="row-fluid">
+                    <h1 class="hidden-phone" style="margin-top:50px;">See why our customers love Radial.</h1>
+                    <h2 class="visible-phone" style="margin-top:50px;">See why our customers love Radial.</h2>
+                    <p class="marking-byline" style="font-size: 20px;">These amazing clients aren't shy about sharing their experiences:<br>Our clients build up <text id="pop">satisfied employees</text> and <text id="pop">happy managers</text>:</p>
+                    <ul class="thumbnails" style="margin: 30px 45px 0px 45px;">
+                        <li class="span3">
+                            <!--<a class="thumbnail anchorLink" href="../customers/#customers1" rel="" id="anchor1">-->
+                            <a class="thumbnail anchorLink" href="#testimonial2" rel="" id="anchor1" style="height: 300px; position: relative;">
+                                <img src="/Radial_files/logo1.png" style="margin-top: 30px">
+                                <p class="marketing-byline" style="bottom: 0; position: absolute;">"We can say a lot of good things about Radial" ~ Claude Murphy</p>
+                            </a>
+                        </li>
+                        <li class="span3">
+                            <!--<a class="thumbnail anchorLink" href="../customers/#customers2" rel="" id="anchor1">-->
+                            <a class="thumbnail anchorLink" href="#testimonial2" rel="" id="anchor1" style="height: 300px; position: relative">
+                                <img src="/Radial_files/logo2.png" style="margin-top: 30px">
+                                <p class="marketing-byline" style="bottom: 0; position: absolute;">"The service has helped us in many unexpected ways" ~ Vince Francis</p>
+                            </a>
+                        </li>
+                        <li class="span3">
+                            <!--<a class="thumbnail anchorLink" href="../customers/#customers3" rel="" id="anchor1">-->
+                            <a class="thumbnail anchorLink" href="#testimonial2" rel="" id="anchor1" style="height: 300px; position: relative">
+                                <img src="/Radial_files/logo3.png">
+                                <p class="marketing-byline" style="bottom: 0; position: absolute;">"It's made completing the reviews so much faster" ~ Sheri Page</p>
+                            </a>
+                        </li>
+                        <li class="span3">
+                            <!--<a class="thumbnail anchorLink" href="../customers/#customers4" rel="" id="anchor1">-->
+                            <a class="thumbnail anchorLink" href="#testimonial2" rel="" id="anchor1" style="height: 300px; position: relative">
+                                <img src="/Radial_files/logo4.png" style="margin-top: 50px">
+                                <p class="marketing-byline" style="bottom: 0; position: absolute;">"It was literally the easiest part of my job" ~ Daisy Carlson</p>
+                            </a>
+                        </li>
+                    </ul>
+                    <h2 class="marking-byline" style="font-size: 20px;">
+                        <text id="pop">Simple</text>, <text id="pop">intuitive</text>, and all backed by our phenomenal support.
+                    </h2>
+                </div>
+                <i class="fa fa-angle-double-down fa-5x"></i>
+                <a name="testimonial2" id="testimonial2"></a>
+            </div>
+        </div>
+    </div>
+    <!-------------- TESTIMONIAL PROFILE -------------->
+    <div class="testimonial" style="background: url('/content/home/testimonial1.jpg') no-repeat center center; background-size: cover; height: 650px;">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span7"></div>
+                <!--<a href="../customers/#customers4" rel="" id="anchor1">-->
+                <a href="#price" rel="" id="anchor1">
+                    <div class="span5">
+                        <h1 class="quotation hidden-phone" style="padding-bottom: 50px;">I love the way I can freely choose my own review schedule; the time and effort saved is worth it alone <span style="font-size: 18px;">~ Erin Ingram, COO, Pocket Technologies Inc.</span></h1>
+                        <h3 class="quotation visible-phone" style="padding-bottom: 50px;">I love the way I can freely choose my own review schedule; the time and effort saved is worth it alone <span style="font-size: 18px;">~ Erin Ingram, COO, Pocket Technologies Inc.</span></h3>
+                        <p class="quotation">READ MORE</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <!-------------- PRICING -------------->
+    <a name="price" id="price"></a>
+    <div class="marketing">
+        <h1><text id="pop">Power</text> behind every dollar.</h1>
+        <h2 class="marketing-byline" style="color: #5a5a5a;"><text id="pop">Simple</text> pricing. <text id="pop">All</text> features carried in every package.<br>You can say the batteries come included.</h2>
+    </div>
+    <br><br>
+    <div id="pricing" style="margin-left: 25px; margin-right: 25px;">
+        <div class="container">
+            <div class="price_wrapper lite regular span3">
+                <div class="header">
+                    <span>Complete</span>
+                    <div class="price">
+                        <span>$ 3</span>
+                        /user monthly
+                        <br><span style="font-size: 12px; line-height: 40px;">Billed annually.</span>
+                    </div>
+                </div>
+                <div class="section">
+                    <h3 style="text-align: center;">COMPLETE package.<br><text id="pop" class="lead">Period</text>.</h3>
+                    <ul class="perks">
+                        <li>
+                            <i class="fa fa-male fa-fw"></i>
+                            Up to 150 users supported
+                        </li>
+                        <li>
+                            <i class="fa fa-heart fa-fw"></i>
+                            Setup support
+                        </li>
+                        <li>
+                            <i class="fa fa-envelope fa-fw"></i>
+                            Email and social helpdesk
+                        </li>
+                        <li>
+                            <i class="fa fa-unlock-alt fa-fw"></i>
+                            Enhanced business security
+                        </li>
+                        <li>
+                            <i class="fa fa-bolt fa-fw"></i>
+                            Streamlined review process
+                        </li>
+                        <li>
+                            <i class="fa fa-dashboard fa-fw"></i>
+                            Advanced reports and visuals
+                        </li>
+                    </ul>
+                    <div style="text-align: center;">
+                        <p style="color: green;">REGISTRATION STILL OPEN</p>
+                        <!--<a href="../signup/#signup2" class="btn btn-primary btn-large anchorLink" rel"" id="anchor1">Start Free</a>-->
+                        <a href="#register" class="btn btn-primary btn-large anchorLink" rel""="" id="anchor1">Request information</a>
+                    </div>
+                </div>
+            </div>
+            <div class="price_wrapper lite regular span3">
+                <div class="header">
+                    <span>Leadership</span>
+                    <div class="price">
+                        <span>$ 5</span>
+                        /user monthly
+                        <br><span style="font-size: 12px; line-height: 40px;">Billed annually.</span>
+                    </div>
+                </div>
+                <div class="section">
+                    <h3 style="text-align: center;">All Complete benefits<br><text id="pop" class="lead">+</text></h3>
+                    <ul class="perks">
+                        <li>
+                            <i class="fa fa-users fa-fw"></i>
+                            Unlimited user support
+                        </li>
+                        <li>
+                            <i class="fa fa-magic fa-fw"></i>
+                            Serviced setup ($549 fee)
+                        </li>
+                        <li>
+                            <i class="fa fa-exchange fa-fw"></i>
+                            1:1 workflow training ($459 fee)
+                        </li>
+                        <li>
+                            <i class="fa fa-certificate fa-fw"></i>
+                            Company branding &amp; themes
+                        </li>
+                        <li>
+                            <i class="fa fa-star-o fa-fw"></i>
+                            30 ad-hoc users
+                        </li>
+                        <li>
+                            <i class="fa fa-comments-o fa-fw"></i>
+                            Access to Radial community
+                        </li>
+                    </ul>
+                    <div style="text-align: center;">
+                        <p style="color: red;">OPENINGS COMING SOON</p>
+                        <!--<a href="../signup/#signup2" class="btn btn-primary btn-large anchorLink" rel"" id="anchor1">Start Free</a>-->
+                        <a class="btn btn-large anchorLink" rel"" id="anchor1" style="color: gray;">Registration closed</a>
+                    </div>
+                </div>
+            </div>
+            <div class="price_wrapper pro span3">
+                <div class="header">
+                    <span>Professional</span>
+                    <div class="price">
+                        <span>$ 6</span>
+                        /user monthly
+                        <br><span style="font-size: 12px; line-height: 40px;">Billed annually.</span>
+                    </div>
+                </div>
+                <div class="section">
+                    <h3 style="text-align: center;">All Leadership benefits<br><text id="pop" class="lead">+</text></h3>
+                    <ul class="perks">
+                        <li>
+                            <i class="fa fa-phone fa-fw"></i>
+                            Senior phone support<br>
+                        </li>
+                        <li>
+                            <i class="fa fa-magic fa-fw"></i>
+                            Serviced setup ($349 fee)
+                        </li>
+                        <li>
+                            <i class="fa fa-exchange fa-fw"></i>
+                            1:1 workflow training ($259 fee)
+                        </li>
+                        <li>
+                            <i class="fa fa-building-o fa-fw"></i>
+                            Company web address<br>
+                        </li>
+                        <li>
+                            <i class="fa fa-star-half-empty fa-fw"></i>
+                            100 ad-hoc users
+                        </li>
+                        <li>
+                            <i class="fa fa-book fa-fw"></i>
+                            Analyst trend assessment
+                        </li>
+                    </ul>
+                    <div style="text-align: center;">
+                        <p style="color: red;">OPENINGS COMING SOON</p>
+                        <!--<a href="../signup/#signup2" class="btn btn-primary btn-large anchorLink" rel"" id="anchor1">Start Free</a>-->
+                        <a class="btn btn-large anchorLink" rel""="" id="anchor1" style="color: gray;">Registration closed</a>
+                    </div>
+                </div>
+            </div>
+            <div class="price_wrapper standard regular span3">
+                <div class="header">
+                    <span>Ultimate</span>
+                    <div class="price">
+                        <span>$ 9</span>
+                        /user monthly
+                        <br><span style="font-size: 12px; line-height: 40px;">Billed annually.</span>
+                    </div>
+                </div>
+                <div class="section">
+                    <h3 style="text-align: center;">All Professional benefits<br><text id="pop" class="lead">+</text></h3>
+                    <ul class="perks">
+                        <li>
+                            <i class="fa fa-wrench fa-fw"></i>
+                            Dedicated account manager
+                        </li>
+                        <li>
+                            <i class="fa fa-cogs fa-fw"></i>
+                            Industry customization (<text id="pop">FREE</text>)
+                        </li>
+                        <li>
+                            <i class="fa fa-print fa-fw"></i>
+                            Full workflow preparation (<text id="pop">FREE</text>)
+                        </li>
+                        <li>
+                            <i class="fa fa-globe fa-fw"></i>
+                            Unlimited domain setups
+                        </li>
+                        <li>
+                            <i class="fa fa-star fa-fw"></i>
+                            300 ad-hoc users
+                        </li>
+                        <li>
+                            <i class="fa fa-briefcase fa-fw"></i>
+                            Live growth consultancy
+                        </li>
+                    </ul>
+                    <div style="text-align: center;">
+                        <p style="color: red;">OPENINGS COMING SOON</p>
+                        <!--<a href="../signup/#signup2" class="btn btn-primary btn-large anchorLink" rel"" id="anchor1">Start Free</a>-->
+                        <a class="btn btn-large anchorLink" rel"" id="anchor1" style="color: gray;">Registration closed</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <div class="marketing">
+        <!--<a href="../signup/#signup1" class="btn btn-primary btn-large anchorLink" rel"" id="anchor1" style="text-align: center; font-size: 35px; padding: 20px; line-height: 35px; margin-top: 30px; margin-bottom: 30px;">Request access to our Closed Beta</a>-->
+        <a href="#register" class="btn btn-primary btn-large anchorLink" rel""="" id="anchor1" style="text-align: center; font-size: 35px; padding: 20px; line-height: 35px; margin-top: 30px; margin-bottom: 30px;">Request access to our Closed Beta</a>
+        <p class="masthead-links">
+            <span style="text-decoration: underline">Register now</span>: Receive <text id="pop">early access</text>, lifetime <text id="pop">priority</text>, premium <text id="pop">rates</text>.
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+    <br><br>
+    <!-------------- CALL TO ACTION -------------->
+    <a name="register" id="register"></a>
+    <div class="cta">
+        <div class="container">
+            <div class="marketing" style="color: white; margin-bottom: 80px;">
+                <br><br><br>
+                <h1 class="hidden-phone"><text id="pop">Developing</text> growth is a <text id="pop">journey</text>.<br><br>Join us on ours.</h1>
+                <h2 class="visible-phone"><text id="pop">Actualization</text> is a <text id="pop">journey</text>.<br><br>Join us on ours.</h2>
+                <br><br>
+                <form class="hidden-phone" action="register/" method="POST">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="rKMvht5b4XMxUgvrmGSKzwracG5ZznsP">
+                    <p><i>Register with your email:</i></p>
+                    <input id="id_subscription_email" maxlength="250" name="subscription_email" type="email" class="required email" required="True" placeholder="Lets find out if we&#39;re right for each other" style="height: 40px; text-align: center; width: 550px;">
+                    <br><br>
+                    <input type="submit" value="Start today" class="btn btn-primary btn-large">
+                </form>
+                <form class="visible-phone" action="/register/" method="POST">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="rKMvht5b4XMxUgvrmGSKzwracG5ZznsP">
+                    <p><i>Register with your email:</i></p>
+                    <input id="id_subscription_email" maxlength="250" name="subscription_email" type="email" class="required email" required="True" placeholder="Lets see if we&#39;re right for each other" style="height: 40px; text-align: center; width: 240px; display: inline-block">
+                    <br><br>
+                    <input type="submit" value="Start today" class="btn btn-primary btn-large">
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    <!-------------- ARTICLES -------------->
+    <!-------------- FOOTER -------------->
+    <footer class="footer" style="">
+        <a name="footer" id="footer"></a>
+        <div class="container">
+            <div class="row-fluid">
+                <div class="span4" style="text-align: left">
+                    <h4 class="muted" style="font-size: 18px;">Who we are:</h4><br>
+                    <p style="margin-bottom: 20px;">Radial commits to maximize every human potential by streamlining professional talent development to allow any organization to amplify growth, profit, and actualization.</p>
+                    <a href="/Radial_files/Radial.htm" class="logo">
+                        <img src="/Radial_files/radial.png" style="max-height: 80px; margin-bottom: 25px;">
+                    </a>
+                </div>
+                <div class="span4" style="text-align: left">
+                    <h4 class="muted" style="font-size: 18px;">Lets hear from you!</h4><br>
+                    <p>Toll-free: <span style="color:#fff; font-size: 25px;">1-800-123-4567</span></p>
+                    <p>Phone: 402-123-4567</p>
+                    <p>Fax: 402-234-5678</p>
+                    <p style="margin-bottom: 20px;">Email: <a href="mailto:contact@radialworks.com">contact@radialworks.com</a></p>
+                    <a href="/contact/" class="btn btn-inverse btn-large" style="margin-bottom: 25px;">CONTACT US</a>
+                </div>
+                <div class="span4" style="text-align: left">
+                    <form action="/thankyou/" method="POST">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="rKMvht5b4XMxUgvrmGSKzwracG5ZznsP">
+                        <h4 class="muted" style="font-size: 18px;">Feedback? Questions?<br> Talk to a real person.</h4><br>
+                        <input id="id_full_name" maxlength="250" name="full_name" type="text" placeholder="Name">
+                        <input id="id_email" maxlength="250" name="email" class="required email" type="email" placeholder="E-mail*">
+                        <textarea id="id_comments" name="comments" required="True" placeholder="Questions/Comments"></textarea>
+                        <input type="submit" value="Send" class="btn btn-primary" style="display: inline-block">
+                    </form>
+                </div>
+            </div>
+            <ul class="footer-links">
+                <li><a href="/privacy/">Privacy Policy</a></li>
+                <li class="muted">·</li>
+                <li><a href="/tos/">Terms of Service</a></li>
+                <li class="muted">·</li>
+                <li>© Copyright 2013 Radial, Inc. All rights reserved.</li>
+            </ul>
+        </div>
+    </footer>
+    <!-------------- STICKY BAR -------------->
+    <div class="sticky-bar">
+        <div class="hidden-phone" id="mc_embed_signup" style="padding-top: -20px; padding-left: 30px;">
+            <form action="/register/" method="POST">
+                <input type="hidden" name="csrfmiddlewaretoken" value="rKMvht5b4XMxUgvrmGSKzwracG5ZznsP">
+                <input id="id_subscription_email" maxlength="250" name="subscription_email" type="email" class="required email" required="True" placeholder="Why wait? Get updated." style="margin-bottom: 0px; margin-top: -27px; display: inline-block">
+                <input type="submit" value="Subscribe!" class="btn btn-primary" style="display: inline-block; margin-top: -27px;">
+                <a class="btn btn-primary" href="/contact/" style="display: inline-block; margin-top: -27px;">Contact Us</a>
+                <a class="iconsocial in" href="http://www.linkedin.com/company/radial-works" target="_blank" style="display: inline-block; margin-top: 10px;"></a>
+                <a class="iconsocial tw" href="https://twitter.com/RadialWorks" target="_blank" style="display: inline-block; margin-top: 10px;"></a>
+                <a class="iconsocial fb" href="https://www.facebook.com/pages/Radial/339264716218641" target="_blank" style="display: inline-block; margin-top: 10px;"></a>
+                <a class="iconsocial gp" href="https://plus.google.com/114028958260667352075/" target="_blank" style="display: inline-block; margin-top: 10px;"></a>
+            </form>
+        </div>
+        <div class="visible-phone" style="padding-top: 10px; padding-left: 10px;">
+            <a class="iconsocial in" href="http://www.linkedin.com/company/radial-works" target="_blank" style="display: inline-block;"></a>
+            <a class="iconsocial tw" href="https://twitter.com/RadialWorks" target="_blank" style="display: inline-block;"></a>
+            <a class="iconsocial fb" href="https://www.facebook.com/pages/Radial/339264716218641" target="_blank" style="display: inline-block;"></a>
+            <a class="iconsocial gp" href="https://plus.google.com/114028958260667352075/" target="_blank" style="display: inline-block;"></a>
+        </div>
     </div>
-</div>
+    <!-- Le javascript
+    ================================================== -->
+    <script src="/Radial_files/jquery.js"></script>
+    <script src="/Radial_files/jquery.magnific-popup.js"></script>
+    <!-- MAGNIFIC POPUP INITIATE -->
+    <script>$('.popup-vimeo').magnificPopup({ disableOn: 700, type: 'iframe', mainClass: 'mfp-fade', iframe: { patterns: { vimeo: { index: 'vimeo.com/', id: '/', src: '//player.vimeo.com/video/%id%?autoplay=1' }, } } });</script>
+    <!-- SMOOTH SCROLL INITIATE -->
+    <script>$(document).ready(function (e) { var str = location.hash; var n = str.replace("_temp", ""); $('html,body').animate({ scrollTop: $(n).offset().top }, 500); });</script>
+    <!-- TWITTER TIMELINE INITIATE -->
+    <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + "://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");</script>
+    <!-- EQUALHEIGHT INITIATE -->
+    <script type="text/javascript">$(function () { $('#equalize').equalHeights(); });</script>
+    <script type="text/javascript" src="/Radial_files/jQuery.equalHeights.js"></script>
+    <script type="text/javascript" src="/Radial_files/widgets.js"></script>
+    <script src="/Radial_files/bootstrap.js"></script>
+    <script src="/Radial_files/bootstrap.min.js"></script>
+    <script src="/Radial_files/holder.js"></script>
+    <script src="/Radial_files/prettify.js"></script>
+    <script src="/Radial_files/application.js"></script>
+    <script src="/Radial_files/fluidvids.js"></script>
+
+    <script id="hiddenlpsubmitdiv" style="display: none;"></script>
+    <script>try { for (var lastpass_iter = 0; lastpass_iter < document.forms.length; lastpass_iter++) { var lastpass_f = document.forms[lastpass_iter]; if (typeof (lastpass_f.lpsubmitorig2) == "undefined") { lastpass_f.lpsubmitorig2 = lastpass_f.submit; lastpass_f.submit = function () { var form = this; var customEvent = document.createEvent("Event"); customEvent.initEvent("lpCustomEvent", true, true); var d = document.getElementById("hiddenlpsubmitdiv"); if (d) { for (var i = 0; i < document.forms.length; i++) { if (document.forms[i] == form) { d.innerText = i; } } d.dispatchEvent(customEvent); } form.lpsubmitorig2(); } } } } catch (e) { }</script>
+</body>
+</html>

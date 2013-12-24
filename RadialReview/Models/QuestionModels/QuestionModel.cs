@@ -16,7 +16,7 @@ namespace RadialReview.Models
         public virtual DateTime DateCreated { get; set; }
         public virtual LocalizedStringModel Question { get; set; }
         public virtual long CreatedById { get; set; }
-        public virtual IList<QuestionKeyValues> KeyValues { get; set; }
+        //public virtual IList<QuestionKeyValues> KeyValues { get; set; }
         public virtual IList<LongModel> DisabledFor { get; set; }
         /*public virtual ApplicationWideModel ForApplication { get; set; }
         public virtual OrganizationModel ForOrganization { get; set; }
@@ -30,7 +30,6 @@ namespace RadialReview.Models
         public QuestionModel() :base()
         {
             DateCreated = DateTime.UtcNow;
-            KeyValues = new List<QuestionKeyValues>();
             DisabledFor = new List<LongModel>();
             Question = new LocalizedStringModel();
         }
@@ -108,9 +107,9 @@ namespace RadialReview.Models
             HasMany(x => x.DisabledFor)
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();
-            HasMany(x => x.KeyValues)
+            /*HasMany(x => x.KeyValues)
                 .Not.LazyLoad()
-                .Cascade.SaveUpdate();
+                .Cascade.SaveUpdate();*/
 
         }
     }

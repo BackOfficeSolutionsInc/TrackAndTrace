@@ -132,7 +132,7 @@
     {
         <tr>
             <td class="small-centered">
-                @if (!q.DisabledFor.Any(x => x.Long == Model.User.Id))
+                @if (!q.DisabledFor.Any(x => x.Value == Model.User.Id))
                 {
                     <span data-id="@q.Id" data-type="questionEnabled" class="glyphicon glyphicon-ok editable"></span>
                 }

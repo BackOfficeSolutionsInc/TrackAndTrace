@@ -58,6 +58,7 @@ namespace RadialReview.Controllers
             long reviewId = -1;
             int page = -1;
 
+
             if (ParseAndSave(collection, out reviewId, out page))
             {
                 return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
@@ -80,6 +81,12 @@ namespace RadialReview.Controllers
                 }
 
                 var user = GetUser();
+
+                var review=_ReviewAccessor.GetReview(user, reviewId);
+
+                if (review.ForUserId != user.Id)
+                    throw new PermissionsException("You cannot take this review.");
+
                 var allComplete = true;
 
                 var values = collection.AllKeys.Select(k => collection[k]).ToList();
@@ -129,6 +136,10 @@ namespace RadialReview.Controllers
         {
             var user = GetUser();
             var review = _ReviewAccessor.GetReview(user, id);
+
+            if (review.ForUserId != user.Id)
+                throw new PermissionsException("You cannot take this review.");
+
             ViewBag.ReviewId = id;
             ViewBag.OrganizationId = user.Organization.Id;
             ViewBag.Page = page;
@@ -276,6 +287,8 @@ namespace RadialReview.Controllers
             public long yAxis { get; set; }
             public List<AnswerModel> AnswersAbout { get; set; }
             public Dictionary<long, String> Categories { get; set; }
+            public String ManagerNotes { get; set; }
+
         }
 
         private ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
@@ -319,8 +332,8 @@ namespace RadialReview.Controllers
         public ActionResult ClientDetails(long id)
         {
             var review = _ReviewAccessor.GetReview(GetUser(), id);
-
-            if (review.ClientReview.Visible)
+            var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId));
+            if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization)
             {
                 var model = GetReviewDetails(review);
                 return View(model);

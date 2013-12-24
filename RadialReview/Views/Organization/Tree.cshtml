@@ -20,6 +20,15 @@
             font: 10px sans-serif;
         }
 
+            .node.organizations circle {
+                stroke: black;
+                fill: #E4E4E4;
+            }
+            .node.admin circle {
+                stroke: #ff7878;
+                fill:#ffbcbc;
+            }
+
         .link {
             fill: none;
             stroke: #ccc;
@@ -61,13 +70,26 @@
             var node = svg.selectAll("g.node")
                 .data(nodes)
               .enter().append("g")
-                .attr("class", "node")
+                .attr("class", function (d) { return "node "+d.class })
                 .attr("transform", function (d) { return "translate(" + d.y + "," + d.x + ")"; })
 
             node.append("a")
-                .attr("xlink:href", function (d) { return "/User/Details/" + d.id })
+                .attr("xlink:href", function (d) {
+                    if (d.id != -1) {
+                        return "/User/Details/" + d.id;
+                    }
+                })
                 .append("circle")
-                .attr("r", 4.5);
+                .attr("r", 4.5)
+                .append("title")
+                .text(function (d) {
+                    if (d.class == "admin") {
+                        return "Administrator";
+                    }else if (d.class == "organizations")
+                    {
+                        return "Organization";
+                    }
+                });
 
             var box = node.append("a")
                 .attr("xlink:href", function (d) { return "/User/Details/" + d.id })

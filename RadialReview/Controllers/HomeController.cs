@@ -14,9 +14,7 @@ namespace RadialReview.Controllers
         {
             if (IsLoggedIn())
             {
-                
-
-                return View("Backend", new UserOrganizationViewModel() { User = GetUser() });
+                return View("Backend", new UserViewModel() { User = GetUserModel() });
             }
             return View();
         }

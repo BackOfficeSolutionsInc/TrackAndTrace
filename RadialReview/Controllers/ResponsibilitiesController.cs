@@ -74,9 +74,6 @@ namespace RadialReview.Controllers
             var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), responsibilityGroupId).HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
             var model = new ResponsibilityTablesViewModel(r);
 
-
-
-
             if (r is UserOrganizationModel)
             {
                 ViewBag.Page = "Members";

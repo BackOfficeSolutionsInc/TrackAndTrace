@@ -60,8 +60,15 @@ namespace RadialReview.Controllers
 
             for(int i=0;i<orgTeams.Count();i++)
             {
-                teams[i].Team = teams[i].Team.HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
-                teams[i].Members = _TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id).ToListAlive().Count();
+                try
+                {
+                    teams[i].Team = teams[i].Team.HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
+                    teams[i].Members = _TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id).ToListAlive().Count();
+                }
+                catch (Exception e)
+                {
+                    log.Error(e);
+                }
 
             }
             var model = new OrganizationTeamsViewModel() { Teams = teams };

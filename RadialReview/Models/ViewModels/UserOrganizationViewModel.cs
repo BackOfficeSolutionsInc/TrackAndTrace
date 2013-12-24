@@ -33,9 +33,9 @@ namespace RadialReview.Models.ViewModels
         //public List<SelectListItem> PotentialManagers { get; set; }
     }
 
-    public class UserOrganizationViewModel : ICompletable
+    public class UserViewModel : ICompletable
     {
-        public UserOrganizationModel User { get; set; }
+        public UserModel User { get; set; }
 
         public int ReviewToComplete { get; set; }
 
@@ -44,11 +44,16 @@ namespace RadialReview.Models.ViewModels
             int complete = 1;
             int total = 1;
 
-            complete += (User.User.ImageGuid != null).ToInt(); 
+            complete += (User.ImageGuid != null).ToInt(); 
             total++;
 
             return new CompletionModel(complete, total);
-
         }
+    }
+
+    public class UserOrganizationDetails
+    {
+        public UserOrganizationModel User { get; set; }
+        public List<String> Responsibilities { get; set; }
     }
 }

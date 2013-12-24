@@ -36,7 +36,7 @@
                 <td>
                     @Html.Partial("_Completion", review.Review)
                 </td>
-                <td class="rightButton"><a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.details</a></td>
+                <td class="rightButton"><a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="btn btn-primary">@RadialReview.Properties.DisplayNameStrings.details</a></td>
             </tr>
         }
     </table>

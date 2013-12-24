@@ -20,7 +20,7 @@
                 <th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>
                 <th style="width:10px;"></th>
             </tr>
-            @foreach (var review in Model.Reviews.OrderByDescending(x=>x.CreatedAt))
+            @foreach (var review in Model.Reviews.OrderByDescending(x => x.CreatedAt))
             {
                 <tr class="startHidden">
                     <td>@review.Name</td>
@@ -34,7 +34,7 @@
                             </div>
                         *@
                     </td>
-                    <td style="padding:2px;">
+                    <td style="padding:2px;" class="rightButton">
                         @if ((review.DueDate < DateTime.UtcNow) || review.GetCompletion().Illegal)
                         {
                             <div class="btn btn-default disabled fullWidth">@RadialReview.Properties.DisplayNameStrings.done</div>
@@ -42,6 +42,12 @@
                         else
                         {
                             <a class="btn btn-primary fullWidth" href="@Url.Action("Take", new { id = review.Id, page=0})">@RadialReview.Properties.DisplayNameStrings.finish</a>
+                        }
+                    </td>
+                    <td class="rightButton">
+                        @if (review.ClientReview.Visible)
+                        {
+                            <a class="btn btn-info" href="Review/ClientDetails/@review.Id">Results</a>
                         }
                     </td>
                 </tr>

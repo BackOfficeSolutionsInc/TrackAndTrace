@@ -449,14 +449,14 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void ChangeRole(UserModel caller, long roleId)
+        public void ChangeRole(UserModel caller,UserOrganizationModel callerUserOrg, long roleId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     caller = s.Get<UserModel>(caller.Id);
-                    if (caller.UserOrganization.Any(x => x.Id == roleId))
+                    if ((callerUserOrg!=null && callerUserOrg.IsRadialAdmin) || caller.UserOrganization.Any(x => x.Id == roleId))
                         caller.CurrentRole = roleId;
                     else
                         throw new PermissionsException();

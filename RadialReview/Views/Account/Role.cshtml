@@ -15,7 +15,7 @@
         <tr>
             <td width="10px;"></td>
             <td>
-                <a href="@(Url.Action("SetRole","Account", new { id = userOrg.Id, ReturnUrl=ViewBag.ReturnUrl }))">@userOrg.GetTitles().Surround(""," at ")@(userOrg.Organization.Name)</a>
+                <a href="@(Url.Action("SetRole","Account", new { id = userOrg.Id, ReturnUrl=ViewBag.ReturnUrl }))">@userOrg.GetTitles().Surround(""," at ")@(userOrg.Organization.Name) <span style="color:gray">@(userOrg.ManagingOrganization?" (Admin)":"")</span></a>
             </td>
         </tr>
     }

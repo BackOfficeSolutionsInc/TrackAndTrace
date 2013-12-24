@@ -3,23 +3,111 @@
 @{
     ViewBag.Title = "ClientDetails";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var charts = Model.Review.ClientReview.Charts.ToListAlive();
+    var feedbacks = Model.Review.ClientReview.FeedbackIds.ToListAlive().GroupBy(x => x.Value).Select(x => x.First()).ToList();
+}
+<div class="review" style="padding-top:20px;">
+    @if (charts.Count > 0)
+    {
+        <h3>Charts:</h3>
+        foreach (var chart in charts)
+        {
+            <div>
+                <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id"></svg>
+
+            </div>
+        }
+    }
+
+    @if (feedbacks.Count > 0)
+    {
+        <h3>Feedback:</h3>
+        <div style="margin-left:20px">
+            @foreach (var f in feedbacks)
+            {
+            <div id="feedback_@f.Value" class="feedback">
+                @(((RadialReview.Models.FeedbackAnswer)Model.AnswersAbout.FirstOrDefault(x => x.Id == f.Value)).Feedback)
+            </div>
+            <div class="smallBreak"></div>
+            <div class="smallBreak"></div>
+            }
+        </div>
+    }
+</div>
+@using (Html.BeginStyles())
+{
+    <style>
+        .chartButton {
+            top: 39px;
+            position: absolute;
+            right: 39px;
+        }
+
+        .sidebar {
+            padding: 10px;
+            font-size: 12px;
+            background-color: #FDFDFD;
+            border: 1px solid #DFDFDF;
+            -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
+            box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 3px;
+            border: 1px solid #E9E9E9;
+            color: #6F6F6F;
+        }
+    </style>
+    <link href="~/Content/chart.css" rel="stylesheet" />
 }
 
-@using(Html.BeginScripts())
+
+@using (Html.BeginScripts())
 {
-    <script>
-        ReviewId    = @Model.Review.ForReviewsId;
-        LegendData  = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
-        AxisSelect   = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
-        AxisLabel  = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
-        ForUserId = @Model.Review.ForUserId;
-    </script>
+
     <script src="/scripts/d3/d3.js"></script>
     <script src="/scripts/d3/d3.csv.js"></script>
     <script src="/scripts/d3/ScatterChart.js"></script>
+    <script>
+        var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+        var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
+        var legendData = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
+
+        var dataUrl = "/Data/ReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId";
+        d3.csv(dataUrl, function (data) {
+            var dataFunc = function (dd, redrawFunc) {
+                dd.data = data;
+                redrawFunc();
+            };
+
+            function chartIt(id, x, y) {
+                var chart = new Chart(
+                    "#chart_" + id,
+                    function () {
+                        var xindex = axisSelect.indexOf(x),
+                            yindex = axisSelect.indexOf(y);
+                        var xlabel = axisLabels[xindex],
+                            ylabel = axisLabels[yindex];
+                        return {
+                            xAxis: x,
+                            yAxis: y,
+                            //radiusAxis: r,
+                            xAxisLabel: xlabel,
+                            yAxisLabel: ylabel
+                        }
+                    }, dataFunc, legendData);
+            };
+
+
+            @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
+            {
+                @:chartIt("@(chart.Id)", "@(chart.Item1)", "@(chart.Item2)");
+                                    }
+
+
+
+        });
+    </script>
 }
 
-@foreach(var chart in Model.Review.ClientReview.Charts)
-{
-    
-}

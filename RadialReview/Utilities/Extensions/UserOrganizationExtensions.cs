@@ -56,6 +56,12 @@ namespace RadialReview
                 return "/i/userplaceholder";
             return "/i/" + self.User.ImageGuid;
         }
+        public static String ImageUrl(this UserModel self)
+        {
+            if (self == null || self.ImageGuid == null)
+                return "/i/userplaceholder";
+            return "/i/" + self.ImageGuid;
+        }
         public static String ImageUrl(this UserOrganizationModel self, int width, int height)
         {
             if (self.User == null || self.User.ImageGuid == null)

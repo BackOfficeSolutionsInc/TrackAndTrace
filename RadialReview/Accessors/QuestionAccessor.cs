@@ -48,11 +48,11 @@ namespace RadialReview.Accessors
                     var foundEnabled = s.GetByMultipleIds<QuestionModel>(enabled);
                     foreach (var f in foundEnabled)
                     {
-                        var found = f.DisabledFor.ToList().FirstOrDefault(x => x.Long == forUserId);
+                        var found = f.DisabledFor.ToList().FirstOrDefault(x => x.Value == forUserId);
                         if (found != null)
                         {
                             var newList = f.DisabledFor.ToList();
-                            newList.RemoveAll(x => x.Long == forUserId);
+                            newList.RemoveAll(x => x.Value == forUserId);
                             f.DisabledFor = newList;
                             s.Delete(s.Load<LongModel>(found.Id));
                         }
@@ -66,9 +66,9 @@ namespace RadialReview.Accessors
                     var foundDisabled = s.GetByMultipleIds<QuestionModel>(disabled);
                     foreach (var f in foundDisabled)
                     {
-                        if (!f.DisabledFor.Any(x => x.Long == forUserId))
+                        if (!f.DisabledFor.Any(x => x.Value == forUserId))
                         {
-                            f.DisabledFor.Add(new LongModel() { Long = forUserId });
+                            f.DisabledFor.Add(new LongModel() { Value = forUserId });
                             s.SaveOrUpdate(f);
                         }
                     }
