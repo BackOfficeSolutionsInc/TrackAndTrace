@@ -12,7 +12,7 @@
             <label>Category:</label>
         </div>
         <div class="col-sm-9 catContainer">
-            @Html.DropDownListFor(x => x.CategoryId, Model.Categories.Select(x =>
+            @Html.DropDownListFor(x => x.CategoryId, Model.Categories.OrderBy(x => x.Id == -1).ThenBy(y => y.Id==1).ThenBy(y => y.Id).Select(x =>
                     new SelectListItem()
                     {
                         Selected = (x.Id == Model.CategoryId),

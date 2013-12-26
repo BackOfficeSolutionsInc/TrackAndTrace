@@ -38,7 +38,7 @@ namespace RadialReview.Controllers
 
                 var nexusId = NexusAccessor.JoinOrganizationUnderManager(user,model.ManagerId, model.IsManager, model.Position.PositionId, model.Email,model.FirstName,model.LastName);
 
-                return Json(new ResultObject(false,"Success"));
+                return Json(new ResultObject(false,"Successfully added "+model.FirstName+" "+model.LastName+"."));
             }
             catch (RedirectException e)
             {

@@ -341,8 +341,8 @@ namespace RadialReview.Accessors
                 @class=classes.FirstOrDefault()+" "+classStr,
                 children = users.ToListAlive().Select(x => 
                     Children(
-                        x.GetName(),
                         x.GetTitles(),
+                        x.GetName(),
                         String.Join(" ",x.Teams.Select(y=>y.Team.Name.Replace(' ','_'))),
                         x.Id,
                         newClasses,

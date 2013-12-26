@@ -4,12 +4,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<ul id="Selectors" class="noBullet "></ul>
 <div class="row">
     <div class="col-md-9">
         <div id="Chart"></div>
     </div>
     <div class="col-md-3 noselect">
-        <ul id="Selectors" class="noBullet "></ul>
     </div>
 </div>
 
@@ -61,11 +61,11 @@
     <script>
         allClasses = [];
 
-        var width = 960,
-            height = 500;
+        var width = 1224,
+            height = 1224;
 
         var tree = d3.layout.tree()
-            .size([height, width - 250]);
+            .size([height, width-250]);
 
         var diagonal = d3.svg.diagonal()
             .projection(function (d) { return [d.y, d.x]; });
@@ -94,7 +94,7 @@
             
             node.append("a")
                 .attr("xlink:href", function (d) {
-                    if (d.id != -1) {
+                    if (d.id != "-1") {
                         return "/User/Details/" + d.id;
                     }
                 })
@@ -141,24 +141,22 @@
             var box = node.append("a")
                 .attr("xlink:href", function (d) { return "/User/Details/" + d.id })
                 .append("g")
-                .attr("transform", function (d) { return "translate(0,-30)"; });
+                .attr("transform", function (d) { return "translate(0,-4)"; });
 
             box.append("text")
-                .attr("dx", function (d) { return d.children ? -0 : 0; })
+                .attr("dx", function (d) { return d.children ? -7 : 7; })
                 .attr("dy", 3)
                 .attr("text-anchor", function (d) { return d.children ? "end" : "start"; })
                 .text(function (d) { return d.name; })
-                .style("font-size", "14px")
-                .style("text-anchor", "middle");
+                .style("font-size", "10px")
 
             box.append("text")
-                .attr("dx", function (d) { return d.children ? -0 : 0; })
-                .attr("dy", 18)
+                .attr("dx", function (d) { return d.children ? -7 : 7; })
+                .attr("dy", 10)
                 .attr("text-anchor", function (d) { return d.children ? "end" : "start"; })
                 .text(function (d) { return d.subtext; })
-                .style("font-size", "12px")
+                .style("font-size", "8px")
                 .style("fill", "gray")
-                .style("text-anchor", "middle");
         });
 
         d3.select(self.frameElement).style("height", height + "px");

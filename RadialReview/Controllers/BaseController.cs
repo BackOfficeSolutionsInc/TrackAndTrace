@@ -235,7 +235,8 @@ namespace RadialReview.Controllers
                     //filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
                     filterContext.Controller.ViewBag.UserName = name;
                     filterContext.Controller.ViewBag.IsManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization;
-                    filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization;                        
+                    filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization;    
+                    filterContext.Controller.ViewBag.UserId = oneUser.Id;                    
                 }
                 else
                 {
