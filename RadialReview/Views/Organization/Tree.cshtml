@@ -4,8 +4,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-<div id="Chart"></div>
+<div class="row">
+    <div class="col-md-9">
+        <div id="Chart"></div>
+    </div>
+    <div class="col-md-3 noselect">
+        <ul id="Selectors" class="noBullet "></ul>
+    </div>
+</div>
 
 @using (Html.BeginStyles())
 {
@@ -34,6 +40,17 @@
             stroke: #ccc;
             stroke-width: 1.5px;
         }
+
+        .highlighted text, .highlighted {
+            fill: red;
+            color: red;
+        }
+
+        .selector {
+            text-transform: capitalize;
+            cursor:pointer;
+        }
+
     </style>
 }
 
@@ -42,6 +59,8 @@
 {
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script>
+        allClasses = [];
+
         var width = 960,
             height = 500;
 
@@ -72,7 +91,7 @@
               .enter().append("g")
                 .attr("class", function (d) { return "node "+d.class })
                 .attr("transform", function (d) { return "translate(" + d.y + "," + d.x + ")"; })
-
+            
             node.append("a")
                 .attr("xlink:href", function (d) {
                     if (d.id != -1) {
@@ -81,6 +100,17 @@
                 })
                 .append("circle")
                 .attr("r", 4.5)
+                .attr("class", function (d) {
+                    var classes = d.class.split(" ");
+                    for(var i=0;i<classes.length;i++)
+                    {
+                        var item = classes[i].trim();
+                        if (allClasses.indexOf(item)==-1 && item!="") {
+                            allClasses.push(item);
+                        }
+                    }
+                    return d.class;
+                })
                 .append("title")
                 .text(function (d) {
                     if (d.class == "admin") {
@@ -90,6 +120,23 @@
                         return "Organization";
                     }
                 });
+
+            for (var i = 0; i < allClasses.length; i++)
+            {
+                $("#Selectors").append("<li data-highlight='" + allClasses[i] + "' class='selector " + allClasses[i] + " noSelect'>" + allClasses[i].replace(/_/g, ' ') + "</li>");
+                var c = allClasses[i];
+
+
+                $("." + c).hover(
+                    function () {
+                        var clss=$(this).data("highlight");
+                        $("." + clss).attr("class", function (i, classNames) { return classNames + " highlighted"; });
+                    },
+                    function () {
+                        var clss = $(this).data("highlight");
+                        $("." + clss).attr("class", function (i, classNames) { return classNames.replace("highlighted", "");});
+                    });
+            }
 
             var box = node.append("a")
                 .attr("xlink:href", function (d) { return "/User/Details/" + d.id })

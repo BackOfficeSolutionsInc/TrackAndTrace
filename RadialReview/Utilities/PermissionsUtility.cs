@@ -66,6 +66,9 @@ namespace RadialReview.Utilities
 
         public PermissionsUtility EditUserOrganization(long userId)
         {
+            if (caller.Id == userId)
+                return this;
+
             return ManagesUserOrganization(userId);
 
             /*
@@ -198,7 +201,7 @@ namespace RadialReview.Utilities
             if (caller.ManagingOrganization)
             {
                 var subordinate=session.Get<UserOrganizationModel>(userOrganizationId);
-                if (subordinate.Organization.Id == caller.Organization.Id)
+                if (subordinate!=null && subordinate.Organization.Id == caller.Organization.Id)
                     return this;
             }
 

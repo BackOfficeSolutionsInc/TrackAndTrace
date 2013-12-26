@@ -235,7 +235,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditTeam(teamId).EditUserOrganization(userOrgId);
+                    PermissionsUtility.Create(s, caller).EditTeam(teamId).ManagesUserOrganization(userOrgId);
                     var team = s.Get<OrganizationTeamModel>(teamId);
 
                     if (team.Type != TeamType.Standard)
@@ -252,8 +252,7 @@ namespace RadialReview.Accessors
 
                     var teamDuration = new TeamDurationModel(uOrg, team, caller.Id);
 
-                    uOrg.Teams.Add(teamDuration);
-                    s.Update(uOrg);
+                    s.Save(teamDuration);
 
                     tx.Commit();
                     s.Flush();

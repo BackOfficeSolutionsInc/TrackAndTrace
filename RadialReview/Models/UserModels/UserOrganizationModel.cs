@@ -188,6 +188,7 @@ namespace RadialReview.Models
                 .Column("Organization_Id")
                 .Cascade.SaveUpdate();*/
             HasMany(x => x.Teams)
+                .KeyColumn("User_id")
                 .Cascade.SaveUpdate();
 
             HasMany(x => x.ManagedBy)

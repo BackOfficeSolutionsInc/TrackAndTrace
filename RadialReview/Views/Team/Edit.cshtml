@@ -28,7 +28,7 @@
             <th style="width: 150px;" class="alignCenter">End</th>
             @if (Model.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
             {
-                <th style="width:100px;">
+                <th  class="rightButton rightButton">
 
                     <a class="btn btn-default fullWidth" onclick="@Html.ShowModal(
                         "Add user to "+Model.Team.GetName(),
@@ -47,7 +47,7 @@
                 <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
                 @if (Model.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
                 {
-                    <td class="deleteButton">
+                    <td class="rightButton deletebutton">
 
                         @if (p.DeleteTime == null)
                         {

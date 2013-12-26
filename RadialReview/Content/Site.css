@@ -519,6 +519,12 @@ tr.danger .strikable{
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;
 }
+
+.strokeDarkGray{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #414141;
+}
+
 .strokeGreen{
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #3C763D;
@@ -564,6 +570,13 @@ color: #FFBFC0;
 .gray{
     color:#BDBDBD;
 }
+.darkGray{
+    color:#A7A7A7;
+}
+
+.black{
+    color:rgb(0, 0, 0);
+}
 
 .clickable{
     cursor:pointer;
@@ -575,11 +588,20 @@ color: #FFBFC0;
 }
 
 .team.AllMembers{
-    background-color:rgba(235, 216, 184, 0.42);
+    background-color:rgba(255, 218, 157, 0.42)
 }
 .team.Managers{
-    background-color:rgba(235, 231, 184, 0.42);
+    background-color:rgba(253, 244, 136, 0.42)
 }
 .team.Subordinates{
-    background-color:rgba(203, 235, 184, 0.42);
+    background-color:rgba(196, 255, 161, 0.42)
+}
+
+.plus{
+    font-weight:bold;
+    color:#8d9098;
+}
+.plus:hover{
+    font-weight:bold;
+    color:#767F99;
 }

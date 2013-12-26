@@ -26,6 +26,11 @@ namespace RadialReview.Models
 
         }
 
+        public bool Started()
+        {
+            return !(OptionalCompleted == 0 && RequiredCompleted == 0);
+        }
+
         private void Calculate()
         {
             if (TotalRequired != 0)

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Home Page"; 
+    ViewBag.Title = "Home Page";
     Layout = null;
     var radialworks = "@radialworks";
 }
@@ -19,7 +19,7 @@
     <meta name="description" content="Conduct peer performance assessments efficiently with Radial">
     <meta name="author" content="RadialWorks">
     <!-- Styles -->
-    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/Content/Home/bootstrap.css" rel="stylesheet">
     <!--<link href="/static/css/bootstrap-responsive.css" rel="stylesheet">-->
     <link href="~/Content/home/docs.css" rel="stylesheet" />
     <link href="~/Content/home/prettify.css" rel="stylesheet" />
@@ -48,8 +48,8 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>-->
-    <script id="twitter-wjs" src="/Radial_files/widgets.js"></script>
-    <script async="" src="/Radial_files/analytics.js"></script>
+    <script id="twitter-wjs" src="/Scripts/Home/widgets.js"></script>
+    <script async="" src="/Scripts/Home/analytics.js"></script>
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
@@ -69,6 +69,10 @@
             font-family: sans-serif;
             margin: 0;
         }
+
+        .iconHolder {
+            min-height: 519px ! important;
+        }
     </style>
 </head>
 <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
@@ -85,7 +89,7 @@
                 <a class="brand anchorLink" href="#jumbo" rel="" id="anchor1">Radial</a>
                 <div id="circle"></div>
                 <!--<a href="../signup/" rel="" id="anchor1" class="anchorLink try">Try us Free</a>-->
-                <a href="#register" rel="" id="anchor1" class="anchorLink try">Register</a>
+
                 <div class="nav-collapse collapse pull-right">
                     <ul class="nav">
                         <li class="">
@@ -99,6 +103,12 @@
                         </li>
                         <li class="">
                             <a href="http://medium.com/@radialworks" target="_blank">Blog</a>
+                        </li>
+                        <li class="">
+                            <a href="/Account/Register" rel="" id="anchor1" class="anchorLink try">Register</a>
+                        </li>
+                        <li class="">
+                            <a href="/Account/Login" rel="" id="anchor1" class="anchorLink">Login</a>
                         </li>
                     </ul>
                 </div>
@@ -207,7 +217,7 @@
             <h2 class="marketing-byline" style="color: #5a5a5a;">Because simplicity is better than procedure.<br>Put the <text id="pop">focus</text> back on your objectives.</h2>
             <br>
             <div class="row-fluid" id="equalize">
-                <div class="span4 thumbnail">
+                <div class="span4 thumbnail iconHolder">
                     <h2><text id="pop">Streamlined</text>.</h2>
                     <p class="marketing-byline">Simple to setup</p>
                     <!--<a class="anchorLink" href="../features/" rel="" id="anchor1">-->
@@ -218,7 +228,7 @@
                     <!--<p><a class="anchorLink" href="../features/#features1" rel="" id="anchor1">Find out More</a></p>-->
                     <p><a class="anchorLink" href="#features2" rel="" id="anchor1">Find out More</a></p>
                 </div>
-                <div class="span4 thumbnail">
+                <div class="span4 thumbnail iconHolder">
                     <h2><text id="pop">360 Radial</text> review.</h2>
                     <p class="marketing-byline">Instant peer feedback</p>
                     <!--<a class="anchorLink" href="../features/#features2" rel="" id="anchor1">-->
@@ -229,7 +239,7 @@
                     <!--<p><a class="anchorLink" href="../features/#features2" rel="" id="anchor1">Find out More</a></p>-->
                     <p><a class="anchorLink" href="#features2" rel="" id="anchor1">Find out More</a></p>
                 </div>
-                <div class="span4 thumbnail">
+                <div class="span4 thumbnail iconHolder">
                     <h2><text id="pop">Fast</text> follow up.</h2>
                     <p class="marketing-byline">100% completion rates</p>
                     <!--<a class="anchorLink" href="../features/features3" rel="" id="anchor1">-->
@@ -250,7 +260,7 @@
             <h2 class="marketing-byline" style="color: #5a5a5a;">Because performance development isn't about the review.<br>It's about what we <text id="pop">accomplish</text> afterwards.</h2>
             <br>
             <div class="row-fluid">
-                <div class="span4 thumbnail">
+                <div class="span4 thumbnail iconHolder">
                     <h2><text id="pop">Growth</text> profiles.</h2>
                     <p class="marketing-byline">Personal trend analysis</p>
                     <!--<a class="anchorLink" href="../features/features4" rel="" id="anchor1">-->
@@ -261,7 +271,7 @@
                     <!--<p><a class="anchorLink" href="../features/#features4" rel="" id="anchor1">Find out More</a></p>-->
                     <p><a class="anchorLink" href="#testimonial" rel="" id="anchor1">Find out More</a></p>
                 </div>
-                <div class="span4 thumbnail">
+                <div class="span4 thumbnail iconHolder">
                     <h2><text id="pop">Action</text> reporting.</h2>
                     <p class="marketing-byline">Insights at every level</p>
                     <!--<a class="anchorLink" href="../features/features5" rel="" id="anchor1">-->
@@ -272,7 +282,7 @@
                     <!--<p><a class="anchorLink" href="../features/#features5" rel="" id="anchor1">Find out More</a></p>-->
                     <p><a class="anchorLink" href="#testimonial" rel="" id="anchor1">Find out More</a></p>
                 </div>
-                <div class="span4 thumbnail">
+                <div class="span4 thumbnail iconHolder">
                     <h2><text id="pop">Targeted</text> growth.</h2>
                     <p class="marketing-byline">Visualize and calibrate</p>
                     <!--<a class="anchorLink" href="../features/features6" rel="" id="anchor1">-->
@@ -555,7 +565,7 @@
     <a name="register" id="register"></a>
     <div class="cta">
         <div class="container">
-            <div class="marketing" style="color: white; margin-bottom: 80px;">
+            <div class="marketing" style="color: white; margin-bottom: 130px;">
                 <br><br><br>
                 <h1 class="hidden-phone"><text id="pop">Developing</text> growth is a <text id="pop">journey</text>.<br><br>Join us on ours.</h1>
                 <h2 class="visible-phone"><text id="pop">Actualization</text> is a <text id="pop">journey</text>.<br><br>Join us on ours.</h2>
@@ -574,6 +584,8 @@
                     <br><br>
                     <input type="submit" value="Start today" class="btn btn-primary btn-large">
                 </form>
+                <br />
+                <br />
             </div>
         </div>
     </div>
@@ -592,11 +604,8 @@
                 </div>
                 <div class="span4" style="text-align: left">
                     <h4 class="muted" style="font-size: 18px;">Lets hear from you!</h4><br>
-                    <p>Toll-free: <span style="color:#fff; font-size: 25px;">1-800-123-4567</span></p>
-                    <p>Phone: 402-123-4567</p>
-                    <p>Fax: 402-234-5678</p>
-                    <p style="margin-bottom: 20px;">Email: <a href="mailto:contact@radialworks.com">contact@radialworks.com</a></p>
-                    <a href="/contact/" class="btn btn-inverse btn-large" style="margin-bottom: 25px;">CONTACT US</a>
+                    <p><span style="color:#fff; font-size: 25px;">1-402-437-0099</span></p>
+                    <p style="margin-bottom: 20px;">Email: <a href="mailto:contact@radialworks.com">clay.upton@radialreview.com</a></p>
                 </div>
                 <div class="span4" style="text-align: left">
                     <form action="/thankyou/" method="POST">
@@ -614,7 +623,7 @@
                 <li class="muted">·</li>
                 <li><a href="/tos/">Terms of Service</a></li>
                 <li class="muted">·</li>
-                <li>© Copyright 2013 Radial, Inc. All rights reserved.</li>
+                <li>© Copyright @DateTime.UtcNow.Date.Year Radial, Inc. All rights reserved.</li>
             </ul>
         </div>
     </footer>
@@ -623,9 +632,9 @@
         <div class="hidden-phone" id="mc_embed_signup" style="padding-top: -20px; padding-left: 30px;">
             <form action="/register/" method="POST">
                 <input type="hidden" name="csrfmiddlewaretoken" value="rKMvht5b4XMxUgvrmGSKzwracG5ZznsP">
-                <input id="id_subscription_email" maxlength="250" name="subscription_email" type="email" class="required email" required="True" placeholder="Why wait? Get updated." style="margin-bottom: 0px; margin-top: -27px; display: inline-block">
+                <input id="id_subscription_email" maxlength="250" name="subscription_email" type="email" class="required email" required="True" placeholder="Email" style="margin-bottom: 0px; margin-top: -27px; display: inline-block">
                 <input type="submit" value="Subscribe!" class="btn btn-primary" style="display: inline-block; margin-top: -27px;">
-                <a class="btn btn-primary" href="/contact/" style="display: inline-block; margin-top: -27px;">Contact Us</a>
+                <a class="btn btn-primary" href="/Home/Contact" style="display: inline-block; margin-top: -27px;">Contact Us</a>
                 <a class="iconsocial in" href="http://www.linkedin.com/company/radial-works" target="_blank" style="display: inline-block; margin-top: 10px;"></a>
                 <a class="iconsocial tw" href="https://twitter.com/RadialWorks" target="_blank" style="display: inline-block; margin-top: 10px;"></a>
                 <a class="iconsocial fb" href="https://www.facebook.com/pages/Radial/339264716218641" target="_blank" style="display: inline-block; margin-top: 10px;"></a>
@@ -641,24 +650,33 @@
     </div>
     <!-- Le javascript
     ================================================== -->
-    <script src="/Radial_files/jquery.js"></script>
-    <script src="/Radial_files/jquery.magnific-popup.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/home/jquery.magnific-popup.js"></script>
     <!-- MAGNIFIC POPUP INITIATE -->
     <script>$('.popup-vimeo').magnificPopup({ disableOn: 700, type: 'iframe', mainClass: 'mfp-fade', iframe: { patterns: { vimeo: { index: 'vimeo.com/', id: '/', src: '//player.vimeo.com/video/%id%?autoplay=1' }, } } });</script>
     <!-- SMOOTH SCROLL INITIATE -->
-    <script>$(document).ready(function (e) { var str = location.hash; var n = str.replace("_temp", ""); $('html,body').animate({ scrollTop: $(n).offset().top }, 500); });</script>
+    <script>
+        $(document).ready(function (e) {
+            var str = location.hash;
+            var n = str.replace("_temp", "");
+            var elementOffset=$(n).offset();
+            if (elementOffset !== undefined)
+            {
+                $('html,body').animate({ scrollTop: elementOffset.top }, 500);
+            }
+        });
+    </script>
     <!-- TWITTER TIMELINE INITIATE -->
     <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + "://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");</script>
     <!-- EQUALHEIGHT INITIATE -->
     <script type="text/javascript">$(function () { $('#equalize').equalHeights(); });</script>
-    <script type="text/javascript" src="/Radial_files/jQuery.equalHeights.js"></script>
-    <script type="text/javascript" src="/Radial_files/widgets.js"></script>
-    <script src="/Radial_files/bootstrap.js"></script>
-    <script src="/Radial_files/bootstrap.min.js"></script>
-    <script src="/Radial_files/holder.js"></script>
-    <script src="/Radial_files/prettify.js"></script>
-    <script src="/Radial_files/application.js"></script>
-    <script src="/Radial_files/fluidvids.js"></script>
+    <script src="~/Scripts/home/jQuery.equalHeights.js"></script>
+    <script src="~/Scripts/home/widgets.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="/Scripts/Home/holder.js"></script>
+    <script src="/Scripts/Home/prettify.js"></script>
+    <script src="/Scripts/Home/application.js"></script>
+    <script src="/Scripts/Home/fluidvids.js"></script>
 
     <script id="hiddenlpsubmitdiv" style="display: none;"></script>
     <script>try { for (var lastpass_iter = 0; lastpass_iter < document.forms.length; lastpass_iter++) { var lastpass_f = document.forms[lastpass_iter]; if (typeof (lastpass_f.lpsubmitorig2) == "undefined") { lastpass_f.lpsubmitorig2 = lastpass_f.submit; lastpass_f.submit = function () { var form = this; var customEvent = document.createEvent("Event"); customEvent.initEvent("lpCustomEvent", true, true); var d = document.getElementById("hiddenlpsubmitdiv"); if (d) { for (var i = 0; i < document.forms.length; i++) { if (document.forms[i] == form) { d.innerText = i; } } d.dispatchEvent(customEvent); } form.lpsubmitorig2(); } } } } catch (e) { }</script>

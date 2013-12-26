@@ -24,7 +24,7 @@
             <th style="width:100px" class="alignCenter">Due</th>
             <th style="width:120px" class="alignCenter">@RadialReview.Properties.DisplayNameStrings.completion</th>
             <th class="rightButton">
-                <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton" data-toggle="modal">+</button>
+                <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton plus" data-toggle="modal">+</button>
             </th>
         </tr>
         @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))

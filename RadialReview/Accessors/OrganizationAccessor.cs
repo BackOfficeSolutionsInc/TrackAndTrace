@@ -316,17 +316,18 @@ namespace RadialReview.Accessors
 
                     var managers = s.QueryOver<UserOrganizationModel>()
                                         .Where(x => x.Organization.Id == orgId && x.ManagingOrganization)
+                                        .Fetch(x=>x.Teams).Default
                                         .List()
                                         .ToList();
 
                     var classes="organizations".AsList("admin");
 
-                    return Children(org.Name.Translate(),"",-1,classes, managers);
+                    return Children(org.Name.Translate(),"","",-1,classes, managers);
                 }
             }
         }
 
-        private Tree Children(String name,String subtext,long id,List<String> classes, List<UserOrganizationModel> users)
+        private Tree Children(String name,String subtext,String classStr,long id,List<String> classes, List<UserOrganizationModel> users)
         {
             var newClasses = classes.ToList();
             if (classes.Count>0)
@@ -337,8 +338,16 @@ namespace RadialReview.Accessors
                 name = name,
                 id=id,
                 subtext=subtext,
-                @class=classes.FirstOrDefault(),
-                children = users.ToListAlive().Select(x => Children(x.GetName(), x.GetTitles(), x.Id, newClasses, x.ManagingUsers.ToListAlive().Select(y => y.Subordinate).ToList())).ToList()
+                @class=classes.FirstOrDefault()+" "+classStr,
+                children = users.ToListAlive().Select(x => 
+                    Children(
+                        x.GetName(),
+                        x.GetTitles(),
+                        String.Join(" ",x.Teams.Select(y=>y.Team.Name.Replace(' ','_'))),
+                        x.Id,
+                        newClasses,
+                        x.ManagingUsers.ToListAlive().Select(y => y.Subordinate).ToList())
+                    ).ToList()
             };
         }
 

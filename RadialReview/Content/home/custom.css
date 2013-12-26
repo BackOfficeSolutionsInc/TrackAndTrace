@@ -31,7 +31,7 @@ body {
 .logo:hover {
     opacity: 0.8;
     -webkit-transition: all 0.2s linear;
-    -o-transition: all0.2s linear;
+    -o-transition: all 0.2s linear;
     -moz-transition: all 0.2s linear;
     -ms-transition: all 0.2s linear;
     -kthtml-transition: all 0.2s linear;
@@ -87,17 +87,17 @@ border-color: #002d44;
 }
 
 .try {
-    background-color: #0088cc;
-    color: #fff;
-    float: right;
-    padding: 10px 15px;
-    margin-top: 10px;
+    background-color: #0088cc ! important;
+    color: #fff ! important;
+    float: right ! important;
+    padding: 10px 15px ! important;
+    margin-top: 0px ! important;
 }
 
 .try:hover {
-    background-color: #56C6FF;
-    color: #fff;
-    text-decoration: none;
+    background-color: #56C6FF ! important;
+    color: #fff ! important;
+    text-decoration: none ! important;
 }
 
 .jumbotron {
@@ -130,7 +130,7 @@ html,body {height:100%;}
   right: 0;
   bottom: 0;
   left: 0;
-  background: url(../img/Cover.jpg);
+  background: url(/Content/home/Cover.jpg);
   background-size: cover;
   opacity: 0.3;
 }
@@ -211,7 +211,7 @@ top: 0;
 right: 0;
 bottom: 0;
 left: 0;
-background: url(../img/denim.png) repeat center center;
+background: url(/Content/Home/denim.png) repeat center center;
 opacity: 1;
 border-top: 50px;
 margin-top: 0px;
@@ -258,7 +258,7 @@ padding-bottom: 50px;
   right: 0;
   bottom: 0;
   left: 0;
-  background: url(../img/cityscape.jpg);
+  background: url(/Content/Home/cityscape.jpg);
   background-size: cover;
   opacity: 0.3;
 }
@@ -439,7 +439,7 @@ display: block;
 	position: relative;
 }
 #pricing .price_wrapper.regular .header {
-	background: url('../img/denim.png') 0 0 repeat;
+	background: url('/Content/Home/denim.png') 0 0 repeat;
 }
 #pricing .price_wrapper.pro {
 }
@@ -497,7 +497,7 @@ display: block;
 /* Social icons
 -------------------------------------------------- */
 .iconsocial {
-	background: url('../img/social_icons_gray.png') no-repeat 0 0;
+	background: url('/Content/Home/social_icons_gray.png') no-repeat 0 0;
 	width: 33px;
 	height: 33px;
 	display: inline-block;
@@ -518,24 +518,24 @@ display: block;
 .iconsocial.myspace { background-position: -233px -51px; }
 
 .iconsocial.fb:hover {
-    background: url('../img/social_icons_white.png') no-repeat 0 0;
+    background: url('/Content/Home/social_icons_white.png') no-repeat 0 0;
     background-position: -39px 0;
 }
 .iconsocial.in:hover {
-    background: url('../img/social_icons_white.png') no-repeat 0 0;
+    background: url('/Content/Home/social_icons_white.png') no-repeat 0 0;
     background-position: -117px 0;
 }
 .iconsocial.tw:hover {
-    background: url('../img/social_icons_white.png') no-repeat 0 0;
+    background: url('/Content/Home/social_icons_white.png') no-repeat 0 0;
     background-position: 0px 0px;
 }
 .iconsocial.gp:hover {
-    background: url('../img/social_icons_white.png') no-repeat 0 0;
+    background: url('/Content/Home/social_icons_white.png') no-repeat 0 0;
     background-position: -156px 0;
 }
 
 .footer {
-    background: url('../img/denim.png') repeat center center;
+    background: url('/Content/Home/denim.png') repeat center center;
     width: 100%;
     display: inline-block;
     padding-bottom: 50px;

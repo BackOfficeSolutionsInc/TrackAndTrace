@@ -130,6 +130,15 @@ namespace RadialReview.Controllers
 
         }
 
+        [HttpPost]
+        [Access(AccessLevel.Manager)]
+        public JsonResult SetNotes(long id,string notes)
+        {
+            _ReviewAccessor.UpdateNotes(GetUser(), id, notes);
+            return Json(ResultObject.Success);
+        }
+
+
         [HttpGet]
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Take(long id, int? page)
@@ -287,22 +296,21 @@ namespace RadialReview.Controllers
             public long yAxis { get; set; }
             public List<AnswerModel> AnswersAbout { get; set; }
             public Dictionary<long, String> Categories { get; set; }
-            public String ManagerNotes { get; set; }
 
         }
 
-        private ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
+        ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
         {
-            var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
+            var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x=>x.Id);
             var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId);
             var model = new ReviewDetailsViewModel()
             {
                 Review = review,
                 Axis = categories.ToSelectList(x => x.Category.Translate(), x => x.Id),
-                xAxis = categories.FirstOrDefault().NotNull(x => x.Id),
-                yAxis = categories.Skip(1).FirstOrDefault().NotNull(x => x.Id),
+                xAxis = ((long?)Session["lastXAxis"]) ?? categories.FirstOrDefault().NotNull(x => x.Id),
+                yAxis = ((long?)Session["lastYAxis"]) ?? categories.Skip(1).FirstOrDefault().NotNull(x => x.Id),
                 AnswersAbout = answers,
-                Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate())
+                Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate()),
             };
             return model;
         }
@@ -343,7 +351,6 @@ namespace RadialReview.Controllers
                 throw new PermissionsException("This review is not visible at this time. If you feel this is in error, please contact your reviewing manager.");
             }
         }
-
 
         [Access(AccessLevel.Manager)]
         public JsonResult SetFeedback(long feedbackId, long reviewId, bool on)

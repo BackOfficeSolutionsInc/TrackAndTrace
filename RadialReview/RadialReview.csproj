@@ -395,6 +395,9 @@
     <Compile Include="Utilities\AskableUtility.cs" />
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
     <Compile Include="Utilities\Attributes\AccessAttribute.cs" />
+    <Compile Include="Utilities\CsvUtility.cs" />
+    <Compile Include="Utilities\DataTypes\Csv.cs" />
+    <Compile Include="Utilities\DataTypes\Multimap.cs" />
     <Compile Include="Utilities\DataTypes\Tree.cs" />
     <Compile Include="Utilities\DragDropUtility.cs" />
     <Compile Include="Utilities\Extensions\DictionaryExtensions.cs" />
@@ -428,11 +431,16 @@
     <Content Include="Content\Home.css" />
     <Content Include="Content\home\bootstrap.css" />
     <Content Include="Content\home\cityscape.jpg" />
+    <Content Include="Content\home\Cover.jpg" />
     <Content Include="Content\home\custom.css" />
+    <Content Include="Content\home\denim.png" />
     <Content Include="Content\home\docs.css" />
     <Content Include="Content\home\font-awesome.css" />
     <Content Include="Content\home\magnific-popup.css" />
     <Content Include="Content\home\prettify.css" />
+    <Content Include="Content\home\social_icons_gray.png" />
+    <Content Include="Content\home\social_icons_white.png" />
+    <Content Include="Content\home\testimonial1.jpg" />
     <Content Include="Content\img\box.png" />
     <Content Include="Content\home\features1.png" />
     <Content Include="Content\home\features2.png" />
@@ -512,6 +520,7 @@
     <Content Include="Scripts\home\widgets.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.js" />
     <Content Include="Scripts\jquery\jquery.hashchange.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
     <Content Include="Scripts\moment.min.js" />
@@ -640,6 +649,7 @@
     <Content Include="Views\Account\Profile.cshtml" />
     <Content Include="Views\Review\ClientDetails.cshtml" />
     <Content Include="Views\Shared\_UserModel.cshtml" />
+    <Content Include="Views\Account\TestChart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -210,6 +210,25 @@ namespace RadialReview.Accessors
             }
         }
 
+        public List<AnswerModel> GetReviewContainerAnswers(UserOrganizationModel caller,  long reviewContainerId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var reviewContainer=s.Get<ReviewsModel>(reviewContainerId);
+
+                    PermissionsUtility.Create(s, caller).ViewOrganization(reviewContainer.ForOrganization.Id);
+
+                    var answers = s.QueryOver<AnswerModel>()
+                                        .Where(x => x.ForReviewContainerId == reviewContainerId)
+                                        .List()
+                                        .ToList();
+                    return answers;
+                }
+            }
+        }
+
         public ClientReviewModel GetClientReview(UserOrganizationModel caller, long reviewId)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -597,5 +616,22 @@ namespace RadialReview.Accessors
 
 
 
+
+        public void UpdateNotes(UserOrganizationModel caller, long id, string notes)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(id);
+                    var review=s.Get<ReviewModel>(id);
+
+                    review.ClientReview.ManagerNotes = notes;                    
+                    s.Update(review);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
     }
 }

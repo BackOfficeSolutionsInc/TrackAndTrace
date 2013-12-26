@@ -1,0 +1,45 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+
+@{
+    ViewBag.Title = "TestChart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<svg id="chart"></svg>
+
+<script src="~/Scripts/d3/ScatterChart.js"></script>
+<script>
+    var axisSelect = [@(new HtmlString(String.Join(",", Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+    var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
+    var legendData = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
+
+    var getAxis = function () {
+        var a = document.getElementById("xAxis"),
+            b = document.getElementById("yAxis");
+        //c = document.getElementById("r-axis");
+        var x = a.options[a.selectedIndex].value,
+            y = b.options[b.selectedIndex].value;
+        //r = c.options[c.selectedIndex].value;
+        var xindex = axisSelect.indexOf(x),
+            yindex = axisSelect.indexOf(y);
+        var xlabel = axisLabels[xindex],
+            ylabel = axisLabels[yindex];
+        return {
+            xAxis: x,
+            yAxis: y,
+            //radiusAxis: r,
+            xAxisLabel: xlabel,
+            yAxisLabel: ylabel
+        };
+    };
+
+    var dataUrl = "/Data/OrganizationReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId";
+    var dataFunc = function (dd, redrawFunc) {
+        d3.csv(dataUrl, function (data) {
+            // store data in the appropriate variables
+            dd.data = data;
+            redrawFunc();
+        });
+    };
+    var chart = new Chart("#chart", getAxis, dataFunc, legendData);
+</script>

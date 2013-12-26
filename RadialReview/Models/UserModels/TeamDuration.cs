@@ -28,10 +28,12 @@ namespace RadialReview.Models.UserModels
 
         public TeamDurationModel(UserOrganizationModel forUser, OrganizationTeamModel team,long addedBy)
         {
-            Team = team;
+            TeamId = team.Id;
+            UserId = forUser.Id;
+            //Team = team;
             AddedBy = addedBy;
             Start = DateTime.UtcNow;
-            User = forUser;
+            //User = forUser;
         }
     }
 

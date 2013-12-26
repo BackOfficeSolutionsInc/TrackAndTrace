@@ -35,13 +35,24 @@
                         *@
                     </td>
                     <td style="padding:2px;" class="rightButton">
+                        @{
+                            var button = "Begin";
+                            if (review.GetCompletion().Started())
+                            {
+                                button = "Edit";
+                            }
+                        }
+
+
                         @if ((review.DueDate < DateTime.UtcNow) || review.GetCompletion().Illegal)
                         {
                             <div class="btn btn-default disabled fullWidth">@RadialReview.Properties.DisplayNameStrings.done</div>
                         }
                         else
                         {
-                            <a class="btn btn-primary fullWidth" href="@Url.Action("Take", new { id = review.Id, page=0})">@RadialReview.Properties.DisplayNameStrings.finish</a>
+                            <a class="btn btn-primary fullWidth" href="@Url.Action("Take", new { id = review.Id, page=0})">
+                                @button
+                            </a>
                         }
                     </td>
                     <td class="rightButton">

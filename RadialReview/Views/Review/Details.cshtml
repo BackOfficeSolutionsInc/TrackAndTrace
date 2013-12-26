@@ -8,6 +8,32 @@
 @using (Html.BeginScripts())
 {
     <script>
+        var last = null;
+
+        function saveText() {
+            var notes = $("#ManagerNotes").val();
+
+            var dat = new Object();
+            dat.id = "@Model.Review.Id";
+            dat.notes = notes;
+
+
+            if (notes != last) {
+                last = notes;
+                $(".save").addClass("saving");
+                $.ajax({
+                    url: "/Review/SetNotes",
+                    data: dat,
+                    method: "POST",
+                    complete: function () {
+                        setTimeout(function () {
+                            $(".save").removeClass("saving");
+                        }, 1000);
+                    }
+                });
+            }
+        }
+
         function allowed() {
             return ($("#charts li").size() != 0 || $("#feedbacks li").size() != 0);
         }
@@ -159,6 +185,26 @@
             -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
             box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
         }
+
+        .save {
+            position: absolute;
+            right: 26px;
+            display: inline-block;
+            border: 1px solid #AFADAD;
+            padding: 3px;
+            border-bottom-left-radius: 3px;
+            background-color: #D1FCD1;
+            opacity: 0;
+            -webkit-transition: all .10s ease;
+            -moz-transition: all .10s ease;
+            -ms-transition: all .10s ease;
+            -o-transition: all .10s ease;
+            transition: all .10s ease;
+        }
+
+        .saving {
+            opacity: .5;
+        }
     </style>
     <link href="~/Content/chart.css" rel="stylesheet" />
 }
@@ -166,7 +212,7 @@
 
 
 <div class="row">
-    <div class="col-lg-10">
+    <div class="col-lg-9">
         <div class="row" style="height: 0px;">
             <div class="col-sm-1 col-sm-offset-11" style="height: 0px; position: relative; top: 10px; left: -10px; z-index: 1000;">
                 <a class="btn btn-default pull-right" href="@Url.Action("Details", "Reviews", new {id=Model.Review.ForReviewsId })">
@@ -176,10 +222,10 @@
         </div>
         <div class="review " style=" min-width: 650px;">
             <div class="row">
-                <div class="col-md-4" style="padding-bottom:20px;">
+                <div class="col-md-3 noPad" style="padding-bottom:20px;">
                     @Html.Partial("_User", Model.Review.ForUser)
                 </div>
-                <div class="col-md-8 ">
+                <div class="col-md-9 ">
                     <div class="row noselect">
                         <form id="controls">
                             <div class="col-xs-6 alignRight ">
@@ -217,7 +263,7 @@
                                 <th></th>
                                 <th style="width:120px">By</th>
                                 <th>Feedback</th>
-                                <th class="rightButton alignCenter">Include</th>
+                                <th class="rightButton alignCenter">Included</th>
                             </tr>
                             @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>())
                             {
@@ -241,7 +287,7 @@
         </div>
         <div class="smallBreak"></div>
     </div>
-    <div class="col-lg-2 noPad ">
+    <div class="col-lg-3 ">
         <div class="sidebar" style="padding:10px;font-size:12px">
             <h3 class="alignCenter"><u>Build Report</u></h3>
             <div class="smallBreak"></div>
@@ -267,6 +313,10 @@
                 }
             </ul>
             <hr />
+            <h4 class="alignCenter">Notes</h4>
+            <div class="save">Saving</div>
+                        @Html.TextAreaFor(x => x.Review.ClientReview.ManagerNotes, new { placeholder = "Optional notes...", style = "width:100%;height:150px;resize:vertical;", id="ManagerNotes" })
+            <hr />
             <div class="alignCenter">
                 <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View</div>
                 <div class="smallBreak"></div>
@@ -290,7 +340,12 @@
     <script src="/scripts/d3/d3.js"></script>
     <script src="/scripts/d3/d3.csv.js"></script>
     <script src="/scripts/d3/ScatterChart.js"></script>
+    <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
     <script>
+        $(function(){
+            $('#ManagerNotes').keyup( $.debounce( 500, saveText ) );
+        });
+
         var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
         var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
         var legendData = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
@@ -322,10 +377,7 @@
                 redrawFunc();
             });
         };
-
-
         var chart = new Chart("#visualisation", getAxis, dataFunc, legendData);
-
         document.getElementById("controls").addEventListener("click", chart.update, false);
         document.getElementById("controls").addEventListener("keyup", chart.update, false);
         document.getElementById("xAxis").addEventListener("change", chart.update, false);

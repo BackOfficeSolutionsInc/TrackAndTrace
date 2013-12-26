@@ -1,9 +1,11 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
+using RadialReview.Utilities.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -14,6 +16,8 @@ namespace RadialReview.Controllers
 
         protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
         protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
+        protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
+
 
         [Access(AccessLevel.UserOrganization)]
         public JsonResult OrganizationHierarchy(long id)
@@ -75,11 +79,10 @@ namespace RadialReview.Controllers
 
                 return e.ToString();
             }
-
         }
 
-        [Access(AccessLevel.UserOrganization)]
 
+        [Access(AccessLevel.UserOrganization)]
         public FileContentResult ReviewData(long id,long reviewsId)
         {
             var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
@@ -96,6 +99,57 @@ namespace RadialReview.Controllers
 
             var csv = String.Join("\n",lines);
             return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "Report.csv");
+        }
+
+        [Access(AccessLevel.UserOrganization)]
+        public FileContentResult OrganizationReviewData(long id, long reviewsId)
+        {
+            _PermissionsAccessor.Permitted(GetUser(), x => x.EditUserOrganization(id));
+
+            var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
+
+            var reviewAnswers = _ReviewAccessor.GetReviewContainerAnswers(GetUser(), reviewsId);
+            var completedSliders = reviewAnswers.Where(x => x.Askable.GetQuestionType() == QuestionType.Slider && x.Complete).Cast<SliderAnswer>();
+
+            var categoryIds = categories.Select(x=>x.Id).ToList();
+
+            StringBuilder sb=new StringBuilder();
+
+            //Header row
+            sb.AppendLine("about,"+String.Join(",",categoryIds));
+            
+            foreach(var c in completedSliders.GroupBy(x=>x.AboutUserId)) //answers about each user
+            {
+                var dictionary = new Multimap<long,decimal>();
+
+                foreach(var answer in c.ToList())
+                    dictionary.AddNTimes(answer.Askable.Category.Id, answer.Percentage.Value * 200 - 100,(int)answer.Askable.Weight);
+
+                var cols = new String[categoryIds.Count];
+
+                for(int i=0;i<categoryIds.Count;i++)
+                {
+                    var datapts = dictionary.Get(categoryIds[i]);
+                    var average = 0m;
+                    if(datapts.Count>0)
+                        average=datapts.Average();
+                    cols[i] = "" + average;
+                }
+                var row=String.Join(",",cols);
+
+                sb.AppendLine("Employee,"+row);
+
+                if(c.First().AboutUser.IsManager())
+                    sb.AppendLine("Management,"+row);
+
+                if (c.First().AboutUserId == id)
+                    sb.AppendLine("You," + row);
+            }
+
+            var csv = sb.ToString();
+
+            return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "Report.csv");
+
         }
 
 	}

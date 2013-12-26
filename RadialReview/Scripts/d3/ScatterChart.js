@@ -3,9 +3,9 @@
 var Chart = function (selector,getAxis,dataFunc,legendData) {
     var width = 600, // width of the graph
     height = 500, // height of the graph
-    xPadding = 110,
+    rightPadding = 110,
     padding = 50,
-    xRange = d3.scale.linear().range([xPadding, width - xPadding]), // x range function
+    xRange = d3.scale.linear().range([rightPadding, width - rightPadding]), // x range function
     yRange = d3.scale.linear().range([height - padding, padding]), // y range function
     rRange = d3.scale.linear().range([5, 15]), // radius range function
     drawingData, // data we want to display
@@ -28,8 +28,8 @@ var Chart = function (selector,getAxis,dataFunc,legendData) {
         vis.append("svg:g")
             .append("svg:line")
             .attr("style", "stroke: #000; opacity: 0.4;")
-            .attr("x1", xPadding)
-            .attr("x2", width - xPadding)
+            .attr("x1", rightPadding)
+            .attr("x2", width - rightPadding)
             .attr("y1", height / 2)
             .attr("y2", height / 2);
 
@@ -51,7 +51,7 @@ var Chart = function (selector,getAxis,dataFunc,legendData) {
         // add in the y axis
         vis.append("svg:g")
             .attr("class", "y axis")
-            .attr("transform", "translate(" + xPadding + ",0)")
+            .attr("transform", "translate(" + rightPadding + ",0)")
             .call(yAxis);
 
         // add in axis labels
@@ -73,7 +73,7 @@ var Chart = function (selector,getAxis,dataFunc,legendData) {
         // add in legend
         vis.append("text")
             .attr("class", "legendTitle")
-            .attr("x", width - xPadding)
+            .attr("x", width - rightPadding)
             .attr("y", 35)
             .text("Legend:")
         /*
@@ -86,7 +86,7 @@ var Chart = function (selector,getAxis,dataFunc,legendData) {
         var legend = vis.selectAll("g.legend")
           .data(legendData)
         .enter().append("svg:g")
-          .attr("transform", function (d, i) { return "translate(" + (width - xPadding + 15) + "," + (i * 14 + 50) + ")"; });
+          .attr("transform", function (d, i) { return "translate(" + (width - rightPadding + 15) + "," + (i * 14 + 50) + ")"; });
 
         legend.append("svg:ellipse")
             .attr("class", function (d) { return d; })
@@ -166,8 +166,8 @@ var Chart = function (selector,getAxis,dataFunc,legendData) {
                     .remove();
 
         // update axis labels
-        d3.selectAll(".x.label").text(axes.xAxisLabel);
-        d3.selectAll(".y.label").text(axes.yAxisLabel);
+        vis.selectAll(".x.label").text(axes.xAxisLabel);
+        vis.selectAll(".y.label").text(axes.yAxisLabel);
     };
 
 

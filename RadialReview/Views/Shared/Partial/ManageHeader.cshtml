@@ -23,8 +23,8 @@
     </div>
 *@
 <div class="nav-arrows flat pull-left noselect">
-    <a href="/Manage/Positions" class="@(ViewBag.Page == "Positions" ? "active" : "")">Positions</a>
     <a href="/Manage/Members"   class="@(ViewBag.Page == "Members"   ? "active" : "")">Members</a>
+    <a href="/Manage/Positions" class="@(ViewBag.Page == "Positions" ? "active" : "")">Positions</a>
     <a href="/Manage/Teams"     class="@(ViewBag.Page == "Teams"     ? "active" : "")">Teams</a>
     <a href="/Manage/Reviews"   class="@(ViewBag.Page == "Reviews"   ? "active" : "")">Reviews</a>
 </div>
@@ -47,7 +47,7 @@
         border-radius: 5px;
         /*Lets add the numbers for each link using CSS counters. flag is the name of the counter. to be defined using counter-reset in the parent element of the links*/
         counter-reset: flag;
-        border: 1px solid #428BCA;
+        border: 1px solid #767F99;
     }
 
         .nav-arrows a {
@@ -116,7 +116,7 @@
                 background: #666;
                 background: linear-gradient(135deg, #666, #333);
                 /*stylish arrow design using box shadow*/
-                /*box-shadow: 2px -2px 0 2px #428BCA, 3px -3px 0 2px #428BCA;
+                /*box-shadow: 2px -2px 0 2px #767F99, 3px -3px 0 2px #767F99;
                 
         5px - for rounded arrows and
         50px - to prevent hover glitches on the border created using shadows*/
@@ -147,7 +147,7 @@
 
     .flat a, .flat a:after {
         background: #FEFEFE;
-        color: #428BCA;
+        color: #767F99;
         -moz-transition: all 0.25s;
         -o-transition: all 0.25s;
         -webkit-transition: all 0.25s;
@@ -162,7 +162,7 @@
         .flat a:hover, .flat a.active,
         .nav-arrows a:active,
         .flat a:hover:after, .flat a.active:after {
-            background: #428BCA;
+            background: #767F99;
             color: #D5E8FF;
         }
 </style>

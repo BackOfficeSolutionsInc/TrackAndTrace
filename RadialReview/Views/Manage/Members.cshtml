@@ -12,11 +12,16 @@
 }
 
 @section hints{
-    @Html.AlertBoxDismissable("The next step is adding members to your organization. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
+    @Html.AlertBoxDismissable(@"
+            The first step is adding members to your organization.
+            Members have a number of individual responsibilities and responsibilities for their team, position and organization. 
+            During the review process, peers, teammates, managers and subordinates rate individuals on how well they are fulfilling their responsibilities.
+            To begin, click the + button.
+            You can come back to this any time.", "alert-info", "Info:")
 }
 <div class="panel panel-primary">
     <div style="float:right;" class="rightButton">
-        <button class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
+        <button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
             +
         </button>
     </div>

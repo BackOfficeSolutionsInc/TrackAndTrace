@@ -1,38 +1,100 @@
 ﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 @{
-    ViewBag.Title = "ClientDetails";
+    ViewBag.Title = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var charts = Model.Review.ClientReview.Charts.ToListAlive();
     var feedbacks = Model.Review.ClientReview.FeedbackIds.ToListAlive().GroupBy(x => x.Value).Select(x => x.First()).ToList();
+    var notes = Model.Review.ClientReview.ManagerNotes;
+    var i = 0;
 }
 <div class="review" style="padding-top:20px;">
-    @if (charts.Count > 0)
-    {
-        <h3>Charts:</h3>
-        foreach (var chart in charts)
-        {
-            <div>
-                <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id"></svg>
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="panel-group" id="accordion">
 
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_organization">
+                                [+] Organization
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse_organization" class="panel-collapse collapse in">
+                        <div class="panel-body noPad">
+
+                            <div class="row noselect">
+                                <form id="controls">
+                                    <div class="col-xs-6 alignRight ">
+                                        <div class="inlineBlock">
+                                            <div class="alignCenter"><h4 class="axisTitle">X-Axis</h4></div>
+                                            <div style="top:10px;"> @Html.DropDownListFor(x => x.xAxis, Model.Axis, new { @class = "form-control" })</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 alignLeft">
+                                        <div class="inlineBlock">
+                                            <div class="alignCenter"><h4 class="axisTitle">Y-Axis</h4></div>
+                                            <div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="orgChart"></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @foreach (var chart in charts)
+                {
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_@chart.Id">
+                                    [+] @Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_@chart.Id" class="panel-collapse collapse">
+                            <div class="panel-body noPad">
+                                <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id"></svg>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        }
-    }
 
-    @if (feedbacks.Count > 0)
-    {
-        <h3>Feedback:</h3>
-        <div style="margin-left:20px">
-            @foreach (var f in feedbacks)
+        </div>
+        <div class="col-lg-5">
+
+            @if (!String.IsNullOrWhiteSpace(notes))
             {
-            <div id="feedback_@f.Value" class="feedback">
-                @(((RadialReview.Models.FeedbackAnswer)Model.AnswersAbout.FirstOrDefault(x => x.Id == f.Value)).Feedback)
-            </div>
-            <div class="smallBreak"></div>
-            <div class="smallBreak"></div>
+                <h3>Notes:</h3>
+                <div style="margin-left:20px">
+                    <div id="notes" style="white-space: pre-line" class="feedback">@notes</div>
+                    <div class="smallBreak"></div>
+                    <div class="smallBreak"></div>
+                </div>
+            }
+
+            @if (feedbacks.Count > 0)
+            {
+                <h3>Feedback:</h3>
+                <div style="margin-left:20px">
+                    @foreach (var f in feedbacks)
+                    {
+                        <div style="white-space: pre-line" id="feedback_@f.Value" class="feedback">@(((RadialReview.Models.FeedbackAnswer)Model.AnswersAbout.FirstOrDefault(x => x.Id == f.Value)).Feedback)</div>
+                        <div class="smallBreak"></div>
+                        <div class="smallBreak"></div>
+                    }
+                </div>
             }
         </div>
-    }
+    </div>
 </div>
 @using (Html.BeginStyles())
 {
@@ -55,7 +117,7 @@
         .feedback {
             padding: 15px;
             border-radius: 3px;
-            border: 1px solid #E9E9E9;
+            border: 1px solid #DADADA;
             color: #6F6F6F;
         }
     </style>
@@ -70,16 +132,16 @@
     <script src="/scripts/d3/d3.csv.js"></script>
     <script src="/scripts/d3/ScatterChart.js"></script>
     <script>
-        var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
-        var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
-        var legendData = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
 
-        var dataUrl = "/Data/ReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId";
-        d3.csv(dataUrl, function (data) {
+        d3.csv("/Data/ReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId", function (data) {
             var dataFunc = function (dd, redrawFunc) {
                 dd.data = data;
                 redrawFunc();
             };
+
+            var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+            var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
+            var legendData = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
 
             function chartIt(id, x, y) {
                 var chart = new Chart(
@@ -103,11 +165,50 @@
             @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
             {
                 @:chartIt("@(chart.Id)", "@(chart.Item1)", "@(chart.Item2)");
-                                    }
-
-
-
+                                                                            }
         });
+
+
+        d3.csv("/Data/OrganizationReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId",
+            function (data) {
+                var dataFunc = function (dd, redrawFunc) {
+                    dd.data = data;
+                    redrawFunc();
+                };
+
+                var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+                var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
+                var legendData = ["Management", "Employee", "You"];
+
+
+                var orgChart = new Chart(
+                       "#orgChart",
+                       function () {
+                           var a = document.getElementById("xAxis"),
+                               b = document.getElementById("yAxis");
+                           //c = document.getElementById("r-axis");
+                           var x = a.options[a.selectedIndex].value,
+                               y = b.options[b.selectedIndex].value;
+                           //r = c.options[c.selectedIndex].value;
+                           var xindex = axisSelect.indexOf(x),
+                               yindex = axisSelect.indexOf(y);
+                           var xlabel = axisLabels[xindex],
+                               ylabel = axisLabels[yindex];
+                           return {
+                               xAxis: x,
+                               yAxis: y,
+                               //radiusAxis: r,
+                               xAxisLabel: xlabel,
+                               yAxisLabel: ylabel
+                           };
+                       }, dataFunc, legendData);
+                document.getElementById("controls").addEventListener("click", orgChart.update, false);
+                document.getElementById("controls").addEventListener("keyup", orgChart.update, false);
+                document.getElementById("xAxis").addEventListener("change", orgChart.update, false);
+                document.getElementById("yAxis").addEventListener("change", orgChart.update, false);
+            });
+
+
     </script>
 }
 

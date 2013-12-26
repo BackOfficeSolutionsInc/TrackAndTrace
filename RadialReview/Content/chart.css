@@ -83,7 +83,7 @@ canvas {
 }
 
 .datapoint {
-    fill-opacity: 0.7;
+    fill-opacity: 0.75;
     stroke: #000000;
     stroke-width: 1px;
     cursor: pointer;
@@ -91,7 +91,7 @@ canvas {
 
 
 .Self {
-    fill: #BEAF11;
+    fill: #ffcb00;
 }
 
 .Peer {
@@ -103,9 +103,24 @@ canvas {
 }
 
 .Teammate {
-    fill: #be5705;
+    fill: #e99654;
 }
 
 .Subordinate {
-    fill: #be0527;
+    fill: #be0505;
+}
+
+.Employee {
+    fill: #005d80;
+    fill-opacity:1;
+}
+
+.Management {
+    fill:#ff0000;
+    fill-opacity:1;
+}
+
+.You {
+    fill: #ffcb00;
+    fill-opacity:1;
 }

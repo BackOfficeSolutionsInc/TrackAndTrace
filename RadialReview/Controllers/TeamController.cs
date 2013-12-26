@@ -114,7 +114,7 @@ namespace RadialReview.Controllers
 
             var model = new AddModalViewModel(){
                 TeamId = id,
-                Users = notMembers.ToSelectList(x => x.GetName(), x => x.Id).ToList(),
+                Users = notMembers.ToSelectList(x => x.GetNameAndTitle(), x => x.Id).ToList(),
             };
             return PartialView(model);
         }

@@ -302,7 +302,7 @@ namespace RadialReview.Accessors
 
                     if (changed)
                     {
-                        PermissionsUtility.Create(s,caller).EditUserOrganization(userOrgId);
+                        PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrgId);
                         s.Update(tempUser);
                         tx.Commit();
                         s.Flush();
@@ -341,7 +341,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var perm = PermissionsUtility.Create(s, caller).EditUserOrganization(userOrganizationId);
+                    var perm = PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId);
                     var found = s.Get<UserOrganizationModel>(userOrganizationId);
 
                     DateTime deleteTime = DateTime.UtcNow;

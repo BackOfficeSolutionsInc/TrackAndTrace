@@ -10,7 +10,7 @@
     @Html.Partial("Partial/manageheader")
 }
 @section hints{
-    @Html.AlertBoxDismissable("The first step toward setting up your organization is to create a list of positions within your organization. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
+    @Html.AlertBoxDismissable("You can edit your organization's positions from this view. You can then add responsibilies to everyone in that position. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
 }
 <div class="panel panel-primary">
     <div class="panel-heading">
@@ -25,7 +25,7 @@
             <th style="width:150px" class="alignCenter"># People</th>
             @if (Model.CanEdit)
             {
-                <th style="" class="rightButton"><button class="btn btn-default fullWidth" onclick="@Html.ShowModal("Create Position", "/Position/Modal", "/Position/Modal")">+</button></th>
+                <th style="" class="rightButton"><button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Position", "/Position/Modal", "/Position/Modal")">+</button></th>
             }
         </tr>
         @foreach (var p in Model.Positions.OrderBy(x => x.Name))

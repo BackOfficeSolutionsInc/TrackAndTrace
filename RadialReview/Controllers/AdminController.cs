@@ -13,9 +13,10 @@ namespace RadialReview.Controllers
 {
     public partial class AccountController : BaseController
     {
-        private OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        private PaymentAccessor _PaymentAccessor = new PaymentAccessor();
-        private PositionAccessor _PositoinAccessor = new PositionAccessor();
+        private static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
+        private static PaymentAccessor _PaymentAccessor = new PaymentAccessor();
+        private static PositionAccessor _PositoinAccessor = new PositionAccessor();
+        private static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
 
         [Access(AccessLevel.Radial)]
         public async Task<String> TempCreate()
@@ -107,5 +108,34 @@ namespace RadialReview.Controllers
 
             return "Success";
         }
+
+
+        private RadialReview.Controllers.ReviewController.ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
+        {
+            var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
+            var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId);
+            var model = new RadialReview.Controllers.ReviewController.ReviewDetailsViewModel()
+            {
+                Review = review,
+                Axis = categories.ToSelectList(x => x.Category.Translate(), x => x.Id),
+                xAxis = categories.FirstOrDefault().NotNull(x => x.Id),
+                yAxis = categories.Skip(1).FirstOrDefault().NotNull(x => x.Id),
+                AnswersAbout = answers,
+                Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate()),
+            };
+            return model;
+        }
+
+
+
+        [Access(AccessLevel.Any)]
+        public ActionResult TestChart(long id,long reviewsId)
+        {
+            var review = _ReviewAccessor.GetReview(GetUser(), id);
+
+            var model = GetReviewDetails(review);
+            return View(model);
+        }
+
 	}
 }

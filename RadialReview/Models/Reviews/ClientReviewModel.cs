@@ -16,6 +16,7 @@ namespace RadialReview.Models.Reviews
         public virtual IList<LongModel> FeedbackIds { get; set; }
         public virtual IList<LongTuple> Charts { get; set; }
         public virtual bool Visible { get; set; }
+        public virtual String ManagerNotes { get; set; }
 
         public ClientReviewModel()
         {
@@ -31,6 +32,8 @@ namespace RadialReview.Models.Reviews
             Id(x => x.Id);
             Map(x => x.ReviewId);
             Map(x => x.Visible);
+            Map(x => x.ManagerNotes);
+
             HasMany(x => x.FeedbackIds)
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();
