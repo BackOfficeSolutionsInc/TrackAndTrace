@@ -33,6 +33,7 @@ namespace RadialReview.Models
         public virtual IList<GroupModel> Groups { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual DateTime CreationTime { get; set; }
+        public virtual bool SendEmailImmediately { get; set; }
 
         public virtual IList<ReviewsModel> Reviews { get; set; }
 
@@ -105,6 +106,7 @@ namespace RadialReview.Models
             Map(x => x.StrictHierarchy);
             Map(x => x.ManagersCanEditPositions);
             //Map(x => x.ImageUrl);
+            Map(x => x.SendEmailImmediately);
 
             References(x => x.Image).Not.LazyLoad().Cascade.SaveUpdate();
             References(x => x.Name).Not.LazyLoad().Cascade.SaveUpdate();

@@ -244,6 +244,7 @@
 
 			this.inDrag = true;
 			var val = this.calculateValue();
+			//debugger;
 			this.element.trigger({
 					type: 'slideStart',
 					value: val
@@ -326,6 +327,11 @@
 				val = (this.min + Math.round((this.diff * this.percentage[0]/100)/this.step)*this.step);
 				this.value = [val, this.value[1]];
 			}
+			this.element
+				.trigger({
+				    type: 'calculate',
+				    value: val
+				});
 			return val;
 		},
 

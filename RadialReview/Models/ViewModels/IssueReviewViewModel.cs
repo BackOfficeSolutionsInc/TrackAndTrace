@@ -17,6 +17,12 @@ namespace RadialReview.Models.ViewModels
 
         public String Date { get; set; }
         public String Name { get; set; }
+        public bool Emails { get; set; }
+
+        public IssueReviewViewModel()
+        {
+            Emails = true;
+        }
                 
     }
 }

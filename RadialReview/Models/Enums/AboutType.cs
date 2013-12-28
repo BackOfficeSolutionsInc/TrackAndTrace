@@ -8,11 +8,12 @@ namespace RadialReview.Models.Enums
     [Flags]
     public enum AboutType : long
     {
-        Self        = 1,
-        Subordinate = 2,
-        Teammate    = 4,
-        Peer        = 8,
-        Manager     = 16,
+        NoRelationship  = 0,
+        Self            = 1,
+        Subordinate     = 2,
+        Teammate        = 4,
+        Peer            = 8,
+        Manager         = 16,
     }
 
 }

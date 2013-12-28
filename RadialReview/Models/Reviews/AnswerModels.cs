@@ -11,7 +11,7 @@ namespace RadialReview.Models
 {
 
     #region AnswerModel
-    public abstract class AnswerModel : ILongIdentifiable
+    public abstract class AnswerModel : ILongIdentifiable,ICompletable
     {
         public virtual long Id { get; set; }
         public virtual long ForReviewId { get; set; }
@@ -25,7 +25,12 @@ namespace RadialReview.Models
         public virtual UserOrganizationModel ByUser { get; set; }
         public virtual AboutType AboutType { get; set; }
 
-
+        public virtual CompletionModel GetCompletion()
+        {
+            if (Required)
+                return new CompletionModel(Complete.ToInt(), 1);
+            return new CompletionModel(0, 0, Complete.ToInt(), 1);
+        }
     }
     #endregion
 

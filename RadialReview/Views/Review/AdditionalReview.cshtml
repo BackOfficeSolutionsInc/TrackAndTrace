@@ -1,0 +1,27 @@
+﻿@model RadialReview.Models.ViewModels.AdditionalReviewViewModel
+@{
+    ViewBag.Title = "AdditionalReview";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="review">
+    <h3>You're all done!</h3>
+    @if (Model.Possible.Count > 0)
+    {
+        <h4>But you may optionally review more users:</h4>
+        using (Html.BeginForm())
+        {
+            @Html.HiddenFor(x => x.Id)
+            @Html.HiddenFor(x => x.Page)
+            <p>
+                @Html.DropDownListFor(x => x.User, Model.Possible, new { @class = "form-control" })
+            </p>
+            <button class="btn btn-primary">Review</button>
+            <a href="/" class="btn btn-default">Exit</a>
+        }
+    }
+    else
+    {
+        <a href="/" class="btn btn-default">Exit</a>
+    }
+</div>

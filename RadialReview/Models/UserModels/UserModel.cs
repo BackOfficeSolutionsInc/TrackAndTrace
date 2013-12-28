@@ -61,6 +61,8 @@ namespace RadialReview.Models
 
         public virtual DateTime? DeleteTime { get; set; }
 
+
+        public virtual bool IsRadialAdmin { get; set; }
     }
 
     public class UserModelMap : ClassMap<UserModel>
@@ -76,6 +78,7 @@ namespace RadialReview.Models
             Map(x => x.CurrentRole);
             //Map(x => x.Email);
             Map(x => x.SecurityStamp);
+            Map(x => x.IsRadialAdmin);
             Map(x => x.DeleteTime);
             Map(x => x.ImageGuid);
             HasMany(x => x.UserOrganization).Not.LazyLoad().Cascade.SaveUpdate();

@@ -276,7 +276,7 @@ namespace RadialReview.Utilities
         }
         protected Boolean IsRadialAdmin()
         {
-            if (caller.IsRadialAdmin)
+            if (caller.IsRadialAdmin || caller.User.IsRadialAdmin)
                 return true;
             return false;
         }

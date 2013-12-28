@@ -65,6 +65,12 @@
     <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
       <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.1.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.0.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.0.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.6.7.4\lib\net40\MySql.Data.dll</HintPath>
@@ -244,6 +250,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
+    <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Models\Interfaces\ICompletable.cs" />
     <Compile Include="Models\Enums\AboutType.cs" />
     <Compile Include="Models\Responsibilities\AskableAbout.cs" />
@@ -256,6 +263,7 @@
     <Compile Include="Models\Template\TemplateModel.cs" />
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
+    <Compile Include="Models\ViewModels\AdditionalReviewViewModel.cs" />
     <Compile Include="Models\ViewModels\CompletionViewModel.cs" />
     <Compile Include="Models\Enums\TeamType.cs" />
     <Compile Include="Models\Responsibilities\Askable.cs" />
@@ -518,6 +526,8 @@
     <Content Include="Scripts\home\jquery.magnific-popup.js" />
     <Content Include="Scripts\home\prettify.js" />
     <Content Include="Scripts\home\widgets.js" />
+    <Content Include="Scripts\jquery.signalR-2.0.1.js" />
+    <Content Include="Scripts\jquery.signalR-2.0.1.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.js" />
@@ -650,6 +660,7 @@
     <Content Include="Views\Review\ClientDetails.cshtml" />
     <Content Include="Views\Shared\_UserModel.cshtml" />
     <Content Include="Views\Account\TestChart.cshtml" />
+    <Content Include="Views\Review\AdditionalReview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

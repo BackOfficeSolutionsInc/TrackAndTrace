@@ -32,7 +32,7 @@
 
             <div class="row">
                 <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.min</h5></div>
-                <div class="col-xs-6" style="padding:30px 0 15px 0;">
+                <div class="col-xs-6" style="padding:30px 0 0px 0;">
                     <input name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
                            type="text"
                            class="sliderInput"
@@ -46,6 +46,7 @@
                 </div>
                 <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.max</h5></div>
             </div>
+            <div id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@(slider.Id)_title" class="bold alignCenter">No Answer</div>
         </div>
     </div>
 }
@@ -72,9 +73,26 @@
 @using (var scripts = Html.BeginScripts())
 {
     <script>
+        function slideUpdate(d) {
+            var name = $(this).attr("name");
+            var answers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
+            var div = 100 / answers.length;
+            var i = Math.floor(d.value / div);
+
+            $("#"+name + "_title").html(answers[i]);
+        }
+
         $(function () {
-            $(".sliderInput").slider();
+
+            $(".sliderInput").slider().on('calculate', slideUpdate);//.on('click', slideUpdate).on('slideStop', slideUpdate);
+
+            $(".sliderInput").each(function () {
+                slideUpdate.call(this,{ value: parseInt($(this).val()) });
+            });
+
             $('.btn-group').button();
+
+
         });
         @*
         function Thumbs(id) {

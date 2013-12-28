@@ -1,5 +1,7 @@
-﻿using RadialReview.Accessors;
+﻿using Microsoft.AspNet.SignalR;
+using RadialReview.Accessors;
 using RadialReview.Exceptions;
+using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
@@ -138,6 +140,35 @@ namespace RadialReview.Controllers
             return Json(ResultObject.Success);
         }
 
+        [HttpGet]
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult AdditionalReview(long id,long page)
+        {
+            var organizationUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
+            var review = _ReviewAccessor.GetReview(GetUser(), id);
+
+            var permittedUsers = organizationUsers.Where(x => !review.Answers.Any(y => y.AboutUserId == x.Id));
+
+            var selectList = permittedUsers.Select(x => new SelectListItem() { Text = x.GetNameAndTitle(), Value = "" + x.Id }).ToList();
+
+            var model = new AdditionalReviewViewModel()
+            {
+                Id=id,
+                Possible=selectList,
+                Page=page
+            };
+
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult AdditionalReview(AdditionalReviewViewModel model)
+        {
+            _ReviewAccessor.AddToReview(GetUser(),GetUser().Id, model.Id,model.User);
+            return RedirectToAction("Take", new { id = model.Id, page = model.Page });
+        }
 
         [HttpGet]
         [Access(AccessLevel.UserOrganization)]
@@ -158,7 +189,7 @@ namespace RadialReview.Controllers
             try
             {
                 var p = pages[page ?? 0].ToList();
-                if (p.Any(x => x.Complete && x.Required) && !p.All(x => x.Complete && x.Required))
+                if (p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required))
                 {
                     TempData["Message"] = DisplayNameStrings.remainingQuestions;
                     ViewBag.Incomplete = true;
@@ -175,7 +206,8 @@ namespace RadialReview.Controllers
             }
             catch (ArgumentOutOfRangeException)
             {
-                return RedirectToAction("Index");
+                //Session["Page"] = page;
+                return RedirectToAction("AdditionalReview",new { id=id,page=page });
             }
             #region Comment
             /*
@@ -278,9 +310,19 @@ namespace RadialReview.Controllers
                 /*if (!caller.ManagingOrganization)
                     throw new PermissionsException();*/
 
+                var userId = GetUserModel().UserName;
+
                 //TODO HERE
-                var result = _ReviewAccessor.CreateCompleteReview(GetUser(), model.ForTeamId, dueDate, model.Name);
-                return Json(result);
+                new Task(() =>
+                {
+                    var result = _ReviewAccessor.CreateCompleteReview(GetUser(), model.ForTeamId, dueDate, model.Name, model.Emails);
+                    Thread.Sleep(4000);
+                    var hub=GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+                    hub.Clients.User(userId).jsonAlert(ResultObject.Create(false, "Finished creating review \"" + model.Name + "\"."), true);
+                    hub.Clients.User(userId).unhide("#ManageNotification");
+                }).Start();
+
+                return Json(ResultObject.Create(false,"Creating review. This will may take a few minutes."));
             }
             catch (Exception e)
             {

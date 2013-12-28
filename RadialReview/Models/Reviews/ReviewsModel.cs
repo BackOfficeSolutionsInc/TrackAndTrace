@@ -21,11 +21,12 @@ namespace RadialReview.Models
 
         public virtual OrganizationModel ForOrganization { get; set; }
 
+        public virtual CompletionModel Completion { get; set; }
+
         public virtual CompletionModel GetCompletion()
         {
-            if (Reviews == null)
-                return null;
-            return CompletionModel.FromList(Reviews.Select(x => x.GetCompletion()));
+            return Completion;
+            //return CompletionModel.FromList(Reviews.Select(x => x.GetCompletion()));
             /*foreach (var r in Reviews)
             {
                 var c = r.GetCompletion();

@@ -14,14 +14,37 @@
 @section hints{
     @Html.AlertBoxDismissable(@"
             The first step is adding members to your organization.
-            Members have a number of individual responsibilities and responsibilities for their team, position and organization. 
+            Members have a number of individual responsibilities and responsibilities for their team, position and organization.
             During the review process, peers, teammates, managers and subordinates rate individuals on how well they are fulfilling their responsibilities.
             To begin, click the + button.
             You can come back to this any time.", "alert-info", "Info:")
 }
+@using (Html.BeginScripts())
+{
+    <script>
+
+        function SendEmails()
+        {
+            $.ajax({
+                url: "/Nexus/SendAllEmails",
+                success:function(data)
+                {
+                    StoreJsonAlert(data);
+                    location.reload();
+                }
+            });
+        }
+
+    </script>
+}
+
+
 <div class="panel panel-primary">
-    <div style="float:right;" class="rightButton">
-        <button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
+    <div style="float:right;padding:2px;" class="">
+        <button class="btn btn-default  plus" onclick="SendEmails()">
+            Send Invites
+        </button>
+        <button class="btn btn-default  plus" style="width: 69px;" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
             +
         </button>
     </div>
@@ -53,7 +76,14 @@
                         }
                         else
                         {
-                            @(p.Verified.GetIcon("", "glyphicon-envelope strokeRed red clickable", "Joined", "Resend Email","","onclick=\""+Html.ShowModal("Resend Email", "/Organization/ResendJoin/"+p.Id, "/Organization/ResendJoin/"+p.Id)+"\""))
+                            if (p.EmailSent)
+                            {
+                                <span title="Resend Email" class="glyphicon glyphicon-envelope strokeRed red clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-exclamation-sign red strokeRed clickable icon" title="Invitation not sent." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+                            }
                         }
                         @((p.Manager).GetIcon("glyphicon-tower gold strokeGold", "glyphicon-user blue strokeBlue", "A manager", "Not a manager"))
                     </td>

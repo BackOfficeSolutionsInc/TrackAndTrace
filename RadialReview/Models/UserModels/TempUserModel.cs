@@ -10,11 +10,12 @@ namespace RadialReview.Models.UserModels
     public class TempUserModel : ILongIdentifiable
     {
         public virtual long Id { get; set; }
+        public virtual long? OrganizationId { get; set; }
         public virtual String FirstName { get; set; }
         public virtual String LastName { get; set; }
         public virtual String Email { get; set; }
         public virtual DateTime Created { get; set; }       
-        public virtual DateTime LastSent { get; set; }
+        public virtual DateTime? LastSent { get; set; }
 
         public virtual String Guid { get; set; }
 
@@ -47,6 +48,7 @@ namespace RadialReview.Models.UserModels
             Map(x => x.Guid);
             Map(x => x.Created);
             Map(x => x.LastSent);
+            Map(x => x.OrganizationId);
         }
     }
 }

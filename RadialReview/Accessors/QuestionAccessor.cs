@@ -122,20 +122,12 @@ namespace RadialReview.Accessors
 
             s.Update(reviewModel);
 
-            foreach (var q in askables)
-            {
-                switch (q.Askable.GetQuestionType())
-                {
-                    case QuestionType.RelativeComparison: GenerateRelativeComparisonAnswers(s, caller, forUser, q, reviewModel); break;
-                    case QuestionType.Slider: GenerateSliderAnswers(s, caller, forUser, q, reviewModel); break;
-                    case QuestionType.Thumbs: GenerateThumbsAnswers(s, caller, forUser, q, reviewModel); break;
-                    case QuestionType.Feedback: GenerateFeedbackAnswers(s, caller, forUser, q, reviewModel); break;
-                    default: throw new ArgumentException("Unrecognized questionType(" + q.Askable.GetQuestionType() + ")");
-                }
-            }
-            s.SaveOrUpdate(reviewModel);
+            ReviewAccessor.AddAskablesToReview(s, perms, caller, forUser, reviewModel, askables);
+
             return reviewModel;
         }
+
+        
 
 
         /*
@@ -179,99 +171,6 @@ namespace RadialReview.Accessors
                 }
             }
         }*/
-
-
-        private static void GenerateSliderAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
-        {
-
-            var slider = new SliderAnswer()
-            {
-                Complete = false,
-                Percentage = null,
-                Askable = askable.Askable,
-                Required = askable.Askable.Required,
-                ForReviewId = review.Id,
-                ByUserId = forUser.Id,
-                AboutUserId = askable.AboutUserId,
-                ForReviewContainerId = review.ForReviewsId,
-                AboutType = askable.AboutType
-
-            };
-            session.Save(slider);
-
-        }
-        private static void GenerateFeedbackAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
-        {
-            var feedback = new FeedbackAnswer()
-            {
-                Complete = false,
-                Feedback = null,
-                Askable = askable.Askable,
-                Required = askable.Askable.Required,
-                ForReviewId = review.Id,
-                ByUserId = forUser.Id,
-                AboutUserId = askable.AboutUserId,
-                ForReviewContainerId = review.ForReviewsId,
-                AboutType = askable.AboutType
-            };
-            session.Save(feedback);
-
-        }
-
-        private static void GenerateThumbsAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
-        {
-            var thumbs = new ThumbsAnswer()
-            {
-                Complete = false,
-                Thumbs = ThumbsType.None,
-                Askable = askable.Askable,
-                Required = askable.Askable.Required,
-                ForReviewId = review.Id,
-                ByUserId = forUser.Id,
-                AboutUserId = askable.AboutUserId,
-                ForReviewContainerId = review.ForReviewsId,
-                AboutType = askable.AboutType
-            };
-            session.Save(thumbs);
-
-        }
-
-        private static void GenerateRelativeComparisonAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
-        {
-            var peers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager).SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate));
-            var managers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager);
-            var managing = forUser.ManagingUsers.ToListAlive().Select(x => x.Subordinate);
-
-            var groupMembers = forUser.Groups.SelectMany(x => x.GroupUsers);
-
-            var union = peers.UnionBy(x => x.Id, managers, managing, groupMembers).ToList();
-
-            var len = union.Count();
-            List<Tuple<UserOrganizationModel, UserOrganizationModel>> items = new List<Tuple<UserOrganizationModel, UserOrganizationModel>>();
-            for (int i = 0; i < len - 1; i++)
-            {
-                for (int j = i + 1; j < len; j++)
-                {
-                    var relComp = new RelativeComparisonAnswer()
-                    {
-                        Required = askable.Askable.Required,
-                        Askable = askable.Askable,
-                        Complete = false,
-                        First = union[i],
-                        Second = union[j],
-                        Choice = RelativeComparisonType.Skip,
-                        ForReviewId = review.Id,
-                        ByUserId = forUser.Id,
-                        AboutUserId = askable.AboutUserId,
-                        ForReviewContainerId = review.ForReviewsId,
-                        AboutType = askable.AboutType
-                    };
-                    items.Add(Tuple.Create(union[i], union[j]));
-                    session.Save(relComp);
-                }
-            }
-
-        }
 
         public static List<QuestionModel> GetQuestionsForUser(ISession s,PermissionsUtility perms, UserOrganizationModel caller, long forUserId)
         {

@@ -64,7 +64,8 @@ namespace RadialReview.Accessors
                         LastName = lastName,
                         Email = email,
                         Guid = nexusId.ToString(),
-                        LastSent = DateTime.UtcNow
+                        LastSent = null,
+                        OrganizationId = caller.Organization.Id,
                     };
                     newUser.TempUser = tempUser;
 
@@ -123,17 +124,60 @@ namespace RadialReview.Accessors
 
         public String JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email,String firstName,String lastName)
         {
+            var sendEmail = caller.Organization.SendEmailImmediately;
+
             var tempUser=CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName);
-            return SendJoinEmailToGuid(caller,tempUser);
+            if (sendEmail)
+            {
+                SendJoinEmailToGuid(caller, tempUser);
+            }
+            return tempUser.Guid;
+        }
+
+        public int SendAllJoinEmails(UserOrganizationModel caller, long organizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
+
+                    var toSend=s.QueryOver<TempUserModel>().Where(x => x.OrganizationId == organizationId && x.LastSent == null).List().ToList();
+                    foreach (var tempUser in toSend)
+                    {
+                        SendJoinEmailToGuid(s, caller, tempUser);
+                    }
+                    tx.Commit();
+                    s.Flush();
+                    return toSend.Count;
+                }
+            }
         }
 
         public String SendJoinEmailToGuid(UserOrganizationModel caller, TempUserModel tempUser)
         {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var result=SendJoinEmailToGuid(s, caller, tempUser);
+                    tx.Commit();
+                    s.Flush();
+                    return result;
+                }
+            }
+        }
 
-            var email = tempUser.Email;
+        public static string SendJoinEmailToGuid(ISession s, UserOrganizationModel caller, TempUserModel tempUser)
+        {
+            var emailAddress = tempUser.Email;
             var firstName = tempUser.FirstName;
             var lastName = tempUser.LastName;
             var id = tempUser.Guid;
+            
+            tempUser = s.Get<TempUserModel>(tempUser.Id);
+            tempUser.LastSent = DateTime.UtcNow;
+            s.SaveOrUpdate(tempUser);
 
             //Send Email
             var subject = String.Format(EmailStrings.JoinOrganizationUnderManager_Subject, firstName, caller.Organization.Name.Translate(), ProductStrings.ProductName);
@@ -143,7 +187,7 @@ namespace RadialReview.Accessors
             //var shorenedUrl = ProductStrings.BaseUrl + _UrlAccessor.RecordUrl(url, email);
             var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName);
             subject = Regex.Replace(subject, @"[^A-Za-z0-9 \.\,&]", "");
-            Emailer.SendEmail(email, subject, body);
+            Emailer.SendEmail(s,emailAddress, subject, body);
             return id;
         }
 

@@ -112,7 +112,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Organization(OrganizationViewModel model)
         {
-            _OrganizationAccessor.Edit(GetUser(),model.Id, model.OrganizationName, model.ManagersCanEdit, model.StrictHierarchy,model.ManagersCanEditPositions);
+            _OrganizationAccessor.Edit(GetUser(),model.Id, model.OrganizationName, model.ManagersCanEdit, model.StrictHierarchy,model.ManagersCanEditPositions,model.SendEmailImmediately);
             ViewBag.Success = "Successfully Saved.";
             return View(model);
         }
@@ -121,7 +121,7 @@ namespace RadialReview.Controllers
         public ActionResult Reviews()
         {
             Session["Manage"] = "Reviews";
-            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, true);
+            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false);
             var model = new OrgReviewsViewModel()
             {
                 Reviews = reviews.Select(x => new ReviewsViewModel(x)).ToList()

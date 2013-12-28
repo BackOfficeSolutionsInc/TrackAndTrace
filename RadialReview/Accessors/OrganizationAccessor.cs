@@ -256,7 +256,8 @@ namespace RadialReview.Accessors
         public void Edit(UserOrganizationModel caller,long organizationId,  string organizationName=null,
                                                                             bool? managersCanEdit = null,
                                                                             bool? strictHierarchy = null,
-                                                                            bool? managersCanEditPositions = null)
+                                                                            bool? managersCanEditPositions = null,
+                                                                            bool? sendEmailImmediately = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -278,6 +279,9 @@ namespace RadialReview.Accessors
 
                     if (managersCanEditPositions != null)
                         org.ManagersCanEditPositions = managersCanEditPositions.Value;
+
+                    if (sendEmailImmediately != null)
+                        org.SendEmailImmediately = sendEmailImmediately.Value;
 
                     s.Update(org);
                     tx.Commit();

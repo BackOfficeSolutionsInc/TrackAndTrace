@@ -17,10 +17,13 @@
 </div>
 <div class="smallBreak"></div>
 <div class="smallBreak"></div>
-<div class="row">
-    <div class="col-xs-12">
-        <h4 style="color: #CC2424">Last sent : @Model.LastSent.ToShortDateString() @Model.LastSent.ToShortTimeString()</h4>
+@if(Model.LastSent!=null)
+{ 
+    <div class="row">
+        <div class="col-xs-12">
+            <h4 style="color: #CC2424">Last sent : @Model.LastSent.Value.ToShortDateString() @Model.LastSent.Value.ToShortTimeString()</h4>
+        </div>
     </div>
-</div>
+}
 @Html.HiddenFor(x => x.Id)
 @Html.HiddenFor(x => x.Guid)

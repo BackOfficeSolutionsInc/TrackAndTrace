@@ -238,12 +238,22 @@ namespace RadialReview.Accessors
                     .SingleOrDefault();*/
 
                     //                    var user = db.UserModels.Include(x => x.UserOrganization.Select(y => y.Organization)).FirstOrDefault(x => x.IdMapping == userId);
-                    if (user == null)
-                        throw new LoginException();
-                    var match = user.UserOrganization.SingleOrDefault(x => x.Id == userOrganizationId && x.DetachTime == null);
-                    if (match == null)
-                        throw new OrganizationIdException();
-                    return GetUserOrganizationModel(s, match.Id, full);
+                    long matchId = -1;
+
+                    if (!user.IsRadialAdmin)
+                    {
+                        if (user == null)
+                            throw new LoginException();
+                        var match = user.UserOrganization.SingleOrDefault(x => x.Id == userOrganizationId && x.DetachTime == null);
+                        if (match == null)
+                            throw new OrganizationIdException();
+                        matchId = match.Id;
+                    }
+                    else
+                    {
+                        matchId = userOrganizationId;
+                    }
+                    return GetUserOrganizationModel(s, matchId, full);
                 }
             }
         }
@@ -456,7 +466,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     caller = s.Get<UserModel>(caller.Id);
-                    if ((callerUserOrg!=null && callerUserOrg.IsRadialAdmin) || caller.UserOrganization.Any(x => x.Id == roleId))
+                    if ((caller != null && caller.IsRadialAdmin) || (callerUserOrg != null && callerUserOrg.IsRadialAdmin) || caller.UserOrganization.Any(x => x.Id == roleId))
                         caller.CurrentRole = roleId;
                     else
                         throw new PermissionsException();

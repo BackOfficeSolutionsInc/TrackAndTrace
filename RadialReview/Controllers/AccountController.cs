@@ -379,7 +379,7 @@ namespace RadialReview.Controllers
         {
             this.SignOut();
             //AuthenticationManager.SignOut();
-            //Session["organizationId"] = null;
+            //Session["UserOrganizationId"] = null;
             return RedirectToAction("Index", "Home");
         }
 

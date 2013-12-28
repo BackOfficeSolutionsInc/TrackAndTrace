@@ -22,6 +22,7 @@ namespace RadialReview.Models.ViewModels
         public String Email { get; set; }
         public bool Verified { get; set; }
         public bool Manager { get; set; }
+        public bool EmailSent { get; set; }
         public int NumIndividualResponsibilities { get; set; }
         public int NumTotalResponsibilities { get; set; }
         //public int NumTeams { get; set; }
@@ -43,6 +44,9 @@ namespace RadialReview.Models.ViewModels
             PositionTitles = userOrg.Positions.ToListAlive().Select(x=>x.Position.CustomName).ToList();
             ManagersTitles = userOrg.ManagedBy.ToListAlive().Select(x => x.Manager.GetName()).ToList();
             NumIndividualResponsibilities = userOrg.Responsibilities.ToListAlive().Count();
+            EmailSent=true;
+            if (userOrg.TempUser != null && userOrg.TempUser.LastSent == null)
+                EmailSent = false;
 
             Managing = userOrg.GetPersonallyManaging();
 

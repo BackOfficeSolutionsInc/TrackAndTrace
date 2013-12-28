@@ -38,7 +38,15 @@ namespace RadialReview.Controllers
 
                 var nexusId = NexusAccessor.JoinOrganizationUnderManager(user,model.ManagerId, model.IsManager, model.Position.PositionId, model.Email,model.FirstName,model.LastName);
 
-                return Json(new ResultObject(false,"Successfully added "+model.FirstName+" "+model.LastName+"."));
+                var message="Successfully added "+model.FirstName+" "+model.LastName+".";
+                if(GetUser().Organization.SendEmailImmediately)
+                {
+                    message+=" An invitation has been sent to "+model.Email+".";
+                }else{
+                    message+=" The invitation has NOT been sent. To send, click \"Send Invites\" below.";
+                }
+
+                return Json(new ResultObject(false, message));
             }
             catch (RedirectException e)
             {
@@ -49,24 +57,38 @@ namespace RadialReview.Controllers
                 return Json(new ResultObject(true, ExceptionStrings.AnErrorOccuredContactUs));
             }
         }
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult SendAllEmails()
+        {
+            var count=NexusAccessor.SendAllJoinEmails(GetUser(), GetUser().Organization.Id);
+            return Json(ResultObject.Create(true,"Sent "+count+" email".Pluralize(count)+"."),JsonRequestBehavior.AllowGet);
+        }
         
         [Access(AccessLevel.Any)]
         public ActionResult Index(String id)
         {
-            if (id == null)
-                throw new PermissionsException();
-            var nexus=NexusAccessor.Get(id);
-            switch(nexus.ActionCode)
+            try
             {
-                case NexusActions.JoinOrganizationUnderManager: return RedirectToAction("Join", "Organization", new { id = id });
-                case NexusActions.TakeReview: {
-                    SignOut();
-                    NexusAccessor.Execute(nexus);
-                    return RedirectToAction("Index", "Review");
-                };
-            }
+                if (id == null)
+                    throw new PermissionsException();
+                var nexus = NexusAccessor.Get(id);
+                switch (nexus.ActionCode)
+                {
+                    case NexusActions.JoinOrganizationUnderManager: return RedirectToAction("Join", "Organization", new { id = id });
+                    case NexusActions.TakeReview:
+                        {
+                            SignOut();
+                            NexusAccessor.Execute(nexus);
+                            return RedirectToAction("Index", "Review");
+                        };
+                }
 
             return View();
+            }catch(Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
     }
 }

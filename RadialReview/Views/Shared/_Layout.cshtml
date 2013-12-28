@@ -49,20 +49,26 @@
                             {
                                 if (((int?)ViewBag.Organizations ?? 0) > 0)
                                 {
-                                    <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.reviews, "Index", "Review")</li>
-                                    <li>@Html.ActionLink("Responsibilities", "Details", "User", new { id = ViewBag.UserId }, null)</li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "Review")">@RadialReview.Properties.DisplayNameStrings.reviews <span id="ReviewsNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span></a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Details", "User", new { id = ViewBag.UserId })">Responsibilities <span id="ResponsibilitiesNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span></a>
+                                    </li>
                                 }
                                 if (ViewBag.IsManager ?? false)
                                 {
-                                    <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.manage, "Index", "Manage")</li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "Manage")">@RadialReview.Properties.DisplayNameStrings.manage <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span></a>
+                                    </li>
                                 }
                             }
                             else
                             {
                                 <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "Index", "Home")</li>
                             }
-                        </ul>
-                        @Html.Partial("_LoginPartial", (string)ViewBag.ReturnUrl)
+                            </ul>
+                            @Html.Partial("_LoginPartial", (string)ViewBag.ReturnUrl)
                     </div>
                 </div>
             </div>
@@ -105,22 +111,21 @@
                     ForceUnhide();
                     @if(ViewBag.Alert!=null)
                     {
-                        @:showAlert("@ViewBag.Alert");                                  
-                    }
+                        @:showAlert("@ViewBag.Alert");
+                                        }
                     @if(ViewBag.Success!=null)
                     {
                         @:showAlert("@ViewBag.Success", "alert-success", "Success!");
-                    }
+                                        }
 
                     var data = localStorage.getItem("Alert");
                     localStorage.setItem("Alert", null);
 
                     var alert = JSON.parse(data);
-                    if (alert !== undefined && alert != null && alert != "null")
-                    {
+                    if (alert !== undefined && alert != null && alert != "null") {
                         var type = alert.type;
                         var title = alert.title;
-                        var message =alert.message;
+                        var message = alert.message;
 
                         if (type === undefined)
                             type = "alert-success";
@@ -209,10 +214,7 @@
                                             $("#modal").modal("hide");
                                             showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
                                         } else {
-                                            var alert = new Object();
-                                            alert.message = data.Message;
-                                            localStorage.setItem("Alert", JSON.stringify(alert));
-
+                                            StoreJsonAlert(data)
                                             if (onSuccess) {
                                                 eval(onSuccess + "(data)");
                                                 $("#modal").modal("hide");
@@ -255,6 +257,20 @@
                     });
                 }
 
+                function StoreJsonAlert(json) {
+                    var alert = new Object();
+                    alert.message = json.Message;
+                    if (json.Error) {
+                        alert.type = "alert-danger";
+                        alert.title = "Warning";
+                    } else {
+                        alert.type = "alert-success";
+                        alert.title = "Success!";
+                    }
+
+                    localStorage.setItem("Alert", JSON.stringify(alert));
+                }
+
                 function showAlert(message, alertType, preface) {
                     if (alertType === undefined)
                         alertType = "alert-danger";
@@ -281,6 +297,20 @@
                     }
                 }
 
+                var alertHub = $.connection.alertHub;
+
+                alertHub.client.jsonAlert = function (data, showSuccess) {
+                    showJsonAlert(data, showSuccess);
+                };
+
+                alertHub.client.unhide = function (selector) {
+                    $(selector).show();
+                };
+
+                $.connection.hub.start().done(function () {
+                });
+
+
                 (function ($) {
                     $.fn.setCursorToTextEnd = function () {
                         var $initialVal = this.val();
@@ -297,6 +327,8 @@
         @Html.Partial("Partial/Footer")
     </div>
     @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/jquery.signalR-2.0.1.min.js"></script>
+    <script src="~/signalr/hubs"></script>
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
     @RenderSection("modals", required: false)
