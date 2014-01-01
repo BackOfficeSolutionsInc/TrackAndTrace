@@ -45,31 +45,38 @@
 <div class="startHiddenGroup">
     <div class="row startHidden">
         @Html.AlertBoxDismissable((string)ViewBag.Message,(string)ViewBag.AlertType,(string)ViewBag.AlertMessage)
-        <div class="review col-md-12">
-            @using (var form = Html.BeginForm("Take", "Review", FormMethod.Post, new {id="form" }))
-            {
-                <input type="hidden" name="reviewId" value="@ViewBag.ReviewId" />
-                <input type="hidden" name="page" value="@ViewBag.Page" />
-                @RenderBody()
-                <br />
-                <div class="row startHidden">
-                    <div class="col-md-12 alignCenter">
-                        @if(ViewBag.NoSubmit==null)
-                        {
-                            if(ViewBag.Page!=0)
-                            { 
-                            <input type="submit" name="back" class="btn btn-default btn-lg" value="Back" />
+        <div class="col-md-9">
+            <div class="review">
+                @using(var form = Html.BeginForm("Take", "Review", FormMethod.Post, new {id="form" }))
+                {
+                    <input type="hidden" name="reviewId" value="@ViewBag.ReviewId" />
+                    <input type="hidden" name="page" value="@ViewBag.Page" />
+                    @RenderBody()
+                    <br />
+                    <div class="row startHidden">
+                        <div class="col-md-12 alignCenter">
+                            @if(ViewBag.NoSubmit==null)
+                            {
+                                if(ViewBag.Page!=0)
+                                { 
+                                <input type="submit" name="back" class="btn btn-default btn-lg" value="Back" />
+                                }
+                                <input type="submit" class="btn btn-primary btn-lg" value="Next" />
                             }
-                            <input type="submit" class="btn btn-primary btn-lg" value="Next" />
-                        }
-                        @*else
-                        {
-                            <input type="submit" class="btn btn-primary btn-lg" value="@RadialReview.Properties.DisplayNameStrings.submit" />
-                            <input type="submit" class="btn btn-info btn-lg" value="@RadialReview.Properties.DisplayNameStrings.skip" />
-                        }*@
+                            @*else
+                            {
+                                <input type="submit" class="btn btn-primary btn-lg" value="@RadialReview.Properties.DisplayNameStrings.submit" />
+                                <input type="submit" class="btn btn-info btn-lg" value="@RadialReview.Properties.DisplayNameStrings.skip" />
+                            }*@
+                        </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
+            <div class="smallBreak"></div>
+            <div class="smallBreak"></div>
+        </div>
+        <div class="col-md-3 sidebar" style=" position: relative;">
+            @RenderSection("sidebar")
         </div>
     </div>
 </div>

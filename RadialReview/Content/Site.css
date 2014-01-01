@@ -411,9 +411,8 @@ input[type="checkbox"].input-validation-error {
     list-style-type: none;
 }
 
-.noBullet{
-
-    padding:0px;
+.noBullet {
+    padding: 0px;
 }
 
 .footer.container {
@@ -424,49 +423,49 @@ input[type="checkbox"].input-validation-error {
     color: #C9C8D8;
 }
 
-.smallPad{
-    padding-left:5px !important; 
-    padding-right:5px !important; 
+.smallPad {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
 }
 
-.noPad{
-    padding:0px !important;
-}
-.noMargin{
-    margin:0px !important;
+.noPad {
+    padding: 0px !important;
 }
 
-.noPadLeft{
-    padding-right:0px !important; 
-}
-.noPadRight{
-    padding-left:0px !important; 
+.noMargin {
+    margin: 0px !important;
 }
 
-.btn-group{
+.noPadLeft {
+    padding-right: 0px !important;
+}
+
+.noPadRight {
+    padding-left: 0px !important;
+}
+
+.btn-group {
     -webkit-transition: all .35s ease;
-	-moz-transition: all .35s ease;
+    -moz-transition: all .35s ease;
     -ms-transition: all .35s ease;
     -o-transition: all .35s ease;
-	transition: all .35s ease;
+    transition: all .35s ease;
 }
 
-.btn-group.heading:hover{
-    opacity:1;
-}
+    .btn-group.heading:hover {
+        opacity: 1;
+    }
 
-.btn.heading:not(.open){
-    background-color:transparent;
-    border-color:transparent;
+.btn.heading:not(.open) {
+    background-color: transparent;
+    border-color: transparent;
     color: #98C7FF;
     /*text-shadow: 0px -1px 10px #286D9B;
     filter: dropshadow(color=#286D9B, offx=0, offy=-1);*/
 }
 
 .btn-group.heading:hover .btn,
-.btn-group.heading.open .btn
-{
-    
+.btn-group.heading.open .btn {
     color: #333333;
     background-color: #ffffff;
     border-color: #cccccc;
@@ -481,127 +480,144 @@ td.noOverflow {
     white-space: nowrap;
 }
 
-.icon{
-    opacity:1;
+.icon {
+    opacity: 1;
 }
 
 .notManaging .icon {
-    opacity:.55;
+    opacity: .55;
 }
 
 
-.inlineBlock{
+.inlineBlock {
     display: inline-block;
 }
 
-.nav-pills a{
-    background-color:#E9E9E9;
-    border:1px solid #D8D8D8;
+.nav-pills a {
+    background-color: #E9E9E9;
+    border: 1px solid #D8D8D8;
 }
 
-.clickThrough{
-    pointer-events:none;
-    background:none !important;
+.clickThrough {
+    pointer-events: none;
+    background: none !important;
 }
 
-.rightButton
-{
-    width:69px;
-    padding:2px ! important;
+.rightButton {
+    width: 69px;
+    padding: 2px !important;
 }
 
 
-tr.danger .strikable{
-    text-decoration:line-through;
+tr.danger .strikable {
+    text-decoration: line-through;
 }
 
-.strokeBlack{
+.strokeBlack {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;
 }
 
-.strokeDarkGray{
+.strokeDarkGray {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #414141;
 }
 
-.strokeGreen{
+.strokeGreen {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #3C763D;
 }
-.strokeRed{
+
+.strokeRed {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #BF8F90;
 }
-.strokeGray{
+
+.strokeGray {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: rgb(193, 193, 193);
 }
-.strokeGold{
+
+.strokeGold {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #BFA970;
 }
-.strokeBlue{
+
+.strokeBlue {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #859BAD;
 }
-.strokeLightGreen{
+
+.strokeLightGreen {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #96B88A;
 }
 
-.green{
-color:#CCFABB;/*#A7E2A8;#468847;*/
+.green {
+    color: #CCFABB; /*#A7E2A8;#468847;*/
 }
 
-.red
-{
-color: #FFBFC0;
+.red {
+    color: #FFBFC0;
 }
 
-.gold{
-    color:#FFE296;
+.gold {
+    color: #FFE296;
 }
 
-.blue{
-    color:#BAD9F3;
+.blue {
+    color: #BAD9F3;
 }
 
-.gray{
-    color:#BDBDBD;
-}
-.darkGray{
-    color:#A7A7A7;
+.gray {
+    color: #BDBDBD;
 }
 
-.black{
-    color:rgb(0, 0, 0);
+.darkGray {
+    color: #A7A7A7;
 }
 
-.clickable{
-    cursor:pointer;
+.black {
+    color: rgb(0, 0, 0);
 }
 
-.team{
-    background-color:rgba(235, 235, 235, 0.42);
-    color:#393939;
+.clickable {
+    cursor: pointer;
 }
 
-.team.AllMembers{
-    background-color:rgba(255, 218, 157, 0.42)
-}
-.team.Managers{
-    background-color:rgba(253, 244, 136, 0.42)
-}
-.team.Subordinates{
-    background-color:rgba(196, 255, 161, 0.42)
+.team {
+    background-color: rgba(235, 235, 235, 0.42);
+    color: #393939;
 }
 
-.plus{
-    font-weight:bold;
-    color:#8d9098;
+    .team.AllMembers {
+        background-color: rgba(255, 218, 157, 0.42);
+    }
+
+    .team.Managers {
+        background-color: rgba(253, 244, 136, 0.42);
+    }
+
+    .team.Subordinates {
+        background-color: rgba(196, 255, 161, 0.42);
+    }
+
+.plus {
+    font-weight: bold;
+    color: #8d9098;
 }
-.plus:hover{
-    font-weight:bold;
-    color:#767F99;
+
+    .plus:hover {
+        font-weight: bold;
+        color: #767F99;
+    }
+
+
+.sidebar {
+    padding: 10px;
+    font-size: 12px;
+    background-color: #FDFDFD;
+    border: 1px solid #DFDFDF;
+    -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
+    box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
 }

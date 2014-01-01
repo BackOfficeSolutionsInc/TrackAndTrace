@@ -12,7 +12,7 @@ namespace RadialReview.Models.ViewModels
         public long UserOrganizationId { get; set; }
 
     }
-
+    /*
     public class ManageViewModel
     {
         public List<UserOrganizationModel> ManagedUsers { get; set; }
@@ -36,7 +36,7 @@ namespace RadialReview.Models.ViewModels
                 .Alive()
                 .Where(x => x.DateExecuted==null && x.ActionCode == NexusActions.JoinOrganizationUnderManager)
                 .Select(x => new PendingUsers() { EmailAddress = x.GetArgs()[1],Date=x.DateCreated,Id=long.Parse(x.GetArgs()[2]) })
-                .ToList();*/
+                .ToList();*
             Categories = orgUser.Organization.QuestionCategories.ToListAlive();
             OrganizationQuestions = new QuestionsViewModel(Organization.Id, OriginType.Organization, Organization.Id, Organization.CustomQuestions);
             AllSubordinates = orgUser.AllSubordinates;
@@ -45,5 +45,5 @@ namespace RadialReview.Models.ViewModels
             ManagingReviews = orgUser.CreatedReviews.Select(x=>new ReviewsViewModel(x)).ToList();
         }
 
-    }
+    }*/
 }

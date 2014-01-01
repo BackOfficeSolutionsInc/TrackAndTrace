@@ -6,7 +6,7 @@
 
 @if (completion != null)
 {
-    <div class="progress @(!completion.FullyComplete ? "active progress-striped" : "")" style="margin-top: 0px; margin-bottom: 0px;position:relative;">
+    <div class="progress @(!completion.FullyComplete && !completion.ForceInactive ? "active progress-striped" : "")" style="margin-top: 0px; margin-bottom: 0px;position:relative;">
         @if (!completion.FullyComplete)
         {
             if (completion.TotalRequired > 0)

@@ -31,5 +31,24 @@
     </div>
 </div>
 
+@section sidebar{
+    <ol>
+        @for(int i=0;i<Model.OrderedPeople.Count;i++)
+        {
+            <li class="@(Model.OrderedPeople[i].Item2?"complete":"incomplete")"><a href="@Url.Action("take", new {id=Model.Id, page = i})">@Model.OrderedPeople[i].Item1</a></li>
+        }
+        <li><a href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Review Others</a></li>
+    </ol>
+}
 
-
+@using(Html.BeginStyles())
+{
+    <style>
+        .complete a {
+            /*color: #52AC52 !important;*/
+        }
+        .incomplete a {
+            color: #D68585 !important;
+        }
+    </style>
+}

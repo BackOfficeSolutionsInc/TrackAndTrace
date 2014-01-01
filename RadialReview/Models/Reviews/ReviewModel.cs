@@ -43,7 +43,10 @@ namespace RadialReview.Models
             int required = Answers.Count(x => x.Required);
             int optional = Answers.Count(x => !x.Required);
 
-            return new CompletionModel(requiredComplete, required, optionalComplete, optional);
+            return new CompletionModel(requiredComplete, required, optionalComplete, optional)
+            {
+                ForceInactive= DateTime.UtcNow>DueDate
+            };
             /*
             if (requiredComplete < required)
             {

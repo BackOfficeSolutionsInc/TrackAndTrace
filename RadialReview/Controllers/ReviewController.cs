@@ -127,8 +127,11 @@ namespace RadialReview.Controllers
 
         public class TakeViewModel
         {
+            public long Id { get; set; }
+            public long Page { get; set; }
             public List<AnswerModel> Answers { get; set; }
             public UserOrganizationModel ForUser { get; set; }
+            public List<Tuple<String,bool>> OrderedPeople {get;set;}
 
         }
 
@@ -188,7 +191,8 @@ namespace RadialReview.Controllers
 
             try
             {
-                var p = pages[page ?? 0].ToList();
+                var pageConcrete = page ?? 0;
+                var p = pages[pageConcrete].ToList();
                 if (p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required))
                 {
                     TempData["Message"] = DisplayNameStrings.remainingQuestions;
@@ -197,8 +201,15 @@ namespace RadialReview.Controllers
 
                 var model = new TakeViewModel()
                 {
+                    Id=id,
+                    Page = pageConcrete,
                     Answers = p,
-                    ForUser = p.FirstOrDefault().NotNull(x => x.AboutUser)
+                    ForUser = p.FirstOrDefault().NotNull(x => x.AboutUser),
+                    OrderedPeople = pages.Select(x=>
+                        Tuple.Create(
+                            x.First().AboutUser.GetNameAndTitle(),
+                            x.All(y=>!y.Required||y.Complete))
+                        ).ToList()
                 };
 
 
@@ -277,7 +288,7 @@ namespace RadialReview.Controllers
             }*/
             #endregion
         }
-
+        
         [HttpGet]
         [Access(AccessLevel.Manager)]
         public ActionResult Create()
@@ -315,7 +326,7 @@ namespace RadialReview.Controllers
                 //TODO HERE
                 new Task(() =>
                 {
-                    var result = _ReviewAccessor.CreateCompleteReview(GetUser(), model.ForTeamId, dueDate, model.Name, model.Emails);
+                    var result = _ReviewAccessor.CreateCompleteReview(GetUser(), model.ForTeamId, dueDate, model.Name, model.Emails,model.ReviewSelf,model.ReviewManagers,model.ReviewSubordinates,model.ReviewTeammates,model.ReviewPeers);
                     Thread.Sleep(4000);
                     var hub=GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
                     hub.Clients.User(userId).jsonAlert(ResultObject.Create(false, "Finished creating review \"" + model.Name + "\"."), true);

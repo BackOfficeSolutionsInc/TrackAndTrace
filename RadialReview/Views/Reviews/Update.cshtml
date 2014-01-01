@@ -1,0 +1,29 @@
+﻿@model RadialReview.Controllers.ReviewsController.UpdateReviewsViewModel
+
+
+<div class="form-horizontal">
+    <div class="form-group">
+        <label class="col-xs-3 control-label">Add to review:</label>
+        <div class="col-xs-6">
+            @Html.DropDownList("AdditionalUser", Model.AdditionalUsers, new { @class = "form-control" })
+        </div>
+        <div class="col-xs-3">
+            <div onclick="addUser()" class="btn btn-default">Add</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addUser() {
+        var selected = $("#AdditionalUser").val();
+        var reviewId = "@Model.Id";
+        var data = new Object();
+        data.userId = selected;
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("AddToReview", "Reviews", new { id=@Model.Id })",
+            data: data,
+        });
+    }
+</script>

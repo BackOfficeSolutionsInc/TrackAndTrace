@@ -12,6 +12,8 @@ namespace RadialReview.Models
         public int OptionalCompleted { get; private set; }
         public int TotalOptional { get; private set; }
 
+        public Boolean ForceInactive { get; set; }
+
         public decimal RequiredPercentage { get; private set; }
         public decimal OptionalPercentage { get; private set; }
 

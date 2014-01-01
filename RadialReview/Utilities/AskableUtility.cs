@@ -1,4 +1,5 @@
-﻿using RadialReview.Models.Enums;
+﻿using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,13 @@ namespace RadialReview.Utilities
 {
     public class AskableUtility
     {
+        public List<Tuple<UserOrganizationModel,AboutType>> AllUsers {get;set;}
+
         public List<AskableAbout> Askables { get; set; } 
         public AskableUtility()
         {
             Askables = new List<AskableAbout>();
+            AllUsers = new List<Tuple<UserOrganizationModel, AboutType>>();
         }
 
         public void AddUnique(Askable askable, AboutType about, long aboutUserId)
@@ -34,6 +38,11 @@ namespace RadialReview.Utilities
             {
                 AddUnique(a, about, aboutUserId);
             }
+        }
+
+        public void AddUser(UserOrganizationModel user, AboutType aboutType)
+        {
+            AllUsers.Add(Tuple.Create(user,aboutType));
         }
         
     }
