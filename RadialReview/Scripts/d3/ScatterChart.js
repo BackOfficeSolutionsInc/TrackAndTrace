@@ -98,7 +98,11 @@ var Chart = function (selector,getAxis,dataFunc,legendData) {
               .attr("class", "legend")
             .attr("x", 12)
             .attr("dy", ".31em")
-            .text(function (d) { return d; });
+            .text(function (d) {
+                if (d == "NoRelationship")
+                    return "Other";
+                return d;
+            });
 
         // load data and draw it
         this.update();

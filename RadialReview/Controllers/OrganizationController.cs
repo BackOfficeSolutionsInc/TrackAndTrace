@@ -172,13 +172,14 @@ namespace RadialReview.Controllers
 
         [Access(AccessLevel.Manager)]
         [HttpPost]
-        public JsonResult ResendJoin(long id,TempUserModel model)
+        public JsonResult ResendJoin(long id,TempUserModel model,long TempId)
         {
             var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false);
             if (found.TempUser==null)
                 throw new PermissionsException("User is already a part of the organization");
 
-            _UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email,model.LastSent);
+            _UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, model.LastSent);
+            model.Id = TempId;
             _NexusAccessor.SendJoinEmailToGuid(GetUser(), model);
 
             return Json(ResultObject.Success);
