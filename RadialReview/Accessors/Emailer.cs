@@ -3,6 +3,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Properties;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,20 +24,23 @@ namespace RadialReview.Accessors
 
         public static bool IsValid(string emailaddress)
         {
-            try{
+            try
+            {
                 MailAddress m = new MailAddress(emailaddress);
                 return true;
-            }catch (FormatException){
+            }
+            catch (FormatException)
+            {
                 return false;
             }
         }
 
         private static void SendEmail(String address, String subject, String htmlHody, int emailId)
         {
-           // "clay.upton@gmail.com"
-           // "smtp.gmail.com"
-           // 587                
-            
+            // "clay.upton@gmail.com"
+            // "smtp.gmail.com"
+            // 587                
+
 
 
             MailMessage message = new MailMessage
@@ -56,24 +60,51 @@ namespace RadialReview.Accessors
             };
             SmtpMailer.Credentials = new System.Net.NetworkCredential(ConstantStrings.SmtpLogin, ConstantStrings.SmtpPassword);
             SmtpMailer.SendCompleted += EmailComplete;
-            new Thread(() =>{
-                SmtpMailer.SendAsync(message, emailId);
-            }).Start();
- 
+            SmtpMailer.SendAsync(message, emailId);
+        }
 
+        private static void SendEmailSync(String address, String subject, String body, EmailModel email)
+        {
+            MailMessage message = new MailMessage
+            {
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true,
+                From = new MailAddress(ConstantStrings.SmtpFromAddress),
+            };
+            message.To.Add(address);
+            SmtpClient SmtpMailer = new SmtpClient
+            {
+                Host = ConstantStrings.SmtpHost,
+                Port = int.Parse(ConstantStrings.SmtpPort),
+                Timeout = 50000,
+                EnableSsl = true
+            };
+            SmtpMailer.Credentials = new System.Net.NetworkCredential(ConstantStrings.SmtpLogin, ConstantStrings.SmtpPassword);
+            SmtpMailer.Send(message);
+
+            email.Sent = true;
+            email.CompleteTime = DateTime.UtcNow;
         }
 
         private static void EmailComplete(object sender, AsyncCompletedEventArgs e)
         {
-            using(var s =HibernateSession.GetCurrentSession())
+            try
             {
-                using(var tx=s.BeginTransaction())
+                using (var s = HibernateSession.GetCurrentSession())
                 {
-                    var email=s.Get<EmailModel>(e.UserState);
-                    email.Sent = true;
-                    email.CompleteTime = DateTime.UtcNow;
-                    tx.Commit();
+                    using (var tx = s.BeginTransaction())
+                    {
+                        var email = s.Get<EmailModel>(e.UserState);
+                        email.Sent = true;
+                        email.CompleteTime = DateTime.UtcNow;
+                        tx.Commit();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
             }
             /*
             using (var db = new ApplicationDbContext())
@@ -88,13 +119,14 @@ namespace RadialReview.Accessors
             if (!IsValid(toAddress))
                 throw new RedirectException(ExceptionStrings.InvalidEmail);
 
-            var body=EmailBodyWrapper(htmlBody);
-            int emailId=-1;
-            using(var s =HibernateSession.GetCurrentSession())
+            var body = EmailBodyWrapper(htmlBody);
+            long emailId = -1;
+            using (var s = HibernateSession.GetCurrentSession())
             {
+                EmailModel email;
                 using (var tx = s.BeginTransaction())
                 {
-                    var email = new EmailModel()
+                    email = new EmailModel()
                                 {
                                     Body = body,
                                     Sent = false,
@@ -103,23 +135,25 @@ namespace RadialReview.Accessors
                                     ToAddress = toAddress
                                 };
                     s.Save(email);
-                    tx.Commit();
-                    s.Flush();
                     //db.SaveChanges();
                     emailId = email.Id;
+
+                    SendEmailSync(toAddress, subject, body, email);
+                    s.Update(email);
+
+                    tx.Commit();
+                    s.Flush();
                 }
             }
-
-            SendEmail(toAddress, subject, body, emailId);
         }
 
-        public static void SendEmail(ISession s, String toAddress, String subject, String htmlBody)
+        public static void SendEmail(AbstractUpdate s, String toAddress, String subject, String htmlBody)
         {
             if (!IsValid(toAddress))
                 throw new RedirectException(ExceptionStrings.InvalidEmail);
 
             var body = EmailBodyWrapper(htmlBody);
-            int emailId = -1;
+            long emailId = -1;
             var email = new EmailModel()
             {
                 Body = body,
@@ -133,7 +167,38 @@ namespace RadialReview.Accessors
             //db.SaveChanges();
             emailId = email.Id;
 
-            SendEmail(toAddress, subject, body, emailId);
+            //SendEmail(toAddress, subject, body, emailId);
+
+            /*MailMessage message = new MailMessage
+            {
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true,
+                From = new MailAddress(ConstantStrings.SmtpFromAddress),
+            };
+            message.To.Add(toAddress);
+            SmtpClient SmtpMailer = new SmtpClient
+            {
+                Host = ConstantStrings.SmtpHost,
+                Port = int.Parse(ConstantStrings.SmtpPort),
+                Timeout = 50000,
+                EnableSsl = true
+            };
+            SmtpMailer.Credentials = new System.Net.NetworkCredential(ConstantStrings.SmtpLogin, ConstantStrings.SmtpPassword);
+            SmtpMailer.Send(message);
+
+            email.Sent = true;
+            email.CompleteTime = DateTime.UtcNow;
+            s.Update(email);*/
+            try
+            {
+                SendEmailSync(toAddress, subject, body, email);
+                s.Update(email);
+            }
+            catch (Exception e)
+            {
+                log.Error(e);
+            }
         }
     }
 }

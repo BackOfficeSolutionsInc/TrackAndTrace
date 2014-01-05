@@ -15,7 +15,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class UserModel : IdentityUser, IDeletable
+    public class UserModel : IdentityUser, IDeletable, IStringIdentifiable
     {
         //[Key]
         //public new virtual string Id {get; protected set;}

@@ -4,6 +4,7 @@ using RadialReview.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -36,18 +37,18 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Positions()
+        public async Task<ActionResult> Positions()
         {
             Session["Manage"] = "Positions";
             var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
 
-            var positions = orgPos.Select(x=>
+            var positions = orgPos.Select(x =>
                 new OrgPosViewModel(x, _PositionAccessor.GetUsersWithPosition(GetUser(), x.Id).Count())
             ).ToList();
 
             var caller = GetUser().Hydrate().EditPositions().Execute();
 
-            var model = new OrgPositionsViewModel() { Positions = positions, CanEdit = caller.GetEditPosition()};
+            var model = new OrgPositionsViewModel() { Positions = positions, CanEdit = caller.GetEditPosition() };
             return View(model);
         }
 
@@ -55,10 +56,10 @@ namespace RadialReview.Controllers
         public ActionResult Teams()
         {
             Session["Manage"] = "Teams";
-            var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);            
-            var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x,Members=-1 }).ToList();
+            var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
+            var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = -1 }).ToList();
 
-            for(int i=0;i<orgTeams.Count();i++)
+            for (int i = 0; i < orgTeams.Count(); i++)
             {
                 try
                 {
@@ -79,12 +80,16 @@ namespace RadialReview.Controllers
         public ActionResult Members()
         {
             Session["Manage"] = "Members";
-            var members = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
-            for(int i=0;i<members.Count();i++)
+            var user = GetUser().Hydrate().ManagingUsers(true).Execute();
+
+            var members = _OrganizationAccessor.GetOrganizationMembers(user, user.Organization.Id, true, true);
+
+            for (int i = 0; i < members.Count(); i++)
             {
                 var u = members[i];
-                var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
-                members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Managers().Execute();
+                u.PopulatePersonallyManaging(user, user.AllSubordinates);
+                //var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
+                //members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Managers().Execute();
             }
             var model = new OrgMembersViewModel(members);
             return View(model);
@@ -97,8 +102,9 @@ namespace RadialReview.Controllers
             if (!user.ManagingOrganization)
                 throw new PermissionsException();
 
-            var model=new OrganizationViewModel(){
-                Id=user.Organization.Id,
+            var model = new OrganizationViewModel()
+            {
+                Id = user.Organization.Id,
                 ManagersCanEdit = user.Organization.ManagersCanEdit,
                 OrganizationName = user.Organization.Name.Standard,
                 StrictHierarchy = user.Organization.StrictHierarchy,
@@ -112,7 +118,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Organization(OrganizationViewModel model)
         {
-            _OrganizationAccessor.Edit(GetUser(),model.Id, model.OrganizationName, model.ManagersCanEdit, model.StrictHierarchy,model.ManagersCanEditPositions,model.SendEmailImmediately);
+            _OrganizationAccessor.Edit(GetUser(), model.Id, model.OrganizationName, model.ManagersCanEdit, model.StrictHierarchy, model.ManagersCanEditPositions, model.SendEmailImmediately);
             ViewBag.Success = "Successfully Saved.";
             return View(model);
         }

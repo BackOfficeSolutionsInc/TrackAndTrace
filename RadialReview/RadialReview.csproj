@@ -217,6 +217,7 @@
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
     <Compile Include="Accessors\ImageAccessor.cs" />
+    <Compile Include="Accessors\KeyValueAccessor.cs" />
     <Compile Include="Accessors\NexusAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
@@ -274,8 +275,11 @@
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
+    <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Interfaces\ICompletable.cs" />
     <Compile Include="Models\Enums\AboutType.cs" />
+    <Compile Include="Models\Interfaces\IGuidIdentifiable.cs" />
+    <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
     <Compile Include="Models\Responsibilities\AskableAbout.cs" />
     <Compile Include="Models\Enums\WeightType.cs" />
     <Compile Include="Models\Reviews\ClientReviewModel.cs" />
@@ -448,6 +452,13 @@
     <Compile Include="Utilities\Extensions\LocalizationExtensions.cs" />
     <Compile Include="Utilities\HttpContextUtility.cs" />
     <Compile Include="Utilities\PermissionsUtility.cs" />
+    <Compile Include="Utilities\Query\AbstractQuery.cs" />
+    <Compile Include="Utilities\Query\AbstractUpdate.cs" />
+    <Compile Include="Utilities\Query\DataInteraction.cs" />
+    <Compile Include="Utilities\Query\IEnumerableQuery.cs" />
+    <Compile Include="Utilities\Query\IEnumerableTransaction.cs" />
+    <Compile Include="Utilities\Query\SessionQuery.cs" />
+    <Compile Include="Utilities\Query\SessionUpdate.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
     <Compile Include="Utilities\ShortenerUtility.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />

@@ -10,9 +10,10 @@ namespace RadialReview.Utilities
 {
     public class AskableUtility
     {
-        public List<Tuple<UserOrganizationModel,AboutType>> AllUsers {get;set;}
+        public List<Tuple<UserOrganizationModel, AboutType>> AllUsers { get; set; }
 
-        public List<AskableAbout> Askables { get; set; } 
+        public List<AskableAbout> Askables { get; set; }
+
         public AskableUtility()
         {
             Askables = new List<AskableAbout>();
@@ -29,7 +30,6 @@ namespace RadialReview.Utilities
                     return;
                 }
             }
-
             Askables.Add(new AskableAbout() { AboutType = about, Askable = askable, AboutUserId = aboutUserId });
         }
         public void AddUnique(IEnumerable<Askable> askables, AboutType about, long aboutUserId)
@@ -42,8 +42,8 @@ namespace RadialReview.Utilities
 
         public void AddUser(UserOrganizationModel user, AboutType aboutType)
         {
-            AllUsers.Add(Tuple.Create(user,aboutType));
+            AllUsers.Add(Tuple.Create(user, aboutType));
         }
-        
+
     }
 }

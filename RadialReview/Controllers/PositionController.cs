@@ -57,7 +57,7 @@ namespace RadialReview.Controllers
         {
             var caller=GetUser();
             _OrganizationAccessor.EditOrganizationPosition(caller,model.Id, caller.Organization.Id, model.Position.Value,model.PositionName);
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Updated position."));
         }
 
         /*

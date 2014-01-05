@@ -10,7 +10,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class ApplicationWideModel : IOrigin
+    public class ApplicationWideModel : IOrigin, ILongIdentifiable
     {
         public virtual long Id { get; protected set; }
         public virtual IList<QuestionModel> CustomQuestions { get; set; }

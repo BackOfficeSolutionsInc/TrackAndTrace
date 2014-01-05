@@ -26,7 +26,7 @@ namespace RadialReview.Models.ViewModels
 
         public IssueReviewViewModel()
         {
-            Emails = true;
+            Emails = false;
 
             ReviewSelf = true;
             ReviewPeers = true;

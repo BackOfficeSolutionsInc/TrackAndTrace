@@ -13,41 +13,95 @@ namespace RadialReview.Models.Json
     {
         public String ErrorMessage { get; set; }
         public bool Error { get; set; }
-        public T Data { get;set;}
+        public T Data { get; set; }
+    }
+
+    public enum StatusType
+    {
+        Success,
+        Danger,
+        Warning,
+        Info,
+        Primary,
+        @Default,
+        SilentSuccess
     }
 
     public class ResultObject
     {
+        public StatusType Status { get; set; }
+
+        public String MessageType { get { return Status.ToString(); } }
+        public String Heading
+        {
+            get
+            {
+                switch (Status)
+                {
+                    case StatusType.Success: return "Success!";
+                    case StatusType.Danger: return "Warning";
+                    case StatusType.Warning: return "Warning";
+                    case StatusType.Info: return "Info";
+                    case StatusType.Primary: return "";
+                    case StatusType.Default: return "";
+                    case StatusType.SilentSuccess: return "Success!";
+                    default: throw new ArgumentOutOfRangeException("Unknown message type");
+                }
+            }
+        }
+
         public object Object { get; set; }
         public String Message { get; set; }
         public String Trace { get; set; }
         public bool Error { get; set; }
 
-        public readonly static ResultObject Success= new ResultObject(false, "Success");
-        
+        public static ResultObject Success(String message)
+        {
+            return new ResultObject(false, message);
+        }
+
         protected ResultObject()
         {
-
+            Status = StatusType.SilentSuccess;
         }
 
-        public static ResultObject Create(object obj,String message="Success")
+        public static ResultObject SilentSuccess()
         {
-            return new ResultObject() { Object = obj, Error = false, Message = message };
+            return new ResultObject()
+            {
+                Object = null,
+                Error = false,
+                Message = "Success",
+                Status = StatusType.SilentSuccess
+            };
         }
 
-        public ResultObject(Boolean error,String message)
+        public static ResultObject Create(object obj, String message = "Success")
+        {
+            return new ResultObject()
+            {
+                Object = obj,
+                Error = false,
+                Message = message,
+                Status = StatusType.Success
+            };
+        }
+
+        public ResultObject(Boolean error, String message)
         {
             Error = error;
             Message = Capitalize(message);
+            Status = StatusType.Danger;
         }
 
         public ResultObject(RedirectException e)
         {
             Error = true;
+            Status = StatusType.Danger;
             Message = Capitalize(e.Message);
-            #if(DEBUG)
+#if(DEBUG)
             Trace = e.StackTrace;
-            #endif
+#endif
         }
 
         private String Capitalize(String message)
@@ -61,13 +115,30 @@ namespace RadialReview.Models.Json
         public ResultObject(Exception e)
         {
             Error = true;
-            if(e is RedirectException)
+            Status = StatusType.Danger;
+            if (e is RedirectException)
                 Message = Capitalize(e.Message);
             else
                 Message = Capitalize(ExceptionStrings.AnErrorOccuredContactUs);
-            #if(DEBUG)
+#if(DEBUG)
             Trace = e.StackTrace;
-            #endif
+#endif
+        }
+
+        public override string ToString()
+        {
+            return (Error ? "Error:" : "Success:") + Message ?? "";
+        }
+
+        public static object NoMessage()
+        {
+            return new ResultObject()
+            {
+                Error = false,
+                Message = null,
+                Object = null,
+                Status = StatusType.SilentSuccess
+            };
         }
     }
 }

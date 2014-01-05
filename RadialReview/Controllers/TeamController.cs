@@ -47,7 +47,7 @@ namespace RadialReview.Controllers
         {
             var user = GetUser();
             var team = _TeamAccessor.EditTeam(user, model.TeamId,model.TeamName,model.InterReview,true,model.ManagerId);
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Team has been updated."));
         }
         /*
         public ActionResult Responsibilities(long id)
@@ -107,7 +107,7 @@ namespace RadialReview.Controllers
         public ActionResult AddModal(long id)
         {
             var teamId = id;
-            var members = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
+            var members = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id,false,false);
             var alreadyMember=_TeamAccessor.GetTeamMembers(GetUser(), teamId).ToListAlive();
 
             var notMembers=members.Where(x=>!alreadyMember.Any(y=>y.User.Id==x.Id));
@@ -126,7 +126,7 @@ namespace RadialReview.Controllers
             if (model.SelectedUserId == 0)
                 return Json(new ResultObject(true, "Id of zero is not allowed."));
             _TeamAccessor.AddMember(GetUser(), model.TeamId, model.SelectedUserId);
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Added member."));
         }
         /*
         [HttpPost]
@@ -142,7 +142,7 @@ namespace RadialReview.Controllers
         {
             var user=GetUser();
             _TeamAccessor.AddMember(user,teamId,userId);
-            return Json(ResultObject.Success, JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success("Added member."), JsonRequestBehavior.AllowGet);
         }
 
 	}

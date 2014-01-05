@@ -21,6 +21,12 @@
         </div>
         <span class="add-on"><i class="icon-th"></i></span>
     </div>
+    <div class="form-group">
+        <label class="col-xs-4 control-label noPad">Send emails:</label>
+        <div class="col-xs-6">
+            @Html.CheckBoxFor(x => x.Emails, new { @class = "checkbox" })
+        </div>
+    </div>
     <hr />
     <h4>Users will review:</h4>
     <div class="form-group">

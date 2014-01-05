@@ -621,3 +621,8 @@ tr.danger .strikable {
     -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
     box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
 }
+
+.alert-silentsuccess
+{
+    display:none;
+}

@@ -9,7 +9,7 @@ namespace RadialReview.Models.Reviews
 {
  
 
-    public class ClientReviewModel
+    public class ClientReviewModel : ILongIdentifiable
     {
         public virtual long Id {get;set;}
         public virtual long ReviewId { get; set; }

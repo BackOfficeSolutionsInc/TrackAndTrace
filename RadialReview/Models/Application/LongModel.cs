@@ -7,7 +7,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class LongModel : IDeletable
+    public class LongModel : IDeletable, ILongIdentifiable
     {
         public virtual long Id { get; set; }
         public virtual long Value { get;set; }

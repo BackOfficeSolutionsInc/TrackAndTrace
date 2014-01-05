@@ -10,6 +10,7 @@ using System.Web;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities.DataTypes;
 using NHibernate;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Accessors
 {
@@ -73,7 +74,7 @@ namespace RadialReview.Accessors
                     var managerTeam = new OrganizationTeamModel()
                     {
                         CreatedBy = userOrgModel.Id,
-                        Name = "Managers at "+organization.Name.Translate(),
+                        Name = "Managers at " + organization.Name.Translate(),
                         OnlyManagersEdit = true,
                         Organization = organization,
                         InterReview = false,
@@ -94,7 +95,7 @@ namespace RadialReview.Accessors
 
         }
 
-        public UserOrganizationModel JoinOrganization(UserModel user, long managerId,long userOrgPlaceholder)
+        public UserOrganizationModel JoinOrganization(UserModel user, long managerId, long userOrgPlaceholder)
         {
             using (var db = HibernateSession.GetCurrentSession())
             {
@@ -107,7 +108,7 @@ namespace RadialReview.Accessors
                     var userOrg = db.Get<UserOrganizationModel>(userOrgPlaceholder);
 
                     userOrg.AttachTime = DateTime.UtcNow;
-                    userOrg.User= user;
+                    userOrg.User = user;
                     userOrg.Organization = organization;
                     user.CurrentRole = userOrgPlaceholder;
 
@@ -129,7 +130,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public List<OrganizationPositionModel> GetOrganizationPositions( UserOrganizationModel caller, long organizationId)
+        public List<OrganizationPositionModel> GetOrganizationPositions(UserOrganizationModel caller, long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -155,22 +156,43 @@ namespace RadialReview.Accessors
             }
         }
 
-      
 
-        public List<UserOrganizationModel> GetOrganizationMembers(UserOrganizationModel caller,long organizationId)
+
+        public List<UserOrganizationModel> GetOrganizationMembers(UserOrganizationModel caller, long organizationId, bool teams, bool managers)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-                    return s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+                    var users = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+                    
+                    if (managers)
+                    {
+                        var allManagers = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == organizationId).List().ToList();
+                        foreach (var user in users)
+                            user.PopulateManagers(allManagers);
+                    }
+
+                    if (teams)
+                    {
+                        var allTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+                        var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == organizationId).List().ToList();
+                        foreach (var user in users)
+                        {
+                            user.PopulateTeams(allTeams, allTeamDurations);
+                        }
+                    }
+
+
+
+                    return users;
                 }
             }
         }
 
-        public OrganizationPositionModel EditOrganizationPosition(UserOrganizationModel caller,long orgPositionId, long organizationId, 
-            long? positionId=null, String customName=null)
+        public OrganizationPositionModel EditOrganizationPosition(UserOrganizationModel caller, long orgPositionId, long organizationId,
+            long? positionId = null, String customName = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -202,7 +224,7 @@ namespace RadialReview.Accessors
 
                     if (positionId != null)
                     {
-                        var position=s.Get<PositionModel>(positionId);
+                        var position = s.Get<PositionModel>(positionId);
                         orgPos.Position = position;
                     }
 
@@ -220,7 +242,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        public OrganizationTeamModel AddOrganizationTeam(UserOrganizationModel caller, long organizationId, string teamName,bool onlyManagersEdit,bool secret)
+        public OrganizationTeamModel AddOrganizationTeam(UserOrganizationModel caller, long organizationId, string teamName, bool onlyManagersEdit, bool secret)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -236,13 +258,14 @@ namespace RadialReview.Accessors
 
                     var org = s.Get<OrganizationModel>(organizationId);
 
-                    var orgTeam = new OrganizationTeamModel() { 
-                            Organization = org,
-                            CreatedBy=caller.Id,
-                            Name=teamName,
-                            OnlyManagersEdit=onlyManagersEdit,
-                            Secret=secret,
-                        };
+                    var orgTeam = new OrganizationTeamModel()
+                    {
+                        Organization = org,
+                        CreatedBy = caller.Id,
+                        Name = teamName,
+                        OnlyManagersEdit = onlyManagersEdit,
+                        Secret = secret,
+                    };
 
                     s.Save(orgTeam);
                     tx.Commit();
@@ -253,7 +276,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void Edit(UserOrganizationModel caller,long organizationId,  string organizationName=null,
+        public void Edit(UserOrganizationModel caller, long organizationId, string organizationName = null,
                                                                             bool? managersCanEdit = null,
                                                                             bool? strictHierarchy = null,
                                                                             bool? managersCanEditPositions = null,
@@ -265,7 +288,7 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).EditOrganization(organizationId).ManagingOrganization();
                     var org = s.Get<OrganizationModel>(organizationId);
-                    if (managersCanEdit != null && managersCanEdit.Value!=org.ManagersCanEdit)
+                    if (managersCanEdit != null && managersCanEdit.Value != org.ManagersCanEdit)
                     {
                         if (caller.ManagingOrganization)
                             org.ManagersCanEdit = managersCanEdit.Value;
@@ -296,7 +319,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s,caller).ViewOrganization(organizationId);
+                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
                     var managers = s.QueryOver<UserOrganizationModel>()
                                             .Where(x => x.Organization.Id == organizationId && (x.ManagerAtOrganization || x.ManagingOrganization))
                                             .List()
@@ -320,34 +343,34 @@ namespace RadialReview.Accessors
 
                     var managers = s.QueryOver<UserOrganizationModel>()
                                         .Where(x => x.Organization.Id == orgId && x.ManagingOrganization)
-                                        .Fetch(x=>x.Teams).Default
+                                        .Fetch(x => x.Teams).Default
                                         .List()
                                         .ToList();
 
-                    var classes="organizations".AsList("admin");
+                    var classes = "organizations".AsList("admin");
 
-                    return Children(org.Name.Translate(),"","",-1,classes, managers);
+                    return Children(org.Name.Translate(), "", "", -1, classes, managers);
                 }
             }
         }
 
-        private Tree Children(String name,String subtext,String classStr,long id,List<String> classes, List<UserOrganizationModel> users)
+        private Tree Children(String name, String subtext, String classStr, long id, List<String> classes, List<UserOrganizationModel> users)
         {
             var newClasses = classes.ToList();
-            if (classes.Count>0)
+            if (classes.Count > 0)
                 newClasses.RemoveAt(0);
 
             return new Tree()
             {
                 name = name,
-                id=id,
-                subtext=subtext,
-                @class=classes.FirstOrDefault()+" "+classStr,
-                children = users.ToListAlive().Select(x => 
+                id = id,
+                subtext = subtext,
+                @class = classes.FirstOrDefault() + " " + classStr,
+                children = users.ToListAlive().Select(x =>
                     Children(
                         x.GetTitles(),
                         x.GetName(),
-                        String.Join(" ",x.Teams.Select(y=>y.Team.Name.Replace(' ','_'))),
+                        String.Join(" ", x.Teams.Select(y => y.Team.Name.Replace(' ', '_'))),
                         x.Id,
                         newClasses,
                         x.ManagingUsers.ToListAlive().Select(y => y.Subordinate).ToList())
@@ -362,12 +385,12 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-                    var orgCategories=s.QueryOver<QuestionCategoryModel>()
+                    var orgCategories = s.QueryOver<QuestionCategoryModel>()
                                     .Where(x => (x.OriginId == organizationId && x.OriginType == OriginType.Organization))
                                     .List()
                                     .ToList();
 
-                    var appCategories=ApplicationAccessor.GetApplicationCategories(s);
+                    var appCategories = ApplicationAccessor.GetApplicationCategories(s);
 
                     return orgCategories.Union(appCategories).ToList();
                 }

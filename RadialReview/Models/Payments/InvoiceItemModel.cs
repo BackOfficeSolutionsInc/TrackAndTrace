@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace RadialReview.Models
 {
-    public class InvoiceItemModel
+    public class InvoiceItemModel : ILongIdentifiable
     {
         public virtual long Id { get; protected set; }
 

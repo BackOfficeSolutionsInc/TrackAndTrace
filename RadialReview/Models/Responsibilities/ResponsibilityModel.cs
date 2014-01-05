@@ -33,7 +33,7 @@ namespace RadialReview.Models.Responsibilities
     {
         public ResponsibilityModelMap()
         {
-            Map(x => x.Responsibility);
+            Map(x => x.Responsibility).Length(65000);
             Map(x => x.ForOrganizationId);
             Map(x => x.ForResponsibilityGroup);
             References(x => x.Category).Not.LazyLoad();

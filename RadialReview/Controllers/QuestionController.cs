@@ -47,7 +47,7 @@ namespace RadialReview.Controllers
                                                                    categoryId:  categoryId,
                                                                    questionType: q.QuestionType);
 
-                return Json(ResultObject.Success);
+                return Json(ResultObject.Success(""));
             }
             catch (Exception e)
             {
@@ -63,7 +63,7 @@ namespace RadialReview.Controllers
                 var caller = GetUser();
                 //var q = _QuestionAccessor.GetQuestion(caller, id);
                 _QuestionAccessor.EditQuestion(caller,id, deleteTime: DateTime.UtcNow);
-                return Json(ResultObject.Success,JsonRequestBehavior.AllowGet);
+                return Json(ResultObject.Success("Deleted"),JsonRequestBehavior.AllowGet);
             }catch(Exception e){
                 return Json(new ResultObject(e), JsonRequestBehavior.AllowGet);
             }

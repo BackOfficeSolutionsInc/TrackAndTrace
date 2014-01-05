@@ -10,7 +10,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class NexusModel :IDeletable
+    public class NexusModel :IDeletable, IStringIdentifiable
     {
         public virtual string Id { get; protected set; }
         public virtual string Message { get; set; }

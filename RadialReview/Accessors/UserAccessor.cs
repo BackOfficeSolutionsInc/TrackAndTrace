@@ -10,6 +10,7 @@ using NHibernate;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Enums;
+using RadialReview.Utilities.Query;
 
 namespace RadialReview.Accessors
 {
@@ -50,12 +51,12 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetUserOrganization(s, perms, caller, userOrganizationId, asManager, sensitive);
+                    return GetUserOrganization(s.ToQueryProvider(true), perms, caller, userOrganizationId, asManager, sensitive);
                 }
             }
         }
 
-        public static UserOrganizationModel GetUserOrganization(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long userOrganizationId, bool asManager, bool sensitive)
+        public static UserOrganizationModel GetUserOrganization(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long userOrganizationId, bool asManager, bool sensitive)
         {
             perms.ViewUserOrganization(userOrganizationId, sensitive);
             if (asManager)
@@ -97,13 +98,13 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetPeers(s, perms, caller, forId);
+                    return GetPeers(s.ToQueryProvider(true), perms, caller, forId);
                 }
             }
         }
-        public static List<UserOrganizationModel> GetPeers(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long forId)
+        public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forId)
         {
-            PermissionsUtility.Create(s, caller).ViewUserOrganization(forId, false);
+            perms.ViewUserOrganization(forId, false);
             var forUser = s.Get<UserOrganizationModel>(forId);
             return forUser.ManagedBy.ToListAlive()
                           .Select(x => x.Manager)
@@ -119,11 +120,11 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetManagers(s, perms, caller, forId);
+                    return GetManagers(s.ToQueryProvider(true), perms, caller, forId);
                 }
             }
         }
-        public static List<UserOrganizationModel> GetManagers(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long forId)
+        public static List<UserOrganizationModel> GetManagers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forId)
         {
             perms.ViewUserOrganization(forId, false);
             var forUser = s.Get<UserOrganizationModel>(forId);
@@ -143,11 +144,11 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms=PermissionsUtility.Create(s, caller);
-                    return GetSubordinates(s, perms, caller, forId);
+                    return GetSubordinates(s.ToQueryProvider(true), perms, caller, forId);
                 }
             }
         }
-        public static List<UserOrganizationModel> GetSubordinates(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long forId)
+        public static List<UserOrganizationModel> GetSubordinates(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forId)
         {
             perms.ViewUserOrganization(forId, false);
             var forUser = s.Get<UserOrganizationModel>(forId);

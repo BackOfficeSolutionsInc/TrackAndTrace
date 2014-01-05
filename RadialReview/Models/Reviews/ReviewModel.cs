@@ -8,7 +8,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class ReviewModel : ICompletable
+    public class ReviewModel : ICompletable, ILongIdentifiable
     {
         public virtual long Id { get; protected set; }
         public virtual long ForReviewsId { get;set;}

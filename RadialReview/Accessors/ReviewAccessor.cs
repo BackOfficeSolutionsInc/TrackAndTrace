@@ -1,4 +1,5 @@
 ﻿using NHibernate;
+using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
@@ -8,9 +9,11 @@ using RadialReview.Models.Reviews;
 using RadialReview.Models.UserModels;
 using RadialReview.Properties;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Accessors
@@ -67,25 +70,45 @@ namespace RadialReview.Accessors
 
                     var organization = caller.Organization;
                     OrganizationTeamModel team;
-                    /*if (forTeamId == -5) // Subordinates
-                    {
-                        team = OrganizationTeamModel.SubordinateTeam(caller);
-                    }
-                    else
-                    {*/
-                    team = TeamAccessor.GetTeam(s, perms, caller, forTeamId);
-                    //}
-                    var usersToReview = TeamAccessor.GetTeamMembers(s, perms, caller, forTeamId).ToListAlive();
+
+                    var orgId = caller.Organization.Id;
+
+                    var allOrgTeams             = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
+                    var allTeamDurations        = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
+                    var allMembers              = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).List();
+                    var allManagerSubordinates  = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == orgId).List();
+                    var allPositions            = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId).List();
+                    var applicationQuestions    = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).List();
+                    var application             = s.QueryOver<ApplicationWideModel>().Where(x => x.Id == ApplicationAccessor.APPLICATION_ID).List();
+                
+                    var queryProvider   = new IEnumerableQuery();
+                                                queryProvider.AddData(allOrgTeams);
+                                                queryProvider.AddData(allTeamDurations);
+                                                queryProvider.AddData(allMembers);
+                                                queryProvider.AddData(allManagerSubordinates);
+                                                queryProvider.AddData(allPositions);
+                                                queryProvider.AddData(applicationQuestions);
+                                                queryProvider.AddData(application);
+
+                    var updateProvider  = new SessionUpdate(s);
+                    var dataInteraction = new DataInteraction(queryProvider,updateProvider);
+
+                    team = allOrgTeams.First(x => x.Id == forTeamId);
+
+                    var usersToReview = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, caller, forTeamId).ToListAlive();
 
                     List<Exception> exceptions = new List<Exception>();
+
+                    var toReview=usersToReview.Select(x=>x.User).ToList();
+
                     int sent = 0;
                     int errors = 0;
-                    foreach (var beingReviewed in usersToReview)
+                    foreach(var beingReviewed in usersToReview)
                     {
                         var beingReviewedUser = beingReviewed.User;
-                        AddUserToReview(caller, dueDate, emails,
+                        AddUserToReview(caller,false, dueDate, emails,
                             reviewSelf, reviewManagers, reviewSubordinates, reviewTeammates, reviewPeers,
-                            s, reviewContainer, perms, organization, team, exceptions, ref sent, ref errors, beingReviewedUser);
+                            dataInteraction, reviewContainer, perms, organization, team, exceptions, ref sent, ref errors, beingReviewedUser, toReview);
                     }
                     tx.Commit();
                     s.Flush();
@@ -101,11 +124,13 @@ namespace RadialReview.Accessors
         }
 
         private static void AddUserToReview(
-            UserOrganizationModel caller, DateTime dueDate,
+            UserOrganizationModel caller, 
+            bool updateOthers,DateTime dueDate,
             bool sendEmail, bool reviewSelf, bool reviewManagers, bool reviewSubordinates, bool reviewTeammates, bool reviewPeers,
-            ISession s, ReviewsModel reviewContainer, PermissionsUtility perms,
+            DataInteraction dataInteraction, ReviewsModel reviewContainer, PermissionsUtility perms,
             OrganizationModel organization, OrganizationTeamModel team, List<Exception> exceptions, ref int sent, ref int errors,
-            UserOrganizationModel beingReviewedUser)
+            UserOrganizationModel beingReviewedUser,
+            List<UserOrganizationModel> usersToReview)
         {
             try
             {
@@ -114,12 +139,13 @@ namespace RadialReview.Accessors
                 askable.AddRange(responsibilities.Select(x => new AskableAbout() { Askable = x, AboutUserId = beingReviewed.Id, AboutType = AboutType.Self }));
                 askable.AddRange(questions.Select(x => new AskableAbout() { Askable = x, AboutUserId = beingReviewed.Id, AboutType = AboutType.Self }));
                 */
+                //var allowableUserIds = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, caller, team.Id).ToListAlive().Select(x => x.UserId).ToList();
 
                 //Generate Askables
-                var askables = GetAskables(s, perms, caller, beingReviewedUser, team, reviewSelf, reviewManagers, reviewSubordinates, reviewTeammates, reviewPeers);
+                var askables = GetAskables(dataInteraction, perms, caller, beingReviewedUser, team, reviewSelf, reviewManagers, reviewSubordinates, reviewTeammates, reviewPeers, usersToReview);
                 
                 //Create the Review
-                var review = QuestionAccessor.GenerateReviewForUser(s, perms, caller, beingReviewedUser, reviewContainer, askables.Askables);
+                var review = QuestionAccessor.GenerateReviewForUser(dataInteraction, perms, caller, beingReviewedUser, reviewContainer, askables.Askables);
                 //Generate Review Nexus
                 Guid guid = Guid.NewGuid();
                 NexusModel nexus = new NexusModel(guid)
@@ -127,13 +153,13 @@ namespace RadialReview.Accessors
                     ForUserId = beingReviewedUser.Id,
                     ActionCode = NexusActions.TakeReview
                 };
-                NexusAccessor.Put(s, nexus);
+                NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
                 if (sendEmail)
                 {
                     //Send email
                     var subject = String.Format(RadialReview.Properties.EmailStrings.NewReview_Subject, organization.Name.Translate());
                     var body = String.Format(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
-                    Emailer.SendEmail(s, beingReviewedUser.EmailAtOrganization, subject, body);
+                    Emailer.SendEmail(dataInteraction.GetUpdateProvider(), beingReviewedUser.EmailAtOrganization, subject, body);
                 }
                 sent++;
 
@@ -142,10 +168,12 @@ namespace RadialReview.Accessors
 
 
                 //Update everyone else's review.
-                var beingReviewedUserId = beingReviewedUser.Id;
+                if (updateOthers)
+                {
+                    var beingReviewedUserId = beingReviewedUser.Id;
 
-                #region comments
-                /*
+                    #region comments
+                    /*
                 if (reviewManagers)
                 {
                     var subordinates = s.QueryOver<ManagerDuration>().Where(x => x.ManagerId == beingReviewedUserId).List().ToListAlive();
@@ -207,16 +235,17 @@ namespace RadialReview.Accessors
                         AddToReview(s, perms, caller, caller.Id, r.Id, beingReviewedUserId, AboutType.Teammate);
                     }
                 }*/
-                #endregion
+                    #endregion
 
-                var reviewsLookup = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainer.Id).List().ToList();
-                var newUsers = askables.AllUsers.GroupBy(x => x.Item1.Id).Select(x => x.OrderByDescending(y => (long)y.Item2).Single());
+                    var reviewsLookup = dataInteraction.Where<ReviewModel>(x => x.ForReviewsId == reviewContainer.Id);
+                    var newUsers = askables.AllUsers.GroupBy(x => x.Item1.Id).Select(x => x.OrderByDescending(y => (long)y.Item2).Single());
 
 
-                foreach (var askableUser in newUsers.Where(x=>x.Item2!=AboutType.Self))
-                {
-                    var r = reviewsLookup.Where(x => x.ForUserId == askableUser.Item1.Id).Single();
-                    AddToReview(s, perms, caller, caller.Id, r.Id, beingReviewedUserId, askableUser.Item2.Invert());
+                    foreach (var askableUser in newUsers.Where(x => x.Item2 != AboutType.Self))
+                    {
+                        var r = reviewsLookup.Where(x => x.ForUserId == askableUser.Item1.Id).Single();
+                        AddToReview(dataInteraction, perms, caller, caller.Id, r.Id, beingReviewedUserId, askableUser.Item2.Invert());
+                    }
                 }
 
             }
@@ -266,8 +295,11 @@ namespace RadialReview.Accessors
                         //add reviewModel Id to answers, query for that
                         .List().ToList();
 
+                    var allAnswers = s.QueryOver<AnswerModel>().Where(x => x.ByUserId == forUser.Id).List().ToList();
+
+
                     for (int i = 0; i < reviews.Count; i++)
-                        PopulateAnswers(s, reviews[i]);
+                        PopulateAnswers(s, reviews[i], allAnswers);
                     return reviews;
                 }
             }
@@ -291,15 +323,15 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var reviewPopulated = s.QueryOver<ReviewModel>()
-                       .Where(x => x.Id == reviewId)
-                       .Fetch(x => x.Answers).Eager
-                       .SingleOrDefault();
-
+                    var reviewPopulated = s.Get<ReviewModel>(reviewId);
+                    
                     PermissionsUtility.Create(s, caller).ViewUserOrganization(reviewPopulated.ForUserId, true).ViewReview(reviewId);
 
+                    var allAnswers = s.QueryOver<AnswerModel>()
+                                        .Where(x => x.ForReviewId == reviewId)
+                                        .List().ToList();
 
-                    PopulateAnswers(s, reviewPopulated);
+                    PopulateAnswers(s, reviewPopulated, allAnswers);
                     return reviewPopulated;
                 }
             }
@@ -440,50 +472,61 @@ namespace RadialReview.Accessors
         #region Update
         public ResultObject AddUserToReviewContainer(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId)
         {
-            using (var s = HibernateSession.GetCurrentSession())
+            try
             {
-                using (var tx = s.BeginTransaction())
+                using (var s = HibernateSession.GetCurrentSession())
                 {
-                    var perms=PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId).ViewReviews(reviewContainerId);
-                    var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
-                    var dueDate = reviewContainer.DueDate;
-                    var sendEmails = true;
-                    var reviewSelf = reviewContainer.ReviewSelf;
-                    var reviewManagers = reviewContainer.ReviewManagers;
-                    var reviewSubordinates = reviewContainer.ReviewSubordinates;
-                    var reviewTeammates = reviewContainer.ReviewTeammates;
-                    var reviewPeers = reviewContainer.ReviewPeers;
-                    var organization = reviewContainer.ForOrganization;
-
-                    OrganizationTeamModel team = TeamAccessor.GetTeam(s, perms, caller, reviewContainer.ForTeamId);
-
-                    List<Exception> exceptions = new List<Exception>();
-                    int sent = 0;
-                    int errors = 0;
-
-                    var beingReviewedUser = s.Get<UserOrganizationModel>(userOrganizationId);
-
-
-
-                    AddUserToReview(caller, dueDate, sendEmails, 
-                        reviewSelf,
-                        reviewManagers,
-                        reviewSubordinates,
-                        reviewTeammates,
-                        reviewPeers,
-                        s, reviewContainer, perms, organization, team, exceptions,
-                        ref sent, ref errors, beingReviewedUser);
-
-                    if (errors > 0)
+                    using (var tx = s.BeginTransaction())
                     {
-                        var message = String.Join("\n", exceptions.Select(x => x.Message));
-                        return new ResultObject(new RedirectException(errors + " errors:\n" + message));
-                    }
+                        var perms = PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId).ViewReviews(reviewContainerId);
+                        var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+                        var dueDate = reviewContainer.DueDate;
+                        var sendEmails = true;
+                        var reviewSelf = reviewContainer.ReviewSelf;
+                        var reviewManagers = reviewContainer.ReviewManagers;
+                        var reviewSubordinates = reviewContainer.ReviewSubordinates;
+                        var reviewTeammates = reviewContainer.ReviewTeammates;
+                        var reviewPeers = reviewContainer.ReviewPeers;
+                        var organization = reviewContainer.ForOrganization;
 
-                    tx.Commit();
-                    s.Flush();
-                    return ResultObject.Success;
+                        OrganizationTeamModel team = TeamAccessor.GetTeam(s, perms, caller, reviewContainer.ForTeamId);
+
+
+                        List<Exception> exceptions = new List<Exception>();
+                        int sent = 0;
+                        int errors = 0;
+
+                        var beingReviewedUser = s.Get<UserOrganizationModel>(userOrganizationId);
+
+                        var usersToReview = TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perms, caller, reviewContainer.ForTeamId)
+                                                        .ToListAlive()
+                                                        .Select(x=>x.User).ToListAlive();
+                        //TODO Populate a queryprovider structure here..
+
+                        AddUserToReview(caller,true, dueDate, sendEmails,
+                            reviewSelf,
+                            reviewManagers,
+                            reviewSubordinates,
+                            reviewTeammates,
+                            reviewPeers,
+                            s.ToDataInteraction(true), reviewContainer, perms, organization, team, exceptions,
+                            ref sent, ref errors, beingReviewedUser, usersToReview);
+
+                        if (errors > 0)
+                        {
+                            var message = String.Join("\n", exceptions.Select(x => x.Message));
+                            return new ResultObject(new RedirectException(errors + " errors:\n" + message));
+                        }
+
+                        tx.Commit();
+                        s.Flush();
+                        return ResultObject.Create(false, "Successfully added " + beingReviewedUser.GetName() + " to the review.");
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                return new ResultObject(e);
             }
         }
 
@@ -698,13 +741,19 @@ namespace RadialReview.Accessors
         private void PopulateReviewContainerCompletion(ISession s, ReviewsModel reviewContainer)
         {
             var reviewContainerId = reviewContainer.Id;
-            var reviewsQuery = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId).List();
+            //var reviewsQuery = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId).List();
 
-            var completion = new CompletionModel(0, 0);
-            foreach (var answer in reviewsQuery)
+
+            var optional = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && !x.Required).Select(Projections.RowCount()).SingleOrDefault<int>();
+            var required = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId &&  x.Required).Select(Projections.RowCount()).SingleOrDefault<int>();
+            var optComp = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId  && !x.Required && x.Complete).Select(Projections.RowCount()).SingleOrDefault<int>();
+            var reqComp = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId  &&  x.Required && x.Complete).Select(Projections.RowCount()).SingleOrDefault<int>();
+
+            var completion = new CompletionModel(reqComp,required,optComp,optional);
+            /*foreach (var answer in reviewsQuery)
             {
                 completion += answer.GetCompletion();
-            }
+            }*/
             reviewContainer.Completion = completion;
         }
 
@@ -712,20 +761,22 @@ namespace RadialReview.Accessors
         {
             var reviewContainerId = reviewContainer.Id;
             var reviewsQuery = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId);
-            reviewsQuery.Fetch(x => x.ForUser).Eager.Future();
+            reviewsQuery.Fetch(x => x.ForUser).Default.Future();
             var reviews = reviewsQuery.List().ToList();
+            var allAnswers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId).List().ToList();
 
             foreach (var r in reviews)
             {
-                PopulateAnswers(s, r);
+                PopulateAnswers(s, r, allAnswers);
             }
 
             reviewContainer.Reviews = reviews;
         }
 
-        private void PopulateAnswers(ISession session, ReviewModel review)
+        private void PopulateAnswers(ISession session, ReviewModel review,List<AnswerModel> allAnswers)
         {
-            var answers = session.QueryOver<AnswerModel>().Where(x => x.ForReviewId == review.Id).List().ToList();
+           // var answers = session.QueryOver<AnswerModel>().Where(x => x.ForReviewId == review.Id).List().ToList();
+            var answers = allAnswers.Where(x => x.ForReviewId == review.Id).ToList();
             review.Answers = answers;
         }
         #endregion
@@ -733,7 +784,11 @@ namespace RadialReview.Accessors
         #region GenerateAnswers
 
 
-        private static AskableUtility GetAskables(ISession s, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel beingReviewed, OrganizationTeamModel team, bool reviewSelf, bool reviewManagers, bool reviewSubordinates, bool reviewTeammates, bool reviewPeers)
+        private static AskableUtility GetAskables(
+            DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller,
+            UserOrganizationModel beingReviewed, OrganizationTeamModel team, bool reviewSelf,
+            bool reviewManagers, bool reviewSubordinates, bool reviewTeammates, bool reviewPeers,
+            List<UserOrganizationModel> usersToReview)
         {
             #region comment
             /** Old questions way to do things.
@@ -748,17 +803,18 @@ namespace RadialReview.Accessors
             //var feedbackLSM = ApplicationAccessor.GetApplicationLocalizedStringModel(s, ApplicationAccessor.FEEDBACK);
             //var feedbackCategory = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK);
 
-            var feedbackQuestion = ApplicationAccessor.GetApplicationQuestion(s, ApplicationAccessor.FEEDBACK);
+            var feedbackQuestion = ApplicationAccessor.GetApplicationQuestion(s.GetQueryProvider(), ApplicationAccessor.FEEDBACK);
+            var responsibilityGroups = ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, beingReviewed.Id);
 
-            var responsibilityGroups = ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(s, perms, caller, beingReviewed.Id);
 
+            //Ensures uniqueness and removes people not in the review.
             var askable = new AskableUtility();
 
             // Personal Responsibilities 
             if (reviewSelf)
             {
                 var responsibilities = responsibilityGroups.SelectMany(x => x.Responsibilities).ToListAlive();
-                var questions = QuestionAccessor.GetQuestionsForUser(s, perms, caller, beingReviewed.Id);
+                var questions = QuestionAccessor.GetQuestionsForUser(s.GetQueryProvider(), perms, caller, beingReviewed.Id);
 
                 askable.AddUnique(responsibilities, AboutType.Self, beingReviewed.Id);
                 askable.AddUnique(questions, AboutType.Self, beingReviewed.Id);
@@ -777,11 +833,14 @@ namespace RadialReview.Accessors
 
                 foreach (var t in teams)
                 {
-                    var teamMembers = TeamAccessor.GetTeamMembers(s, perms, caller, t.Id).Where(x => x.User.Id != beingReviewed.Id).ToListAlive();
+                    var teamMembers = TeamAccessor.GetTeamMembers(s.GetQueryProvider(), perms, caller, t.Id)
+                        .Where(x => x.User.Id != beingReviewed.Id)
+                        .Where(x=>usersToReview.Any(y=>y.Id==x.UserId))
+                        .ToListAlive();
                     foreach (var teammember in teamMembers)
                     {
                         var teamMemberResponsibilities = ResponsibilitiesAccessor
-                                                            .GetResponsibilityGroupsForUser(s, perms, caller, teammember.User.Id)
+                                                            .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, teammember.User.Id)
                                                             .SelectMany(x => x.Responsibilities)
                                                             .ToListAlive();
                         askable.AddUnique(teamMemberResponsibilities, AboutType.Teammate, teammember.User.Id);
@@ -795,11 +854,13 @@ namespace RadialReview.Accessors
             {
                 if (team.Type != TeamType.Standard)
                 {
-                    List<UserOrganizationModel> peers = UserAccessor.GetPeers(s, perms, caller, beingReviewed.Id);
+                    List<UserOrganizationModel> peers = UserAccessor.GetPeers(s.GetQueryProvider(), perms, caller, beingReviewed.Id)
+                        .Where(x => usersToReview.Any(y => y.Id == x.Id))
+                        .ToListAlive();
                     foreach (var peer in peers)
                     {
                         var peerResponsibilities = ResponsibilitiesAccessor
-                                                            .GetResponsibilityGroupsForUser(s, perms, caller, peer.Id)
+                                                            .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, peer.Id)
                                                             .SelectMany(x => x.Responsibilities)
                                                             .ToListAlive();
                         askable.AddUnique(peerResponsibilities, AboutType.Peer, peer.Id);
@@ -813,17 +874,20 @@ namespace RadialReview.Accessors
             {
                 List<UserOrganizationModel> managers;
                 if (team.Type != TeamType.Standard)
-                    managers = UserAccessor.GetManagers(s, perms, caller, beingReviewed.Id);
+                    managers = UserAccessor.GetManagers(s.GetQueryProvider(), perms, caller, beingReviewed.Id)
+                        .Where(x => usersToReview.Any(y => y.Id == x.Id))
+                        .ToListAlive();
                 else
-                    managers = UserAccessor.GetUserOrganization(s, perms, caller, team.ManagedBy, false, false)
+                    managers = UserAccessor.GetUserOrganization(s.GetQueryProvider(), perms, caller, team.ManagedBy, false, false)
                                             .AsList()
                                             .Where(x => x.Id != beingReviewed.Id)
+                                            .Where(x => usersToReview.Any(y => y.Id == x.Id))
                                             .ToList();
 
                 foreach (var manager in managers)
                 {
                     var managerResponsibilities = ResponsibilitiesAccessor
-                                                        .GetResponsibilityGroupsForUser(s, perms, caller, manager.Id)
+                                                        .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, manager.Id)
                                                         .SelectMany(x => x.Responsibilities)
                                                         .ToListAlive();
                     askable.AddUnique(managerResponsibilities, AboutType.Manager, manager.Id);
@@ -836,11 +900,14 @@ namespace RadialReview.Accessors
             {
                 if (team.Type != TeamType.Standard)
                 {
-                    List<UserOrganizationModel> subordinates = UserAccessor.GetSubordinates(s, perms, caller, beingReviewed.Id);
+                    List<UserOrganizationModel> subordinates = UserAccessor.GetSubordinates(s.GetQueryProvider(), perms, caller, beingReviewed.Id)
+                                                              .Where(x => usersToReview.Any(y => y.Id == x.Id))
+                                                              .Where(x => x.Id != beingReviewed.Id)
+                                                              .ToListAlive();
                     foreach (var subordinate in subordinates)
                     {
                         var subordinateResponsibilities = ResponsibilitiesAccessor
-                                                            .GetResponsibilityGroupsForUser(s, perms, caller, subordinate.Id)
+                                                            .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, subordinate.Id)
                                                             .SelectMany(x => x.Responsibilities)
                                                             .ToListAlive();
                         askable.AddUnique(subordinateResponsibilities, AboutType.Subordinate, subordinate.Id);
@@ -852,7 +919,7 @@ namespace RadialReview.Accessors
             return askable;
         }
 
-        private static void GenerateSliderAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
+        private static void GenerateSliderAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
         {
 
             var slider = new SliderAnswer()
@@ -871,7 +938,7 @@ namespace RadialReview.Accessors
             session.Save(slider);
 
         }
-        private static void GenerateFeedbackAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
+        private static void GenerateFeedbackAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
         {
             var feedback = new FeedbackAnswer()
             {
@@ -889,7 +956,7 @@ namespace RadialReview.Accessors
 
         }
 
-        private static void GenerateThumbsAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
+        private static void GenerateThumbsAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
         {
             var thumbs = new ThumbsAnswer()
             {
@@ -907,7 +974,7 @@ namespace RadialReview.Accessors
 
         }
 
-        private static void GenerateRelativeComparisonAnswers(ISession session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
+        private static void GenerateRelativeComparisonAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
         {
             var peers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager).SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate));
             var managers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager);
@@ -945,7 +1012,7 @@ namespace RadialReview.Accessors
         }
         #endregion
 
-        public static void AddAskablesToReview(ISession s, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewModel reviewModel, List<AskableAbout> askables)
+        public static void AddAskablesToReview(AbstractUpdate s, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewModel reviewModel, List<AskableAbout> askables)
         {
             foreach (var q in askables)
             {
@@ -968,14 +1035,14 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    AddToReview(s, perms,caller, byUserId, reviewId, aboutUserId, AboutType.NoRelationship);
+                    AddToReview(s.ToDataInteraction(true), perms,caller, byUserId, reviewId, aboutUserId, AboutType.NoRelationship);
                     tx.Commit();
                     s.Flush();
                 }
             }
         }
 
-        private static void AddToReview(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewId, long aboutUserId, AboutType aboutType)
+        private static void AddToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewId, long aboutUserId, AboutType aboutType)
         {            
             perms.ViewUserOrganization(byUserId, false).ViewReview(reviewId);
 
@@ -984,9 +1051,9 @@ namespace RadialReview.Accessors
 
             var askable = new AskableUtility();
 
-            var feedbackQuestion = ApplicationAccessor.GetApplicationQuestion(s, ApplicationAccessor.FEEDBACK);
+            var feedbackQuestion = ApplicationAccessor.GetApplicationQuestion(s.GetQueryProvider(), ApplicationAccessor.FEEDBACK);
             var userResponsibilities = ResponsibilitiesAccessor
-                                                  .GetResponsibilityGroupsForUser(s, perms, caller, aboutUserId)
+                                                  .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, aboutUserId)
                                                   .SelectMany(x => x.Responsibilities)
                                                   .ToListAlive();
             askable.AddUnique(userResponsibilities, aboutType, aboutUserId);
@@ -995,7 +1062,7 @@ namespace RadialReview.Accessors
             var forUser = s.Get<UserOrganizationModel>(review.ForUserId);
             //var review=s.QueryOver<ReviewModel>().Where(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).SingleOrDefault();
 
-            AddAskablesToReview(s, perms, caller, forUser, review, askable.Askables);
+            AddAskablesToReview(s.GetUpdateProvider(), perms, caller, forUser, review, askable.Askables);
         }
     }
 }

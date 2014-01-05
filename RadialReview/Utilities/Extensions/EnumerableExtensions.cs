@@ -58,14 +58,15 @@ namespace RadialReview
             return source.Alive().Select(selector);
         }
 
-        public static IEnumerable<T> Alive<T>(this IEnumerable<T> source) where T : IDeletable
+        public static IEnumerable<T> Alive<T>(this IEnumerable<T> source) 
         {
             if (source == null)
                 return null;
 
-            if (source is AliveEnumerable<T>)
-                return source;
-            return new AliveEnumerable<T>(source.Where(x => x.DeleteTime == null));
+            /*if (source is AliveEnumerable<T>)
+                return source;*/
+            return source.Where(x => x.Alive());
+            //return new AliveEnumerable<T>(source.Where(x => x.Alive()));
         }
 
         public static List<TSource> ToListAlive<TSource>(this IEnumerable<TSource> source) where TSource : IDeletable

@@ -1,5 +1,6 @@
 ﻿using NHibernate;
 using NHibernate.Criterion;
+using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,19 @@ namespace RadialReview
               .Add(Restrictions.In("Id", ids.ToArray()))
               .List<TEntity>();
             return result;
+        }
+
+        public static AbstractQuery ToQueryProvider(this ISession session, bool onlyAlive)
+        {
+            return new SessionQuery(session, onlyAlive);
+        }
+        public static AbstractUpdate ToUpdateProvider(this ISession session)
+        {
+            return new SessionUpdate(session);
+        }
+        public static DataInteraction ToDataInteraction(this ISession session, bool onlyAlive)
+        {
+            return new DataInteraction(session.ToQueryProvider(onlyAlive),session.ToUpdateProvider());
         }
     }
 }

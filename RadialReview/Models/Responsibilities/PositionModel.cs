@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Web;
 
 namespace RadialReview.Models.Responsibilities
 {
-    public class PositionModel 
+    public class PositionModel :ILongIdentifiable
     {
         public virtual long Id { get;protected set; }
         public virtual LocalizedStringModel Name { get; set; }

@@ -405,7 +405,7 @@ namespace RadialReview.Controllers
         public JsonResult SetHint(bool? hint)
         {
             _UserAccessor.SetHints(GetUserModel(), hint.Value);
-            return Json(ResultObject.Success,JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success("Hints turned "+(hint.Value?"on.":"off.")),JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.User)]

@@ -7,7 +7,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class QuestionKeyValues : IDeletable
+    public class QuestionKeyValues : IDeletable, ILongIdentifiable
     {
         public virtual long Id { get; set; }
         public virtual String QuestionKey { get; set; }

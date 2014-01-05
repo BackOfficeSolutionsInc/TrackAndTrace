@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Interfaces;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -7,14 +8,15 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class UrlHitModel{
+    public class UrlHitModel : ILongIdentifiable
+    {
         public virtual long Id { get; protected set; }
         public virtual String IP {get;set;}
         public virtual DateTime Time {get;set;}
 
     }
 
-    public class UrlModel
+    public class UrlModel : ILongIdentifiable
     {
         public virtual long Id { get; protected set; }
         public virtual String Url { get; set; }

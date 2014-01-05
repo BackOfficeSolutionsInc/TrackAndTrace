@@ -76,14 +76,14 @@ namespace RadialReview.Controllers
                 if (user == null)
                     return Json(new ResultObject(true, ExceptionStrings.DefaultPermissionsException));
                 if (save.toSave == null)
-                    return Json(ResultObject.Success);
+                    return Json(ResultObject.Success("Nothing to update."));
 
                 var questionsToEdit = save.toSave.Where(x => x.Type == "questionEnabled").ToList();
                 var enabledQuestions = questionsToEdit.Where(x => x.Value == "true").Select(x => x.Id).ToList();
                 var disabledQuestions = questionsToEdit.Where(x => x.Value == "false").Select(x => x.Id).ToList();
                 _QuestionAccessor.SetQuestionsEnabled(user, save.forUser, enabledQuestions, disabledQuestions);
 
-                return Json(ResultObject.Success);
+                return Json(ResultObject.Success("Updated user."));
             }
             catch (Exception e)
             {
@@ -192,7 +192,7 @@ namespace RadialReview.Controllers
         {
             _UserAccessor.EditUser(GetUser(), model.UserId, model.IsManager, model.ManagingOrganization);
 
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("User updated."));
         }
 
         #endregion
@@ -212,7 +212,7 @@ namespace RadialReview.Controllers
         public JsonResult RemovePosition(long id)
         {
             _PositionAccessor.RemovePositionFromUser(GetUser(), id);
-            return Json(ResultObject.Success, JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success("Removed position."), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]
@@ -259,7 +259,7 @@ namespace RadialReview.Controllers
 
             _PositionAccessor.AddPositionToUser(GetUser(), model.UserId, model.PositionId);
 
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Added position."));
         }
 
         #endregion
@@ -280,7 +280,7 @@ namespace RadialReview.Controllers
         public JsonResult RemoveTeam(long id)
         {
             _TeamAccessor.RemoveMember(GetUser(), id);
-            return Json(ResultObject.Success, JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success("Removed team."), JsonRequestBehavior.AllowGet);
         }
 
         public class UserTeamViewModel
@@ -335,7 +335,7 @@ namespace RadialReview.Controllers
 
             _TeamAccessor.AddMember(GetUser(), model.TeamId, model.UserId);
 
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Added to team."));
         }
         #endregion
 
@@ -379,7 +379,7 @@ namespace RadialReview.Controllers
         public JsonResult DeleteManager(long id)
         {
             _UserAccessor.RemoveManager(GetUser(), id);
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Removed manager."));
         }
 
         [Access(AccessLevel.Manager)]
@@ -387,7 +387,7 @@ namespace RadialReview.Controllers
         public JsonResult AddManager(AddManagerViewModel model)
         {
             _UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId);
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Added manager."));
         }
         #endregion
 
@@ -401,16 +401,16 @@ namespace RadialReview.Controllers
             var teams = _TeamAccessor.GetUsersTeams(GetUser(), id);
             var userResponsibility = ((UserOrganizationModel)r).Hydrate().Position().SetTeams(teams).Execute();
 
-            responsibilities.AddRange(userResponsibility.Responsibilities.Select(x => x.GetQuestion()));
+            responsibilities.AddRange(userResponsibility.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
             foreach (var rgId in userResponsibility.Positions.ToListAlive().Select(x => x.Position.Id))
             {
                 var positionResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), rgId);
-                responsibilities.AddRange(positionResp.Responsibilities.Select(x => x.GetQuestion()));
+                responsibilities.AddRange(positionResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
             }
             foreach (var teamId in userResponsibility.Teams.ToListAlive().Select(x => x.Team.Id))
             {
                 var teamResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), teamId);
-                responsibilities.AddRange(teamResp.Responsibilities.Select(x => x.GetQuestion()));
+                responsibilities.AddRange(teamResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
             }
 
 

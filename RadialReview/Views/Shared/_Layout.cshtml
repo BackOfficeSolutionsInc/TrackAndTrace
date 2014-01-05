@@ -67,8 +67,8 @@
                             {
                                 <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "Index", "Home")</li>
                             }
-                            </ul>
-                            @Html.Partial("_LoginPartial", (string)ViewBag.ReturnUrl)
+                        </ul>
+                        @Html.Partial("_LoginPartial", (string)ViewBag.ReturnUrl)
                     </div>
                 </div>
             </div>
@@ -112,11 +112,11 @@
                     @if(ViewBag.Alert!=null)
                     {
                         @:showAlert("@ViewBag.Alert");
-                                        }
+                                                                                }
                     @if(ViewBag.Success!=null)
                     {
                         @:showAlert("@ViewBag.Success", "alert-success", "Success!");
-                                        }
+                                                                                }
 
                     var data = localStorage.getItem("Alert");
                     localStorage.setItem("Alert", null);
@@ -205,6 +205,7 @@
                                         return;
                                     }
                                 }
+                                $("#modal").modal("hide");
                                 $.ajax({
                                     url: pushUrl,
                                     type: "POST",
@@ -217,16 +218,16 @@
                                             StoreJsonAlert(data)
                                             if (onSuccess) {
                                                 eval(onSuccess + "(data)");
-                                                $("#modal").modal("hide");
+                                                //$("#modal").modal("hide");
                                             }
                                             else {
                                                 if (data.Error) {
-                                                    $("#modal").modal("hide");
-                                                    console.log(data.Trace);
-                                                    console.log(data.Message);
-                                                    showAlert(data.Message);
+                                                    //console.log(data.Trace);
+                                                    //console.log(data.Message);
+                                                    //if (!data.ForceNoShow)
+                                                    showJsonAlert(data);
                                                 } else {
-                                                    $("#modal").modal("hide");
+                                                    //$("#modal").modal("hide");
                                                     location.reload();
                                                 }
                                             }
@@ -260,14 +261,8 @@
                 function StoreJsonAlert(json) {
                     var alert = new Object();
                     alert.message = json.Message;
-                    if (json.Error) {
-                        alert.type = "alert-danger";
-                        alert.title = "Warning";
-                    } else {
-                        alert.type = "alert-success";
-                        alert.title = "Success!";
-                    }
-
+                    alert.type = "alert-" + json.MessageType.toLowerCase();
+                    alert.title = json.Heading;
                     localStorage.setItem("Alert", JSON.stringify(alert));
                 }
 
@@ -282,18 +277,15 @@
                 }
 
                 function showJsonAlert(data, showSuccess) {
-                    var message = data.Message;
-                    if (message === undefined)
-                        message = "";
-
                     if (!data) {
                         showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
-                    } else if (data.Error) {
+                    } else {
+                        var message = data.Message;
+                        if (message === undefined)
+                            message = "";
                         console.log(data.Trace);
                         console.log(data.Message);
-                        showAlert(message);
-                    } else if (showSuccess) {
-                        showAlert(message, "alert-success", "@RadialReview.Properties.MessageStrings.Success");
+                        showAlert(message, "alert-" + data.MessageType.toLowerCase(), data.Heading);
                     }
                 }
 

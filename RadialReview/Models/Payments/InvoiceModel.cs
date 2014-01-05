@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +8,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class InvoiceModel
+    public class InvoiceModel : ILongIdentifiable
     {
         public virtual long Id { get; protected set; }
         public virtual DateTime InvoiceSentDate { get; set; }

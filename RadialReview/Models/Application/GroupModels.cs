@@ -12,7 +12,7 @@ using System.Text;
 
 namespace RadialReview.Models
 {
-    public class GroupModel : IOrigin, IDeletable
+    public class GroupModel :IOrigin, IDeletable
     {
         [Key]
         public virtual long Id { get; set; }

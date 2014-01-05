@@ -8,7 +8,7 @@ using System.Web;
 
 namespace RadialReview.Models.UserModels
 {
-    public class TeamDurationModel : IDeletable
+    public class TeamDurationModel : IDeletable,ILongIdentifiable
     {
         public virtual long Id { get; set; }
         public virtual long UserId { get; set; }
@@ -20,6 +20,8 @@ namespace RadialReview.Models.UserModels
         public virtual DateTime? DeleteTime { get; set; }
         public virtual long? DeletedBy { get; set; }
         public virtual long AddedBy { get; set; }
+
+        //public virtual long OrganizationId { get; set; }
 
         public TeamDurationModel()
         {

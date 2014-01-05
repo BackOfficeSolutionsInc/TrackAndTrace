@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +7,9 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class EmailModel
+    public class EmailModel : ILongIdentifiable
     {
-        public virtual int Id { get; protected set; }
+        public virtual long Id { get; protected set; }
         public virtual string ToAddress { get; set; }
         public virtual string Body { get; set; }
         public virtual string Subject { get; set; }

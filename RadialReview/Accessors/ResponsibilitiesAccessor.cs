@@ -4,6 +4,7 @@ using RadialReview.Models;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,18 +74,18 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetResponsibilityGroupsForUser(s, perms, caller, userId);
+                    return GetResponsibilityGroupsForUser(s.ToQueryProvider(true), perms, caller, userId);
                 }
             }
         }
 
-        public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(ISession s, PermissionsUtility permissions, UserOrganizationModel caller, long userId)
+        public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(AbstractQuery s, PermissionsUtility permissions, UserOrganizationModel caller, long userId)
         {
             var teams = TeamAccessor.GetUsersTeams(s, permissions, caller, userId);
             /*}
             using (var tx = s.BeginTransaction())
             {*/
-            PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
+            permissions.ViewUserOrganization(userId, false);
             var user = s.Get<UserOrganizationModel>(userId);
 
             List<ResponsibilityGroupModel> responsibilityGroups = new List<ResponsibilityGroupModel>();

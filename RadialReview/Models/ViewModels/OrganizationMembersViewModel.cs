@@ -37,7 +37,7 @@ namespace RadialReview.Models.ViewModels
         {
             Id = userOrg.Id;
             Name = userOrg.GetName();
-            Email = userOrg.EmailAtOrganization;
+            Email = userOrg.GetEmail();
             Manager = userOrg.IsManager();
             Verified = userOrg.User != null;
             TeamsTitles = userOrg.Teams.ToListAlive().Select(x => x.Team.Name).ToList();

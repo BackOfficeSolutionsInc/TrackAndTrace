@@ -7,6 +7,7 @@ using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Reviews;
 using RadialReview.Properties;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,7 +92,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    var reviewModel=GenerateReviewForUser(s, perms, caller, forUser, reviewContainer, askables);
+                    var reviewModel=GenerateReviewForUser(new DataInteraction(s.ToQueryProvider(true),s.ToUpdateProvider()), perms, caller, forUser, reviewContainer, askables);
                     tx.Commit();
                     s.Flush();
                     return reviewModel;
@@ -99,12 +100,12 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static ReviewModel GenerateReviewForUser(ISession s, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
+        public static ReviewModel GenerateReviewForUser(DataInteraction dataInteraction, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
         {
             //var questions = GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
             //var responsibilities =
 
-            forUser = s.Get<UserOrganizationModel>(forUser.Id);
+            forUser = dataInteraction.Get<UserOrganizationModel>(forUser.Id);
 
             var askable = new List<Askable>();
 
@@ -116,14 +117,11 @@ namespace RadialReview.Accessors
                 Name = reviewContainer.ReviewName,
             };
 
-            s.Save(reviewModel);
-
+            dataInteraction.Save(reviewModel);
             reviewModel.ClientReview.ReviewId = reviewModel.Id;
+            dataInteraction.Update(reviewModel);
 
-            s.Update(reviewModel);
-
-            ReviewAccessor.AddAskablesToReview(s, perms, caller, forUser, reviewModel, askables);
-
+            ReviewAccessor.AddAskablesToReview(dataInteraction.GetUpdateProvider(), perms, caller, forUser, reviewModel, askables);
             return reviewModel;
         }
 
@@ -172,7 +170,7 @@ namespace RadialReview.Accessors
             }
         }*/
 
-        public static List<QuestionModel> GetQuestionsForUser(ISession s,PermissionsUtility perms, UserOrganizationModel caller, long forUserId)
+        public static List<QuestionModel> GetQuestionsForUser(AbstractQuery s,PermissionsUtility perms, UserOrganizationModel caller, long forUserId)
         {
             perms.ViewUserOrganization(forUserId, false);
             var forUser = s.Get<UserOrganizationModel>(forUserId);
@@ -186,10 +184,10 @@ namespace RadialReview.Accessors
             questions.AddRange(forUser.Groups.SelectMany(x => x.CustomQuestions));
             //Organization Questions
             var orgId = forUser.Organization.Id;
-            var orgQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == orgId && x.OriginType == OriginType.Organization).List().ToList();
+            var orgQuestions = s.Where<QuestionModel>(x => x.OriginId == orgId && x.OriginType == OriginType.Organization);
             questions.AddRange(orgQuestions);
             //Application Questions
-            var applicationQuestions = s.QueryOver<ApplicationWideModel>().List().SelectMany(x => x.CustomQuestions).ToList();
+            var applicationQuestions = s.Where<ApplicationWideModel>(x=>true).SelectMany(x => x.CustomQuestions).ToList();
             questions.AddRange(applicationQuestions);
             return questions;
         }
@@ -201,7 +199,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetQuestionsForUser(s, perms, caller, forUserId);
+                    return GetQuestionsForUser(s.ToQueryProvider(true), perms, caller, forUserId);
                 }
             }
         }

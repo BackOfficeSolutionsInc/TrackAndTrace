@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,9 +9,9 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class PaymentModel
+    public class PaymentModel : ILongIdentifiable
     {
-        public virtual int Id { get; protected set; }
+        public virtual long Id { get; protected set; }
 
         public virtual DateTime PaymentDate { get; set; }
          

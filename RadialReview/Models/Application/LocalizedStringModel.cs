@@ -8,7 +8,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class LocalizedStringPairModel 
+    public class LocalizedStringPairModel : ILongIdentifiable
     {
         public virtual long Id {get;protected set;}
         public virtual String Locale {get;set;}

@@ -8,7 +8,7 @@ using System.Web;
 
 namespace RadialReview.Models.UserModels
 {
-    public class PositionDurationModel:IDeletable
+    public class PositionDurationModel:IDeletable, ILongIdentifiable
     {
         public virtual long Id { get; set; }
         public virtual long UserId { get; set; }

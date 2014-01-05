@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Web;
 
 namespace RadialReview.Models.Rockstars
 {
-    public class RockstarModel
+    public class RockstarModel : ILongIdentifiable
     {
         public virtual long Id { get; set; }
         public virtual long ForOrganizationId { get; set; }

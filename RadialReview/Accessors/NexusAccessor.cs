@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using NHibernate;
+using RadialReview.Utilities.Query;
 
 namespace RadialReview.Accessors
 {
@@ -145,7 +146,7 @@ namespace RadialReview.Accessors
                     var toSend=s.QueryOver<TempUserModel>().Where(x => x.OrganizationId == organizationId && x.LastSent == null).List().ToList();
                     foreach (var tempUser in toSend)
                     {
-                        SendJoinEmailToGuid(s, caller, tempUser);
+                        SendJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
                     }
                     tx.Commit();
                     s.Flush();
@@ -160,7 +161,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var result=SendJoinEmailToGuid(s, caller, tempUser);
+                    var result = SendJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
                     tx.Commit();
                     s.Flush();
                     return result;
@@ -168,7 +169,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static string SendJoinEmailToGuid(ISession s, UserOrganizationModel caller, TempUserModel tempUser)
+        public static string SendJoinEmailToGuid(DataInteraction s, UserOrganizationModel caller, TempUserModel tempUser)
         {
             var emailAddress = tempUser.Email;
             var firstName = tempUser.FirstName;
@@ -187,7 +188,7 @@ namespace RadialReview.Accessors
             //var shorenedUrl = ProductStrings.BaseUrl + _UrlAccessor.RecordUrl(url, email);
             var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName);
             subject = Regex.Replace(subject, @"[^A-Za-z0-9 \.\,&]", "");
-            Emailer.SendEmail(s,emailAddress, subject, body);
+            Emailer.SendEmail(s.GetUpdateProvider(),emailAddress, subject, body);
             return id;
         }
 
@@ -215,7 +216,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    model = Put(s, model);
+                    model = Put(s.ToUpdateProvider(), model);
                     tx.Commit();
                     s.Flush();
                 }
@@ -223,7 +224,7 @@ namespace RadialReview.Accessors
             return model;
         }
 
-        public static NexusModel Put(ISession s,NexusModel model)
+        public static NexusModel Put(AbstractUpdate s,NexusModel model)
         {
             s.Save(model);
             return model;

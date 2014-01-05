@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class ImageModel
+    public class ImageModel : IGuidIdentifiable
     {
         public virtual Guid Id { get; set; }
         public virtual String OriginalName { get;set;}

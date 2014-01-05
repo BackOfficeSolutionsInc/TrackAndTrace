@@ -64,7 +64,7 @@ namespace RadialReview.Controllers
                 model.CategoryId = category.Id;
             }
             _ResponsibilitiesAccessor.EditResponsibility(caller, model.Id, model.Responsibility, model.CategoryId, model.ResponsibilityGroupId,model.Active,model.Weight);
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Responsibility updated."));
         }
 
         [Access(AccessLevel.Manager)]

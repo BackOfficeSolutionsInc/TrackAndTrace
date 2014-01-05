@@ -84,7 +84,7 @@ namespace RadialReview.Controllers
 
                 var user = GetUser();
 
-                var review=_ReviewAccessor.GetReview(user, reviewId);
+                var review = _ReviewAccessor.GetReview(user, reviewId);
 
                 if (review.ForUserId != user.Id)
                     throw new PermissionsException("You cannot take this review.");
@@ -131,23 +131,23 @@ namespace RadialReview.Controllers
             public long Page { get; set; }
             public List<AnswerModel> Answers { get; set; }
             public UserOrganizationModel ForUser { get; set; }
-            public List<Tuple<String,bool>> OrderedPeople {get;set;}
+            public List<Tuple<String, bool>> OrderedPeople { get; set; }
 
         }
 
         [HttpPost]
         [Access(AccessLevel.Manager)]
-        public JsonResult SetNotes(long id,string notes)
+        public JsonResult SetNotes(long id, string notes)
         {
             _ReviewAccessor.UpdateNotes(GetUser(), id, notes);
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Added notes."));
         }
 
         [HttpGet]
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult AdditionalReview(long id,long page)
+        public ActionResult AdditionalReview(long id, long page)
         {
-            var organizationUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
+            var organizationUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
             var review = _ReviewAccessor.GetReview(GetUser(), id);
 
             var permittedUsers = organizationUsers.Where(x => !review.Answers.Any(y => y.AboutUserId == x.Id));
@@ -156,9 +156,9 @@ namespace RadialReview.Controllers
 
             var model = new AdditionalReviewViewModel()
             {
-                Id=id,
-                Possible=selectList,
-                Page=page
+                Id = id,
+                Possible = selectList,
+                Page = page
             };
 
 
@@ -169,7 +169,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult AdditionalReview(AdditionalReviewViewModel model)
         {
-            _ReviewAccessor.AddToReview(GetUser(),GetUser().Id, model.Id,model.User);
+            _ReviewAccessor.AddToReview(GetUser(), GetUser().Id, model.Id, model.User);
             return RedirectToAction("Take", new { id = model.Id, page = model.Page });
         }
 
@@ -201,14 +201,14 @@ namespace RadialReview.Controllers
 
                 var model = new TakeViewModel()
                 {
-                    Id=id,
+                    Id = id,
                     Page = pageConcrete,
                     Answers = p,
                     ForUser = p.FirstOrDefault().NotNull(x => x.AboutUser),
-                    OrderedPeople = pages.Select(x=>
+                    OrderedPeople = pages.Select(x =>
                         Tuple.Create(
                             x.First().AboutUser.GetNameAndTitle(),
-                            x.All(y=>!y.Required||y.Complete))
+                            x.All(y => !y.Required || y.Complete))
                         ).ToList()
                 };
 
@@ -218,7 +218,7 @@ namespace RadialReview.Controllers
             catch (ArgumentOutOfRangeException)
             {
                 //Session["Page"] = page;
-                return RedirectToAction("AdditionalReview",new { id=id,page=page });
+                return RedirectToAction("AdditionalReview", new { id = id, page = page });
             }
             #region Comment
             /*
@@ -288,7 +288,7 @@ namespace RadialReview.Controllers
             }*/
             #endregion
         }
-        
+
         [HttpGet]
         [Access(AccessLevel.Manager)]
         public ActionResult Create()
@@ -311,8 +311,9 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.Manager)]
-        public JsonResult Create(IssueReviewViewModel model)
+        public async Task<JsonResult> Create(IssueReviewViewModel model)
         {
+            var userId = GetUserModel().UserName;
             try
             {
                 var dueDate = DateTime.Parse(model.Date);
@@ -321,24 +322,48 @@ namespace RadialReview.Controllers
                 /*if (!caller.ManagingOrganization)
                     throw new PermissionsException();*/
 
-                var userId = GetUserModel().UserName;
+                var user = GetUser();
 
-                //TODO HERE
-                new Task(() =>
+                // try
+                // {
+                //throw new Exception("Todo");
+                var result = await Task.Run(() =>
                 {
-                    var result = _ReviewAccessor.CreateCompleteReview(GetUser(), model.ForTeamId, dueDate, model.Name, model.Emails,model.ReviewSelf,model.ReviewManagers,model.ReviewSubordinates,model.ReviewTeammates,model.ReviewPeers);
+                    return _ReviewAccessor.CreateCompleteReview(user, model.ForTeamId, dueDate,
+                        model.Name, model.Emails, model.ReviewSelf, model.ReviewManagers, model.ReviewSubordinates,
+                        model.ReviewTeammates, model.ReviewPeers);
+                });
+                new Thread(() =>
+                {
                     Thread.Sleep(4000);
-                    var hub=GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
                     hub.Clients.User(userId).jsonAlert(ResultObject.Create(false, "Finished creating review \"" + model.Name + "\"."), true);
                     hub.Clients.User(userId).unhide("#ManageNotification");
                 }).Start();
+                //return true;
+                /* }
+                 catch (Exception e)
+                 {
+                     //var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+                     // hub.Clients.User(userId).jsonAlert(new ResultObject(e));
+                     //hub.Clients.User(userId).unhide("#ManageNotification");
+                     log.Error(e);
+                     throw e;
+                     // return false;
+                 }*/
 
-                return Json(ResultObject.Create(false,"Creating review. This will may take a few minutes."));
             }
             catch (Exception e)
             {
-                return Json(new ResultObject(e));
+                log.Error(e);
+                new Thread(() =>
+                {
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+                    hub.Clients.User(userId).jsonAlert(new ResultObject(e));
+                    hub.Clients.User(userId).unhide("#ManageNotification");
+                }).Start();
             }
+            return Json(ResultObject.SilentSuccess());
         }
 
         public class ReviewDetailsViewModel
@@ -354,7 +379,7 @@ namespace RadialReview.Controllers
 
         ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
         {
-            var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x=>x.Id);
+            var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.Id);
             var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId);
             var model = new ReviewDetailsViewModel()
             {

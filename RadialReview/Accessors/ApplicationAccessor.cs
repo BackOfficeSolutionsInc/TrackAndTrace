@@ -4,6 +4,7 @@ using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +15,7 @@ namespace RadialReview.Accessors
 {
     public class ApplicationAccessor : BaseAccessor
     {
-        private const long APPLICATION_ID = 1;
+        public const long APPLICATION_ID = 1;
 
         public const string FEEDBACK = "Feedback";
 
@@ -198,15 +199,15 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static QuestionModel GetApplicationQuestion(ISession session,String question)
+        public static QuestionModel GetApplicationQuestion(AbstractQuery session,String question)
         {
             var found = ApplicationQuestions.FirstOrDefault(x => x.Question.ToLower() == question.ToLower());
             if (found == null)
                 throw new PermissionsException("No application category for " + question);
-            var foundQList = session.QueryOver<QuestionModel>().Where(x =>
+            var foundQList = session.Where<QuestionModel>(x =>
                     x.OriginId == APPLICATION_ID &&
                     x.OriginType == OriginType.Application
-                ).List().ToList();
+                ).ToList();
             var foundQ = foundQList.Where(x => x.Question.Standard == question).FirstOrDefault();
             if (foundQ == null)
                 throw new PermissionsException("Application was not initialized. Category was missing. " + question);

@@ -182,7 +182,7 @@ namespace RadialReview.Controllers
             model.Id = TempId;
             _NexusAccessor.SendJoinEmailToGuid(GetUser(), model);
 
-            return Json(ResultObject.Success);
+            return Json(ResultObject.Success("Resent invite."));
         }
     }
 }
