@@ -41,12 +41,12 @@ namespace RadialReview.Controllers
                 var message="Successfully added "+model.FirstName+" "+model.LastName+".";
                 if(GetUser().Organization.SendEmailImmediately)
                 {
-                    message+=" An invitation has been sent to "+model.Email+".";
+                    message += " An invitation has been sent to " + model.Email + ".";
+                    return Json(ResultObject.CreateMessage(StatusType.Success, message));
                 }else{
                     message+=" The invitation has NOT been sent. To send, click \"Send Invites\" below.";
+                    return Json(ResultObject.CreateMessage(StatusType.Warning, message));
                 }
-
-                return Json(new ResultObject(false, message));
             }
             catch (RedirectException e)
             {

@@ -368,16 +368,20 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }
         
-        public PermissionsUtility EditReviews(long userOrganizationId)
+        public PermissionsUtility EditReviews(long reviewContainerId)
         {
             //TODO more permissions here?
             if (IsRadialAdmin())
                 return this;
 
-            var user=session.Get<UserOrganizationModel>(userOrganizationId);
-            if (user.Id != caller.Id)
-                throw new PermissionsException();
+            var review = session.Get<ReviewsModel>(reviewContainerId);
+            if (review.CreatedById == caller.Id)
+                return this;
 
+            var team = session.Get<OrganizationTeamModel>(review.ForTeamId);
+            if (team.ManagedBy == caller.Id)
+                return this;
+            
             ManagerAtOrganization(caller.Id,caller.Organization.Id);
 
             return this;
@@ -473,6 +477,7 @@ namespace RadialReview.Utilities
                 return this;
             var review = session.Get<ReviewsModel>(reviewContainerId);
             var orgId=review.ForOrganization.Id;
+            
 
             ManagerAtOrganization(caller.Id, orgId);
 

@@ -226,7 +226,12 @@
     <Compile Include="Accessors\PositionAccessor.cs" />
     <Compile Include="Accessors\QuestionAccessor.cs" />
     <Compile Include="Accessors\ResponsibilitiesAccessor.cs" />
-    <Compile Include="Accessors\ReviewAccessor.cs" />
+    <Compile Include="Accessors\ReviewAccessor\CreateReview.cs" />
+    <Compile Include="Accessors\ReviewAccessor\GenerateReview.cs" />
+    <Compile Include="Accessors\ReviewAccessor\GetReview.cs" />
+    <Compile Include="Accessors\ReviewAccessor\PopulateReview.cs" />
+    <Compile Include="Accessors\ReviewAccessor\ReviewAccessor.cs" />
+    <Compile Include="Accessors\ReviewAccessor\UpdateReview.cs" />
     <Compile Include="Accessors\S3Response.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
     <Compile Include="Accessors\UrlAccessor.cs" />
@@ -283,6 +288,7 @@
     <Compile Include="Models\Responsibilities\AskableAbout.cs" />
     <Compile Include="Models\Enums\WeightType.cs" />
     <Compile Include="Models\Reviews\ClientReviewModel.cs" />
+    <Compile Include="Models\Reviews\ReviewParameters.cs" />
     <Compile Include="Models\Rockstars\RockstarModel.cs" />
     <Compile Include="Models\Template\TemplateItem.cs" />
     <Compile Include="Models\Template\TemplateItemChart.cs" />
@@ -432,6 +438,7 @@
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
     <Compile Include="Utilities\Attributes\AccessAttribute.cs" />
     <Compile Include="Utilities\CsvUtility.cs" />
+    <Compile Include="Utilities\DataTypes\Coworker.cs" />
     <Compile Include="Utilities\DataTypes\Csv.cs" />
     <Compile Include="Utilities\DataTypes\Multimap.cs" />
     <Compile Include="Utilities\DataTypes\Tree.cs" />
@@ -444,6 +451,7 @@
     <Compile Include="Utilities\Extensions\OrganizationExtensions.cs" />
     <Compile Include="Utilities\Extensions\OriginExtensions.cs" />
     <Compile Include="Utilities\Extensions\QuestionModelExtensions.cs" />
+    <Compile Include="Utilities\Extensions\ReviewExtensions.cs" />
     <Compile Include="Utilities\Extensions\SessionExtensions.cs" />
     <Compile Include="Utilities\Extensions\StringExtensions.cs" />
     <Compile Include="Utilities\Extensions\UserOrganizationExtensions.cs" />
@@ -700,6 +708,8 @@
     <Content Include="Views\Account\TestChart.cshtml" />
     <Content Include="Views\Review\AdditionalReview.cshtml" />
     <Content Include="Views\Reviews\Update.cshtml" />
+    <Content Include="Views\Reviews\RemoveQuestion.cshtml" />
+    <Content Include="Views\Reviews\AddQuestion.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

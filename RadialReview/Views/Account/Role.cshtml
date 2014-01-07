@@ -20,5 +20,20 @@
         </tr>
     }
 
+       @if(ViewBag.Admin)
+       {
+           <tr>
+               <td width="10px;"></td>
+               <td>
+                   <form method="get" action="/Account/SetRole/">
+                       <input type="number" name="id"/>
+                       <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
+                       <input type="submit" />
+                   </form>
+               </td>
+           </tr>
+       }
+    
+
     </table>
 </div>

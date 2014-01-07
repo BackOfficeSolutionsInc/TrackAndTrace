@@ -154,18 +154,29 @@ namespace RadialReview.Accessors
 
             var body = EmailBodyWrapper(htmlBody);
             long emailId = -1;
-            var email = new EmailModel()
+            try
             {
-                Body = body,
-                Sent = false,
-                SentTime = DateTime.UtcNow,
-                Subject = subject,
-                ToAddress = toAddress
-            };
-            s.Save(email);
+                var email = new EmailModel()
+                {
+                    Body = body,
+                    Sent = false,
+                    SentTime = DateTime.UtcNow,
+                    Subject = subject,
+                    ToAddress = toAddress
+                };
+                s.Save(email);
 
-            //db.SaveChanges();
-            emailId = email.Id;
+
+                //db.SaveChanges();
+                emailId = email.Id;
+
+                SendEmailSync(toAddress, subject, body, email);
+                s.Update(email);
+            }
+            catch (Exception e)
+            {
+                log.Error(e);
+            }
 
             //SendEmail(toAddress, subject, body, emailId);
 
@@ -190,15 +201,6 @@ namespace RadialReview.Accessors
             email.Sent = true;
             email.CompleteTime = DateTime.UtcNow;
             s.Update(email);*/
-            try
-            {
-                SendEmailSync(toAddress, subject, body, email);
-                s.Update(email);
-            }
-            catch (Exception e)
-            {
-                log.Error(e);
-            }
         }
     }
 }

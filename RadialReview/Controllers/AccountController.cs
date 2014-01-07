@@ -37,6 +37,7 @@ namespace RadialReview.Controllers
         public ActionResult Role(String ReturnUrl)
         {
             var userOrgs = GetUserOrganizations();
+            ViewBag.Admin = GetUserModel().IsRadialAdmin;
             ViewBag.ReturnUrl = ReturnUrl;
             return View(userOrgs.ToList());
         }

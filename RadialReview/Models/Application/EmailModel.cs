@@ -9,7 +9,7 @@ namespace RadialReview.Models
 {
     public class EmailModel : ILongIdentifiable
     {
-        public virtual long Id { get; protected set; }
+        public virtual long Id { get; set; }
         public virtual string ToAddress { get; set; }
         public virtual string Body { get; set; }
         public virtual string Subject { get; set; }

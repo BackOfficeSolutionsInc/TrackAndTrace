@@ -57,7 +57,7 @@ namespace RadialReview.Models.Json
 
         public static ResultObject Success(String message)
         {
-            return new ResultObject(false, message);
+            return new ResultObject(false, message) { Status=StatusType.Success };
         }
 
         protected ResultObject()
@@ -130,7 +130,7 @@ namespace RadialReview.Models.Json
             return (Error ? "Error:" : "Success:") + Message ?? "";
         }
 
-        public static object NoMessage()
+        public static ResultObject NoMessage()
         {
             return new ResultObject()
             {
@@ -138,6 +138,17 @@ namespace RadialReview.Models.Json
                 Message = null,
                 Object = null,
                 Status = StatusType.SilentSuccess
+            };
+        }
+
+        public static ResultObject CreateMessage(StatusType status, string message)
+        {
+            return new ResultObject()
+            {
+                Error = false,
+                Message = message,
+                Object = null,
+                Status = status
             };
         }
     }

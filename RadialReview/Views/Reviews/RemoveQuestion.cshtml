@@ -1,0 +1,56 @@
+﻿@model RadialReview.Controllers.ReviewsController.RemoveQuestionVM
+
+@Html.HiddenFor(x => x.ReviewContainerId)
+
+<div class="form-horizontal">
+    <div class="form-group">
+        <div class="row">
+            <label class="col-xs-3 control-label">Remove question for:</label>
+            <div class="col-xs-6">
+                @Html.DropDownList(Html.NameFor(x => x.SelectedUserId).ToHtmlString(), Model.Users, new { id = "userId", @class = "form-control", onchange = "changeUser()" })
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-xs-3 control-label">Question:</label>
+            <div class="col-xs-6">
+                <select id="questionList" class="form-control" name="@Html.NameFor(x=>x.SelectedQuestionId)"></select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeUser() {
+        var selectedUser = $("#userId").val();
+        $("#questionList").html("");
+        
+        if (selectedUser != "-1") {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("PopulateAnswersForUser", "Reviews")?reviewId=@Model.ReviewContainerId&userId=" + selectedUser,
+                success: function (data) {
+
+                    if (data.length == 0) {
+                        $("#questionList").append($("<option>").attr("value", "-1").text("Nothing to remove..."));
+                    } else {
+                        $("#questionList").append($("<option>").attr("value", "-1").text("Select a question..."));
+                    }
+
+                    $(data).each(function () {
+                        $("#questionList").append($("<option>").attr("value", this.Value).text(this.Text));
+                    });
+                }
+            });
+        }
+    }
+
+    function validateRemoval() {
+        if (!$("#userId").val() || $("#userId").val()=="-1")
+            return "You must select a user.";
+        if (!$("#questionList").val() || $("#questionList").val()=="-1")
+            return "You must select a question to delete.";
+    }
+</script>
+
+
+

@@ -42,7 +42,8 @@ namespace RadialReview.Accessors
                 {
                     using (var tx = s.BeginTransaction())
                     {
-                        s.Delete(id);
+                        var obj = s.Get<KeyValueModel>(id);
+                        s.Delete(obj);
                         tx.Commit();
                         s.Flush();
                     }

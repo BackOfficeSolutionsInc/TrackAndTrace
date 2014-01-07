@@ -345,7 +345,7 @@ namespace RadialReview.Accessors
                                         .Where(x => x.Organization.Id == orgId && x.ManagingOrganization)
                                         .Fetch(x => x.Teams).Default
                                         .List()
-                                        .ToList();
+                                        .ToListAlive();
 
                     var classes = "organizations".AsList("admin");
 
@@ -370,7 +370,7 @@ namespace RadialReview.Accessors
                     Children(
                         x.GetTitles(),
                         x.GetName(),
-                        String.Join(" ", x.Teams.Select(y => y.Team.Name.Replace(' ', '_'))),
+                        String.Join(" ", x.Teams.ToListAlive().Select(y => y.Team.Name.Replace(' ', '_'))),
                         x.Id,
                         newClasses,
                         x.ManagingUsers.ToListAlive().Select(y => y.Subordinate).ToList())

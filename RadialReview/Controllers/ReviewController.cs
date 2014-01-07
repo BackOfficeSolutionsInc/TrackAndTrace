@@ -192,7 +192,7 @@ namespace RadialReview.Controllers
             try
             {
                 var pageConcrete = page ?? 0;
-                var p = pages[pageConcrete].ToList();
+                var p = pages[pageConcrete].ToListAlive();
                 if (p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required))
                 {
                     TempData["Message"] = DisplayNameStrings.remainingQuestions;

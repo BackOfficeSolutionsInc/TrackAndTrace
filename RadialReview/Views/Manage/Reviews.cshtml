@@ -25,7 +25,7 @@ Before the review is created, make sure you've added all members and responsibil
             <th style="width:100px" class="alignCenter">Created</th>
             <th style="width:100px" class="alignCenter">Due</th>
             <th style="width:120px" class="alignCenter">@RadialReview.Properties.DisplayNameStrings.completion</th>
-            <th class="rightButton"></th>
+            @*<th class="rightButton"></th>*@
             <th class="rightButton">
                 <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton plus" data-toggle="modal">+</button>
             </th>
@@ -39,7 +39,7 @@ Before the review is created, make sure you've added all members and responsibil
                 <td>
                     @Html.Partial("_Completion", review.Review)
                 </td>
-                <td class="rightButton"><div onclick="@Html.ShowModal("Update Review", "/Reviews/Update/"+review.Review.Id, "/Reviews/Update/"+review.Review.Id)" class="btn btn-primary">Update</div></td>
+                @*<td class="rightButton"><div onclick="@Html.ShowModal("Update Review", "/Reviews/Update/"+review.Review.Id, "/Reviews/Update/"+review.Review.Id)" class="btn btn-primary">Update</div></td>*@
                 <td class="rightButton"><a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="btn btn-primary">@RadialReview.Properties.DisplayNameStrings.details</a></td>
             </tr>
         }

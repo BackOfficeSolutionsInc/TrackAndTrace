@@ -30,7 +30,7 @@ namespace RadialReview.Utilities.Query
         {
             var key =typeof(T);
             if (!Data.ContainsKey(key))
-                throw new InvalidOperationException("List doesn't contain: "+key);
+                throw new InvalidOperationException("Query provider doesn't contain: "+key);
             return ((IEnumerable<T>)Data[key]);
         }
         

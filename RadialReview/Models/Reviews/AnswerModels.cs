@@ -11,7 +11,7 @@ namespace RadialReview.Models
 {
 
     #region AnswerModel
-    public abstract class AnswerModel : ILongIdentifiable,ICompletable
+    public abstract class AnswerModel : ILongIdentifiable,ICompletable,IDeletable
     {
         public virtual long Id { get; set; }
         public virtual long ForReviewId { get; set; }
@@ -31,6 +31,8 @@ namespace RadialReview.Models
                 return new CompletionModel(Complete.ToInt(), 1);
             return new CompletionModel(0, 0, Complete.ToInt(), 1);
         }
+
+        public virtual DateTime? DeleteTime { get; set; }
     }
     #endregion
 
@@ -69,6 +71,7 @@ namespace RadialReview.Models
             Map(x => x.ForReviewId);
             Map(x => x.ForReviewContainerId);
             Map(x => x.Complete);
+            Map(x => x.DeleteTime);
 
             Map(x=> x.AboutType).CustomType(typeof(Int64));
 

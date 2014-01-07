@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace RadialReview.Utilities.DataTypes
 {
-    public class Multimap<K,V>
+    public class Multimap<K, V> : IEnumerable<KeyValuePair<K, List<V>>>
     {
         private Dictionary<K, List<V>> Map { get; set; }
 
@@ -39,5 +40,14 @@ namespace RadialReview.Utilities.DataTypes
             return Map.Keys.Select(x => x);
         }
 
+        public IEnumerator<KeyValuePair<K, List<V>>> GetEnumerator()
+        {
+            return Map.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return Map.GetEnumerator();
+        }
     }
 }

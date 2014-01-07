@@ -224,7 +224,7 @@ namespace RadialReview
                     {
                         foreach (var r in reviewList)
                         {
-                            var ans = Session.QueryOver<AnswerModel>().Where(x => x.ForReviewId == r.Id).List().ToList();
+                            var ans = Session.QueryOver<AnswerModel>().Where(x => x.ForReviewId == r.Id).List().ToListAlive();
                             r.Answers = ans;
                         }
                     }

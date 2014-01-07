@@ -73,13 +73,16 @@
 @using (var scripts = Html.BeginScripts())
 {
     <script>
+        var canUpdate = true;
         function slideUpdate(d) {
             var name = $(this).attr("name");
             var answers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
             var div = 100 / answers.length;
             var i = Math.floor(d.value / div);
 
-            $("#"+name + "_title").html(answers[i]);
+            $("#" + name + "_title").html(answers[i]);
+            $(this).val()
+            $(this).attr("name");
         }
 
         $(function () {

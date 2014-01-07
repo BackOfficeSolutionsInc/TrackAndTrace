@@ -112,6 +112,11 @@ namespace RadialReview
             }
         }
 
+        public static IEnumerable<T> Distinct<T,TProp>(this IEnumerable<T> source, Func<T, TProp> distinction)
+        {
+            return source.GroupBy(distinction).Select(x => x.First());
+        }
+
         /*public static Boolean Contains<T>(this IEnumerable<T> enumerable, Func<T, Boolean> contains)
         {
             return enumerable.FirstOrDefault(contains) != null;
