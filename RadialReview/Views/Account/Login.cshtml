@@ -55,7 +55,10 @@
                     </div>
                 </div>
                 <p>
-                    @Html.ActionLink("Register", "Register", new { returnUrl = ViewBag.ReturnUrl }) if you don't have a Radial account.
+                    @Html.ActionLink("Forgot my password", "ResetPassword", new { returnUrl = ViewBag.ReturnUrl })
+                </p>
+                <p>
+                    or @Html.ActionLink("Register", "Register", new { returnUrl = ViewBag.ReturnUrl }) if you don't have a Radial account.
                 </p>
             }
         </section>

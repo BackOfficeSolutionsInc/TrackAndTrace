@@ -62,7 +62,14 @@ namespace RadialReview.Controllers
                 return RedirectToAction("Login", "Account", new { returnUrl = "Organization/Join/" + id });
             try{
                 var userOrg = GetUser(placeholderUserId);
-                throw new RedirectException(ExceptionStrings.AlreadyMember);
+                if (!user.IsRadialAdmin)
+                {
+                    throw new RedirectException(ExceptionStrings.AlreadyMember);
+                }
+                else
+                {
+                    throw new OrganizationIdException();
+                }
             }
             catch (OrganizationIdException)
             {

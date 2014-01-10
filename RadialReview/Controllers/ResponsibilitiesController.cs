@@ -101,5 +101,12 @@ namespace RadialReview.Controllers
 
             return View(model);
         }
+
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult ToggleActive(long id,bool active)
+        {
+            return Json(ResultObject.SilentSuccess(_ResponsibilitiesAccessor.SetActive(GetUser(), id, active)),JsonRequestBehavior.AllowGet);
+        }
 	}
 }

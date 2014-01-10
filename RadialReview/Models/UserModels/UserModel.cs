@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.UserModels;
 using RadialReview.Properties;
@@ -29,6 +30,7 @@ namespace RadialReview.Models
         public virtual bool Hints { get; set; }
         public virtual long CurrentRole { get; set; }
         public virtual string ImageGuid { get; set; }
+        public virtual GenderType? Gender { get; set; }
         /*
         public ICollection<UserLogin> Logins { get; set; }
         */
@@ -81,6 +83,7 @@ namespace RadialReview.Models
             Map(x => x.IsRadialAdmin);
             Map(x => x.DeleteTime);
             Map(x => x.ImageGuid);
+            Map(x => x.Gender);
             HasMany(x => x.UserOrganization).Not.LazyLoad().Cascade.SaveUpdate();
             HasMany(x => x.Logins).Cascade.SaveUpdate();
             HasMany(x => x.Roles).Cascade.SaveUpdate();

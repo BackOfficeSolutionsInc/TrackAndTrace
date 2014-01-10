@@ -164,7 +164,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void RemoveResponsibility(UserOrganizationModel caller, long responsibilityId)
+        public bool SetActive(UserOrganizationModel caller, long responsibilityId,Boolean active)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -172,12 +172,23 @@ namespace RadialReview.Accessors
                 {
                     var responsibility = s.Get<ResponsibilityModel>(responsibilityId);
                     PermissionsUtility.Create(s, caller).EditOrganization(responsibility.ForOrganizationId);
-                    responsibility.DeleteTime = DateTime.UtcNow;
+                    if (active == true)
+                    {
+                        responsibility.DeleteTime = null;
+                    }
+                    else
+                    {
+                        if (responsibility.DeleteTime==null)
+                            responsibility.DeleteTime = DateTime.UtcNow;
+                    }
                     s.Update(responsibility);
                     tx.Commit();
                     s.Flush();
+                    return active;
                 }
             }
         }
+
+        //public void SetActive(UserOrganizationModel caller,long respon
     }
 }

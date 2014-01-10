@@ -33,16 +33,38 @@
             <div class="row">
                 <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.min</h5></div>
                 <div class="col-xs-6" style="padding:30px 0 0px 0;">
-                    <input name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
-                           type="text"
-                           class="sliderInput"
-                           value="@((int?)(slider.Percentage*100))"
-                           data-slider-min="0"
-                           data-slider-max="100"
-                           data-slider-step="1"
-                           data-slider-value="@((int?)(slider.Percentage*100))"
-                           data-slider-orientation="horizontal"
-                           data-slider-selection="after">
+                    @*<input name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
+                        type="text"
+                        class="sliderInput"
+                        value="@((int?)(slider.Percentage*100))"
+                        data-slider-min="0"
+                        data-slider-max="100"
+                        data-slider-step="1"
+                        data-slider-value="@((int?)(slider.Percentage*100))"
+                        data-slider-orientation="horizontal"
+                        data-slider-selection="after">*@
+                    <div class="slider" id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id">
+                        <input
+                         class="sliderBar bar"
+                         type="range"
+                         name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
+                         value="@((int?)(slider.Percentage*100)??0)"
+                         min="0"
+                         max="100"
+                         step="5"
+                         onchange="sliderUpdateInternal(this)">
+                        <!--span class="highlight"></span-->
+                        <div class="rangevalue">
+                            @if (slider.Percentage==null)
+                            {
+                                @:NA
+                            }
+                            else
+                            {
+                               @((int?)(slider.Percentage * 100))
+                            }
+                        </div>
+                    </div>
                 </div>
                 <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.max</h5></div>
             </div>
@@ -74,13 +96,26 @@
 {
     <script>
         var canUpdate = true;
+
+        function sliderUpdateInternal(self) {
+            var d = { value: parseInt($(self).val()) };
+            $("#" + $(self).attr("name") + " .rangevalue").html(d.value);
+
+            slideUpdate.call(self, d);
+
+        }
+
         function slideUpdate(d) {
             var name = $(this).attr("name");
             var answers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
             var div = 100 / answers.length;
             var i = Math.floor(d.value / div);
 
-            $("#" + name + "_title").html(answers[i]);
+            var answer = answers[i];
+            if (d.value == 0)
+                answer = "No Answer";
+
+            $("#" + name + "_title").html(answer);
             $(this).val()
             $(this).attr("name");
         }
@@ -89,8 +124,8 @@
 
             $(".sliderInput").slider().on('calculate', slideUpdate);//.on('click', slideUpdate).on('slideStop', slideUpdate);
 
-            $(".sliderInput").each(function () {
-                slideUpdate.call(this,{ value: parseInt($(this).val()) });
+            $(".sliderBar").each(function () {
+                sliderUpdateInternal(this);
             });
 
             $('.btn-group').button();

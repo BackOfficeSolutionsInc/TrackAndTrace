@@ -21,6 +21,9 @@
 }
 
 <body>
+    <div class="statusContainer" >
+        <div id="status">No status</div>
+    </div>
     <div id="wrap">
         <div id="main">
             <div class="navbar navbar-inverse navbar-fixed-top">
@@ -297,6 +300,25 @@
 
                 alertHub.client.unhide = function (selector) {
                     $(selector).show();
+                };
+
+                var statusTimeout;
+
+                alertHub.client.status = function (text) {
+
+                    $(".statusContainer").css("bottom", "0px");
+                    $(".statusContainer").css("display", "block");
+                    $(".statusContainer").css("opacity", "1");
+                    $("#status").html(text);
+                    clearTimeout(statusTimeout);
+                    statusTimeout = setTimeout(function () {
+                        $(".statusContainer").animate({
+                            opacity: 0,
+                            bottom: "-20px"
+                        }, 500, function () {
+                            $(".statusContainer").css("display", "none");
+                        })
+                    }, 2000);
                 };
 
                 $.connection.hub.start().done(function () {

@@ -65,11 +65,11 @@ namespace RadialReview.Models.Json
             Status = StatusType.SilentSuccess;
         }
 
-        public static ResultObject SilentSuccess()
+        public static ResultObject SilentSuccess(object obj=null)
         {
             return new ResultObject()
             {
-                Object = null,
+                Object = obj,
                 Error = false,
                 Message = "Success",
                 Status = StatusType.SilentSuccess
@@ -86,7 +86,7 @@ namespace RadialReview.Models.Json
                 Status = StatusType.Success
             };
         }
-
+        
         public ResultObject(Boolean error, String message)
         {
             Error = error;

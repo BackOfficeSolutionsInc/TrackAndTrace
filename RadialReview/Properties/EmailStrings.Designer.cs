@@ -133,5 +133,31 @@ namespace RadialReview.Properties {
                 return ResourceManager.GetString("NewReview_Subject", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
+        ///&lt;p&gt;To reset your password please click the following link:&lt;/p&gt;
+        ///&lt;br&gt; 
+        ///    &lt;a href=&quot;{1}&quot;&gt;{2}&lt;/a&gt;
+        ///&lt;br /&gt;&lt;br /&gt;If it was not at your request, then please contact us immediately. If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+        ///&lt;br /&gt;
+        ///&lt;br /&gt;
+        ///Sincerely,&lt;br/&gt;
+        ///The {3} Team.
+        /// </summary>
+        public static string PasswordReset_Body {
+            get {
+                return ResourceManager.GetString("PasswordReset_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} Password Reset.
+        /// </summary>
+        public static string PasswordReset_Subject {
+            get {
+                return ResourceManager.GetString("PasswordReset_Subject", resourceCulture);
+            }
+        }
     }
 }

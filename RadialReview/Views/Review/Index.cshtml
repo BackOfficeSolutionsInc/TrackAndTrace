@@ -1,6 +1,6 @@
 ﻿@model RadialReview.Models.ViewModels.ReviewsListViewModel
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Reviews";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,8 +11,9 @@
     <div class="panel-heading">
         <h3 class="panel-title">@RadialReview.Properties.DisplayNameStrings.reviews</h3>
     </div>
-    @if (Model.Reviews.Any())
-    {
+        @if (Model.Reviews.Any())
+{
+    <div class="table-responsive">
         <table class="table startHiddenGroup">
             <tr>
                 <th class="startHidden">@RadialReview.Properties.DisplayNameStrings.name</th>
@@ -36,11 +37,11 @@
                     </td>
                     <td style="padding:2px;" class="rightButton">
                         @{
-                            var button = "Begin";
-                            if (review.GetCompletion().Started())
-                            {
-                                button = "Edit";
-                            }
+                var button = "Begin";
+                if (review.GetCompletion().Started())
+                {
+                    button = "Edit";
+                }
                         }
 
 
@@ -60,16 +61,18 @@
                         {
                             <a class="btn btn-info" href="Review/ClientDetails/@review.Id">Results</a>
                         }
-                        else { 
+                        else
+                        {
                             <div class="btn btn-default disabled " title="Not available yet">Results</div>
                         }
                     </td>
                 </tr>
             }
         </table>
-    }
-    else
-    {
+    </div>
+}
+else
+{
         <div class="panel-body">
             <div>No reviews at this time.</div>
         </div>

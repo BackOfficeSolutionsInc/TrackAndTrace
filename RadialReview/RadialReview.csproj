@@ -281,6 +281,7 @@
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
+    <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Interfaces\ICompletable.cs" />
     <Compile Include="Models\Enums\AboutType.cs" />
     <Compile Include="Models\Interfaces\IGuidIdentifiable.cs" />
@@ -516,6 +517,7 @@
     <Content Include="Content\home\placelogo8.png" />
     <Content Include="Content\home\radial.png" />
     <Content Include="Content\home\radial2.png" />
+    <Content Include="Content\Review.css" />
     <Content Include="Content\slider.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -710,6 +712,9 @@
     <Content Include="Views\Reviews\Update.cshtml" />
     <Content Include="Views\Reviews\RemoveQuestion.cshtml" />
     <Content Include="Views\Reviews\AddQuestion.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordWithToken.cshtml" />
+    <Content Include="Views\Reviews\RemoveUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -765,6 +770,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionStrings.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

@@ -8,10 +8,8 @@
 @using RadialReview.Models
 
 <div class="row">
-    <div class="col-md-4">
-        @Html.Partial("_User", Model.ForUser)
-    </div>
-    <div class="col-md-8">
+    
+    <div class="col-md-12">
         <div>
             <div class="smallBreak"></div>
             @foreach (var group in Model.Answers.GroupBy(x => x.Askable.Category.Id))
@@ -32,6 +30,10 @@
 </div>
 
 @section sidebar{
+
+<div class="">
+    @Html.Partial("_User", Model.ForUser)
+</div>
     <ol>
         @for(int i=0;i<Model.OrderedPeople.Count;i++)
         {
@@ -42,7 +44,8 @@
 }
 
 @using(Html.BeginStyles())
-{
+{    
+    <link href="~/Content/Review.css" rel="stylesheet" />
     <style>
         .complete a {
             /*color: #52AC52 !important;*/

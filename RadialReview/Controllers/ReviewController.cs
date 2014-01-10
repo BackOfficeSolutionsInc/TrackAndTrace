@@ -107,7 +107,10 @@ namespace RadialReview.Controllers
                                     decimal? output = null;
                                     if (decimal.TryParse(collection[k], out value))
                                         output = value / 100.0m;
-                                    allComplete = allComplete && _ReviewAccessor.UpdateSliderAnswer(user, questionId, output);
+                                    if (value == 0)
+                                        output = null;
+                                    var currentComplete=_ReviewAccessor.UpdateSliderAnswer(user, questionId, output);
+                                    allComplete = allComplete && currentComplete;
                                 } break;
                             case QuestionType.Thumbs: allComplete = allComplete && _ReviewAccessor.UpdateThumbsAnswer(user, questionId, collection[k].Parse<ThumbsType>()); break;
                             case QuestionType.Feedback: allComplete = allComplete && _ReviewAccessor.UpdateFeedbackAnswer(user, questionId, collection[k]); break;
@@ -337,8 +340,10 @@ namespace RadialReview.Controllers
                 {
                     Thread.Sleep(4000);
                     var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-                    hub.Clients.User(userId).jsonAlert(ResultObject.Create(false, "Finished creating review \"" + model.Name + "\"."), true);
-                    hub.Clients.User(userId).unhide("#ManageNotification");
+                    var hubUsers =  hub.Clients.User(userId);
+                    //var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+                    hubUsers.jsonAlert(ResultObject.Create(false, "Finished creating review \"" + model.Name + "\"."), true);
+                    hubUsers.unhide("#ManageNotification");
                 }).Start();
                 //return true;
                 /* }

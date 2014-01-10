@@ -1,0 +1,14 @@
+﻿@model RadialReview.Controllers.ReviewsController.RemoveUserVM
+
+@Html.HiddenFor(x => x.ReviewContainerId)
+
+<div class="form-horizontal">
+    <div class="form-group">
+        <div class="row">
+            <label class="col-xs-3 control-label">Add question to review for:</label>
+            <div class="col-xs-6">
+                @Html.DropDownList(Html.NameFor(x => x.SelectedUser).ToHtmlString(), Model.PossibleUsers, new { id = "userId", @class = "form-control" })
+            </div>
+        </div>
+    </div>
+</div>

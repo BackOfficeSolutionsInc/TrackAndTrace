@@ -657,6 +657,12 @@
     <!-- SMOOTH SCROLL INITIATE -->
     <script>
         $(document).ready(function (e) {
+            console.log("Fix this stuff. Dont use alertbox.");
+            var message = "@(ViewBag.Message??"")";
+            if (message) {
+                alert(message);
+            }
+
             var str = location.hash;
             var n = str.replace("_temp", "");
             var elementOffset=$(n).offset();
@@ -664,6 +670,7 @@
             {
                 $('html,body').animate({ scrollTop: elementOffset.top }, 500);
             }
+
         });
     </script>
     <!-- TWITTER TIMELINE INITIATE -->
@@ -680,5 +687,6 @@
 
     <script id="hiddenlpsubmitdiv" style="display: none;"></script>
     <script>try { for (var lastpass_iter = 0; lastpass_iter < document.forms.length; lastpass_iter++) { var lastpass_f = document.forms[lastpass_iter]; if (typeof (lastpass_f.lpsubmitorig2) == "undefined") { lastpass_f.lpsubmitorig2 = lastpass_f.submit; lastpass_f.submit = function () { var form = this; var customEvent = document.createEvent("Event"); customEvent.initEvent("lpCustomEvent", true, true); var d = document.getElementById("hiddenlpsubmitdiv"); if (d) { for (var i = 0; i < document.forms.length; i++) { if (document.forms[i] == form) { d.innerText = i; } } d.dispatchEvent(customEvent); } form.lpsubmitorig2(); } } } } catch (e) { }</script>
+
 </body>
 </html>

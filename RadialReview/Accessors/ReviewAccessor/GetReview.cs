@@ -203,7 +203,7 @@ namespace RadialReview.Accessors
                         .ManagerAtOrganization(caller.Id, reviewContainer.ForOrganization.Id)
                         .ViewReviews(reviewContainerId);
 
-                    var reviewUsers = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).Fetch(x => x.ForUser).Default.List().ToList().Select(x => x.ForUser).ToList();
+                    var reviewUsers = s.QueryOver<ReviewModel>().Where(x =>x.DeleteTime==null && x.ForReviewsId == reviewContainerId).Fetch(x => x.ForUser).Default.List().ToList().Select(x => x.ForUser).ToList();
                     return reviewUsers;
                 }
             }

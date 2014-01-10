@@ -37,7 +37,7 @@ namespace RadialReview.Controllers
             return HttpContextUtility.Get(HttpContext, "User", x =>
             {
                 var id = User.Identity.GetUserId();
-                return _UserAccessor.GetUser(id);
+                return _UserAccessor.GetUserById(id);
             }, false);
         }
         protected List<UserOrganizationModel> GetUserOrganizations()//Boolean full = false)
@@ -225,11 +225,19 @@ namespace RadialReview.Controllers
                 
                 if (oneUser != null)
                 {
-                    var name=oneUser.GetName();
+                    HtmlString name= new HtmlString(oneUser.GetName());
 
                     if (userOrgs.Count>1)
                     {
-                        name = oneUser.GetNameAndTitle(1);
+                        name = new HtmlString(oneUser.GetNameAndTitle(1));
+                        try
+                        {
+                            name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate()+"</span>");
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error(e);
+                        }
                     }
 
                     //filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
@@ -258,7 +266,7 @@ namespace RadialReview.Controllers
                 case AccessLevel.User: GetUserModel(); break;
                 case AccessLevel.UserOrganization: GetUser(); break;
                 case AccessLevel.Manager: if (!GetUser().IsManager()) throw new PermissionsException("You must be a manager to view this resource."); break;
-                case AccessLevel.Radial: if (!GetUser().IsRadialAdmin) throw new PermissionsException("You must be a Radial Admin to view this resource."); break;
+                case AccessLevel.Radial: if (!GetUserModel().IsRadialAdmin) throw new PermissionsException("You must be a Radial Admin to view this resource."); break;
                 default: throw new Exception("Unknown Access Type");
             }
 

@@ -17,7 +17,7 @@ namespace RadialReview.Accessors
 
     public class UserAccessor : BaseAccessor
     {
-        public UserModel GetUser(String userId)
+        public UserModel GetUserById(String userId)
         {
             if (userId == null)
                 throw new LoginException();

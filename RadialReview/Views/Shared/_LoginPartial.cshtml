@@ -11,13 +11,14 @@
         <ul class="nav navbar-nav navbar-right">
             <li>
                 <div class="btn-group heading" style="padding:8px;">
-                    @Html.ActionLink((string)(ViewBag.UserName ?? "Manage"), "Manage", "Account",
-                        routeValues: null,
-                        htmlAttributes: new
-                        {
-                            title = DisplayNameStrings.manage,
-                            @class = "btn btn-default heading"
-                        })
+
+                    <a 
+                       href="@Url.Action("Manage", "Account")" 
+                       title="@DisplayNameStrings.manage" 
+                       style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap;max-width: 320px;" 
+                       class="btn btn-default heading">
+                        @(ViewBag.UserName ?? "Manage")
+                    </a>
                     <button type="button" class="btn btn-default heading dropdown-toggle" data-toggle="dropdown">
                         <span class="caret"></span>
                         <span class="sr-only">Toggle Dropdown</span>
@@ -25,9 +26,11 @@
                     <ul class="dropdown-menu" role="menu">
                         <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")">
                             @if (((int?)ViewBag.Organizations ?? 0) > 1)
-                            { 
-                                @Html.ActionLink("Change Roles", "Role", "Account", new { ReturnUrl=Request.Url.AbsolutePath },null)
-                            }else{
+                            {
+                                @Html.ActionLink("Change Roles", "Role", "Account", new { ReturnUrl = Request.Url.AbsolutePath }, null)
+                            }
+                            else
+                            {
                                 <a href="#">Change Roles</a>
                             }
                         </li>
@@ -56,7 +59,7 @@
                 $.ajax({
                     url: "@Url.Action("SetHint", "Account")",
                     data: { hint: b },
-                    success:function(data){
+                    success: function (data) {
                         location.reload();
                     }
                 });
@@ -67,7 +70,7 @@
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink(DisplayNameStrings.register, "Register", "Account", routeValues:new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
+        <li>@Html.ActionLink(DisplayNameStrings.register, "Register", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
         <li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "loginLink", })</li>
     </ul>
 }

@@ -241,8 +241,10 @@ namespace RadialReview.Accessors
                     if (found == null)
                         throw new PermissionsException();
                     return found;*/
-
-                    return s.Get<NexusModel>(id);
+                    var found=s.Get<NexusModel>(id);
+                    if (found.DeleteTime!=null && DateTime.UtcNow>found.DeleteTime)
+                        throw new PermissionsException("The request has expired.");
+                    return found;
                 }
             }
         }

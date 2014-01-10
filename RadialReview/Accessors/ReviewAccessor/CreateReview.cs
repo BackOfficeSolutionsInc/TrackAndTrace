@@ -1,6 +1,8 @@
-﻿using NHibernate;
+﻿using Microsoft.AspNet.SignalR;
+using NHibernate;
 using NHibernate.Criterion;
 using RadialReview.Exceptions;
+using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
@@ -42,8 +44,12 @@ namespace RadialReview.Accessors
             using (var s = HibernateSession.GetCurrentSession())
             {
                 ReviewsModel reviewContainer;
+                var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+                var userId = caller.User.UserName;
                 using (var tx = s.BeginTransaction())
                 {
+
+                    hub.Clients.User(userId).status("Creating Review");
                     var perms = PermissionsUtility.Create(s, caller);
                     reviewContainer = new ReviewsModel()
                       {
@@ -62,7 +68,6 @@ namespace RadialReview.Accessors
                       };
 
                     ReviewAccessor.CreateReviewContainer(s, perms, caller, reviewContainer);
-
                 }
 
                 using (var tx = s.BeginTransaction())
@@ -74,6 +79,9 @@ namespace RadialReview.Accessors
                     OrganizationTeamModel team;
 
                     var orgId = caller.Organization.Id;
+
+
+                    hub.Clients.User(userId).status("Gathering Data");
 
                     var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
                     var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
@@ -105,15 +113,20 @@ namespace RadialReview.Accessors
 
                     int sent = 0;
                     int errors = 0;
+                    int count = 0;
+                    int total = usersToReview.Count();
                     foreach (var beingReviewed in usersToReview)
                     {
                         var beingReviewedUser = beingReviewed.User;
                         AddUserToReview(caller, false, dueDate, emails,
                             reviewContainer.GetParameters(),
                             dataInteraction, reviewContainer, perms, organization, team, exceptions, ref sent, ref errors, beingReviewedUser, toReview);
+                        count++;
+                        hub.Clients.User(userId).status("Added " + count + " user".Pluralize(count) + " out of " + total + ".");
                     }
                     tx.Commit();
                     s.Flush();
+                    hub.Clients.User(userId).status("Done!");
 
                     if (errors > 0)
                     {

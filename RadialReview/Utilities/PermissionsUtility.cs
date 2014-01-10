@@ -368,7 +368,7 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }
         
-        public PermissionsUtility EditReviews(long reviewContainerId)
+        public PermissionsUtility EditReviewContainer(long reviewContainerId)
         {
             //TODO more permissions here?
             if (IsRadialAdmin())

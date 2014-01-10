@@ -177,4 +177,20 @@ The {5} Team</value>
     <value>You have a new review task from {0}</value>
     <comment>[organizationName]</comment>
   </data>
+  <data name="PasswordReset_Body" xml:space="preserve">
+    <value>&lt;p&gt;{0},&lt;/p&gt;
+&lt;p&gt;To reset your password please click the following link:&lt;/p&gt;
+&lt;br&gt; 
+    &lt;a href="{1}"&gt;{2}&lt;/a&gt;
+&lt;br /&gt;&lt;br /&gt;If it was not at your request, then please contact us immediately. If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+&lt;br /&gt;
+&lt;br /&gt;
+Sincerely,&lt;br/&gt;
+The {3} Team</value>
+    <comment>[username,linkUrl,linkDisplay,productName]</comment>
+  </data>
+  <data name="PasswordReset_Subject" xml:space="preserve">
+    <value>{0} Password Reset</value>
+    <comment>[productName]</comment>
+  </data>
 </root>

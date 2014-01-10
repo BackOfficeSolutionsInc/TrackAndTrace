@@ -16,34 +16,36 @@
     <div class="panel-heading">
         <h3 class="panel-title">Manage Teams</h3>
     </div>
-    <table class="table">
-        <tr>
-            <th style="width:50px;"></th>
-            <th>Name</th>
-            <th style="width:10px" class="alignCenter"></th>
-            <th style="width:130px" class="alignCenter">Members</th>
-            <th style="width:130px" class="alignCenter">Responsibilities</th>
-            <th class="rightButton"><button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal")">+</button></th>
-        </tr>
-        @foreach (var p in Model.Teams.OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
-        {
-            <tr class="team @p.Team.Type">
-                <td class="">
-                    @((p.Team.Type != RadialReview.Models.Enums.TeamType.Standard).GetIcon("glyphicon glyphicon-refresh  darkGray strokeDarkGray", "glyphicon glyphicon-briefcase       darkGray strokeDarkGray", "Auto-generated", "Custom team"))
-                    @((p.Team.InterReview).GetIcon("glyphicon glyphicon-random   darkGray strokeDarkGray", "glyphicon glyphicon-question-sign   darkGray strokeDarkGray", "Inter-review", "Question group"))
-
-                </td>
-                <td>@p.Team.Name</td>
-                <td style="width:10px" class="alignCenter"></td>
-                <td class=" alignCenter"><a href="@Url.Action("Edit", "Team", new { id = p.Team.Id })" class="fullWidth">@Html.ViewOrEdit(p.Team.GetEditable() && p.Team.Type == RadialReview.Models.Enums.TeamType.Standard) (@p.Members)</a></td>
-                <td class=" alignCenter"><a href="@Url.Action("Edit", "Responsibilities", new { id = p.Team.Id })" class="fullWidth">@Html.ViewOrEdit(p.Team.GetEditable()) (@p.Team.Responsibilities.Count())</a> </td>
-                <td class="rightButton">
-                    @if (p.Team.GetEditable())
-                    {
-                        <a onclick="@Html.ShowModal("Edit Team", "/Team/Modal/" + p.Team.Id, "/Team/Modal")" class="fullWidth btn btn-primary">Edit</a>
-                    }
-                </td>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th style="width:50px;"></th>
+                <th>Name</th>
+                <th style="width:10px" class="alignCenter"></th>
+                <th style="width:130px" class="alignCenter">Members</th>
+                <th style="width:130px" class="alignCenter">Responsibilities</th>
+                <th class="rightButton"><button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal")">+</button></th>
             </tr>
-        }
-    </table>
+            @foreach (var p in Model.Teams.OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
+            {
+                <tr class="team @p.Team.Type">
+                    <td class="">
+                        @((p.Team.Type != RadialReview.Models.Enums.TeamType.Standard).GetIcon("glyphicon glyphicon-refresh  darkGray strokeDarkGray", "glyphicon glyphicon-briefcase       darkGray strokeDarkGray", "Auto-generated", "Custom team"))
+                        @((p.Team.InterReview).GetIcon("glyphicon glyphicon-random   darkGray strokeDarkGray", "glyphicon glyphicon-question-sign   darkGray strokeDarkGray", "Inter-review", "Question group"))
+
+                    </td>
+                    <td>@p.Team.Name</td>
+                    <td style="width:10px" class="alignCenter"></td>
+                    <td class=" alignCenter"><a href="@Url.Action("Edit", "Team", new { id = p.Team.Id })" class="fullWidth">@Html.ViewOrEdit(p.Team.GetEditable() && p.Team.Type == RadialReview.Models.Enums.TeamType.Standard) (@p.Members)</a></td>
+                    <td class=" alignCenter"><a href="@Url.Action("Edit", "Responsibilities", new { id = p.Team.Id })" class="fullWidth">@Html.ViewOrEdit(p.Team.GetEditable()) (@p.Team.Responsibilities.Count())</a> </td>
+                    <td class="rightButton">
+                        @if (p.Team.GetEditable())
+                        {
+                            <a onclick="@Html.ShowModal("Edit Team", "/Team/Modal/" + p.Team.Id, "/Team/Modal")" class="fullWidth btn btn-primary">Edit</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
 </div>

@@ -103,7 +103,7 @@ namespace RadialReview.Accessors
                 {
                     var reviewContainer=s.Get<ReviewsModel>(reviewContainerId);
                     var orgId=reviewContainer.ForOrganization.Id;
-                    var perms = PermissionsUtility.Create(s,caller).EditReviews(reviewContainerId).ViewOrganization(orgId);                    
+                    var perms = PermissionsUtility.Create(s,caller).EditReviewContainer(reviewContainerId).ViewOrganization(orgId);                    
                     
                     var queryProvider = GetReviewQueryProvider(s,orgId,reviewContainerId);
                     queryProvider.AddData(reviewContainer.AsList());
@@ -134,8 +134,36 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
         #endregion
+
+        public ResultObject RemoveUserFromReview(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var perms = PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId).EditReviewContainer(reviewContainerId);
+
+                    var deleteTime = DateTime.UtcNow;
+                    var user=s.Get<UserOrganizationModel>(userOrganizationId);
+
+                    var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == userOrganizationId).SingleOrDefault();
+                    review.DeleteTime = deleteTime;
+                    s.Update(review);
+                    review.DeleteTime = deleteTime;
+                    var answers= s.QueryOver<AnswerModel>().Where(x => (x.AboutUserId == userOrganizationId || x.ByUserId==userOrganizationId) && x.ForReviewContainerId == reviewContainerId).List();
+                    foreach (var a in answers)
+                    {
+                        a.DeleteTime = deleteTime;
+                        s.Update(a);
+                    }
+                    tx.Commit();
+                    s.Flush();
+                    return ResultObject.Success("Removed " + user.GetNameAndTitle()+ " from the review.");
+                }
+            }
+
+        }
 
         #region Update
         public ResultObject AddUserToReviewContainer(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId)
@@ -149,7 +177,7 @@ namespace RadialReview.Accessors
                         var perms = PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId).ViewReviews(reviewContainerId);
                         var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
                         var dueDate = reviewContainer.DueDate;
-                        var sendEmails = true;
+                        var sendEmails = false;
                         var reviewSelf = reviewContainer.ReviewSelf;
                         var reviewManagers = reviewContainer.ReviewManagers;
                         var reviewSubordinates = reviewContainer.ReviewSubordinates;

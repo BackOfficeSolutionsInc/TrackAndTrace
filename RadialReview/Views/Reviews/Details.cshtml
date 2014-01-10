@@ -24,6 +24,9 @@
         <div class="btn btn-primary" onclick="@Html.ShowModal("Add user", "/Reviews/Update/" + Model.Review.Id, "/Reviews/Update/")">
             Add User
         </div>
+        <div class="btn btn-primary" onclick="@Html.ShowModal("Remove user", "/Reviews/RemoveUser/" + Model.Review.Id, "/Reviews/RemoveUser/")">
+            Remove User
+        </div>
     </div>
 
     <table class="table">
@@ -33,7 +36,7 @@
             <th style="width:120px" class="alignCenter">Completion</th>
             <th style="width:50px"></th>
         </tr>
-        @foreach (var r in Model.Review.Reviews)
+        @foreach (var r in Model.Review.Reviews.ToListAlive())
         {
             <tr class="@(r.ForUser.GetPersonallyManaging()?"managing":"not-managing")">
                 <td>@r.ForUser.GetNameAndTitle()</td>

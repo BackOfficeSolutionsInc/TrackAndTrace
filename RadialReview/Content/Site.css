@@ -137,6 +137,10 @@ html, body {
     height: 4px;
 }
 
+.smallBreak2 {
+    height: 8px;
+}
+
 .fullWidth {
     width: 100%;
 }
@@ -622,7 +626,54 @@ tr.danger .strikable {
     box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
 }
 
-.alert-silentsuccess
-{
+.alert-silentsuccess {
+    display: none;
+}
+
+.activatable:not(.active) {
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+}
+
+    .activatable:not(.active) .strikable {
+        text-decoration: line-through;
+    }
+
+.activatable .activeIcon {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+}
+
+
+
+.activatable.active .activeIcon:before {
+    content: "\e084";
+    color: #468847;
+}
+
+.activatable .activeIcon:before {
+    color: #B94A48;
+    content: "\e082";
+}
+
+.statusContainer {
+    border-top-left-radius:6px;
+    opacity:1;
+    z-index: 1000000;
+    border-left: 1px solid #28292c;
+    border-top: 1px solid #28292c;
+    background-color: #434b67;
+    color:white;
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    min-width: 200px;
+    padding-left:8px;
     display:none;
 }

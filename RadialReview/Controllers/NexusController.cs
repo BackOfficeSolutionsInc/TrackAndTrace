@@ -82,11 +82,17 @@ namespace RadialReview.Controllers
                             NexusAccessor.Execute(nexus);
                             return RedirectToAction("Index", "Review");
                         };
+                    case NexusActions.ResetPassword:
+                        {
+                            SignOut();
+                            return RedirectToAction("ResetPasswordWithToken", "Account", new { Id = id });
+                        };
                 }
 
             return View();
             }catch(Exception e)
             {
+                ViewBag.Message = "There was an error in your request.";
                 return RedirectToAction("Index", "Home");
             }
         }

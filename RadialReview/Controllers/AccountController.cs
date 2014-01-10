@@ -14,6 +14,10 @@ using RadialReview.Properties;
 using RadialReview.Models.Json;
 using RadialReview.Accessors;
 using RadialReview.Models.ViewModels;
+using System.Text;
+using System.Security.Cryptography;
+using RadialReview.Models.Enums;
+using RadialReview.Exceptions;
 
 namespace RadialReview.Controllers
 {
@@ -23,7 +27,8 @@ namespace RadialReview.Controllers
         protected static NexusAccessor _NexusAccessor = new NexusAccessor();
         protected static ImageAccessor _ImageAccessor = new ImageAccessor();
 
-        public AccountController() : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
+        public AccountController()
+            : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
         {
         }
 
@@ -31,6 +36,117 @@ namespace RadialReview.Controllers
         {
             UserManager = userManager;
         }
+
+        [AllowAnonymous]
+        //[RecaptchaControlMvc.CaptchaValidator]
+        [Access(AccessLevel.Any)]
+        public virtual ActionResult ResetPassword()
+        {
+            SignOut();
+            return View(new ResetPasswordViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        [Access(AccessLevel.Any)]
+        //[RecaptchaControlMvc.CaptchaValidator]
+        public virtual async Task<ActionResult> ResetPassword(ResetPasswordViewModel rpvm)
+        {
+            string message = null;
+            //the token is valid for one day
+            var until = DateTime.UtcNow.AddDays(1);
+            var user = _UserAccessor.GetUserByEmail(rpvm.Email);
+            var token = Guid.NewGuid();
+
+            if (null != user)
+            {
+                //Generating a token
+                var nexus = new NexusModel(token) { DateCreated = DateTime.UtcNow, DeleteTime = until, ActionCode = NexusActions.ResetPassword };
+                nexus.SetArgs(user.Id);
+                var result = _NexusAccessor.Put(nexus);
+
+                Emailer.SendEmail(
+                        user.Email,
+                        String.Format(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName),
+                        String.Format(EmailStrings.PasswordReset_Body, user.Name(), ProductStrings.BaseUrl + "n/" + token, ProductStrings.BaseUrl + "n/" + token, ProductStrings.ProductName)
+                    );
+
+            }
+            TempData["Message"] = "Please check your inbox, an email has been sent with further instructions.";
+            return RedirectToAction("Index", "Home");
+        }
+
+        [AllowAnonymous]
+        [Access(AccessLevel.Any)]
+        public virtual async Task<ActionResult> ResetPasswordWithToken(string id)
+        {
+            SignOut();
+            //Call this to force check permissions 
+            var nexus = _NexusAccessor.Get(id);
+
+            return View(new ResetPasswordWithTokenViewModel() { Token = id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        [Access(AccessLevel.Any)]
+        //[RecaptchaControlMvc.CaptchaValidator]
+        public virtual async Task<ActionResult> ResetPasswordWithToken(ResetPasswordWithTokenViewModel rpwtvm)
+        {
+            if (ModelState.IsValid)
+            {
+                string message = null;
+                //reset the password
+                var nexus = _NexusAccessor.Get(rpwtvm.Token);
+
+                if (nexus.DateExecuted != null)
+                    throw new PermissionsException("Token can only be used once.");
+
+                var userId = nexus.GetArgs()[0];
+                var removeSuccess = true;
+                IdentityResult removeResult=null;
+
+                if (UserManager.HasPassword(userId))
+                {
+                    removeResult = UserManager.RemovePassword(userId);
+                    removeSuccess = removeResult.Succeeded;
+                }
+                if (removeSuccess)
+                {
+                    //UserManager.GetLogins
+                    //var result = UserManager.RemovePassword(nexus.GetArgs()[0]);
+                    //var resultAdd = UserManager.AddPassword(nexus.GetArgs()[0],rpwtvm.Password);
+
+                    IdentityResult result = UserManager.AddPassword(userId, rpwtvm.Password);
+
+                    if (result.Succeeded)
+                    {
+                        //Clear forgot password temp key
+                        _NexusAccessor.Execute(nexus);
+
+                        //Sign them in
+                        await SignInAsync(_UserAccessor.GetUserById(userId), false);
+                        //var identity = UserManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+                        //AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, identity);
+                        TempData["Message"] = "The password has been reset.";
+                        return RedirectToAction("Index", "Home");
+
+                    }
+                    else
+                    {
+                        AddErrors(result);
+                    }
+                }
+                else
+                {
+                    AddErrors(removeResult);
+                }
+            }
+            return View(rpwtvm);
+        }
+
 
 
         [Access(AccessLevel.Any)]
@@ -43,9 +159,9 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Any)]
-        public ActionResult SetRole(long id,String ReturnUrl=null)
+        public ActionResult SetRole(long id, String ReturnUrl = null)
         {
-            UserOrganizationModel userOrg=null;
+            UserOrganizationModel userOrg = null;
             try
             {
                 userOrg = GetUser();
@@ -55,7 +171,7 @@ namespace RadialReview.Controllers
 
             }
 
-            _UserAccessor.ChangeRole(GetUserModel(),userOrg, id);
+            _UserAccessor.ChangeRole(GetUserModel(), userOrg, id);
             GetUser(id);
             if (ReturnUrl == null || ReturnUrl.StartsWith("/Account/Role"))
                 return RedirectToAction("Index", "Home");
@@ -68,12 +184,12 @@ namespace RadialReview.Controllers
         // GET: /Account/Login
         [AllowAnonymous]
         [Access(AccessLevel.Any)]
-        public ActionResult Login(string returnUrl,String message)
+        public ActionResult Login(string returnUrl, String message)
         {
             if (User.Identity.GetUserId() != null)
             {
                 AuthenticationManager.SignOut();
-                return RedirectToAction("Login", new { returnUrl = returnUrl,message=message });
+                return RedirectToAction("Login", new { returnUrl = returnUrl, message = message });
             }
             ViewBag.Message = message;
             ViewBag.ReturnUrl = returnUrl;
@@ -107,6 +223,7 @@ namespace RadialReview.Controllers
             return View(model);
         }
 
+
         //
         // GET: /Account/Register
         [AllowAnonymous]
@@ -115,8 +232,8 @@ namespace RadialReview.Controllers
         {
 
             ViewBag.ReturnUrl = returnUrl;
-            var model = new RegisterViewModel() { ReturnUrl=returnUrl };
-            if (returnUrl!=null && returnUrl.StartsWith("/Organization/Join/"))
+            var model = new RegisterViewModel() { ReturnUrl = returnUrl };
+            if (returnUrl != null && returnUrl.StartsWith("/Organization/Join/"))
             {
                 try
                 {
@@ -145,9 +262,9 @@ namespace RadialReview.Controllers
 
             if (ModelState.IsValid)
             {
-                model.Email=model.Email.ToLower();
+                model.Email = model.Email.ToLower();
 
-                var user = new UserModel() { UserName = model.Email, FirstName=model.fname,LastName=model.lname };
+                var user = new UserModel() { UserName = model.Email, FirstName = model.fname, LastName = model.lname };
                 var resultx = UserManager.CreateAsync(user, model.Password);
                 var result = await resultx;
                 if (result.Succeeded)
@@ -204,7 +321,8 @@ namespace RadialReview.Controllers
             {
                 var user = GetUser();
                 ViewBag.ImageUrl = user.ImageUrl();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 ViewBag.ImageUrl = ConstantStrings.ImageUserPlaceholder;
             }
@@ -406,18 +524,19 @@ namespace RadialReview.Controllers
         public JsonResult SetHint(bool? hint)
         {
             _UserAccessor.SetHints(GetUserModel(), hint.Value);
-            return Json(ResultObject.Success("Hints turned "+(hint.Value?"on.":"off.")),JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success("Hints turned " + (hint.Value ? "on." : "off.")), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.User)]
         public ActionResult Profile()
         {
-            var user=GetUserModel();
+            var user = GetUserModel();
 
-            return View(new ProfileViewModel() { 
+            return View(new ProfileViewModel()
+            {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(),user.ImageGuid)
+                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid)
             });
         }
 
@@ -425,7 +544,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.User)]
         public ActionResult Profile(ProfileViewModel model)
         {
-            _UserAccessor.EditUserModel(GetUserModel(), GetUserModel().Id, model.FirstName,model.LastName,null);
+            _UserAccessor.EditUserModel(GetUserModel(), GetUserModel().Id, model.FirstName, model.LastName, null);
             return RedirectToAction("Profile");
         }
 
@@ -491,7 +610,8 @@ namespace RadialReview.Controllers
 
         private class ChallengeResult : HttpUnauthorizedResult
         {
-            public ChallengeResult(string provider, string redirectUri) : this(provider, redirectUri, null)
+            public ChallengeResult(string provider, string redirectUri)
+                : this(provider, redirectUri, null)
             {
             }
 

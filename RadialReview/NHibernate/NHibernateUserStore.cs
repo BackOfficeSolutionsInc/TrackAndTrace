@@ -120,8 +120,22 @@ namespace RadialReview.NHibernate
 
         public async Task SetPasswordHashAsync(UserModel user, string passwordHash)
         {
-            
             user.PasswordHash = passwordHash;
+            using (var db = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = db.BeginTransaction())
+                {
+                    var foundUser = db.Get<UserModel>(user.Id);
+                    if (foundUser != null)
+                    {
+                        foundUser.PasswordHash = passwordHash;
+                        db.Update(foundUser);
+                        tx.Commit();
+                        db.Flush();
+                    }
+                    //user.PasswordHash = passwordHash;
+                }
+            }
             /*using (var db = HibernateSession.GetCurrentSession())
             {
                 using (var tx = db.BeginTransaction())

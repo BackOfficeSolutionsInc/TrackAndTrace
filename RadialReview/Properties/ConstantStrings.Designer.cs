@@ -97,7 +97,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to clay.upton@gmail.com.
+        ///   Looks up a localized string similar to clay.upton@radialreview.com.
         /// </summary>
         public static string SmtpFromAddress {
             get {
@@ -115,7 +115,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to clay.upton@gmail.com.
+        ///   Looks up a localized string similar to clay.upton@radialreview.com.
         /// </summary>
         public static string SmtpLogin {
             get {
@@ -124,7 +124,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to gd198oobEFZP.
+        ///   Looks up a localized string similar to 4Ztdgavv49.
         /// </summary>
         public static string SmtpPassword {
             get {

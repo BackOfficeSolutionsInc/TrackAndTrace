@@ -1,8 +1,27 @@
 ﻿using RadialReview.Properties;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace RadialReview.Models
 {
+    public class ResetPasswordViewModel
+    {
+        [Required]
+        [DataType(DataType.EmailAddress)]
+        public String Email { get; set; }
+
+    }
+
+    public class ResetPasswordWithTokenViewModel
+    {
+        public String Token { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        public String Password { get; set; }
+    }
+
+
     public class ExternalLoginConfirmationViewModel
     {
         [Required]

@@ -16,9 +16,9 @@
             <h2 class="panel-title">@table.GroupType: <b>@table.Name</b></h2>
         </div>
 
-        <div class="panel-body">
-            @if (table.Responsibilities.Any())
-            {
+        @if (table.Responsibilities.Any())
+        {
+            <div class="table-responsive">
                 <table class="table table-condensed" style="margin-bottom:0px">
                     <tr>
                         <th class="alignCenter" style="width:10px;">Active</th>
@@ -38,12 +38,13 @@
                     </tr>
                     @foreach (var r in table.Responsibilities.OrderBy(x => !x.Active).ThenBy(x => x.Category).ThenBy(x => x.Responsibility))
                     {
-                        <tr class="@(r.Active?"":"danger")">
-                            <td class="alignCenter">@r.Active.GetIcon()</td>
+                        <tr class="activatable row_@r.Id @(r.Active?"active":"")">
+                            <td class="alignCenter toggleButton clickable" onclick="toggle(@r.Id)"><span class="activeIcon"></span></td>
                             <td class="strikable">@r.Responsibility</td>
-                            <td class="" >@r.Category</td>
+                            <td class="">@r.Category</td>
                             <td class="alignCenter">
-                                @for (int i = 0; i < 5; i++){<span style="color: @(((int)r.Weight) > i ? "#3276B1" : "#D3D3D3");" class="glyphicon glyphicon-star@(((int)r.Weight)>i?"":"-empty")"></span>}
+                                @for (int i = 0; i < 5; i++)
+                                {<span style="color: @(((int)r.Weight) > i ? "#3276B1" : "#D3D3D3");" class="glyphicon glyphicon-star@(((int)r.Weight)>i?"":"-empty")"></span>}
                             </td>
                             <td class="alignCenter rightButton" style="padding: 2px;">
                                 @if (table.Editable)
@@ -59,10 +60,12 @@ Url.Action("Modal", "Responsibilities"),null,"verify")">
                         </tr>
                     }
                 </table>
-            }
-            else
-            {
-                if (table.Editable)
+            </div>
+        }
+        else
+        {
+            <div class="panel-body">
+                @if (table.Editable)
                 {
                     <div class="btn btn-default pull-right" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),Url.Action("Modal", "Responsibilities"), null, "verify")" style="width:66px;">+</div>
                     <div style="color: #B6B6B6">No @table.GroupType.ToLower() responsibilies. Click the button to the right to add some.</div>
@@ -71,8 +74,42 @@ Url.Action("Modal", "Responsibilities"),null,"verify")">
                 {
                     <div style="color: #B6B6B6">No @table.GroupType.ToLower() responsibilies.</div>
                 }
-            }
-        </div>
+            </div>
+        }
     </div>
+}
+
+@using (Html.BeginScripts())
+{
+    <script>
+        var once = false;
+        function toggle(id) {
+            if (!once) {
+                showAlert("Changing the 'Active' attribute does not update outstanding review. To do this, you'll need to click 'Manage' > 'Review' > 'Details' > 'Add/Remove Question'.", "alert-info", "Info:")
+                once = true;
+            }
+
+            var active = $(".row_" + id).hasClass("active").toString().toLowerCase() == "true";
+
+            $(".row_" + id).toggleClass("active");
+
+            $.ajax({
+                url: "/Responsibilities/ToggleActive/" + id + "?active=" + !active,
+                success: function (data) {
+                    if (data.Error) {
+                        showJsonAlert(data);
+                    } else {
+                        if (data.Object == true) {
+                            $(".row_" + id).addClass("active");
+                        } else {
+                            $(".row_" + id).removeClass("active");
+                        }
+                    }
+                }
+            })
+
+        }
+    </script>
+
 }
 

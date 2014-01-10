@@ -8,7 +8,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class ReviewModel : ICompletable, ILongIdentifiable
+    public class ReviewModel : ICompletable, ILongIdentifiable, IDeletable
     {
         public virtual long Id { get; protected set; }
         public virtual long ForReviewsId { get;set;}
@@ -16,9 +16,11 @@ namespace RadialReview.Models
         public virtual long ForUserId { get; set; }
         public virtual String Name { get; set; }
         public virtual DateTime CreatedAt { get; set; }
+        public virtual DateTime De { get; set; }
         public virtual DateTime DueDate { get; set; }
         public virtual ClientReviewModel ClientReview { get; set; }
         public virtual List<AnswerModel> Answers { get; set; }
+        public virtual DateTime? DeleteTime { get; set; }
 
         /*public virtual decimal Completion { get; set; }
         public virtual Boolean Complete { get; set; }
@@ -65,7 +67,7 @@ namespace RadialReview.Models
             CreatedAt = DateTime.UtcNow;
             ClientReview = new ClientReviewModel();
         }
-        
+
     }
 
     public class ReviewModelMap :ClassMap<ReviewModel>
@@ -86,6 +88,7 @@ namespace RadialReview.Models
             Map(x => x.Name);
             Map(x => x.CreatedAt);
             Map(x => x.DueDate);
+            Map(x => x.DeleteTime);
             References(x => x.ClientReview)
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();
