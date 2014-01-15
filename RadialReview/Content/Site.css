@@ -41,6 +41,9 @@ html, body {
 .alignCenter {
     text-align: center;
 }
+.alignLeft {
+    text-align: left ! important;
+}
 
 .addButton {
     width: 100%;
@@ -663,17 +666,73 @@ tr.danger .strikable {
 }
 
 .statusContainer {
-    border-top-left-radius:6px;
-    opacity:1;
+    border-top-left-radius: 6px;
+    opacity: 1;
     z-index: 1000000;
     border-left: 1px solid #28292c;
     border-top: 1px solid #28292c;
     background-color: #434b67;
-    color:white;
+    color: white;
     position: fixed;
     bottom: 0px;
     right: 0px;
     min-width: 200px;
-    padding-left:8px;
-    display:none;
+    padding-left: 8px;
+    display: none;
+}
+
+.rotate {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    /* also accepts left, right, top, bottom coordinates; not required, but a good idea for styling */
+    -webkit-transform-origin: 25% 75%;
+    -moz-transform-origin: 25% 75%;
+    -ms-transform-origin: 25% 75%;
+    -o-transform-origin: 25% 75%;
+    transform-origin: 25% 75%;
+    /* Should be unset in IE9+ I think. */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+.headerButton {
+    min-width: 69px;
+    height: 33px;
+    margin: 2px;
+    padding: 5px;
+}
+
+.btn.includable.on:after {
+    content: 'Included';
+}
+
+.btn.includable:not(.on):after {
+    content: 'Excluded';
+}
+
+
+.glyphicon.includable.on:after {
+    color: #CCFABB;
+    content: "\e013";
+    /*Red Stroke*/
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #3C763D;
+}
+
+.glyphicon.includable:not(.on):before {
+    color: #FFBFC0;
+    content: "\e014";
+    /*Red Stroke*/
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #BF8F90;
+    
+
+}
+
+.oneline{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }

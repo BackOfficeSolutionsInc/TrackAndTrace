@@ -18,16 +18,65 @@ namespace System.Web
             return edit ? "Edit" : "View";
         }
 
-        public static HtmlString EditFirstButton(this HtmlHelper html,List<string> items,bool edit=true)
+        public static HtmlString Color(this HtmlHelper html, double value, double neg, double zero, double pos,double alpha)
         {
-            var count=items.Count();
-            var name = ""+count;
+            double v = 0;
+            var redValue = 0.0;
+            var greenValue = 0.0;
+            // value is a value between 0 and 511; 
+            // 0 = red, 255 = yellow, 511 = green.
+            if (value > zero)
+            {
+                if (pos - zero == 0)
+                    v = 255;
+                else
+                    v = (int)((value - zero) / (pos - zero) * 255.0 + 255.0);
+            }
+            else
+            {
+                if (zero - neg == 0)
+                    v = 0;
+                else
+                    v = (int)((value - neg) / (zero - neg) * 255.0);
+
+            }
+
+            v = Math.Max(0, Math.Min(511, v));
+
+
+            if (v < 255)
+            {
+                redValue = 255;
+                greenValue = Math.Sqrt(v) * 16;
+                greenValue = Math.Round(greenValue);
+            }
+            else
+            {
+                greenValue = 255;
+                v = v - 255;
+                redValue = 256 - (v * v / 255);
+                redValue = Math.Round(redValue);
+
+            }
+
+            int red = Math.Min(255, Math.Max(0, (int)redValue));
+            int green = Math.Min(255, Math.Max(0, (int)greenValue));
+
+            var hexColor = String.Format("rgba({0},{1},{2},{3})",red,green,0,alpha);
+
+            return new HtmlString(hexColor);
+        }
+
+        public static HtmlString EditFirstButton(this HtmlHelper html, List<string> items, bool edit = true)
+        {
+            var count = items.Count();
+            var name = "" + count;
             var joined = String.Join(", ", items);
             if (count == 1)
                 name = items.First();
             return new HtmlString(ViewOrEdit(html, edit) + " (<span title='" + joined + "'>" + name + "</span>)");
         }
-        
+
         public static HtmlString Badge<T>(this HtmlHelper<T> html, Func<T, int> count)
         {
             var c = count(html.ViewData.Model);
@@ -50,10 +99,10 @@ namespace System.Web
 
         public static HtmlString AlertBoxDismissableJavascript(this HtmlHelper html, String messageVariableName, String alertType = "alert-danger")
         {
-            return new HtmlString("\"<div class=\\\"alert " + alertType + " alert-dismissable\\\"><button type=\\\"button\\\" class=\\\"close\\\" data-dismiss=\\\"alert\\\" aria-hidden=\\\"true\\\">&times;</button><strong>"+MessageStrings.Warning+"</strong> <span class=\\\"message\\\">\" + " + messageVariableName + " + \"</span></div>\"");
+            return new HtmlString("\"<div class=\\\"alert " + alertType + " alert-dismissable\\\"><button type=\\\"button\\\" class=\\\"close\\\" data-dismiss=\\\"alert\\\" aria-hidden=\\\"true\\\">&times;</button><strong>" + MessageStrings.Warning + "</strong> <span class=\\\"message\\\">\" + " + messageVariableName + " + \"</span></div>\"");
 
         }
-        public static HtmlString AlertBoxDismissable(this HtmlHelper html, String message, String alertType = null,String alertMessage=null)
+        public static HtmlString AlertBoxDismissable(this HtmlHelper html, String message, String alertType = null, String alertMessage = null)
         {
             if (String.IsNullOrWhiteSpace(alertType))
                 alertType = "alert-danger";

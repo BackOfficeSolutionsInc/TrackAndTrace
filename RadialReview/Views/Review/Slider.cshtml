@@ -94,12 +94,19 @@
 
 @using (var scripts = Html.BeginScripts())
 {
+    <script src="~/Scripts/review/translateSlider.js"></script>
     <script>
         var canUpdate = true;
 
         function sliderUpdateInternal(self) {
             var d = { value: parseInt($(self).val()) };
-            $("#" + $(self).attr("name") + " .rangevalue").html(d.value);
+            var disp = d.value;
+            if (d.value == 0)
+            {
+                disp = "NA";
+            }
+
+            $("#" + $(self).attr("name") + " .rangevalue").html(disp);
 
             slideUpdate.call(self, d);
 
@@ -107,13 +114,15 @@
 
         function slideUpdate(d) {
             var name = $(this).attr("name");
-            var answers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
+           /* var answers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
             var div = 100 / answers.length;
             var i = Math.floor(d.value / div);
 
             var answer = answers[i];
             if (d.value == 0)
-                answer = "No Answer";
+                answer = "No Answer";*/
+
+            var answer=sliderToText(d.value);
 
             $("#" + name + "_title").html(answer);
             $(this).val()

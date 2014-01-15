@@ -18,6 +18,7 @@ namespace RadialReview.Controllers
         private static PositionAccessor _PositoinAccessor = new PositionAccessor();
         private static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
 
+        /*
         [Access(AccessLevel.Radial)]
         public async Task<String> TempCreate()
         {
@@ -56,7 +57,7 @@ namespace RadialReview.Controllers
                 fname=orgCreatorData.FirstName,
                 lname=orgCreatorData.LastName,
                 Password=orgCreatorData.Password,
-            });*/
+            });*
 
 
             foreach(var m in members)
@@ -107,7 +108,7 @@ namespace RadialReview.Controllers
             }
 
             return "Success";
-        }
+        }*/
 
 
         private RadialReview.Controllers.ReviewController.ReviewDetailsViewModel GetReviewDetails(ReviewModel review)

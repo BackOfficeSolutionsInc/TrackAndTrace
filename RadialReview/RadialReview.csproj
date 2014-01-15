@@ -517,6 +517,7 @@
     <Content Include="Content\home\placelogo8.png" />
     <Content Include="Content\home\radial.png" />
     <Content Include="Content\home\radial2.png" />
+    <Content Include="Content\print.css" />
     <Content Include="Content\Review.css" />
     <Content Include="Content\slider.css" />
     <Content Include="favicon.ico" />
@@ -581,6 +582,8 @@
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\d3\ScatterChart.js" />
+    <Content Include="Scripts\review\review.js" />
+    <Content Include="Scripts\review\translateSlider.js" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -715,6 +718,9 @@
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Account\ResetPasswordWithToken.cshtml" />
     <Content Include="Views\Reviews\RemoveUser.cshtml" />
+    <Content Include="Views\Review\ClientDetailsPrint.cshtml" />
+    <Content Include="Views\Partial\_QuestionColorTable.cshtml" />
+    <Content Include="Views\Partial\_SupervisorAnswers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

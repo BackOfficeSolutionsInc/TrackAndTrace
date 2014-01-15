@@ -1,0 +1,244 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+
+@{
+    Layout = null;
+    var charts = Model.Review.ClientReview.Charts.ToListAlive();
+    var feedbacks = Model.Review.ClientReview.FeedbackIds.ToListAlive().GroupBy(x => x.Value).Select(x => x.First()).ToList();
+    var notes = Model.Review.ClientReview.ManagerNotes;
+    var i = 0;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title> @(Model.Review.ForUser.GetNameAndTitle()) - @(Model.Review.Name) [@(Model.Review.DueDate.ToShortDateString())]</title>
+    <link href="~/Content/print.css" rel="stylesheet" />
+    <link href="~/Content/chart.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="/scripts/d3/d3.js"></script>
+    <script src="/scripts/d3/d3.csv.js"></script>
+    <script src="/scripts/d3/ScatterChart.js"></script>
+    <script src="~/Scripts/review/translateSlider.js"></script>
+
+
+    <style type="text/css">
+        body {
+            width: 100%;
+            height: 100%;
+            zoom: 100%;
+        }
+
+        .rotate {
+            -webkit-transform: rotate(-45deg);
+            -moz-transform: rotate(-45deg);
+            -ms-transform: rotate(-45deg);
+            -o-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+            /* also accepts left, right, top, bottom coordinates; not required, but a good idea for styling */
+            -webkit-transform-origin: 25% 75%;
+            -moz-transform-origin: 25% 75%;
+            -ms-transform-origin: 25% 75%;
+            -o-transform-origin: 25% 75%;
+            transform-origin: 25% 75%;
+            /* Should be unset in IE9+ I think. */
+            filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+        }
+
+        .chart {
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 10px;
+        }
+
+        .internalAvoid {
+            page-break-before: auto;
+            page-break-after: auto;
+            page-break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 class="inlined noMargin" style="float:left"> @(Model.Review.ForUser.GetNameAndTitle()) - @(Model.Review.Name)</h1>
+        <h2 class="inlined noMargin" style="float: right; padding-right: 10px;">&nbsp;&nbsp; @(Model.Review.DueDate.ToShortDateString()) </h2>
+        <div style="clear:both;"></div>
+        @if (charts.Any())
+        {
+            <h3>Charts:</h3>
+            foreach (var chart in charts)
+            {
+                <div class="bordered chart internalAvoid" style="width:610px">
+                    <div class="" style="padding:0px;text-align:center;border-bottom:1px solid gray">
+                        <h4>
+                            @Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
+                        </h4>
+                    </div>
+                    <div>
+                        <div id="collapse_@chart.Id" style="">
+                            <svg style="height: 500px; width: 600px; margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id">
+
+                                <defs>
+                                    <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                                        <path d="M-1,1 l2,-2
+                                            M0,4 l4,-4
+                                            M3,5 l2,-2" stroke-width="1" stroke="black" />
+                                    </pattern>
+                                    <pattern id="diagonalHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+                                        <rect x="0" y="0" width="4" height="4" fill="#cccccc"></rect>
+                                        <path d="M-1,1 l2,-2
+                                            M0,4 l4,-4
+                                            M3,5 l2,-2" stroke-width="1" stroke="black" />
+                                    </pattern>
+                                    <pattern id="diagonalRightHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+                                        <rect width='8' height='8' fill='#777777' />
+                                        <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='1' stroke='#bbbbbb' />
+                                    </pattern>
+                                    <pattern id="crossHatch" patternUnits="userSpaceOnUse" width="8" height="8">
+                                        <rect width='8' height='8' fill='#cccccc' />
+                                        <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='1' stroke='black' />
+                                    </pattern>
+                                    <pattern id="verticalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                                        <path d="M -1,2 l 6,0" stroke-width="1" stroke="black" />
+                                    </pattern>
+                                </defs>
+                            </svg>
+
+                        </div>
+                    </div>
+                </div>
+            }
+            <hr />
+        }
+        @if (feedbacks.Count > 0)
+        {
+            <div class="internalAvoid">
+                <h3>Feedback:</h3>
+
+                <div style="margin-left:20px">
+                    @foreach (var f in feedbacks)
+                    {
+                        <div style="white-space: pre-line" id="feedback_@f.Value" class="feedback">@(((RadialReview.Models.FeedbackAnswer)Model.AnswersAbout.FirstOrDefault(x => x.Id == f.Value)).Feedback)</div>
+                        <div class="smallBreak"></div>
+                        <div class="smallBreak"></div>
+                    }
+                </div>
+            </div>
+            <hr />
+        }
+        @if (Model.Review.ClientReview.IncludeQuestionTable)
+        {
+            <div class="internalAvoid">
+                <h3 class="panel-title">Answer Distribution</h3>
+                @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
+            </div>
+            <hr />
+        }
+
+        @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
+        {
+            <div class="internalAvoid">
+                <h3 class="panel-title">Supervisor Answers</h3>
+                @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+            </div>
+            <hr />
+        }
+        @if (!String.IsNullOrWhiteSpace(notes))
+        {
+            <div class="internalAvoid">
+                <h3>Manager Notes:</h3>
+
+                <div style="margin-left:20px">
+                    <div id="notes" style="white-space: pre-line" class="feedback">@notes</div>
+                    <div class="smallBreak"></div>
+                    <div class="smallBreak"></div>
+                </div>
+
+            </div>
+        }
+
+    </div>
+    <script>
+        var done = 0;
+
+        d3.csv("/Data/ReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId", function (data) {
+            var dataFunc = function (dd, redrawFunc) {
+                dd.data = data;
+                redrawFunc();
+            };
+
+            var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+            var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
+            var legendData = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
+
+            function chartIt(id, x, y) {
+                var chart = new Chart(
+                    "#chart_" + id,
+                    function () {
+                        var xindex = axisSelect.indexOf(x),
+                            yindex = axisSelect.indexOf(y);
+                        var xlabel = axisLabels[xindex],
+                            ylabel = axisLabels[yindex];
+                        return {
+                            xAxis: x,
+                            yAxis: y,
+                            //radiusAxis: r,
+                            xAxisLabel: xlabel,
+                            yAxisLabel: ylabel
+                        }
+                    }, dataFunc, legendData);
+            };
+
+
+            @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
+            {
+                @:chartIt("@(chart.Id)", "@(chart.Item1)", "@(chart.Item2)");
+                                                                                                }
+            setTimeout(function () { window.print(); }, 2000);
+            ;
+        });
+
+        @*
+        d3.csv("/Data/OrganizationReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId",
+            function (data) {
+                var dataFunc = function (dd, redrawFunc) {
+                    dd.data = data;
+                    redrawFunc();
+                };
+
+                var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+                var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
+                var legendData = ["Management", "Employee", "You"];
+
+
+               var orgChart = new Chart(
+                       "#orgChart",
+                       function () {
+                           var a = document.getElementById("xAxis"),
+                               b = document.getElementById("yAxis");
+                           //c = document.getElementById("r-axis");
+                           var x = a.options[a.selectedIndex].value,
+                               y = b.options[b.selectedIndex].value;
+                           //r = c.options[c.selectedIndex].value;
+                           var xindex = axisSelect.indexOf(x),
+                               yindex = axisSelect.indexOf(y);
+                           var xlabel = axisLabels[xindex],
+                               ylabel = axisLabels[yindex];
+                           return {
+                               xAxis: x,
+                               yAxis: y,
+                               //radiusAxis: r,
+                               xAxisLabel: xlabel,
+                               yAxisLabel: ylabel
+                           };
+                       }, dataFunc, legendData);
+                document.getElementById("controls").addEventListener("click", orgChart.update, false);
+                document.getElementById("controls").addEventListener("keyup", orgChart.update, false);
+                document.getElementById("xAxis").addEventListener("change", orgChart.update, false);
+                document.getElementById("yAxis").addEventListener("change", orgChart.update, false);*/
+            });
+    *@
+    </script>
+</body>
+</html>

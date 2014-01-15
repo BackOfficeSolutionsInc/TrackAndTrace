@@ -117,6 +117,9 @@ namespace RadialReview.Controllers
 
             //Header row
             sb.AppendLine("about,"+String.Join(",",categoryIds));
+
+            var sbMiddle = new StringBuilder();
+            var sbEnd = new StringBuilder();
             
             foreach(var c in completedSliders.GroupBy(x=>x.AboutUserId)) //answers about each user
             {
@@ -140,12 +143,27 @@ namespace RadialReview.Controllers
                 sb.AppendLine("Employee,"+row);
 
                 if(c.First().AboutUser.IsManager())
-                    sb.AppendLine("Management,"+row);
+                    sbMiddle.AppendLine("Management," + row);
 
                 if (c.First().AboutUserId == id)
-                    sb.AppendLine("You," + row);
+                    sbEnd.AppendLine("You," + row);
             }
+            var managers=sbMiddle.ToString();
+            var you = sbEnd.ToString();
 
+            if (!String.IsNullOrWhiteSpace(managers))
+                sb.Append(managers);
+            if (!String.IsNullOrWhiteSpace(you))
+                sb.Append(you);
+
+        
+
+            /*
+            
+            if (!String.IsNullOrWhiteSpace(managers))
+                sb.AppendLine(managers);
+            if (!String.IsNullOrWhiteSpace(you))
+                sb.AppendLine(you);*/
             var csv = sb.ToString();
 
             return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "Report.csv");

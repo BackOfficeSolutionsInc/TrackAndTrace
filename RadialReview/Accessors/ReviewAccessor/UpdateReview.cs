@@ -339,41 +339,41 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        public void AddFeedbackToReview(UserOrganizationModel caller, long reviewId, long feedbackId)
+        public void AddAnswerToReview(UserOrganizationModel caller, long reviewId, long answerId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ManageReview(reviewId);
-                    var feedback = s.Get<FeedbackAnswer>(feedbackId);
+                    var feedback = s.Get<AnswerModel>(answerId);
                     var review = s.Get<ReviewModel>(reviewId);
                     if (review.ForUserId != feedback.AboutUserId)
-                        throw new PermissionsException("Feedback and Review do not match.");
+                        throw new PermissionsException("Answer and Review do not match.");
 
-                    review.ClientReview.FeedbackIds.Add(new LongModel() { Value = feedbackId });
+                    review.ClientReview.FeedbackIds.Add(new LongModel() { Value = answerId });
                     s.Update(review);
                     tx.Commit();
                     s.Flush();
                 }
             }
         }
-        public void RemoveFeedbackFromReview(UserOrganizationModel caller, long reviewId, long feedbackId)
+        public void RemoveAnswerFromReview(UserOrganizationModel caller, long reviewId, long answerId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ManageReview(reviewId);
-                    var feedback = s.Get<FeedbackAnswer>(feedbackId);
+                    var answer = s.Get<AnswerModel>(answerId);
                     var review = s.Get<ReviewModel>(reviewId);
 
-                    if (review.ForUserId != feedback.AboutUserId)
-                        throw new PermissionsException("Feedback and Review do not match.");
+                    if (review.ForUserId != answer.AboutUserId)
+                        throw new PermissionsException("Answer and Review do not match.");
 
                     foreach (var id in review.ClientReview.FeedbackIds)
                     {
-                        if (id.Value == feedbackId)
+                        if (id.Value == answerId)
                             id.DeleteTime = DateTime.UtcNow;
                     }
                     s.Update(review);
@@ -417,6 +417,40 @@ namespace RadialReview.Accessors
                         if (id.Id == chartId)
                             id.DeleteTime = DateTime.UtcNow;
                     }
+                    s.Update(review);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public void SetIncludeQuestionTable(UserOrganizationModel caller, long reviewId, bool on)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.IncludeQuestionTable = on;
+                    s.Update(review);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public void SetIncludeManagerAnswers(UserOrganizationModel caller, long reviewId, bool on)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.IncludeManagerFeedback = on;
                     s.Update(review);
                     tx.Commit();
                     s.Flush();

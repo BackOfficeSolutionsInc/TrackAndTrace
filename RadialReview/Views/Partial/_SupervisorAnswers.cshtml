@@ -1,0 +1,31 @@
+﻿@*Supervisors, all answers*@
+@model Tuple<List<RadialReview.Models.UserOrganizationModel>, List<RadialReview.Models.AnswerModel>>
+
+@using (Html.BeginScripts())
+{
+    <script src="~/Scripts/review/translateSlider.js"></script>
+}
+
+@foreach (var manager in Model.Item1)
+{
+    <h4 class="noMargin smallPad" style="padding-top: 10px;">@manager.GetNameAndTitle()</h4>
+    <table class="table table-condensed" style="min-width:50%">
+        <tr>
+            <th style="width:1px;"></th>
+            <th style="text-align:left">Question</th>
+            <th style="width:1px;text-align:center">Answer</th>
+        </tr>
+        @foreach (var answer in Model.Item2.Where(x => x is RadialReview.Models.SliderAnswer && x.ByUserId == manager.Id).Cast<RadialReview.Models.SliderAnswer>())
+        {
+            <tr>
+                <td></td>
+                <td>
+                    @answer.Askable.GetQuestion()
+                </td>
+                <td style="width:130px;text-align:center;" class="percentage oneline alignCenter">
+                    @answer.Percentage
+                </td>
+            </tr>
+        }
+    </table>
+}

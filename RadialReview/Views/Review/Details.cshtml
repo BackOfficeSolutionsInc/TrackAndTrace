@@ -7,6 +7,7 @@
 
 @using (Html.BeginScripts())
 {
+    <script src="~/Scripts/review/translateSlider.js"></script>
     <script>
         var last = null;
 
@@ -35,22 +36,64 @@
         }
 
         function allowed() {
+            @if(!((bool?)ViewBag.Hints ?? true))
+            {
+                @:return true;
+            }
+
             return ($("#charts li").size() != 0 || $("#feedbacks li").size() != 0);
         }
 
         function clickDetails() {
-            if (allowed() || confirm("You need to include data in the review. Add some feedback and charts before viewing. Continue anyway?")) {
+            if (allowed() || confirm("You need to include data in the review. Add some feedback and charts before viewing. You may turn off this indicator by turning off hints. Continue anyway?")) {
                 window.location = "/Review/ClientDetails/@Model.Review.Id";
             }
 
         }
         function clickAuthorize() {
-            if (allowed() ||  $("#Authorized").hasClass("on") || confirm("You need to include data in the review. You should add some feedback and charts before authroizing. Continue anyway?")) {
+            if (allowed() || $("#Authorized").hasClass("on") || confirm("You need to include data in the review. You should add some feedback and charts before authroizing. You may turn off this indicator by turning off hints. Continue anyway?")) {
                 setAuthorize();
             } else {
                 ;
             }
+        }
 
+        function SetManagerAnswers() {
+            var on = !$(".ManagerAnswers").hasClass("on");
+            var dat = { reviewId: "@Model.Review.Id", on: on };
+            $.ajax({
+                url: "/Review/SetIncludeManagerAnswers",
+                data: dat,
+                method: "GET",
+                success: function (data) {
+                    if (data.Object) {
+                        if (data.Object.On) {
+                            $(".ManagerAnswers").addClass("on");
+                        } else {
+                            $(".ManagerAnswers").removeClass("on");
+                        }
+                    }
+                }
+            });
+        }
+
+        function SetQuestionTable() {
+            var on = !$(".QuestionTable").hasClass("on");
+            var dat = { reviewId: "@Model.Review.Id", on: on };
+            $.ajax({
+                url: "/Review/SetIncludeTable",
+                data: dat,
+                method: "GET",
+                success: function (data) {
+                    if (data.Object) {
+                        if (data.Object.On) {
+                            $(".QuestionTable").addClass("on");
+                        } else {
+                            $(".QuestionTable").removeClass("on");
+                        }
+                    }
+                }
+            });
         }
 
         function SetFeedback(id, on) {
@@ -171,6 +214,18 @@
 @using (Html.BeginStyles())
 {
     <style>
+        .btn.includable.on {
+            color: #FFF;
+            background-color: #5CB85C;
+            border-color: #4CAE4C;
+        }
+
+        .btn.includable:not(.on) {
+            color: #FFF;
+            background-color: #D9534F;
+            border-color: #D43F3A;
+        }
+
         .chartButton {
             top: 39px;
             position: absolute;
@@ -213,10 +268,9 @@
         </div>
         <div class="review " style=" min-width: 650px;">
             <div class="row">
-                <div class="col-md-3 noPad" style="padding-bottom:20px;">
-                    @Html.Partial("_User", Model.Review.ForUser)
-                </div>
-                <div class="col-md-9 ">
+                @*<div class="col-md-3 noPad" style="padding-bottom:20px;">
+                    </div>*@
+                <div class="col-md-12 ">
                     <div class="row noselect">
                         <form id="controls">
                             <div class="col-xs-6 alignRight ">
@@ -258,7 +312,7 @@
                             </tr>
                             @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>())
                             {
-                                <tr class="feedback feedback_@feedback.Id">
+                                <tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
                                     <td></td>
                                     <td>@feedback.ByUser.GetName()</td>
                                     <td class="text">@feedback.Feedback</td>
@@ -272,7 +326,25 @@
                                 </tr>
                             }
                         </table>
+
                     </div>
+                    @*Manager Answers*@
+                    <div class="panel panel-default">
+                        <div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Manager Answers</h3>
+                        </div>
+                        @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml",Tuple.Create(Model.Supervisers,Model.AnswersAbout))
+                    </div>
+                    @*All Answers*@
+                    <div class="panel panel-default">
+                        <div onclick="SetQuestionTable()" class="QuestionTable btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")" style=""></div>
+                        <div class="panel-heading">
+                            <h3 class="panel-title">All Answers</h3>
+                        </div>
+                        @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -280,6 +352,7 @@
     </div>
     <div class="col-lg-3 ">
         <div class="sidebar" style="padding:10px;font-size:12px">
+            @Html.Partial("_User", Model.Review.ForUser)
             <h3 class="alignCenter"><u>Build Report</u></h3>
             <div class="smallBreak"></div>
             <h4 class="alignCenter">Charts</h4>
@@ -304,9 +377,25 @@
                 }
             </ul>
             <hr />
+            <h4 class="alignCenter">Include</h4>
+            <ul class="noBullet" id="includes">
+                <li class="clearfix">
+                    Managers' Answers
+                    <div  onclick="SetManagerAnswers()"
+                          class="ManagerAnswers glyphicon includable pull-right clickable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")">
+                    </div>
+                </li>
+                <li class="clearfix">
+                    All Answers Table
+                    <span onclick="SetQuestionTable()"
+                          class="QuestionTable glyphicon includable pull-right clickable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")">
+                    </span>
+                </li>
+            </ul>
+            <hr />
             <h4 class="alignCenter">Notes</h4>
             <div class="save">Saving</div>
-                        @Html.TextAreaFor(x => x.Review.ClientReview.ManagerNotes, new { placeholder = "Optional notes...", style = "width:100%;height:150px;resize:vertical;", id="ManagerNotes" })
+            @Html.TextAreaFor(x => x.Review.ClientReview.ManagerNotes, new { placeholder = "Optional notes...", style = "width:100%;height:150px;resize:vertical;", id = "ManagerNotes" })
             <hr />
             <div class="alignCenter">
                 <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View</div>
@@ -333,11 +422,16 @@
     <script src="/scripts/d3/ScatterChart.js"></script>
     <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
     <script>
-        $(function(){
-            $('#ManagerNotes').keyup( $.debounce( 500, saveText ) );
+        $(function () {
+            $('#ManagerNotes').keyup($.debounce(500, saveText));
+            /*$(".percentage").each(function () {
+                var value = parseFloat($(this).html()) * 100;
+                var text = sliderToText(value);
+                $(this).html(text);
+            });*/
         });
 
-        var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
+        var axisSelect = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Value + "\""))))];
         var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
         var legendData = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
         var getAxis = function () {

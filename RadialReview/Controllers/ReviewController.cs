@@ -380,12 +380,14 @@ namespace RadialReview.Controllers
             public List<AnswerModel> AnswersAbout { get; set; }
             public Dictionary<long, String> Categories { get; set; }
 
+            public List<UserOrganizationModel> Supervisers { get; set; }
         }
 
-        ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
+        private ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
         {
             var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.Id);
             var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId);
+            var managers = _UserAccessor.GetManagers(GetUser(), review.ForUserId);
             var model = new ReviewDetailsViewModel()
             {
                 Review = review,
@@ -394,6 +396,7 @@ namespace RadialReview.Controllers
                 yAxis = ((long?)Session["lastYAxis"]) ?? categories.Skip(1).FirstOrDefault().NotNull(x => x.Id),
                 AnswersAbout = answers,
                 Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate()),
+                Supervisers =managers
             };
             return model;
         }
@@ -415,18 +418,21 @@ namespace RadialReview.Controllers
             {
                 _PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId));
                 var model = GetReviewDetails(review);
+                //model.Supervisors = model.AnswersAbout.Where(x => x.ByUserId == GetUser().Id).ToList();
                 return View(model);
             }
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult ClientDetails(long id)
+        public ActionResult ClientDetails(long id,bool print=false)
         {
             var review = _ReviewAccessor.GetReview(GetUser(), id);
             var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId));
             if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization)
             {
                 var model = GetReviewDetails(review);
+                if (print)
+                    return View("ClientDetailsPrint", model);
                 return View(model);
             }
             else
@@ -438,9 +444,24 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public JsonResult SetFeedback(long feedbackId, long reviewId, bool on)
         {
-            if (on) _ReviewAccessor.AddFeedbackToReview(GetUser(), reviewId, feedbackId);
-            else _ReviewAccessor.RemoveFeedbackFromReview(GetUser(), reviewId, feedbackId);
+            if (on) _ReviewAccessor.AddAnswerToReview(GetUser(), reviewId, feedbackId);
+            else _ReviewAccessor.RemoveAnswerFromReview(GetUser(), reviewId, feedbackId);
             return Json(ResultObject.Create(new { FeedbackId = feedbackId, On = on }), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult SetIncludeTable(long reviewId, bool on)
+        {
+            _ReviewAccessor.SetIncludeQuestionTable(GetUser(), reviewId, on);
+
+            return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult SetIncludeManagerAnswers(long reviewId, bool on)
+        {
+            _ReviewAccessor.SetIncludeManagerAnswers(GetUser(), reviewId, on);
+            return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]

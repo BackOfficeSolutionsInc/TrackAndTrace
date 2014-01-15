@@ -36,7 +36,7 @@
             <th style="width:120px" class="alignCenter">Completion</th>
             <th style="width:50px"></th>
         </tr>
-        @foreach (var r in Model.Review.Reviews.ToListAlive())
+        @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x=>x.ForUser.GetNameAndTitle()))
         {
             <tr class="@(r.ForUser.GetPersonallyManaging()?"managing":"not-managing")">
                 <td>@r.ForUser.GetNameAndTitle()</td>

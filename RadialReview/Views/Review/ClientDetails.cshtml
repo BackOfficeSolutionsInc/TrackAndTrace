@@ -1,7 +1,7 @@
 ﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = Model.Review.ForUser.GetNameAndTitle() + " Review";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var charts = Model.Review.ClientReview.Charts.ToListAlive();
     var feedbacks = Model.Review.ClientReview.FeedbackIds.ToListAlive().GroupBy(x => x.Value).Select(x => x.First()).ToList();
@@ -9,9 +9,12 @@
     var i = 0;
 }
 <div class="review" style="padding-top:20px;">
+    <a href="?print=true" class="btn btn-default pull-right">
+        Print
+    </a>
     <div class="row">
         <div class="col-lg-7">
-            <div class="panel-group" id="accordion">
+            <div class="panel-group clearfix" id="accordion">
 
                 <div class="panel panel-primary">
                     <div class="panel-heading">
@@ -66,6 +69,42 @@
                         </div>
                     </div>
                 }
+                @if (Model.Review.ClientReview.IncludeQuestionTable)
+                {
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_AnswerDistribution">
+                                    [+] Answer Distribution
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_AnswerDistribution" class="panel-collapse collapse">
+                            <div class="panel-body noPad">
+                                @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
+                {
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_SupervisorsAnswer">
+                                    [+] Supervisors' Answers
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_SupervisorsAnswer" class="panel-collapse collapse">
+                            <div class="panel-body noPad">
+                                @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
             </div>
 
         </div>
@@ -93,6 +132,8 @@
                     }
                 </div>
             }
+         
+
         </div>
     </div>
 </div>
@@ -131,6 +172,7 @@
     <script src="/scripts/d3/d3.js"></script>
     <script src="/scripts/d3/d3.csv.js"></script>
     <script src="/scripts/d3/ScatterChart.js"></script>
+    <script src="~/Scripts/review/translateSlider.js"></script>
     <script>
 
         d3.csv("/Data/ReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId", function (data) {
@@ -165,12 +207,13 @@
             @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
             {
                 @:chartIt("@(chart.Id)", "@(chart.Item1)", "@(chart.Item2)");
-                                                                            }
+                                                                                        }
         });
 
 
         d3.csv("/Data/OrganizationReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId",
             function (data) {
+                debugger;
                 var dataFunc = function (dd, redrawFunc) {
                     dd.data = data;
                     redrawFunc();
