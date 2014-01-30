@@ -25,7 +25,7 @@ namespace RadialReview.Models
         public virtual UserOrganizationModel ByUser { get; set; }
         public virtual AboutType AboutType { get; set; }
 
-        public virtual CompletionModel GetCompletion()
+        public virtual ICompletionModel GetCompletion(bool split = false)
         {
             if (Required)
                 return new CompletionModel(Complete.ToInt(), 1);
@@ -33,6 +33,7 @@ namespace RadialReview.Models
         }
 
         public virtual DateTime? DeleteTime { get; set; }
+        public virtual DateTime? CompleteTime { get; set; }
     }
     #endregion
 
@@ -72,6 +73,7 @@ namespace RadialReview.Models
             Map(x => x.ForReviewContainerId);
             Map(x => x.Complete);
             Map(x => x.DeleteTime);
+            Map(x => x.CompleteTime);
 
             Map(x=> x.AboutType).CustomType(typeof(Int64));
 

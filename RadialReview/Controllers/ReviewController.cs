@@ -374,13 +374,27 @@ namespace RadialReview.Controllers
         public class ReviewDetailsViewModel
         {
             public ReviewModel Review { get; set; }
-            public List<SelectListItem> Axis { get; set; }
             public long xAxis { get; set; }
             public long yAxis { get; set; }
+            public String JobDescription { get; set; }
+            public List<SelectListItem> Axis { get; set; }
             public List<AnswerModel> AnswersAbout { get; set; }
             public Dictionary<long, String> Categories { get; set; }
-
+            public List<String> Responsibilities { get; set; }
+            public List<ResponsibilityModel> Questions { get; set; }
             public List<UserOrganizationModel> Supervisers { get; set; }
+
+
+            public ReviewDetailsViewModel()
+            {
+                Axis = new List<SelectListItem>();
+                AnswersAbout = new List<AnswerModel>();
+                Categories = new Dictionary<long, string>();
+                Responsibilities = new List<string>();
+                Questions = new List<ResponsibilityModel>();
+                Supervisers = new List<UserOrganizationModel>();
+            }
+
         }
 
         private ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
@@ -388,6 +402,11 @@ namespace RadialReview.Controllers
             var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.Id);
             var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId);
             var managers = _UserAccessor.GetManagers(GetUser(), review.ForUserId);
+
+            var user =_UserAccessor.GetUserOrganization(GetUser(),review.ForUserId,false,false);
+
+            var questions = _ResponsibilitiesAccessor.GetResponsibilitiesForUser(GetUser(),review.ForUserId);
+
             var model = new ReviewDetailsViewModel()
             {
                 Review = review,
@@ -396,7 +415,10 @@ namespace RadialReview.Controllers
                 yAxis = ((long?)Session["lastYAxis"]) ?? categories.Skip(1).FirstOrDefault().NotNull(x => x.Id),
                 AnswersAbout = answers,
                 Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate()),
-                Supervisers =managers
+                Supervisers =managers,
+                Questions = questions,
+                JobDescription = user.JobDescription,
+                
             };
             return model;
         }
@@ -465,13 +487,20 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public JsonResult AddChart(long x, long y, long reviewId)
+        public JsonResult SetIncludeSelfAnswers(long reviewId, bool on)
         {
-            var chartId = _ReviewAccessor.AddChartToReview(GetUser(), reviewId, x, y);
+            _ReviewAccessor.SetIncludeSelfAnswers(GetUser(), reviewId, on);
+            return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult AddChart(long x, long y, long reviewId,bool grouped)
+        {
+            var chartId = _ReviewAccessor.AddChartToReview(GetUser(), reviewId, x, y, grouped);
             var xTitle = _CategoryAccessor.Get(GetUser(), x).Category.Translate();
             var yTitle = _CategoryAccessor.Get(GetUser(), y).Category.Translate();
 
-            return Json(ResultObject.Create(new { XTitle = xTitle, YTitle = yTitle, ChartId = chartId }), JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Create(new { XTitle = xTitle, YTitle = yTitle, ChartId = chartId, Grouped=grouped }), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]

@@ -26,6 +26,25 @@ namespace RadialReview.Accessors
                 }
             }
         }
+        public List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller, long forUserId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetResponsibilitiesForUser(caller, s.ToQueryProvider(true), perms, forUserId);
+                }
+            }
+        }
+
+
+        public static List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller,AbstractQuery queryProvider, PermissionsUtility perms,  long forUserId)
+        {
+            return GetResponsibilityGroupsForUser(queryProvider, perms, caller, forUserId)
+                    .SelectMany(x => x.Responsibilities)
+                    .ToList();
+        }
 
         public ResponsibilityGroupModel GetResponsibilityGroup(UserOrganizationModel caller, long responsibilityGroupId)
         {
@@ -66,7 +85,7 @@ namespace RadialReview.Accessors
 
         private static TeamAccessor _TeamAccessor = new TeamAccessor();
         private static PositionAccessor _PositionAccessor = new PositionAccessor();
-
+                
         public List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(UserOrganizationModel caller, long userId)
         {
             using (var s = HibernateSession.GetCurrentSession())

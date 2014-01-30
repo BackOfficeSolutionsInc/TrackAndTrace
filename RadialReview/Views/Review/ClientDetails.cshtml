@@ -8,122 +8,217 @@
     var notes = Model.Review.ClientReview.ManagerNotes;
     var i = 0;
 }
-<div class="review" style="padding-top:20px;">
-    <a href="?print=true" class="btn btn-default pull-right">
+<div class="shiftContainer" style="">
+    <!--a href="?print=true" class="btn btn-default pull-right">
         Print
-    </a>
-    <div class="row">
-        <div class="col-lg-7">
-            <div class="panel-group clearfix" id="accordion">
-
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_organization">
-                                [+] Organization
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse_organization" class="panel-collapse collapse in">
-                        <div class="panel-body noPad">
-
-                            <div class="row noselect">
-                                <form id="controls">
-                                    <div class="col-xs-6 alignRight ">
-                                        <div class="inlineBlock">
-                                            <div class="alignCenter"><h4 class="axisTitle">X-Axis</h4></div>
-                                            <div style="top:10px;"> @Html.DropDownListFor(x => x.xAxis, Model.Axis, new { @class = "form-control" })</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6 alignLeft">
-                                        <div class="inlineBlock">
-                                            <div class="alignCenter"><h4 class="axisTitle">Y-Axis</h4></div>
-                                            <div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="orgChart"></svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                @foreach (var chart in charts)
-                {
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_@chart.Id">
-                                    [+] @Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="collapse_@chart.Id" class="panel-collapse collapse">
-                            <div class="panel-body noPad">
-                                <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id"></svg>
-                            </div>
-                        </div>
-                    </div>
-                }
-                @if (Model.Review.ClientReview.IncludeQuestionTable)
-                {
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_AnswerDistribution">
-                                    [+] Answer Distribution
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="collapse_AnswerDistribution" class="panel-collapse collapse">
-                            <div class="panel-body noPad">
-                                @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
-                            </div>
-                        </div>
-                    </div>
-                }
-                @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
-                {
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_SupervisorsAnswer">
-                                    [+] Supervisors' Answers
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="collapse_SupervisorsAnswer" class="panel-collapse collapse">
-                            <div class="panel-body noPad">
-                                @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
-                            </div>
-                        </div>
-                    </div>
-                }
-
-
+    </a-->
+    <div class="col-lg-3 noPrint">
+        <div class="sidebar noPad sidebar-fixed ">
+            <div class="sidebar-header alignCenter">
+                Quick Links
+            </div>
+            <div class="sidebar-contents ">
+                <ol>
+                    <li><a href="#name">Name</a></li>
+                    @if (!String.IsNullOrWhiteSpace(Model.JobDescription))
+                    {
+                        <li><a href="#jobDescription">Job Description</a></li>
+                    }
+                    @if (Model.Responsibilities.Any())
+                    {
+                        <li><a href="#responsibilities">Responsibilities</a></li>
+                    }
+                    <li><a href="#questions">Questions</a></li>
+                    @foreach (var chart in charts)
+                    {
+                        <li><a href="#ql_chart_@chart.Id">@Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]</a></li>
+                    }
+                    @if (Model.Review.ClientReview.IncludeQuestionTable)
+                    {
+                        <li><a href="#questionTable">Answer Distribution</a></li>
+                    }
+                    @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
+                    {
+                        <li><a href="#managerFeedback">Supervisor's Answers</a></li>
+                    }
+                    @if (feedbacks.Count > 0)
+                    {
+                        <li><a href="#feedback">Feedback</a></li>
+                    }
+                    @if (!String.IsNullOrWhiteSpace(notes))
+                    {
+                        <li><a href="#notes">Supervisor's Notes</a></li>
+                    }
+                </ol>
             </div>
 
         </div>
-        <div class="col-lg-5">
+        <div class="smallBreak2"></div>
+        <div class="smallBreak2"></div>
 
-            @if (!String.IsNullOrWhiteSpace(notes))
+    </div>
+    <div class="col-lg-9 review">
+        <div class="noBreak">
+            <a id="name" class="shiftByTitle"></a>
+            <div>
+                <div class="name">Name: @Model.Review.ForUser.GetName()</div>
+                <div class="role">Role: @Model.Review.ForUser.GetTitles()</div>
+            </div>
+
+            @* JOB DESCRIPTION HERE*@
+            @if (!String.IsNullOrWhiteSpace(Model.JobDescription))
             {
-                <h3>Notes:</h3>
-                <div style="margin-left:20px">
-                    <div id="notes" style="white-space: pre-line" class="feedback">@notes</div>
-                    <div class="smallBreak"></div>
-                    <div class="smallBreak"></div>
-                </div>
+                <p>
+                    <a id="jobDescription" class="shiftByTitle"></a>
+                    <div class="jobDescriptionHeading">Job Description:</div>
+                    <div class="jobDescription">@Model.JobDescription</div>
+                </p>
             }
 
-            @if (feedbacks.Count > 0)
+            @*Task and Responsibilities here*@
+            <a id="responsibilities" class="shiftByTitle"></a>
+            @if (Model.Responsibilities.Any())
             {
-                <h3>Feedback:</h3>
-                <div style="margin-left:20px">
+                <p>
+                <div class="noBreak">
+                    Responsibilities:
+                    <ol>
+                        @foreach (var r in Model.Responsibilities)
+                        {
+                            <li>@r</li>
+                        }
+                    </ol>
+                </div>
+                    </p>
+            }
+
+            @*Questions here*@
+            <a id="questions" class="shiftByTitle"></a>
+            <p>
+                <div class="noBreak">
+                    Questions:
+                    <ol>
+                        @foreach (var q in Model.Questions)
+                        {
+                            <li>@q.GetQuestion()</li>
+                        }
+                    </ol>
+                </div>
+            </p>
+        </div>
+
+        @*
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        Organization
+                    </h4>
+                </div>
+                <div class="panel-body noPad">
+                    <div class="row noselect">
+                        <form id="controls">
+                            <div class="col-xs-6 alignRight ">
+                                <div class="inlineBlock">
+                                    <div class="alignCenter"><h4 class="axisTitle">X-Axis</h4></div>
+                                    <div style="top:10px;"> @Html.DropDownListFor(x => x.xAxis, Model.Axis, new { @class = "form-control" })</div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 alignLeft">
+                                <div class="inlineBlock">
+                                    <div class="alignCenter"><h4 class="axisTitle">Y-Axis</h4></div>
+                                    <div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="orgChart"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        *@
+
+
+        @foreach (var chart in charts)
+        {
+            <a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
+            <div class="panel panel-primary noBreak">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        @Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
+                    </h4>
+                </div>
+                <div class="panel-body noPad">
+                    <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id">
+                        <defs>
+                            <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                                <path d="M-1,1 l2,-2
+                                            M0,4 l4,-4
+                                            M3,5 l2,-2" stroke-width="2" stroke="black" />
+                            </pattern>
+                            <pattern id="diagonalHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+                                <rect x="0" y="0" width="4" height="4" fill="black"></rect>
+                                <path d="M-1,1 l2,-2
+                                            M0,4 l4,-4
+                                            M3,5 l2,-2" stroke-width="2" stroke="#65c14e" />
+                            </pattern>
+                            <pattern id="diagonalRightHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+                                <rect width='8' height='8' fill='white' />
+                                <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='2' stroke='#e99654' />
+                            </pattern>
+                            <pattern id="crossHatch" patternUnits="userSpaceOnUse" width="8" height="8">
+                                <rect width='8' height='8' fill='#cccccc' />
+                                <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='1' stroke='black' />
+                            </pattern>
+                            <pattern id="verticalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                                <path d="M -1,2 l 6,0" stroke-width="1" stroke="black" />
+                            </pattern>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        }
+        @if (Model.Review.ClientReview.IncludeQuestionTable)
+        {
+            <a id="questionTable" class="shiftByTitle"></a>
+            <div class="panel panel-primary noBreak">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        Answer Distribution
+                    </h4>
+                </div>
+                <div class="panel-body noPad">
+                    @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
+                </div>
+            </div>
+        }
+        @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
+        {
+            <a id="managerFeedback" class="shiftByTitle"></a>
+            <div class="panel panel-primary noBreak">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        Supervisors' Answers
+                    </h4>
+                </div>
+                <div class="panel-body noPad">
+                    @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+                </div>
+            </div>
+        }
+
+        @if (feedbacks.Count > 0)
+        {
+            <a id="feedback" class="shiftByTitle"></a>
+            <div class="panel panel-primary noBreak">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        Feedback
+                    </h4>
+                </div>
+                <div class="panel-body">
                     @foreach (var f in feedbacks)
                     {
                         <div style="white-space: pre-line" id="feedback_@f.Value" class="feedback">@(((RadialReview.Models.FeedbackAnswer)Model.AnswersAbout.FirstOrDefault(x => x.Id == f.Value)).Feedback)</div>
@@ -131,10 +226,25 @@
                         <div class="smallBreak"></div>
                     }
                 </div>
-            }
-         
+            </div>
+        }
 
-        </div>
+        @if (!String.IsNullOrWhiteSpace(notes))
+        {
+            <a id="notes" class="shiftByTitle"></a>
+            <div class="panel panel-primary noBreak">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        Supervisors' Notes
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <div id="notes" style="white-space: pre-line" class="feedback">@notes</div>
+                    <div class="smallBreak"></div>
+                    <div class="smallBreak"></div>
+                </div>
+            </div>
+        }
     </div>
 </div>
 @using (Html.BeginStyles())
@@ -147,22 +257,20 @@
         }
 
         .sidebar {
-            padding: 10px;
-            font-size: 12px;
-            background-color: #FDFDFD;
-            border: 1px solid #DFDFDF;
-            -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
-            box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
+            /*padding: 10px;
+                font-size: 12px;
+                background-color: #FDFDFD;
+                border: 1px solid #DFDFDF;
+                -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
+                box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);*/
         }
 
-        .feedback {
-            padding: 15px;
-            border-radius: 3px;
-            border: 1px solid #DADADA;
-            color: #6F6F6F;
+        .shiftContainer {
+            padding-top: 20px;
         }
     </style>
     <link href="~/Content/chart.css" rel="stylesheet" />
+    <link href="~/Content/print.css" media="print" rel="stylesheet" />
 }
 
 
@@ -174,6 +282,7 @@
     <script src="/scripts/d3/ScatterChart.js"></script>
     <script src="~/Scripts/review/translateSlider.js"></script>
     <script>
+
 
         d3.csv("/Data/ReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId", function (data) {
             var dataFunc = function (dd, redrawFunc) {
@@ -203,14 +312,13 @@
                     }, dataFunc, legendData);
             };
 
-
             @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
             {
                 @:chartIt("@(chart.Id)", "@(chart.Item1)", "@(chart.Item2)");
-                                                                                        }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
         });
 
-
+        @*
         d3.csv("/Data/OrganizationReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId",
             function (data) {
                 debugger;
@@ -249,9 +357,8 @@
                 document.getElementById("controls").addEventListener("keyup", orgChart.update, false);
                 document.getElementById("xAxis").addEventListener("change", orgChart.update, false);
                 document.getElementById("yAxis").addEventListener("change", orgChart.update, false);
-            });
+            });*@
 
 
     </script>
 }
-

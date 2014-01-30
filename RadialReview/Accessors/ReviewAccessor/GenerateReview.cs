@@ -57,9 +57,9 @@ namespace RadialReview.Accessors
             {
                 long id =/* aboutSelf ? beingReviewed.Id :*/ user.Key.Id;
 
-                var responsibilities = ResponsibilitiesAccessor
-                    .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, id)
-                    .SelectMany(x => x.Responsibilities).ToListAlive();
+                var responsibilities = ResponsibilitiesAccessor.GetResponsibilitiesForUser(caller,s.GetQueryProvider(),perms,id).ToListAlive();
+                           /* .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, id)
+                            .SelectMany(x => x.Responsibilities).ToListAlive();*/
                 foreach (var aboutType in user.Value)
                 {
                     foreach (var responsibility in responsibilities)

@@ -39,6 +39,9 @@ namespace RadialReview.Models
         public virtual IList<PositionDurationModel> Positions { get; set; }
         public virtual IList<TeamDurationModel> Teams { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
+
+        public virtual String JobDescription { get; set; }
+
         public virtual OriginType GetOriginType()
         {
             return OriginType.User;
@@ -166,6 +169,8 @@ namespace RadialReview.Models
             Map(x => x.DetachTime);
             Map(x => x.DeleteTime);
             Map(x => x.EmailAtOrganization);
+
+            Map(x => x.JobDescription).Length(65000);
 
             References(x => x.TempUser).Not.LazyLoad().Cascade.All();
 

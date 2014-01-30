@@ -112,6 +112,23 @@ namespace RadialReview.Accessors
             }
         }
 
+        public List<AnswerModel> GetAnswersAboutUser(UserOrganizationModel caller, long userOrgId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(userOrgId, true);
+
+                    var answers = s.QueryOver<AnswerModel>()
+                                        .Where(x => x.AboutUserId == userOrgId )
+                                        .List()
+                                        .ToListAlive();
+                    return answers;
+                }
+            }
+        }
+
         public List<AnswerModel> GetReviewContainerAnswers(UserOrganizationModel caller, long reviewContainerId)
         {
             using (var s = HibernateSession.GetCurrentSession())

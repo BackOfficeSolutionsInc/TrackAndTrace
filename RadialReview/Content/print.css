@@ -1,66 +1,121 @@
 ﻿body {
 }
 
-.noMargin{
+.noPrint {
+    display: none;
+}
+
+.body-content {
+    padding: 0px;
+}
+
+#main {
+    padding: 0px;
+    margin: 10px;
+}
+
+#footer{
+    display:none;
+}
+
+.pageBreak{
+    page-break-after:always;
+}
+
+.table-responsive{
+    overflow-x: hidden;
+}
+
+.panel{
+    border-radius: 3px;
+    border-color: black;
+}
+
+.panel-heading{
+    padding: 5px ;
+}
+
+.panel-body{
+    padding: 5px;
+}
+
+.landscape {
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    page-break-inside:avoid;
+}
+
+.review {
+    border: 0px;
+    padding: 0px;
+}
+
+.shiftContainer {
+    padding-top: 0px;
+}
+
+.noMargin {
     margin: 0px;
 }
 
-.bordered{
-    border:1px solid black;
+.bordered {
+    border: 1px solid black;
 }
 
-.smallBreak{
+.smallBreak {
     height: 4px;
 }
 
-.inlined{
-    display:inline-block;
+.inlined {
+    display: inline-block;
 }
 
 
 .Manager {
-    fill: black ! important;
-    stroke: black ! important;
+    fill: #6da1e1 !important;
+    stroke: black !important;
 }
 
 .Self {
-    stroke: black ! important;
-    fill: white ! important;
-
+    stroke: black !important;
+    stroke-width:3px;
+    fill: #ffcb00 !important;
 }
 
 .Subordinate {
-    stroke:black ! important;
-    fill: gray ! important;
+    stroke: black !important;
+    stroke-width:2px;
+    fill: #be0505 !important;
 }
 
 .Peer {
-    stroke: black ! important;
-    fill: url(#diagonalHatch_gray) ! important;
+    stroke: black !important;
+    fill: url(#diagonalHatch_gray) !important;
 }
 
 .Teammate {
-    fill: url(#diagonalRightHatch_gray) ! important;
-    stroke: black ! important;
+    fill: url(#diagonalRightHatch_gray) !important;
+    stroke: black !important;
 }
 
 .NoRelationship {
-    fill: url(#crossHatch) ! important;
-    stroke: black ! important;
+    fill: url(#crossHatch) !important;
+    stroke: black !important;
 }
 
 
 .Employee {
     fill: #005d80;
-    fill-opacity:1;
+    fill-opacity: 1;
 }
 
 .Management {
-    fill:#ff0000;
-    fill-opacity:1;
+    fill: #ff0000;
+    fill-opacity: 1;
 }
 
 .You {
     fill: #ffcb00;
-    fill-opacity:1;
+    fill-opacity: 1;
 }

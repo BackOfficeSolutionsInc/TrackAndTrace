@@ -1,0 +1,45 @@
+﻿@*Supervisors, all answers*@
+@model Tuple<List<RadialReview.Models.UserOrganizationModel>, List<RadialReview.Models.SliderAnswer>>
+
+@using (Html.BeginScripts())
+{
+    <script src="~/Scripts/review/translateSlider.js"></script>
+}
+@using (Html.BeginStyles())
+{
+    <style>
+    </style>
+}
+
+@{
+    var orderedPeople = Model.Item1.OrderBy(x => x.GetName()).ToList();
+}
+
+<div class="table-responsive">
+    <table class="table table-condensed" style="min-width:50%">
+        <tr class="noPad" style="height:120px;vertical-align:bottom">
+            <th class="noPad" style="width: 1px; vertical-align: bottom">Question</th>
+            @foreach (var person in orderedPeople)
+            {
+                <th title="@person.GetNameAndTitle()" class="rotate noPad" style="width: 10px; min-width: 10px; max-width: 10px; white-space: nowrap; vertical-align: bottom">
+                    @person.GetName()
+                </th>
+            }
+        </tr>
+        @{
+            var questions = Model.Item2.GroupBy(x => x.Askable.Id).Select(x => x.First().Askable);
+        }
+        @foreach (var question in questions)
+        {
+            <tr class="noPad">
+                <td class="noPad">@question.GetQuestion()</td>
+                @foreach (var person in orderedPeople)
+                {
+                    <td class="color-percentage bordered noPad">
+                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+</div>

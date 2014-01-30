@@ -1,11 +1,12 @@
-﻿using System;
+﻿using RadialReview.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace RadialReview.Models
 {
-    public class CompletionModel
+    public class CompletionModel : ICompletionModel, ICompletable
     {
         public int RequiredCompleted{get;private set;}
         public int TotalRequired { get; private set; }
@@ -23,14 +24,20 @@ namespace RadialReview.Models
 
         public Boolean Illegal { get; set; }
 
+        public String Class { get; set; }
+
         private CompletionModel()
         {
 
         }
 
-        public bool Started()
+
+        public bool Started
         {
-            return !(OptionalCompleted == 0 && RequiredCompleted == 0);
+            get
+            {
+                return !(OptionalCompleted == 0 && RequiredCompleted == 0);
+            }
         }
 
         private void Calculate()
@@ -75,16 +82,17 @@ namespace RadialReview.Models
             }
         }
 
-        public CompletionModel(int requiredCompleted,int totalRequired,int optionalCompleted,int totalOptional)
+        public CompletionModel(int requiredCompleted, int totalRequired, int optionalCompleted, int totalOptional, String clss="")
         {
             RequiredCompleted=requiredCompleted;
             TotalRequired=totalRequired;
             OptionalCompleted=optionalCompleted;
             TotalOptional = totalOptional;
+            Class = clss;
             Calculate();
         }
 
-        public CompletionModel(int RequiredCompleted, int TotalRequired):this(RequiredCompleted,TotalRequired,0,0)
+        public CompletionModel(int RequiredCompleted, int TotalRequired, String clss="") : this(RequiredCompleted, TotalRequired, 0, 0, clss)
         {
 
         }
@@ -96,6 +104,7 @@ namespace RadialReview.Models
             combine.OptionalCompleted = c1.OptionalCompleted + c2.OptionalCompleted;
             combine.TotalRequired = c1.TotalRequired + c2.TotalRequired;
             combine.TotalOptional = c1.TotalOptional + c2.TotalOptional;
+            combine.Class = c1.Class;
             combine.Calculate();
 
             return combine;
@@ -111,8 +120,15 @@ namespace RadialReview.Models
             }
             return combined;
         }
+        
+        public List<CompletionModel> GetCompletions()
+        {
+            return this.AsList();
+        }
 
-
-
+        public ICompletionModel GetCompletion(bool split = false)
+        {
+            return this;
+        }
     }
 }

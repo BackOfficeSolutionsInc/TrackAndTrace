@@ -8,24 +8,29 @@
 
 @foreach (var manager in Model.Item1)
 {
-    <h4 class="noMargin smallPad" style="padding-top: 10px;">@manager.GetNameAndTitle()</h4>
-    <table class="table table-condensed" style="min-width:50%">
-        <tr>
-            <th style="width:1px;"></th>
-            <th style="text-align:left">Question</th>
-            <th style="width:1px;text-align:center">Answer</th>
-        </tr>
-        @foreach (var answer in Model.Item2.Where(x => x is RadialReview.Models.SliderAnswer && x.ByUserId == manager.Id).Cast<RadialReview.Models.SliderAnswer>())
-        {
-            <tr>
-                <td></td>
-                <td>
-                    @answer.Askable.GetQuestion()
-                </td>
-                <td style="width:130px;text-align:center;" class="percentage oneline alignCenter">
-                    @answer.Percentage
-                </td>
+    if (Model.Item1.Count > 1)
+    {
+        <h4 class="noMargin smallPad" style="padding-top: 10px;">@manager.GetNameAndTitle()</h4>
+    }
+    <div class="panel-body">
+        <table class="table table-condensed" style="min-width:50%">
+            <tr class="noPad">
+                <th class="noPad" style="width:1px;"></th>
+                <th class="noPad" style="text-align:left">Question</th>
+                <th class="noPad" style="width:1px;text-align:center">Answer</th>
             </tr>
-        }
-    </table>
+            @foreach (var answer in Model.Item2.Where(x => x is RadialReview.Models.SliderAnswer && x.ByUserId == manager.Id).Cast<RadialReview.Models.SliderAnswer>())
+            {
+                <tr class="noPad">
+                    <td class="noPad"></td>
+                    <td class="noPad">
+                        @answer.Askable.GetQuestion()
+                    </td>
+                    <td style="width:130px;text-align:center;" class="percentage oneline alignCenter noPad">
+                        @answer.Percentage
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
 }

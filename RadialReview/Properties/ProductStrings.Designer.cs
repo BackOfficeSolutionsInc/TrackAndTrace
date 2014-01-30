@@ -61,7 +61,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://ec2-54-201-184-149.us-west-2.compute.amazonaws.com/.
+        ///   Looks up a localized string similar to http://54.201.243.125/.
         /// </summary>
         public static string BaseUrl {
             get {

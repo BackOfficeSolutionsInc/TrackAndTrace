@@ -8,6 +8,6 @@ namespace RadialReview.Models.Interfaces
 {
     public interface ICompletable
     {
-        CompletionModel GetCompletion();
+        ICompletionModel GetCompletion(bool split=false);
     }
 }

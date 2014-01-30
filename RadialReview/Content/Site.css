@@ -41,8 +41,9 @@ html, body {
 .alignCenter {
     text-align: center;
 }
+
 .alignLeft {
-    text-align: left ! important;
+    text-align: left !important;
 }
 
 .addButton {
@@ -621,13 +622,26 @@ tr.danger .strikable {
 
 
 .sidebar {
-    padding: 10px;
-    font-size: 12px;
     background-color: #FDFDFD;
     border: 1px solid #DFDFDF;
     -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
     box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
 }
+
+    .sidebar .sidebar-header {
+        font-size: 24px;
+        padding: 10px;
+        background-color: #F7F7F7;
+        border-bottom: 1px solid #EBEBEB;
+        text-shadow: 0px 1px 0px #FFF;
+        color: #5C5C5C;
+    }
+
+    .sidebar .sidebar-contents {
+        padding: 10px;
+        font-size: 12px;
+    }
+
 
 .alert-silentsuccess {
     display: none;
@@ -688,11 +702,11 @@ tr.danger .strikable {
     -o-transform: rotate(-45deg);
     transform: rotate(-45deg);
     /* also accepts left, right, top, bottom coordinates; not required, but a good idea for styling */
-    -webkit-transform-origin: 25% 75%;
-    -moz-transform-origin: 25% 75%;
-    -ms-transform-origin: 25% 75%;
-    -o-transform-origin: 25% 75%;
-    transform-origin: 25% 75%;
+    -webkit-transform-origin: 35% 85%;
+    -moz-transform-origin: 35% 85%;
+    -ms-transform-origin: 35% 85%;
+    -o-transform-origin: 35% 85%;
+    transform-origin: 35% 85%;
     /* Should be unset in IE9+ I think. */
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
@@ -712,27 +726,69 @@ tr.danger .strikable {
     content: 'Excluded';
 }
 
-
-.glyphicon.includable.on:after {
-    color: #CCFABB;
-    content: "\e013";
-    /*Red Stroke*/
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: #3C763D;
+.glyphicon.includable {
+    border-radius: 3px;
+    border: 1px solid #636363;
+    background-color: #EEE;
+    width: 10px;
+    height: 10px;
+    line-height: 0px;
 }
 
-.glyphicon.includable:not(.on):before {
-    color: #FFBFC0;
-    content: "\e014";
-    /*Red Stroke*/
+
+    .glyphicon.includable.on:after {
+        /*color: #CCFABB;*/
+        color: #444;
+        content: "\2713";
+        position: relative;
+        left: 1px;
+        top: -1px;
+        /*Red Stroke
     -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: #BF8F90;
-    
+    -webkit-text-stroke-color: #3C763D;*/
+    }
 
-}
+    .glyphicon.includable:not(.on):before {
+        /*color: #FFBFC0;*/
+        color: black;
+        content: "";
+        /*Red Stroke
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #BF8F90;*/
+    }
 
-.oneline{
+.oneline {
     overflow: hidden;
     white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
+}
+
+.noBreak {
+    page-break-inside: avoid;
+}
+
+.lightGrayOutlined {
+    color: #DBDBDB !important;
+    -webkit-text-shadow: 0px -1px 1px #8B8B8B !important;
+    text-shadow: 0px -1px 1px #8B8B8B !important;
+}
+
+.shiftByTitle{
+    position:relative;
+    top:-54px;
+    left:-100px;
+    visibility:hidden;
+    height:0px;
+}
+.shiftByTitle:after{
+    content:"";
+}
+
+@media (min-width: 1200px) {
+    .sidebar-fixed {
+        position: fixed;
+        top: 95px;
+    }
 }

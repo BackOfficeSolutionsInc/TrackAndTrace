@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Reviews;
 using System;
@@ -25,8 +26,7 @@ namespace RadialReview.Models
         /*public virtual decimal Completion { get; set; }
         public virtual Boolean Complete { get; set; }
         public virtual Boolean FullyComplete { get; set; }*/
-
-
+        
         /*private  decimal Divide(decimal numerator, decimal denomiator)
         {
             if (denomiator == 0)
@@ -35,20 +35,65 @@ namespace RadialReview.Models
         }*/
 
 
-        public virtual CompletionModel GetCompletion()
+        public virtual ICompletionModel GetCompletion(bool split = false)
         {
             if (Answers == null)
                 return null;
-            
-            int requiredComplete = Answers.Count(x => x.Required && x.Complete);
-            var optionalComplete = Answers.Count(x => x.Complete && !x.Required);
-            int required = Answers.Count(x => x.Required);
-            int optional = Answers.Count(x => !x.Required);
 
-            return new CompletionModel(requiredComplete, required, optionalComplete, optional)
+            if (!split)
             {
-                ForceInactive= DateTime.UtcNow>DueDate
-            };
+                int requiredComplete = Answers.Count(x => x.Required && x.Complete);
+                var optionalComplete = Answers.Count(x => x.Complete && !x.Required);
+                int required = Answers.Count(x => x.Required);
+                int optional = Answers.Count(x => !x.Required);
+
+                return new CompletionModel(requiredComplete, required, optionalComplete, optional, "")
+                {
+                    ForceInactive = DateTime.UtcNow > DueDate
+                };
+            }
+            else
+            {
+                var completions = new List<CompletionModel>();
+                var types = new AboutType[] {
+                    AboutType.Self,
+                    AboutType.Manager,
+                    AboutType.Subordinate,
+                    AboutType.Peer,
+                    AboutType.Teammate,
+                };
+
+
+                foreach (var flag in types)
+                {
+                    if (flag != AboutType.NoRelationship)
+                    {
+                        var limit = Answers.Where(x => (x.AboutType & flag) == flag);
+                        completions.Add(new CompletionModel(limit.Count(x => x.Complete), limit.Count(), flag.ToString()));
+                    }
+                }
+
+                return new MultibarCompletion(completions);
+
+                /*
+                var supervisorCount =   Answers.Where(x => (x.AboutType & AboutType.Manager)        == AboutType.Manager);
+                var subordinateCount = Answers.Where(x => (x.AboutType & AboutType.Subordinate) == AboutType.Subordinate);
+                var peerCount = Answers.Where(x => (x.AboutType & AboutType.Peer) == AboutType.Peer);
+                var teammateCount = Answers.Where(x => (x.AboutType & AboutType.Teammate) == AboutType.Teammate);
+                var selfCount = Answers.Where(x => (x.AboutType & AboutType.Self) == AboutType.Self);
+
+                
+             
+
+                int requirerComplete = Answers.Count(x => x.Required && x.Complete);
+                var optionalComplete = Answers.Count(x => x.Complete && !x.Required);
+                int required = Answers.Count(x => x.Required);
+                int optional = Answers.Count(x => !x.Required);*/
+
+
+
+
+            }
             /*
             if (requiredComplete < required)
             {
@@ -68,6 +113,8 @@ namespace RadialReview.Models
             ClientReview = new ClientReviewModel();
         }
 
+
+       
     }
 
     public class ReviewModelMap :ClassMap<ReviewModel>

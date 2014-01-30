@@ -39,7 +39,7 @@ namespace RadialReview.Models.ViewModels
 
         public int ReviewToComplete { get; set; }
 
-        public CompletionModel GetCompletion()
+        public ICompletionModel GetCompletion(bool split = false)
         {
             int complete = 1;
             int total = 1;

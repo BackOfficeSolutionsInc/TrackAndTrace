@@ -18,6 +18,18 @@ namespace System.Web
             return edit ? "Edit" : "View";
         }
 
+        public static HtmlString GrayScale(this HtmlHelper html, double value, double neg, double pos, double alpha)
+        {
+            double scale=0;
+            if (pos-neg!=0)
+                scale=(value - neg) / (pos - neg)*255.0;
+
+            int coerced = (int)(255-Math.Max(0, Math.Min(scale, 255.0)));
+
+            return new HtmlString(String.Format("rgba({0},{0},{0},{1})", coerced, alpha));
+
+        }
+
         public static HtmlString Color(this HtmlHelper html, double value, double neg, double zero, double pos,double alpha)
         {
             double v = 0;

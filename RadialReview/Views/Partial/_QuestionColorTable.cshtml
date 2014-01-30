@@ -6,7 +6,7 @@
 }
 
 <div class="table-responsive">
-    <table class="fullWidth table-responsive" style="min-width: 50%; border-collapse: collapse;">
+    <table class="fullWidth" style="min-width: 50%; border-collapse: collapse;">
         <tr style="height: 70px; vertical-align: bottom;">
             <th style="width:10px;"></th>
             <th style="text-align:left;" >Question</th>
@@ -44,14 +44,14 @@
                 <td class="alignLeft">
                     @question.First().Askable.GetQuestion()
                 </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.Color(-incomplete  ,-total,0,0,alpha)">@incomplete    </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.Color(never         ,0,0,totalComplete,alpha)">@never         </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.Color(seldom        ,0,0,totalComplete,alpha)">@seldom        </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.Color(sometimes     ,0,0,totalComplete,alpha)">@sometimes     </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.Color(usually       ,0,0,totalComplete,alpha)">@usually       </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.Color(mostly        ,0,0,totalComplete,alpha)">@mostly        </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.Color(always        ,0,0,totalComplete,alpha)">@always        </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.Color(aboveAndBeyond,0,0,totalComplete,alpha)">@aboveAndBeyond</td>
+                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(incomplete     ,0,total,alpha)">@incomplete    </td>
+                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(never          ,0,totalComplete*1.5,alpha)">@never         </td>
+                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(seldom         ,0,totalComplete*1.5,alpha)">@seldom        </td>
+                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(sometimes      ,0,totalComplete*1.5,alpha)">@sometimes     </td>
+                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(usually        ,0,totalComplete*1.5,alpha)">@usually       </td>
+                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(mostly         ,0,totalComplete*1.5,alpha)">@mostly        </td>
+                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(always         ,0,totalComplete*1.5,alpha)">@always        </td>
+                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(aboveAndBeyond ,0,totalComplete*1.5,alpha)">@aboveAndBeyond</td>
 
                 <td class="alignCenter bordered percentage oneline" style="background-color:@(Html.Color(average, 0, .5, 1, alpha));">
                     @average

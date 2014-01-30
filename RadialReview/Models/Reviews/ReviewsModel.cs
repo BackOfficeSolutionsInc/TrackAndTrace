@@ -24,7 +24,7 @@ namespace RadialReview.Models
         public virtual long ForTeamId { get; set; }
         public virtual CompletionModel Completion { get; set; }
 
-        public virtual CompletionModel GetCompletion()
+        public virtual ICompletionModel GetCompletion(bool split=false)
         {
             return Completion;
             //return CompletionModel.FromList(Reviews.Select(x => x.GetCompletion()));

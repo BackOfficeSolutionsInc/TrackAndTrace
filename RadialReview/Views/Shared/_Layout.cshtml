@@ -62,6 +62,9 @@
                                 if (ViewBag.IsManager ?? false)
                                 {
                                     <li>
+                                        <a href="@Url.Action("Index", "Results")">Results <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span></a>
+                                    </li>
+                                    <li>
                                         <a href="@Url.Action("Index", "Manage")">@RadialReview.Properties.DisplayNameStrings.manage <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span></a>
                                     </li>
                                 }
@@ -279,7 +282,12 @@
                     setTimeout(function () { alert.removeClass("start"); }, 1);
                 }
 
-                function showJsonAlert(data, showSuccess) {
+                function showJsonAlert(data, showSuccess, clearOthers) {
+                    if (clearOthers)
+                    {
+                        $("#alerts").html("");
+                    }
+
                     if (!data) {
                         showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
                     } else {

@@ -1,0 +1,979 @@
+﻿<html>
+<head>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="Scripts/jquery.svg.js"></script>
+    <script src="Scripts/jquery.svgdom.js"></script>
+    <style>
+        #chart {
+            width: 900px;
+            height: 900px;
+        }
+
+        .axis {
+            fill: #000000;
+            opacity: 0.4;
+        }
+
+
+            .axis path {
+                fill: none;
+                /*stroke: #E2E2E2;*/
+                shape-rendering: crispEdges;
+                vector-effect: non-scaling-stroke;
+            }
+
+            .axis line,
+            .axis.origin {
+                fill: none;
+                stroke: #000000;
+                opacity: 0.4;
+                stroke-width: 1px;
+                /*vector-effect: non-scaling-stroke;*/
+            }
+
+        .scatter-point {
+            opacity: .08;
+            -moz-transition: all 250ms ease;
+            -o-transition: all 250ms ease;
+            -webkit-transition: all 250ms ease;
+            transition: all 250ms ease;
+        }
+
+        .on.nearest {
+            opacity: 1 !important;
+            stroke-width: 6px;
+        }
+
+        .scatter-point:not(.on) {
+            -webkit-filter: blur(3px);
+        }
+
+        .scatter-link {
+            fill: none;
+            stroke:black;
+            opacity: 0.1;
+            stroke-width: 1px;
+            vector-effect: non-scaling-stroke;
+        }
+
+
+        /*.nearest{
+            stroke-width:3px;
+            opacity:1 !important;
+        }*/
+
+        .inclusive {
+            opacity: .8;
+            fill: gray;
+        }
+
+
+        .tooltip {
+            position: absolute;
+            width: 200px;
+            height: 28px;
+            pointer-events: none;
+        }
+
+
+        .posterior:not(.on) {
+            fill: gray;
+        }
+
+        .about-Self {
+            stroke: darkgoldenrod;
+            fill: yellow;
+        }
+
+        .about-Manager {
+            stroke: blue;
+            fill: lightblue;
+        }
+
+        .about-Subordinate {
+            stroke: darkred;
+            fill: red;
+        }
+
+        .about-Teammate {
+            stroke: darkorange;
+            fill: orange;
+        }
+
+        .about-Peer {
+            stroke: #000;
+            fill: #7AD17A;
+        }
+    </style>
+
+    <script>
+        //ScatterChart Constructor
+        function ScatterChart(id) {
+            this.id = id;
+            var padding = 50;
+
+            this.height = 1000;//Dont change
+            this.width = 1000;//Dont change
+
+            this.leftWidth = 0;
+            this.rightWidth = 0;
+            this.titleHeight = 10;
+            this.footerHeight = 5;
+
+            this.tickSize = 10;
+
+            this.pointRadius = 10;
+
+            this.legendWidth = 200;
+            this.legendHeight = 400;
+            this.chartPadding = padding;
+            this.legendPadding = padding;
+
+            this.xScale = d3.scale.linear();
+            this.yScale = d3.scale.linear();
+
+            this.legend = "right";//top,right,bottom
+
+            this.chartHeight = function () {
+                var additional = 0;
+                if (this.legend.toLowerCase() == "bottom" || this.legend.toLowerCase() == "top")
+                    additional = this.legendPadding * 2;
+                return this.height - (this.titleHeight + this.chartPadding * 2 + this.footerHeight + additional)
+            };
+
+            this.chartWidth = function () {
+                var additional = 0;
+                if (this.legend.toLowerCase() == "left" || this.legend.toLowerCase() == "right")
+                    additional = this.legendPadding * 2;
+                return this.width - (this.leftWidth + this.chartPadding * 2 + this.rightWidth + additional)
+            };
+
+            this.chartTopLeft = function () {
+                var additionalLeft = 0;
+                var additionalTop = 0;
+                if (this.legend.toLowerCase() == "left")
+                    additionalLeft = this.legendPadding;
+                if (this.legend.toLowerCase() == "top")
+                    additionalTop = this.legendPadding;
+
+                var x = this.leftWidth + this.chartPadding + additionalLeft;
+                var y = this.titleHeight + this.chartPadding + additionalTop;
+                return { x: x, y: y };
+            };
+        };
+
+        ScatterChart.prototype.Pull = function Pull(url, data, callback) {
+            var that = this;
+
+            function onComplete(d) {
+                this.Data = d;
+                if (callback)
+                    callback.call(that, d);
+            }
+
+            $.ajax({
+                url: url,
+                method: "GET",
+                data: data,
+                success: function (data) {
+                    onComplete(data.Object);
+                }
+            });
+        };
+
+        function tooltipFunc(scatterDataPoint, xDimId, yDimId) {
+            var x = scatterDataPoint.Dimensions[xDimId];
+            var y = scatterDataPoint.Dimensions[yDimId];
+            return (x.Value / x.Denominator).toFixed(2) + ", " + (y.Value / y.Denominator).toFixed(2);
+        }
+
+        function mouseover(d, chart) {
+            tooltip.transition()
+                 .duration(200)
+                 .style("opacity", .9);
+            tooltip.html(function (a) {
+                return tooltipFunc(d, chart.xDimId, chart.yDimId);
+            }).style("left", (d3.event.pageX + 5) + "px")
+              .style("top", (d3.event.pageY - 28) + "px");
+        }
+
+        function mouseout(d, chart) {
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        }
+
+
+        ScatterChart.prototype.GetDate =function getDate(jsonDate) {
+            return new Date(parseInt(jsonDate.substr(6)));
+        }
+
+
+        ScatterChart.prototype.Plot = function Plot(scatterData, options) {
+            /// <param name="scatterData" type="RadialReview.Models.Json.ScatterData">
+            ///     ScatterPlot data
+            /// </param>
+            //Data quality control
+
+            /*if (!scatterData.Width)
+                scatterData.Width = 1000;
+            if (!scatterData.Height)
+                scatterData.Height = 1000;*/
+            var that = this;
+
+            var first = false;
+            if (!this.once) {
+                this.once = true;
+                first = true;
+            }
+
+            if (options === undefined)
+                options = new Object();
+
+            this.xDimId = options.xDimensionId || scatterData.InitialXDimension;
+            this.yDimId = options.yDimensionId || scatterData.InitialYDimension;
+
+            options.mouseover = options.mouseover || function () { return null; };
+            options.mouseout = options.mouseout || function () { return null; };
+            options.startTime = options.startTime || new Date(0);
+            options.endTime = options.endTime || Date.now;
+            options.time = options.time || Date.now;
+
+
+            options.groups = options.groups || [["*"]];//[["class1","class2"],["class3"]]
+            if (options.groups.length == 0)
+                options.groups = [["*"]];
+
+            if (options.animate === undefined) {
+                options.animate = true;
+            }
+            if (options.reset === undefined) {
+                options.reset = options.reset || false;
+            }
+            options.reset = options.reset || first;
+
+
+            /*var scatterLookup = {};
+            var nextScatterLookup = {};
+            for (var i = 0; i < scatterData.Points.length; i++) {
+                var p = scatterData.Points[i];
+                scatterLookup[p.Id] = p;
+                nextScatterLookup[p.PreviousId] = p;
+            }*/
+
+            //var xDimension=scatterData[xDimensionId];
+            //var yDimension=scatterData[yDimensionId];
+
+            var xDimension = scatterData.Dimensions[this.xDimId];
+            var yDimension = scatterData.Dimensions[this.yDimId];
+
+            //Functions
+            var topLeft = this.chartTopLeft();
+            var width = this.chartWidth();
+            var height = this.chartHeight();
+
+            var dataIdFunction = function (d) {
+                return d.Id;
+            };
+
+            this.xScale = this.xScale.range([0, width]); // value -> display
+            //setup x
+            var xValue = function (scatterDataPoint) {
+                return scatterDataPoint.Dimensions[that.xDimId].Value / scatterDataPoint.Dimensions[that.xDimId].Denominator;
+            }, // data -> value
+                xMap = function (scatterDataPoint) {
+                    return that.xScale(xValue(scatterDataPoint)) + topLeft.x;
+                }, // data -> display
+                xAxis = d3.svg.axis().scale(this.xScale).orient("bottom").tickSize(this.tickSize).tickSubdivide(true);
+
+            this.yScale = this.yScale.range([height, 0]); // value -> display
+            //setup y
+            var yValue = function (scatterDataPoint) {
+                return scatterDataPoint.Dimensions[that.yDimId].Value / scatterDataPoint.Dimensions[that.yDimId].Denominator;
+            }, // data -> value
+                yMap = function (scatterDataPoint) {
+                    return that.yScale(yValue(scatterDataPoint)) + topLeft.y;
+                }, // data -> display
+                yAxis = d3.svg.axis().scale(this.yScale).orient("left").tickSize(this.tickSize).tickSubdivide(true);
+
+            if (options.reset && options.animate) {
+                this.xScale.domain([-1, 1]);
+                this.yScale.domain([-1, 1]);
+            }/* else {
+                xScale.domain([xDimension.Min, xDimension.Max]);
+                yScale.domain([yDimension.Min, yDimension.Max]);
+            }*/
+
+
+
+            var svgContainer = d3.select("#" + this.id + " svg");
+            var container = d3.select("#" + this.id + " svg g.middle");
+            var underContainer = d3.select("#" + this.id + " svg g.bottom");
+            var overContainer = d3.select("#" + this.id + " svg g.top");
+            if (options.reset) {
+                svgContainer = d3.select("#" + this.id).html("").append("svg").attr("xmlns", "http://www.w3.org/2000/svg");
+                svgContainer.html('<marker xmlns="http://www.w3.org/2000/svg" id="triangle" viewBox="0 0 10 10" refX="18" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"/></marker>');
+
+                underContainer = svgContainer.append("g").attr("class", "bottom");
+                container = svgContainer.append("g").attr("class", "middle");
+                overContainer = svgContainer.append("g").attr("class", "top");
+
+                svgContainer.attr("viewBox", "0 0 " + this.width + " " + this.height)
+                    .attr("class", scatterData.Class)
+                    .attr("height", "100%")
+                    .attr("width", "100%");
+
+                //x-axis
+                container.append("g")
+                            .attr("class", "x axis")
+                            .attr("transform", function (d) { return "translate(" + (topLeft.x) + "," + (topLeft.y + height) + ")"; })
+                            .call(xAxis);
+                container.append("line")
+                            .attr("class", "x axis origin")
+                            .attr("x1", topLeft.x)
+                            .attr("x2", topLeft.x + width)
+                            .attr("y1", topLeft.y + height / 2)
+                            .attr("y2", topLeft.y + height / 2);
+
+                //y-axis
+                container.append("g")
+                            .attr("class", "y axis")
+                            .attr("transform", function (d) { return "translate(" + (topLeft.x) + "," + (topLeft.y) + ")"; })
+                            .call(yAxis);
+                container.append("line")
+                            .attr("class", "y axis origin")
+                            .attr("x1", topLeft.x + width / 2)
+                            .attr("x2", topLeft.x + width / 2)
+                            .attr("y1", topLeft.y)
+                            .attr("y2", topLeft.y + height);
+            }
+            /*
+            var axisSet = container.selectAll("x.axis.origin").data([this.xDimId, this.yDimId]);
+
+            axisSet.exit()
+                .remove();
+
+            axisSet.enter()
+                    .append("line")
+                    .attr("class", "x axis origin")
+                    .attr("x1", topLeft.x)
+                    .attr("x2", topLeft.x + width)
+                    .attr("y1", topLeft.y + height / 2)
+                    .attr("y2", topLeft.y + height / 2);*/
+
+
+            //Moving points around
+            var transition = svgContainer;
+
+            if (options.animate) {
+                transition = transition.transition().duration(500).ease("exp-in-out");
+            } else {
+                transition = transition;
+            }
+
+            //Group points together
+            var scatterDataGrouped = [];
+
+            var dataPoints = [];
+
+            function containsAll(list, required) {
+                var comparableWildcards=[];
+                for (var r = 0; r < required.length; r++) {
+                    var found = false;
+                    var regexStr=required[r].replace("*","[a-zA-Z0-9_\\-]+");
+                    var re = new RegExp(regexStr,"g")
+                    for (var i = 0; i < list.length; i++) {
+                        if (re.test(list[i]))
+                        {
+                            found = true;
+                            /*if(required[r]!=list[i])
+                            {
+                                debugger;
+                                comparableWildcards.push(list[i]);
+                            }*/
+                        }
+                    }
+                    if (found == false)
+                        return false;
+                }
+                return true;
+
+                /*if(comparableWildcards.length==0)
+                    return true;
+                comparableWildcards.sort();*/
+            }
+
+
+            function intersection(array1, array2) {
+                return array1.filter(function (n) {
+                    return array2.indexOf(n) != -1
+                });
+            }
+            
+            function getClasses(classStr)
+            {
+                var trimmed=classStr.replace(/^\s+|\s+$/g, '');
+                return trimmed.split(/\s+/g);
+            }
+
+            function normalizedMatchingClasses(classes,requiredClasses)
+            {
+                var matches = [];
+                var required = requiredClasses;
+                for (var r = 0; r < required.length; r++) {
+                    var found = false;
+                    var regexStr=required[r].replace("*","[a-zA-Z0-9_\\-]+");
+                    var re = new RegExp(regexStr, "");
+                    for (var i = 0; i < classes.length; i++) {
+                        if (re.test(classes[i]))
+                        {
+                            found = true;
+                            matches.push(classes[i]);
+                            /*if(required[r]!=list[i])
+                            {
+                                debugger;
+                                comparableWildcards.push(list[i]);
+                            }*/
+                        }
+                    }
+                    if (found == false)
+                        return null;
+                }
+                matches.sort();
+                return matches;
+            }
+
+            function findMatches(points, requiredClasses)//RequiredClasses=["c1","c2"..]
+            {
+                var matches = [];
+                for(var p=0;p<points.length;p++)
+                {
+                    var point = points[p];
+
+                    var availableDims = {};
+
+                    for (var d in point.Dimensions)
+                    {
+                        var dim = point.Dimensions[d];
+                        var classes= point.Class+" "+dim.Class;
+                        var classList = getClasses(classes);
+
+                        //var comparableWildcards=containsAll(classList, requiredClasses);
+
+                        if (containsAll(classList, requiredClasses)) {
+                            /*if(!(comparableWildcards in matches))
+                            {
+                                matches[comparableWildcards]=[];
+                            }*/
+                            availableDims[dim.DimensionId] = dim;
+                        }
+
+                    }
+
+                    if (Object.keys(availableDims).length > 0)
+                    {
+                        var newPoint = jQuery.extend(true, {}, point);
+                        newPoint.Dimensions = availableDims;
+                        matches.push(newPoint);
+                    }
+                }
+                return matches;
+            }
+            
+
+            //groupClasses=["class1","class2"]
+            function mergePoints(points,groupClasses)
+            {
+                var merged={ };
+
+                for(var i=0;i<points.length;i++)
+                {
+                    var point=points[i];
+                    var sliceId=point.SliceId;
+                    var normClasses = normalizedMatchingClasses(getClasses(point.Class), groupClasses);
+                    var groupId = normClasses.join(",");
+                    var key =normClasses;
+                    
+                    key.splice(0,0,sliceId);
+
+
+                    if(!(key in merged))
+                    {
+                        merged[key]={
+                            SliceId:point.SliceId,
+                            Id:point.Id,
+                            Date:point.Date,
+                            Dimensions: {},
+                            Class:point.Class,
+                            GroupId: groupId
+                        };
+                    }
+
+                    merged[key].Class = intersection(getClasses(merged[key].Class), getClasses(point.Class)).join(" ");
+
+                    for(var d in point.Dimensions)
+                    {
+                        var dim=point.Dimensions[d];
+                        if (!(d in merged[key].Dimensions))
+                        {
+                            merged[key].Dimensions[d]={
+                                DimensionId:dim.DimensionId,
+                                Value:0,
+                                Denominator:0,
+                                Class:dim.Class,
+                            };
+                        }
+
+                        merged[key].Dimensions[d].Value+=dim.Value;
+                        merged[key].Dimensions[d].Denominator+=dim.Denominator;
+                        merged[key].Dimensions[d].Class=intersection(getClasses(merged[key].Dimensions[d].Class),getClasses(dim.Class)).join(" ");
+                    }
+                }
+
+                var output=[];
+
+                for (var m in merged)
+                {
+                    //merged[m].groupId = m.;
+                    output.push(merged[m]);
+                }
+                return output;
+            }
+
+            /*
+            if (options.groups.length > 0) {
+                //each groupby statement
+                for (var i = 0; i < options.groups.length; i++) {
+                    //Each class in this groupby:
+                    /*for (var g = 0; g < options.groups[i].length; g++) {
+                        var group = options.groups[i][g];
+                        scatterDataGrouped[i][group.Class] = {
+                            Class: group.Class,
+                            Numerator: 0,
+                            Denominator: 0
+                        };
+                    }
+
+                    var slices = {};
+                    //Which points match this statement?
+                    for (var p = 0; p < scatterData.Points.length; p++) {
+                        var point = scatterData.Points[p];
+                        var classes = point.Class.split(" ");
+
+                        if (containsAll(classes, options.groups[i])) {
+                            var sId = point.SliceId;
+                            if (!(sId in slices)) {
+                                slices[point.SliceId] = {
+                                    dimensions: {},
+                                    maxId: -1,
+                                    lastDate: Date(0, 0, 1),
+                                    id: sId
+                                };
+                            }
+                            var pointDate = this.GetDate(point.Date);
+                            if (pointDate > slices[sId].lastDate) {
+                                slices[sId].lastDate = pointDate;
+                            }
+                            if (point.Id > slices[sId].maxId)
+                                slices[sId].maxId = point.Id;
+
+
+
+                            for (var d in point.Dimensions) {
+                                dim = point.Dimensions[d];
+                                if (!(d in slices[point.SliceId].dimensions)) {
+                                    slices[point.SliceId].dimensions[d] = {
+                                        Value: 0,
+                                        Denominator: 0,
+                                        DimensionId: d,
+                                        Class: dim.Class,
+                                    };
+                                }
+
+                                slices[point.SliceId].dimensions[d]["Value"] += dim.Value;
+                                slices[point.SliceId].dimensions[d]["Denominator"] += dim.Value;
+                                slices[point.SliceId].dimensions[d]["Class"] = intersection(slices[point.SliceId].dimensions[d]["Class"].split(" "), dim.Class.split(" ")).join(" ");
+                            }
+                        }
+                    }
+                    
+
+                    var orderedSlices = []
+
+                    for (var s in slices) {
+                        orderedSlices.push({ key: s, value: slices[s] });
+                    }
+
+                    orderedSlices.sort(function (a, b) { return b.key - a.key; });
+
+
+
+                    for (var s in slices) {
+                        var slice = slices[s];
+                        var sliceIndex = orderedSlices.indexOf(s);
+                        var prevId = null;
+                        if (sliceIndex > 0)
+                            prevId = orderedSlices[sliceIndex - 1].value.maxId;
+
+
+                        dataPoints.push({
+                            Class: options.groups[i].join(" "),
+                            Dimensions: slice.dimensions,
+                            Id: slice.maxId,
+                            PreviousId: prevId,
+                            SliceId: slice.id,
+                            Date: "/Date(" + slice.lastDate.getTime() + ")/"
+                        });
+                    }
+
+
+
+                    /*
+
+                    if (denominator > 0)
+                        dataPoints.push({
+                            Class:  ,
+                            Value: numerator,
+                            Denominator: denominator
+                        });
+                }*
+
+                }
+            } else {
+                dataPoints = scatterData.Points;
+            }*/
+            /*
+
+            */
+
+            function separateByGroups(points,groups)
+            {
+                /*if (groups.length == 0)
+                    return points;*/
+                var separated=[];
+                for(var g=0;g<groups.length;g++)
+                {
+                    var groupPoints=mergePoints(findMatches(points,groups[g]),groups[g]);
+                    for(var p=0;g<groupPoints.length;g++)
+                    {
+                        separated.push(groupPoints[g]);
+                    }
+                }
+                return separated;
+            }
+
+            function getPrevious(point, points) {
+                var found = points.filter(function (d) {
+                    return d.GroupId == point.GroupId;
+                });
+                found.sort(function (a, b) { return b.SliceId - a.SliceId; });
+
+                var index = found.indexOf(point);
+                if (index > 0)
+                    return found[index - 1];
+                return null;
+            }
+
+            function getNext(point, points) {
+                var found = points.filter(function (d) {
+                    return d.GroupId == point.GroupId;
+                });
+                found.sort(function (a, b) { return b.SliceId - a.SliceId; });
+
+                var index = found.indexOf(point);
+                if (index < found.length-1)
+                    return found[index + 1];
+                return null;
+            }
+
+            var dataPoints = separateByGroups(scatterData.Points, options.groups);
+
+
+
+            //On first call:
+            var dataset = container.selectAll(".scatter-point").data(dataPoints, dataIdFunction);
+            dataset.enter()
+                   .append("circle")
+                   .attr("cx", xMap)
+                   .attr("cy", yMap);
+
+            dataset.attr("class", function (d) {
+                return "scatter-point " + d.Class + " " + d.Dimensions[that.xDimId].Class + " " + d.Dimensions[that.yDimId].Class;
+            });
+
+            var lineSet = underContainer.selectAll(".scatter-link").data(dataPoints.filter(function (d) { return getPrevious(d,dataPoints) || false; }), dataIdFunction);
+            lineSet.enter()
+                .append("line")
+                .attr("marker-end", "url(#triangle)")
+                .attr("x1", xMap)
+                .attr("x2", function (d) {
+                    return xMap(getPrevious(d, dataPoints));
+                })
+                .attr("y1", yMap)
+                .attr("y2", function (d) {
+                    return yMap(getPrevious(d, dataPoints));
+                });
+
+            //Resize domain
+            this.xScale.domain([xDimension.Min, xDimension.Max]);
+            this.yScale.domain([yDimension.Min, yDimension.Max]);
+
+            //Shift axis
+            var verticalShift = Math.max(0, Math.min(1, yDimension.Max / (yDimension.Max - yDimension.Min))) * height;
+            var horizontalShift = Math.max(0, Math.min(1, xDimension.Min / (xDimension.Min - xDimension.Max))) * width;
+            transition.select(".x.axis.origin")
+                    .attr("y1", topLeft.y + verticalShift)
+                    .attr("y2", topLeft.y + verticalShift);
+            transition.select(".y.axis.origin")
+                    .attr("x1", topLeft.x + horizontalShift)
+                    .attr("x2", topLeft.x + horizontalShift);
+            transition.select(".x.axis").call(xAxis);
+            transition.select(".y.axis").call(yAxis);
+
+
+            //Update point positions
+            var pointSet = dataset
+                .on("mouseover", function (d) {
+                    options.mouseover(d, that);
+                }).on("mouseout", function (d) {
+                    options.mouseout(d, that);
+                }).classed("prior", function (d) {
+                    var date = new Date(parseInt(d.Date.substr(6)));
+                    return date < options.startTime;
+                }).classed("posterior", function (d) {
+                    var date = new Date(parseInt(d.Date.substr(6)));
+                    return date > options.endTime;
+                }).classed("inclusive", function (d) {
+                    var date = new Date(parseInt(d.Date.substr(6)));
+                    return date <= options.endTime && date >= options.startTime;
+                }).classed("exclusive", function (d) {
+                    var date = new Date(parseInt(d.Date.substr(6)));
+                    return date > options.endTime || date < options.startTime;
+                }).classed("nearest", function (d) {
+
+
+                    var nearestId = null;
+                    var nearestDelta = new Date(100000, 0, 1);
+                    var cur = d;
+                    var alreadyHit = []
+
+                    while (cur && alreadyHit.indexOf(cur.Id) == -1) {
+                        var date = new Date(parseInt(cur.Date.substr(6)));
+                        var delta = Math.abs(date - options.time);
+                        if (delta < nearestDelta) {
+                            nearestDelta = delta;
+                            nearestId = cur.Id;
+                        }
+                        alreadyHit.push(cur.Id);
+                        cur = getPrevious(cur, dataPoints);
+
+                    }
+                    var cur = d;
+                    while (cur && alreadyHit.indexOf(cur.Id) == -1) {
+                        var date = new Date(parseInt(cur.Date.substr(6)));
+                        var delta = Math.abs(date - options.time);
+                        if (delta < nearestDelta) {
+                            nearestDelta = delta;
+                            nearestId = cur.Id;
+                        }
+                        alreadyHit.push(cur.Id);
+                        cur = getNext(cur, dataPoints);
+                    }
+                    return nearestId == d.Id;
+                })
+            if (options.animate) {
+                pointSet = pointSet.transition()
+                .delay(function (d) { return 0; })
+                .duration(500).ease("exp-in-out");
+            }
+            pointSet.attr("cx", xMap)
+            .attr("cy", yMap)
+            .attr("r", function (d) {
+                return that.pointRadius;
+            });
+
+
+            lineSet.attr("class", function (d) {
+                return "scatter-link " + d.Class + " " + d.Dimensions[that.xDimId].Class + " " + d.Dimensions[that.yDimId].Class;
+            })
+                .classed("prior", function (d) {
+                    var date = new Date(parseInt(d.Date.substr(6)));
+                    return date < options.startTime;
+                }).classed("posterior", function (d) {
+                    var date = new Date(parseInt(d.Date.substr(6)));
+                    return date > options.endTime;
+                }).classed("inclusive", function (d) {
+                    var date = new Date(parseInt(d.Date.substr(6)));
+                    return date <= options.endTime && date >= options.startTime;
+                }).classed("exclusive", function (d) {
+                    var date = new Date(parseInt(d.Date.substr(6)));
+                    return date > options.endTime || date < options.startTime;
+                })
+                .transition()
+                .duration(500)
+                .ease("exp-in-out")
+                .attr("x1", xMap)
+                .attr("x2", function (d) {
+                    return xMap(getPrevious(d, dataPoints));
+                })
+                .attr("y1", yMap)
+                .attr("y2", function (d) {
+                    return yMap(getPrevious(d, dataPoints));
+                });
+
+            lineSet.exit().remove();
+            dataset.exit().transition().style("opacity", "0").duration(100).remove();
+
+
+            /*.attr("xx", function (d) {
+                return d.Dimensions[xDimId].Value;
+            })
+            .attr("yy", function (d) {
+                return d.Dimensions[yDimId].Value;
+            })*/
+            //.attr("r", function (d) { return that.pointRadius; })
+
+
+            /**/
+
+
+
+            //var updating = dataset.;
+
+        };
+
+    </script>
+
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://ghusse.github.io/jQRangeSlider/stable/jQRangeSliderMouseTouch.js"></script>
+    <script type="text/javascript" src="http://ghusse.github.io/jQRangeSlider/stable/jQRangeSliderDraggable.js"></script>
+    <script type="text/javascript" src="http://ghusse.github.io/jQRangeSlider/stable/jQRangeSliderBar.js"></script>
+    <script type="text/javascript" src="http://ghusse.github.io/jQRangeSlider/stable/jQRangeSliderHandle.js"></script>
+    <script type="text/javascript" src="http://ghusse.github.io/jQRangeSlider/stable/jQRangeSliderLabel.js"></script>
+    <script type="text/javascript" src="http://ghusse.github.io/jQRangeSlider/stable/jQRangeSlider.js"></script>
+    <script type="text/javascript" src="http://ghusse.github.io/jQRangeSlider/stable/jQDateRangeSliderHandle.js"></script>
+    <script type="text/javascript" src="http://ghusse.github.io/jQRangeSlider/stable/jQDateRangeSlider.js"></script>
+    <script type="text/javascript" src="http://ghusse.github.io/jQRangeSlider/stable/jQRuler.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://ghusse.github.io/jQRangeSlider/stable/css/iThing.css">
+
+</head>
+
+
+<body>
+    <div id="chart">
+
+    </div>
+
+    <input id="date1" type="range" min="557957600000" max="2057957600000" step="31556926000" /><br />
+    <input id="date2" type="range" min="557957600000" max="2057957600000" step="31556926000" /><br />
+    <input id="date3" type="range" min="557957600000" max="2057957600000" step="31556926000" />
+    <article style="padding:50px 20px">
+        <div id="slider"></div>
+    </article>
+
+
+    <select id="xDim"></select>
+    <select id="yDim"></select>
+
+    <div id="filters"></div><br />
+    <div id="groups">
+        <label>Users</label>
+        <input class='group' type='checkbox' checked data-class='user-*' />
+        <label>About</label>
+        <input class='group' type='checkbox' checked data-class='about-*' />
+        <label>Reviews</label>
+        <input class='group' type='checkbox' checked data-class='reviews-*' />
+
+    </div>
+
+
+    <script>
+        var chart = new ScatterChart("chart");
+
+        var tooltip = d3.select("body").append("div")
+                           .attr("class", "tooltip")
+                           .style("opacity", 0);
+        var data;
+        var time = new Date(757957600000);
+
+        function update(reset) {
+            var date1 = new Date(parseInt($("#date1").val()));
+            var date2 = new Date(parseInt($("#date2").val()));
+            var date3 = new Date(parseInt($("#date3").val()));
+            
+            var groups = [$(".group:checked").map(function () { return $(this).data("class"); })];
+
+            chart.Plot(data, {
+                mouseout: mouseout,
+                mouseover: mouseover,
+                animate: true,
+                reset: reset,
+                xDimensionId: $("#xDim").val(),
+                yDimensionId: $("#yDim").val(),
+                startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
+                endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
+                time: date3,//new Date(parseInt($("#date").val()))
+                groups: groups
+            });
+        }
+
+        chart.Pull("/Data/ReviewScatterTest/50?reviewsId=69", null, function (dat) {
+            data = dat;
+            for (var key in dat.Dimensions) {
+                var item = dat.Dimensions[key];
+                $("#xDim").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>")
+                $("#yDim").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>")
+            }
+
+            for (var i = 0; i < dat.Filters.length; i++) {
+                var filter = dat.Filters[i];
+                var checked = "";
+                if (filter.On)
+                    checked = "checked";
+                $("#filters").append("<label>" + filter.Name + "</label><input class='filters' type='checkbox' " + checked + " data-class='" + filter.Class + "'/>");
+            }
+
+            for (var i = 0; i < dat.Groups.length; i++) {
+                var group = dat.Groups[i];
+                var checked = "";
+                if (group.On)
+                    checked = "checked";
+                $("#groups").append("<label>" + group.Name + "</label><input class='group' type='checkbox' " + checked + " data-class='" + group.Class + "'/>");
+            }
+
+            update(true);
+
+
+            $(".date").attr("min", this.GetDate(data.MinDate).getTime() - 86400000);
+            $(".date").attr("max", this.GetDate(data.MaxDate).getTime() + 86400000);
+            /*$(".date")
+            $(".date")*/
+
+            $("#date1").change(function () { update(false); });
+            $("#date2").change(function () { update(false); });
+            $("#date3").change(function () { update(false); });
+            $("#xDim").change(function () { update(false); });
+            $("#yDim").change(function () { update(false); });
+
+            $(".filters").change(function () {
+                if ($(this).is(':checked')) {
+                    $("." + $(this).data("class")).addClass("on");
+                } else {
+                    $("." + $(this).data("class")).removeClass("on");
+                }
+            });
+
+            $(".group").change(function () { update(false); })
+        });
+
+
+
+
+
+
+    </script>
+</body>
+
+
+</html>

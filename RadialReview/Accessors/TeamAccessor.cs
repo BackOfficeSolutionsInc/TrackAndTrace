@@ -160,6 +160,27 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
+        public List<TeamDurationModel> GetAllTeammembersAssociatedWithUser(UserOrganizationModel caller, long forUserId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var userTeams=s.QueryOver<TeamDurationModel>().Where(x=>x.UserId==forUserId && x.DeleteTime!=null).List().ToList();
+
+                    var members=new List<TeamDurationModel>();
+
+                    foreach (var team in userTeams)
+                    {
+                        var teamMembers=s.QueryOver<TeamDurationModel>().Where(x => x.TeamId == team.TeamId && x.DeleteTime != null).List().ToList();
+                        members.AddRange(teamMembers);    
+                    }
+                    return members;
+                }
+            }
+        }
+
         /*
         public static List<TeamDurationModel> GetUsersTeams(ISession s, PermissionsUtility permissions, UserOrganizationModel caller, UserOrganizationModel forUserId, List<OrganizationTeamModel> allOrganizationTeamModel, List<TeamDurationModel> allTeamDurationModels)
         {

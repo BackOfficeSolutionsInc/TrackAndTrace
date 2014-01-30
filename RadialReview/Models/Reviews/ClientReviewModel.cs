@@ -28,6 +28,8 @@ namespace RadialReview.Models.Reviews
             FeedbackIds = new List<LongModel>();
             Charts = new List<LongTuple>();
         }
+
+        public virtual bool IncludeSelfFeedback { get; set; }
     }
 
     public class ClientReviewModelMap : ClassMap<ClientReviewModel>
@@ -40,6 +42,7 @@ namespace RadialReview.Models.Reviews
             Map(x => x.ManagerNotes);
             Map(x => x.IncludeManagerFeedback);
             Map(x => x.IncludeQuestionTable);
+            Map(x => x.IncludeSelfFeedback);
 
             HasMany(x => x.FeedbackIds)
                 .Not.LazyLoad()
@@ -55,7 +58,7 @@ namespace RadialReview.Models.Reviews
         public virtual long Id { get; set; }
         public virtual long Item1 { get; set; }
         public virtual long Item2 { get; set; }
-
+        public virtual bool Grouped { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
     }
     public class LongTupleMap : ClassMap<LongTuple>
@@ -65,6 +68,7 @@ namespace RadialReview.Models.Reviews
             Id(x => x.Id);
             Map(x => x.Item1);
             Map(x => x.Item2);
+            Map(x => x.Grouped);
             Map(x => x.DeleteTime);
         }
     }

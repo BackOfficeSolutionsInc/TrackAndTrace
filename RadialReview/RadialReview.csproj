@@ -241,6 +241,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\StructuremapMvc.cs" />
+    <Compile Include="Controllers\ResultsController.cs" />
     <Compile Include="Controllers\RockstarController.cs" />
     <Compile Include="Controllers\UnitTestController.cs" />
     <Compile Include="Data.Designer.cs">
@@ -281,11 +282,16 @@
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
+    <Compile Include="Models\Completion\MultibarCompletion.cs" />
+    <Compile Include="Models\Enums\ChartDataSource.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Interfaces\ICompletable.cs" />
     <Compile Include="Models\Enums\AboutType.cs" />
+    <Compile Include="Models\Interfaces\ICompletionModel.cs" />
     <Compile Include="Models\Interfaces\IGuidIdentifiable.cs" />
     <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
+    <Compile Include="Models\Charts\ChartOptions.cs" />
+    <Compile Include="Models\Charts\ScatterData.cs" />
     <Compile Include="Models\Responsibilities\AskableAbout.cs" />
     <Compile Include="Models\Enums\WeightType.cs" />
     <Compile Include="Models\Reviews\ClientReviewModel.cs" />
@@ -299,7 +305,7 @@
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
     <Compile Include="Models\ViewModels\AdditionalReviewViewModel.cs" />
-    <Compile Include="Models\ViewModels\CompletionViewModel.cs" />
+    <Compile Include="Models\Completion\TwoBarCompletion.cs" />
     <Compile Include="Models\Enums\TeamType.cs" />
     <Compile Include="Models\Responsibilities\Askable.cs" />
     <Compile Include="Models\Responsibilities\ResponsibilityModel.cs" />
@@ -438,13 +444,17 @@
     <Compile Include="Utilities\AskableUtility.cs" />
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
     <Compile Include="Utilities\Attributes\AccessAttribute.cs" />
+    <Compile Include="Engines\ChartsEngine.cs" />
+    <Compile Include="Utilities\Chart\ChartUtility.cs" />
     <Compile Include="Utilities\CsvUtility.cs" />
     <Compile Include="Utilities\DataTypes\Coworker.cs" />
     <Compile Include="Utilities\DataTypes\Csv.cs" />
+    <Compile Include="Utilities\DataTypes\EqualityComparer.cs" />
     <Compile Include="Utilities\DataTypes\Multimap.cs" />
     <Compile Include="Utilities\DataTypes\Tree.cs" />
     <Compile Include="Utilities\DragDropUtility.cs" />
     <Compile Include="Utilities\Extensions\AboutTypeExtensions.cs" />
+    <Compile Include="Utilities\Extensions\ChartExtensions.cs" />
     <Compile Include="Utilities\Extensions\DictionaryExtensions.cs" />
     <Compile Include="Utilities\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Utilities\Extensions\EnumExtensions.cs" />
@@ -476,6 +486,7 @@
     <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Content\bootstrap-responsive.css" />
     <Content Include="Content\bootstrap-responsive.min.css" />
+    <Content Include="Content\bootstrap-switch.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\chart.css" />
@@ -517,9 +528,11 @@
     <Content Include="Content\home\placelogo8.png" />
     <Content Include="Content\home\radial.png" />
     <Content Include="Content\home\radial2.png" />
+    <Content Include="Content\img\slider.png" />
     <Content Include="Content\print.css" />
     <Content Include="Content\Review.css" />
     <Content Include="Content\slider.css" />
+    <Content Include="Content\toggle.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -558,9 +571,11 @@
     <Content Include="Radial_files\radial.png" />
     <Content Include="Radial_files\radial2.png" />
     <Content Include="Radial_files\widgets.js" />
+    <Content Include="Scatter.html" />
     <Content Include="Scripts\animations\circles.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap-slider.js" />
+    <Content Include="Scripts\bootstrap-switch.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\d3\d3.csv.js" />
@@ -575,6 +590,8 @@
     <Content Include="Scripts\home\widgets.js" />
     <Content Include="Scripts\jquery.signalR-2.0.1.js" />
     <Content Include="Scripts\jquery.signalR-2.0.1.min.js" />
+    <Content Include="Scripts\jquery.svg.js" />
+    <Content Include="Scripts\jquery.svgdom.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.js" />
@@ -721,6 +738,8 @@
     <Content Include="Views\Review\ClientDetailsPrint.cshtml" />
     <Content Include="Views\Partial\_QuestionColorTable.cshtml" />
     <Content Include="Views\Partial\_SupervisorAnswers.cshtml" />
+    <Content Include="Views\Results\Index.cshtml" />
+    <Content Include="Views\Partial\_AnswerTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

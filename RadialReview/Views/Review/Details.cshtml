@@ -5,11 +5,350 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
+<div class="row">
+    <div class="col-lg-9">
+
+        <div class="review" style=" min-width: 650px;padding-top:15px;">
+            <div class="header" style="height:60px;">
+                <div class="pull-left" style="font-size: 30px;">
+                    Manage Review for @Model.Review.ForUser.GetName()
+                </div>
+                <a class="btn btn-default pull-right" href="@Url.Action("Details", "Reviews", new {id=Model.Review.ForReviewsId })">
+                    Back
+                </a>
+            </div>
+
+            <div class="row clearfix">
+                @*<div class="col-md-3 noPad" style="padding-bottom:20px;">
+                    </div>*@
+                <div class="col-md-12 ">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            Chart Builder
+                        </div>
+                        <div class="noselect">
+                            <form id="controls">
+                                <div class="row">
+                                    <div class="col-xs-6 ">
+                                        <div class="alignRight"><h4 class="axisTitle">X-Axis</h4></div>
+                                    </div>
+                                    <div class="col-xs-6 ">
+                                        <div class="inlineBlock">
+                                            <div style="top:10px;"> @Html.DropDownListFor(x => x.xAxis, Model.Axis, new { @class = "form-control" })</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 ">
+                                        <div class="alignRight"><h4 class="axisTitle">Y-Axis</h4></div>
+                                    </div>
+                                    <div class="col-xs-6 ">
+                                        <div class="inlineBlock">
+                                            <div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 ">
+                                        <div class="alignRight"><h4 class="axisTitle">Group</h4></div>
+                                    </div>
+                                    <div class="col-xs-6 " title="Group classes together">
+                                        <div class="inlineBlock">
+                                            <input id="grouped" type="checkbox" style="margin-top: 14px;margin-bottom: 10px;" /> 
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                @*
+                                    <div class="col-xs-6 alignRight ">
+                                        <div class="inlineBlock">
+                                            <div class="alignCenter"><h4 class="axisTitle">X-Axis</h4></div>
+                                            <div style="top:10px;"> @Html.DropDownListFor(x => x.xAxis, Model.Axis, new { @class = "form-control" })</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 alignLeft">
+                                        <div class="inlineBlock">
+                                            <div class="alignCenter"><h4 class="axisTitle">Y-Axis</h4></div>
+                                            <div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
+                                        </div>
+                                        <div title="Add this chart to the review." class="pull-right btn btn-default clickable chartButton" onclick="IncludeChart()">
+                                            Add
+                                        </div>
+                                    </div>*@
+
+                            </form>
+                        </div>
+                        <div class="row noselect">
+                            <div class="col-md-12">
+                                <div style="height:500px">
+                                    <svg id="visualisation"></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Feedback</h3>
+                        </div>
+                        <table class="fullWidth">
+                            <tr>
+                                <th></th>
+                                <th style="width:120px">By</th>
+                                <th>Feedback</th>
+                                <th class="rightButton alignCenter">Included</th>
+                            </tr>
+                            @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>())
+                            {
+                                <tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
+                                    <td></td>
+                                    <td>@feedback.ByUser.GetName()</td>
+                                    <td class="text">@feedback.Feedback</td>
+                                    <td class="alignCenter clickable">
+                                        @{
+                                var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
+                                        }
+                                        <div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+
+                    </div>
+                    @*Self Answers*@
+                    <a id="SelfAnswers" class="shiftByTitle"></a>
+                    <div class="panel panel-primary">
+                        <div onclick="SetSelfAnswers()" class="SelfAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeSelfFeedback?"on":"")" style=""></div>
+                        <div class="panel-heading">
+                            <h3 class="panel-title">@Model.Review.ForUser.GetName()'s Answers</h3>
+                        </div>
+                        @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
+                    </div>
+                    @*Manager Answers*@
+                    <a id="ManagerAnswers" class="shiftByTitle"></a>
+                    <div class="panel panel-primary">
+                        <div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Manager Answers</h3>
+                        </div>
+                        @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+                    </div>
+                    @*All Answers*@
+                    <a id="AggragateAnswers" class="shiftByTitle"></a>
+                    <div class="panel panel-primary">
+                        <div onclick="SetQuestionTable()" class="QuestionTable btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")" style=""></div>
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Aggragate Answers</h3>
+                        </div>
+                        @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
+                    </div>
+                    @*All other answers*@
+                    <a id="OtherAnswers" class="shiftByTitle"></a>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">All Answers</h3>
+                        </div>
+                        @{
+                            var allOtherUsers = Model.AnswersAbout
+                                .GroupBy(x => x.ByUserId)
+                                .Select(x => x.First().ByUser)
+                                .ToList();
+                        }
+
+                        @Html.Partial("~/Views/Partial/_AnswerTable.cshtml", Tuple.Create(allOtherUsers, Model.AnswersAbout.Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList()))
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="smallBreak"></div>
+    </div>
+    <div class="col-lg-3 ">
+
+        <div class="sidebar" style="padding:10px;font-size:12px">
+            @Html.Partial("_User", Model.Review.ForUser)
+        </div>
+        <div class="smallBreak2"></div>
+
+        <div class="sidebar noPad">
+            <input id="Authorize"
+                   type="checkbox" @(Model.Review.ClientReview.Visible ? "checked" : "")
+                   class="switch switch-large pull-right"
+                   style="min-width:128px;"
+                   data-on-label="Sharing"
+                   data-off-label="Private"
+                   data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
+
+
+            @*
+                <div id="Authorized" class="toggle pull-right">
+                    <input id="Authorize" type="checkbox" value="@Model.Review.ClientReview.Visible" onclick="setAuthorize()">
+                    <label for="Authorize"><span>Power</span></label>
+                    <div class="toggleLabel"></div>
+                </div>
+            *@
+            <div class="sidebar-header" style="padding-left:20px;">
+                Share
+            </div>
+            <div class="sidebar-contents">
+                @{
+                    var visible = Model.Review.ClientReview.Visible;
+                }
+
+                <div class="smallBreak"></div>
+                @*Charts*@
+                <h4 class="alignCenter">Charts</h4>
+                <ul class="noBullet" id="charts">
+                    @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
+                    {
+                        <li class="chart_@chart.Id">
+                            @Model.Categories[chart.Item1] vs @Model.Categories[chart.Item2]
+                            <span onclick="RemoveChart(@chart.Id)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
+                        </li>
+                    }
+                </ul>
+                <hr />
+                @*Feedback*@
+                <h4 class="alignCenter">Feedback</h4>
+                <ul class="noBullet" id="feedbacks">
+                    @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete && Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())
+                    {
+                        <li class="feedback feedback_@feedback.Id">
+                            @feedback.Feedback
+                            <span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
+                        </li>
+                    }
+                </ul>
+                <hr />
+                @*Include*@
+                <h4 class="alignCenter">Include</h4>
+                <ul class="noBullet" id="includes">
+                    <li class="clearfix">
+                        <a href="#SelfAnswers">@Model.Review.ForUser.GetName()'s Answers</a>
+                        <div onclick="SetSelfAnswers()"
+                             class="SelfAnswers glyphicon includable pull-right clickable @(Model.Review.ClientReview.IncludeSelfFeedback ? "on" : "")">
+                        </div>
+                    </li>
+                    <li class="clearfix">
+                        <a href="#ManagerAnswers">Managers' Answers</a>
+                        <div onclick="SetManagerAnswers()"
+                             class="ManagerAnswers glyphicon includable pull-right clickable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")">
+                        </div>
+                    </li>
+                    <li class="clearfix">
+                        <a href="#AggragateAnswers">Aggragate Answers</a>
+                        <span onclick="SetQuestionTable()"
+                              class="QuestionTable glyphicon includable pull-right clickable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")">
+                        </span>
+                    </li>
+                </ul>
+                <hr />
+                <h4 class="alignCenter">Notes</h4>
+                <div class="save">Saving</div>
+                @Html.TextAreaFor(x => x.Review.ClientReview.ManagerNotes, new { placeholder = "Optional notes...", style = "width:100%;height:150px;resize:vertical;", id = "ManagerNotes" })
+                <hr />
+                <div class="alignCenter">
+                    <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View</div>
+                    <div class="smallBreak"></div>
+                    @*<div title="Authorize the user to view this review.">
+                        Html.CheckBox("Authorized", , new { onclick = "setAuthorize()" })
+                                        @if (Model.Review.ClientReview.Visible)
+                                        {
+                                            <div style="width:120px;" class="btn btn-success active on" onclick="clickAuthorize()" id="Authorized">Authorized!</div>
+                                        }
+                                        else
+                                        {
+                                            <div style="width:120px;" class="btn btn-danger" onclick="clickAuthorize()" id="Authorized">Not Authorized</div>
+                                        }
+                                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginStyles())
+{
+    <style>
+        .btn.includable {
+            opacity: .45;
+            -moz-transition: opacity 200ms ease;
+            -o-transition: opacity 200ms ease;
+            -webkit-transition: opacity 200ms ease;
+            transition: opacity 200ms ease;
+        }
+
+            .btn.includable:hover {
+                opacity: 1;
+            }
+
+
+            .btn.includable.on {
+                color: #FFF;
+                background-color: #5CB85C;
+                border-color: #4CAE4C;
+            }
+
+            .btn.includable:not(.on) {
+                color: #FFF;
+                background-color: #D9534F;
+                border-color: #D43F3A;
+            }
+
+        .chartButton {
+            top: 39px;
+            position: absolute;
+            right: 39px;
+        }
+
+        .save {
+            position: absolute;
+            right: 26px;
+            display: inline-block;
+            border: 1px solid #AFADAD;
+            padding: 3px;
+            border-bottom-left-radius: 3px;
+            background-color: #D1FCD1;
+            opacity: 0;
+            -webkit-transition: all .10s ease;
+            -moz-transition: all .10s ease;
+            -ms-transition: all .10s ease;
+            -o-transition: all .10s ease;
+            transition: all .10s ease;
+        }
+
+        .saving {
+            opacity: .5;
+        }
+
+        .has-switch {
+            float: right;
+            margin: 8px;
+        }
+    </style>
+    <link href="~/Content/chart.css" rel="stylesheet" />
+    <link href="~/Content/toggle.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-switch.css" rel="stylesheet" />
+}
 @using (Html.BeginScripts())
 {
+    <script src="/scripts/d3/d3.js"></script>
+    <script src="/scripts/d3/d3.csv.js"></script>
+    <script src="/scripts/d3/ScatterChart.js"></script>
+    <script src="~/Scripts/bootstrap-switch.js"></script>
     <script src="~/Scripts/review/translateSlider.js"></script>
+    <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
+
     <script>
         var last = null;
+
+
+        function Group() {
+
+        }
 
         function saveText() {
             var notes = $("#ManagerNotes").val();
@@ -39,7 +378,7 @@
             @if(!((bool?)ViewBag.Hints ?? true))
             {
                 @:return true;
-            }
+                                                                                                                    }
 
             return ($("#charts li").size() != 0 || $("#feedbacks li").size() != 0);
         }
@@ -71,6 +410,25 @@
                             $(".ManagerAnswers").addClass("on");
                         } else {
                             $(".ManagerAnswers").removeClass("on");
+                        }
+                    }
+                }
+            });
+        }
+
+        function SetSelfAnswers() {
+            var on = !$(".SelfAnswers").hasClass("on");
+            var dat = { reviewId: "@Model.Review.Id", on: on };
+            $.ajax({
+                url: "/Review/SetIncludeSelfAnswers",
+                data: dat,
+                method: "GET",
+                success: function (data) {
+                    if (data.Object) {
+                        if (data.Object.On) {
+                            $(".SelfAnswers").addClass("on");
+                        } else {
+                            $(".SelfAnswers").removeClass("on");
                         }
                     }
                 }
@@ -137,8 +495,8 @@
             });
         }
 
-        function setAuthorize() {
-            var auth = !$("#Authorized").hasClass("on");
+        function setAuthorize(auth) {
+            //var auth = $("#Authorized input").prop('checked');
             var dat = new Object();
             dat.Authorized = auth;
             dat.ReviewId = "@Model.Review.Id";
@@ -148,20 +506,22 @@
                 data: dat,
                 method: "GET",
                 success: function (data) {
-                    showJsonAlert(data, false);
+                    showJsonAlert(data, false, true);
                     if (data.Object.Authorized) {
-                        $("#Authorized").addClass("on");
+                        $("#Authorize").prop('checked', true);
+                        /*$("#Authorized").addClass("on");
                         $("#Authorized").addClass("active");
                         $("#Authorized").addClass("btn-success");
                         $("#Authorized").removeClass("btn-danger");
-                        $("#Authorized").html("Authorized!");
+                        $("#Authorized .toggleLabel").html("Sharing");*/
 
                     } else {
-                        $("#Authorized").removeClass("on");
+                        /*$("#Authorized").removeClass("on");
                         $("#Authorized").removeClass("active");
                         $("#Authorized").removeClass("btn-success");
-                        $("#Authorized").addClass("btn-danger");
-                        $("#Authorized").html("Not Authorized");
+                        $("#Authorized").addClass("btn-danger");*/
+                        $("#Authorize").prop('checked', false);
+                        //$("#Authorized .toggleLabel").html("Not sharing");
                     }
                 }
 
@@ -175,10 +535,13 @@
         function IncludeChart() {
             var xId = $("#xAxis").val();
             var yId = $("#yAxis").val();
+            debugger;
+            var grouped = $("#grouped").is(':checked');
 
             var dat = new Object();
             dat.X = xId;
             dat.Y = yId;
+            dat.Grouped = grouped;
             dat.ReviewId = "@Model.Review.Id";
 
             $.ajax({
@@ -209,220 +572,15 @@
         }
 
     </script>
-}
 
-@using (Html.BeginStyles())
-{
-    <style>
-        .btn.includable.on {
-            color: #FFF;
-            background-color: #5CB85C;
-            border-color: #4CAE4C;
-        }
-
-        .btn.includable:not(.on) {
-            color: #FFF;
-            background-color: #D9534F;
-            border-color: #D43F3A;
-        }
-
-        .chartButton {
-            top: 39px;
-            position: absolute;
-            right: 39px;
-        }
-
-        .save {
-            position: absolute;
-            right: 26px;
-            display: inline-block;
-            border: 1px solid #AFADAD;
-            padding: 3px;
-            border-bottom-left-radius: 3px;
-            background-color: #D1FCD1;
-            opacity: 0;
-            -webkit-transition: all .10s ease;
-            -moz-transition: all .10s ease;
-            -ms-transition: all .10s ease;
-            -o-transition: all .10s ease;
-            transition: all .10s ease;
-        }
-
-        .saving {
-            opacity: .5;
-        }
-    </style>
-    <link href="~/Content/chart.css" rel="stylesheet" />
-}
-
-
-
-<div class="row">
-    <div class="col-lg-9">
-        <div class="row" style="height: 0px;">
-            <div class="col-sm-1 col-sm-offset-11" style="height: 0px; position: relative; top: 10px; left: -10px; z-index: 1000;">
-                <a class="btn btn-default pull-right" href="@Url.Action("Details", "Reviews", new {id=Model.Review.ForReviewsId })">
-                    Back
-                </a>
-            </div>
-        </div>
-        <div class="review " style=" min-width: 650px;">
-            <div class="row">
-                @*<div class="col-md-3 noPad" style="padding-bottom:20px;">
-                    </div>*@
-                <div class="col-md-12 ">
-                    <div class="row noselect">
-                        <form id="controls">
-                            <div class="col-xs-6 alignRight ">
-                                <div class="inlineBlock">
-                                    <div class="alignCenter"><h4 class="axisTitle">X-Axis</h4></div>
-                                    <div style="top:10px;"> @Html.DropDownListFor(x => x.xAxis, Model.Axis, new { @class = "form-control" })</div>
-                                </div>
-                            </div>
-                            <div class="col-xs-6 alignLeft">
-                                <div class="inlineBlock">
-                                    <div class="alignCenter"><h4 class="axisTitle">Y-Axis</h4></div>
-                                    <div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
-                                </div>
-                                <div title="Add this chart to the review." class="pull-right btn btn-default clickable chartButton" onclick="IncludeChart()">
-                                    Add
-                                </div>
-
-                            </div>
-                        </form>
-                    </div>
-                    <div class="row noselect">
-                        <div class="col-md-12">
-                            <div style="height:500px">
-                                <svg id="visualisation"></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Feedback</h3>
-                        </div>
-                        <table class="fullWidth">
-                            <tr>
-                                <th></th>
-                                <th style="width:120px">By</th>
-                                <th>Feedback</th>
-                                <th class="rightButton alignCenter">Included</th>
-                            </tr>
-                            @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>())
-                            {
-                                <tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
-                                    <td></td>
-                                    <td>@feedback.ByUser.GetName()</td>
-                                    <td class="text">@feedback.Feedback</td>
-                                    <td class="alignCenter clickable">
-                                        @{
-                                var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
-                                        }
-                                        <div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </table>
-
-                    </div>
-                    @*Manager Answers*@
-                    <div class="panel panel-default">
-                        <div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Manager Answers</h3>
-                        </div>
-                        @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml",Tuple.Create(Model.Supervisers,Model.AnswersAbout))
-                    </div>
-                    @*All Answers*@
-                    <div class="panel panel-default">
-                        <div onclick="SetQuestionTable()" class="QuestionTable btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")" style=""></div>
-                        <div class="panel-heading">
-                            <h3 class="panel-title">All Answers</h3>
-                        </div>
-                        @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <div class="smallBreak"></div>
-    </div>
-    <div class="col-lg-3 ">
-        <div class="sidebar" style="padding:10px;font-size:12px">
-            @Html.Partial("_User", Model.Review.ForUser)
-            <h3 class="alignCenter"><u>Build Report</u></h3>
-            <div class="smallBreak"></div>
-            <h4 class="alignCenter">Charts</h4>
-            <ul class="noBullet" id="charts">
-                @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
-                {
-                    <li class="chart_@chart.Id">
-                        @Model.Categories[chart.Item1] vs @Model.Categories[chart.Item2]
-                        <span onclick="RemoveChart(@chart.Id)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
-                    </li>
-                }
-            </ul>
-            <hr />
-            <h4 class="alignCenter">Feedback</h4>
-            <ul class="noBullet" id="feedbacks">
-                @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete && Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())
-                {
-                    <li class="feedback feedback_@feedback.Id">
-                        @feedback.Feedback
-                        <span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
-                    </li>
-                }
-            </ul>
-            <hr />
-            <h4 class="alignCenter">Include</h4>
-            <ul class="noBullet" id="includes">
-                <li class="clearfix">
-                    Managers' Answers
-                    <div  onclick="SetManagerAnswers()"
-                          class="ManagerAnswers glyphicon includable pull-right clickable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")">
-                    </div>
-                </li>
-                <li class="clearfix">
-                    All Answers Table
-                    <span onclick="SetQuestionTable()"
-                          class="QuestionTable glyphicon includable pull-right clickable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")">
-                    </span>
-                </li>
-            </ul>
-            <hr />
-            <h4 class="alignCenter">Notes</h4>
-            <div class="save">Saving</div>
-            @Html.TextAreaFor(x => x.Review.ClientReview.ManagerNotes, new { placeholder = "Optional notes...", style = "width:100%;height:150px;resize:vertical;", id = "ManagerNotes" })
-            <hr />
-            <div class="alignCenter">
-                <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View</div>
-                <div class="smallBreak"></div>
-                <div title="Authorize the user to view this review.">
-                    @*Html.CheckBox("Authorized", , new { onclick = "setAuthorize()" })*@
-                    @if (Model.Review.ClientReview.Visible)
-                    {
-                        <div style="width:120px;" class="btn btn-success active on" onclick="clickAuthorize()" id="Authorized">Authorized!</div>
-                    }
-                    else
-                    {
-                        <div style="width:120px;" class="btn btn-danger" onclick="clickAuthorize()" id="Authorized">Not Authorized</div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@using (Html.BeginScripts())
-{
-    <script src="/scripts/d3/d3.js"></script>
-    <script src="/scripts/d3/d3.csv.js"></script>
-    <script src="/scripts/d3/ScatterChart.js"></script>
-    <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
     <script>
         $(function () {
+            $('.switch').bootstrapSwitch();
+            $('#Authorize').on('switch-change', function (e, data) {
+                setAuthorize(data.value);
+            });
+
+
             $('#ManagerNotes').keyup($.debounce(500, saveText));
             /*$(".percentage").each(function () {
                 var value = parseFloat($(this).html()) * 100;
@@ -437,6 +595,7 @@
         var getAxis = function () {
             var a = document.getElementById("xAxis"),
                 b = document.getElementById("yAxis");
+                grouped = $("#grouped").is(':checked');
             //c = document.getElementById("r-axis");
             var x = a.options[a.selectedIndex].value,
                 y = b.options[b.selectedIndex].value;
@@ -450,7 +609,8 @@
                 yAxis: y,
                 //radiusAxis: r,
                 xAxisLabel: xlabel,
-                yAxisLabel: ylabel
+                yAxisLabel: ylabel,
+                grouped: grouped
             };
         };
 
@@ -467,5 +627,6 @@
         document.getElementById("controls").addEventListener("keyup", chart.update, false);
         document.getElementById("xAxis").addEventListener("change", chart.update, false);
         document.getElementById("yAxis").addEventListener("change", chart.update, false);
+        document.getElementById("grouped").addEventListener("change", chart.update, false);
     </script>
 }

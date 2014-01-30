@@ -270,6 +270,14 @@ namespace RadialReview.Accessors
 
                     answer.Complete = value.HasValue;
                     answer.Percentage = value;
+                    if (answer.Complete)
+                    {
+                        answer.CompleteTime = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        answer.CompleteTime = null;
+                    }
                     s.Update(answer);
 
                     tx.Commit();
@@ -296,6 +304,14 @@ namespace RadialReview.Accessors
 
                     answer.Complete = value != ThumbsType.None;
                     answer.Thumbs = value;
+                    if (answer.Complete)
+                    {
+                        answer.CompleteTime = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        answer.CompleteTime = null;
+                    }
                     s.Update(answer);
                     tx.Commit();
                     s.Flush();
@@ -313,6 +329,14 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).EditReview(answer.ForReviewId);
 
                     answer.Complete = (choice != RelativeComparisonType.None);
+                    if (answer.Complete)
+                    {
+                        answer.CompleteTime = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        answer.CompleteTime = null;
+                    }
                     answer.Choice = choice;
                     s.Update(answer);
                     tx.Commit();
@@ -331,6 +355,11 @@ namespace RadialReview.Accessors
                     var answer = s.Get<FeedbackAnswer>(questionId);
                     PermissionsUtility.Create(s, caller).EditReview(answer.ForReviewId);
                     answer.Complete = !String.IsNullOrWhiteSpace(feedback);
+                    if (answer.Complete){
+                        answer.CompleteTime = DateTime.UtcNow;
+                    }else{
+                        answer.CompleteTime = null;
+                    }
                     answer.Feedback = feedback;
                     s.Update(answer);
                     tx.Commit();
@@ -382,7 +411,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        public long AddChartToReview(UserOrganizationModel caller, long reviewId, long xCategoryId, long yCategoryId)
+        public long AddChartToReview(UserOrganizationModel caller, long reviewId, long xCategoryId, long yCategoryId,bool grouped)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -394,7 +423,7 @@ namespace RadialReview.Accessors
 
                     var review = s.Get<ReviewModel>(reviewId);
 
-                    var tuple = new LongTuple() { Item1 = xCategoryId, Item2 = yCategoryId };
+                    var tuple = new LongTuple() { Item1 = xCategoryId, Item2 = yCategoryId, Grouped=grouped };
                     review.ClientReview.Charts.Add(tuple);
                     s.Update(review);
                     tx.Commit();
@@ -451,6 +480,24 @@ namespace RadialReview.Accessors
 
                     var review = s.Get<ReviewModel>(reviewId);
                     review.ClientReview.IncludeManagerFeedback = on;
+                    s.Update(review);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+
+        public void SetIncludeSelfAnswers(UserOrganizationModel caller, long reviewId, bool on)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.IncludeSelfFeedback = on;
                     s.Update(review);
                     tx.Commit();
                     s.Flush();

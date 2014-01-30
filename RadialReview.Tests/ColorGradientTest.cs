@@ -12,8 +12,8 @@ namespace RadialReview.Tests
         {
             for(int i=-100;i<100;i++)
             {
-                var str=HtmlExtensions.Color(null, i, 0, 1, 90).ToHtmlString();
-                Console.WriteLine("<div style='background-color:" + str + "'>"+str+"</div>");
+               // var str=HtmlExtensions.Color(null, i, 0, 1, 90).ToHtmlString();
+                //Console.WriteLine("<div style='background-color:" + str + "'>"+str+"</div>");
             }
         }
     }
