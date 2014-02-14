@@ -50,7 +50,7 @@ namespace RadialReview.Models.Charts
 
         public virtual String Options { get; set; }
 
-        public DateTime? DeleteTime { get; set; }
+        public virtual DateTime? DeleteTime { get; set; }
 
         public ChartOptions()
         {

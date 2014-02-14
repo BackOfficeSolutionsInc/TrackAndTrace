@@ -7,6 +7,7 @@ namespace RadialReview.Models.Charts
 {
     public class ScatterPlot
     {
+        public List<ScatterLegendItem> Legend { get; set; }
         public List<ScatterFilter> Filters { get; set; }
         public List<ScatterGroup> Groups { get; set; }
         public String Class { get; set; }
@@ -14,6 +15,8 @@ namespace RadialReview.Models.Charts
         public Dictionary<String,ScatterDimension> Dimensions { get; set; }
         public String InitialXDimension { get; set; }
         public String InitialYDimension { get; set; }
+
+        public dynamic OtherData { get; set; }
 
         public ScatterPlot Copy()
         {
@@ -26,11 +29,39 @@ namespace RadialReview.Models.Charts
                 InitialXDimension = InitialXDimension,
                 InitialYDimension = InitialYDimension,
                 Points = Points.Select(x => x.Copy()).ToList(),
+                Legend=Legend.Select(x=>x.Copy()).ToList()
             };
         }
 
         public DateTime? MinDate { get; set; }
         public DateTime? MaxDate { get; set; }
+    }
+
+    public class ScatterLegendItem
+    {
+        public String Name {get;set;}
+        public String Class {get;set;}
+
+        public ScatterLegendItem()
+        {
+        }
+
+        public ScatterLegendItem(String name,String clss)
+        {
+            Name = name;
+            Class = clss;
+        }
+
+        public ScatterLegendItem Copy()
+        {
+            return new ScatterLegendItem()
+            {
+                Class=Class,
+                Name=Name
+            };
+        }
+
+
     }
 
     public class ScatterFilter
@@ -79,6 +110,8 @@ namespace RadialReview.Models.Charts
         public DateTime Date { get; set; }
         public Dictionary<String,ScatterDatum> Dimensions { get; set; }
         public String Class { get; set; }
+
+        public dynamic OtherData { get; set; }
 
         public ScatterData Copy()
         {

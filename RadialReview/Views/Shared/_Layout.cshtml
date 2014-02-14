@@ -53,19 +53,31 @@
                                 if (((int?)ViewBag.Organizations ?? 0) > 0)
                                 {
                                     <li>
-                                        <a href="@Url.Action("Index", "Review")">@RadialReview.Properties.DisplayNameStrings.reviews <span id="ReviewsNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span></a>
+                                        <a href="@Url.Action("Index", "Review")">
+                                            Take
+                                            <span id="ReviewsNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                        </a>
                                     </li>
                                     <li>
-                                        <a href="@Url.Action("Details", "User", new { id = ViewBag.UserId })">Responsibilities <span id="ResponsibilitiesNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span></a>
+                                        <a href="@Url.Action("Details", "User", new { id = ViewBag.UserId })">
+                                            Self 
+                                            <span id="ResponsibilitiesNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                        </a>
                                     </li>
                                 }
                                 if (ViewBag.IsManager ?? false)
                                 {
                                     <li>
-                                        <a href="@Url.Action("Index", "Results")">Results <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span></a>
+                                        <a href="@Url.Action("Index", "Results")">
+                                            Reviews 
+                                            <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                        </a>
                                     </li>
                                     <li>
-                                        <a href="@Url.Action("Index", "Manage")">@RadialReview.Properties.DisplayNameStrings.manage <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span></a>
+                                        <a href="@Url.Action("Index", "Manage")">
+                                             Admin
+                                            <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                        </a>
                                     </li>
                                 }
                             }

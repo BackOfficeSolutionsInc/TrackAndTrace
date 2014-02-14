@@ -53,7 +53,7 @@
                 <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(always         ,0,totalComplete*1.5,alpha)">@always        </td>
                 <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(aboveAndBeyond ,0,totalComplete*1.5,alpha)">@aboveAndBeyond</td>
 
-                <td class="alignCenter bordered percentage oneline" style="background-color:@(Html.Color(average, 0, .5, 1, alpha));">
+                <td class="alignCenter bordered color-value-percentage oneline" @*style="background-color:@(Html.Color(average, 0, .5, 1, alpha));"*@>
                     @average
                 </td>
             </tr>

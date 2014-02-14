@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.SignalR;
 using RadialReview.Accessors;
+using RadialReview.Engines;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
@@ -30,6 +31,7 @@ namespace RadialReview.Controllers
         protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
         protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
         protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
+        protected static ChartsEngine _ChartsEngine = new ChartsEngine();
 
 
         //
@@ -405,8 +407,14 @@ namespace RadialReview.Controllers
 
             var user =_UserAccessor.GetUserOrganization(GetUser(),review.ForUserId,false,false);
 
-            var questions = _ResponsibilitiesAccessor.GetResponsibilitiesForUser(GetUser(),review.ForUserId);
 
+            foreach (var c in review.ClientReview.Charts)
+            {
+                c.Title = _ChartsEngine.GetChartTitle(GetUser(), c.Id);
+            }
+
+
+            var questions = _ResponsibilitiesAccessor.GetResponsibilitiesForUser(GetUser(),review.ForUserId);
             var model = new ReviewDetailsViewModel()
             {
                 Review = review,
@@ -494,13 +502,24 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public JsonResult AddChart(long x, long y, long reviewId,bool grouped)
+        public JsonResult AddChart(long x, long y, long reviewId, String groups, String filters,long start,long end)
         {
-            var chartId = _ReviewAccessor.AddChartToReview(GetUser(), reviewId, x, y, grouped);
+            var chartId = _ReviewAccessor.AddChartToReview(GetUser(), reviewId, x, y, groups, filters,start.ToDateTime(),end.ToDateTime());
+
             var xTitle = _CategoryAccessor.Get(GetUser(), x).Category.Translate();
             var yTitle = _CategoryAccessor.Get(GetUser(), y).Category.Translate();
-
-            return Json(ResultObject.Create(new { XTitle = xTitle, YTitle = yTitle, ChartId = chartId, Grouped=grouped }), JsonRequestBehavior.AllowGet);
+            var title = _ChartsEngine.GetChartTitle(GetUser(),chartId);
+            
+            return Json(ResultObject.Create(new {
+                XTitle = xTitle,
+                YTitle = yTitle,
+                ChartId = chartId,
+                Grouped = groups,
+                Filters = filters,
+                Title = title,
+                Start=start,
+                End=end,
+            }), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]

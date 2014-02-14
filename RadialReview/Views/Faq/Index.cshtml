@@ -1,0 +1,183 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginStyles())
+{
+    <style>
+        .indent {
+            padding-left: 10px;
+        }
+
+        article {
+            padding-left: 20px;
+            margin-top: -10px;
+        }
+
+        .boldFirst tr td:first-child {
+            font-weight: bold;
+        }
+
+        .header .title {
+            font-size: 30px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: 500;
+            line-height: 1.1;
+            float: left;
+            margin-bottom: 5px;
+        }
+
+        .header .topLink {
+            float: right;
+            position: relative;
+            top: 9px;
+            right: 9px;
+        }
+
+        .header:after {
+            content: ".";
+            visibility: hidden;
+            display: block;
+            height: 0;
+            clear: both;
+        }
+    </style>
+}
+
+@section top
+{
+    <a id="top" class="shiftByTitle"></a>
+    <div class="jumbotron">
+        <h1 class="noMargin alignCenter" style="color: #4E4D5F;">Frequently Asked Questions</h1>
+        <br />
+        <ul class="alignCenter noBullet">
+            <li><a href="#Reviews">Radial Reviews</a></li>
+            <li><a href="#Questions">Questions</a></li>
+            <li><a href="#IssueReviews">Managing a review</a></li>
+            <li><a href="#ReviewSubordinates">Reviewing subordinates</a></li>
+        </ul>
+    </div>
+}
+
+
+<div class="header">
+    <a id="Reviews" class="shiftByTitle"></a>
+    <div class="title">Radial Reviews</div>
+    <a href="#top" class="topLink">Top</a>
+</div>
+<div class="review">
+
+    <article>
+        <h4>What are Radial Reviews?</h4>
+        <p class="indent">
+            Radial Reviews are a mechanism for measuring the progress and direction of a company by collecting
+            information from all employees about their perspective about their immediate coworkers. Immediate coworkers can include
+            teammates, subordinates, superiors, and themselves. The review is a snapshot of the company's health and can be used
+            to alert managment of positive and negative changes within the company.
+        </p>
+
+        <h4>Why issue reviews?</h4>
+        <p class="indent">
+            The health of a company is related to the psychological well-being of the employees that comprise it. A healthier company can lead to
+            improved communication channels between employees and management which can be fostered to create efficient work channels giving your company
+            an edge on the competition, reduce turnover, improve employee stamina and loyalty.
+            A review can be thought of as a snapshot of the company's health. By issuing reviews frequently, you can generate a moving picture of trends within
+            the company and quickly detect divergances between expectations and quickly make changes saving your company time and money.
+        </p>
+    </article>
+
+
+</div>
+<br />
+<div class="header">
+    <a id="Questions" class="shiftByTitle"></a>
+    <div class="title">Questions</div>
+    <a href="#top" class="topLink">Top</a>
+</div>
+<div class="review">
+    <article>
+        <h4>What are questions?</h4>
+        <p class="indent">
+            Every employee has responsibilities to their company. Questions are a method of determining if expectations are being met.
+            These questions can cover anything the comapny would like to measure qualitativly.
+            They may range from the individuals performance to their attitude but are not restricted to these things.
+            Before the review is issued, every employee should work with their managers to establish a set of questions that relate to their responsibilities to the company.
+        </p>
+        <div class="indent">
+            Some examples of questions might be:
+            <ul>
+                <li>"Am I hitting my sales numbers?"</li>
+                <li>"Am I pleasent to work with?"</li>
+                <li>"Am I focused on the customer?"</li>
+            </ul>
+        </div>
+
+        <h4>How are questions used?</h4>
+        <p class="indent">
+            When a review is issued, the employee's immediate coworkers are all asked questions of the employee.
+            The answers are aggregated and presented to the employee's managers.
+        </p>
+    </article>
+
+</div>
+<br />
+
+<div class="header">
+    <a id="IssueReviews" class="shiftByTitle"></a>
+    <div class="title">Managing a review</div>
+    <a href="#top" class="topLink">Top</a>
+</div>
+<div class="review">
+    <article>
+        <h4>How do I issue a review?</h4>
+        <div class="indent">
+            Managers have the authority to issue a review. To do so, click "Reviews" tab in the main menu then click the "+" button. A dialog will appear with options for the review.
+            <div class="indent">
+                <div class="indent">
+                    <table class="boldFirst">
+                        <tr><td>Review Name:</td><td>Can be anything you want, but should be something easy to identify.</td></tr>
+                        <tr><td>For Team:</td><td>You may issue a review for the entire company or for any team (autogenerated or not) within the company.</td></tr>
+                        <tr><td>Due:</td><td>The date which the review can no longer be edited.</td></tr>
+                        <tr><td>Send emails:</td><td>Checking this box will send an email notification to all employees being reviewed</td></tr>
+                        <tr><td>Users will review Self:</td><td>Employees review themselves</td></tr>
+                        <tr><td>Users will review Peers:</td><td>Employees review all subordinates of their manager.</td></tr>
+                        <tr><td>Users will review Managers:</td><td>Employees review all of their managers.</td></tr>
+                        <tr><td>Users will review Subordinates:</td><td>Employees review all of their subordinates.</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <h4>How do I change an existing review?</h4>
+        <div class="indent">
+            You can update an outstanding review by clicking "Reviews" and then "Details" on the particular review. From here, you can add/remove questions and users from the review.
+            To add a question, you must first add the question to the employee, then add the question to the review.
+        </div>
+    </article>
+</div>
+<br />
+
+<div class="header">
+    <a id="ReviewSubordinates" class="shiftByTitle"></a>
+    <div class="title">Reviewing subordinates</div>
+    <a href="#top" class="topLink">Top</a>
+</div>
+<div class="review">
+    <article>
+
+        <h4>Discussing results with employees</h4>
+        <p class="indent">
+            After everyone has completed their reviews, managers should take some time to sit down with their subordinates
+            to discuss feedback from coworkers and plan out changes for the next review cycle. If any abnormal changes occur between review cycles,
+            these should be discussed immediately to quickly fix any problems.
+        </p>
+        <h4>How do I prepare a review?</h4>
+        <p class="indent">
+            You can prepare reviews for employees by clicking "Reviews" then choosing the review then "View" for the chosen user.
+        </p>
+        <p class="indent">
+            From this view, you can prepare charts for the user, add/remove feedback from others, add/remove the employee's answers, add/remove managers' answers, add/remove aggregate answers
+        </p>
+    </article>
+</div>

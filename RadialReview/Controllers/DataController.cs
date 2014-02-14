@@ -24,7 +24,7 @@ namespace RadialReview.Controllers
         protected static ChartsEngine _ChartsEngine = new ChartsEngine();
         //
         // GET: /Data/
-        [Access(AccessLevel.Any)]
+        /*[Access(AccessLevel.Any)]
         public JsonResult Scatter()
         {
             var data = GenerateData();
@@ -194,9 +194,8 @@ namespace RadialReview.Controllers
                 InitialYDimension = "dim-id-1",
             };
             return data;*/
-        }
-
-
+        /*}
+        
         [Access(AccessLevel.UserOrganization)]
         public JsonResult ReviewScatterTest(long id, long reviewsId,string filters)
         {
@@ -211,12 +210,45 @@ namespace RadialReview.Controllers
 
             return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
         }
+        */
+
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult Scatter(long id,long reviewId)
+        {
+            var chartTuple = _ReviewAccessor.GetChartTuple(GetUser(),reviewId, id);
+
+            var reviewContainer = _ReviewAccessor.GetReviewContainerByReviewId(GetUser(), reviewId);
+            var review =_ReviewAccessor.GetReview(GetUser(),reviewId);
+
+            var title = _ChartsEngine.GetChartTitle(GetUser(),id);
+
+
+            var options = new ChartOptions()
+            {
+                Id=id,
+                ChartName = title,
+                DeleteTime = chartTuple.DeleteTime,
+                DimensionIds = "category-"+chartTuple.Item1+",category-"+chartTuple.Item2,
+                Filters=chartTuple.Filters,
+                ForUserId = review.ForUserId,
+                GroupBy=chartTuple.Groups,
+                Options=""+reviewContainer.Id,
+                Source = ChartDataSource.Review
+                
+            };
+            var scatter = _ChartsEngine.ScatterFromOptions(GetUser(), options);
+            return Json(ResultObject.Create(scatter), JsonRequestBehavior.AllowGet);
+        }
 
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult ReviewScatter(long id, long reviewsId, bool includeHistory = false)
+        public JsonResult ReviewScatter(long id, long reviewsId)
         {
-            return null;
+
+            var newScatter = _ChartsEngine.ReviewScatter(GetUser(), id, reviewsId);
+            return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
+
+            //return null;
             /*var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
             var review = _ReviewAccessor.GetAnswersForUserReview(GetUser(), id, reviewsId);
             var history = new List<AnswerModel>();

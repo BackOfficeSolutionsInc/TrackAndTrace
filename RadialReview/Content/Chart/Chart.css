@@ -1,0 +1,114 @@
+﻿
+.axis {
+    fill: #000000;
+    opacity: 0.4;
+}
+
+
+    .axis path {
+        fill: none;
+        /*stroke: #E2E2E2;*/
+        shape-rendering: crispEdges;
+        vector-effect: non-scaling-stroke;
+    }
+
+    .axis line,
+    .axis.origin {
+        fill: none;
+        stroke: #000000;
+        opacity: 0.4;
+        stroke-width: 1px;
+        vector-effect: non-scaling-stroke;
+    }
+
+.title{
+    font-size: 32px;
+}
+
+.scatter-point {
+    stroke:black;
+    stroke-width:1px;
+    opacity: .28;
+    -moz-transition: all 250ms ease;
+    -o-transition: all 250ms ease;
+    -webkit-transition: all 250ms ease;
+    transition: all 250ms ease;
+}
+
+/*.on.nearest {
+    opacity: 1 !important;
+    stroke-width: 6px;
+}*/
+
+.scatter-point:not(.on) {
+    /*-webkit-filter: blur(3px);*/
+}
+
+.scatter-link {
+    fill: none;
+    stroke: black;
+    opacity: 0.1;
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+    -moz-transition: all 250ms ease;
+    -o-transition: all 250ms ease;
+    -webkit-transition: all 250ms ease;
+    transition: all 250ms ease;
+}
+
+.nearest {
+    stroke-width:4px;
+    -webkit-filter: hue-rotate(50deg);
+
+    /*opacity:1 !important;*/
+}
+
+.inclusive {
+    opacity: .8;
+    fill: gray;
+}
+
+
+.tooltip {
+    position: absolute;
+    width: 200px;
+    height: 28px;
+    pointer-events: none;
+}
+
+
+.posterior:not(.on) {
+    fill: gray;
+    stroke:black;
+}
+
+.about-Self {
+    stroke: darkgoldenrod;
+    fill: yellow;
+}
+
+.about-Manager {
+    stroke: blue;
+    fill: lightblue;
+}
+
+.about-Subordinate {
+    stroke: darkred;
+    fill: red;
+}
+
+.about-Teammate {
+    stroke: darkorange;
+    fill: orange;
+}
+
+.about-Peer {
+    stroke: #000;
+    fill: #7AD17A;
+}
+
+.axisTitle{
+    font-family:'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
+    font-size:18px;
+    font-weight:bold;
+}

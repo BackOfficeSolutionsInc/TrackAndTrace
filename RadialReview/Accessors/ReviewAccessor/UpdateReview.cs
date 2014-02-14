@@ -411,7 +411,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        public long AddChartToReview(UserOrganizationModel caller, long reviewId, long xCategoryId, long yCategoryId,bool grouped)
+        public long AddChartToReview(UserOrganizationModel caller, long reviewId, long xCategoryId, long yCategoryId, String groups, String filters,DateTime startTime,DateTime endTime)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -423,7 +423,14 @@ namespace RadialReview.Accessors
 
                     var review = s.Get<ReviewModel>(reviewId);
 
-                    var tuple = new LongTuple() { Item1 = xCategoryId, Item2 = yCategoryId, Grouped=grouped };
+                    var tuple = new LongTuple() { 
+                        Item1 = xCategoryId,
+                        Item2 = yCategoryId,
+                        Groups = groups,
+                        Filters = filters,
+                        StartDate=startTime,
+                        EndDate=endTime
+                    };
                     review.ClientReview.Charts.Add(tuple);
                     s.Update(review);
                     tx.Commit();

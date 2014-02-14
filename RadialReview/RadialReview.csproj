@@ -241,6 +241,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\StructuremapMvc.cs" />
+    <Compile Include="Controllers\FaqController.cs" />
     <Compile Include="Controllers\ResultsController.cs" />
     <Compile Include="Controllers\RockstarController.cs" />
     <Compile Include="Controllers\UnitTestController.cs" />
@@ -291,7 +292,7 @@
     <Compile Include="Models\Interfaces\IGuidIdentifiable.cs" />
     <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
     <Compile Include="Models\Charts\ChartOptions.cs" />
-    <Compile Include="Models\Charts\ScatterData.cs" />
+    <Compile Include="Models\Charts\ScatterPlot.cs" />
     <Compile Include="Models\Responsibilities\AskableAbout.cs" />
     <Compile Include="Models\Enums\WeightType.cs" />
     <Compile Include="Models\Reviews\ClientReviewModel.cs" />
@@ -449,6 +450,7 @@
     <Compile Include="Utilities\CsvUtility.cs" />
     <Compile Include="Utilities\DataTypes\Coworker.cs" />
     <Compile Include="Utilities\DataTypes\Csv.cs" />
+    <Compile Include="Utilities\DataTypes\DefaultDictionary.cs" />
     <Compile Include="Utilities\DataTypes\EqualityComparer.cs" />
     <Compile Include="Utilities\DataTypes\Multimap.cs" />
     <Compile Include="Utilities\DataTypes\Tree.cs" />
@@ -458,6 +460,7 @@
     <Compile Include="Utilities\Extensions\DictionaryExtensions.cs" />
     <Compile Include="Utilities\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Utilities\Extensions\EnumExtensions.cs" />
+    <Compile Include="Utilities\Extensions\JavascriptExtensions.cs" />
     <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
     <Compile Include="Utilities\Extensions\OrganizationExtensions.cs" />
     <Compile Include="Utilities\Extensions\OriginExtensions.cs" />
@@ -490,6 +493,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\chart.css" />
+    <Content Include="Content\Chart\Chart.css" />
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\favicon.ico" />
     <Content Include="Content\Home.css" />
@@ -529,6 +533,7 @@
     <Content Include="Content\home\radial.png" />
     <Content Include="Content\home\radial2.png" />
     <Content Include="Content\img\slider.png" />
+    <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\print.css" />
     <Content Include="Content\Review.css" />
     <Content Include="Content\slider.css" />
@@ -580,6 +585,7 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\d3\d3.csv.js" />
     <Content Include="Scripts\d3\d3.js" />
+    <Content Include="Scripts\d3\Plot.js" />
     <Content Include="Scripts\home\analytics.js" />
     <Content Include="Scripts\home\application.js" />
     <Content Include="Scripts\home\fluidvids.js" />
@@ -596,7 +602,11 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.js" />
     <Content Include="Scripts\jquery\jquery.hashchange.js" />
+    <Content Include="Scripts\jquery\jquery.nouislider.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
+    <Content Include="Scripts\moment-with-langs.js" />
+    <Content Include="Scripts\moment-with-langs.min.js" />
+    <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\d3\ScatterChart.js" />
     <Content Include="Scripts\review\review.js" />
@@ -740,6 +750,7 @@
     <Content Include="Views\Partial\_SupervisorAnswers.cshtml" />
     <Content Include="Views\Results\Index.cshtml" />
     <Content Include="Views\Partial\_AnswerTable.cshtml" />
+    <Content Include="Views\Faq\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -837,7 +848,7 @@
     <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>

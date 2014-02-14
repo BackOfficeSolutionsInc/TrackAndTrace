@@ -58,8 +58,14 @@ namespace RadialReview.Models.Reviews
         public virtual long Id { get; set; }
         public virtual long Item1 { get; set; }
         public virtual long Item2 { get; set; }
-        public virtual bool Grouped { get; set; }
+        public virtual String Title { get; set; }
+        public virtual String Groups { get; set; }
+        public virtual String Filters { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
+
+        public virtual DateTime StartDate { get; set; }
+
+        public virtual DateTime EndDate { get; set; }
     }
     public class LongTupleMap : ClassMap<LongTuple>
     {
@@ -68,7 +74,11 @@ namespace RadialReview.Models.Reviews
             Id(x => x.Id);
             Map(x => x.Item1);
             Map(x => x.Item2);
-            Map(x => x.Grouped);
+            Map(x => x.Title);
+            Map(x => x.Groups);
+            Map(x => x.Filters);
+            Map(x => x.EndDate);
+            Map(x => x.StartDate);
             Map(x => x.DeleteTime);
         }
     }

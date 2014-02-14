@@ -10,7 +10,7 @@
 {
     if (Model.Item1.Count > 1)
     {
-        <h4 class="noMargin smallPad" style="padding-top: 10px;">@manager.GetNameAndTitle()</h4>
+        <div class="noMargin smallPad" style="padding-top: 10px; padding-bottom: 10px; background-color: #A7ABB9;color:#3a3a3a;">@manager.GetNameAndTitle()</div>
     }
     <div class="panel-body">
         <table class="table table-condensed" style="min-width:50%">
@@ -26,7 +26,7 @@
                     <td class="noPad">
                         @answer.Askable.GetQuestion()
                     </td>
-                    <td style="width:130px;text-align:center;" class="percentage oneline alignCenter noPad">
+                    <td style="width:130px;text-align:center;" class=" color-value-percentage oneline alignCenter noPad">
                         @answer.Percentage
                     </td>
                 </tr>

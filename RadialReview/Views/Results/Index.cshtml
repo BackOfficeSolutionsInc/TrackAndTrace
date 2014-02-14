@@ -15,6 +15,7 @@
     <div class="panel-heading">
         <h3 class="panel-title">Reviews</h3>
     </div>
+    
     <div class="table-responsive">
         <table class="table">            
             <tr>
@@ -24,7 +25,7 @@
                 <th style="width:120px" class="alignCenter">Completion</th>
                 @*<th class="rightButton"></th>*@
                 <th class="rightButton">
-                    <a href="@Url.Action("Review","Manage")" class="btn btn-default addButton plus" data-toggle="modal">+</a>
+                    <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton plus" data-toggle="modal">+</button>
                 </th>
             </tr>
             @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))

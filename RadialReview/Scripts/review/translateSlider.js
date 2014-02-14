@@ -13,7 +13,7 @@ function sliderIndex(value)
 function sliderToText(value) {
     var i=sliderIndex(value);   
     var answer = possibleAnswers[i];
-    if (value == 0)
+    if (value === undefined || value == 0 || isNaN(value))
         answer = "No Answer";
     return answer;
 }
@@ -21,9 +21,8 @@ function sliderToText(value) {
 function sliderToColor(value) {
     var i = sliderIndex(value);
     var answer = possibleColors[i];
-
-    if (value == 0)
-        answer = "No Answer";
+    if (value === undefined || value == 0 || isNaN(value))
+        answer = "#EEEEEE";
     return answer;
 }
 
@@ -42,6 +41,22 @@ $(function () {
         $(this).css("background-color", color);
         $(this).attr("title", text);
         $(this).html("");
+    });
+
+    $(".color-value-percentage").each(function () {
+        var value = parseFloat($(this).html()) * 100;
+        var text = sliderToText(value);
+        var color = sliderToColor(value);
+
+        $(this).css("background-color", color);
+        $(this).css("color", "rgba(0, 0, 0, 0.65)");
+        $(this).attr("title", text);
+        $(this).html(text);
 
     });
+
+    $(".color-value-percentage").removeClass("color-value-percentage");
+    $(".color-percentage").removeClass("color-percentage");
+    $(".percentage").removeClass("percentage");
+
 });

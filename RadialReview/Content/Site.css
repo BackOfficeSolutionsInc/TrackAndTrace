@@ -633,7 +633,7 @@ tr.danger .strikable {
         padding: 10px;
         background-color: #F7F7F7;
         border-bottom: 1px solid #EBEBEB;
-        text-shadow: 0px 1px 0px #FFF;
+        /*text-shadow: 0px 1px 0px #FFF;*/
         color: #5C5C5C;
     }
 
@@ -702,13 +702,28 @@ tr.danger .strikable {
     -o-transform: rotate(-45deg);
     transform: rotate(-45deg);
     /* also accepts left, right, top, bottom coordinates; not required, but a good idea for styling */
-    -webkit-transform-origin: 35% 85%;
-    -moz-transform-origin: 35% 85%;
-    -ms-transform-origin: 35% 85%;
-    -o-transform-origin: 35% 85%;
-    transform-origin: 35% 85%;
+    -webkit-transform-origin: 30% 70%;
+    -moz-transform-origin: 30% 70%;
+    -ms-transform-origin: 30% 70%;
+    -o-transform-origin: 30% 70%;
+    transform-origin: 30% 70%;
     /* Should be unset in IE9+ I think. */
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+.rotate90 {
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    /* Should be unset in IE9+ I think. */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    -moz-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
+    -webkit-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
 }
 
 .headerButton {
@@ -786,9 +801,15 @@ tr.danger .strikable {
     content:"";
 }
 
+
 @media (min-width: 1200px) {
     .sidebar-fixed {
         position: fixed;
         top: 95px;
+        width:255px;
     }
+}
+
+.marginAuto{
+    margin:auto;
 }

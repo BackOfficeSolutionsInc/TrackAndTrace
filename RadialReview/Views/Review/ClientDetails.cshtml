@@ -12,8 +12,8 @@
     <!--a href="?print=true" class="btn btn-default pull-right">
         Print
     </a-->
-    <div class="col-lg-3 noPrint">
-        <div class="sidebar noPad sidebar-fixed ">
+    <div class="col-lg-3 noPrint noPad">
+        <div class="sidebar noPad sidebar-fixed">
             <div class="sidebar-header alignCenter">
                 Quick Links
             </div>
@@ -31,7 +31,7 @@
                     <li><a href="#questions">Questions</a></li>
                     @foreach (var chart in charts)
                     {
-                        <li><a href="#ql_chart_@chart.Id">@Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]</a></li>
+                        <li><a href="#ql_chart_@chart.Id">@chart.Title</a></li>
                     }
                     @if (Model.Review.ClientReview.IncludeQuestionTable)
                     {
@@ -80,16 +80,16 @@
             @if (Model.Responsibilities.Any())
             {
                 <p>
-                <div class="noBreak">
-                    Responsibilities:
-                    <ol>
-                        @foreach (var r in Model.Responsibilities)
-                        {
-                            <li>@r</li>
-                        }
-                    </ol>
-                </div>
-                    </p>
+                    <div class="noBreak">
+                        Responsibilities:
+                        <ol>
+                            @foreach (var r in Model.Responsibilities)
+                            {
+                                <li>@r</li>
+                            }
+                        </ol>
+                    </div>
+                </p>
             }
 
             @*Questions here*@
@@ -143,43 +143,59 @@
 
         @foreach (var chart in charts)
         {
+            @*<a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
+                <div class="panel panel-primary noBreak">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            @Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
+                        </h4>
+                    </div>
+                    <div class="panel-body noPad">
+                        <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id">
+                            <defs>
+                                <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                                    <path d="M-1,1 l2,-2
+                                                M0,4 l4,-4
+                                                M3,5 l2,-2" stroke-width="2" stroke="black" />
+                                </pattern>
+                                <pattern id="diagonalHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+                                    <rect x="0" y="0" width="4" height="4" fill="black"></rect>
+                                    <path d="M-1,1 l2,-2
+                                                M0,4 l4,-4
+                                                M3,5 l2,-2" stroke-width="2" stroke="#65c14e" />
+                                </pattern>
+                                <pattern id="diagonalRightHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+                                    <rect width='8' height='8' fill='white' />
+                                    <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='2' stroke='#e99654' />
+                                </pattern>
+                                <pattern id="crossHatch" patternUnits="userSpaceOnUse" width="8" height="8">
+                                    <rect width='8' height='8' fill='#cccccc' />
+                                    <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='1' stroke='black' />
+                                </pattern>
+                                <pattern id="verticalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                                    <path d="M -1,2 l 6,0" stroke-width="1" stroke="black" />
+                                </pattern>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>*@
             <a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
-            <div class="panel panel-primary noBreak">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        @Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
-                    </h4>
-                </div>
-                <div class="panel-body noPad">
-                    <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id">
-                        <defs>
-                            <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
-                                <path d="M-1,1 l2,-2
-                                            M0,4 l4,-4
-                                            M3,5 l2,-2" stroke-width="2" stroke="black" />
-                            </pattern>
-                            <pattern id="diagonalHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
-                                <rect x="0" y="0" width="4" height="4" fill="black"></rect>
-                                <path d="M-1,1 l2,-2
-                                            M0,4 l4,-4
-                                            M3,5 l2,-2" stroke-width="2" stroke="#65c14e" />
-                            </pattern>
-                            <pattern id="diagonalRightHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
-                                <rect width='8' height='8' fill='white' />
-                                <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='2' stroke='#e99654' />
-                            </pattern>
-                            <pattern id="crossHatch" patternUnits="userSpaceOnUse" width="8" height="8">
-                                <rect width='8' height='8' fill='#cccccc' />
-                                <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='1' stroke='black' />
-                            </pattern>
-                            <pattern id="verticalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
-                                <path d="M -1,2 l 6,0" stroke-width="1" stroke="black" />
-                            </pattern>
-                        </defs>
-                    </svg>
+            <div class="noselect noBreak">
+                <div class="col-md-12">
+                    <div class="chart"
+                         id="chart_@chart.Id"
+                         data-id="@chart.Id"
+                         data-start="@chart.StartDate.ToJavascriptMilliseconds()"
+                         data-end="@chart.EndDate.ToJavascriptMilliseconds()"
+                         data-xaxis="@chart.Item1"
+                         data-yaxis="@chart.Item2"
+                         data-title="@chart.Title">
+                        <!--Chart Goes Here-->
+                    </div>
                 </div>
             </div>
         }
+
         @if (Model.Review.ClientReview.IncludeQuestionTable)
         {
             <a id="questionTable" class="shiftByTitle"></a>
@@ -249,7 +265,15 @@
 </div>
 @using (Html.BeginStyles())
 {
+    <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
     <style>
+        .chart {
+            width: 600px;
+            height: 600px;
+            position: relative;
+            margin: auto;
+        }
+
         .chartButton {
             top: 39px;
             position: absolute;
@@ -279,86 +303,71 @@
 
     <script src="/scripts/d3/d3.js"></script>
     <script src="/scripts/d3/d3.csv.js"></script>
-    <script src="/scripts/d3/ScatterChart.js"></script>
+    <script src="/scripts/d3/Plot.js"></script>
     <script src="~/Scripts/review/translateSlider.js"></script>
     <script>
-
-
-        d3.csv("/Data/ReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId", function (data) {
-            var dataFunc = function (dd, redrawFunc) {
-                dd.data = data;
-                redrawFunc();
-            };
-
-            var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
-            var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
-            var legendData = [@(new HtmlString(String.Join(",", Enum.GetNames(typeof(RadialReview.Models.Enums.AboutType)).Select(x => "\"" + x + "\""))))];
-
-            function chartIt(id, x, y) {
-                var chart = new Chart(
-                    "#chart_" + id,
-                    function () {
-                        var xindex = axisSelect.indexOf(x),
-                            yindex = axisSelect.indexOf(y);
-                        var xlabel = axisLabels[xindex],
-                            ylabel = axisLabels[yindex];
-                        return {
-                            xAxis: x,
-                            yAxis: y,
-                            //radiusAxis: r,
-                            xAxisLabel: xlabel,
-                            yAxisLabel: ylabel
-                        }
-                    }, dataFunc, legendData);
-            };
-
-            @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
+        var categoryLookup = {
+            @foreach (var kv in Model.Categories)
             {
-                @:chartIt("@(chart.Id)", "@(chart.Item1)", "@(chart.Item2)");
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                    @:"@(kv.Key)": "@(kv.Value)",
+                                    }
+        };
+
+        var updates = [];
+
+        function update() {
+            $(updates).each(function (indexInArray) {
+                var item = this;
+                setTimeout(function () {
+                    var reset = item[0];
+                    var data = item[1];
+                    var that = item[2];
+                    var chart = item[3];
+
+                    var date1 = +$(that).data("start");
+                    var date2 = +$(that).data("end");
+                    var date3 = new Date();
+
+                    var groups = null;
+                    var filters = [];
+                    debugger;
+                    chart.Plot(data, {
+                        title:data.OtherData.Title,
+                        animate: true,
+                        reset: reset,
+                        xAxis: categoryLookup[$(that).data("xaxis")],
+                        yAxis: categoryLookup[$(that).data("yaxis")],
+                        xDimensionId: "category-" + $(that).data("xaxis"),
+                        yDimensionId: "category-" + $(that).data("yaxis"),
+                        startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
+                        endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
+                        time: date3,//new Date(parseInt($("#date").val()))
+                        groups: "none",
+                        //filters: filters
+                    });
+                }, indexInArray * 150);
+            });
+        }
+
+        var count = 0;
+        var required = $(".chart").length;
+
+        $(".chart").each(function () {
+            var id = $(this).attr("id");
+            var chart = new ScatterChart(id);
+            var that = this;
+
+
+            var id = $(this).data("id");
+            var dataUrl = "/Data/Scatter/" + id + "?reviewId=@Model.Review.Id";
+            chart.Pull(dataUrl, null, function (dat) {
+                data = dat;
+                updates.push([true, data, that, chart]);
+                count++;
+                if (count == required) {
+                    update();
+                }
+            });
         });
-
-        @*
-        d3.csv("/Data/OrganizationReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId",
-            function (data) {
-                debugger;
-                var dataFunc = function (dd, redrawFunc) {
-                    dd.data = data;
-                    redrawFunc();
-                };
-
-                var axisSelect = [@(new HtmlString(String.Join(",",Model.Axis.Select(x=>"\""+x.Value+"\""))))];
-                var axisLabels = [@(new HtmlString(String.Join(",", Model.Axis.Select(x => "\"" + x.Text + "\""))))];
-                var legendData = ["Management", "Employee", "You"];
-
-
-                var orgChart = new Chart(
-                       "#orgChart",
-                       function () {
-                           var a = document.getElementById("xAxis"),
-                               b = document.getElementById("yAxis");
-                           //c = document.getElementById("r-axis");
-                           var x = a.options[a.selectedIndex].value,
-                               y = b.options[b.selectedIndex].value;
-                           //r = c.options[c.selectedIndex].value;
-                           var xindex = axisSelect.indexOf(x),
-                               yindex = axisSelect.indexOf(y);
-                           var xlabel = axisLabels[xindex],
-                               ylabel = axisLabels[yindex];
-                           return {
-                               xAxis: x,
-                               yAxis: y,
-                               //radiusAxis: r,
-                               xAxisLabel: xlabel,
-                               yAxisLabel: ylabel
-                           };
-                       }, dataFunc, legendData);
-                document.getElementById("controls").addEventListener("click", orgChart.update, false);
-                document.getElementById("controls").addEventListener("keyup", orgChart.update, false);
-                document.getElementById("xAxis").addEventListener("change", orgChart.update, false);
-                document.getElementById("yAxis").addEventListener("change", orgChart.update, false);
-            });*@
-
-
     </script>
 }

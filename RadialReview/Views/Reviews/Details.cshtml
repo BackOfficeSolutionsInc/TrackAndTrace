@@ -6,12 +6,39 @@
 }
 
 @*
-@section header{
-    @Html.Partial("Partial/manageheader")
-}*@@using (Html.BeginStyles())
+    @section header{
+        @Html.Partial("Partial/manageheader")
+    }
+*@
+
+@using (Html.BeginStyles())
 {
     <style>
         .bar {
+        }
+
+        .toggle-completion:not(.on) {
+            display: none;
+        }
+        .shift5050 {
+            -webkit-transform-origin: 50% 50%;
+            -moz-transform-origin: 50% 50%;
+            -ms-transform-origin: 50% 50%;
+            -o-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+        }
+
+        .expandButton {
+            cursor: pointer;
+            opacity: .25;
+            -webkit-transition: opacity .25s ease;
+            -moz-transition: opacity .25s ease;
+            -ms-transition: opacity .25s ease;
+            -o-transition: opacity .25s ease;
+            transition: opacity .25s ease;
+        }
+        .expandButton:hover {
+            opacity:1;
         }
     </style>
 }
@@ -19,9 +46,8 @@
 @using (Html.BeginScripts())
 {
     <script>
-        function newTitle(item,about)
-        {
-            var progressBar=$(item).find(".progress-bar");
+        function newTitle(item, about) {
+            var progressBar = $(item).find(".progress-bar");
             var oldTitle = progressBar.attr("title");
 
             var newTitle = "Answers about " + about + " [" + oldTitle + "]";
@@ -52,6 +78,10 @@
                 return newTitle(this, "teammates");
             });
         });
+
+        function toggleComplete(){
+            $('.toggle-completion').toggleClass('on');
+        }
     </script>
 }
 
@@ -60,49 +90,109 @@
         <h3 class="panel-title">Review : @Model.Review.ReviewName</h3>
         <div class="pull-right"></div>
     </div>
-    <table class="table">
+    <div class="panel-body">
 
-        <tr>
-            <th></th>
-            <th></th>
-            <th style="height:84px;" class="alignCenter" colspan="5">@RadialReview.Properties.DisplayNameStrings.completion</th>
-            <th></th>
-        </tr>
+        <div class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th class="row">
+                        <div class="col-md-3 smallPad">
+                            <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Add Question", "/Reviews/AddQuestion/" + Model.Review.Id, "/Reviews/AddQuestion/")">
+                                Add Question
+                            </div>
+                        </div>
+                        <div class="col-md-3 smallPad">
+                            <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Remove question", "/Reviews/RemoveQuestion/" + Model.Review.Id, "/Reviews/RemoveQuestion/", preSubmitCheck: "validateRemoval")">
+                                <span style="font-size: 90%;"> Remove Question</span> &nbsp;
+                            </div>
+                        </div>
+                        <div class="col-md-3 smallPad">
+                            <div class="btn btn-default  fullWidth" onclick="@Html.ShowModal("Add user", "/Reviews/Update/" + Model.Review.Id, "/Reviews/Update/")">
+                                Add User
+                            </div>
+                        </div>
+                        <div class="col-md-3 smallPad">
+                            <div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Remove user", "/Reviews/RemoveUser/" + Model.Review.Id, "/Reviews/RemoveUser/")">
+                                Remove User
+                            </div>
+                        </div>
 
-        <tr style="height:30px;">
-            <th>User</th>
-            <th style="width:10px" title="Subordinate is authorized to view this report.">Visible</th>
-            
-            <th class="rotate" style="min-width:40px;max-width:40px;width:40px;">Self</th>
-            <th class="rotate" style="min-width:40px;max-width:40px;width:40px;">Managers</th>
-            <th class="rotate" style="min-width:40px;max-width:40px;width:40px;">Subordinates</th>
-            <th class="rotate" style="min-width:40px;max-width:40px;width:40px;">Peers</th>
-            <th class="rotate" style="min-width:40px;max-width:40px;width:40px;">Teammate</th>
 
-            <th style="width:50px"></th>
-        </tr>
-        @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x=>x.ForUser.GetNameAndTitle()))
-        {
-            <tr class="@(r.ForUser.GetPersonallyManaging()?"managing":"not-managing")">
-                <td>@r.ForUser.GetNameAndTitle()</td>
-                <td class="alignCenter">
-                    @r.ClientReview.Visible.GetIcon()
-                </td>
+                    </th>
+                    <th></th>
+                    <th class="alignCenter">
+                        <div class="toggle-completion" style="height:55px;">
+                            @RadialReview.Properties.DisplayNameStrings.completion
+                            <div onclick="toggleComplete()" class="glyphicon glyphicon-minus-sign expandButton"></div>
+                        </div>
 
-                @foreach(var bar in r.GetCompletion(true).GetCompletions())
+                        <div class="toggle-completion on">
+                        </div>
+                    </th>
+                    <th></th>
+                </tr>
+
+                <tr style="height:30px;">
+                    <th>User</th>
+                    <th style="width:10px" title="Subordinate is authorized to view this report.">Visible</th>
+
+                    <th>
+                        <div class="toggle-completion">
+                            <table class="fullWidth">
+                                <tr>
+                                    <th class="rotate shift5050" style="min-width:40px;max-width:40px;width:40px;">Self</th>
+                                    <th class="rotate shift5050" style="min-width:40px;max-width:40px;width:40px;">Managers</th>
+                                    <th class="rotate shift5050" style="min-width:40px;max-width:40px;width:40px;">Subordinates</th>
+                                    <th class="rotate shift5050" style="min-width:40px;max-width:40px;width:40px;">Peers</th>
+                                    <th class="rotate shift5050" style="min-width:40px;max-width:40px;width:40px;">Teammate</th>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="toggle-completion on alignCenter">
+                            Completion
+                            <div onclick="toggleComplete()" class="glyphicon glyphicon-plus-sign expandButton"></div>
+                        </div>
+                    </th>
+                    <th style="width:50px"></th>
+                </tr>
+                @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ForUser.GetPersonallyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle()))
                 {
-                    <td style="padding: 5px 1px 1px 1px !important; ">                        
-                        @Html.Partial("_Completion", bar)
-                    </td>
-                }
+                    <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")">
+                        <td>@r.ForUser.GetNameAndTitle()</td>
+                        <td class="alignCenter">
+                            @r.ClientReview.Visible.GetIcon()
+                        </td>
 
-                <td style="padding: 2px;" class="rightButton">
-                    @if (r.ForUser.GetPersonallyManaging())
-                    {
-                        <a class="btn btn-primary fullWidth " href="@Url.Action("Details", "Review", new { id=r.Id })">View</a>
-                    }
-                </td>
-            </tr>
-        }
-    </table>
+                        <td>
+                            @*Both types of completions*@
+                            <div class="toggle-completion">
+                                <table class="table noMargin" style="width: 100%; border: none; padding: 5px 0px 0px 0px !important;">
+                                    <tr>
+                                        @foreach (var bar in r.GetCompletion(true).GetCompletions())
+                                        {
+                                            <th style="padding: 1px 1px 1px 1px !important;">
+                                                @Html.Partial("_Completion", bar)
+                                            </th>
+                                        }
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="toggle-completion on">
+                                <div style="padding: 5px 1px 1px 1px !important; ">
+                                    @Html.Partial("_Completion", r.GetCompletion())
+                                </div>
+                            </div>
+                            @*END Both types of completions*@
+                        </td>
+                        <td style="padding: 2px;" class="rightButton">
+                            @if (r.ForUser.GetPersonallyManaging())
+                            {
+                                <a class="btn btn-primary fullWidth " href="@Url.Action("Details", "Review", new { id = r.Id })">View</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
 </div>

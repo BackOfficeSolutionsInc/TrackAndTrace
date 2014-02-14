@@ -327,6 +327,40 @@ namespace RadialReview.Accessors
         #endregion
 
 
+        public LongTuple GetChartTuple(UserOrganizationModel caller,long reviewId, long chartTupleId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewReview(reviewId);
 
+                    var review = s.Get<ReviewModel>(reviewId);
+
+                    //Tuple
+                    var tuple=review.ClientReview.Charts.FirstOrDefault(x => x.Id == chartTupleId);
+
+                    if (tuple == null)
+                        throw new PermissionsException("The chart you requested does not exist");
+                    return tuple;
+                }
+            }
+        }
+
+        public ReviewsModel GetReviewContainerByReviewId(UserOrganizationModel caller, long clientReviewId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var clientReview=s.Get<ReviewModel>(clientReviewId);
+                    var reviewsId = clientReview.ForReviewsId;
+                    PermissionsUtility.Create(s, caller).ViewReviews(reviewsId);
+                    var review=s.Get<ReviewsModel>(reviewsId);
+
+                    return review;
+                }
+            }
+        }
     }
 }

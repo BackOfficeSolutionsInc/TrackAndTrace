@@ -69,7 +69,7 @@ namespace RadialReview.Models
                     if (flag != AboutType.NoRelationship)
                     {
                         var limit = Answers.Where(x => (x.AboutType & flag) == flag);
-                        completions.Add(new CompletionModel(limit.Count(x => x.Complete), limit.Count(), flag.ToString()));
+                        completions.Add(new CompletionModel(limit.Count(x => x.Complete && x.Required), limit.Count(x => x.Required), limit.Count(x => !x.Required && x.Complete),limit.Count(x=>!x.Required), flag.ToString()));
                     }
                 }
 

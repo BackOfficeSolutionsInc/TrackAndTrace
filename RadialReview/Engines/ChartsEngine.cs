@@ -3,6 +3,8 @@ using RadialReview.Models;
 using RadialReview.Models.Charts;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
+using RadialReview.Models.Reviews;
+using RadialReview.Utilities;
 using RadialReview.Utilities.Chart;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,81 @@ namespace RadialReview.Engines
         protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
         protected static TeamAccessor _TeamAccessor = new TeamAccessor();
 
+        public String GetChartTitle(UserOrganizationModel caller, long chartTupleId)
+        {
+
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    //Tuple
+                    var tuple= s.Get<LongTuple>(chartTupleId);
+
+                    //Filters
+                    var filters = ChartClassMatcher.CreateMatchers(tuple.Filters);
+                    var filterStrs=new List<String>();
+                    foreach(var f in filters)
+                    {
+                        foreach(var r in f.Requirements)
+                        {
+                            var split=r.Split('-');
+                            switch(split[0].ToLower()){
+                                case "team":{
+                                    if(split[1]=="*")
+                                        filterStrs.Add("Teams");
+                                    else
+                                        filterStrs.Add("?"+r+"?");
+                                    break;
+                                }
+                                default:{
+                                    filterStrs.Add("?"+r+"?");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    //Groups
+                    var groups = ChartClassMatcher.CreateMatchers(tuple.Groups);
+                    foreach(var g in groups)
+                    {
+                        foreach(var r in g.Requirements)
+                        {
+                            var split=r.Split('-');
+                            switch(split[0].ToLower()){
+                                case "about":{
+                                    if(split[1]=="*")
+                                        filterStrs.Add("Relationship");
+                                    else
+                                        filterStrs.Add("?"+r+"?");
+                                    break;
+                                }
+                                case "user":
+                                    {
+                                        filterStrs.Add("User");
+                                        break;
+                                    }
+                                default:{
+                                    filterStrs.Add("?"+r+"?");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    var cat1=s.Get<QuestionCategoryModel>(tuple.Item1);
+                    var cat2=s.Get<QuestionCategoryModel>(tuple.Item2);
+
+                    var filterStr="";
+
+                    if(filterStrs.Count>0)
+                    {
+                        filterStr=" (By "+String.Join(",",filterStrs)+")";
+                    }
+
+                    return String.Format("{0} vs {1}{2}", cat2.Category.Translate(), cat1.Category.Translate(), filterStr);
+                }
+            }
+        }
 
         public ScatterPlot ScatterFromOptions(UserOrganizationModel caller, ChartOptions options)
         {
@@ -50,13 +127,27 @@ namespace RadialReview.Engines
                 initialXDim = filteredDimensions.Keys.FirstOrDefault();
             if (initialYDim == null)
                 initialYDim = filteredDimensions.Keys.Skip(1).FirstOrDefault() ?? filteredDimensions.Keys.FirstOrDefault();
-            
-            var classFilters=ChartClassFilter.CreateFilters(options.Filters);
+
+            var groupMatchers = ChartClassMatcher.CreateMatchers(options.GroupBy);
+            var filterMatchers = ChartClassMatcher.CreateMatchers(options.Filters);
             var dimensionFilters=ChartDimensionFilter.Create(options.DimensionIds);
 
-            var filteredPoints = ChartUtility.Filter(unfilteredPlot.Points, classFilters, dimensionFilters);
+            var filteredPoints = ChartUtility.Filter(unfilteredPlot.Points, filterMatchers, dimensionFilters);
 
-            
+            var minDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1));
+            var maxDate = DateTime.UtcNow.Add(TimeSpan.FromDays(1));
+
+            var groupedPoints = ChartUtility.Group(filteredPoints, groupMatchers);
+
+            //about-* not matching correctly aka fix for *
+
+            if (groupedPoints.Count > 0)
+            {
+                minDate = groupedPoints.Min(x => x.Date);
+                maxDate = groupedPoints.Max(x => x.Date);
+            }
+
+            var title = GetChartTitle(caller, options.Id);
 
             var filteredPlot = new ScatterPlot()
             {
@@ -64,11 +155,12 @@ namespace RadialReview.Engines
                 Dimensions = filteredDimensions,
                 InitialXDimension = initialXDim,
                 InitialYDimension = initialYDim,
-                Points = filteredPoints,
-                Groups=unfilteredPlot.Groups,
-                Filters = unfilteredPlot.Filters,
-                MinDate = filteredPoints.Min(x => x.Date),
-                MaxDate = filteredPoints.Max(x => x.Date),
+                Points = groupedPoints,
+                Groups = new List<ScatterGroup>(),//groupMatchers.Select(x=>x.Requirements.ToArray()).ToArray(),
+                Filters = new List<ScatterFilter>(),
+                MinDate = minDate,
+                MaxDate = maxDate,
+                OtherData = new { Title= title }
             };
 
             return filteredPlot;
@@ -103,6 +195,7 @@ namespace RadialReview.Engines
             var filters = new HashSet<ScatterFilter>(new EqualityComparer<ScatterFilter>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
             var groups = new HashSet<ScatterGroup>(new EqualityComparer<ScatterGroup>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
 
+            var legend = new HashSet<ScatterLegendItem>(new EqualityComparer<ScatterLegendItem>((x,y)=>x.Class.Equals(y.Class),x=>x.Class.GetHashCode()));
 
             foreach (var userAnswers in groupedByUsers) //<UserId>
             {
@@ -134,7 +227,7 @@ namespace RadialReview.Engines
                         datums[catClass].Value += ((double)(answer.Percentage.Value ) * 200 - 100)* (double)answer.Askable.Weight;
 
                         
-                        filters.Add(new ScatterFilter(answer.Askable.Category.Category.Translate(), catClass));
+                        //filters.Add(new ScatterFilter(answer.Askable.Category.Category.Translate(), catClass));
                         groups.Add(new ScatterGroup(answer.Askable.Category.Category.Translate(), catClass));
                     }
 
@@ -152,7 +245,11 @@ namespace RadialReview.Engines
                         teamClasses.Add(teamClass);
                     }
 
-                    var aboutClass = "about-" + userReviewAnswers.First().AboutType.Invert();
+                    var aboutType=userReviewAnswers.First().AboutType.Invert();
+                    var aboutClass = "about-" + aboutType;
+                    
+                    legend.Add(new ScatterLegendItem(aboutType.ToString(),aboutClass));
+                    
                     var reviewsClass = "reviews-" + reviewContainerId;
                     var teamClassesStr = String.Join(" ", teamClasses);
                     var userClassStr = "user-" + safeUserIdMap;
@@ -176,6 +273,9 @@ namespace RadialReview.Engines
             var xDimId = dimensions.FirstOrDefault().NotNull(x => x.Id);
             var yDimId = dimensions.Skip(1).FirstOrDefault().NotNull(x => x.Id);
 
+            var dates=scatterDataPoints.Select(x=>x.Date);
+
+
             var scatter = new ScatterPlot()
             {
                 Dimensions = dimensions.ToDictionary(x => x.Id, x => x),
@@ -184,6 +284,9 @@ namespace RadialReview.Engines
                 InitialXDimension = xDimId,
                 InitialYDimension = yDimId ?? xDimId,
                 Points = scatterDataPoints,
+                MinDate=dates.Min(),
+                MaxDate = dates.Max(),
+                Legend=legend.ToList(),
             };
 
             return scatter;

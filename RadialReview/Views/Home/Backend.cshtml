@@ -30,7 +30,7 @@
                 <p>
                     Welcome to Radial Review, your 360 review provider. 
 
-                    To begin taking your review, click on the Reviews button above by clicking <a href="@Url.Action("Index","Review")">here</a>.
+                    To begin taking your review, click on the Take button above by clicking <a href="@Url.Action("Index","Review")">here</a>.
                     After your coworkers have completed their reviews, Radial Review will aggregate the results for you and your manager to discuss.
                 </p>
                 <p>
@@ -39,12 +39,21 @@
                 {
                 <h3>Instructions for managament:</h3>
                     <p>
-                        As a manager you can manage the organization from the Manage tab, or by clicking here <a href="@Url.Action("Index","Manage")">here</a>.
-                        From the manage menu, you can add subordinates, responsibilities, positions, and teams to the organization.
+                        As a manager you can manage the organization from the Admin tab, or by clicking here <a href="@Url.Action("Index","Manage")">here</a>.
+                        From the manage menu, you can add subordinates, job descriptions, questions, and teams for the organization.
                     </p>
                     <p>
-                        Responsibilities are items an employee will be reviewed over.
-                        Employees can have responsibilities to the whole organization, teams, positions, and can have personal responsibilities.
+                        Questions are items an employee will be reviewed over.
+                        There are four types of questions.
+                        <ul>
+                            <li>Organization-wide</li>
+                            <li>Team</li>
+                            <li>Position</li>
+                            <li>Individual</li>
+                        </ul>
+
+
+                        Employees can have questions to the whole organization, teams, positions, and can have personal responsibilities.
                         Each employee can have a unique set of responsibilities. 
                         Every user reviewing the employee will rate the employee on how well they are meeting their responsibilities.
                     </p>

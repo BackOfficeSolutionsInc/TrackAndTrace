@@ -1,45 +1,332 @@
 ﻿@*Supervisors, all answers*@
 @model Tuple<List<RadialReview.Models.UserOrganizationModel>, List<RadialReview.Models.SliderAnswer>>
 
-@using (Html.BeginScripts())
-{
-    <script src="~/Scripts/review/translateSlider.js"></script>
-}
+
 @using (Html.BeginStyles())
 {
     <style>
+        .allAnswers .bordered {
+            border: 1px solid #DDD;
+        }
+
+        .allAnswers .square {
+            height: 20px;
+            width: 20px;
+            max-height: 20px;
+            max-width: 20px;
+            min-height: 20px;
+            min-width: 20px;
+        }
+
+        .allAnswers .padded {
+            padding: 20px 20px 20px 20px;
+        }
+
+        .allAnswers .question {
+            display: none;
+        }
+
+        .allAnswers .people {
+            display: none;
+        }
+
+        .allAnswers .order {
+            display: none;
+        }
+
+        .allAnswers .simplify {
+            display: none;
+        }
+
+        .allAnswers .detail {
+            display: none;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+            .allAnswers .detail.on {
+                display: block;
+            }
+
+        .allAnswers .on {
+            display: inherit;
+        }
+
+        .allAnswers tr.on {
+            display: table-row;
+        }
+
+        .peopleRow {
+            height: 1px;
+        }
+
+        .fixedSizeCell {
+            width: 100px;
+        }
+
+        .rotateCell {
+            width: 10px;
+            min-width: 10px;
+            max-width: 10px;
+            white-space: nowrap;
+            vertical-align: top;
+            height: 10px;
+            min-height: 10px;
+            max-height: 10px;
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -ms-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+            /* Should be unset in IE9+ I think. */
+            filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+            -moz-transform-origin: 50% 50%;
+            -ms-transform-origin: 50% 50%;
+            -o-transform-origin: 50% 50%;
+            -webkit-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+        }
     </style>
 }
 
 @{
-    var orderedPeople = Model.Item1.OrderBy(x => x.GetName()).ToList();
+    var defaultOrderedPeople = Model.Item1.OrderBy(x => x.GetName()).ToList();
+    var questions = Model.Item2.GroupBy(x => x.Askable.Id).Select(x => x.First().Askable).ToList();
+
+
+    // var pleasentOrderedPeople = Model.Item1.OrderBy(x => x.GetName()).ToList();
+
+
+    var dataPeople = defaultOrderedPeople.Select((p, i) => Tuple.Create(i, questions.Select(q => Model.Item2.First(x => x.Askable.Id == q.Id && x.ByUserId == p.Id).Percentage).ToArray())).ToArray();
+    var dataQuestion = questions.Select((q, i) => Tuple.Create(i, defaultOrderedPeople.Select(p => Model.Item2.First(x => x.Askable.Id == q.Id && x.ByUserId == p.Id).Percentage).ToArray())).ToArray();
+
+
+    var orderingPeople = dataPeople.OrderByDescending(x => x.Item2.Sum()).Select(x => x.Item1);
+    var orderingQuestion = dataQuestion.OrderByDescending(x => x.Item2.Sum()).Select(x => x.Item1);
+
+
+    var pleasentOrderedPeople = orderingPeople.Select(i => defaultOrderedPeople[i]).ToList();
+    var pleasentOrderedQuestions = orderingQuestion.Select(i => questions[i]).ToList();
+
+    var rand = new Random().Next();
+}
+@using (Html.BeginScripts())
+{
+    <script src="~/Scripts/review/translateSlider.js"></script>
+    <script>
+        $(function () {
+            updateHeights();
+            $(".allAnswers .update").change(function () {
+                $("." + $(this).data("class")).toggleClass("on");
+                updateHeights();
+
+
+            });
+        });
+
+        function updateHeights() {
+            var list = $(".allAnswers .people").map(function () {
+                return $(this).textWidth();
+            });
+            var listHeight = $(".allAnswers .people").map(function () {
+                return $(this).textHeight();
+            });
+            var max = Math.max.apply(null, list) - 0;
+            var maxHeight = Math.max.apply(null, listHeight) - 0;
+
+            $(".allAnswers .peopleRow").css("height", max + "px");
+
+            $(".rotateCell").each(function () {
+                var shift = Math.round(.5 * ($(this).parent().width() - maxHeight)) + 1;
+                $(this).css("position", "relative");
+                $(this).css("left", shift + "px");
+            });
+
+        }
+
+
+        $.fn.textWidth = function () {
+            var html_org = $(this).html();
+            var html_calc = '<span>' + html_org + '</span>';
+            $(this).html(html_calc);
+            var width = $(this).find('span:first').width();
+            $(this).html(html_org);
+            return width;
+        };
+
+        $.fn.textHeight = function () {
+            var html_org = $(this).html();
+            var html_calc = '<span>' + html_org + '</span>';
+            $(this).html(html_calc);
+            var width = $(this).find('span:first').height();
+            $(this).html(html_org);
+            return width;
+        };
+
+    </script>
 }
 
-<div class="table-responsive">
-    <table class="table table-condensed" style="min-width:50%">
-        <tr class="noPad" style="height:120px;vertical-align:bottom">
-            <th class="noPad" style="width: 1px; vertical-align: bottom">Question</th>
-            @foreach (var person in orderedPeople)
-            {
-                <th title="@person.GetNameAndTitle()" class="rotate noPad" style="width: 10px; min-width: 10px; max-width: 10px; white-space: nowrap; vertical-align: bottom">
-                    @person.GetName()
-                </th>
-            }
-        </tr>
-        @{
-            var questions = Model.Item2.GroupBy(x => x.Askable.Id).Select(x => x.First().Askable);
-        }
-        @foreach (var question in questions)
-        {
-            <tr class="noPad">
-                <td class="noPad">@question.GetQuestion()</td>
+<div class="allAnswers noselect">
+
+
+    <form>
+
+        <div style="background-color: #8990A7;color: #D3D3D3;padding-top:5px;margin:0px;">
+            <div class="row">
+                <div class="col-xs-3 alignRight">
+                    <label>Options:</label>
+                </div>
+                <div class="col-sm-3 alignRight"></div>
+                <div class="col-xs-3 alignRight">
+                    <span class="lbl">Expanded</span>
+                </div>
+                <div class="col-xs-3 alignLeft">
+                    <input checked type="checkbox" class="update" data-class="simplify" />
+                </div>
+            </div>
+            <div class="row simplify">
+                <div class="col-xs-3 alignRight">
+                    <span class="lbl">Order</span>
+                </div>
+                <div class="col-xs-3 alignLeft">
+                    <input checked type="checkbox" class="update" data-class="order" />
+                </div>
+                <div class="col-xs-3 alignRight">
+                    <span class="lbl">Detailed</span>
+                </div>
+                <div class="col-xs-3 alignLeft">
+                    <input checked type="checkbox" class="update" data-class="detail" />
+                </div>
+            </div>
+
+            <div class="row simplify">
+                <div class="col-xs-3 alignRight">
+                    <span class="lbl">People</span>
+                </div>
+                <div class="col-xs-3 alignLeft">
+                    <input checked type="checkbox" class="update" data-class="people" />
+                </div>
+                <div class="col-xs-3 alignRight">
+                    <span class="lbl">Questions</span>
+                </div>
+                <div class="col-xs-3 alignLeft">
+                    <input checked type="checkbox" class="update" data-class="question" />
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="table-responsive">
+        <div class="simplify on">
+            @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Item1, Model.Item2.Cast<RadialReview.Models.AnswerModel>().ToList()))
+        </div>
+        <div class="simplify">
+            <div class="order padded alignCenter">
+                <table class="marginAuto">
+                    <tr class="peopleRow"></tr>
+                    <tr class="noPad">
+                        <th class="noPad question on">Question</th>
+                        @foreach (var person in defaultOrderedPeople)
+                        {
+                            <th title="@person.GetNameAndTitle()" class="noPad">
+                                <div class="people on rotateCell">
+                                    @person.GetName()
+                                </div>
+                            </th>
+                        }
+                    </tr>
+
+                    @foreach (var question in questions)
+                    {
+                        <tr class="noPad">
+                            <td class="noPad question on">@question.GetQuestion()&nbsp;</td>
+                            @foreach (var person in defaultOrderedPeople)
+                            {
+                                <td class="bordered noPad">
+                                    <div class="detail color-percentage square noPad">
+                                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                                    </div>
+                                    <div class="detail on color-value-percentage smallPad">
+                                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
+
+            <div class="order padded alignCenter on">
+                <table class="marginAuto">
+                    <tr class="peopleRow"></tr>
+                    <tr class="noPad">
+
+                        <th class="noPad question on">Question</th>
+                        @foreach (var person in pleasentOrderedPeople)
+                        {
+                            <th title="@person.GetNameAndTitle()" class="noPad">
+                                <div class="people on rotateCell">
+                                    @person.GetName()
+                                </div>
+                            </th>
+                        }
+                    </tr>
+
+                    @foreach (var question in pleasentOrderedQuestions)
+                    {
+                        <tr class="noPad">
+                            <td class="noPad question on">@question.GetQuestion()&nbsp;</td>
+                            @foreach (var person in pleasentOrderedPeople)
+                            {
+                                <td class="bordered noPad">
+                                    <div class="detail color-percentage square noPad">
+                                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                                    </div>
+                                    <div class="detail on detail color-value-percentage smallPad">
+                                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@*
+    <div class="table-responsive">
+        <table class="table table-condensed" style="min-width:50%">
+            <tr class="noPad" style="height:10px;vertical-align:bottom">
+                <th class="noPad" style="width: 1px; vertical-align: bottom">Question</th>
                 @foreach (var person in orderedPeople)
                 {
-                    <td class="color-percentage bordered noPad">
-                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
-                    </td>
+                    <th title="@person.GetNameAndTitle()" class="rotate90 noPad" style="width: 10px; min-width: 10px; max-width: 10px; white-space: nowrap; vertical-align: bottom">
+                        @person.GetName()
+                    </th>
                 }
             </tr>
-        }
-    </table>
-</div>
+            @{
+                var questions = Model.Item2.GroupBy(x => x.Askable.Id).Select(x => x.First().Askable);
+            }
+            @foreach (var question in questions)
+            {
+                <tr class="noPad">
+                    <td class="noPad">@question.GetQuestion()&nbsp;</td>
+                    @foreach (var person in orderedPeople)
+                    {
+                        <td class="color-percentage bordered noPad" >
+                            @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+*@
