@@ -83,28 +83,43 @@
 }
 
 .about-Self {
+    border-width:2px ! important;
     stroke: darkgoldenrod;
     fill: yellow;
+    background-color: yellow;
+    border-color: darkgoldenrod ! important;
 }
 
 .about-Manager {
+    border-width:2px ! important;
+    border-color: blue ! important;
     stroke: blue;
     fill: lightblue;
+    background-color: lightblue;
 }
 
 .about-Subordinate {
+    border-width:2px ! important;
+    border-color: darkred ! important;
     stroke: darkred;
     fill: red;
+    background-color: red;
 }
 
 .about-Teammate {
+    border-width:2px ! important;
+    border-color: darkorange ! important;
     stroke: darkorange;
     fill: orange;
+    background-color: orange;
 }
 
 .about-Peer {
+    border-width:2px ! important;
+    border-color: #000 ! important;
     stroke: #000;
     fill: #7AD17A;
+    background-color: #7AD17A;
 }
 
 .axisTitle{

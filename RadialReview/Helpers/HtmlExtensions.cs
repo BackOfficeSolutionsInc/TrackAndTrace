@@ -13,9 +13,9 @@ namespace System.Web
     public static class HtmlExtensions
     {
 
-        public static String ViewOrEdit(this HtmlHelper html, bool edit)
+        public static HtmlString ViewOrEdit(this HtmlHelper html, bool edit)
         {
-            return edit ? "Edit" : "View";
+            return new HtmlString(edit ? "<span class='glyphicon glyphicon-pencil viewEdit edit'></span>" : "<span class='glyphicon glyphicon-eye-open viewEdit view'></span>");
         }
 
         public static HtmlString GrayScale(this HtmlHelper html, double value, double neg, double pos, double alpha)
@@ -86,7 +86,7 @@ namespace System.Web
             var joined = String.Join(", ", items);
             if (count == 1)
                 name = items.First();
-            return new HtmlString(ViewOrEdit(html, edit) + " (<span title='" + joined + "'>" + name + "</span>)");
+            return new HtmlString("<span class='editFirst'>" + ViewOrEdit(html, edit).ToHtmlString() + "<span title='" + joined + "'>" + name + "</span></span>");
         }
 
         public static HtmlString Badge<T>(this HtmlHelper<T> html, Func<T, int> count)

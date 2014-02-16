@@ -92,37 +92,45 @@ canvas {
 
 .Self {
     fill: #ffcb00;
+    background-color:#ffcb00;
 }
 
 .Peer {
     fill: #2d8716;
+    background-color: #2d8716;
 }
 
 .Manager {
     fill: #3577c8;
+    background-color: #3577c8;
 }
 
 .Teammate {
     fill: #e99654;
+    background-color: #e99654;
 }
 
 .Subordinate {
     fill: #be0505;
+    background-color: #be0505;
 }
 
 
 
 .Employee {
     fill: #005d80;
+    background-color: #005d80;
     fill-opacity:1;
 }
 
 .Management {
     fill:#ff0000;
+    background-color:#ff0000;
     fill-opacity:1;
 }
 
 .You {
     fill: #ffcb00;
+    background-color: #ffcb00;
     fill-opacity:1;
 }

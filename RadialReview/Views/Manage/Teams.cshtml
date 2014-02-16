@@ -17,14 +17,14 @@
         <h3 class="panel-title">Manage Teams</h3>
     </div>
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-condensed">
             <tr>
                 <th style="width:50px;"></th>
                 <th>Name</th>
                 <th style="width:10px" class="alignCenter"></th>
                 <th style="width:130px" class="alignCenter">Members</th>
                 <th style="width:130px" class="alignCenter">Responsibilities</th>
-                <th class="rightButton"><button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal")">+</button></th>
+                <th class="rightButton"><button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal")">Add</button></th>
             </tr>
             @foreach (var p in Model.Teams.OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
             {
@@ -38,10 +38,10 @@
                     <td style="width:10px" class="alignCenter"></td>
                     <td class=" alignCenter"><a href="@Url.Action("Edit", "Team", new { id = p.Team.Id })" class="fullWidth">@Html.ViewOrEdit(p.Team.GetEditable() && p.Team.Type == RadialReview.Models.Enums.TeamType.Standard) (@p.Members)</a></td>
                     <td class=" alignCenter"><a href="@Url.Action("Edit", "Responsibilities", new { id = p.Team.Id })" class="fullWidth">@Html.ViewOrEdit(p.Team.GetEditable()) (@p.Team.Responsibilities.Count())</a> </td>
-                    <td class="rightButton">
+                    <td class="">
                         @if (p.Team.GetEditable())
                         {
-                            <a onclick="@Html.ShowModal("Edit Team", "/Team/Modal/" + p.Team.Id, "/Team/Modal")" class="fullWidth btn btn-primary">Edit</a>
+                            <div onclick="@Html.ShowModal("Edit Team", "/Team/Modal/" + p.Team.Id, "/Team/Modal")" class="fullWidth editButton"></div>
                         }
                     </td>
                 </tr>

@@ -140,7 +140,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     options.time = options.time || Date.now;
     this.legend = (options.legend || this.legend || "right").toLowerCase();
 
-    options.legendFunc = options.legendFunc || function (legendData) { };
+    options.legendFunc = options.legendFunc || function (legendData,chart) { };
 
     options.filters = options.filters || [];
 
@@ -205,7 +205,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     var yAxisTitle = d3.select("#" + this.id + " svg g.yAxisTitle text");
     var title = d3.select("#" + this.id + " svg g.title text");
 
-    options.legendFunc(scatterData.Legend);
+    options.legendFunc(scatterData.Legend,this);
 
     if (options.reset) {
         svgContainer = d3.select("#" + this.id).html("").append("svg").attr("xmlns", "http://www.w3.org/2000/svg");
@@ -440,7 +440,6 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         }
 
         var output = [];
-        debugger;
         for (var m in merged) {
             //merged[m].groupId = m.;
             output.push(merged[m]);
@@ -452,7 +451,6 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         /*if (groups.length == 0)
             return points;*/
         if (groups == "none") {
-            debugger;
             for (var key in points)
             {
                 points[key].GroupId = points[key].OtherData.GroupId;
@@ -468,7 +466,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                 separated.push(groupPoints[g]);
             }
         }
-        debugger;
+
         return separated;
     }
 

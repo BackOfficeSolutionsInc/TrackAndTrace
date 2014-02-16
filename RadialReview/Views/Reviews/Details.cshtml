@@ -96,22 +96,22 @@
             <table class="table">
                 <tr>
                     <th class="row">
-                        <div class="col-md-3 smallPad">
+                        <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
                             <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Add Question", "/Reviews/AddQuestion/" + Model.Review.Id, "/Reviews/AddQuestion/")">
                                 Add Question
                             </div>
                         </div>
-                        <div class="col-md-3 smallPad">
+                        <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
                             <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Remove question", "/Reviews/RemoveQuestion/" + Model.Review.Id, "/Reviews/RemoveQuestion/", preSubmitCheck: "validateRemoval")">
                                 <span style="font-size: 90%;"> Remove Question</span> &nbsp;
                             </div>
                         </div>
-                        <div class="col-md-3 smallPad">
+                        <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
                             <div class="btn btn-default  fullWidth" onclick="@Html.ShowModal("Add user", "/Reviews/Update/" + Model.Review.Id, "/Reviews/Update/")">
                                 Add User
                             </div>
                         </div>
-                        <div class="col-md-3 smallPad">
+                        <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
                             <div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Remove user", "/Reviews/RemoveUser/" + Model.Review.Id, "/Reviews/RemoveUser/")">
                                 Remove User
                             </div>

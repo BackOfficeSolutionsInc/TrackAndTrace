@@ -8,6 +8,93 @@
     var notes = Model.Review.ClientReview.ManagerNotes;
     var i = 0;
 }
+
+@using (Html.BeginStyles())
+{
+    <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
+    <style>
+        .chart {
+            width: 600px;
+            height: 600px;
+            position: relative;
+            margin: auto;
+        }
+
+        .chartButton {
+            top: 39px;
+            position: absolute;
+            right: 39px;
+        }
+
+        .sidebar-contents {
+            padding: 6px;
+        }
+
+        .sidebar-contents ol{
+            padding-left:25px;
+        }
+
+        .sidebar {
+            /*padding: 10px;
+                font-size: 12px;
+                background-color: #FDFDFD;
+                border: 1px solid #DFDFDF;
+                -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
+                box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);*/
+        }
+
+        .legend .container{
+            margin-top: 30px;
+            border: 1px solid #E7E7E7;
+            padding: 10px;
+        }
+            .legend .title{
+                font-size:16px;
+            }
+
+            .legend .circle {
+                border: 1px solid black;
+                border-radius: 6px;
+                width: 12px;
+                height: 12px;
+                display: inline-block;
+                margin-right:5px;
+            }
+
+        .shiftContainer {
+            padding-top: 20px;
+        }
+
+        .row-title {
+            margin-left: -30px;
+            margin-right: -30px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            background-color: #E4E5E9;
+            text-align: center;
+            font-size: 18px;
+            color: #818181;
+            /*text-shadow: 0 1px 0px #FFF;*/
+            border-top: 1px solid #E0E0E0;
+            border-bottom: 1px solid #D1D1D1;
+            margin-top: 20px;
+        }
+
+            .row-title.first {
+                margin-top: -30px;
+                padding-top: 20px;
+                padding-bottom: 15px;
+                color: #84858B;
+                border-top-left-radius: 9px;
+                border-top-right-radius: 9px;
+                font-size: 30px;
+                margin-bottom: 25px;
+            }
+    </style>
+    <link href="~/Content/chart.css" rel="stylesheet" />
+    <link href="~/Content/print.css" media="print" rel="stylesheet" />
+}
+
 <div class="shiftContainer" style="">
     <!--a href="?print=true" class="btn btn-default pull-right">
         Print
@@ -17,7 +104,7 @@
             <div class="sidebar-header alignCenter">
                 Quick Links
             </div>
-            <div class="sidebar-contents ">
+            <div class="sidebar-contents">
                 <ol>
                     <li><a href="#name">Name</a></li>
                     @if (!String.IsNullOrWhiteSpace(Model.JobDescription))
@@ -60,6 +147,7 @@
     <div class="col-lg-9 review">
         <div class="noBreak">
             <a id="name" class="shiftByTitle"></a>
+            <div class="row-title first" style="">Review: @Model.Review.Name</div>
             <div>
                 <div class="name">Name: @Model.Review.ForUser.GetName()</div>
                 <div class="role">Role: @Model.Review.ForUser.GetTitles()</div>
@@ -179,18 +267,25 @@
                         </svg>
                     </div>
                 </div>*@
-            <a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
             <div class="noselect noBreak">
-                <div class="col-md-12">
-                    <div class="chart"
-                         id="chart_@chart.Id"
-                         data-id="@chart.Id"
-                         data-start="@chart.StartDate.ToJavascriptMilliseconds()"
-                         data-end="@chart.EndDate.ToJavascriptMilliseconds()"
-                         data-xaxis="@chart.Item1"
-                         data-yaxis="@chart.Item2"
-                         data-title="@chart.Title">
-                        <!--Chart Goes Here-->
+                <a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
+                <div class="row-title">@chart.Title</div>
+                <div class="row">
+                    <div class="col-xs-9">
+                        <div class="chart"
+                             id="chart_@chart.Id"
+                             data-id="@chart.Id"
+                             data-start="@chart.StartDate.ToJavascriptMilliseconds()"
+                             data-end="@chart.EndDate.ToJavascriptMilliseconds()"
+                             data-xaxis="@chart.Item1"
+                             data-yaxis="@chart.Item2"
+                             data-title="@chart.Title">
+                            <!--Chart Goes Here-->
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+
+                        <div class="legend" id="legend_chart_@chart.Id"></div>
                     </div>
                 </div>
             </div>
@@ -263,39 +358,6 @@
         }
     </div>
 </div>
-@using (Html.BeginStyles())
-{
-    <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
-    <style>
-        .chart {
-            width: 600px;
-            height: 600px;
-            position: relative;
-            margin: auto;
-        }
-
-        .chartButton {
-            top: 39px;
-            position: absolute;
-            right: 39px;
-        }
-
-        .sidebar {
-            /*padding: 10px;
-                font-size: 12px;
-                background-color: #FDFDFD;
-                border: 1px solid #DFDFDF;
-                -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
-                box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);*/
-        }
-
-        .shiftContainer {
-            padding-top: 20px;
-        }
-    </style>
-    <link href="~/Content/chart.css" rel="stylesheet" />
-    <link href="~/Content/print.css" media="print" rel="stylesheet" />
-}
 
 
 @using (Html.BeginScripts())
@@ -310,10 +372,23 @@
             @foreach (var kv in Model.Categories)
             {
                     @:"@(kv.Key)": "@(kv.Value)",
-                                    }
+                                                            }
         };
 
         var updates = [];
+
+        function legend(legendData,chart)
+        {
+            if (legendData.length > 0) {
+                $("#legend_" + chart.id).html("<div class='container'><div class='title'>Legend:</div><div class='contents'></div></div>");
+
+                for (var i in legendData) {
+                    var item = legendData[i];
+                    $("#legend_" + chart.id + " .contents").append("<div><div class='" + item.Class + " circle inlineBlock'></div><div class='inlineBlock'>" + item.Name + "</div></div>")
+                }
+            }
+
+        }
 
         function update() {
             $(updates).each(function (indexInArray) {
@@ -330,9 +405,8 @@
 
                     var groups = null;
                     var filters = [];
-                    debugger;
                     chart.Plot(data, {
-                        title:data.OtherData.Title,
+
                         animate: true,
                         reset: reset,
                         xAxis: categoryLookup[$(that).data("xaxis")],
@@ -343,6 +417,7 @@
                         endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
                         time: date3,//new Date(parseInt($("#date").val()))
                         groups: "none",
+                        legendFunc:legend
                         //filters: filters
                     });
                 }, indexInArray * 150);

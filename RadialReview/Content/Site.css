@@ -612,7 +612,7 @@ tr.danger .strikable {
 
 .plus {
     font-weight: bold;
-    color: #8d9098;
+    color: #6e7074;
 }
 
     .plus:hover {
@@ -790,26 +790,50 @@ tr.danger .strikable {
     text-shadow: 0px -1px 1px #8B8B8B !important;
 }
 
-.shiftByTitle{
-    position:relative;
-    top:-54px;
-    left:-100px;
-    visibility:hidden;
-    height:0px;
+.shiftByTitle {
+    position: relative;
+    top: -54px;
+    left: -100px;
+    visibility: hidden;
+    height: 0px;
 }
-.shiftByTitle:after{
-    content:"";
-}
+
+    .shiftByTitle:after {
+        content: "";
+    }
 
 
 @media (min-width: 1200px) {
     .sidebar-fixed {
         position: fixed;
         top: 95px;
-        width:255px;
+        width: 255px;
     }
 }
 
-.marginAuto{
-    margin:auto;
+.marginAuto {
+    margin: auto;
+}
+
+.editButton {
+    cursor: pointer;
+    color:#767676;
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    text-align:center;
+}
+
+.editButton:before{    
+    content: "\270f";
+}
+
+.panel-heading-button{
+    padding:2px;
+    float:right;
 }

@@ -160,7 +160,8 @@ namespace RadialReview.Engines
                 Filters = new List<ScatterFilter>(),
                 MinDate = minDate,
                 MaxDate = maxDate,
-                OtherData = new { Title= title }
+                OtherData = new { Title= title },
+                Legend = unfilteredPlot.Legend
             };
 
             return filteredPlot;
@@ -196,7 +197,7 @@ namespace RadialReview.Engines
             var groups = new HashSet<ScatterGroup>(new EqualityComparer<ScatterGroup>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
 
             var legend = new HashSet<ScatterLegendItem>(new EqualityComparer<ScatterLegendItem>((x,y)=>x.Class.Equals(y.Class),x=>x.Class.GetHashCode()));
-
+            
             foreach (var userAnswers in groupedByUsers) //<UserId>
             {
                 var byReviewOrdered = userAnswers.GroupBy(x => x.ForReviewContainerId).OrderBy(x => x.Max(y => y.CompleteTime)).ToList();
@@ -247,7 +248,7 @@ namespace RadialReview.Engines
 
                     var aboutType=userReviewAnswers.First().AboutType.Invert();
                     var aboutClass = "about-" + aboutType;
-                    
+                                        
                     legend.Add(new ScatterLegendItem(aboutType.ToString(),aboutClass));
                     
                     var reviewsClass = "reviews-" + reviewContainerId;

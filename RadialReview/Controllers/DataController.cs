@@ -222,7 +222,6 @@ namespace RadialReview.Controllers
 
             var title = _ChartsEngine.GetChartTitle(GetUser(),id);
 
-
             var options = new ChartOptions()
             {
                 Id=id,
@@ -233,8 +232,7 @@ namespace RadialReview.Controllers
                 ForUserId = review.ForUserId,
                 GroupBy=chartTuple.Groups,
                 Options=""+reviewContainer.Id,
-                Source = ChartDataSource.Review
-                
+                Source = ChartDataSource.Review,
             };
             var scatter = _ChartsEngine.ScatterFromOptions(GetUser(), options);
             return Json(ResultObject.Create(scatter), JsonRequestBehavior.AllowGet);

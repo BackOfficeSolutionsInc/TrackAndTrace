@@ -22,6 +22,15 @@
         </ul>
     </div>
 *@
+<ul class="nav nav-tabs manage">
+    <li class="@(ViewBag.Page == "Members"   ? "active" : "")"><a href="/Manage/Members"  >     Members</a></li>
+    <li class="@(ViewBag.Page == "Positions" ? "active" : "")"><a href="/Manage/Positions">     Positions</a></li>
+    <li class="@(ViewBag.Page == "Teams"     ? "active" : "")"><a href="/Manage/Teams"    >     Teams</a></li>
+    <li class="@(ViewBag.Page == "Reviews"   ? "active" : "")"><a href="/Manage/Reviews">       Reviews</a></li>
+    <li class="@(ViewBag.Page == "Settings"  ? "active" : "")"><a href="/Manage/Organization">  Settings</a></li>
+</ul>
+
+@*
 <div class="nav-arrows flat pull-left noselect">
     <a href="/Manage/Members"   class="@(ViewBag.Page == "Members"   ? "active" : "")">Members</a>
     <a href="/Manage/Positions" class="@(ViewBag.Page == "Positions" ? "active" : "")">Positions</a>
@@ -34,9 +43,13 @@
         <a href="/Manage/Organization" class="@(ViewBag.Page == "Settings" ? "active" : "")">Settings</a>
     </div>
 }
+ *@
 <div class="clearfix" style="padding-bottom:10px;"></div>
 
 <style>
+    .nav-tabs.manage .active a {
+    }
+
     .nav-arrows {
         margin: 0;
         padding: 0;
