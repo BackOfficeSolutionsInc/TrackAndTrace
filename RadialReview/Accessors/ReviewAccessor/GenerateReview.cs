@@ -21,6 +21,79 @@ namespace RadialReview.Accessors
 {
     public partial class ReviewAccessor : BaseAccessor
     {
+        public static TeamAccessor _TeamAccessor = new TeamAccessor();
+
+        public Dictionary<long, List<long>> GetUsersWhoReviewUsers(
+                UserOrganizationModel caller, 
+                ReviewParameters parameters,
+                long forTeam)
+        {
+            var teams = _TeamAccessor.GetTeamsDirectlyManaged(caller, caller.Id).ToList();
+            if (!teams.Any(x => x.Id == forTeam)){
+                throw new PermissionsException("You do not have access to that team.");
+            }
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var orgId = caller.Organization.Id;
+
+                    var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
+                    var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
+                    var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).List();
+                    //var allManagerSubordinates = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == orgId).List();
+                    //var allPositions = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId).List();
+                    //var applicationQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).List();
+                    //var application = s.QueryOver<ApplicationWideModel>().Where(x => x.Id == ApplicationAccessor.APPLICATION_ID).List();
+
+                    var reviewWhoSettings = s.QueryOver<ReviewWhoSettingsModel>().Where(x => x.OrganizationId == orgId).List();
+
+                    var queryProvider = new IEnumerableQuery(true);
+                    queryProvider.AddData(allOrgTeams);
+                    queryProvider.AddData(allTeamDurations);
+                    queryProvider.AddData(allMembers);
+                    //queryProvider.AddData(allManagerSubordinates);
+                    //queryProvider.AddData(application);
+
+                    queryProvider.AddData(reviewWhoSettings);
+
+                    var d = new DataInteraction(queryProvider, s.ToUpdateProvider());
+
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var teamMembers = TeamAccessor.GetTeamMembers(queryProvider, perms, caller, forTeam).Select(x => x.User);
+
+                    var team = teams.First(x => x.Id == forTeam);
+
+                    var reviewWhoDictionary = new Dictionary<long, HashSet<long>>();
+
+                    foreach (var member in teamMembers)
+                    {
+                        var reviewing = queryProvider.Get<UserOrganizationModel>(member.Id);
+                        var usersTheyReview = ReviewAccessor.GetUsersThatReviewUser(caller, perms, d, reviewing, parameters, team, teamMembers.ToList()).ToList();
+                        reviewWhoDictionary[member.Id] = new HashSet<long>(usersTheyReview.Select(x => x.Key.Id));
+                        var reviewWho = queryProvider.Where<ReviewWhoSettingsModel>(x => x.ByUserId == member.Id).ToList();
+                        foreach (var r in reviewWho)
+                        {
+                            if (r.ForceState)
+                            {
+                                reviewWhoDictionary[member.Id].Add(r.ForUserId);
+                            }
+                            else
+                            {
+                                reviewWhoDictionary[member.Id].Remove(r.ForUserId);
+                            }
+                        }
+                    }
+
+                    var output = reviewWhoDictionary.ToDictionary(x=>x.Key,x=>x.Value.ToList());
+                                        /*.ToDictionary(
+                                            x => queryProvider.Get<UserOrganizationModel>(x.Key),
+                                            x => x.Value.Select(y => queryProvider.Get<UserOrganizationModel>(y)).ToList()
+                                        );*/
+                    return output;
+                }
+            }
+        }
 
 
         #region Generate Review

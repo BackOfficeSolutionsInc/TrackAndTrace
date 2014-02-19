@@ -1,0 +1,24 @@
+﻿@model RadialReview.Models.Interfaces.IPagination
+
+@{
+    int numPages = (int)Math.Ceiling(Model.NumPages);
+}
+
+<ul class="pagination">
+    <li><a href="?page=0">&laquo;</a></li>
+    @if (Model.Page > 0)
+    {
+        <li><a href="?page=@(Model.Page-1)">&lsaquo;</a></li>
+    }
+    @for (int i = Math.Max(0, Model.Page - 2), j = 0; j < 5 && i < numPages; i++, j++)
+    {
+        <li class="@(i==Model.Page?"active":"")">
+            <a href="?page=@i">@(i + 1)</a>
+        </li>
+    }
+    @if (Model.Page < numPages - 1)
+    {
+        <li><a href="?page=@(Model.Page+1)">&rsaquo;</a></li>
+    }
+    <li><a href="?page=@(numPages - 1)">&raquo;</a></li>
+</ul>

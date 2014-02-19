@@ -93,7 +93,7 @@
     <div class="panel-body">
 
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-condensed">
                 <tr>
                     <th class="row">
                         <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
@@ -153,11 +153,17 @@
                             <div onclick="toggleComplete()" class="glyphicon glyphicon-plus-sign expandButton"></div>
                         </div>
                     </th>
-                    <th style="width:50px"></th>
+                    <th style="width:10px"></th>
                 </tr>
                 @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ForUser.GetPersonallyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle()))
                 {
-                    <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")">
+                    <tr 
+                        class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
+                        @if(r.ForUser.GetPersonallyManaging())
+                        {
+                            @:onclick = "@Url.Action("Details", "Review", new { id = r.Id })"
+                        }
+                        >
                         <td>@r.ForUser.GetNameAndTitle()</td>
                         <td class="alignCenter">
                             @r.ClientReview.Visible.GetIcon()
@@ -166,7 +172,7 @@
                         <td>
                             @*Both types of completions*@
                             <div class="toggle-completion">
-                                <table class="table noMargin" style="width: 100%; border: none; padding: 5px 0px 0px 0px !important;">
+                                <table class="table noMargin" style="width: 100%; border: none;">
                                     <tr>
                                         @foreach (var bar in r.GetCompletion(true).GetCompletions())
                                         {
@@ -184,10 +190,10 @@
                             </div>
                             @*END Both types of completions*@
                         </td>
-                        <td style="padding: 2px;" class="rightButton">
+                        <td style="padding: 2px;" class="">
                             @if (r.ForUser.GetPersonallyManaging())
                             {
-                                <a class="btn btn-primary fullWidth " href="@Url.Action("Details", "Review", new { id = r.Id })">View</a>
+                                <a class=" fullWidth " href="">View</a>
                             }
                         </td>
                     </tr>

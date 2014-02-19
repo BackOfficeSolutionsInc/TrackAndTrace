@@ -21,7 +21,20 @@ namespace RadialReview.Accessors
 {
     public partial class ReviewAccessor : BaseAccessor
     {
-        private static CoworkerRelationships GetUsersThatReviewUser(
+
+        /// <summary>
+        /// Requires:
+        ///     <br/>
+        /// </summary>
+        /// <param name="caller"></param>
+        /// <param name="perms"></param>
+        /// <param name="s"></param>
+        /// <param name="beingReviewed"></param>
+        /// <param name="parameters"></param>
+        /// <param name="forTeam"></param>
+        /// <param name="accessableUsers"></param>
+        /// <returns></returns>
+        public static CoworkerRelationships GetUsersThatReviewUser(
             UserOrganizationModel caller, PermissionsUtility perms,
             DataInteraction s, UserOrganizationModel beingReviewed,
             ReviewParameters parameters, OrganizationTeamModel forTeam,

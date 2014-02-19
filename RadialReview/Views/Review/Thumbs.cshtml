@@ -1,9 +1,9 @@
-﻿@model List<RadialReview.Models.ThumbsAnswer>
+﻿@model Tuple<List<RadialReview.Models.ThumbsAnswer>,bool>
 
 @using RadialReview.Models
 @using RadialReview.Models.Enums
 
-@foreach (var thumbs in Model)
+@foreach (var thumbs in Model.Item1)
 {
     <div class="row">
 
@@ -20,11 +20,29 @@
                 <div class="col-sm-4 col-sm-offset-4 alignCenter">
                     <div class="btn-group" data-toggle="buttons">
                         <label class="btn btn-lg btn-default successRadio @(thumbs.Thumbs == ThumbsType.Up ? "active" : "")">
-                            <input type="radio" @(thumbs.Thumbs == ThumbsType.Up ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.Up">
+                            <input 
+                                   type="radio"
+                                   @(thumbs.Thumbs == ThumbsType.Up ? "checked" : "")
+                                   @if(Model.Item2)
+                                   {
+                                    @:name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" 
+                                   }
+                                   else { 
+                                   @:disabled
+                                   }                              
+                                   value="@ThumbsType.Up">
                             <span class="glyphicon glyphicon-thumbs-up"></span>
                         </label>
                         <label class="btn btn-lg btn-default dangerRadio @(thumbs.Thumbs == ThumbsType.Down ? "active" : "") ">
-                            <input type="radio" @(thumbs.Thumbs == ThumbsType.Down ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.Down">
+                            <input type="radio" @(thumbs.Thumbs == ThumbsType.Down ? "checked" : "")
+                                   @if (Model.Item2) { 
+                                       @: name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id"
+                                   }
+                                   else { 
+                                   @:disabled
+                                   }  
+                                   value="@ThumbsType.Down">
+
                             <span class="glyphicon glyphicon-thumbs-down"></span>
                         </label>
                     </div>

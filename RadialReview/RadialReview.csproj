@@ -233,6 +233,7 @@
     <Compile Include="Accessors\ReviewAccessor\ReviewAccessor.cs" />
     <Compile Include="Accessors\ReviewAccessor\UpdateReview.cs" />
     <Compile Include="Accessors\S3Response.cs" />
+    <Compile Include="Accessors\SettingsAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
     <Compile Include="Accessors\UrlAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
@@ -290,6 +291,7 @@
     <Compile Include="Models\Enums\AboutType.cs" />
     <Compile Include="Models\Interfaces\ICompletionModel.cs" />
     <Compile Include="Models\Interfaces\IGuidIdentifiable.cs" />
+    <Compile Include="Models\Interfaces\IPagination.cs" />
     <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
     <Compile Include="Models\Charts\ChartOptions.cs" />
     <Compile Include="Models\Charts\ScatterPlot.cs" />
@@ -297,6 +299,7 @@
     <Compile Include="Models\Enums\WeightType.cs" />
     <Compile Include="Models\Reviews\ClientReviewModel.cs" />
     <Compile Include="Models\Reviews\ReviewParameters.cs" />
+    <Compile Include="Models\Reviews\ReviewWhoModel.cs" />
     <Compile Include="Models\Rockstars\RockstarModel.cs" />
     <Compile Include="Models\Template\TemplateItem.cs" />
     <Compile Include="Models\Template\TemplateItemChart.cs" />
@@ -751,6 +754,8 @@
     <Content Include="Views\Results\Index.cshtml" />
     <Content Include="Views\Partial\_AnswerTable.cshtml" />
     <Content Include="Views\Faq\Index.cshtml" />
+    <Content Include="Views\Reviews\IssueDetails.cshtml" />
+    <Content Include="Views\Shared\_Pagination.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

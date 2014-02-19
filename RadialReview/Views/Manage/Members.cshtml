@@ -37,7 +37,6 @@
         span:hover .viewEdit {
             opacity: 1;
         }
-
     </style>
 }
 
@@ -45,12 +44,10 @@
 {
     <script>
 
-        function SendEmails()
-        {
+        function SendEmails() {
             $.ajax({
                 url: "/Nexus/SendAllEmails",
-                success:function(data)
-                {
+                success: function (data) {
                     StoreJsonAlert(data);
                     location.reload();
                 }
@@ -80,19 +77,31 @@
                 <th style="width:15px;" class="alignCenter smallPad"></th>
                 <th>Name</th>
                 <th>Email</th>
-                <th style="min-width:150px" class="NalignCenter">Positions</th>
-                <th style="min-width:80px" class="NalignCenter">Teams</th>
-                <th style="min-width:150px" class="NalignCenter">Managers</th>
-                <th style="width:0px" class="NalignCenter">Questions</th>
-                <th style="" class="NalignCenter"></th>
+                <th style="min-width:10px" class="NalignCenter">Positions</th>
+                <th style="min-width:10px" class="NalignCenter">Teams</th>
+                <th style="min-width:10px" class="NalignCenter">Managers</th>
+                <th style="width:10px" class="NalignCenter">Questions</th>
             </tr>
             @foreach (var p in Model.Users.OrderByDescending(x => x.Managing).ThenByDescending(x => x.Verified).ThenBy(x => x.Name))
             {
                 <tr class="@(p.Managing?"managing":"notManaging")">
                     <td class="alignCenter noselect">
                         @*@((p.Managing).GetIcon("glyphicon-eye-open strokeLightGreen", "glyphicon-eye-close gray", "You are managing", "You are not managing"))*@
-                        
-                        @((p.Manager).GetIcon("glyphicon-tower gold strokeGold", "glyphicon-user blue strokeBlue", "A manager", "Not a manager"))
+
+
+                        @*if (p.Managing)
+                            {
+                                <div onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))" class="editButton"></div>
+                            }*@
+
+                        <span @if (p.Manager) { @: class="glyphicon glyphicon-tower gold strokeGold" title="A manager"
+                                                } else {  @: class="glyphicon glyphicon-user blue strokeBlue" title="Not a manager"
+                                                }
+                              @if (p.Managing) { @: style="cursor:pointer;" onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))"
+                                                                                                                                                                                                                  }>
+                        </span>
+
+
                         @if (p.Verified || !p.Managing)
                         {
                             @p.Verified.GetIcon("glyphicon-ok-sign strokeGray gray", "glyphicon-envelope strokeGray gray", "Joined", "Has not joined")
@@ -110,15 +119,15 @@
                         }
                     </td>
                     <td class="noOverflow" style="max-width: 160px;" title="@p.Name">@p.Name</td>
-                    <td class="noOverflow" style="max-width: 160px;" title="@p.Email"><a href="mailto:@p.Email">@p.Email</a></td>
+                    <td class="noOverflow" style="max-width: 150px;" title="@p.Email"><a href="mailto:@p.Email">@p.Email</a></td>
                     <td class="NalignCenter noOverflow" style="max-width: 200px;">
                         <a href="@Url.Action("Positions","User",new {id = p.Id})" class="fullWidth">
-                        @Html.EditFirstButton(p.PositionTitles, p.Managing)
+                            @Html.EditFirstButton(p.PositionTitles, p.Managing)
                         </a>
                     </td>
                     <td class="NalignCenter noOverflow" style="max-width: 80px;">
                         <a href="@Url.Action("Teams","User",new {id = p.Id})" class="fullWidth">
-                        @Html.EditFirstButton(p.TeamsTitles, p.Managing)
+                            @Html.EditFirstButton(p.TeamsTitles, p.Managing)
                         </a>
                     </td>
                     <td class="NalignCenter noOverflow" style="max-width: 180px;">
@@ -129,17 +138,11 @@
                     <td class="NalignCenter noOverflow">
                         <a href="@Url.Action("Edit", "Responsibilities", new { id = p.Id })" class="fullWidth">
                             <span>
-                            @Html.ViewOrEdit(p.Managing)
-                            <span title="Number of Individual Responsibilities">@(p.NumIndividualResponsibilities)</span>+<span title="Number of Other Responsibilities">@(p.NumTotalResponsibilities - p.NumIndividualResponsibilities)</span>
-                                </span>
-                            
+                                @Html.ViewOrEdit(p.Managing)
+                                <span title="Number of individual questions">@(p.NumIndividualResponsibilities)</span>+<span title="Number of other questions">@(p.NumTotalResponsibilities - p.NumIndividualResponsibilities)</span>
+                            </span>
+
                         </a>
-                    </td>
-                    <td class="noselect">
-                        @if (p.Managing)
-                        {
-                            <div onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))" class="editButton"></div>
-                        }
                     </td>
                 </tr>
             }
@@ -148,4 +151,3 @@
 
     </div>
 </div>
-

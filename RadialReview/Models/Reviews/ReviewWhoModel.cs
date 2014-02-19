@@ -16,6 +16,8 @@ namespace RadialReview.Models.Reviews
         public virtual Boolean ForceState { get; set; }
         public virtual DateTime Created { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
+
+        public virtual long OrganizationId { get; set; }
     }
 
     public class ReviewWhoSettingsModelMap : ClassMap<ReviewWhoSettingsModel>
@@ -24,6 +26,7 @@ namespace RadialReview.Models.Reviews
         {
             Id(x => x.Id);
             Map(x => x.ForUserId);
+            Map(x => x.OrganizationId);
             Map(x => x.ByUserId);
             Map(x => x.SetByUserId);
             Map(x => x.ForceState);

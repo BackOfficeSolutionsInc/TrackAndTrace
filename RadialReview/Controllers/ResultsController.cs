@@ -15,9 +15,9 @@ namespace RadialReview.Controllers
         //
         // GET: /Results/
         [Access(AccessLevel.Manager)]
-        public ActionResult Index()
+        public ActionResult Index(int page=0)
         {
-            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false);
+            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false,10,page);
             var model = new OrgReviewsViewModel()
             {
                 Reviews = reviews.Select(x => new ReviewsViewModel(x)).ToList()

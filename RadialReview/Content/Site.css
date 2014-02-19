@@ -827,6 +827,21 @@ tr.danger .strikable {
     font-weight: normal;
     line-height: 1;
     text-align:center;
+    opacity:.2;
+    
+}
+
+a .viewEdit{
+    opacity:.2;
+}
+
+a:hover .viewEdit{
+    opacity:1;
+}
+
+.editButton:hover{
+    opacity:1;
+    cursor:pointer;
 }
 
 .editButton:before{    
@@ -836,4 +851,12 @@ tr.danger .strikable {
 .panel-heading-button{
     padding:2px;
     float:right;
+}
+
+.glyphicon-ban-circle-overlap:after {
+    content: "\e090";
+    position:absolute;
+    left:0px;
+    -webkit-text-stroke-width: 1px;
+    color:rgba(169, 0, 0, 0.33);
 }

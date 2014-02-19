@@ -54,6 +54,7 @@ namespace RadialReview.Accessors
 
         }
 
+
         public List<OrganizationTeamModel> GetOrganizationTeams(UserOrganizationModel caller, long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -102,6 +103,17 @@ namespace RadialReview.Accessors
             }
         }
 
+        /// <summary>
+        /// Requires:
+        ///     OrganizationTeamModel
+        ///     TeamDurationModel
+        ///     UserOrganizationModel
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="permissions"></param>
+        /// <param name="caller"></param>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
         public static List<TeamDurationModel> GetTeamMembers(AbstractQuery s, PermissionsUtility permissions, UserOrganizationModel caller, long teamId)
         {
             permissions.ViewTeam(teamId);
@@ -246,7 +258,7 @@ namespace RadialReview.Accessors
                     }
 
 
-                    if (name != null)
+                    if (name != null && team.Type==TeamType.Standard)
                     {
                         team.Name = name;
                     }

@@ -1,7 +1,7 @@
-﻿@model List<RadialReview.Models.FeedbackAnswer>
+﻿@model Tuple<List<RadialReview.Models.FeedbackAnswer>, bool>
 
 <div class="startHiddenGroup">
-    @foreach (var f in Model)
+    @foreach (var f in Model.Item1)
     {
         <div class="startHidden row">
             <div class="col-md-6 alignRight startHidden">
@@ -12,7 +12,19 @@
                 <h4 class="alignCenter question">@f.Askable.GetQuestion()</h4>
             </div>
             <div class="col-md-6 alignRight startHidden">
-                <textarea placeholder="@(f.Required?"":"Optional")" class="feedback" name="question_@(RadialReview.Models.Enums.QuestionType.Feedback)_@f.Id">@f.Feedback</textarea>
+                <textarea
+                placeholder="@(f.Required ? "" : "Optional")"
+                class="feedback"
+                @if (Model.Item2)
+                {
+                    @:name="question_@(RadialReview.Models.Enums.QuestionType.Feedback)_@f.Id"
+                          }
+                else
+                {
+                    @:disabled
+                         }
+
+                >@f.Feedback</textarea>
             </div>
         </div>
         <hr />

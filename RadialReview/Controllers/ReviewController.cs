@@ -37,11 +37,18 @@ namespace RadialReview.Controllers
         //
         // GET: /Review/
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Index(String id)
+        public ActionResult Index(String id,int page=0)
         {
             var user = GetUser();
-            var reviews = _ReviewAccessor.GetReviewsForUser(user, user);
-            var output = new ReviewsListViewModel() { ForUser = user, Reviews = reviews };
+            var reviewCount=_ReviewAccessor.GetNumberOfReviewsForUser(user, user);
+            var reviews = _ReviewAccessor.GetReviewsForUser(user, user,page,user.CountPerPage);
+            var output = new ReviewsListViewModel() { 
+                ForUser = user, 
+                Reviews = reviews,
+                Page=page,
+                NumPages = reviewCount/(double)user.CountPerPage
+
+            };
             return View(output);
         }
 
@@ -62,7 +69,6 @@ namespace RadialReview.Controllers
             long reviewId = -1;
             int page = -1;
 
-
             if (ParseAndSave(collection, out reviewId, out page))
             {
                 return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
@@ -77,7 +83,14 @@ namespace RadialReview.Controllers
             try
             {
                 reviewId = long.Parse(collection["reviewId"]);
-                currentPage = int.Parse(collection["page"]);
+                try
+                {
+                    currentPage = int.Parse(collection["page"]);
+                }
+                catch (FormatException)
+                {
+                    currentPage = 0;
+                }
 
                 if (collection.AllKeys.Contains("back"))
                 {
@@ -111,7 +124,7 @@ namespace RadialReview.Controllers
                                         output = value / 100.0m;
                                     if (value == 0)
                                         output = null;
-                                    var currentComplete=_ReviewAccessor.UpdateSliderAnswer(user, questionId, output);
+                                    var currentComplete = _ReviewAccessor.UpdateSliderAnswer(user, questionId, output);
                                     allComplete = allComplete && currentComplete;
                                 } break;
                             case QuestionType.Thumbs: allComplete = allComplete && _ReviewAccessor.UpdateThumbsAnswer(user, questionId, collection[k].Parse<ThumbsType>()); break;
@@ -124,6 +137,10 @@ namespace RadialReview.Controllers
 
                 return allComplete;
             }
+            catch (PermissionsException e)
+            {
+                throw e;
+            }
             catch (Exception)
             {
                 throw new PermissionsException();
@@ -134,6 +151,7 @@ namespace RadialReview.Controllers
         {
             public long Id { get; set; }
             public long Page { get; set; }
+            public bool Editable { get; set; }
             public List<AnswerModel> Answers { get; set; }
             public UserOrganizationModel ForUser { get; set; }
             public List<Tuple<String, bool>> OrderedPeople { get; set; }
@@ -209,6 +227,7 @@ namespace RadialReview.Controllers
                     Id = id,
                     Page = pageConcrete,
                     Answers = p,
+                    Editable = review.DueDate>DateTime.UtcNow,
                     ForUser = p.FirstOrDefault().NotNull(x => x.AboutUser),
                     OrderedPeople = pages.Select(x =>
                         Tuple.Create(

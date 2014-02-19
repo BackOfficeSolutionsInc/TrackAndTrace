@@ -11,27 +11,29 @@
 }
 
 <div class="panel panel-primary">
+    @if (Model.GetPersonallyManaging())
+    {
+        <div class="panel-heading-button">
+
+            <a class="btn btn-default"
+               onclick="@Html.ShowModal(
+                        "Add Team",
+                        Url.Action("TeamModal", "User", new {userId=Model.Id}),
+                        Url.Action("TeamModal", "User")
+                    )">Add</a>
+        </div>
+    }
     <div class="panel-heading">
-        <h3 class="panel-title">@Html.ViewOrEdit(Model.GetPersonallyManaging()) teams: <i>@Model.GetNameAndTitle()</i></h3>
+        <h3 class="panel-title">@Html.ViewOrEdit(Model.GetPersonallyManaging(), false) teams: <i>@Model.GetNameAndTitle()</i></h3>
     </div>
 
-    <table class="table">
+    <table class="table table-condensed">
         <tr>
             <th style="width: 10px;"></th>
             <th>Team</th>
             <th style="width: 150px;" class="alignCenter">Start</th>
             <th class="alignCenter rightButton">End</th>
-            @if (Model.GetPersonallyManaging())
-            {
-                <th class="rightButton">
-                    <a class="btn btn-default fullWidth"
-                       onclick="@Html.ShowModal(
-                        "Add Team",
-                        Url.Action("TeamModal", "User", new {userId=Model.Id}),
-                        Url.Action("TeamModal", "User")
-                    )">+</a>
-                </th>
-            }
+            <th style="width:10px;"></th>
         </tr>
         @foreach (var p in Model.Teams.OrderBy(x => x.DeleteTime).ThenBy(x => x.Team.Type != RadialReview.Models.Enums.TeamType.Standard).ThenBy(x => x.Team.Name))
         {
@@ -39,7 +41,7 @@
                 <td class="">
                     @if (p.Team.Type != RadialReview.Models.Enums.TeamType.Standard)
                     {
-                        <span class="glyphicon glyphicon-refresh" title="Auto-generated"></span>
+                        <span class="glyphicon glyphicon-flash" title="Auto-generated"></span>
                     }
                 </td>
                 <td class="position">@p.Team.Name</td>
@@ -48,22 +50,22 @@
                 <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
                 @if (Model.GetPersonallyManaging())
                 {
-                    <td class="deleteButton rightButton">
+                    <td class="deleteButton">
                         @if (p.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
                         {
                             if (p.DeleteTime == null)
                             {
-                                <a onclick="Delete(@p.Id)" class="btn btn-danger fullWidth">Delete</a>
+                                <div onclick="Delete(@p.Id)" class="glyphicon glyphicon-trash clickable" ></div>
                             }
-                            else
+                            @*else
                             {
                                 <div class="fullWidth alignCenter" style="color: #929292">Deleted</div>
-                            }
+                            }*@
                         }
-                        else
-                        {
-                            <a class="btn btn-default disabled fullWidth">Delete</a>
-                        }
+                        @*else
+                            {
+                                <a class="btn btn-default disabled fullWidth">Delete</a>
+                            }*@
                     </td>
                 }
             </tr>
@@ -79,7 +81,7 @@
                 url: "/User/RemoveTeam/" + id + "?userId=@Model.Id",
                 success: function (data) {
                     $("#row_" + id).addClass("danger");
-                    $("#row_" + id + " .deleteButton").html("<div class='fullWidth alignCenter' style='color: #929292'>Deleted</div>");
+                    $("#row_" + id + " .deleteButton").html("<div class='glyphicon glyphicon-trash' style='color: red'></div>");
                     $("#row_" + id + " .endTime").html("Just now");
                 }
             })

@@ -1,4 +1,4 @@
-﻿@model List<RadialReview.Models.SliderAnswer>
+﻿@model Tuple<List<RadialReview.Models.SliderAnswer>, bool>
 
 @using RadialReview.Models
 @using RadialReview.Models.Enums
@@ -17,9 +17,9 @@
     }
 
 }
-@foreach (var slider in Model.OrderBy(x => x.Askable.GetQuestion()))
+@foreach (var slider in Model.Item1.OrderBy(x => x.Askable.GetQuestion()))
 {
-    <div class="row ">
+    <div class="row question" >
         <div i class="col-md-6 alignCenter startHidden">
             @if (slider.Required)
             {
@@ -29,46 +29,51 @@
         </div>
 
         <div class="col-md-6 startHidden">
+            @if (Model.Item2)
+            {
+                <div class="row">
+                    <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.min</h5></div>
+                    <div class="col-xs-6" style="padding:30px 0 0px 0;">
+                        @*<input name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
+                            type="text"
+                            class="sliderInput"
+                            value="@((int?)(slider.Percentage*100))"
+                            data-slider-min="0"
+                            data-slider-max="100"
+                            data-slider-step="1"
+                            data-slider-value="@((int?)(slider.Percentage*100))"
+                            data-slider-orientation="horizontal"
+                            data-slider-selection="after">*@
+                        <div class="slider" id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id">
 
-            <div class="row">
-                <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.min</h5></div>
-                <div class="col-xs-6" style="padding:30px 0 0px 0;">
-                    @*<input name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
-                        type="text"
-                        class="sliderInput"
-                        value="@((int?)(slider.Percentage*100))"
-                        data-slider-min="0"
-                        data-slider-max="100"
-                        data-slider-step="1"
-                        data-slider-value="@((int?)(slider.Percentage*100))"
-                        data-slider-orientation="horizontal"
-                        data-slider-selection="after">*@
-                    <div class="slider" id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id">
-                        <input
-                         class="sliderBar bar"
-                         type="range"
-                         name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
-                         value="@((int?)(slider.Percentage*100)??0)"
-                         min="0"
-                         max="100"
-                         step="5"
-                         onchange="sliderUpdateInternal(this)">
-                        <!--span class="highlight"></span-->
-                        <div class="rangevalue">
-                            @if (slider.Percentage==null)
-                            {
-                                @:NA
+                            <input class="sliderBar bar"
+                                   type="range"
+                                   name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
+                                   value="@((int?)(slider.Percentage*100)??0)"
+                                   min="0"
+                                   max="100"
+                                   step="5"
+                                   onchange="sliderUpdateInternal(this)">
+
+                            <!--span class="highlight"></span-->
+                            <div class="rangevalue">
+                                @if (slider.Percentage == null)
+                                {
+                                    @:NA
                             }
-                            else
-                            {
-                               @((int?)(slider.Percentage * 100))
-                            }
+                                else
+                                {
+                                    @((int?)(slider.Percentage * 100))
+                                }
+                            </div>
                         </div>
                     </div>
+                    <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.max</h5></div>
                 </div>
-                <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.max</h5></div>
+            }
+            <div id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@(slider.Id)_title" class="bold alignCenter percentage">
+                @((int?)(slider.Percentage * 100))
             </div>
-            <div id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@(slider.Id)_title" class="bold alignCenter">No Answer</div>
         </div>
     </div>
 }
@@ -101,8 +106,7 @@
         function sliderUpdateInternal(self) {
             var d = { value: parseInt($(self).val()) };
             var disp = d.value;
-            if (d.value == 0)
-            {
+            if (d.value == 0) {
                 disp = "NA";
             }
 
@@ -114,15 +118,15 @@
 
         function slideUpdate(d) {
             var name = $(this).attr("name");
-           /* var answers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
-            var div = 100 / answers.length;
-            var i = Math.floor(d.value / div);
+            /* var answers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
+             var div = 100 / answers.length;
+             var i = Math.floor(d.value / div);
 
-            var answer = answers[i];
-            if (d.value == 0)
-                answer = "No Answer";*/
+             var answer = answers[i];
+             if (d.value == 0)
+                 answer = "No Answer";*/
 
-            var answer=sliderToText(d.value);
+            var answer = sliderToText(d.value);
 
             $("#" + name + "_title").html(answer);
             $(this).val()

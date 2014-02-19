@@ -392,7 +392,10 @@ namespace RadialReview.Utilities
             //TODO more permissions here?
             if (IsRadialAdmin())
                 return this;
-            if (session.Get<ReviewModel>(reviewId).ForUserId == caller.Id)
+            var review=session.Get<ReviewModel>(reviewId);
+            if(review.DueDate<DateTime.UtcNow)
+                throw new PermissionsException("Review period has expired.");
+            if (review.ForUserId == caller.Id)
                 return this;
 
             throw new PermissionsException();

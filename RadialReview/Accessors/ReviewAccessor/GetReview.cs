@@ -23,7 +23,24 @@ namespace RadialReview.Accessors
     {
 
         #region Get
-        public List<ReviewModel> GetReviewsForUser(UserOrganizationModel caller, UserOrganizationModel forUser)
+
+        public int GetNumberOfReviewsForUser(UserOrganizationModel caller, UserOrganizationModel forUser)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var forUserId = forUser.Id;
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(forUserId, true);
+
+                    return s.QueryOver<ReviewModel>()
+                        .Where(x => x.ForUserId == forUserId)
+                        .RowCount();
+                }
+            }
+        }
+
+        public List<ReviewModel> GetReviewsForUser(UserOrganizationModel caller, UserOrganizationModel forUser,int page,int pageCount)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -34,6 +51,9 @@ namespace RadialReview.Accessors
 
                     var reviews = s.QueryOver<ReviewModel>()
                         .Where(x => x.ForUserId == forUserId)
+                        .OrderBy(x=>x.CreatedAt).Desc
+                        .Skip(page*pageCount)
+                        .Take(pageCount)
                         //.Fetch(x => x.Answers).Eager
                         //add reviewModel Id to answers, query for that
                         .List().ToList();
@@ -180,14 +200,34 @@ namespace RadialReview.Accessors
             }
         }*/
 
-        public List<ReviewsModel> GetReviewsForOrganization(UserOrganizationModel caller, long organizationId, bool populate)
+        public long GetNumberOfReviewsForOrganization(UserOrganizationModel caller, long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
-                    var reviewContainers = s.QueryOver<ReviewsModel>().Where(x => x.ForOrganization.Id == organizationId).List().ToList();
+                    var count = s.QueryOver<ReviewsModel>()
+                                                .Where(x => x.ForOrganization.Id == organizationId)
+                                                .RowCountInt64();
+                    return count;
+                }
+            }
+        }
+
+        public List<ReviewsModel> GetReviewsForOrganization(UserOrganizationModel caller, long organizationId, bool populate,int pageSize,int page)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
+                    var reviewContainers = s.QueryOver<ReviewsModel>()
+                                                .Where(x => x.ForOrganization.Id == organizationId)
+                                                .OrderBy(x=>x.DateCreated).Desc
+                                                .Skip(page*pageSize)
+                                                .Take(pageSize)
+                                                .List().ToList();
 
                     //Completion should be much faster than getting all the reviews...
 

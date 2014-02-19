@@ -124,13 +124,18 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Reviews()
+        public ActionResult Reviews(int page=0)
         {
             Session["Manage"] = "Reviews";
-            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false);
+
+            double pageSize=10;
+
+            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false,(int)pageSize,page);
             var model = new OrgReviewsViewModel()
             {
-                Reviews = reviews.Select(x => new ReviewsViewModel(x)).ToList()
+                Reviews = reviews.Select(x => new ReviewsViewModel(x)).ToList(),
+                NumPages = (int)Math.Ceiling(_ReviewAccessor.GetNumberOfReviewsForOrganization(GetUser(), GetUser().Organization.Id) / pageSize),
+                Page=page
             };
 
             return View(model);

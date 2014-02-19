@@ -39,7 +39,7 @@ namespace RadialReview.Models
         public virtual IList<PositionDurationModel> Positions { get; set; }
         public virtual IList<TeamDurationModel> Teams { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
-
+        public virtual int CountPerPage { get; set; }
         public virtual String JobDescription { get; set; }
 
         public virtual OriginType GetOriginType()
@@ -163,6 +163,7 @@ namespace RadialReview.Models
             //Map(x => x.Title);
 
             Map(x => x.IsRadialAdmin);
+            Map(x => x.CountPerPage);
             Map(x => x.ManagingOrganization);
             Map(x => x.ManagerAtOrganization);
             Map(x => x.AttachTime);

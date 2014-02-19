@@ -19,9 +19,9 @@
                         <h3 class="panel-title">@group.FirstOrDefault().NotNull(x => x.Askable.Category.Category.Translate())</h3>
                     </div>
                     <div class="panel-body">
-                        @Html.Partial("Slider", group.ToList().Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList())
-                        @Html.Partial("Thumbs", group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList())
-                        @Html.Partial("Feedback", group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList())
+                        @Html.Partial("Slider",   Tuple.Create(group.ToList().Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList(),Model.Editable))
+                        @Html.Partial("Thumbs",   Tuple.Create(group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList(), Model.Editable))
+                        @Html.Partial("Feedback", Tuple.Create(group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList(),Model.Editable))
                     </div>
                 </div>
             }

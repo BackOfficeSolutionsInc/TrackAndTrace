@@ -1,0 +1,40 @@
+﻿@model RadialReview.Controllers.ReviewsController.IssueDetailsViewModel
+@{
+    ViewBag.Title = "Issue a Review";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row">
+    <div class="col-sm-6">
+        @{
+            var first = "checked";
+        }
+        @foreach (var userId in Model.ReviewWho.Keys)
+        {
+            <a class="@first" href="#user_@userId">@Model.AvailableUsers[userId].GetNameAndTitle()</a>
+            first = "";
+        }
+    </div>
+    @{
+        first = "on";
+    }
+    @foreach (var userId in Model.ReviewWho.Keys)
+    {
+        <div class="col-sm-6 @(first) ">
+            <h1>@Model.AvailableUsers[userId].GetNameAndTitle()</h1>
+
+            <table class="table table-condensed table-striped">
+                @foreach (var reviewWho in Model.AvailableUsers.Keys)
+                {
+                    <tr>
+                        <td><input name="reviewWho_@(userId)_@(reviewWho)" @(Model.ReviewWho.ContainsKey(reviewWho)?"checked":"") ></td>
+                        <td>@Model.AvailableUsers[reviewWho].GetNameAndTitle()</td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+        first = "";
+    }
+</div>

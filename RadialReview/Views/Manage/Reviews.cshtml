@@ -16,6 +16,11 @@ Before the review is created, make sure you've added all members and responsibil
 }
 
 <div class="panel panel-primary startHiddenGroup">
+    <div class="panel-heading-button">
+        <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton plus" data-toggle="modal">
+            Add
+        </button>
+    </div>
     <div class="panel-heading">
         <h3 class="panel-title">Reviews</h3>
     </div>
@@ -27,8 +32,7 @@ Before the review is created, make sure you've added all members and responsibil
                 <th style="width:100px" class="alignCenter">Due</th>
                 <th style="width:120px" class="alignCenter">@RadialReview.Properties.DisplayNameStrings.completion</th>
                 @*<th class="rightButton"></th>*@
-                <th class="rightButton">
-                    <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton plus" data-toggle="modal">Add</button>
+                <th class="" style="width:10px">
                 </th>
             </tr>
             @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
@@ -41,7 +45,7 @@ Before the review is created, make sure you've added all members and responsibil
                         @Html.Partial("_Completion", review.Review)
                     </td>
                     @*<td class="rightButton"><div onclick="@Html.ShowModal("Update Review", "/Reviews/Update/"+review.Review.Id, "/Reviews/Update/"+review.Review.Id)" class="btn btn-primary">Update</div></td>*@
-                    <td class="">
+                    <td class="" style="width:10px">
                         <a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="">
                             @RadialReview.Properties.DisplayNameStrings.details
                         </a>
@@ -51,6 +55,9 @@ Before the review is created, make sure you've added all members and responsibil
         </table>
     </div>
 </div>
+
+@Html.Partial("_Pagination", Model)
+
 @*
     <div class="panel panel-primary startHiddenGroup">
         <div class="panel-heading">

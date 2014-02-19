@@ -4,11 +4,18 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
+@using(Html.BeginStyles())
+{
+    <style>
+        tr:hover .underline{
+            text-decoration:underline;
+        }
+    </style>
+}
 
 
 @section hints{
-    @Html.AlertBoxDismissable(@"From this page, you can access the progress and ", "alert-info", "Info:")
+    @Html.AlertBoxDismissable(@"From this page, you can access the progress of outstanding reviews and evaluate members in completed reviews.", "alert-info", "Info:")
 }
 
 <div class="panel panel-primary startHiddenGroup">
@@ -22,31 +29,35 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-condensed">
-            <tr>
-                <th style="min-width: 120px">@RadialReview.Properties.DisplayNameStrings.name</th>
-                <th style="width:100px" class="alignCenter">Created</th>
-                <th style="width:100px" class="alignCenter">Due</th>
-                <th style="width:120px" class="alignCenter">Completion</th>
-                @*<th class="rightButton"></th>*@
-            </tr>
-            @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
-            {
-                <tr class="startHidden">
-                    <td>
-                        <a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="">
-                            @review.Review.ReviewName
-                        </a>
-                    </td>
-                    <td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>
-                    <td class="alignCenter">@review.Review.DueDate.ToShortDateString()</td>
-                    <td>
-                        @Html.Partial("_Completion", review.Review)
-                    </td>
-                    @*<td class="rightButton"><div onclick="@Html.ShowModal("Update Review", "/Reviews/Update/"+review.Review.Id, "/Reviews/Update/"+review.Review.Id)" class="btn btn-primary">Update</div></td>*@
-                    
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th style="min-width: 120px">@RadialReview.Properties.DisplayNameStrings.name</th>
+                    <th style="width:100px" class="alignCenter">Created</th>
+                    <th style="width:100px" class="alignCenter">Due</th>
+                    <th style="width:120px" class="alignCenter">Completion</th>
+                    @*<th class="rightButton"></th>*@
                 </tr>
-            }
+            </thead>
+            <tbody>
+                @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
+                {
+                    <tr class="startHidden clickable" onclick="location.href = '@Url.Action("Details", "Reviews", new {id=review.Review.Id})';">
+                        <td class="underline">
+                            <a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="">
+                                @review.Review.ReviewName
+                            </a>
+                        </td>
+                        <td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>
+                        <td class="alignCenter">@review.Review.DueDate.ToShortDateString()</td>
+                        <td>
+                            @Html.Partial("_Completion", review.Review)
+                        </td>
+                        @*<td class="rightButton"><div onclick="@Html.ShowModal("Update Review", "/Reviews/Update/"+review.Review.Id, "/Reviews/Update/"+review.Review.Id)" class="btn btn-primary">Update</div></td>*@
+
+                    </tr>
+                }
+            </tbody>
         </table>
     </div>
 </div>

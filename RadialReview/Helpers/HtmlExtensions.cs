@@ -13,9 +13,11 @@ namespace System.Web
     public static class HtmlExtensions
     {
 
-        public static HtmlString ViewOrEdit(this HtmlHelper html, bool edit)
+        public static HtmlString ViewOrEdit(this HtmlHelper html, bool edit,bool icon=true)
         {
-            return new HtmlString(edit ? "<span class='glyphicon glyphicon-pencil viewEdit edit'></span>" : "<span class='glyphicon glyphicon-eye-open viewEdit view'></span>");
+            if(icon)
+                return new HtmlString(edit ? "<span class='glyphicon glyphicon-pencil viewEdit edit'></span>" : "<span class='glyphicon glyphicon-eye-open viewEdit view'></span>");
+            return new HtmlString(edit ? "Edit" : "View");
         }
 
         public static HtmlString GrayScale(this HtmlHelper html, double value, double neg, double pos, double alpha)
@@ -86,6 +88,13 @@ namespace System.Web
             var joined = String.Join(", ", items);
             if (count == 1)
                 name = items.First();
+            else if (count == 0)
+            {
+                name = "<i>None</i>";
+                joined = "None";
+            }
+            else
+                name = "<i>Multiple</i> ("+count+")";
             return new HtmlString("<span class='editFirst'>" + ViewOrEdit(html, edit).ToHtmlString() + "<span title='" + joined + "'>" + name + "</span></span>");
         }
 
