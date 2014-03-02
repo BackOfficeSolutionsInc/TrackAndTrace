@@ -20,6 +20,7 @@
         .toggle-completion:not(.on) {
             display: none;
         }
+
         .shift5050 {
             -webkit-transform-origin: 50% 50%;
             -moz-transform-origin: 50% 50%;
@@ -37,8 +38,25 @@
             -o-transition: opacity .25s ease;
             transition: opacity .25s ease;
         }
-        .expandButton:hover {
-            opacity:1;
+
+            .expandButton:hover {
+                opacity: 1;
+            }
+
+        .table thead > tr:first-child > th {
+            border-bottom: 0px solid #DDD;
+        }
+
+        .table thead > tr:nth-child(2) > th {
+            border-top: 0px solid #DDD;
+        }
+
+        tr.managing {
+            cursor: pointer;
+        }
+
+        tr.not-managing {
+            background-color: #aaaaaa;
         }
     </style>
 }
@@ -90,12 +108,12 @@
         <h3 class="panel-title">Review : @Model.Review.ReviewName</h3>
         <div class="pull-right"></div>
     </div>
-    <div class="panel-body">
 
-        <div class="table-responsive">
-            <table class="table table-condensed">
+    <div class="table-responsive">
+        <table class="table table-condensed table-hover">
+            <thead>
                 <tr>
-                    <th class="row">
+                    <th class="row" colspan="2">
                         <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
                             <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Add Question", "/Reviews/AddQuestion/" + Model.Review.Id, "/Reviews/AddQuestion/")">
                                 Add Question
@@ -119,7 +137,6 @@
 
 
                     </th>
-                    <th></th>
                     <th class="alignCenter">
                         <div class="toggle-completion" style="height:55px;">
                             @RadialReview.Properties.DisplayNameStrings.completion
@@ -138,7 +155,7 @@
 
                     <th>
                         <div class="toggle-completion">
-                            <table class="fullWidth">
+                            <table class="fullWidth" style="margin-bottom:7px;">
                                 <tr>
                                     <th class="rotate shift5050" style="min-width:40px;max-width:40px;width:40px;">Self</th>
                                     <th class="rotate shift5050" style="min-width:40px;max-width:40px;width:40px;">Managers</th>
@@ -153,20 +170,18 @@
                             <div onclick="toggleComplete()" class="glyphicon glyphicon-plus-sign expandButton"></div>
                         </div>
                     </th>
-                    <th style="width:10px"></th>
+                    <th></th>
                 </tr>
+            </thead>
+            <tbody>
                 @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ForUser.GetPersonallyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle()))
                 {
-                    <tr 
-                        class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
-                        @if(r.ForUser.GetPersonallyManaging())
-                        {
-                            @:onclick = "@Url.Action("Details", "Review", new { id = r.Id })"
-                        }
-                        >
-                        <td>@r.ForUser.GetNameAndTitle()</td>
+                    <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
+                        @if (r.ForUser.GetPersonallyManaging()) { @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
+                                                                            }>
+                        <td class="table-hover-underline">@r.ForUser.GetNameAndTitle()</td>
                         <td class="alignCenter">
-                            @r.ClientReview.Visible.GetIcon()
+                            <a>@r.ClientReview.Visible.GetIcon()</a>
                         </td>
 
                         <td>
@@ -176,7 +191,7 @@
                                     <tr>
                                         @foreach (var bar in r.GetCompletion(true).GetCompletions())
                                         {
-                                            <th style="padding: 1px 1px 1px 1px !important;">
+                                            <th>
                                                 @Html.Partial("_Completion", bar)
                                             </th>
                                         }
@@ -184,21 +199,16 @@
                                 </table>
                             </div>
                             <div class="toggle-completion on">
-                                <div style="padding: 5px 1px 1px 1px !important; ">
+                                <div>
                                     @Html.Partial("_Completion", r.GetCompletion())
                                 </div>
                             </div>
                             @*END Both types of completions*@
                         </td>
-                        <td style="padding: 2px;" class="">
-                            @if (r.ForUser.GetPersonallyManaging())
-                            {
-                                <a class=" fullWidth " href="">View</a>
-                            }
-                        </td>
+                        <td></td>
                     </tr>
                 }
-            </table>
-        </div>
+            </tbody>
+        </table>
     </div>
 </div>

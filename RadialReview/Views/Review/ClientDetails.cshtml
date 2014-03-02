@@ -30,9 +30,9 @@
             padding: 6px;
         }
 
-        .sidebar-contents ol{
-            padding-left:25px;
-        }
+            .sidebar-contents ol {
+                padding-left: 25px;
+            }
 
         .sidebar {
             /*padding: 10px;
@@ -43,23 +43,25 @@
                 box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);*/
         }
 
-        .legend .container{
+        .legend .container {
             margin-top: 30px;
             border: 1px solid #E7E7E7;
             padding: 10px;
+            -webkit-print-color-adjust: exact;
         }
-            .legend .title{
-                font-size:16px;
-            }
 
-            .legend .circle {
-                border: 1px solid black;
-                border-radius: 6px;
-                width: 12px;
-                height: 12px;
-                display: inline-block;
-                margin-right:5px;
-            }
+        .legend .title {
+            font-size: 16px;
+        }
+
+        .legend .circle {
+            border: 1px solid black;
+            border-radius: 6px;
+            width: 12px;
+            height: 12px;
+            display: inline-block;
+            margin-right: 5px;
+        }
 
         .shiftContainer {
             padding-top: 20px;
@@ -73,10 +75,11 @@
             background-color: #E4E5E9;
             text-align: center;
             font-size: 18px;
-            color: #818181;
-            /*text-shadow: 0 1px 0px #FFF;*/
-            border-top: 1px solid #E0E0E0;
-            border-bottom: 1px solid #D1D1D1;
+            color: #6E7392;
+            -webkit-text-shadow: 0 1px 0px #F3F3F3;
+            text-shadow: 0 1px 0px #F3F3F3;
+            border-top: 1px solid #C5C9DF;
+            border-bottom: 1px solid #C5C9DF;
             margin-top: 20px;
         }
 
@@ -84,11 +87,12 @@
                 margin-top: -30px;
                 padding-top: 20px;
                 padding-bottom: 15px;
-                color: #84858B;
+                /*color: #84858B;*/
                 border-top-left-radius: 9px;
                 border-top-right-radius: 9px;
                 font-size: 30px;
                 margin-bottom: 25px;
+                border-top: 1px solid #E0E0E0;
             }
     </style>
     <link href="~/Content/chart.css" rel="stylesheet" />
@@ -294,28 +298,34 @@
         @if (Model.Review.ClientReview.IncludeQuestionTable)
         {
             <a id="questionTable" class="shiftByTitle"></a>
-            <div class="panel panel-primary noBreak">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        Answer Distribution
-                    </h4>
-                </div>
-                <div class="panel-body noPad">
+            <div class="row-title">Answer Distribution</div>
+            <div class="row">
+                <div class="col-sm-12">
                     @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
                 </div>
             </div>
+
         }
         @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
         {
             <a id="managerFeedback" class="shiftByTitle"></a>
-            <div class="panel panel-primary noBreak">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        Supervisors' Answers
-                    </h4>
-                </div>
-                <div class="panel-body noPad">
+            <div class="row-title" style="margin-bottom:10px;">Supervisors' Answers</div>
+            <div class="row">
+                <div class="col-sm-12">
                     @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+                </div>
+            </div>
+        }
+
+        @if (!String.IsNullOrWhiteSpace(notes))
+        {
+            <a id="notes" class="shiftByTitle"></a>
+            <div class="row-title">Supervisors' Notes</div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div id="notes" style="white-space: pre-line" class="feedback">@notes</div>
+                    <div class="smallBreak"></div>
+                    <div class="smallBreak"></div>
                 </div>
             </div>
         }
@@ -323,13 +333,9 @@
         @if (feedbacks.Count > 0)
         {
             <a id="feedback" class="shiftByTitle"></a>
-            <div class="panel panel-primary noBreak">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        Feedback
-                    </h4>
-                </div>
-                <div class="panel-body">
+            <div class="row-title">Feedback</div>
+            <div class="row">
+                <div class="col-sm-12">
                     @foreach (var f in feedbacks)
                     {
                         <div style="white-space: pre-line" id="feedback_@f.Value" class="feedback">@(((RadialReview.Models.FeedbackAnswer)Model.AnswersAbout.FirstOrDefault(x => x.Id == f.Value)).Feedback)</div>
@@ -340,22 +346,7 @@
             </div>
         }
 
-        @if (!String.IsNullOrWhiteSpace(notes))
-        {
-            <a id="notes" class="shiftByTitle"></a>
-            <div class="panel panel-primary noBreak">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        Supervisors' Notes
-                    </h4>
-                </div>
-                <div class="panel-body">
-                    <div id="notes" style="white-space: pre-line" class="feedback">@notes</div>
-                    <div class="smallBreak"></div>
-                    <div class="smallBreak"></div>
-                </div>
-            </div>
-        }
+
     </div>
 </div>
 
@@ -372,13 +363,12 @@
             @foreach (var kv in Model.Categories)
             {
                     @:"@(kv.Key)": "@(kv.Value)",
-                                                            }
+                                                                                                                                                    }
         };
 
         var updates = [];
 
-        function legend(legendData,chart)
-        {
+        function legend(legendData, chart) {
             if (legendData.length > 0) {
                 $("#legend_" + chart.id).html("<div class='container'><div class='title'>Legend:</div><div class='contents'></div></div>");
 
@@ -417,7 +407,7 @@
                         endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
                         time: date3,//new Date(parseInt($("#date").val()))
                         groups: "none",
-                        legendFunc:legend
+                        legendFunc: legend
                         //filters: filters
                     });
                 }, indexInArray * 150);

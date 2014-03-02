@@ -280,6 +280,7 @@
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
+    <Compile Include="Engines\UserEngine.cs" />
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
@@ -520,6 +521,7 @@
     <Content Include="Content\home\features5.png" />
     <Content Include="Content\home\features6.png" />
     <Content Include="Content\img\footer.png" />
+    <Content Include="Content\img\greenlight.png" />
     <Content Include="Content\img\little_pluses.png" />
     <Content Include="Content\home\logo1.png" />
     <Content Include="Content\home\logo2.png" />
@@ -535,6 +537,7 @@
     <Content Include="Content\home\placelogo8.png" />
     <Content Include="Content\home\radial.png" />
     <Content Include="Content\home\radial2.png" />
+    <Content Include="Content\img\redlight.png" />
     <Content Include="Content\img\slider.png" />
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\print.css" />
@@ -756,6 +759,8 @@
     <Content Include="Views\Faq\Index.cshtml" />
     <Content Include="Views\Reviews\IssueDetails.cshtml" />
     <Content Include="Views\Shared\_Pagination.cshtml" />
+    <Content Include="Views\Manage\UserDetails.cshtml" />
+    <Content Include="Views\Shared\_UserDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

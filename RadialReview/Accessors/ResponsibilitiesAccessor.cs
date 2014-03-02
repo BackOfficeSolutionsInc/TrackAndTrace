@@ -147,7 +147,7 @@ namespace RadialReview.Accessors
                     {
                         r = s.Get<ResponsibilityModel>(responsibilityId);
 
-                        if (responsibilityGroupId != null && responsibilityGroupId != r.ForResponsibilityGroup)//Cant change responsibilty Group
+                        if (responsibilityGroupId != null && responsibilityGroupId != r.ForResponsibilityGroup)//Cant change responsibility Group
                             throw new PermissionsException();
                     }
 

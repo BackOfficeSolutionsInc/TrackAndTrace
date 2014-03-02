@@ -731,6 +731,9 @@ tr.danger .strikable {
     height: 33px;
     margin: 2px;
     padding: 5px;
+    float:right;
+    text-align:center;
+
 }
 
 .btn.includable.on:after {
@@ -859,4 +862,9 @@ a:hover .viewEdit{
     left:0px;
     -webkit-text-stroke-width: 1px;
     color:rgba(169, 0, 0, 0.33);
+}
+
+
+.table-hover tr:hover .table-hover-underline{
+    text-decoration:underline;
 }

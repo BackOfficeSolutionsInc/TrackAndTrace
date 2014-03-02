@@ -1,0 +1,39 @@
+﻿@model RadialReview.Models.ViewModels.UserOrganizationDetails
+
+@using (Html.BeginStyles())
+{
+    <style>
+        ul li {
+            list-style-type: decimal;
+        }
+    </style>
+}
+
+
+<div class="review">
+    <div class="row">
+        <div class="col-sm-4">
+            @Html.Partial("_User", Model.User)
+            <div class="smallBreak"></div>
+            <div class="smallBreak"></div>
+        </div>
+        <div class="col-sm-8">
+            <div class="panel panel-default">
+                <a class="headerButton" href="~/Responsibilities/Edit/4">Edit</a>
+                <div class="panel-heading">
+                    <h3 class="panel-title">Questions</h3>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        @foreach (var r in Model.Responsibilities)
+                        {
+                            <li class="font-size:19px;">
+                                @r
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

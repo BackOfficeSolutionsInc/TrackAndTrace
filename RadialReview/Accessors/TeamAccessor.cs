@@ -133,12 +133,28 @@ namespace RadialReview.Accessors
                 case TeamType.AllMembers:
                     {
                         var users = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id);
-                        return users.Select(x => new TeamDurationModel() { Id = -2, Start = x.AttachTime, Team = team, User = x, DeleteTime = x.DeleteTime ?? x.DetachTime }).ToList();
+                        return users.Select(x => new TeamDurationModel() { 
+                            Id = -2, 
+                            Start = x.AttachTime, 
+                            Team = team, 
+                            User = x,
+                            DeleteTime = x.DeleteTime ?? x.DetachTime,
+                            UserId=x.Id,
+                            TeamId=team.Id
+                        }).ToList();
                     }
                 case TeamType.Managers:
                     {
                         var managers = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id && (x.ManagerAtOrganization || x.ManagingOrganization));
-                        return managers.Select(x => new TeamDurationModel() { Id = -2, Start = x.AttachTime, Team = team, User = x, DeleteTime = x.DeleteTime ?? x.DetachTime }).ToList();
+                        return managers.Select(x => new TeamDurationModel() { 
+                            Id = -2, 
+                            Start = x.AttachTime, 
+                            Team = team, 
+                            User = x, 
+                            DeleteTime = x.DeleteTime ?? x.DetachTime,
+                            UserId = x.Id,
+                            TeamId = team.Id
+                        }).ToList();
                     }
                 case TeamType.Subordinates:
                     {
@@ -151,15 +167,14 @@ namespace RadialReview.Accessors
                             Start = x.AttachTime,
                             Team = team,
                             User = x,
-                            DeleteTime = x.DeleteTime ?? x.DetachTime 
+                            DeleteTime = x.DeleteTime ?? x.DetachTime,
+                            UserId = x.Id,
+                            TeamId = team.Id
                         }).ToList();
                     }
                 default: throw new NotImplementedException("Team Type unknown");
             }
         }
-
-
-
 
         public List<TeamDurationModel> GetUsersTeams(UserOrganizationModel caller, long forUserId)
         {

@@ -1,4 +1,5 @@
 ﻿using RadialReview.Accessors;
+using RadialReview.Engines;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
@@ -26,6 +27,7 @@ namespace RadialReview.Controllers
         private static PositionAccessor _PositionAccessor = new PositionAccessor();
         private static TeamAccessor _TeamAccessor = new TeamAccessor();
         private static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
+        private static UserEngine _UserEngine = new UserEngine();
 
         #region User
         public class SaveUserModel
@@ -394,31 +396,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Details(long id)
         {
-            var foundUser = _UserAccessor.GetUserOrganization(GetUser(), id, false, false);
-            var responsibilities = new List<String>();
-
-            var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), id);
-            var teams = _TeamAccessor.GetUsersTeams(GetUser(), id);
-            var userResponsibility = ((UserOrganizationModel)r).Hydrate().Position().SetTeams(teams).Execute();
-
-            responsibilities.AddRange(userResponsibility.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
-            foreach (var rgId in userResponsibility.Positions.ToListAlive().Select(x => x.Position.Id))
-            {
-                var positionResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), rgId);
-                responsibilities.AddRange(positionResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
-            }
-            foreach (var teamId in userResponsibility.Teams.ToListAlive().Select(x => x.Team.Id))
-            {
-                var teamResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), teamId);
-                responsibilities.AddRange(teamResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
-            }
-
-
-            var model = new UserOrganizationDetails()
-            {
-                User=foundUser,
-                Responsibilities = responsibilities,
-            };
+            var model = _UserEngine.GetUserDetails(GetUser(), id);
 
             return View(model);
         }

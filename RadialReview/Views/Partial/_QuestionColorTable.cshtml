@@ -7,56 +7,59 @@
 
 <div class="table-responsive">
     <table class="fullWidth" style="min-width: 50%; border-collapse: collapse;">
-        <tr style="height: 70px; vertical-align: bottom;">
-            <th style="width:10px;"></th>
-            <th style="text-align:left;" >Question</th>
-            <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Incomplete</th>
-            <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Never</th>
-            <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Seldom</th>
-            <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Sometimes</th>
-            <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Usually</th>
-            <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Mostly</th>
-            <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Always</th>
-            <th class="rotate" style="width:40px;max-width:40px;min-width:40px;" title="Above and Beyond">Above</th>
-            <th class="alignCenter" style="width:90px;">Average</th>
-        </tr>
-
-        @foreach (var question in Model.Where(x => x is SliderAnswer).Cast<SliderAnswer>().GroupBy(x => x.Askable.Id))
-        {
-            var total = question.Count();
-            var totalComplete = question.Count(x=>x.Complete);
-            var incomplete = question.Count(x => !x.Complete);
-            var never = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 0.0m / 7.0m && x.Percentage < 1.0m / 7.0m);
-            var seldom = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 1.0m / 7.0m && x.Percentage < 2.0m / 7.0m);
-            var sometimes = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 2.0m / 7.0m && x.Percentage < 3.0m / 7.0m);
-            var usually = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 3.0m / 7.0m && x.Percentage < 4.0m / 7.0m);
-            var mostly = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 4.0m / 7.0m && x.Percentage < 5.0m / 7.0m);
-            var always = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 5.0m / 7.0m && x.Percentage < 6.0m / 7.0m);
-            var aboveAndBeyond = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 6.0m / 7.0m && x.Percentage < 7.0m / 7.0m);
-
-            double average = (double)(question.Average(x => x.Percentage) ?? 0);
-
-
-            var alpha = .5;
-
-            <tr class="question alignCenter" style="border-bottom: 1px solid #DDD;">
-                <td class=""></td>
-                <td class="alignLeft">
-                    @question.First().Askable.GetQuestion()
-                </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(incomplete     ,0,total,alpha)">@incomplete    </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(never          ,0,totalComplete*1.5,alpha)">@never         </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(seldom         ,0,totalComplete*1.5,alpha)">@seldom        </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(sometimes      ,0,totalComplete*1.5,alpha)">@sometimes     </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(usually        ,0,totalComplete*1.5,alpha)">@usually       </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(mostly         ,0,totalComplete*1.5,alpha)">@mostly        </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(always         ,0,totalComplete*1.5,alpha)">@always        </td>
-                <td class="text bordered" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(aboveAndBeyond ,0,totalComplete*1.5,alpha)">@aboveAndBeyond</td>
-
-                <td class="alignCenter bordered color-value-percentage oneline" @*style="background-color:@(Html.Color(average, 0, .5, 1, alpha));"*@>
-                    @average
-                </td>
+        <thead>
+            <tr style="height: 70px; vertical-align: bottom;">
+                <th style="width:10px;"></th>
+                <th style="text-align:left;">Question</th>
+                <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Incomplete</th>
+                <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Never</th>
+                <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Seldom</th>
+                <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Sometimes</th>
+                <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Usually</th>
+                <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Mostly</th>
+                <th class="rotate" style="width:40px;max-width:40px;min-width:40px;">Always</th>
+                <th class="rotate" style="width:40px;max-width:40px;min-width:40px;" title="Above and Beyond">Above</th>
+                <th class="alignCenter" style="width:90px;">Average</th>
             </tr>
-        }
+        </thead>
+        <tbody>
+            @foreach (var question in Model.Where(x => x is SliderAnswer).Cast<SliderAnswer>().GroupBy(x => x.Askable.Id))
+            {
+                var total = question.Count();
+                var totalComplete = question.Count(x => x.Complete);
+                var incomplete = question.Count(x => !x.Complete);
+                var never = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 0.0m / 7.0m && x.Percentage < 1.0m / 7.0m);
+                var seldom = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 1.0m / 7.0m && x.Percentage < 2.0m / 7.0m);
+                var sometimes = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 2.0m / 7.0m && x.Percentage < 3.0m / 7.0m);
+                var usually = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 3.0m / 7.0m && x.Percentage < 4.0m / 7.0m);
+                var mostly = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 4.0m / 7.0m && x.Percentage < 5.0m / 7.0m);
+                var always = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 5.0m / 7.0m && x.Percentage < 6.0m / 7.0m);
+                var aboveAndBeyond = question.Count(x => x.Percentage.HasValue && x.Percentage.Value >= 6.0m / 7.0m && x.Percentage < 7.0m / 7.0m);
+
+                double average = (double)(question.Average(x => x.Percentage) ?? 0);
+
+
+                var alpha = .5;
+
+                <tr class="question alignCenter" style="border-bottom: 1px solid #DDD;">
+                    <td class=""></td>
+                    <td class="alignLeft">
+                        @question.First().Askable.GetQuestion()
+                    </td>
+                    <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(incomplete     ,0,total,alpha)">@incomplete    </td>
+                    <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(never          ,0,totalComplete*1.5,alpha)">@never         </td>
+                    <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(seldom         ,0,totalComplete*1.5,alpha)">@seldom        </td>
+                    <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(sometimes      ,0,totalComplete*1.5,alpha)">@sometimes     </td>
+                    <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(usually        ,0,totalComplete*1.5,alpha)">@usually       </td>
+                    <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(mostly         ,0,totalComplete*1.5,alpha)">@mostly        </td>
+                    <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(always         ,0,totalComplete*1.5,alpha)">@always        </td>
+                    <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(aboveAndBeyond ,0,totalComplete*1.5,alpha)">@aboveAndBeyond</td>
+
+                    <td class="alignCenter color-value-percentage oneline" @*style="background-color:@(Html.Color(average, 0, .5, 1, alpha));"*@>
+                        @average
+                    </td>
+                </tr>
+            }
+        </tbody>
     </table>
 </div>

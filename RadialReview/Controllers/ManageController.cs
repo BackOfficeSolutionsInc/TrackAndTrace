@@ -1,4 +1,5 @@
 ﻿using RadialReview.Accessors;
+using RadialReview.Engines;
 using RadialReview.Exceptions;
 using RadialReview.Models.ViewModels;
 using System;
@@ -16,6 +17,7 @@ namespace RadialReview.Controllers
         protected static TeamAccessor _TeamAccessor = new TeamAccessor();
         protected static PositionAccessor _PositionAccessor = new PositionAccessor();
         protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
+        protected static UserEngine _UserEngine = new UserEngine();
         //
         // GET: /Manage/
         [Access(AccessLevel.Manager)]
@@ -33,7 +35,26 @@ namespace RadialReview.Controllers
                 case "Reviews": return Reviews();
                 default: return Positions();
             }*/
+        }
 
+        public class ManageUserModel
+        {
+            public UserOrganizationDetails Details { get; set; }
+        }
+
+        [Access(AccessLevel.Manager)]
+        public ActionResult UserDetails(long id)
+        {
+            var caller=GetUser().Hydrate().ManagingUsers(true).Execute();
+            var details=_UserEngine.GetUserDetails(GetUser(), id);
+            details.User.PopulatePersonallyManaging(caller, caller.AllSubordinates);
+
+            var model = new ManageUserModel()
+            {
+                Details = details
+            };
+
+            return View(model);
         }
 
         [Access(AccessLevel.Manager)]

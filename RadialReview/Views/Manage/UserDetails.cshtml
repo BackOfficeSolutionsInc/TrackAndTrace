@@ -1,0 +1,8 @@
+﻿@model RadialReview.Controllers.ManageController.ManageUserModel
+
+@{
+    ViewBag.Title = "User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Partial("~/Views/Shared/_UserDetails.cshtml", Model.Details)

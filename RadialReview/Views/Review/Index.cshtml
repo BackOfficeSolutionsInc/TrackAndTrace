@@ -26,8 +26,8 @@
                 <tbody>
                     @foreach (var review in Model.Reviews.OrderByDescending(x => x.CreatedAt))
                     {
-                        <tr class="startHidden" onclick="location.href='@Url.Action("Take", new { id = review.Id, page = 0 })';">
-                            <td>@review.Name</td>
+                        <tr class="startHidden clickable" onclick="location.href='@Url.Action("Take", new { id = review.Id, page = 0 })';">
+                            <td class="table-hover-underline"><a>@review.Name</a></td>
                             <td style="text-align: center">@review.DueDate.ToShortDateString()</td>
                             <td>
                                 @Html.Partial("_Completion", review.GetCompletion(false))

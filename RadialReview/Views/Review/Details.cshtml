@@ -12,6 +12,45 @@
     <link href="~/Content/toggle.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-switch.css" rel="stylesheet" />
     <style>
+    .includable {
+        float: right;
+        width:70px;
+        margin-top:9px;
+        margin-right:14px;
+        cursor:pointer;
+    }
+
+        .includable:hover .text {
+            visibility: inherit;
+            color: #B8B8B8;
+        }
+
+        .includable .light-icon {
+            width: 12px;
+            height: 12px;
+            float:right;
+            margin-top:4px;
+            background-image: url("/Content/img/redlight.png");
+        }
+
+        .includable.on .light-icon {
+            background-image: url("/Content/img/greenlight.png");
+        }
+
+        .includable .text{
+            float:left;
+            visibility:hidden;
+        }
+
+        .includable:not(.on) .text:before {
+            content: "Excluded";
+        }
+
+        .includable.on .text:before {
+            content: "Included";
+        }
+
+    /*
         .btn.includable {
             opacity: .45;
             -moz-transition: opacity 200ms ease;
@@ -35,62 +74,60 @@
                 color: #FFF;
                 background-color: #D9534F;
                 border-color: #D43F3A;
-            }
+            }*/
 
-        .chartButton {
-            top: 39px;
-            position: absolute;
-            right: 39px;
-        }
+    .chartButton {
+        top: 39px;
+        position: absolute;
+        right: 39px;
+    }
 
-        .save {
-            position: absolute;
-            right: 26px;
-            display: inline-block;
-            border: 1px solid #AFADAD;
-            padding: 3px;
-            border-bottom-left-radius: 3px;
-            background-color: #D1FCD1;
-            opacity: 0;
-            -webkit-transition: all .10s ease;
-            -moz-transition: all .10s ease;
-            -ms-transition: all .10s ease;
-            -o-transition: all .10s ease;
-            transition: all .10s ease;
-        }
+    .save {
+        position: absolute;
+        right: 26px;
+        display: inline-block;
+        border: 1px solid #AFADAD;
+        padding: 3px;
+        border-bottom-left-radius: 3px;
+        background-color: #D1FCD1;
+        opacity: 0;
+        -webkit-transition: all .10s ease;
+        -moz-transition: all .10s ease;
+        -ms-transition: all .10s ease;
+        -o-transition: all .10s ease;
+        transition: all .10s ease;
+    }
 
-        .saving {
-            opacity: .5;
-        }
+    .saving {
+        opacity: .5;
+    }
 
-        .has-switch {
-        }
+    .has-switch {
+    }
 
-        #chart {
-            width: 650px;
-            height: 650px;
-            position: relative;
-            margin: auto;
-        }
+    #chart {
+        width: 650px;
+        height: 650px;
+        position: relative;
+        margin: auto;
+    }
 
-        .separation label {
-            font-weight: normal;
-            margin-bottom: 0px;
-        }
+    .separation label {
+        font-weight: normal;
+        margin-bottom: 0px;
+    }
 
-        #charts:empty:after {
-            content: "No charts";
-            color: #aaa;
-        }
+    #charts:empty:after {
+        content: "No charts";
+        color: #aaa;
+    }
 
-        #feedbacks:empty:after {
-            content: "No feedback";
-            color: #aaa;
-        }
-    </style>
+    #feedbacks:empty:after {
+        content: "No feedback";
+        color: #aaa;
+    }
+</style>
 }
-
-
 <div class="row">
     <div class="col-md-3 ">
         <div class="row">
@@ -124,7 +161,6 @@
                         @{
                             var visible = Model.Review.ClientReview.Visible;
                         }
-
                         <div class="smallBreak"></div>
                         @*Charts*@
                         <h4 class="alignCenter">Charts</h4>
@@ -140,17 +176,6 @@
 
                             }
                         </table>
-                        @*<!--ul class="noBullet" id="charts">h
-        {
-            <li >
-                <table ></table>
-                <span onclick="RemoveChart(@chart.Id)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
-                <span class="pull-left">@chart.Title</span>
-                <div class="clearfix"></div>
-            </li>
-        }
-    </ul-->*@
-
                         <hr />
                         @*Feedback*@
                         <h4 class="alignCenter">Feedback</h4>
@@ -202,7 +227,6 @@
         <div class="smallBreak2"></div>
     </div>
     <div class="col-md-9">
-
         <div class="review" style=" min-width: 650px;padding-top:15px;">
             <div class="header" style="height:60px;">
                 <div class="pull-left" style="font-size: 30px;">
@@ -331,7 +355,13 @@
                     @*Self Answers*@
                     <a id="SelfAnswers" class="shiftByTitle"></a>
                     <div class="panel panel-primary">
-                        <div onclick="SetSelfAnswers()" class="SelfAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeSelfFeedback?"on":"")" style=""></div>
+                        <div 
+                             onclick="SetSelfAnswers()" 
+                             class="SelfAnswers includable @(Model.Review.ClientReview.IncludeSelfFeedback?"on":"")" 
+                             style="">
+                            <div class="text"></div>
+                            <div class="light-icon"></div>
+                        </div>
                         <div class="panel-heading">
                             <h3 class="panel-title">@Model.Review.ForUser.GetName()'s Answers</h3>
                         </div>
@@ -340,7 +370,16 @@
                     @*Manager Answers*@
                     <a id="ManagerAnswers" class="shiftByTitle"></a>
                     <div class="panel panel-primary">
-                        <div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>
+                        @*<div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>*@
+
+                        <div onclick="SetManagerAnswers()"
+                             class="ManagerAnswers includable @(Model.Review.ClientReview.IncludeManagerFeedback ? "on" : "")"
+                             style="">
+                            <div class="text"></div>
+                            <div class="light-icon"></div>
+                        </div>
+                        
+                        
                         <div class="panel-heading">
                             <h3 class="panel-title">Manager Answers</h3>
                         </div>
@@ -349,7 +388,15 @@
                     @*All Answers*@
                     <a id="AggregateAnswers" class="shiftByTitle"></a>
                     <div class="panel panel-primary">
-                        <div onclick="SetQuestionTable()" class="QuestionTable btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")" style=""></div>
+                        @*<div onclick="SetQuestionTable()" class="QuestionTable btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")" style=""></div>*@
+
+                        <div onclick="SetQuestionTable()"
+                             class="QuestionTable includable @(Model.Review.ClientReview.IncludeQuestionTable ? "on" : "")"
+                             style="">
+                            <div class="text"></div>
+                            <div class="light-icon"></div>
+                        </div>
+                        
                         <div class="panel-heading">
                             <h3 class="panel-title">Aggregate Answers</h3>
                         </div>
@@ -389,6 +436,7 @@
     <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
     <script src="~/Scripts/d3/Plot.js"></script>
     <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/review/ReviewDetails.js"></script>
     <script>
         var last = null;
 
@@ -425,15 +473,6 @@
                     }
                 });
             }
-        }
-
-        function allowed() {
-            @if(!((bool?)ViewBag.Hints ?? true))
-            {
-                @:return true;
-                                                                                                }
-
-            return ($("#charts li").size() != 0 || $("#feedbacks li").size() != 0);
         }
 
         function clickDetails() {
@@ -549,6 +588,15 @@
             });
         }
 
+        function allowed() {
+            @if(!((bool?)ViewBag.Hints ?? true))
+            {
+                @:return true;
+            }
+
+            return ($("#charts li").size() != 0 || $("#feedbacks li").size() != 0);
+        }
+
         function setAuthorize(auth) {
             var dat = new Object();
             dat.Authorized = auth;
@@ -632,9 +680,6 @@
             })
         }
 
-    </script>
-
-    <script>
         var slider;
         $(function () {
             $('.switch').bootstrapSwitch();
@@ -751,11 +796,6 @@
             slider.change(function () { update(false); });
 
             update(true);
-
-
-
-
-
         });
 
         document.getElementById("controls").addEventListener("click", chart.update, false);

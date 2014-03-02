@@ -58,7 +58,9 @@ namespace RadialReview.Controllers
         {
             long reviewId = -1;
             int page = -1;
-            ParseAndSave(collection, out reviewId, out page);
+            DateTime dueDate;
+
+            ParseAndSave(collection, out reviewId, out page, out dueDate);
             return Take(reviewId, page + 1);
         }
 
@@ -68,17 +70,21 @@ namespace RadialReview.Controllers
         {
             long reviewId = -1;
             int page = -1;
+            DateTime dueDate;
 
-            if (ParseAndSave(collection, out reviewId, out page))
+            if (ParseAndSave(collection, out reviewId, out page, out dueDate))
             {
                 return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
             }
-            TempData["Message"] = DisplayNameStrings.remainingQuestions;
-            ViewBag.Incomplete = true;
+            if (dueDate > DateTime.UtcNow)
+            {
+                TempData["Message"] = DisplayNameStrings.remainingQuestions;
+                ViewBag.Incomplete = true;
+            }
             return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
         }
 
-        private Boolean ParseAndSave(FormCollection collection, out long reviewId, out int currentPage)
+        private Boolean ParseAndSave(FormCollection collection, out long reviewId, out int currentPage,out DateTime dueDate)
         {
             try
             {
@@ -134,6 +140,7 @@ namespace RadialReview.Controllers
                         }
                     }
                 }
+                dueDate = review.DueDate;
 
                 return allComplete;
             }
@@ -216,11 +223,7 @@ namespace RadialReview.Controllers
             {
                 var pageConcrete = page ?? 0;
                 var p = pages[pageConcrete].ToListAlive();
-                if (p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required))
-                {
-                    TempData["Message"] = DisplayNameStrings.remainingQuestions;
-                    ViewBag.Incomplete = true;
-                }
+                
 
                 var model = new TakeViewModel()
                 {
@@ -236,6 +239,11 @@ namespace RadialReview.Controllers
                         ).ToList()
                 };
 
+                if (model.Editable && p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required))
+                {
+                    TempData["Message"] = DisplayNameStrings.remainingQuestions;
+                    ViewBag.Incomplete = true;
+                }
 
                 return View(model);
             }

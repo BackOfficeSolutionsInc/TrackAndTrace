@@ -12,7 +12,6 @@
     {
         <div class="noMargin smallPad" style="padding-top: 10px; padding-bottom: 10px; background-color: #A7ABB9;color:#3a3a3a;">@manager.GetNameAndTitle()</div>
     }
-    <div class="panel-body">
         <table class="table table-condensed" style="min-width:50%">
             <tr class="noPad">
                 <th class="noPad" style="width:1px;"></th>
@@ -26,11 +25,10 @@
                     <td class="noPad">
                         @answer.Askable.GetQuestion()
                     </td>
-                    <td style="width:130px;text-align:center;" class=" color-value-percentage oneline alignCenter noPad">
+                    <td style="width:90px;text-align:center;" class=" color-value-percentage oneline alignCenter noPad">
                         @answer.Percentage
                     </td>
                 </tr>
             }
         </table>
-    </div>
 }
