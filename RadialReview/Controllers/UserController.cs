@@ -22,12 +22,6 @@ namespace RadialReview.Controllers
 
     public class UserController : BaseController
     {
-        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        private static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
-        private static PositionAccessor _PositionAccessor = new PositionAccessor();
-        private static TeamAccessor _TeamAccessor = new TeamAccessor();
-        private static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
-        private static UserEngine _UserEngine = new UserEngine();
 
         #region User
         public class SaveUserModel

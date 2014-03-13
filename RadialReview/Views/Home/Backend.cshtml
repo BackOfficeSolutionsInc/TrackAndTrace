@@ -5,6 +5,19 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section top{
+    <div class="jumbotron">
+        <h1>Radial Review</h1>
+    </div>
+}
+@using (Html.BeginStyles())
+{
+    <style>
+        .welcome a {
+            color: #4A79FF;
+        }
+    </style>
+}
 
 <div class="row">
     <div class="col-md-3 col-sm-4 alignCenter hidden-xs">
@@ -23,23 +36,23 @@
         <div class="smallBreak hidden-md"></div>
     </div>
     <div class="col-md-9 col-sm-8">
-        <div class="review" style="min-height:30px">
+        <div class="review welcome" style="min-height:30px">
             <h2 class="alignCenter">Welcome to Radial Review</h2>
             <div id="lipsum">
                 <h3>Instructions for employees:</h3>
                 <p>
                     Welcome to Radial Review, your 360 review provider. 
 
-                    To begin taking your review, click on the Take button above by clicking <a href="@Url.Action("Index","Review")">here</a>.
+                    To begin taking your review, click on the 'Task' button above or click <a href="@Url.Action("Index","Task")">here</a>.
                     After your coworkers have completed their reviews, Radial Review will aggregate the results for you and your manager to discuss.
                 </p>
                 <p>
-                    Your profile image and name are an important way for you to ensure you are accurately reviewed. You can edit your profile image by clicking <a href="@Url.Action("Profile","Account")">here.</a>
+                    Your name and profile image are an important way for you to ensure you are accurately reviewed. You can edit your profile image by clicking <a href="@Url.Action("Profile","Account")">here.</a>
                 @if(ViewBag.IsManager)
                 {
-                <h3>Instructions for managament:</h3>
+                <h3>Instructions for management:</h3>
                     <p>
-                        As a manager you can manage the organization from the Admin tab, or by clicking here <a href="@Url.Action("Index","Manage")">here</a>.
+                        As a manager you can manage the organization from the 'Manage' tab, or by clicking here <a href="@Url.Action("Index","Manage")">here</a>.
                         From the manage menu, you can add subordinates, job descriptions, questions, and teams for the organization.
                     </p>
                     <p>

@@ -6,6 +6,9 @@
 
 @Html.AlertBoxDismissable((string)ViewBag.Message, "alert-info", RadialReview.Properties.DisplayNameStrings.hey)
 
+@section header{
+    @Html.Partial("_ReportsHeader")
+}
 
 <div class="panel panel-primary">
     <div class="panel-heading">

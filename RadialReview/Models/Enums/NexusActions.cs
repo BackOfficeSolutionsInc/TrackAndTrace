@@ -10,6 +10,8 @@ namespace RadialReview.Models.Enums
         None = 0,
         JoinOrganizationUnderManager = 1, //[organizationId,EmailAddress,userOrgId,Firstname,Lastname]
         TakeReview = 2, //[]
-        ResetPassword =3 , //[UserId]
+        ResetPassword = 3, //[UserId]
+        Prereview = 4, //[ReviewContainerId,PrereviewId]
+        CreateReview=5,//[ReviewContainerId]
     }
 }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Models;
 
 namespace RadialReview.Controllers
 {
@@ -87,10 +88,28 @@ namespace RadialReview.Controllers
                             SignOut();
                             return RedirectToAction("ResetPasswordWithToken", "Account", new { Id = id });
                         };
+                    case NexusActions.Prereview:
+                        {
+                            return RedirectToAction("Customize", "Prereview", new { id = nexus.GetArgs()[1] });
+                        };
+                    case NexusActions.CreateReview:
+                        {
+                            var admin=new UserOrganizationModel(){
+                                IsRadialAdmin=true
+                            };
+
+                            _ReviewAccessor.CreateReviewFromCustom(admin,,
+                    form["DueDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
+                    form["ReviewName"],
+                    form["SendEmails"].ToBoolean(),
+                    customized.ToList()
+                    );
+                            return null;
+                        }
                 }
 
             return View();
-            }catch(Exception e)
+            }catch(Exception)
             {
                 ViewBag.Message = "There was an error in your request.";
                 return RedirectToAction("Index", "Home");

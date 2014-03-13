@@ -12,7 +12,8 @@ namespace RadialReview.Models
     public class ReviewModel : ICompletable, ILongIdentifiable, IDeletable
     {
         public virtual long Id { get; protected set; }
-        public virtual long ForReviewsId { get;set;}
+        public virtual ReviewsModel ForReviewContainer { get; set; }
+        public virtual long ForReviewsId { get; set; }
         public virtual UserOrganizationModel ForUser { get; set; }
         public virtual long ForUserId { get; set; }
         public virtual String Name { get; set; }
@@ -22,6 +23,8 @@ namespace RadialReview.Models
         public virtual ClientReviewModel ClientReview { get; set; }
         public virtual List<AnswerModel> Answers { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
+        public virtual bool Complete { get; set; }
+        
 
         /*public virtual decimal Completion { get; set; }
         public virtual Boolean Complete { get; set; }
@@ -131,8 +134,12 @@ namespace RadialReview.Models
                 .Column("ForUserId")
                 .Not.LazyLoad()
                 .ReadOnly();
-            Map(x => x.ForReviewsId);
+            Map(x => x.ForReviewsId)
+                .Column("ForReviewsId");
+            References(x => x.ForReviewContainer)
+                .Column("ForReviewsId").LazyLoad().ReadOnly();
             Map(x => x.Name);
+            Map(x => x.Complete);
             Map(x => x.CreatedAt);
             Map(x => x.DueDate);
             Map(x => x.DeleteTime);

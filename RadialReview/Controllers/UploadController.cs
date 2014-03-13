@@ -14,7 +14,6 @@ namespace RadialReview.Controllers
 {
     public class UploadController : BaseController
     {
-        private static ImageAccessor _ImageAccessor = new ImageAccessor();
         //
         // GET: /Upload/
         [Access(AccessLevel.User)]

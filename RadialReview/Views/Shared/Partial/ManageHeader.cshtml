@@ -26,156 +26,157 @@
     <li class="@(ViewBag.Page == "Members"   ? "active" : "")"><a href="/Manage/Members"  >     Members</a></li>
     <li class="@(ViewBag.Page == "Positions" ? "active" : "")"><a href="/Manage/Positions">     Positions</a></li>
     <li class="@(ViewBag.Page == "Teams"     ? "active" : "")"><a href="/Manage/Teams"    >     Teams</a></li>
-    <li class="@(ViewBag.Page == "Reviews"   ? "active" : "")"><a href="/Manage/Reviews">       Reviews</a></li>
-    <li class="@(ViewBag.Page == "Settings"  ? "active" : "")"><a href="/Manage/Organization">  Settings</a></li>
+    @*<li class="@(ViewBag.Page == "Reviews"   ? "active" : "")"><a href="/Manage/Reviews">       Reviews</a></li>*@
+    <li class="@(ViewBag.Page == "Settings"  ? "active" : "")"><a href="/Manage/Organization">  Advanced</a></li>
+    @Html.Partial("_ExtraTab")
 </ul>
 
 @*
-<div class="nav-arrows flat pull-left noselect">
-    <a href="/Manage/Members"   class="@(ViewBag.Page == "Members"   ? "active" : "")">Members</a>
-    <a href="/Manage/Positions" class="@(ViewBag.Page == "Positions" ? "active" : "")">Positions</a>
-    <a href="/Manage/Teams"     class="@(ViewBag.Page == "Teams"     ? "active" : "")">Teams</a>
-    <a href="/Manage/Reviews"   class="@(ViewBag.Page == "Reviews"   ? "active" : "")">Reviews</a>
-</div>
-@if (((bool?)ViewBag.ManagingOrganization) ?? false)
-{
-    <div class="pull-right nav-arrows flat noselect">
-        <a href="/Manage/Organization" class="@(ViewBag.Page == "Settings" ? "active" : "")">Settings</a>
+    <div class="nav-arrows flat pull-left noselect">
+        <a href="/Manage/Members"   class="@(ViewBag.Page == "Members"   ? "active" : "")">Members</a>
+        <a href="/Manage/Positions" class="@(ViewBag.Page == "Positions" ? "active" : "")">Positions</a>
+        <a href="/Manage/Teams"     class="@(ViewBag.Page == "Teams"     ? "active" : "")">Teams</a>
+        <a href="/Manage/Reviews"   class="@(ViewBag.Page == "Reviews"   ? "active" : "")">Reviews</a>
     </div>
-}
- *@
-<div class="clearfix" style="padding-bottom:10px;"></div>
-
-<style>
-    .nav-tabs.manage .active a {
+    @if (((bool?)ViewBag.ManagingOrganization) ?? false)
+    {
+        <div class="pull-right nav-arrows flat noselect">
+            <a href="/Manage/Organization" class="@(ViewBag.Page == "Settings" ? "active" : "")">Settings</a>
+        </div>
     }
 
-    .nav-arrows {
-        margin: 0;
-        padding: 0;
-        /*centering*/
-        display: inline-block;
-        box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.35);
-        overflow: hidden;
-        border-radius: 5px;
-        /*Lets add the numbers for each link using CSS counters. flag is the name of the counter. to be defined using counter-reset in the parent element of the links*/
-        counter-reset: flag;
-        border: 1px solid #767F99;
-    }
-
-        .nav-arrows a {
-            text-align: center;
-            text-decoration: none;
-            outline: none;
-            display: block;
-            float: left;
-            font-size: 12px;
-            line-height: 36px;
-            color: white;
-            /*need more margin on the left of links to accomodate the numbers*/
-            padding: 0 10px 0 10px;
-            background: #666;
-            background: linear-gradient(#666, #333);
-            position: relative;
-            min-width: 90px;
-            padding-left: 30px;
+    <style>
+        .nav-tabs.manage .active a {
         }
-            /*since the first link does not have a triangle before it we can reduce the left padding to make it look consistent with other links*/
-            .nav-arrows a:first-child {
-                padding-left: 20px;
-                /*border-radius: 5px 0 0 5px; /*to match with the parent's radius*/
-            }
 
-                .nav-arrows a:first-child:before {
-                    left: 14px;
-                }
+        .nav-arrows {
+            margin: 0;
+            padding: 0;
+            /*centering*/
+            display: inline-block;
+            box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+            border-radius: 5px;
+            /*Lets add the numbers for each link using CSS counters. flag is the name of the counter. to be defined using counter-reset in the parent element of the links*/
+            counter-reset: flag;
+            border: 1px solid #767F99;
+        }
 
-            .nav-arrows a:last-child {
-                /*border-radius: 0 5px 5px 0; this was to prevent glitches on hover*/
-                padding-right: 20px;
-            }
-
-            /*hover/active styles*/
-            .nav-arrows a.active, .nav-arrows a:hover {
-                background: #333;
-                background: linear-gradient(#333, #000);
-            }
-
-                .nav-arrows a.active:after, .nav-arrows a:hover:after {
-                    background: #333;
-                    background: linear-gradient(135deg, #333, #000);
-                }
-
-            /*adding the arrows for the nav-arrowss using rotated pseudo elements*/
-            .nav-arrows a:after {
-                content: '';
-                position: absolute;
-                top: 0;
-                right: -18px; /*half of square's length*/
-                /*same dimension as the line-height of .nav-arrows a */
-                width: 36px;
-                height: 36px;
-                /*as you see the rotated square takes a larger height. which makes it tough to position it properly. So we are going to scale it down so that the diagonals become equal to the line-height of the link. We scale it to 70.7% because if square's:
-    length = 1; diagonal = (1^2 + 1^2)^0.5 = 1.414 (pythagoras theorem)
-    if diagonal required = 1; length = 1/1.414 = 0.707*/
-                -moz-transform: scale(0.707) rotate(45deg);
-                -ms-transform: scale(0.707) rotate(45deg);
-                -o-transform: scale(0.707) rotate(45deg);
-                -webkit-transform: scale(0.707) rotate(45deg);
-                transform: scale(0.707) rotate(45deg);
-                /*we need to prevent the arrows from getting buried under the next link*/
-                z-index: 1;
-                /*background same as links but the gradient will be rotated to compensate with the transform applied*/
+            .nav-arrows a {
+                text-align: center;
+                text-decoration: none;
+                outline: none;
+                display: block;
+                float: left;
+                font-size: 12px;
+                line-height: 36px;
+                color: white;
+                /*need more margin on the left of links to accomodate the numbers*/
+                padding: 0 10px 0 10px;
                 background: #666;
-                background: linear-gradient(135deg, #666, #333);
-                /*stylish arrow design using box shadow*/
-                /*box-shadow: 2px -2px 0 2px #767F99, 3px -3px 0 2px #767F99;
-                
-        5px - for rounded arrows and
-        50px - to prevent hover glitches on the border created using shadows*/
-                border-radius: 0 5px 0 50px;
+                background: linear-gradient(#666, #333);
+                position: relative;
+                min-width: 90px;
+                padding-left: 30px;
             }
-            /*we dont need an arrow after the last link*/
-            .nav-arrows a:last-child:after {
-                content: none;
-            }
-            /*we will use the :before element to show numbers*/
-            .nav-arrows a:before {
-                /*content: counter(flag);
-                counter-increment: flag;*/
-                /*some styles now*/
-                border-radius: 100%;
-                width: 20px;
-                height: 20px;
-                line-height: 20px;
-                margin: 8px 0;
-                position: absolute;
-                top: 0;
-                left: 30px;
-                background: #444;
-                background: linear-gradient(#444, #222);
-                font-weight: bold;
-            }
+                /*since the first link does not have a triangle before it we can reduce the left padding to make it look consistent with other links*/
+                .nav-arrows a:first-child {
+                    padding-left: 20px;
+                    /*border-radius: 5px 0 0 5px; /*to match with the parent's radius*/
+                }
+
+                    .nav-arrows a:first-child:before {
+                        left: 14px;
+                    }
+
+                .nav-arrows a:last-child {
+                    /*border-radius: 0 5px 5px 0; this was to prevent glitches on hover*/
+                    padding-right: 20px;
+                }
+
+                /*hover/active styles*/
+                .nav-arrows a.active, .nav-arrows a:hover {
+                    background: #333;
+                    background: linear-gradient(#333, #000);
+                }
+
+                    .nav-arrows a.active:after, .nav-arrows a:hover:after {
+                        background: #333;
+                        background: linear-gradient(135deg, #333, #000);
+                    }
+
+                /*adding the arrows for the nav-arrowss using rotated pseudo elements*/
+                .nav-arrows a:after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    right: -18px; /*half of square's length*/
+                    /*same dimension as the line-height of .nav-arrows a */
+                    width: 36px;
+                    height: 36px;
+                    /*as you see the rotated square takes a larger height. which makes it tough to position it properly. So we are going to scale it down so that the diagonals become equal to the line-height of the link. We scale it to 70.7% because if square's:
+        length = 1; diagonal = (1^2 + 1^2)^0.5 = 1.414 (pythagoras theorem)
+        if diagonal required = 1; length = 1/1.414 = 0.707*/
+                    -moz-transform: scale(0.707) rotate(45deg);
+                    -ms-transform: scale(0.707) rotate(45deg);
+                    -o-transform: scale(0.707) rotate(45deg);
+                    -webkit-transform: scale(0.707) rotate(45deg);
+                    transform: scale(0.707) rotate(45deg);
+                    /*we need to prevent the arrows from getting buried under the next link*/
+                    z-index: 1;
+                    /*background same as links but the gradient will be rotated to compensate with the transform applied*/
+                    background: #666;
+                    background: linear-gradient(135deg, #666, #333);
+                    /*stylish arrow design using box shadow*/
+                    /*box-shadow: 2px -2px 0 2px #767F99, 3px -3px 0 2px #767F99;
+
+            5px - for rounded arrows and
+            50px - to prevent hover glitches on the border created using shadows*/
+                    border-radius: 0 5px 0 50px;
+                }
+                /*we dont need an arrow after the last link*/
+                .nav-arrows a:last-child:after {
+                    content: none;
+                }
+                /*we will use the :before element to show numbers*/
+                .nav-arrows a:before {
+                    /*content: counter(flag);
+                    counter-increment: flag;*/
+                    /*some styles now*/
+                    border-radius: 100%;
+                    width: 20px;
+                    height: 20px;
+                    line-height: 20px;
+                    margin: 8px 0;
+                    position: absolute;
+                    top: 0;
+                    left: 30px;
+                    background: #444;
+                    background: linear-gradient(#444, #222);
+                    font-weight: bold;
+                }
 
 
-    .flat a, .flat a:after {
-        background: #FEFEFE;
-        color: #767F99;
-        -moz-transition: all 0.25s;
-        -o-transition: all 0.25s;
-        -webkit-transition: all 0.25s;
-        transition: all 0.25s;
-    }
-
-        .flat a:before {
-            background: white;
-            box-shadow: 0 0 0 1px #ccc;
+        .flat a, .flat a:after {
+            background: #FEFEFE;
+            color: #767F99;
+            -moz-transition: all 0.25s;
+            -o-transition: all 0.25s;
+            -webkit-transition: all 0.25s;
+            transition: all 0.25s;
         }
 
-        .flat a:hover, .flat a.active,
-        .nav-arrows a:active,
-        .flat a:hover:after, .flat a.active:after {
-            background: #767F99;
-            color: #D5E8FF;
-        }
-</style>
+            .flat a:before {
+                background: white;
+                box-shadow: 0 0 0 1px #ccc;
+            }
+
+            .flat a:hover, .flat a.active,
+            .nav-arrows a:active,
+            .flat a:hover:after, .flat a.active:after {
+                background: #767F99;
+                color: #D5E8FF;
+            }
+    </style>
+
+*@

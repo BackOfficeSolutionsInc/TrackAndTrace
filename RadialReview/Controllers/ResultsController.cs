@@ -8,16 +8,16 @@ using System.Web.Mvc;
 
 namespace RadialReview.Controllers
 {
+    /*
     public class ResultsController : BaseController
     {
-        protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
 
         //
         // GET: /Results/
         [Access(AccessLevel.Manager)]
         public ActionResult Index(int page=0)
         {
-            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false,10,page);
+            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false,false,true,10,page,DateTime.MinValue);
             var model = new OrgReviewsViewModel()
             {
                 Reviews = reviews.Select(x => new ReviewsViewModel(x)).ToList()
@@ -25,5 +25,5 @@ namespace RadialReview.Controllers
 
             return View(model);
         }
-	}
+	}*/
 }

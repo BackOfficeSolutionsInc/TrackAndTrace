@@ -23,13 +23,69 @@ namespace RadialReview.Controllers
 {
     public class ReviewsController : BaseController
     {
-        protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
-        protected static TeamAccessor _TeamAccessor = new TeamAccessor();
-        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected static KeyValueAccessor _KeyValueAccessor = new KeyValueAccessor();
-        protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
+        private static OrgReviewsViewModel GenerateReviewVM(UserOrganizationModel caller, DateTime date)
+        {
+            var selfId = caller.Id;
+            var usefulReviews = _ReviewAccessor.GetUsefulReview(caller, selfId, DateTime.UtcNow);
+            var reviewContainers = usefulReviews.Select(x => x.ForReviewContainer).Distinct(x => x.Id);
+
+            var subordinates = _DeepSubordianteAccessor.GetSubordinatesAndSelf(caller, caller.Id);
+
+            var editable = reviewContainers.Where(x => subordinates.Any(y => y == x.CreatedById)).Select(x => x.Id).ToList();
+            var takabled = usefulReviews.Where(x => x.ForUserId == selfId).ToDictionary(x => x.ForReviewsId, x => (long?)x.Id);
+
+            var reviewsVM = reviewContainers.Select(x => new ReviewsViewModel(x){
+                Editable = editable.Any(y => y == x.Id),
+                Viewable = true,
+                TakableId = takabled.GetOrDefault(x.Id, null)
+            }).ToList();
 
 
+            var model = new OrgReviewsViewModel()
+            {
+                Reviews = reviewsVM,
+                AllowEdit = true
+            };
+            return model;
+        }
+
+        [Access(AccessLevel.Manager)]
+        public ActionResult Outstanding(int page = 0)
+        {
+            var model = GenerateReviewVM(GetUser(), DateTime.UtcNow);
+            ViewBag.Page = "Outstanding";
+            ViewBag.Title = "Outstanding";
+            ViewBag.Subheading = "Reviews in progress.";
+            return View(model);
+        }
+
+        [Access(AccessLevel.Manager)]
+        public ActionResult History(int page = 0)
+        {
+            var model = GenerateReviewVM(GetUser(), DateTime.MinValue);
+            ViewBag.Page = "History";
+            ViewBag.Title = "History";
+            ViewBag.Subheading = "All reviews.";
+            return View("Outstanding", model);
+        }
+
+        [Access(AccessLevel.Manager)]
+        public ActionResult Edit(long id)
+        {
+            var user = GetUser().Hydrate().ManagingUsers(true).Execute();
+            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true,false);
+            foreach (var r in reviewContainer.Reviews)
+            {
+                if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id)
+                    r.ForUser.SetPersonallyManaging(true);
+                else
+                    r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+            }
+            var model = new ReviewsViewModel(reviewContainer);
+            return View(model);
+        }
+
+        /*
         [Access(AccessLevel.Manager)]
         public ActionResult Details(long id)
         {
@@ -53,7 +109,7 @@ namespace RadialReview.Controllers
             var model = new ReviewsViewModel(reviewContainer);
 
             return View(model);
-        }
+        }*/
 
         public class UpdateReviewsViewModel
         {
@@ -74,7 +130,6 @@ namespace RadialReview.Controllers
                 ForUsers = user.AllSubordinates,
                 PotentialTeams = teams
             };
-
             return View(model);
         }
 
@@ -85,7 +140,7 @@ namespace RadialReview.Controllers
             public Dictionary<long,UserOrganizationModel> AvailableUsers { get; set; }
         }
 
-        [HttpPost]
+        /*[HttpPost]
         public ActionResult IssueDetails(IssueReviewViewModel model)
         {
             var reviewParams = new ReviewParameters()
@@ -106,7 +161,7 @@ namespace RadialReview.Controllers
             };
 
             return View(output);
-        }
+        }*/
 
         [HttpPost]
         public ActionResult IssueDetailsSubmit(IssueReviewViewModel model)
@@ -193,7 +248,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Update(long id)
         {
-            var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false);
+            var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false,false);
             var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
 
             var orgMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), review.ForOrganization.Id, false, false);

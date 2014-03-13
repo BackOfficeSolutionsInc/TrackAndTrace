@@ -1,0 +1,98 @@
+﻿@model RadialReview.Controllers.IssueReviewModel
+@{
+    ViewBag.Title = "Issue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Issue";
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>
+            Reviews
+        </h1>
+    </div>
+}
+
+@section header{
+    @Html.Partial("_ReviewsHeader")    
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Create a Review:
+    </div>
+    <div class="panel-body alignCenter">
+
+        <form id="issueForm" method="post" action="/Issue/">
+            <h2 class="">Who is this review for?</h2>
+            <div class="row">
+                <div class="col-md-5 col-md-push-7">
+                    <p class="well">
+                        As a manager of this organization you can issue reviews to teams you manage or to the organization as a whole.
+                    </p>
+                </div>
+                <div class="col-md-7 col-md-pull-5" style="padding-top: 25px;">
+                    <div class="row alignCenter" data-toggle="buttons">
+                        <div class="col-sm-4">
+                            <label class="btn btn-default fullWidth" onclick="loadOrganization()">
+                                <input type="radio" name="forWho" value="all" class="hidden" />All of @Model.OrganizationName
+                            </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="btn btn-default  fullWidth" onclick="loadTeam()">
+                                <input type="radio" name="forWho" value="team" class="hidden" />A particular team
+                            </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="btn btn-default disabled fullWidth" title="Coming soon." onclick="loadClient()">
+                                <input type="radio" name="forWho" value="team" class="hidden" />An outside client
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="TimeZoneOffset" id="TimeZoneOffset" value="" />
+            <input type="hidden" name="TeamId" id="TeamId" value="@ViewBag.OrganizationId">
+
+            <div id="pageIndex">
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@using (Html.BeginScripts())
+{
+    <script>
+        var offset = new Date().getTimezoneOffset();
+        $("#TimeZoneOffset").val(offset/60);
+
+
+        function loadPage(selector, url) {
+            $(selector).html('<div class="alignCenter"><img src="/Content/img/ajax-loader.gif" /></div>');
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $(selector).html(data);
+
+                }
+            });
+
+        }
+
+        function loadOrganization() {
+            loadPage("#pageIndex", "@Url.Action("IssueOrganization","Issue")");
+        }
+
+
+        function loadTeam() {
+            loadPage("#pageIndex", "/Issue/IssueTeam/" + $("#team").val());
+        }
+
+        function loadClient() {
+            loadPage("#pageIndex", "/Issue/IssueTeam/" + $("#team").val());
+        }
+    </script>
+}

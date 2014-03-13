@@ -9,6 +9,15 @@
     var i = 0;
 }
 
+@section top{
+    <div class="aboveJumbotron noPrint">
+        <h2>Aggregate report for @Model.Review.Name.</h2>
+    </div>
+    <div class="jumbotron noPrint">
+        <h1>Report</h1>
+    </div>
+}
+
 @using (Html.BeginStyles())
 {
     <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
@@ -323,6 +332,8 @@
             <div class="row-title">Supervisors' Notes</div>
             <div class="row">
                 <div class="col-sm-12">
+                    <div class="smallBreak2"></div>
+                    <div class="smallBreak2"></div>
                     <div id="notes" style="white-space: pre-line" class="feedback">@notes</div>
                     <div class="smallBreak"></div>
                     <div class="smallBreak"></div>
@@ -363,7 +374,7 @@
             @foreach (var kv in Model.Categories)
             {
                     @:"@(kv.Key)": "@(kv.Value)",
-                                                                                                                                                    }
+                                                                                                                                                                }
         };
 
         var updates = [];
@@ -377,7 +388,6 @@
                     $("#legend_" + chart.id + " .contents").append("<div><div class='" + item.Class + " circle inlineBlock'></div><div class='inlineBlock'>" + item.Name + "</div></div>")
                 }
             }
-
         }
 
         function update() {

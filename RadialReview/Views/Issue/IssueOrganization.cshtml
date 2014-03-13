@@ -1,0 +1,47 @@
+﻿@model RadialReview.Controllers.CreateReviewModel
+
+<hr />
+<h2 class="alignCenter">Who will customize this review?</h2>
+<br />
+<div class="row">
+    <div class="col-sm-5 col-sm-push-7">
+        <p class="well">
+            It's often the case that management would like to customize who reviews who.
+            For large organizations, it's difficult for a single person to manage this. You may find it useful to have
+            all managers chose who their subordinates review.
+        </p>
+    </div>
+    <div class="col-sm-7 col-sm-pull-5" style="padding-top: 50px;">
+        <div class="row alignCenter " data-toggle="buttons">
+            <div class="col-sm-6">
+                <label class="btn btn-default fullWidth" onclick="SelfCustomize()">
+                    <input type="radio" name="customize" value="self" class="hidden" />I will
+                </label>
+            </div>
+            <div class="col-sm-6">
+                <label class="btn btn-default fullWidth" onclick="ManagersCustomize()">
+                    <input type="radio" name="customize" value="manager" class="hidden" />Managers
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="pageIssueOrganization" class="">
+
+</div>
+
+<script>
+    function startIssueOrganization(){
+        $('.btn').button();
+    }
+
+    function SelfCustomize() {
+        loadPage("#pageIssueOrganization", "/Issue/Customize/" + $("#TeamId").val());
+    }
+    function ManagersCustomize() {
+        loadPage("#pageIssueOrganization", "/Issue/ManagersCustomize");
+    }
+</script>
+<img src="~/Content/img/blank.gif" onload="startIssueOrganization()" />

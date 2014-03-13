@@ -16,6 +16,7 @@ using System.Reflection;
 using RadialReview.Models.Json;
 using RadialReview.Utilities.Attributes;
 using NHibernate;
+using RadialReview.Engines;
 
 
 namespace RadialReview.Controllers
@@ -24,7 +25,30 @@ namespace RadialReview.Controllers
     {
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        protected static UserEngine _UserEngine = new UserEngine();
+        protected static ChartsEngine _ChartsEngine = new ChartsEngine();
+        protected static ReviewEngine _ReviewEngine = new ReviewEngine();
+
         protected static UserAccessor _UserAccessor = new UserAccessor();
+        protected static TaskAccessor _TaskAccessor = new TaskAccessor();
+        protected static TeamAccessor _TeamAccessor = new TeamAccessor();
+        protected static NexusAccessor _NexusAccessor = new NexusAccessor();
+        protected static ImageAccessor _ImageAccessor = new ImageAccessor();
+        protected static GroupAccessor _GroupAccessor = new GroupAccessor();
+        protected static OriginAccessor _OriginAccessor = new OriginAccessor();
+        protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
+        protected static PaymentAccessor _PaymentAccessor = new PaymentAccessor();
+        protected static KeyValueAccessor _KeyValueAccessor = new KeyValueAccessor();
+        protected static PositionAccessor _PositionAccessor = new PositionAccessor();
+        protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
+        protected static CategoryAccessor _CategoryAccessor = new CategoryAccessor();
+        protected static PrereviewAccessor _PrereviewAccessor = new PrereviewAccessor();
+        protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
+        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
+        protected static DeepSubordianteAccessor _DeepSubordianteAccessor = new DeepSubordianteAccessor();
+        protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
+
+
 
         protected void ManagerAndCanEditOrException(UserOrganizationModel user)
         {
@@ -240,6 +264,7 @@ namespace RadialReview.Controllers
                         }
                     }
 
+                    filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser,oneUser.Id,DateTime.UtcNow);
                     //filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
                     filterContext.Controller.ViewBag.UserName = name;
                     filterContext.Controller.ViewBag.IsManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization;
@@ -266,7 +291,7 @@ namespace RadialReview.Controllers
                 case AccessLevel.User: GetUserModel(); break;
                 case AccessLevel.UserOrganization: GetUser(); break;
                 case AccessLevel.Manager: if (!GetUser().IsManager()) throw new PermissionsException("You must be a manager to view this resource."); break;
-                case AccessLevel.Radial: if (!GetUserModel().IsRadialAdmin) throw new PermissionsException("You must be a Radial Admin to view this resource."); break;
+                case AccessLevel.Radial: if (!(GetUserModel().IsRadialAdmin || GetUser().IsRadialAdmin)) throw new PermissionsException("You must be a Radial Admin to view this resource."); break;
                 default: throw new Exception("Unknown Access Type");
             }
 

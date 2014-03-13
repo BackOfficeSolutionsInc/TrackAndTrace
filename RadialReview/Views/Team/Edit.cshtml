@@ -3,11 +3,18 @@
 @{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Teams";
+    ViewBag.Page = "Edit Team";
+    ViewBag.ExtraTabs = ExtraTab.Create("Edit Team", "/Team/Edit/" + Model.Team.Id);
 }
 
 @section header{
     @Html.Partial("Partial/manageheader")
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>Manage</h1>
+    </div>
 }
 
 

@@ -11,17 +11,22 @@ namespace RadialReview.Models.Reviews
 
     public class ClientReviewModel : ILongIdentifiable
     {
+
         public virtual long Id {get;set;}
         public virtual long ReviewId { get; set; }
         public virtual IList<LongModel> FeedbackIds { get; set; }
         public virtual IList<LongTuple> Charts { get; set; }
-
         public virtual Boolean IncludeManagerFeedback { get; set; }
-
         public virtual Boolean IncludeQuestionTable { get; set; }
-
+        public virtual bool IncludeSelfFeedback { get; set; }
         public virtual bool Visible { get; set; }
         public virtual String ManagerNotes { get; set; }
+        public virtual DateTime? SignedTime { get; set; }
+
+        public virtual bool Started()
+        {
+            return (Charts.Any() || FeedbackIds.Any() || IncludeManagerFeedback || IncludeQuestionTable || IncludeSelfFeedback || !String.IsNullOrEmpty(ManagerNotes) || Visible);
+        }
 
         public ClientReviewModel()
         {
@@ -29,7 +34,6 @@ namespace RadialReview.Models.Reviews
             Charts = new List<LongTuple>();
         }
 
-        public virtual bool IncludeSelfFeedback { get; set; }
     }
 
     public class ClientReviewModelMap : ClassMap<ClientReviewModel>
@@ -43,6 +47,7 @@ namespace RadialReview.Models.Reviews
             Map(x => x.IncludeManagerFeedback);
             Map(x => x.IncludeQuestionTable);
             Map(x => x.IncludeSelfFeedback);
+            Map(x => x.SignedTime);
 
             HasMany(x => x.FeedbackIds)
                 .Not.LazyLoad()

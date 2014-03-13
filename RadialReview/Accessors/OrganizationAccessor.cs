@@ -166,7 +166,7 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
                     var users = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
-                    
+
                     if (managers)
                     {
                         var allManagers = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == organizationId).List().ToList();
@@ -396,5 +396,33 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
+        //Gets all users and populates direct subordinates
+        /*
+        public List<UserOrganizationModel> GetOrganizationMembersAndSubordinates(UserOrganizationModel caller, long forUserId, bool allSubordinates)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    if (allSubordinates == false)
+                        throw new NotImplementedException("All subordinates not implemented. Only direct subordinates.");
+
+                    var perms=PermissionsUtility.Create(s, caller).ViewUserOrganization(forUserId,false);
+
+                    var user=s.Get<UserOrganizationModel>(forUserId);
+                    var allOrgUsers=s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == user.Organization.Id).List().ToList();
+
+                    var directReports = s.QueryOver<ManagerDuration>().Where(x => x.ManagerId == forUserId).List().ToList();
+
+                    foreach (var u in allOrgUsers)
+                    {
+                        u.SetPersonallyManaging(directReports.Any(x => x.SubordinateId == u.Id));
+                    }
+
+                    return allOrgUsers;
+                }
+            }
+        }*/
     }
 }

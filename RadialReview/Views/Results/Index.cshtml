@@ -4,18 +4,23 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section top{
+    <div class="jumbotron">
+        <h1>Reviews</h1>
+    </div>
+}
+
+@section header{
+    @Html.Partial("_ReviewsHeader")
+}
+
 @section hints{
     @Html.AlertBoxDismissable(@"From this page, you can access the progress of outstanding reviews and evaluate members in completed reviews.", "alert-info", "Info:")
 }
 
 <div class="panel panel-primary startHiddenGroup">
-    <div class="panel-heading-button">
-        <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton plus" data-toggle="modal">
-            Issue
-        </button>
-    </div>
     <div class="panel-heading">
-        <h3 class="panel-title">Issued Reviews</h3>
+        <h3 class="panel-title">Outstanding Reviews</h3>
     </div>
 
     <div class="table-responsive">
@@ -32,7 +37,7 @@
             <tbody>
                 @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
                 {
-                    <tr class="startHidden clickable" onclick="location.href = '@Url.Action("Details", "Reviews", new {id=review.Review.Id})';">
+                    <tr class="startHidden clickable" onclick="location.href = '@Url.Action("Review", "Statistics", new { id = review.Review.Id })';">
                         <td class="table-hover-underline">
                             <a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="">
                                 @review.Review.ReviewName

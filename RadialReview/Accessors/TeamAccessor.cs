@@ -51,9 +51,7 @@ namespace RadialReview.Accessors
                     return directlyManaging;
                 }
             }
-
         }
-
 
         public List<OrganizationTeamModel> GetOrganizationTeams(UserOrganizationModel caller, long organizationId)
         {
@@ -358,6 +356,5 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
     }
 }

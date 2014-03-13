@@ -23,19 +23,22 @@ namespace RadialReview.Accessors
     {
         public static TeamAccessor _TeamAccessor = new TeamAccessor();
 
-        public Dictionary<long, List<long>> GetUsersWhoReviewUsers(
+
+        public List<CoworkerRelationships> GetUsersWhoReviewUsers(
                 UserOrganizationModel caller, 
                 ReviewParameters parameters,
                 long forTeam)
         {
-            var teams = _TeamAccessor.GetTeamsDirectlyManaged(caller, caller.Id).ToList();
+            /*var teams = _TeamAccessor.GetTeamsDirectlyManaged(caller, caller.Id).ToList();
             if (!teams.Any(x => x.Id == forTeam)){
                 throw new PermissionsException("You do not have access to that team.");
-            }
+            }*/
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
+
+                    var perms = PermissionsUtility.Create(s, caller).ViewTeam(forTeam);
                     var orgId = caller.Organization.Id;
 
                     var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
@@ -59,19 +62,21 @@ namespace RadialReview.Accessors
 
                     var d = new DataInteraction(queryProvider, s.ToUpdateProvider());
 
-                    var perms = PermissionsUtility.Create(s, caller);
                     var teamMembers = TeamAccessor.GetTeamMembers(queryProvider, perms, caller, forTeam).Select(x => x.User);
 
-                    var team = teams.First(x => x.Id == forTeam);
+                    var team = allOrgTeams.First(x => x.Id == forTeam);
 
                     var reviewWhoDictionary = new Dictionary<long, HashSet<long>>();
+
+                    var items = new List<CoworkerRelationships>();
 
                     foreach (var member in teamMembers)
                     {
                         var reviewing = queryProvider.Get<UserOrganizationModel>(member.Id);
-                        var usersTheyReview = ReviewAccessor.GetUsersThatReviewUser(caller, perms, d, reviewing, parameters, team, teamMembers.ToList()).ToList();
+                        var usersTheyReview = ReviewAccessor.GetUsersThatReviewUser(caller, perms, d, reviewing, parameters, team, teamMembers.ToList());//.ToList();
                         reviewWhoDictionary[member.Id] = new HashSet<long>(usersTheyReview.Select(x => x.Key.Id));
-                        var reviewWho = queryProvider.Where<ReviewWhoSettingsModel>(x => x.ByUserId == member.Id).ToList();
+                        items.Add(usersTheyReview);
+                        /*var reviewWho = queryProvider.Where<ReviewWhoSettingsModel>(x => x.ByUserId == member.Id).ToList();
                         foreach (var r in reviewWho)
                         {
                             if (r.ForceState)
@@ -82,15 +87,15 @@ namespace RadialReview.Accessors
                             {
                                 reviewWhoDictionary[member.Id].Remove(r.ForUserId);
                             }
-                        }
+                        }*/
                     }
 
-                    var output = reviewWhoDictionary.ToDictionary(x=>x.Key,x=>x.Value.ToList());
+                    //var output = reviewWhoDictionary.ToDictionary(x=>x.Key,x=>x.Value.ToList());
                                         /*.ToDictionary(
                                             x => queryProvider.Get<UserOrganizationModel>(x.Key),
                                             x => x.Value.Select(y => queryProvider.Get<UserOrganizationModel>(y)).ToList()
                                         );*/
-                    return output;
+                    return items;
                 }
             }
         }

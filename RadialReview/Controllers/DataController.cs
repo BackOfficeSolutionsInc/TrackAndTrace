@@ -11,17 +11,13 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Engines;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
     public class DataController : BaseController
     {
 
-        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
-        protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
-        protected static TeamAccessor _TeamAccessor = new TeamAccessor();
-        protected static ChartsEngine _ChartsEngine = new ChartsEngine();
         //
         // GET: /Data/
         /*[Access(AccessLevel.Any)]
@@ -213,25 +209,125 @@ namespace RadialReview.Controllers
         */
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult Scatter(long id,long reviewId)
+        public JsonResult ForceDirected()
         {
-            var chartTuple = _ReviewAccessor.GetChartTuple(GetUser(),reviewId, id);
+            var map=_DeepSubordianteAccessor.GetOrganizationMap(GetUser(), GetUser().Organization.Id).ToListAlive();
+            var allMembers = map.Select(x=>x.SubordinateId).Union(map.Select(x=>x.ManagerId)).Distinct().ToList();
+            var dict=new Dictionary<long,int>();
+
+            var membersDict = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToDictionary(x=>x.Id,x=>x.GetName());
+
+            var nodes =allMembers.Select((x,i)=>{
+                dict.Add(x,i);
+                return new { name = membersDict[x], group = 1 };
+            }).ToArray();
+
+            var links= map.Select(x=>new{
+                source=dict[x.ManagerId],
+                target=dict[x.SubordinateId],
+                value=1
+            }).ToArray();
+
+            return Json(new {nodes=nodes,links=links},JsonRequestBehavior.AllowGet);
+        }
+
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult ReviewsData(long id)
+        {
+            var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, true, true);
+
+            /*var managers = review.Reviews.Where(x => x.ForUser.IsManager()).Count();
+            var managersCompleted = review.Reviews.Where(x => x.ForUser.IsManager() && x.Complete).Count();
+            var nonManager = review.Reviews.Where(x => !x.ForUser.IsManager()).Count();
+            var nonManagerComplete = review.Reviews.Where(x => !x.ForUser.IsManager() && x.Complete).Count();*/
+
+            var total = review.Reviews.Count();
+            var started = review.Reviews.Where(x => !x.Complete && x.Answers.Any(y => y.Complete)).Count();
+            var finished = review.Reviews.Where(x => x.Complete).Count();
+            var completion = new
+                {
+                    Total = total,
+                    Started = started,
+                    Finished = finished,
+                    Unstarted = total - started - finished,//.Where(x=>x.Answers.All(y=>!y.Complete)).Count()
+                    /*TotalPeople = review.Reviews.Count(),
+                    TotalCompleted = review.Reviews.Where(x => x.Complete).Count(),
+                    ManagersCompleted = review.Reviews.Where(x => x.ForUser.IsManager() && x.Complete).Count(),
+                    NonManagerComplete = review.Reviews.Where(x => !x.ForUser.IsManager() && x.Complete).Count(),
+                    NonManagerIncomplete = review.Reviews.Where(x => !x.ForUser.IsManager() && !x.Complete).Count(),
+                    ManagerIncomplete = review.Reviews.Where(x => x.ForUser.IsManager() && !x.Complete).Count(),*/
+                };
+
+            var reportsStarted  =review.Reviews.Where(x => x.ClientReview.Started() && !x.ClientReview.Visible && x.ClientReview.SignedTime==null).Count();
+            var visible         =review.Reviews.Where(x =>!x.ClientReview.Started() &&  x.ClientReview.Visible && x.ClientReview.SignedTime==null).Count();
+            var signed          =review.Reviews.Where(x =>!x.ClientReview.Started() && !x.ClientReview.Visible && x.ClientReview.SignedTime!=null).Count();
+            var unstarted = total - visible - signed - reportsStarted;
+            var reports = new
+                {
+                    Total = total,
+                    Unstarted = unstarted,
+                    Started = reportsStarted,
+                    Visible = visible,
+                    Signed = signed
+                };
+
+
+            var excludeLongerThan = TimeSpan.FromMinutes(10);
+            long avgTicks = 0;
+            if (review.Reviews.Any(x => x.Complete))
+            {
+                avgTicks = (long)review.Reviews.Where(x => x.Complete).Average(x => (decimal)(TimingUtility.ReviewDuration(x.Answers, excludeLongerThan).Ticks));
+            }
+            
+            var reviewsCompleted = review.Reviews.Where(x => x.Complete).Count();
+            var questionsAnswered = review.Reviews.Sum(x => x.Answers.Count(y => y.Complete));
+            var minsPerReview = new TimeSpan(avgTicks).TotalMinutes;
+            var optionalsAnswered = review.Reviews.Sum(x => x.Answers.Where(y => !y.Required && y.Complete).Count());
+
+            var statistics = new
+            {
+                ReviewsCompleted = reviewsCompleted,
+                QuestionsAnswered = questionsAnswered,
+                MinsPerReview = minsPerReview,
+                OptionalsAnswered = optionalsAnswered,
+            };
+
+            var output = new
+            {
+                Completion=completion,
+                Reports =reports,
+                Stats=statistics,
+                Individuals = review.Reviews.Select(x => new
+                {
+                    Name = x.ForUser.GetName(),
+                    Completion = x.GetCompletion(),
+                }).ToList()
+            };
+
+            return Json(ResultObject.Create(output), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult Scatter(long id, long reviewId)
+        {
+            var chartTuple = _ReviewAccessor.GetChartTuple(GetUser(), reviewId, id);
 
             var reviewContainer = _ReviewAccessor.GetReviewContainerByReviewId(GetUser(), reviewId);
-            var review =_ReviewAccessor.GetReview(GetUser(),reviewId);
+            var review = _ReviewAccessor.GetReview(GetUser(), reviewId);
 
-            var title = _ChartsEngine.GetChartTitle(GetUser(),id);
+            var title = _ChartsEngine.GetChartTitle(GetUser(), id);
 
             var options = new ChartOptions()
             {
-                Id=id,
+                Id = id,
                 ChartName = title,
                 DeleteTime = chartTuple.DeleteTime,
-                DimensionIds = "category-"+chartTuple.Item1+",category-"+chartTuple.Item2,
-                Filters=chartTuple.Filters,
+                DimensionIds = "category-" + chartTuple.Item1 + ",category-" + chartTuple.Item2,
+                Filters = chartTuple.Filters,
                 ForUserId = review.ForUserId,
-                GroupBy=chartTuple.Groups,
-                Options=""+reviewContainer.Id,
+                GroupBy = chartTuple.Groups,
+                Options = "" + reviewContainer.Id,
                 Source = ChartDataSource.Review,
             };
             var scatter = _ChartsEngine.ScatterFromOptions(GetUser(), options);

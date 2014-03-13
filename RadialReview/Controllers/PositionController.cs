@@ -11,9 +11,6 @@ namespace RadialReview.Controllers
 {
     public class PositionController : BaseController
     {
-        protected static PositionAccessor _PositionAccessor = new PositionAccessor();
-        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
 
         //
         // GET: /Position/

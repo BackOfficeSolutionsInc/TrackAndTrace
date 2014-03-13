@@ -85,20 +85,20 @@ namespace RadialReview.Accessors
         /// <param name="caller"></param>
         /// <param name="forUser"></param>
         /// <returns></returns>
-        public ReviewModel GenerateReviewForUser(UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
+        /*public ReviewModel GenerateReviewForUser(UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    var reviewModel=GenerateReviewForUser(new DataInteraction(s.ToQueryProvider(true),s.ToUpdateProvider()), perms, caller, forUser, reviewContainer, askables);
+                    var reviewModel = GenerateReviewForUser(new DataInteraction(s.ToQueryProvider(true), s.ToUpdateProvider()), perms, caller, forUser, reviewContainer, askables);
                     tx.Commit();
                     s.Flush();
                     return reviewModel;
                 }
             }
-        }
+        }*/
 
         public static ReviewModel GenerateReviewForUser(DataInteraction dataInteraction, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
         {
@@ -125,7 +125,7 @@ namespace RadialReview.Accessors
             return reviewModel;
         }
 
-        
+
 
 
         /*
@@ -170,7 +170,7 @@ namespace RadialReview.Accessors
             }
         }*/
 
-        public static List<QuestionModel> GetQuestionsForUser(AbstractQuery s,PermissionsUtility perms, UserOrganizationModel caller, long forUserId)
+        public static List<QuestionModel> GetQuestionsForUser(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forUserId)
         {
             perms.ViewUserOrganization(forUserId, false);
             var forUser = s.Get<UserOrganizationModel>(forUserId);
@@ -187,7 +187,7 @@ namespace RadialReview.Accessors
             var orgQuestions = s.Where<QuestionModel>(x => x.OriginId == orgId && x.OriginType == OriginType.Organization);
             questions.AddRange(orgQuestions);
             //Application Questions
-            var applicationQuestions = s.Where<ApplicationWideModel>(x=>true).SelectMany(x => x.CustomQuestions).ToList();
+            var applicationQuestions = s.Where<ApplicationWideModel>(x => true).SelectMany(x => x.CustomQuestions).ToList();
             questions.AddRange(applicationQuestions);
             return questions;
         }

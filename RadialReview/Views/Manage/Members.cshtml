@@ -6,6 +6,11 @@
     ViewBag.Page = "Members";
 }
 
+@section top{
+    <div class="jumbotron">
+        <h1>Manage</h1>
+    </div>
+}
 
 @section header{
     @Html.Partial("Partial/manageheader")
@@ -14,10 +19,9 @@
 @section hints{
     @Html.AlertBoxDismissable(@"
             The first step is adding members to your organization.
-            Members have a number of individual responsibilities and responsibilities for their team, position and organization.
-            During the review process, peers, teammates, managers and subordinates rate individuals on how well they are fulfilling their responsibilities.
-            To begin, click the + button.
-            You can come back to this any time.", "alert-info", "Info:")
+            Members have a number of individual questions and questions that evaluate how they are with respect to their team, position and organization.
+            During the review process, peers, teammates, managers and subordinates answer these questions of the individuals to gauge how well they are
+            fulfilling their responsibilities. To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
 }
 
 @using (Html.BeginStyles())
@@ -87,7 +91,7 @@
             <tbody>
             @foreach (var p in Model.Users.OrderByDescending(x => x.Managing).ThenByDescending(x => x.Verified).ThenBy(x => x.Name))
             {
-                <tr class="@(p.Managing?"managing":"notManaging")">
+                <tr class="@(p.Managing?"managing":"grayRow")">
                     <td class="alignCenter noselect">
                         @*@((p.Managing).GetIcon("glyphicon-eye-open strokeLightGreen", "glyphicon-eye-close gray", "You are managing", "You are not managing"))*@
 

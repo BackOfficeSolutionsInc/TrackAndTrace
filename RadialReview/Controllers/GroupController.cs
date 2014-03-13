@@ -16,8 +16,6 @@ namespace RadialReview.Controllers
 {
     public class GroupController : BaseController
     {
-        public static GroupAccessor _GroupAccessor = new GroupAccessor();
-
         //
         // GET: /Group/
         [Access(AccessLevel.Manager)]

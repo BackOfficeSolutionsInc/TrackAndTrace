@@ -29,7 +29,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        [Obsolete("Dont use this elsewhere",false)]
+        [Obsolete("Dont use this elsewhere", false)]
         public UserModel GetUserByEmail(String email)
         {
             if (email == null)
@@ -109,7 +109,7 @@ namespace RadialReview.Accessors
             return forUser.ManagedBy.ToListAlive()
                           .Select(x => x.Manager)
                           .SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate))
-                          .Where(x=>x.Id!=forId)
+                          .Where(x => x.Id != forId)
                           .ToList();
         }
 
@@ -131,7 +131,7 @@ namespace RadialReview.Accessors
             return forUser.ManagedBy
                             .ToListAlive()
                             .Select(x => x.Manager)
-                            .Where(x=>x.Id!=forId)
+                            .Where(x => x.Id != forId)
                             .ToList();
         }
 
@@ -143,7 +143,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var perms=PermissionsUtility.Create(s, caller);
+                    var perms = PermissionsUtility.Create(s, caller);
                     return GetSubordinates(s.ToQueryProvider(true), perms, caller, forId);
                 }
             }
@@ -275,13 +275,13 @@ namespace RadialReview.Accessors
         }
 
 
-        public bool UpdateTempUser(UserOrganizationModel caller, long userOrgId,String firstName,String lastName,String email,DateTime? lastSent =null)
+        public bool UpdateTempUser(UserOrganizationModel caller, long userOrgId, String firstName, String lastName, String email, DateTime? lastSent = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var found=s.Get<UserOrganizationModel>(userOrgId);
+                    var found = s.Get<UserOrganizationModel>(userOrgId);
                     var tempUser = found.TempUser;
                     if (tempUser == null)
                         throw new PermissionsException();
@@ -376,11 +376,11 @@ namespace RadialReview.Accessors
                         }
                         else
                         {
-                            s.Save(OrganizationTeamModel.SubordinateTeam(caller,found));
+                            s.Save(OrganizationTeamModel.SubordinateTeam(caller, found));
                         }
                     }
 
-                    if (manageringOrganization != null && manageringOrganization.Value!=found.ManagingOrganization)
+                    if (manageringOrganization != null && manageringOrganization.Value != found.ManagingOrganization)
                     {
                         if (found.Id == caller.Id)
                             throw new PermissionsException("You cannot unmanage this organization yourself.");
@@ -414,6 +414,61 @@ namespace RadialReview.Accessors
             }
         }
 
+        public void CreateDeepSubordinateTree(UserOrganizationModel caller, long organizationId,DateTime now)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).RadialAdmin();
+
+                    var allManagers = s.QueryOver<ManagerDuration>()
+                                        .JoinQueryOver(x => x.Manager)
+                                        .Where(x => x.Organization.Id == organizationId)
+                                        .List()
+                                        .ToListAlive();
+
+                    var allIds = allManagers.SelectMany(x => x.ManagerId.AsList(x.SubordinateId)).Distinct().ToList();
+
+                    foreach (var id in allIds)
+                    {
+                        var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.SubordinateId == id && x.ManagerId==id).List().ToListAlive();
+                        if (!found.Any())
+                        {
+                            s.Save(new DeepSubordinateModel() { Links = 1, CreateTime = now, ManagerId = id, SubordinateId = id, OrganizationId = organizationId });
+                        }
+                    }
+
+
+                    foreach (var manager in allManagers.Distinct(x => x.ManagerId))
+                    {
+                        var managerSubordinates = s.QueryOver<DeepSubordinateModel>().Where(x => x.ManagerId == manager.ManagerId).List().ToListAlive();
+                        var allSubordinates = SubordinateUtility.GetSubordinates(manager.Manager, false);
+
+                        foreach (var sub in allSubordinates)
+                        {
+                            var found = managerSubordinates.FirstOrDefault(x => x.SubordinateId == sub.Id);
+                            if (found == null)
+                            {
+                                found = new DeepSubordinateModel()
+                                {
+                                    CreateTime = now,
+                                    ManagerId = manager.ManagerId,
+                                    SubordinateId = sub.Id,
+                                    Links = 0,
+                                    OrganizationId = organizationId,
+                                };
+                            }
+                            found.Links += 1;
+                            s.SaveOrUpdate(found);
+                        }
+                    }
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
         public void RemoveManager(UserOrganizationModel caller, long managerDurationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -423,14 +478,32 @@ namespace RadialReview.Accessors
                     var managerDuration = s.Get<ManagerDuration>(managerDurationId);
 
                     PermissionsUtility.Create(s, caller).ManagesUserOrganization(managerDuration.SubordinateId);
+                    var now = DateTime.UtcNow;
 
+                    DeepSubordianteAccessor.Remove(s, managerDuration.Manager, managerDuration.Subordinate,now);
+                    
                     managerDuration.DeletedBy = caller.Id;
-                    managerDuration.DeleteTime = DateTime.UtcNow;
-
+                    managerDuration.DeleteTime = now;
                     s.Update(managerDuration);
 
                     tx.Commit();
                     s.Flush();
+                    /*
+                    foreach (var sub in deepSubordinates)
+                    {
+                        var found = managerSubordinates.FirstOrDefault(x => x.SubordinateId == sub.Id);
+                        if (found == null)
+                        {
+                            log.Error("Manager link doesn't exist for (" + managerDurationId + "). Advise that you run deep subordinate creation.");
+                        }
+                        found.Links -= 1;
+                        if (found.Links == 0)
+                            found.DeleteTime = now;
+                        if (found.Links < 0)
+                            throw new Exception("This should *never* go below 0.");
+                        s.SaveOrUpdate(found);
+                    }*/
+
                 }
             }
 
@@ -445,14 +518,19 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId);
 
                     var user = s.Get<UserOrganizationModel>(userId);
-                    var manager = user.ManagedBy.ToListAlive().Where(x => x.ManagerId == managerId).FirstOrDefault();
+                    var managerNull = user.ManagedBy.ToListAlive().Where(x => x.ManagerId == managerId).FirstOrDefault();
 
-                    if (manager != null)
+                    if (managerNull != null)
                         throw new PermissionsException("Already a manager of this user.");
 
-                    user.ManagedBy.Add(new ManagerDuration(managerId, userId, caller.Id));
+                    var now = DateTime.UtcNow;
+                    var manager = s.Get<UserOrganizationModel>(managerId);
+                    DeepSubordianteAccessor.Add(s, manager, user, manager.Organization.Id, now);                  
 
+
+                    user.ManagedBy.Add(new ManagerDuration(managerId, userId, caller.Id) { Start = now });
                     s.Update(user);
+                    //s.Update(new DeepSubordinateModel(){ManagerId=manager.Id}
 
                     tx.Commit();
                     s.Flush();
@@ -460,7 +538,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void ChangeRole(UserModel caller,UserOrganizationModel callerUserOrg, long roleId)
+        public void ChangeRole(UserModel caller, UserOrganizationModel callerUserOrg, long roleId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -488,9 +566,9 @@ namespace RadialReview.Accessors
                     if (caller.Id != userId)
                         throw new PermissionsException();
                     var userOrg = s.Get<UserModel>(userId);
-                    if (firstName!=null)
+                    if (firstName != null)
                         userOrg.FirstName = firstName;
-                    if(lastName!=null)
+                    if (lastName != null)
                         userOrg.LastName = lastName;
                     if (imageGuid != null)
                     {

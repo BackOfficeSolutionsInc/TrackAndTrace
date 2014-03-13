@@ -48,5 +48,10 @@ namespace RadialReview.Utilities.Query
         {
             return Session.BeginTransaction();
         }
+
+        public override List<T> All<T>()
+        {
+            return Session.QueryOver<T>().List().ToList();
+        }
     }
 }

@@ -28,6 +28,7 @@ namespace RadialReview.Accessors
             String id = null;
 
             TempUserModel tempUser;
+            var now = DateTime.UtcNow;
             using (var db = HibernateSession.GetCurrentSession())
             {
                 long newUserId = 0;
@@ -77,12 +78,15 @@ namespace RadialReview.Accessors
 
                     db.Save(newUser);
 
-                    var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id);
+                    var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id) { Start = now };
                     newUser.Positions.Add(positionDuration);
 
                     if (managerId > 0)
                     {
-                        var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id);
+                        var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id) { Start = now };
+                        var manager=db.Get<UserOrganizationModel>(managerId);
+                        db.Save(new DeepSubordinateModel() { CreateTime = now, Links = 1, ManagerId = newUserId, SubordinateId = newUserId });
+                        DeepSubordianteAccessor.Add(db, manager, newUser,caller.Organization.Id, now);
                         newUser.ManagedBy.Add(managerDuration);
                     }
 

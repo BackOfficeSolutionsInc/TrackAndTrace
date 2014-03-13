@@ -13,6 +13,7 @@ namespace RadialReview.Models
         public virtual long CreatedById { get; set; }
         public virtual DateTime DateCreated { get; set; }
         public virtual DateTime DueDate { get; set; }
+        public virtual DateTime? ReportsDueDate { get; set; }
         public virtual String ReviewName { get; set; }
         public virtual bool ReviewManagers { get; set; }
         public virtual bool ReviewSelf { get; set; }
@@ -20,10 +21,11 @@ namespace RadialReview.Models
         public virtual bool ReviewTeammates { get; set; }
         public virtual bool ReviewPeers { get; set; }
         public virtual List<ReviewModel> Reviews { get; set; }
+        public virtual long ForOrganizationId { get; set; }
         public virtual OrganizationModel ForOrganization { get; set; }
         public virtual long ForTeamId { get; set; }
         public virtual CompletionModel Completion { get; set; }
-
+        public virtual long? TaskId { get; set; }
         public virtual ICompletionModel GetCompletion(bool split=false)
         {
             return Completion;
@@ -46,6 +48,7 @@ namespace RadialReview.Models
         }
 
 
+
     }
 
     public class ReviewsModelMap : ClassMap<ReviewsModel>
@@ -58,16 +61,19 @@ namespace RadialReview.Models
             Map(x => x.DueDate);
             Map(x => x.CreatedById);
 
+            Map(x => x.TaskId);
+            
             Map(x => x.ReviewManagers);
             Map(x => x.ReviewSelf);
             Map(x => x.ReviewSubordinates);
             Map(x => x.ReviewTeammates);
             Map(x => x.ReviewPeers);
+            Map(x => x.ReportsDueDate);
 
             Map(x => x.ForTeamId);
 
-            References(x => x.ForOrganization)
-                .Not.LazyLoad();
+            Map(x => x.ForOrganizationId).Column("ForOrganization_Id");
+            References(x => x.ForOrganization).Column("ForOrganization_Id").LazyLoad().ReadOnly();
         }
     }
 }

@@ -1,0 +1,136 @@
+﻿@model RadialReview.Models.ViewModels.OrgReviewsViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>Reviews</h1>
+    </div>
+}
+
+@section header{
+    @Html.Partial("_ReviewsHeader")
+}
+
+@*section hints{
+        @Html.AlertBoxDismissable(@"From this page, you can access the progress of outstanding reviews and evaluate members in completed reviews.", "alert-info", "Info:")
+    }*@
+
+<div class="panel panel-primary startHiddenGroup">
+    <div class="panel-heading">
+        <h3 class="panel-title">Your reviews:</h3>
+    </div>
+    @if(Model.Reviews.Any())
+    { 
+    <div class="table-responsive">
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th style="min-width: 120px">@RadialReview.Properties.DisplayNameStrings.name</th>
+                    <th style="width:100px" class="alignCenter">Created</th>
+                    <th style="width:100px" class="alignCenter">Due</th>
+                    @*<th style="width: 120px; padding-right: 0px; padding-left: 0px; " class="alignCenter">Completion</th>*@
+                    <th style="width: 20px;" class="alignCenter">Stats</th>
+                    @if (Model.AllowEdit && Model.Reviews.Any(x=>x.Editable))
+                    {
+                        <th style="width: 20px;" class="alignCenter">Edit</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
+                {
+                    var takable = review.TakableId;
+                    @*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
+                    <tr class="startHidden "
+                        >
+                        <td class="@(review.TakableId != null ? "table-hover-underline clickable" : "")"
+                            @if (review.TakableId != null) {    @: onclick="location.href = '/Review/Take/@review.TakableId.Value';"
+                                                    }>
+                            @review.Review.ReviewName
+                        </td>
+
+                        <td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>
+                        <td class="alignCenter">@review.Review.DueDate.ToShortDateString()</td>
+                        @*<td style="padding-right: 0px; padding-left: 0px; ">
+                            @Html.Partial("_Completion", review.Review)
+                        </td>*@
+                        <td class="alignCenter">
+                            <a href="/Statistics/Review/@review.Review.Id"><span class="glyphicon glyphicon-stats"></span></a>
+                        </td>
+                        @if (review.Editable && Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
+                        {
+                            <td class="alignCenter">
+                                <a href="/Reviews/Edit/@review.Review.Id"><span class="glyphicon glyphicon-@(true ? "pencil" : "eye-open")"></span></a>
+                            </td>
+                        }
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+    else
+    {
+        <div class="panel-body gray">
+            There are no reviews at this time.
+        </div> 
+    }
+
+    @*{
+        
+        var otherReviews=Model.Reviews.OrderByDescending(x => x.Review.DateCreated).Where(x => !x.Review.Reviews.Any(y => y.ForUserId == ViewBag.UserId));
+    }
+
+    @if(otherReviews.Any())
+    {
+        <div class="panel-heading">
+        <h3 class="panel-title">Other reviews:</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th style="min-width: 120px">@RadialReview.Properties.DisplayNameStrings.name</th>
+                    <th style="width:100px" class="alignCenter">Created</th>
+                    <th style="width:100px" class="alignCenter">Due</th>
+                    <th style="width: 120px; padding-right: 0px; padding-left: 0px; " class="alignCenter">Completion</th>
+                    <th style="width: 20px;" class="alignCenter">Stats</th>
+                    @if (Model.Edit)
+                    {
+                        <th style="width: 20px;" class="alignCenter">Edit</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var review in otherReviews)
+                {
+                    <tr class="startHidden">
+                        <td>
+                            @review.Review.ReviewName
+                        </td>
+                        <td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>
+                        <td class="alignCenter">@review.Review.DueDate.ToShortDateString()</td>
+                        <td style="padding-right: 0px; padding-left: 0px; ">
+                            @Html.Partial("_Completion", review.Review)
+                        </td>
+                        <td class="alignCenter">
+                            <a href="/Statistics/Review/@review.Review.Id"><span class="glyphicon glyphicon-stats"></span></a>
+                        </td>
+                        @if (Model.Edit)
+                        {
+                            <td class="alignCenter">
+                                <a href="/Reviews/Edit/@review.Review.Id"><span class="glyphicon glyphicon-@(Model.Edit ? "pencil" : "eye-open")"></span></a>
+                            </td>
+                        }
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }*@
+
+</div>

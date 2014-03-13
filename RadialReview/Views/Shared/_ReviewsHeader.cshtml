@@ -1,0 +1,9 @@
+﻿<ul class="nav nav-tabs manage">
+    <li class="@(ViewBag.Page == "Outstanding"   ? "active" : "")"><a href="/Reviews/Outstanding">     Outstanding</a></li>
+    <li class="@(ViewBag.Page == "History"   ? "active" : "")"><a href="/Reviews/History">             History</a></li>
+    @if (ViewBag.IsManager ?? false)
+    {
+        <li class="@(ViewBag.Page == "Issue" ? "active" : "")"><a href="/Issue/">                      Issue</a></li>
+    }
+    @Html.Partial("_ExtraTab")
+</ul>

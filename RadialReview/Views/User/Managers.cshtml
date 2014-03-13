@@ -3,18 +3,28 @@
 @{
     ViewBag.Title = "Managers - " + Model.GetName();
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Members";
+    
+    ViewBag.Page = "Managers";
+    ViewBag.ExtraTabs = ExtraTab.Create("Managers", "/User/Managers/" + Model.Id);    
 }
 
+@section top{
+    <div class="jumbotron">
+        <h1>Manage</h1>
+    </div>
+}
+
+@section header{
 @Html.Partial("Partial/manageheader")
+}
 
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title">
-            @Html.ViewOrEdit(Model.GetPersonallyManaging()) managers: <i>@Model.GetNameAndTitle()</i>
+            @Html.ViewOrEdit(Model.GetPersonallyManaging(),false) managers for <i>@Model.GetNameAndTitle()</i>
         </h3>
     </div>
-    <table class="table">
+    <table class="table table-condensed">
         <tr>
             <th>Position</th>
             <th style="width: 150px;" class="alignCenter">Start</th>

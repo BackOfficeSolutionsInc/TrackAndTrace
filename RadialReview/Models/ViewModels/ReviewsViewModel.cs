@@ -11,6 +11,13 @@ namespace RadialReview.Models.ViewModels
 
         public ReviewsModel Review {get;set;}
 
+        public long? TakableId { get; set; }
+        public bool Viewable { get; set; }
+        public bool Editable { get; set; }
+
+        //public Dictionary<long,RatioModel> Completed { get; set; }
+        //public RatioModel Signed { get; set; }
+        
         public ReviewsViewModel(ReviewsModel review)
         {
             Review = review;

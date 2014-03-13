@@ -4,16 +4,25 @@
 @{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Edit Questions";
+    ViewBag.ExtraTabs = ExtraTab.Create("Edit Questions", Request.RawUrl);
+    
 }
+
+@section top{
+    <div class="jumbotron">
+        <h1>Manage</h1>
+    </div>
+}
+
 @section header{
     @Html.Partial("Partial/manageheader")
 }
-<h2>Edit responsibilities</h2>
 @foreach (var table in Model.ResponsibilityTables)
 {
     <div class="panel panel-primary">
         <div class="panel-heading">
-            <h2 class="panel-title">@table.GroupType: <b>@table.Name</b></h2>
+            <h2 class="panel-title">Questions for @table.GroupType.ToLower(): <b>@table.Name</b></h2>
         </div>
 
         @if (table.Responsibilities.Any())
@@ -22,13 +31,13 @@
                 <table class="table table-condensed" style="margin-bottom:0px">
                     <tr>
                         <th class="alignCenter" style="width:10px;">Active</th>
-                        <th>Responsibility</th>
+                        <th>Question</th>
                         <th class="" style="max-width:200px;">Category</th>
                         <th class="" style="width:89px;">Importance</th>
                         <th class="alignCenter rightButton">
                             @if (table.Editable)
                             {
-                                <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
+                                <a class="btn btn-default fullWidth" onclick="@Html.ShowModal("Add question to " + table.GroupType.ToLower() + ": " + table.Name,
                 Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),
                 Url.Action("Modal", "Responsibilities"),null,"verify")">
                                     +
@@ -49,7 +58,7 @@
                             <td class="alignCenter rightButton" style="padding: 2px;">
                                 @if (table.Editable)
                                 {
-                                    <a class="btn btn-primary fullWidth" onclick="@Html.ShowModal("Edit responsibility to " + table.GroupType.ToLower() + ": " + table.Name,
+                                    <a class="btn btn-primary fullWidth" onclick="@Html.ShowModal("Edit question for " + table.GroupType.ToLower() + ": " + table.Name,
                         Url.Action("Modal", "Responsibilities", new { id = r.Id }),
 Url.Action("Modal", "Responsibilities"),null,"verify")">
                                         Edit
@@ -67,12 +76,12 @@ Url.Action("Modal", "Responsibilities"),null,"verify")">
             <div class="panel-body">
                 @if (table.Editable)
                 {
-                    <div class="btn btn-default pull-right" onclick="@Html.ShowModal("Add responsibility to " + table.GroupType.ToLower() + ": " + table.Name,Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),Url.Action("Modal", "Responsibilities"), null, "verify")" style="width:66px;">+</div>
-                    <div style="color: #B6B6B6">No @table.GroupType.ToLower() responsibilies. Click the button to the right to add some.</div>
+                    <div class="btn btn-default pull-right" onclick="@Html.ShowModal("Add question to " + table.GroupType.ToLower() + ": " + table.Name,Url.Action("Modal", "Responsibilities", new {responsibilityGroupId=table.ResponsibilityGroupId }),Url.Action("Modal", "Responsibilities"), null, "verify")" style="width:66px;">+</div>
+                    <div style="color: #B6B6B6">No @table.GroupType.ToLower() questions. Click the button to the right to add some.</div>
                 }
                 else
                 {
-                    <div style="color: #B6B6B6">No @table.GroupType.ToLower() responsibilies.</div>
+                    <div style="color: #B6B6B6">No @table.GroupType.ToLower() questions.</div>
                 }
             </div>
         }

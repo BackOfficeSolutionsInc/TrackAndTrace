@@ -18,10 +18,6 @@ namespace RadialReview.Controllers
 {
     public class QuestionController : BaseController
     {
-        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected static GroupAccessor _GroupAccessor = new GroupAccessor();
-        protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
-        protected static OriginAccessor _OriginAccessor = new OriginAccessor();
 
 
         [HttpPost]
@@ -73,7 +69,7 @@ namespace RadialReview.Controllers
         public ActionResult Modal(long id=0, String origin = null, long? originId = null)
         {
             throw new NotImplementedException();
-
+            /*
             try
             {
                 var caller = GetUser().Hydrate()
@@ -103,7 +99,7 @@ namespace RadialReview.Controllers
             }catch(Exception e)
             {
                 return PartialView("ModalError", e);
-            }
+            }*/
         }
 
         [Access(AccessLevel.Manager)]

@@ -13,11 +13,7 @@ using RadialReview.Models;
 namespace RadialReview.Controllers
 {
     public class TeamController : BaseController
-    {
-        protected TeamAccessor _TeamAccessor = new TeamAccessor();
-        protected OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
-        
+    {       
         
         //
         // GET: /Team/

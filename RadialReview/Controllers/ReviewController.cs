@@ -23,15 +23,6 @@ namespace RadialReview.Controllers
 {
     public class ReviewController : BaseController
     {
-        protected static TeamAccessor _TeamAccessor = new TeamAccessor();
-        protected static NexusAccessor _NexusAccessor = new NexusAccessor();
-        protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
-        protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
-        protected static CategoryAccessor _CategoryAccessor = new CategoryAccessor();
-        protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
-        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
-        protected static ChartsEngine _ChartsEngine = new ChartsEngine();
 
 
         //
@@ -41,14 +32,14 @@ namespace RadialReview.Controllers
         {
             var user = GetUser();
             var reviewCount=_ReviewAccessor.GetNumberOfReviewsForUser(user, user);
-            var reviews = _ReviewAccessor.GetReviewsForUser(user, user,page,user.CountPerPage);
+            var reviews = _ReviewAccessor.GetReviewsForUser(user, user.Id,page,user.CountPerPage);
             var output = new ReviewsListViewModel() { 
                 ForUser = user, 
                 Reviews = reviews,
                 Page=page,
                 NumPages = reviewCount/(double)user.CountPerPage
-
             };
+            ViewBag.Page = "View";
             return View(output);
         }
 
@@ -142,6 +133,8 @@ namespace RadialReview.Controllers
                 }
                 dueDate = review.DueDate;
 
+                _ReviewAccessor.UpdateAllCompleted(GetUser(), review.Id);
+
                 return allComplete;
             }
             catch (PermissionsException e)
@@ -175,7 +168,7 @@ namespace RadialReview.Controllers
 
         [HttpGet]
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult AdditionalReview(long id, long page)
+        public ActionResult AdditionalReview(long id, long page=0)
         {
             var organizationUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
             var review = _ReviewAccessor.GetReview(GetUser(), id);
@@ -239,9 +232,9 @@ namespace RadialReview.Controllers
                         ).ToList()
                 };
 
-                if (model.Editable && p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required))
+                if (model.Editable && p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required) )
                 {
-                    TempData["Message"] = DisplayNameStrings.remainingQuestions;
+                    //TempData["Message"] = DisplayNameStrings.remainingQuestions;
                     ViewBag.Incomplete = true;
                 }
 

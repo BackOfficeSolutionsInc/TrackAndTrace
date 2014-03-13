@@ -98,8 +98,8 @@ namespace RadialReview
             User.Groups = groups;
             return this;
         }
-        
-        public UserHydration ManagingUsers(Boolean subordinates = false)
+
+        public UserHydration ManagingUsers(Boolean subordinates = false, int levels = int.MaxValue)
         {
             List<ManagerDuration> managing = new List<ManagerDuration>();
             using (var tx = Session.BeginTransaction())
@@ -116,7 +116,7 @@ namespace RadialReview
                 using (var tx = Session.BeginTransaction())
                 {
                     var user=GetUnderlying();
-                    var children = SubordinateUtility.GetSubordinates(user,true);
+                    var children = SubordinateUtility.GetSubordinates(user, true, levels);
                     User.AllSubordinates = children;
                 }
             }
@@ -273,7 +273,7 @@ namespace RadialReview
                     PermissionsUtility.Create(Session, self).ManagesUserOrganization(uOrgId);
                     owned = true;
                 }
-                catch (PermissionsException e)
+                catch (PermissionsException)
                 {
                     owned = false;
                 }
@@ -307,7 +307,7 @@ namespace RadialReview
                     PermissionsUtility.Create(Session, uOrg).EditPositions();
                     editPosition = true;
                 }
-                catch (PermissionsException e)
+                catch (PermissionsException)
                 {
                     editPosition = false;
                 }

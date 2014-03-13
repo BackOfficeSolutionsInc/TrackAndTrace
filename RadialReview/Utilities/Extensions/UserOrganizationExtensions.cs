@@ -52,6 +52,16 @@ namespace RadialReview
             ));
         }
 
+        public static void PopulateLevel(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> allSubordinates)
+        {
+            var found = allSubordinates.FirstOrDefault(x => x.Id == sub.Id);
+            if (found!=null)
+            {
+                var level=found.GetLevel();
+                sub.SetLevel(level);
+            }
+        }
+
         public static void SetPersonallyManaging(this UserOrganizationModel self, Boolean personallyManaging)
         {
             self.Set("_managing", personallyManaging.ToString());
@@ -67,6 +77,15 @@ namespace RadialReview
         public static bool GetEditPosition(this UserOrganizationModel self)
         {
             return bool.Parse(self.GetSingle("_EditPosition"));
+        }
+
+        public static void SetLevel(this UserOrganizationModel self, long level)
+        {
+            self.Set("_Level", level.ToString());
+        }
+        public static long GetLevel(this UserOrganizationModel self)
+        {
+            return long.Parse(self.GetSingle("_Level"));
         }
 
         public static void Set(this UserOrganizationModel self, String key, String value)

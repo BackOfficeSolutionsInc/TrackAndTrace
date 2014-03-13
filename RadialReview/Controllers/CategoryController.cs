@@ -12,8 +12,6 @@ namespace RadialReview.Controllers
 {
     public class CategoryController : BaseController
     {
-        private static CategoryAccessor _CategoryAccessor = new CategoryAccessor();
-
         //
         // GET: /Category/
         [Access(AccessLevel.Manager)]

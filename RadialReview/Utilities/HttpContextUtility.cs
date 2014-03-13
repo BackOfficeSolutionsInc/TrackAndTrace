@@ -19,7 +19,7 @@ namespace RadialReview
             if (context == null)
                 throw new ArgumentException("Requires Context");
 
-            var generated = false;
+            //var generated = false;
             if (context.Items[key] == null || forceUpdate((V)context.Items[key]))
             {
                 context.Items[key] = generator(key);

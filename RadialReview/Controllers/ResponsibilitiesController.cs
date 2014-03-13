@@ -15,10 +15,6 @@ namespace RadialReview.Controllers
     public class ResponsibilitiesController : BaseController
     {
 
-        protected ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
-        protected CategoryAccessor _CategoryAccessor = new CategoryAccessor();
-        protected TeamAccessor _TeamAccessor = new TeamAccessor();
-
         //
         // GET: /Responsibilities/
         [Access(AccessLevel.Manager)]

@@ -10,7 +10,6 @@ namespace RadialReview.Controllers
 {
     public class TemplateController : BaseController
     {
-        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
         [Access(AccessLevel.Manager)]
         public ActionResult Create()
         {

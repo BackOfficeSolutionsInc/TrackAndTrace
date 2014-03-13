@@ -163,7 +163,7 @@ namespace RadialReview.Models
             //Map(x => x.Title);
 
             Map(x => x.IsRadialAdmin);
-            Map(x => x.CountPerPage);
+            Map(x => x.CountPerPage).Default("10");
             Map(x => x.ManagingOrganization);
             Map(x => x.ManagerAtOrganization);
             Map(x => x.AttachTime);

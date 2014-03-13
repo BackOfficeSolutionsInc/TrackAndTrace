@@ -7,6 +7,16 @@
 
 @using RadialReview.Models
 
+
+@section header{
+
+}
+@section top{
+    <div class="jumbotron">
+        <h1>Radial Review</h1>
+    </div>
+}
+
 <div class="row">
     
     <div class="col-md-12">
@@ -19,14 +29,15 @@
                         <h3 class="panel-title">@group.FirstOrDefault().NotNull(x => x.Askable.Category.Category.Translate())</h3>
                     </div>
                     <div class="panel-body">
-                        @Html.Partial("Slider",   Tuple.Create(group.ToList().Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList(),Model.Editable))
-                        @Html.Partial("Thumbs",   Tuple.Create(group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList(), Model.Editable))
-                        @Html.Partial("Feedback", Tuple.Create(group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList(),Model.Editable))
+                        @Html.Partial("Slider", Tuple.Create(group.ToList().Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList(), Model.Editable))
+                        @Html.Partial("Thumbs", Tuple.Create(group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList(), Model.Editable))
+                        @Html.Partial("Feedback", Tuple.Create(group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList(), Model.Editable))
                     </div>
                 </div>
             }
         </div>
     </div>
+
 </div>
 
 @section sidebar{

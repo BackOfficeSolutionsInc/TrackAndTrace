@@ -14,5 +14,7 @@ namespace RadialReview.Models.ViewModels
         public double NumPages { get; set; }
 
         public int Page { get; set; }
+
+        public bool AllowEdit { get; set; }
     }
 }

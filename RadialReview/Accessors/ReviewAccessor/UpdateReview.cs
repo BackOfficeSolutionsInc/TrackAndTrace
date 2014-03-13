@@ -75,10 +75,10 @@ namespace RadialReview.Accessors
             AddAskablesToReview(s.GetUpdateProvider(), perms, caller, forUser, review, askable.Askables);
         }
 
-        public void RemoveQuestionFromReviewForUser(UserOrganizationModel caller, long reviewContainerId,long userId, long askableId)
+        public void RemoveQuestionFromReviewForUser(UserOrganizationModel caller, long reviewContainerId, long userId, long askableId)
         {
             using (var s = HibernateSession.GetCurrentSession())
-            { 
+            {
                 using (var tx = s.BeginTransaction())
                 {
                     var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.Askable.Id == askableId && x.AboutUserId == userId).List();
@@ -101,14 +101,14 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var reviewContainer=s.Get<ReviewsModel>(reviewContainerId);
-                    var orgId=reviewContainer.ForOrganization.Id;
-                    var perms = PermissionsUtility.Create(s,caller).EditReviewContainer(reviewContainerId).ViewOrganization(orgId);                    
-                    
-                    var queryProvider = GetReviewQueryProvider(s,orgId,reviewContainerId);
+                    var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+                    var orgId = reviewContainer.ForOrganization.Id;
+                    var perms = PermissionsUtility.Create(s, caller).EditReviewContainer(reviewContainerId).ViewOrganization(orgId);
+
+                    var queryProvider = GetReviewQueryProvider(s, orgId, reviewContainerId);
                     queryProvider.AddData(reviewContainer.AsList());
 
-                    var dataInteration = new DataInteraction(queryProvider,s.ToUpdateProvider());
+                    var dataInteration = new DataInteraction(queryProvider, s.ToUpdateProvider());
 
                     var team = dataInteration.Get<OrganizationTeamModel>(reviewContainer.ForTeamId);
                     //I think we want ToList, not ToListAlive
@@ -118,15 +118,16 @@ namespace RadialReview.Accessors
                     var relationships = GetUsersThatReviewUser(caller, perms, dataInteration, user, reviewContainer.GetParameters(), team, existingReviewUsers);
 
                     var askable = s.Get<Askable>(askableId);
-                    
+
                     foreach (var r in relationships)
                     {
                         var existingReview = dataInteration.Where<ReviewModel>(x => x.ForUserId == r.Key.Id).Single();
-                        var askableUtil=new AskableUtility();
-                        foreach(var about in r.Value){
+                        var askableUtil = new AskableUtility();
+                        foreach (var about in r.Value)
+                        {
                             askableUtil.AddUnique(askable, about.Invert(), userId);
                         }
-                        AddAskablesToReview(dataInteration.GetUpdateProvider(),perms,caller,r.Key,existingReview,askableUtil.Askables);
+                        AddAskablesToReview(dataInteration.GetUpdateProvider(), perms, caller, r.Key, existingReview, askableUtil.Askables);
                     }
 
                     tx.Commit();
@@ -145,13 +146,13 @@ namespace RadialReview.Accessors
                     var perms = PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId).EditReviewContainer(reviewContainerId);
 
                     var deleteTime = DateTime.UtcNow;
-                    var user=s.Get<UserOrganizationModel>(userOrganizationId);
+                    var user = s.Get<UserOrganizationModel>(userOrganizationId);
 
                     var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == userOrganizationId).SingleOrDefault();
                     review.DeleteTime = deleteTime;
                     s.Update(review);
                     review.DeleteTime = deleteTime;
-                    var answers= s.QueryOver<AnswerModel>().Where(x => (x.AboutUserId == userOrganizationId || x.ByUserId==userOrganizationId) && x.ForReviewContainerId == reviewContainerId).List();
+                    var answers = s.QueryOver<AnswerModel>().Where(x => (x.AboutUserId == userOrganizationId || x.ByUserId == userOrganizationId) && x.ForReviewContainerId == reviewContainerId).List();
                     foreach (var a in answers)
                     {
                         a.DeleteTime = deleteTime;
@@ -159,7 +160,7 @@ namespace RadialReview.Accessors
                     }
                     tx.Commit();
                     s.Flush();
-                    return ResultObject.Success("Removed " + user.GetNameAndTitle()+ " from the review.");
+                    return ResultObject.Success("Removed " + user.GetNameAndTitle() + " from the review.");
                 }
             }
 
@@ -250,7 +251,42 @@ namespace RadialReview.Accessors
             }
         }
 
+        public Boolean UpdateAllCompleted(UserOrganizationModel caller, long reviewId)
+        {
+            using(var s = HibernateSession.GetCurrentSession())
+            {
+	            using(var tx=s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).EditReview(reviewId);
+                    var uncompleted=s.QueryOver<AnswerModel>().Where(x => x.ForReviewId == reviewId && x.Required && !x.Complete).RowCount();
+                    var review = s.Get<ReviewModel>(reviewId);
 
+                    var updated = false;
+
+                    if (uncompleted == 0 && !review.Complete)
+                    {
+                        review.Complete = true;
+                        s.Update(review);
+                        updated = true;
+                    }
+
+                    if (uncompleted != 0 && review.Complete)
+                    {
+                        review.Complete = false;
+                        s.Update(review);
+                        updated = true;
+                    }
+
+                    if (updated)
+                    {
+                        tx.Commit();
+                        s.Flush();
+                    }
+
+                    return review.Complete;
+	            }
+            }
+        }
 
         /// <summary>
         /// 
@@ -355,9 +391,12 @@ namespace RadialReview.Accessors
                     var answer = s.Get<FeedbackAnswer>(questionId);
                     PermissionsUtility.Create(s, caller).EditReview(answer.ForReviewId);
                     answer.Complete = !String.IsNullOrWhiteSpace(feedback);
-                    if (answer.Complete){
+                    if (answer.Complete)
+                    {
                         answer.CompleteTime = DateTime.UtcNow;
-                    }else{
+                    }
+                    else
+                    {
                         answer.CompleteTime = null;
                     }
                     answer.Feedback = feedback;
@@ -411,7 +450,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        public long AddChartToReview(UserOrganizationModel caller, long reviewId, long xCategoryId, long yCategoryId, String groups, String filters,DateTime startTime,DateTime endTime)
+        public long AddChartToReview(UserOrganizationModel caller, long reviewId, long xCategoryId, long yCategoryId, String groups, String filters, DateTime startTime, DateTime endTime)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -423,13 +462,14 @@ namespace RadialReview.Accessors
 
                     var review = s.Get<ReviewModel>(reviewId);
 
-                    var tuple = new LongTuple() { 
+                    var tuple = new LongTuple()
+                    {
                         Item1 = xCategoryId,
                         Item2 = yCategoryId,
                         Groups = groups,
                         Filters = filters,
-                        StartDate=startTime,
-                        EndDate=endTime
+                        StartDate = startTime,
+                        EndDate = endTime
                     };
                     review.ClientReview.Charts.Add(tuple);
                     s.Update(review);

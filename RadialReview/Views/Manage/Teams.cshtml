@@ -5,12 +5,17 @@
     ViewBag.Page = "Teams";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@section top{
+    <div class="jumbotron">
+        <h1>Manage</h1>
+    </div>
+}
 
 @section header{
     @Html.Partial("Partial/manageheader")
 }
 @section hints{
-    @Html.AlertBoxDismissable("The next step is adding teams to your organization. To begin, click the + button. You can come back to this any time.", "alert-info", "Info:")
+    @Html.AlertBoxDismissable("The next step is adding teams to your organization. To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
 }
 <div class="panel panel-primary">
     <div class="panel-heading-button">

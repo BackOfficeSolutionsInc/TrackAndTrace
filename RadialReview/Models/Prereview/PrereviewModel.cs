@@ -1,0 +1,30 @@
+﻿using FluentNHibernate.Mapping;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace RadialReview.Models.Prereview
+{
+    public class PrereviewModel
+    {
+        public virtual long Id { get; set; }
+        //who customizes this review?
+        public virtual long ManagerId { get; set; }
+        public virtual DateTime PrereviewDue { get; set; }
+        public virtual long ReviewContainerId { get; set; }
+        public virtual bool Started { get; set; }
+    }
+
+    public class PrereviewModelMap : ClassMap<PrereviewModel>
+    {
+        public PrereviewModelMap()
+        {
+            Id(x => x.Id);
+            Map(x => x.Started);
+            Map(x => x.PrereviewDue);
+            Map(x => x.ReviewContainerId);
+            Map(x => x.ManagerId);
+        }
+    }
+}

@@ -69,5 +69,10 @@ namespace RadialReview.Utilities.Query
             return new IEnumerableTransaction();
         }
 
+
+        public override List<T> All<T>()
+        {
+            return GetIEnumerable<T>().ToList();
+        }
     }
 }

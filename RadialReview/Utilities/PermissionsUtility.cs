@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Models.UserModels;
+using RadialReview.Models.Prereview;
 
 namespace RadialReview.Utilities
 {
@@ -588,6 +589,24 @@ namespace RadialReview.Utilities
 
         #endregion
 
+        #region Prereview
+        public PermissionsUtility ViewPrereview(long prereviewId)
+        {
+            if (IsRadialAdmin())
+                return this;
+
+            if (IsManagingOrganization(caller.Organization.Id))
+                return this;
+
+            var prereview=session.Get<PrereviewModel>(prereviewId);
+            if (IsOwnedBelowOrEqual(caller, x => x.Id == prereview.ManagerId))
+                return this;
+
+            throw new PermissionsException();
+        }
+
+        #endregion
+
         public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)
         {
             if (IsOwnedBelowOrEqual(caller, visiblility))
@@ -647,5 +666,7 @@ namespace RadialReview.Utilities
             }
             throw new PermissionsException();
         }*/
+
+        
     }
 }

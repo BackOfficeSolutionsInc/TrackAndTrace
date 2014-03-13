@@ -1,0 +1,88 @@
+﻿
+@{
+    ViewBag.Title = "ForceDirected";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="graph"></div>
+
+<style>
+    .node {
+        stroke: black;
+        stroke-width: 1px;
+    }
+
+    .link {
+        stroke: #999;
+        stroke-opacity: .6;
+        
+    }
+
+    .arrow {
+        stroke: red;
+        stroke-width: 1px;
+    }
+
+</style>
+@using(Html.BeginScripts())
+{ 
+    <script src="~/Scripts/d3/d3.v3.min.js"></script>
+    <script>
+
+        var width = 960,
+            height = 500;
+
+        var color = d3.scale.category20();
+
+        var force = d3.layout.force()
+            .charge(-30)
+            .linkDistance(200)
+            .size([width, height]);
+
+        var svg = d3.select("#graph")
+                        .append("svg")
+                        .html("<defs><marker id='head' orient='auto' markerWidth='20000' markerHeight='40000' refX='.1' refY='4'><path class='arrow' d='M0,0 V8 L4,4 Z' fill='red' /></marker></defs>")
+                        .attr("width", width)
+                        .attr("height", height);
+
+        d3.json("/Data/ForceDirected", function (error, graph) {
+            force
+                .nodes(graph.nodes)
+                .links(graph.links)
+                .start();
+
+            var link = svg.selectAll(".link")
+                .data(graph.links)
+              .enter().append("line")
+                .attr("class", "link")
+                .attr("marker-end", "url(#head)")
+                .style("stroke-width", function (d) { return Math.sqrt(d.value); });
+
+            var node = svg.selectAll(".node")
+                .data(graph.nodes)
+              .enter()
+                .append("g").append("text")
+                .text(function (d) { return d.name; })
+                .attr("class", "node")
+                .attr("r", 5)
+                .style("fill", function (d) { return color(d.group); })
+                .call(force.drag);
+
+            /*.append("text")
+                .text(function (d) { return d.name; })*/
+
+            force.on("tick", function () {
+                link.attr("x1", function (d) { return d.source.x; })
+                    .attr("y1", function (d) { return d.source.y; })
+                    .attr("x2", function (d) { return d.target.x; })
+                    .attr("y2", function (d) { return d.target.y; });
+
+                node.attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+                    //.attr("cy", function (d) { return d.y; });
+            });
+        });
+
+    </script>
+
+}

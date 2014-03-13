@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Reviews";
+    ViewBag.Page = "Details";
 }
 
 @*
@@ -178,7 +178,7 @@
                 {
                     <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
                         @if (r.ForUser.GetPersonallyManaging()) { @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
-                                                                            }>
+                                                                                                    }>
                         <td class="table-hover-underline">@r.ForUser.GetNameAndTitle()</td>
                         <td class="alignCenter">
                             <a>@r.ClientReview.Visible.GetIcon()</a>

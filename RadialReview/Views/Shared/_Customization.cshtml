@@ -1,0 +1,224 @@
+﻿@model RadialReview.Models.Reviews.CustomizeModel
+@*<script src="/Scripts/bootstrap-datepicker.js"></script>*@
+<style>
+    .customizeSelection .bordered {
+        border: 1px solid #808080;
+    }
+
+    .customizeSelection label {
+        font-weight: normal;
+    }
+
+    .customizeSelection .counter {
+        padding-left: 4px;
+        border-right: 1px solid #D3D3D3;
+        padding-right: 4px;
+        width: 40px;
+    }
+
+    .customizeSelection .hideable:not(show) {
+        /*display: none;*/
+    }
+
+    .customizeSelection .select, .deselect {
+        cursor: pointer;
+    }
+
+    .customizeSelection .customize .selected {
+        background-color: #F5F5F5;
+        color: #000;
+    }
+
+    .customizeSelection .shiftedCheckbox {
+        margin: 0px !important;
+        position: relative;
+        top: 2px;
+    }
+
+    .customizeSelection .hovered.deselect {
+        color: #CF4242;
+    }
+
+    .customizeSelection .select.hovered {
+        color: #3B3;
+    }
+
+    .customizeSelection .hideable {
+        left: 0px;
+    }
+
+        .customizeSelection .hideable:not(.selected) {
+            left: 50px;
+            opacity: 0;
+            -webkit-transition: opacity 400ms ease-in-out, left 600ms ease-in-out;
+            -moz-transition: opacity 400ms ease-in-out, left 600ms ease-in-out;
+            -ms-transition: opacity 400ms ease-in-out, left 600ms ease-in-out;
+            -o-transition: opacity 400ms ease-in-out, left 600ms ease-in-out;
+            transition: opacity 400ms ease-in-out, left 600ms ease-in-out;
+        }
+</style>
+
+<div class="customizeSelection">
+    <div class="row">
+        <div class="col-sm-5 col-sm-push-7">
+            <div class="well">
+                <p>
+                    From this menu, you can choose select who each employee will review. The "Default" option ensures that users that are Managers, Subordinates, Teammates, and Peers will review each other.
+                
+                    <i> For the most organizations, selecting "Default" is sufficient.</i>
+                </p>
+            </div>
+        </div>
+        <div class="col-sm-7 col-sm-pull-5 smallBreak2">
+            @foreach (var s in Model.Selectors)
+            {
+                <div class="row ">
+                    <div class="alignRight col-xs-6">@(s.Name)</div> <div class="alignLeft quickSelect col-xs-6" data-checkclass="is@(s.UniqueId)">       (<a class="select">select</a> | <a class="deselect">deselect</a>)</div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1 bordered noselect">
+            <div class="row">
+                <div class="col-xs-6 customize noPad">
+                    @{
+                        var first = true;
+                        var firstId = -1L;
+                    }
+                    @foreach (var user in Model.Subordinates)
+                    {
+                        <div id="first_@user.Id" class="@(first?"selected":"") selectable clickable" data-id="@(user.Id)" onclick="unhide(@user.Id)">
+                            <div class="pull-left counter">0</div>
+                            @user.GetNameAndTitle()
+                        </div>
+                        if (first)
+                        {
+                            firstId = user.Id;
+                        }
+                        first = false;
+                    }
+                    @for (int i = Model.Subordinates.Count; i < Model.AllUsers.Count; i++)
+                    {
+                        <div id="" class="">
+                            <div class="pull-left counter">&nbsp;</div>
+                            &nbsp;
+                        </div>
+                    }
+                </div>
+                @{
+                    first = true;
+                }
+                @foreach (var firstUser in Model.Subordinates)
+                {
+                    <div id="second_@firstUser.Id" class="col-xs-6 noPad alignLeft customize hideable @(first ? "selected" : "hide")">
+                        @foreach (var secondUser in Model.AllUsers)
+                        {
+                            var classes = new HashSet<String>();
+                            foreach (var s in Model.Selectors)
+                            {
+                                if (s.Pairs.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
+                                {
+                                    classes.Add("is" + s.UniqueId);
+                                }
+                            }
+                            <div class="selected isAll @String.Join(" ",classes)">
+                                <label class="noMargin" style="padding-left:15px;">
+                                    <input @(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")
+                                           class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.Id)" data-parent="first_@(firstUser.Id)" type="checkbox" name="customize_@(firstUser.Id)_@secondUser.Id" />
+                                    @secondUser.GetNameAndTitle()
+                                </label>
+                            </div>
+                        }
+                    </div>
+                        first = false;
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function updateCount(parent) {
+        var count = 0;
+        $(".parent_" + parent).each(function () {
+            if ($(this).is(":checked")) {
+                count++;
+            }
+        });
+        $("#" + parent + " .counter").html(count);
+    }
+
+    function start_Customize() {
+        $(".quickSelect a").hover(function () {
+            var parent = $(this).parent().get(0);
+            var clss = $(parent).data("checkclass");
+            $("." + clss + " label").addClass("hovered");
+            if ($(this).hasClass("select")) {
+                $("." + clss + " label").addClass("select");
+            }
+            if ($(this).hasClass("deselect")) {
+                $("." + clss + " label").addClass("deselect");
+            }
+        }, function () {
+            var parent = $(this).parent().get(0);
+            var clss = $(parent).data("checkclass");
+            var value = $(this).hasClass("select");
+            $("." + clss + " label").removeClass("hovered");
+            $("." + clss + " label").removeClass("deselect");
+            $("." + clss + " label").removeClass("select");
+
+        })
+
+        $(".customizeBoxes").change(function () {
+            var parent = $(this).data("parent");
+            updateCount(parent);
+        });
+
+        $(".quickSelect a").click(function (item) {
+            var parent = $(this).parent().get(0);
+
+            var clss = $(parent).data("checkclass");
+            var value = $(this).hasClass("select");
+            $("." + clss + " input").prop("checked", value);
+            updateAll();
+        });
+        updateAll();
+    }
+
+    function unhide(id) {
+        $(".selectable").removeClass("selected");
+        $("#first_" + id).addClass("selected");
+        //var spd = 600;
+        // $(".hideable.selected").addClass("animateHide");
+        var toHide = $(".hideable.selected");
+        toHide.removeClass("selected");
+        setTimeout(function () {
+            toHide.addClass("hide");
+            $("#second_" + id).removeClass("hide");
+            $("#second_" + id).addClass("selected");
+
+        }, 400)
+        //$("#second_" + id).removeClass("animateHide");
+        /*$(".hideable.show").animate({ opacity: 0, left: "50" }, spd, function (){
+            var oldPage = $(this);
+            oldPage.removeClass("show");
+            oldPage.css("left", "0");
+            var newPage = $("#second_" + id);
+            newPage.css("opacity", "0");
+            newPage.css("left", "-50");
+            newPage.addClass("show");
+            newPage.animate({ opacity: 1, left: "0" }, spd);
+        });*/
+        //$(".hideable").removeClass("show");
+
+    }
+
+    function updateAll() {
+        $(".selectable").each(function () {
+            updateCount($(this).attr("id"));
+        });
+    }
+</script>
+<img src="~/Content/img/blank.gif" onload="start_Customize()" />

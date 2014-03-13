@@ -28,6 +28,11 @@ namespace RadialReview.Utilities.Query
             return UpdateProvider;
         }
 
+        public List<T> All<T>() where T : class
+        {
+            return QueryProvider.All<T>();
+        }
+
         public List<T> Where<T>(Expression<Func<T, bool>> pred) where T : class
         {
             return QueryProvider.Where(pred);

@@ -2,6 +2,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@section top{
+    @RenderSection("top")
+}
+
+@section header{
+    @RenderSection("header")
+}
 
 @using (var styles = Html.BeginStyles())
 {
@@ -50,9 +57,9 @@
 <div class="startHiddenGroup">
     <div class="row startHidden">
         @Html.AlertBoxDismissable((string)ViewBag.Message,(string)ViewBag.AlertType,(string)ViewBag.AlertMessage)
-        <div class="col-md-9">
-            <div class="review">
-                @using(var form = Html.BeginForm("Take", "Review", FormMethod.Post, new {id="form" }))
+        <div class="col-md-9" >
+            <div class="review2">
+                @using (var form = Html.BeginForm("Take", "Review", FormMethod.Post, new { id = "form" }))
                 {
                     <input type="hidden" name="reviewId" value="@ViewBag.ReviewId" />
                     <input type="hidden" name="page" value="@ViewBag.Page" />
@@ -60,11 +67,11 @@
                     <br />
                     <div class="row startHidden">
                         <div class="col-md-12 alignCenter">
-                            @if(ViewBag.NoSubmit==null)
+                            @if (ViewBag.NoSubmit == null)
                             {
-                                if(ViewBag.Page!=0)
-                                { 
-                                <input type="submit" name="back" class="btn btn-default btn-lg" value="Back" />
+                                if (ViewBag.Page != 0)
+                                {
+                                    <input type="submit" name="back" class="btn btn-default btn-lg" value="Back" />
                                 }
                                 <input type="submit" class="btn btn-primary btn-lg" value="Next" />
                             }

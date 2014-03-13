@@ -41,23 +41,28 @@ namespace RadialReview.Accessors
             reviewContainer.Completion = completion;
         }
 
-        private void PopulateReviewContainer(ISession s, ReviewsModel reviewContainer)
+        private void PopulateReviewContainer(AbstractQuery s, ReviewsModel reviewContainer,bool populateAnswers,bool populateClientReport)
         {
             var reviewContainerId = reviewContainer.Id;
-            var reviewsQuery = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId);
-            reviewsQuery.Fetch(x => x.ForUser).Default.Future();
-            var reviews = reviewsQuery.List().ToList();
-            var allAnswers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId).List().ToList();
-
-            foreach (var r in reviews)
+            var reviewsQuery = s.Where<ReviewModel>(x => x.ForReviewsId == reviewContainerId);
+            //reviewsQuery.Fetch(x => x.ForUser).Default.Future();
+            /*if (populateClientReport){
+                reviewsQuery.Fetch(x => x.ClientReview).Default.Future();
+            }*/
+            var reviews = reviewsQuery.ToList();
+            if (populateAnswers)
             {
-                PopulateAnswers(s, r, allAnswers);
-            }
+                var allAnswers = s.Where<AnswerModel>(x => x.ForReviewContainerId == reviewContainerId).ToList();
 
+                foreach (var r in reviews)
+                {
+                    PopulateAnswers(/*s,*/ r, allAnswers);
+                }
+            }
             reviewContainer.Reviews = reviews;
         }
 
-        private void PopulateAnswers(ISession session, ReviewModel review, List<AnswerModel> allAnswers)
+        private static void PopulateAnswers(/*ISession session,*/ ReviewModel review, List<AnswerModel> allAnswers)
         {
             // var answers = session.QueryOver<AnswerModel>().Where(x => x.ForReviewId == review.Id).List().ToList();
             var answers = allAnswers.Where(x => x.ForReviewId == review.Id).ToList();

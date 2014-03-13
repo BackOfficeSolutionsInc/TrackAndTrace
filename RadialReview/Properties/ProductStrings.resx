@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BaseUrl" xml:space="preserve">
-    <value>http://54.201.243.125/</value>
+    <value>http://radialreview.com/</value>
     <comment>http://localhost:2200/</comment>
   </data>
   <data name="CompanyName" xml:space="preserve">

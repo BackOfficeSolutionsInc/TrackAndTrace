@@ -3,137 +3,40 @@
 @{
     ViewBag.Title = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = Model.Review.ForUser.GetName();
+    ViewBag.ExtraTabs = ExtraTab.Create(
+        "Review: " + Model.Review.Name, "/Reports/List/" + Model.Review.ForReviewsId,
+        ViewBag.Page, "/Review/Details/" + Model.Review.Id
+        );
+
+    var pluralized = Model.Review.ForUser.GetName().Trim();
+    if (pluralized.ToLower().EndsWith("s")){
+        pluralized += "'";
+    }
+    else { 
+        pluralized += "'s";
+    }
+
+    var heading = "Create " + pluralized + " report for '" + Model.Review.Name + "'";
 }
 
-@using (Html.BeginStyles())
-{
-    <link href="~/Content/jquery.nouislider.css" rel="stylesheet" />
-    <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
-    <link href="~/Content/toggle.css" rel="stylesheet" />
-    <link href="~/Content/bootstrap-switch.css" rel="stylesheet" />
-    <style>
-    .includable {
-        float: right;
-        width:70px;
-        margin-top:9px;
-        margin-right:14px;
-        cursor:pointer;
-    }
-
-        .includable:hover .text {
-            visibility: inherit;
-            color: #B8B8B8;
-        }
-
-        .includable .light-icon {
-            width: 12px;
-            height: 12px;
-            float:right;
-            margin-top:4px;
-            background-image: url("/Content/img/redlight.png");
-        }
-
-        .includable.on .light-icon {
-            background-image: url("/Content/img/greenlight.png");
-        }
-
-        .includable .text{
-            float:left;
-            visibility:hidden;
-        }
-
-        .includable:not(.on) .text:before {
-            content: "Excluded";
-        }
-
-        .includable.on .text:before {
-            content: "Included";
-        }
-
-    /*
-        .btn.includable {
-            opacity: .45;
-            -moz-transition: opacity 200ms ease;
-            -o-transition: opacity 200ms ease;
-            -webkit-transition: opacity 200ms ease;
-            transition: opacity 200ms ease;
-        }
-
-            .btn.includable:hover {
-                opacity: 1;
-            }
-
-
-            .btn.includable.on {
-                color: #FFF;
-                background-color: #5CB85C;
-                border-color: #4CAE4C;
-            }
-
-            .btn.includable:not(.on) {
-                color: #FFF;
-                background-color: #D9534F;
-                border-color: #D43F3A;
-            }*/
-
-    .chartButton {
-        top: 39px;
-        position: absolute;
-        right: 39px;
-    }
-
-    .save {
-        position: absolute;
-        right: 26px;
-        display: inline-block;
-        border: 1px solid #AFADAD;
-        padding: 3px;
-        border-bottom-left-radius: 3px;
-        background-color: #D1FCD1;
-        opacity: 0;
-        -webkit-transition: all .10s ease;
-        -moz-transition: all .10s ease;
-        -ms-transition: all .10s ease;
-        -o-transition: all .10s ease;
-        transition: all .10s ease;
-    }
-
-    .saving {
-        opacity: .5;
-    }
-
-    .has-switch {
-    }
-
-    #chart {
-        width: 650px;
-        height: 650px;
-        position: relative;
-        margin: auto;
-    }
-
-    .separation label {
-        font-weight: normal;
-        margin-bottom: 0px;
-    }
-
-    #charts:empty:after {
-        content: "No charts";
-        color: #aaa;
-    }
-
-    #feedbacks:empty:after {
-        content: "No feedback";
-        color: #aaa;
-    }
-</style>
+@section top{
+    <div class="aboveJumbotron"><h2>@heading</h2></div>
+    <div class="jumbotron" style="height:130px;">
+        <h1>Report</h1>
+    </div>
 }
+
+@section header{
+    @Html.Partial("_ReportsHeader")
+}
+
 <div class="row">
     <div class="col-md-3 ">
         <div class="row">
 
             <div class="col-sm-6 col-md-12 ">
-                <div class="sidebar" style="padding:10px;font-size:12px">
+                <div class="" style="padding-top:5px;font-size:12px">
                     @Html.Partial("_User", Model.Review.ForUser)
                 </div>
                 <div class="smallBreak2"></div>
@@ -151,8 +54,11 @@
                                        type="checkbox" @(Model.Review.ClientReview.Visible ? "checked" : "")
                                        class="switch switch-large fullWidth"
                                        style="min-width:128px;"
-                                       data-on-label="Sharing"
-                                       data-off-label="Private"
+                                       data-on-color="success"
+                                       data-off-color="danger"
+                                       data-on-text="Sharing"
+                                       data-off-text="Private"
+                                       data-size="large"
                                        data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
                             </div>
                         </div>
@@ -167,12 +73,12 @@
                         <table id="charts" style="vertical-align: top;font-size:80%;width:100%;">
                             @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
                             {
-                                <tr class="chart_@chart.Id">
-                                    <td>@chart.Title</td>
-                                    <td>
-                                        <span onclick="RemoveChart(@chart.Id)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
-                                    </td>
-                                </tr>
+                            <tr class="chart_@chart.Id">
+                                <td>@chart.Title</td>
+                                <td>
+                                    <span onclick="RemoveChart(@chart.Id)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
+                                </td>
+                            </tr>
 
                             }
                         </table>
@@ -182,10 +88,10 @@
                         <ul class="noBullet" id="feedbacks">
                             @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete && Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())
                             {
-                                <li class="feedback feedback_@feedback.Id">
-                                    @feedback.Feedback
-                                    <span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
-                                </li>
+                            <li class="feedback feedback_@feedback.Id">
+                                @feedback.Feedback
+                                <span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
+                            </li>
                             }
                         </ul>
                         <hr />
@@ -227,17 +133,30 @@
         <div class="smallBreak2"></div>
     </div>
     <div class="col-md-9">
-        <div class="review" style=" min-width: 650px;padding-top:15px;">
-            <div class="header" style="height:60px;">
-                <div class="pull-left" style="font-size: 30px;">
-                    Manage Review for @Model.Review.ForUser.GetName()
-                </div>
-                <a class="btn btn-default pull-right" href="@Url.Action("Details", "Reviews", new {id=Model.Review.ForReviewsId })">
-                    Back
-                </a>
-            </div>
+        <div class="" style=" min-width: 650px;padding-top:5px;">
+            @*
+                <div class="header" style="height:60px;">
+                    <div class="pull-left" style="font-size: 30px;">
+                        Manage Review for @Model.Review.ForUser.GetName()
+                    </div>
+                    <a class="btn btn-default pull-right" href="@Url.Action("List", "Reports", new {id=Model.Review.ForReviewsId })">
+                        Back
+                    </a>
+                </div>*@
             <div class="row clearfix">
                 <div class="col-md-12 ">
+                    <div class="alignRight" style="position: absolute;right: 20px;top: -16px;">
+                        @if (Model.Review.ClientReview.SignedTime == null)
+                        {
+
+                        <span class="unsigned" >Unsigned</span>
+                        }
+                        else
+                        {
+                        <span class="glyphicon glyphicon-ok strokeGreen green"></span>
+                        @:Signed @Model.Review.ClientReview.SignedTime.Value.ToShortDateString()!
+                        }
+                    </div>
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             Chart Builder
@@ -289,37 +208,38 @@
                         <div class="row noselect">
                             <div class="col-md-12">
                                 <div class="alignCenter">
-                                    <div id="chart">
+                                    <div id="legend" class="legend pull-right inline">
+                                    </div>
+                                    <div id="chart" class="pull-left inline">
                                         <!--Chart Goes Here-->
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-xs-2 col-sm-offset-1">
+                                    <div id="StartDate" class="bordered alignCenter">--</div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div id="DateSlider"></div>
+                                </div>
+                                <div class="col-xs-2">
+                                    <div id="EndDate" class="bordered alignCenter">--</div>
+                                </div>
+                            </div>
+                            <br />
                         </div>
-                        <div class="row">
-                            <div class="col-xs-2 col-sm-offset-1">
-                                <div id="StartDate" class="bordered alignCenter">--</div>
-                            </div>
-                            <div class="col-xs-6">
-                                <div id="DateSlider"></div>
-                            </div>
-                            <div class="col-xs-2">
-                                <div id="EndDate" class="bordered alignCenter">--</div>
-                            </div>
-                        </div>
-                        <br />
-                    </div>
 
 
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Feedback</h3>
-                        </div>
-                        @{
-                            var feedbacks = Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>();
-                        }
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Feedback</h3>
+                            </div>
+                            @{
+                                var feedbacks = Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>();
+                            }
 
-                        @if (feedbacks.Count() > 0)
-                        {
+                            @if (feedbacks.Count() > 0)
+                            {
                             <table class="fullWidth">
                                 <tr>
                                     <th></th>
@@ -328,104 +248,103 @@
                                     <th class="rightButton alignCenter">Included</th>
                                 </tr>
                                 @foreach (var feedback in feedbacks)
-                                {
+                                    {
                                     <tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
                                         <td></td>
                                         <td>@feedback.ByUser.GetName()</td>
                                         <td class="text">@feedback.Feedback</td>
                                         <td class="alignCenter clickable">
                                             @{
-                                                var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
+                                        var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
                                             }
                                             <div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">
                                             </div>
                                         </td>
                                     </tr>
-                                }
+                                    }
                             </table>
-                        }
-                        else
-                        {
+                            }
+                            else
+                            {
                             <div class="panel-body gray">
                                 No feedback has been supplied.
                             </div>
-                        }
+                            }
+
+                        </div>
+                        @*Self Answers*@
+                        <a id="SelfAnswers" class="shiftByTitle"></a>
+                        <div class="panel panel-primary">
+                            <div onclick="SetSelfAnswers()"
+                                 class="SelfAnswers includable @(Model.Review.ClientReview.IncludeSelfFeedback?"on":"")"
+                                 style="">
+                                <div class="text"></div>
+                                <div class="light-icon"></div>
+                            </div>
+                            <div class="panel-heading">
+                                <h3 class="panel-title">@Model.Review.ForUser.GetName()'s Answers</h3>
+                            </div>
+                            @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
+                        </div>
+                        @*Manager Answers*@
+                        <a id="ManagerAnswers" class="shiftByTitle"></a>
+                        <div class="panel panel-primary">
+                            @*<div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>*@
+
+                            <div onclick="SetManagerAnswers()"
+                                 class="ManagerAnswers includable @(Model.Review.ClientReview.IncludeManagerFeedback ? "on" : "")"
+                                 style="">
+                                <div class="text"></div>
+                                <div class="light-icon"></div>
+                            </div>
+
+
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Manager Answers</h3>
+                            </div>
+                            @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+                        </div>
+                        @*All Answers*@
+                        <a id="AggregateAnswers" class="shiftByTitle"></a>
+                        <div class="panel panel-primary">
+                            @*<div onclick="SetQuestionTable()" class="QuestionTable btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")" style=""></div>*@
+
+                            <div onclick="SetQuestionTable()"
+                                 class="QuestionTable includable @(Model.Review.ClientReview.IncludeQuestionTable ? "on" : "")"
+                                 style="">
+                                <div class="text"></div>
+                                <div class="light-icon"></div>
+                            </div>
+
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Aggregate Answers</h3>
+                            </div>
+                            @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
+                        </div>
+                        @*All other answers*@
+                        <a id="OtherAnswers" class="shiftByTitle"></a>
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">All Answers</h3>
+                            </div>
+                            @{
+                                var allOtherUsers = Model.AnswersAbout
+                                    .GroupBy(x => x.ByUserId)
+                                    .Select(x => x.First().ByUser)
+                                    .ToList();
+                            }
+
+                            @Html.Partial("~/Views/Partial/_AnswerTable.cshtml", Tuple.Create(allOtherUsers, Model.AnswersAbout.Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList()))
+                        </div>
+
 
                     </div>
-                    @*Self Answers*@
-                    <a id="SelfAnswers" class="shiftByTitle"></a>
-                    <div class="panel panel-primary">
-                        <div 
-                             onclick="SetSelfAnswers()" 
-                             class="SelfAnswers includable @(Model.Review.ClientReview.IncludeSelfFeedback?"on":"")" 
-                             style="">
-                            <div class="text"></div>
-                            <div class="light-icon"></div>
-                        </div>
-                        <div class="panel-heading">
-                            <h3 class="panel-title">@Model.Review.ForUser.GetName()'s Answers</h3>
-                        </div>
-                        @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
-                    </div>
-                    @*Manager Answers*@
-                    <a id="ManagerAnswers" class="shiftByTitle"></a>
-                    <div class="panel panel-primary">
-                        @*<div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>*@
-
-                        <div onclick="SetManagerAnswers()"
-                             class="ManagerAnswers includable @(Model.Review.ClientReview.IncludeManagerFeedback ? "on" : "")"
-                             style="">
-                            <div class="text"></div>
-                            <div class="light-icon"></div>
-                        </div>
-                        
-                        
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Manager Answers</h3>
-                        </div>
-                        @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
-                    </div>
-                    @*All Answers*@
-                    <a id="AggregateAnswers" class="shiftByTitle"></a>
-                    <div class="panel panel-primary">
-                        @*<div onclick="SetQuestionTable()" class="QuestionTable btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")" style=""></div>*@
-
-                        <div onclick="SetQuestionTable()"
-                             class="QuestionTable includable @(Model.Review.ClientReview.IncludeQuestionTable ? "on" : "")"
-                             style="">
-                            <div class="text"></div>
-                            <div class="light-icon"></div>
-                        </div>
-                        
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Aggregate Answers</h3>
-                        </div>
-                        @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
-                    </div>
-                    @*All other answers*@
-                    <a id="OtherAnswers" class="shiftByTitle"></a>
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">All Answers</h3>
-                        </div>
-                        @{
-                            var allOtherUsers = Model.AnswersAbout
-                                .GroupBy(x => x.ByUserId)
-                                .Select(x => x.First().ByUser)
-                                .ToList();
-                        }
-
-                        @Html.Partial("~/Views/Partial/_AnswerTable.cshtml", Tuple.Create(allOtherUsers, Model.AnswersAbout.Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList()))
-                    </div>
-
-
                 </div>
             </div>
+            <div class="smallBreak"></div>
         </div>
-        <div class="smallBreak"></div>
     </div>
 </div>
-
 @using (Html.BeginScripts())
 {
     <script src="~/Scripts/jquery/jquery.nouislider.js"></script>
@@ -438,370 +357,543 @@
     <script src="~/Scripts/moment.min.js"></script>
     <script src="~/Scripts/review/ReviewDetails.js"></script>
     <script>
-        var last = null;
+            var last = null;
 
-        function removeEmpty(array, deleteValue) {
-            for (var i = 0; i < array.length; i++) {
-                if (array[i] == deleteValue) {
-                    array.splice(i, 1);
-                    i--;
+            function removeEmpty(array, deleteValue) {
+                for (var i = 0; i < array.length; i++) {
+                    if (array[i] == deleteValue) {
+                        array.splice(i, 1);
+                        i--;
+                    }
+                }
+                return array;
+            };
+
+
+            function Group() {
+            }
+
+            function saveText() {
+                var notes = $("#ManagerNotes").val();
+                var dat = new Object();
+                dat.id = "@Model.Review.Id";
+                dat.notes = notes;
+                if (notes != last) {
+                    last = notes;
+                    $(".save").addClass("saving");
+                    $.ajax({
+                        url: "/Review/SetNotes",
+                        data: dat,
+                        method: "POST",
+                        complete: function () {
+                            setTimeout(function () {
+                                $(".save").removeClass("saving");
+                            }, 1000);
+                        }
+                    });
                 }
             }
-            return array;
-        };
 
+            function clickDetails() {
+                if (allowed() || confirm("You need to include data in the review. Add some feedback and charts before viewing. You may turn off this indicator by turning off hints. Continue anyway?")) {
+                    window.location = "/Review/ClientDetails/@Model.Review.Id";
+                }
 
-        function Group() {
-        }
+            }
 
-        function saveText() {
-            var notes = $("#ManagerNotes").val();
-            var dat = new Object();
-            dat.id = "@Model.Review.Id";
-            dat.notes = notes;
-            if (notes != last) {
-                last = notes;
-                $(".save").addClass("saving");
+            function clickAuthorize() {
+                if (allowed() || $("#Authorized").hasClass("on") || confirm("You need to include data in the review. You should add some feedback and charts before authorizing. You may turn off this indicator by turning off hints. Continue anyway?")) {
+                    setAuthorize();
+                } else {
+                    ;
+                }
+            }
+
+            function SetManagerAnswers() {
+                var on = !$(".ManagerAnswers").hasClass("on");
+                var dat = { reviewId: "@Model.Review.Id", on: on };
                 $.ajax({
-                    url: "/Review/SetNotes",
+                    url: "/Review/SetIncludeManagerAnswers",
                     data: dat,
-                    method: "POST",
-                    complete: function () {
-                        setTimeout(function () {
-                            $(".save").removeClass("saving");
-                        }, 1000);
+                    method: "GET",
+                    success: function (data) {
+                        if (data.Object) {
+                            if (data.Object.On) {
+                                $(".ManagerAnswers").addClass("on");
+                            } else {
+                                $(".ManagerAnswers").removeClass("on");
+                            }
+                        }
                     }
                 });
             }
-        }
 
-        function clickDetails() {
-            if (allowed() || confirm("You need to include data in the review. Add some feedback and charts before viewing. You may turn off this indicator by turning off hints. Continue anyway?")) {
-                window.location = "/Review/ClientDetails/@Model.Review.Id";
+            function SetSelfAnswers() {
+                var on = !$(".SelfAnswers").hasClass("on");
+                var dat = { reviewId: "@Model.Review.Id", on: on };
+                $.ajax({
+                    url: "/Review/SetIncludeSelfAnswers",
+                    data: dat,
+                    method: "GET",
+                    success: function (data) {
+                        if (data.Object) {
+                            if (data.Object.On) {
+                                $(".SelfAnswers").addClass("on");
+                            } else {
+                                $(".SelfAnswers").removeClass("on");
+                            }
+                        }
+                    }
+                });
             }
 
-        }
-
-        function clickAuthorize() {
-            if (allowed() || $("#Authorized").hasClass("on") || confirm("You need to include data in the review. You should add some feedback and charts before authorizing. You may turn off this indicator by turning off hints. Continue anyway?")) {
-                setAuthorize();
-            } else {
-                ;
+            function SetQuestionTable() {
+                var on = !$(".QuestionTable").hasClass("on");
+                var dat = { reviewId: "@Model.Review.Id", on: on };
+                $.ajax({
+                    url: "/Review/SetIncludeTable",
+                    data: dat,
+                    method: "GET",
+                    success: function (data) {
+                        if (data.Object) {
+                            if (data.Object.On) {
+                                $(".QuestionTable").addClass("on");
+                            } else {
+                                $(".QuestionTable").removeClass("on");
+                            }
+                        }
+                    }
+                });
             }
-        }
 
-        function SetManagerAnswers() {
-            var on = !$(".ManagerAnswers").hasClass("on");
-            var dat = { reviewId: "@Model.Review.Id", on: on };
-            $.ajax({
-                url: "/Review/SetIncludeManagerAnswers",
-                data: dat,
-                method: "GET",
-                success: function (data) {
-                    if (data.Object) {
-                        if (data.Object.On) {
-                            $(".ManagerAnswers").addClass("on");
-                        } else {
-                            $(".ManagerAnswers").removeClass("on");
-                        }
-                    }
+            function SetFeedback(id, on) {
+                var dat = new Object();
+                dat.feedbackId = id;
+                dat.reviewId = "@Model.Review.Id";
+                if (on === undefined) {
+                    on = !$(".feedback_" + id + " .check").hasClass("on");
                 }
-            });
-        }
+                dat.on = on;
 
-        function SetSelfAnswers() {
-            var on = !$(".SelfAnswers").hasClass("on");
-            var dat = { reviewId: "@Model.Review.Id", on: on };
-            $.ajax({
-                url: "/Review/SetIncludeSelfAnswers",
-                data: dat,
-                method: "GET",
-                success: function (data) {
-                    if (data.Object) {
-                        if (data.Object.On) {
-                            $(".SelfAnswers").addClass("on");
-                        } else {
-                            $(".SelfAnswers").removeClass("on");
+                $.ajax({
+                    url: "/Review/SetFeedback",
+                    data: dat,
+                    method: "GET",
+                    success: function (data) {
+                        if (data.Object) {
+                            if (data.Object.On) {
+                                $(".feedback_" + data.Object.FeedbackId + " .check").addClass("on");
+                                var text = $(".feedback_" + data.Object.FeedbackId + " .text").html();
+                                var toAppend = '<li class="feedback feedback_' + data.Object.FeedbackId + '">' + text + '<span onclick="SetFeedback(' + data.Object.FeedbackId + ',false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></li>';
+                                $("#feedbacks").append(toAppend);
+                            } else {
+                                $(".feedback_" + data.Object.FeedbackId + " .check").removeClass("on");
+                                $("#feedbacks .feedback_" + data.Object.FeedbackId).remove();
+                            }
                         }
+                    },
+                    complete: function () {
+                        UpdateFeedbacks();
                     }
-                }
-            });
-        }
-
-        function SetQuestionTable() {
-            var on = !$(".QuestionTable").hasClass("on");
-            var dat = { reviewId: "@Model.Review.Id", on: on };
-            $.ajax({
-                url: "/Review/SetIncludeTable",
-                data: dat,
-                method: "GET",
-                success: function (data) {
-                    if (data.Object) {
-                        if (data.Object.On) {
-                            $(".QuestionTable").addClass("on");
-                        } else {
-                            $(".QuestionTable").removeClass("on");
-                        }
-                    }
-                }
-            });
-        }
-
-        function SetFeedback(id, on) {
-            var dat = new Object();
-            dat.feedbackId = id;
-            dat.reviewId = "@Model.Review.Id";
-            if (on === undefined) {
-                on = !$(".feedback_" + id + " .check").hasClass("on");
+                })
             }
-            dat.on = on;
 
-            $.ajax({
-                url: "/Review/SetFeedback",
-                data: dat,
-                method: "GET",
-                success: function (data) {
-                    if (data.Object) {
-                        if (data.Object.On) {
-                            $(".feedback_" + data.Object.FeedbackId + " .check").addClass("on");
-                            var text = $(".feedback_" + data.Object.FeedbackId + " .text").html();
-                            var toAppend = '<li class="feedback feedback_' + data.Object.FeedbackId + '">' + text + '<span onclick="SetFeedback(' + data.Object.FeedbackId + ',false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></li>';
-                            $("#feedbacks").append(toAppend);
-                        } else {
-                            $(".feedback_" + data.Object.FeedbackId + " .check").removeClass("on");
-                            $("#feedbacks .feedback_" + data.Object.FeedbackId).remove();
-                        }
-                    }
-                },
-                complete: function () {
-                    UpdateFeedbacks();
-                }
-            })
-        }
+            function UpdateFeedbacks() {
+                $(".feedback .check").each(function (i, e) {
+                    if ($(e).hasClass("on"))
+                        $(e).html('<span title="Included" class="glyphicon glyphicon glyphicon-ok   green strokeGreen"></span>');
+                    else
+                        $(e).html('<span title="Excluded" class="glyphicon glyphicon-ban-circle     red strokeRed"></span>');
+                });
+            }
 
-        function UpdateFeedbacks() {
-            $(".feedback .check").each(function (i, e) {
-                if ($(e).hasClass("on"))
-                    $(e).html('<span title="Included" class="glyphicon glyphicon glyphicon-ok   green strokeGreen"></span>');
-                else
-                    $(e).html('<span title="Excluded" class="glyphicon glyphicon-ban-circle     red strokeRed"></span>');
-            });
-        }
-
-        function allowed() {
-            @if(!((bool?)ViewBag.Hints ?? true))
+            function allowed() {
+                @if(!((bool?)ViewBag.Hints ?? true))
             {
                 @:return true;
+                                                            }
+
+                return ($("#charts tr").size() != 0 || $("#feedbacks li").size() != 0 || $("#includes li .includable.on").size() != 0);
             }
 
-            return ($("#charts li").size() != 0 || $("#feedbacks li").size() != 0);
-        }
+            function setAuthorize(auth) {
+                var dat = new Object();
+                dat.Authorized = auth;
+                dat.ReviewId = "@Model.Review.Id";
 
-        function setAuthorize(auth) {
-            var dat = new Object();
-            dat.Authorized = auth;
-            dat.ReviewId = "@Model.Review.Id";
+                $.ajax({
+                    url: "/Review/Authorize",
+                    data: dat,
+                    method: "GET",
+                    success: function (data) {
+                        showJsonAlert(data, false, true);
+                        if (data.Object.Authorized) {
+                            $("#Authorize").prop('checked', true);
+                        } else {
+                            $("#Authorize").prop('checked', false);
+                        }
+                    }
+                });
+            }
 
-            $.ajax({
-                url: "/Review/Authorize",
-                data: dat,
-                method: "GET",
-                success: function (data) {
-                    showJsonAlert(data, false, true);
-                    if (data.Object.Authorized) {
-                        $("#Authorize").prop('checked', true);
-                    } else {
-                        $("#Authorize").prop('checked', false);
+            $(function () {
+                UpdateFeedbacks();
+            });
+
+            function IncludeChart() {
+                debugger;
+                var xId = $("#xAxis").val().substring(9);
+                var yId = $("#yAxis").val().substring(9);
+
+                var groups = $("#groupSet input:checked").map(function () { return $(this).val(); });
+                var filters = $("#filterSet input:checked").map(function () { return $(this).val(); });
+                var groupStr, filterStr;
+
+                if (groups.length == 0)
+                    groupStr = "";
+                else
+                    groupStr = groups.get().join();
+                if (filters.length == 0)
+                    filterStr = "";
+                else
+                    filterStr = filters.get().join();
+
+
+                var dat = new Object();
+                dat.X = xId;
+                dat.Y = yId;
+                dat.groups = groupStr;
+                dat.filters = filterStr;
+                dat.ReviewId = "@Model.Review.Id";
+                dat.Start = $("#DateSlider").val()[0];
+                dat.End = $("#DateSlider").val()[1];
+                // var joined = removeEmpty([groupStr, filterStr],"").join(";");
+
+                $.ajax({
+                    url: "/Review/AddChart",
+                    data: dat,
+                    method: "GET",
+                    success: function (data) {
+
+                        var joined = data.Object.Title;
+
+                        /*if (joined.trim() != "")
+                            joined = "(" + joined + ")";*/
+                        var toAppend = '<tr class="chart_' + data.Object.ChartId + '"><td>' + data.Object.Title + '</td><td><span onclick="RemoveChart(' + data.Object.ChartId + ')" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></td></tr>';
+                        $("#charts").append(toAppend);
+                    }
+                });
+            }
+
+            function RemoveChart(chartId) {
+                var dat = new Object();
+                dat.chartId = chartId;
+                dat.reviewId = "@Model.Review.Id";
+                $.ajax({
+                    url: "/Review/RemoveChart",
+                    data: dat,
+                    method: "GET",
+                    success: function (data) {
+                        $(".chart_" + data.Object.ChartId).remove();
+                    }
+                })
+            }
+
+            var slider;
+            $(function () {
+                $('.switch').bootstrapSwitch();
+                $('#Authorize').on('switchChange', function (e, data) {
+                    setAuthorize(data.value);
+                });
+                $('#ManagerNotes').keyup($.debounce(500, saveText));
+                slider = $("#DateSlider").noUiSlider({
+                    range: [0, 1],
+                    start: [0, 0],
+                    handles: 2,
+                    step: 10,
+                    margin: 20,
+                    connect: true,
+                    direction: 'ltr',
+                    orientation: 'horizontal',
+                    behaviour: 'tap-drag',
+                    serialization: {
+                        resolution: 1,
+                        to: [function (v) {
+                            $("#StartDate").html(moment(+v).format("MMMM Do YYYY"));
+                        }, function (v) {
+                            $("#EndDate").html(moment(+v).format("MMMM Do YYYY"));
+                        }]
+                    }
+                });
+            });
+
+            function legend(legendData, chart) {
+                if (legendData.length > 0) {
+                    $("#legend").html("<div class='container'><div class='title'>Legend:</div><div class='contents'></div></div>");
+
+                    for (var i in legendData) {
+                        var item = legendData[i];
+                        $("#legend .contents").append("<div><div class='" + item.Class + " circle inlineBlock'></div><div class='inlineBlock'>" + item.Name + "</div></div>")
                     }
                 }
-            });
-        }
-
-        $(function () {
-            UpdateFeedbacks();
-        });
-
-        function IncludeChart() {
-            debugger;
-            var xId = $("#xAxis").val().substring(9);
-            var yId = $("#yAxis").val().substring(9);
-
-            var groups = $("#groupSet input:checked").map(function () { return $(this).val(); });
-            var filters = $("#filterSet input:checked").map(function () { return $(this).val(); });
-            var groupStr, filterStr;
-
-            if (groups.length == 0)
-                groupStr = "";
-            else
-                groupStr = groups.get().join();
-            if (filters.length == 0)
-                filterStr = "";
-            else
-                filterStr = filters.get().join();
-
-
-            var dat = new Object();
-            dat.X = xId;
-            dat.Y = yId;
-            dat.groups   = groupStr;
-            dat.filters  = filterStr;
-            dat.ReviewId = "@Model.Review.Id";
-            dat.Start = $("#DateSlider").val()[0];
-            dat.End = $("#DateSlider").val()[1];
-            // var joined = removeEmpty([groupStr, filterStr],"").join(";");
-
-            $.ajax({
-                url: "/Review/AddChart",
-                data: dat,
-                method: "GET",
-                success: function (data) {
-
-                    var joined = data.Object.Title;
-
-                    /*if (joined.trim() != "")
-                        joined = "(" + joined + ")";*/
-                    var toAppend = '<tr class="chart_' + data.Object.ChartId + '"><td>' + data.Object.Title + '</td><td><span onclick="RemoveChart(' + data.Object.ChartId + ')" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></td></tr>';
-                    $("#charts").append(toAppend);
-                }
-            });
-        }
-
-        function RemoveChart(chartId) {
-            var dat = new Object();
-            dat.chartId = chartId;
-            dat.reviewId = "@Model.Review.Id";
-            $.ajax({
-                url: "/Review/RemoveChart",
-                data: dat,
-                method: "GET",
-                success: function (data) {
-                    $(".chart_" + data.Object.ChartId).remove();
-                }
-            })
-        }
-
-        var slider;
-        $(function () {
-            $('.switch').bootstrapSwitch();
-            $('#Authorize').on('switch-change', function (e, data) {
-                setAuthorize(data.value);
-            });
-            $('#ManagerNotes').keyup($.debounce(500, saveText));
-            slider = $("#DateSlider").noUiSlider({
-                range: [0, 1],
-                start: [0, 0],
-                handles: 2,
-                step: 10,
-                margin: 20,
-                connect: true,
-                direction: 'ltr',
-                orientation: 'horizontal',
-                behaviour: 'tap-drag',
-                serialization: {
-                    resolution: 1,
-                    to: [function (v) {
-                        $("#StartDate").html(moment(+v).format("MMMM Do YYYY"));
-                    }, function (v) {
-                        $("#EndDate").html(moment(+v).format("MMMM Do YYYY"));
-                    }]
-                }
-            });
-        });
-
-        var chart = new ScatterChart("chart");
-
-        function update(reset) {
-            var date1 = new Date(+$("#DateSlider").val()[0]);
-            var date2 = new Date(+$("#DateSlider").val()[1]);
-            var date3 = new Date();
-
-            var groups = [];
-            var filters = [];
-
-            $(".group:checked").each(function (x) {
-                var split = $(this).data("class").split(" ");
-                for (var i in split) {
-                    groups.push(split[i]);
-                }
-            });
-
-            $(".filters:checked").each(function (x) {
-                var split = $(this).data("class");//.split(" ");
-                for (var i in split) {
-                    filters.push(split[i]);
-                }
-            });
-
-            //var groups = [$(".group:checked").map(function () { return  })];
-            chart.Plot(data, {
-                //mouseout: mouseout,
-                //mouseover: mouseover,
-                animate: true,
-                reset: reset,
-                xAxis: $("#xAxis option:selected").text(),
-                yAxis: $("#yAxis option:selected").text(),
-                xDimensionId: $("#xAxis").val(),
-                yDimensionId: $("#yAxis").val(),
-                startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
-                endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
-                time: date3,//new Date(parseInt($("#date").val()))
-                groups: [groups],
-                filters: filters
-            });
-        }
-
-        var dataUrl = "/Data/ReviewScatter/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId";
-        chart.Pull(dataUrl, null, function (dat) {
-            data = dat;
-            for (var key in dat.Dimensions) {
-                var item = dat.Dimensions[key];
-                $("#xAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>")
-                $("#yAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>")
             }
 
-            $("#xAxis").val(dat.InitialXDimension);
-            $("#yAxis").val(dat.InitialYDimension);
+            var chart = new ScatterChart("chart");
 
-            for (var i = 0; i < dat.Filters.length; i++) {
-                var filter = dat.Filters[i];
-                var checked = "";
-                if (filter.On)
-                    checked = "checked";
-                $("#filterSet").append("<li><input class='filters update' type='checkbox' " + checked + " data-class='" + filter.Class + "'/><label>" + filter.Name + "</label></li>");
+            function update(reset) {
+                var date1 = new Date(+$("#DateSlider").val()[0]);
+                var date2 = new Date(+$("#DateSlider").val()[1]);
+                var date3 = new Date();
+
+                var groups = [];
+                var filters = [];
+
+                $(".group:checked").each(function (x) {
+                    var split = $(this).data("class").split(" ");
+                    for (var i in split) {
+                        groups.push(split[i]);
+                    }
+                });
+
+                $(".filters:checked").each(function (x) {
+                    var split = $(this).data("class");//.split(" ");
+                    for (var i in split) {
+                        filters.push(split[i]);
+                    }
+                });
+                //var groups = [$(".group:checked").map(function () { return  })];
+                chart.Plot(AllScatterData, {
+                    //mouseout: mouseout,
+                    //mouseover: mouseover,
+                    animate: true,
+                    reset: reset,
+                    xAxis: $("#xAxis option:selected").text(),
+                    yAxis: $("#yAxis option:selected").text(),
+                    xDimensionId: $("#xAxis").val(),
+                    yDimensionId: $("#yAxis").val(),
+                    startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
+                    endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
+                    time: date3,//new Date(parseInt($("#date").val()))
+                    groups: [groups],
+                    filters: filters,
+                    legendFunc: legend
+                });
             }
 
-            if (dat.Filters.length > 0) {
-                $("#filtersContainer").removeClass("hidden");
-            }
+            var dataUrl = "/Data/ReviewScatter/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId";
+            chart.Pull(dataUrl, null, function (dat) {
+                AllScatterData = dat;
+                for (var key in dat.Dimensions) {
+                    var item = dat.Dimensions[key];
+                    $("#xAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>")
+                    $("#yAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>")
+                }
+
+                $("#xAxis").val(dat.InitialXDimension);
+                $("#yAxis").val(dat.InitialYDimension);
+
+                for (var i = 0; i < dat.Filters.length; i++) {
+                    var filter = dat.Filters[i];
+                    var checked = "";
+                    if (filter.On)
+                        checked = "checked";
+                    $("#filterSet").append("<li><input class='filters update' type='checkbox' " + checked + " data-class='" + filter.Class + "'/><label>" + filter.Name + "</label></li>");
+                }
+
+                if (dat.Filters.length > 0) {
+                    $("#filtersContainer").removeClass("hidden");
+                }
 
 
 
-            $(".update").change(false, function (d) {
-                update(d.data);
+                $(".update").change(false, function (d) {
+                    update(d.data);
+                });
+
+                //$(".date").attr("min",);
+                //$(".date").attr("max", );
+
+                /*$("#date1").change(function () { update(false); });
+                $("#date2").change(function () { update(false); });
+                $("#date3").change(function () { update(false); });*/
+                $("#xAxis").change(function () { update(false); });
+                $("#yAxis").change(function () { update(false); });
+                slider.noUiSlider({
+                    range: [this.GetDate(AllScatterData.MinDate).getTime() - 86400000, this.GetDate(AllScatterData.MaxDate).getTime() + 86400000],
+                    start: [this.GetDate(AllScatterData.MinDate).getTime() - 86400000, this.GetDate(AllScatterData.MaxDate).getTime() + 86400000],
+                    slide: function () { update(false); }
+                }, true);
+                slider.change(function () { update(false); });
+
+                update(true);
             });
 
-            //$(".date").attr("min",);
-            //$(".date").attr("max", );
-
-            /*$("#date1").change(function () { update(false); });
-            $("#date2").change(function () { update(false); });
-            $("#date3").change(function () { update(false); });*/
-            $("#xAxis").change(function () { update(false); });
-            $("#yAxis").change(function () { update(false); });
-            slider.noUiSlider({
-                range: [this.GetDate(data.MinDate).getTime() - 86400000, this.GetDate(data.MaxDate).getTime() + 86400000],
-                start: [this.GetDate(data.MinDate).getTime() - 86400000, this.GetDate(data.MaxDate).getTime() + 86400000],
-                slide: function () { update(false); }
-            }, true);
-            slider.change(function () { update(false); });
-
-            update(true);
-        });
-
-        document.getElementById("controls").addEventListener("click", chart.update, false);
-        document.getElementById("controls").addEventListener("keyup", chart.update, false);
-        document.getElementById("xAxis").addEventListener("change", chart.update, false);
-        document.getElementById("yAxis").addEventListener("change", chart.update, false);
-        //document.getElementById("grouped").addEventListener("change", chart.update, false);
+            document.getElementById("controls").addEventListener("click", chart.update, false);
+            document.getElementById("controls").addEventListener("keyup", chart.update, false);
+            document.getElementById("xAxis").addEventListener("change", chart.update, false);
+            document.getElementById("yAxis").addEventListener("change", chart.update, false);
+            //document.getElementById("grouped").addEventListener("change", chart.update, false);
     </script>
+}
+
+@using (Html.BeginStyles())
+{
+    <link href="~/Content/jquery.nouislider.css" rel="stylesheet" />
+    <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
+    <link href="~/Content/toggle.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-switch.css" rel="stylesheet" />
+    <style>
+        .unsigned {
+            cursor: default;
+            color: #EEC8C8;
+            -moz-transition: color 0.3s ease;
+            -o-transition: color 0.3s ease;
+            -webkit-transition: color 0.3s ease;
+            transition: color 0.3s ease;
+        }
+            .unsigned:hover {
+                color: #F55F5F;
+            }
+
+        .includable {
+            float: right;
+            width: 70px;
+            margin-top: 9px;
+            margin-right: 14px;
+            cursor: pointer;
+        }
+
+            .includable:hover .text {
+                visibility: inherit;
+                color: #B8B8B8;
+            }
+
+            .includable .light-icon {
+                width: 12px;
+                height: 12px;
+                float: right;
+                margin-top: 4px;
+                background-image: url("/Content/img/redlight.png");
+            }
+
+            .includable.on .light-icon {
+                background-image: url("/Content/img/greenlight.png");
+            }
+
+            .includable .text {
+                float: left;
+                visibility: hidden;
+            }
+
+            .includable:not(.on) .text:before {
+                content: "Excluded";
+            }
+
+            .includable.on .text:before {
+                content: "Included";
+            }
+
+        .legend {
+            position: absolute;
+            right: 0px;
+            padding-right: 25px;
+        }
+
+            .legend .container {
+                margin-top: 30px;
+                border: 1px solid #E7E7E7;
+                padding: 10px;
+                -webkit-print-color-adjust: exact;
+                text-align: left;
+            }
+
+            .legend .title {
+                font-size: 16px;
+            }
+
+            .legend .circle {
+                border: 1px solid black;
+                border-radius: 6px;
+                width: 12px;
+                height: 12px;
+                display: inline-block;
+                margin-right: 5px;
+            }
+        /*
+        .btn.includable {
+            opacity: .45;
+            -moz-transition: opacity 200ms ease;
+            -o-transition: opacity 200ms ease;
+            -webkit-transition: opacity 200ms ease;
+            transition: opacity 200ms ease;
+        }
+
+            .btn.includable:hover {
+                opacity: 1;
+            }
+
+
+            .btn.includable.on {
+                color: #FFF;
+                background-color: #5CB85C;
+                border-color: #4CAE4C;
+            }
+
+            .btn.includable:not(.on) {
+                color: #FFF;
+                background-color: #D9534F;
+                border-color: #D43F3A;
+            }*/
+
+        .chartButton {
+            top: 39px;
+            position: absolute;
+            right: 39px;
+        }
+
+        .save {
+            position: absolute;
+            right: 26px;
+            display: inline-block;
+            border: 1px solid #AFADAD;
+            padding: 3px;
+            border-bottom-left-radius: 3px;
+            background-color: #D1FCD1;
+            opacity: 0;
+            -webkit-transition: all .10s ease;
+            -moz-transition: all .10s ease;
+            -ms-transition: all .10s ease;
+            -o-transition: all .10s ease;
+            transition: all .10s ease;
+        }
+
+        .saving {
+            opacity: .5;
+        }
+
+        .has-switch {
+        }
+
+        #chart {
+            width: 650px;
+            height: 650px;
+            position: relative;
+            margin: auto;
+        }
+
+        .separation label {
+            font-weight: normal;
+            margin-bottom: 0px;
+        }
+
+        #charts:empty:after {
+            content: "No charts";
+            color: #aaa;
+        }
+
+        #feedbacks:empty:after {
+            content: "No feedback";
+            color: #aaa;
+        }
+    </style>
 }

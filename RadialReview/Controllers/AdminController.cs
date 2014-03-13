@@ -8,15 +8,19 @@ using System.IO;
 using System.Web.Mvc;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using RadialReview.Models.Tasks;
 
 namespace RadialReview.Controllers
 {
     public partial class AccountController : BaseController
     {
-        private static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        private static PaymentAccessor _PaymentAccessor = new PaymentAccessor();
-        private static PositionAccessor _PositoinAccessor = new PositionAccessor();
-        private static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
+        [Access(AccessLevel.Radial)]
+        public String TempDeep(long id)
+        {
+            _UserAccessor.CreateDeepSubordinateTree(GetUser(), id,DateTime.UtcNow);
+            return "done";
+        }
+
 
         /*
         [Access(AccessLevel.Radial)]
@@ -111,6 +115,7 @@ namespace RadialReview.Controllers
         }*/
 
 
+
         private RadialReview.Controllers.ReviewController.ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
         {
             var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
@@ -127,7 +132,21 @@ namespace RadialReview.Controllers
             return model;
         }
 
+        [Access(AccessLevel.Any)]
+        public bool TestTask(long id){
+            var fire=DateTime.UtcNow.AddSeconds(id);
+            _TaskAccessor.AddTask(new ScheduledTask() { Fire = fire, Url = "/Account/TestTaskRecieve" });
+            log.Debug("TestTaskRecieve scheduled for: " + fire.ToString());
+            return true;
+        }
 
+        [AllowAnonymous]
+        [Access(AccessLevel.Any)]
+        public bool TestTaskRecieve()
+        {
+            log.Debug("TestTaskRecieve hit: " + DateTime.UtcNow.ToString());
+            return true;
+        }
 
         [Access(AccessLevel.Any)]
         public ActionResult TestChart(long id,long reviewsId)

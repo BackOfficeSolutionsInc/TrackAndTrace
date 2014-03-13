@@ -15,10 +15,6 @@ namespace RadialReview.Controllers
 {
     public class OrganizationController : BaseController
     {
-        private OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        private static PaymentAccessor _PaymentAccessor = new PaymentAccessor();
-        private NexusAccessor _NexusAccessor = new NexusAccessor();
-
         //
         // GET: /Organization/
         [Access(AccessLevel.Any)]
@@ -159,6 +155,10 @@ namespace RadialReview.Controllers
             if (type.ToLower() == "radial")
             {
                 return View("RadialTree", GetUser().Organization.Id);
+            }
+            else if (type.ToLower() == "forcedirected")
+            {
+                return View("ForceDirected", GetUser().Organization.Id);
             }
             else
             {

@@ -1,0 +1,29 @@
+﻿@model RadialReview.Models.Reviews.CustomizeModel
+@{
+    ViewBag.Title = "Customize";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section top{
+    <div class="aboveJumbotron">
+        <h2>Choose which people your subordinates will review.</h2>
+    </div>
+    <div class="jumbotron">
+        <h1>Customize</h1>
+    </div>
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+       Pre-review:
+    </div>
+    <div class="panel-body alignCenter">
+        <form method="post">
+            <input type="hidden" name="prereviewId" value="@ViewBag.PrereviewId" />
+            @Html.Partial("_Customization", Model)
+            <br/>
+            <button type="submit" name="review" class="btn btn-primary" value="issuePrereview">Save</button>
+
+        </form>
+    </div>
+</div>

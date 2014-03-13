@@ -1600,19 +1600,28 @@ th {
         line-height: 1.428571429;
         vertical-align: top;
     }
-
-    .table thead > tr > th,
-    .table tfoot > tr > th,
-    .table thead > tr > td,
-    .table tbody > tr > td,
-    .table tfoot > tr > td {
+    
+    .table thead > tr:not(:nth-of-type(1)) > th,
+    .table tfoot > tr:not(:nth-of-type(1)) > th,
+    .table thead > tr:not(:nth-of-type(1)) > td,
+    .table tbody > tr:not(:nth-of-type(1)) > td,
+    .table tfoot > tr:not(:nth-of-type(1)) > td {
         border-top: 1px solid #dddddd;
     }
 
-    .table thead > tr > th {
-        vertical-align: bottom;
-        border-bottom: 2px solid #dddddd;
+    .table thead > tr:nth-of-type(1) > th,
+    .table tfoot > tr:nth-of-type(1) > th,
+    .table thead > tr:nth-of-type(1) > td,
+    .table tbody > tr:nth-of-type(1) > td,
+    .table tfoot > tr:nth-of-type(1) > td {
+        border-top: 1px solid #BBBBBB;
+
     }
+
+    /*.table thead > tr > th {
+        vertical-align: bottom;
+        border-bottom: 0px solid #767F99;
+    }*/
 
     .table caption + thead tr:first-child th,
     .table colgroup + thead tr:first-child th,
@@ -1624,7 +1633,7 @@ th {
     }
 
     .table tbody + tbody {
-        border-top: 2px solid #dddddd;
+        border-top: 1px solid #dddddd;
     }
 
     .table .table {
@@ -1665,7 +1674,7 @@ th {
 
 .table-hover > tbody > tr:hover > td,
 .table-hover > tbody > tr:hover > th {
-    background-color: #f5f5f5;
+    background-color: #f1f1f1;
 }
 
 table col[class*="col-"] {
@@ -1775,6 +1784,7 @@ table th[class*="col-"] {
     .table-responsive > .table {
         margin-bottom: 0;
         background-color: #fff;
+        color: #555;
     }
 
         .table-responsive > .table > thead > tr > th,
@@ -4046,24 +4056,36 @@ textarea.input-group-sm > .input-group-btn > .btn {
     }
 
 .nav-tabs {
-    border-bottom: 1px solid #dddddd;
+    /*border-bottom: 1px solid #dddddd;*/
 }
 
     .nav-tabs > li {
         float: left;
-        margin-bottom: -1px;
+        margin-bottom: 0px;
     }
 
         .nav-tabs > li > a {
             margin-right: 2px;
             line-height: 1.428571429;
-            border: 1px solid transparent;
+            /* border: 1px solid rgba(255, 255, 255, 0.34); */
+            background-color: rgba(255, 255, 255, 0.23);
+            border-bottom: none;
             border-radius: 4px 4px 0 0;
+            -webkit-transition: background-color 0.2s ease;
+            -moz-transition: background-color 0.2s ease;
+            -ms-transition: background-color 0.2s ease;
+            -o-transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease;
+            height: 40px;
+            color:#555;
         }
 
             .nav-tabs > li > a:hover {
                 border-color: #E4E1E1 #E4E1E1 #EEE;
             }
+
+        .nav-tabs > li:not(.active) > a:hover {
+        }
 
         .nav-tabs > li.active > a,
         .nav-tabs > li.active > a:hover,
@@ -4072,14 +4094,16 @@ textarea.input-group-sm > .input-group-btn > .btn {
             cursor: default;
             /*background-color: #ffffff;*/
             border: 1px solid #dddddd;
+            border-bottom: none;
             border-bottom-color: transparent;
-            background: -moz-linear-gradient(top, rgba(245,245,245,1) 0%, rgba(245,245,245,1) 39%, rgba(245,245,245,0) 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(245,245,245,1)), color-stop(39%,rgba(245,245,245,1)), color-stop(100%,rgba(245,245,245,0))); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(top, rgba(245,245,245,1) 0%,rgba(245,245,245,1) 39%,rgba(245,245,245,0) 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(top, rgba(245,245,245,1) 0%,rgba(245,245,245,1) 39%,rgba(245,245,245,0) 100%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(top, rgba(245,245,245,1) 0%,rgba(245,245,245,1) 39%,rgba(245,245,245,0) 100%); /* IE10+ */
-            background: linear-gradient(to bottom, rgba(245,245,245,1) 0%,rgba(245,245,245,1) 39%,rgba(245,245,245,0) 100%); /* W3C */
-            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f5f5', endColorstr='#00f5f5f5',GradientType=0 ); /* IE6-9 */
+            background-color: #F1F1F1;
+            /*background: -moz-linear-gradient(top, rgba(245,245,245,1) 0%, rgba(245,245,245,1) 39%, rgba(245,245,245,0) 100%);*/ /* FF3.6+ */
+            /*background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(245,245,245,1)), color-stop(39%,rgba(245,245,245,1)), color-stop(100%,rgba(245,245,245,0)));*/ /* Chrome,Safari4+ */
+            /*background: -webkit-linear-gradient(top, rgba(245,245,245,1) 0%,rgba(245,245,245,1) 39%,rgba(245,245,245,0) 100%); /* Chrome10+,Safari5.1+ */
+            /*background: -o-linear-gradient(top, rgba(245,245,245,1) 0%,rgba(245,245,245,1) 39%,rgba(245,245,245,0) 100%); /* Opera 11.10+ */
+            /*background: -ms-linear-gradient(top, rgba(245,245,245,1) 0%,rgba(245,245,245,1) 39%,rgba(245,245,245,0) 100%); /* IE10+ */
+            /*background: linear-gradient(to bottom, rgba(245,245,245,1) 0%,rgba(245,245,245,1) 39%,rgba(245,245,245,0) 100%);*/ /* W3C */
+            /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f5f5', endColorstr='#00f5f5f5',GradientType=0 );*/ /* IE6-9 */
         }
 
     .nav-tabs.nav-justified {
@@ -5612,6 +5636,9 @@ a.list-group-item {
 .panel-heading {
     padding: 10px 15px;
     border-bottom: 1px solid transparent;
+}
+
+.panel-heading:first-of-type{
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
 }
@@ -5679,13 +5706,17 @@ a.list-group-item {
     }
 
 .panel-primary {
-    border-color: #767F99;
+    /*border-color: #767F99;
+    border:none;*/
+    border-color: #eeeeee;
 }
 
     .panel-primary > .panel-heading {
         color: #ffffff;
-        background-color: #767F99;
-        border-color: #767F99;
+        /*background-color: #767F99;*/
+        background-color:#767F99;
+        /*border-color: #767F99;*/
+        border:none;
     }
 
         .panel-primary > .panel-heading + .panel-collapse .panel-body {

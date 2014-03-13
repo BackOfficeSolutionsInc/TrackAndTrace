@@ -1,0 +1,156 @@
+﻿@model RadialReview.Models.ViewModels.OrgReviewsViewModel
+@{
+    ViewBag.Title = "Edit Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Create";
+    ViewBag.Subheading = "Generate or edit reports for subordinates.";
+
+}
+@section top{
+    <div class="jumbotron alignCenter">
+        <hgroup>
+            <h1>Reports</h1>
+        </hgroup>
+    </div>
+}
+
+@section header{
+    @Html.Partial("_ReportsHeader")
+}
+
+@*section hints{
+    @Html.AlertBoxDismissable(@"Once you've added all members to your organization and attached responsibilities to them, you can create a review.
+    Before the review is created, make sure you've added all members and responsibilities. Once you create the review, further changes can be frustrating to users that have already completed reviews.
+     To begin, click the + button.", "alert-info", "Info:")
+    }*@
+
+<div class="panel panel-primary startHiddenGroup">
+    @*<div class="panel-heading-button">
+    <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check")" role="button" class="btn btn-default addButton plus" data-toggle="modal">
+            Add
+        </button>
+    </div>*@
+    <div class="panel-heading">
+        <h3 class="panel-title">From which review?</h3>
+    </div>
+
+    @if(Model.Reviews.Any())
+    { 
+    <div class="table-responsive">
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th style="min-width: 120px">@RadialReview.Properties.DisplayNameStrings.name</th>
+                    @*<th style="width:100px" class="alignCenter">Created</th>*@
+                    <th style="width:100px" class="alignCenter">Due</th>
+                    <th style="width:120px" class="alignCenter">Created</th>
+                    @*<th class="rightButton"></th>*@
+                    <th class="alignCenter" style="width:10px">
+                        Signed
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
+                {
+                    <tr class="startHidden clickable" onclick="location.href = '/Reports/List/@review.Review.Id';">
+                        <td class="table-hover-underline">@review.Review.ReviewName</td>
+                        @*<td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>*@
+                        <td class="alignCenter">
+                            @if (review.Review.ReportsDueDate==null)
+                            {
+                                <span class='gray'>No due date.</span>
+                            }
+                            else
+                            {
+                                @review.Review.ReportsDueDate.Value.ToShortDateString()
+                            }
+                        </td>
+                        <td class="alignCenter">
+                            @if (review.Review.Reviews.Count()==0)
+                            {
+                                <span class="gray">NA</span>
+                            }
+                            else 
+                            {
+                                @:@(review.Review.Reviews.Count(x=>x.ClientReview.Visible)) / @(review.Review.Reviews.Count())
+                            }
+                            @*Html.Partial("_Completion", review.Review)*@
+                        </td>
+                        <td class="alignCenter">
+                            @if (review.Review.Reviews.Count() == 0)
+                            {
+                                <span class="gray">NA</span>
+                            }
+                            else
+                            {
+                                @:@(review.Review.Reviews.Count(x => x.ClientReview.SignedTime.HasValue)) / @(review.Review.Reviews.Count())
+                            }
+                        </td>
+                        @*<td class="rightButton"><div onclick="@Html.ShowModal("Update Review", "/Reviews/Update/"+review.Review.Id, "/Reviews/Update/"+review.Review.Id)" class="btn btn-primary">Update</div></td>
+                            <td class="" style="width:10px">
+                                <a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="">
+                                    @RadialReview.Properties.DisplayNameStrings.details
+                                </a>
+                            </td>
+                        *@
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+    else
+    {
+        <div class="panel-body gray">
+            There are no reviews. You cannot create a report until after reviews are administered.
+        </div>
+    }
+</div>
+
+@Html.Partial("_Pagination", Model)
+
+@*
+    <div class="panel panel-primary startHiddenGroup">
+        <div class="panel-heading">
+            <h3 class="panel-title">Review Templates</h3>
+        </div>
+        <table class="table">
+            <tr>
+                <th style="min-width: 120px">@RadialReview.Properties.DisplayNameStrings.name</th>
+                <th style="width:100px" class="alignCenter">Created</th>
+                <th style="width:100px" class="alignCenter">Due</th>
+                <th style="width:120px" class="alignCenter">@RadialReview.Properties.DisplayNameStrings.completion</th>
+                <th class="rightButton">
+                    <button onclick="@Html.ShowModal("Issue review", "/Review/Create", "/Review/Create", "completeIssue","check","onCompleteIssue")" role="button" class="btn btn-default addButton" data-toggle="modal">+</button>
+                </th>
+            </tr>
+            @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
+            {
+                <tr class="startHidden">
+                    <td>@review.Review.ReviewName</td>
+                    <td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>
+                    <td class="alignCenter">@review.Review.DueDate.ToShortDateString()</td>
+                    <td>
+                        @Html.Partial("_Completion", review.Review)
+                    </td>
+                    <td class="rightButton"><a href="@Url.Action("Details", "Reviews", new {id=review.Review.Id})" class="btn btn-info">@RadialReview.Properties.DisplayNameStrings.details</a></td>
+                </tr>
+            }
+        </table>
+    </div>
+*@
+
+
+
+
+
+@using (Html.BeginScripts())
+{
+    <script>
+        function onCompleteIssue(data) {
+            showJsonAlert(data, true);
+        }
+    </script>
+}

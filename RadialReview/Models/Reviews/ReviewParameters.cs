@@ -13,5 +13,17 @@ namespace RadialReview.Models.Reviews
         public bool ReviewPeers { get; set; }
         public bool ReviewTeammates { get; set; }
 
+
+        public static ReviewParameters AllTrue()
+        {
+            return new ReviewParameters()
+            {
+                ReviewTeammates=true,
+                ReviewSubordinates=true,
+                ReviewSelf=true,
+                ReviewPeers=true,
+                ReviewManagers=true,
+            };
+        }
     }
 }

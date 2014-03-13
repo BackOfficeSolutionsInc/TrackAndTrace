@@ -82,7 +82,7 @@ namespace RadialReview
                         throw new NotImplementedException("Unknown Responsibility Group");
                     owned = true;
                 }
-                catch (PermissionsException e)
+                catch (PermissionsException)
                 {
                     owned = false;
                 }

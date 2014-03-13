@@ -25,8 +25,8 @@ namespace RadialReview.Utilities.Query
     {
         protected bool OnlyAlive;
 
+        public abstract List<T> All<T>() where T : class;
         public abstract List<T> Where<T>(Expression<Func<T, bool>> pred) where T : class;
-
         public abstract T SingleOrDefault<T>(Expression<Func<T, bool>> pred) where T : class;
 
         public abstract T Get<T>(long id) where T : ILongIdentifiable;

@@ -65,6 +65,7 @@ namespace RadialReview.Models
 
 
         public virtual bool IsRadialAdmin { get; set; }
+
     }
 
     public class UserModelMap : ClassMap<UserModel>

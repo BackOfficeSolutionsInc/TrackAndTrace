@@ -1,0 +1,168 @@
+﻿@model RadialReview.Models.ViewModels.ReviewsViewModel
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Page = "Review: " + Model.Review.ReviewName;
+    ViewBag.ExtraTabs = ExtraTab.Create(ViewBag.Page, "/Reports/List/" + Model.Review.Id);
+    ViewBag.Subheading = "View or create reports for '" + Model.Review.ReviewName + "'";
+}
+@section top{
+    <div class="jumbotron">
+        <h1>Reports</h1>
+    </div>
+}
+
+@section header{
+    @Html.Partial("_ReportsHeader")
+}
+
+
+@using (Html.BeginStyles())
+{
+    <style>
+        .bar {
+        }
+
+        .toggle-completion:not(.on) {
+            display: none;
+        }
+
+        .shift5050 {
+            -webkit-transform-origin: 50% 50%;
+            -moz-transform-origin: 50% 50%;
+            -ms-transform-origin: 50% 50%;
+            -o-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+        }
+
+        .expandButton {
+            cursor: pointer;
+            opacity: .25;
+            -webkit-transition: opacity .25s ease;
+            -moz-transition: opacity .25s ease;
+            -ms-transition: opacity .25s ease;
+            -o-transition: opacity .25s ease;
+            transition: opacity .25s ease;
+        }
+
+            .expandButton:hover {
+                opacity: 1;
+            }
+
+        .table thead > tr:first-child > th {
+            border-bottom: 0px solid #DDD;
+        }
+
+        .table thead > tr:nth-child(2) > th {
+            border-top: 0px solid #DDD;
+        }
+
+        tr.managing {
+            cursor: pointer;
+        }
+
+        tr.not-managing {
+            background-color: #aaaaaa;
+        }
+    </style>
+}
+
+@using (Html.BeginScripts())
+{
+    <script>
+        function newTitle(item, about) {
+            var progressBar = $(item).find(".progress-bar");
+            var oldTitle = progressBar.attr("title");
+
+            var newTitle = "Answers about " + about + " [" + oldTitle + "]";
+
+            progressBar.attr("title", newTitle);
+            return newTitle;
+
+        }
+
+        $(function () {
+            $(".bar.Self").attr("title", function () {
+                return newTitle(this, "self");
+            });
+
+            $(".bar.Manager").attr("title", function () {
+                return newTitle(this, "managers");
+            });
+
+            $(".bar.Subordinate").attr("title", function () {
+                return newTitle(this, "subordinates");
+            });
+
+            $(".bar.Peer").attr("title", function () {
+                return newTitle(this, "peers");
+            });
+
+            $(".bar.Teammate").attr("title", function () {
+                return newTitle(this, "teammates");
+            });
+        });
+
+        function toggleComplete() {
+            $('.toggle-completion').toggleClass('on');
+        }
+    </script>
+}
+
+
+    @if (!Model.Review.Reviews.ToListAlive().Any())
+    {
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Reports</h3>
+                <div class="pull-right"></div>
+            </div>
+            <div class="panel-body gray">
+                There aren't any users in this review.
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Direct subordinates:</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr style="">
+                            <th>User</th>
+                            <th style="width:10px" title="Subordinate is authorized to view this report.">Shared</th>
+                            <th style="width:30px" class="alignCenter" title="You and the subordinate have reviewed this report.">Signed </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model.Review.Reviews.ToListAlive().Where(x =>true).OrderBy(x => x.ForUser.GetNameAndTitle()))
+                        {
+                            <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
+                                @if (r.ForUser.GetPersonallyManaging()) { @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
+                                                                                                                                                                                                                                                                                                                    }>
+                                <td class="table-hover-underline">@r.ForUser.GetNameAndTitle()</td>
+                                <td class="alignCenter">
+                                    <a>@r.ClientReview.Visible.GetIcon()</a>
+                                </td>
+                                <td class="alignCenter">
+
+                                    @if (r.ClientReview.SignedTime.HasValue)
+                                    {
+                                        @r.ClientReview.SignedTime.Value.ToShortDateString()
+                                    }
+                                    else
+                                    {
+                                        <div class="gray">Unsigned</div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }

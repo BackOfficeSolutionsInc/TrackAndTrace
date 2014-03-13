@@ -15,7 +15,6 @@ namespace RadialReview.Controllers
 {
     public class ImageController : BaseController
     {
-        private static ImageAccessor _ImageAccessor = new ImageAccessor();
         //
         // GET: /Img/
         [Access(AccessLevel.Any)]
@@ -70,7 +69,7 @@ namespace RadialReview.Controllers
 
                 return Redirect(imagePath);
 
-            }catch(PermissionsException e)
+            }catch(PermissionsException)
             {
                 return Redirect(ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder);
                 //return File(ConstantStrings.ImagePlaceholder, "image/png");

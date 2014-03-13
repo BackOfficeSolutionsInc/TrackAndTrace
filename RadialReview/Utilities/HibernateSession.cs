@@ -21,60 +21,67 @@ namespace RadialReview.Utilities
         {
             DbFile = file;
         }*/
+        private static object lck = new object();
 
         public static ISessionFactory GetDatabaseSessionFactory()
         {
-            if (factory == null)
+            lock (lck)
             {
-                var config = System.Configuration.ConfigurationManager.AppSettings;
-                var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
-                var dbType = config["DbType"];
-                switch (dbType.ToLower())
+                if (factory == null)
                 {
-                    case "sqlite":
-                        {
-                            var connectionString = connectionStrings["DefaultConnection"].ConnectionString;
-                            var file = connectionString.Split(new String[]{"Data Source="},StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
-                            DbFile = file;
-                            factory = Fluently.Configure().Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
-                            .Mappings(m =>
+                    var config = System.Configuration.ConfigurationManager.AppSettings;
+                    var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
+                    var dbType = config["DbType"];
+                    switch (dbType.ToLower())
+                    {
+                        case "sqlite":
                             {
-                                m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
-                                m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-                                //m.AutoMappings.Add(CreateAutomappings);
-                                //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                var connectionString = connectionStrings["DefaultConnection"].ConnectionString;
+                                var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
+                                DbFile = file;
+                                factory = Fluently.Configure().Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                                .Mappings(m =>
+                                {
+                                    m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
+                                    m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                    //m.AutoMappings.Add(CreateAutomappings);
+                                    //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-                            }).ExposeConfiguration(BuildSchema)
-                            .BuildSessionFactory();
-                            break;
-                        }
-                    case "mysql":
-                        {
-                            factory = Fluently.Configure().Database(
-                                        MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnection"].ConnectionString).ShowSql())
-                               .Mappings(m =>
-                               {
-                                   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
-                                   //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
-                                   //m.AutoMappings.Add(CreateAutomappings);
-                                   //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-                               }).ExposeConfiguration(BuildMySqlSchema)
-                               .BuildSessionFactory();
-                            break;
-                        }
-                    /*case "connectionString":
-                        {
-                            factory = Fluently.Configure().
-                        }*/
-                    default: throw new Exception("No database type");
+                                }).ExposeConfiguration(BuildSchema)
+                                .BuildSessionFactory();
+                                break;
+                            }
+                        case "mysql":
+                            {
+                                factory = Fluently.Configure().Database(
+                                            MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnection"].ConnectionString).ShowSql())
+                                   .Mappings(m =>
+                                   {
+                                       m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
+                                       //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                       //m.AutoMappings.Add(CreateAutomappings);
+                                       //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                   }).ExposeConfiguration(BuildMySqlSchema)
+                                   .BuildSessionFactory();
+                                break;
+                            }
+                        /*case "connectionString":
+                            {
+                                factory = Fluently.Configure().
+                            }*/
+                        default: throw new Exception("No database type");
+                    }
                 }
+                return factory;
             }
-            return factory;
         }
-
+        
         public static ISession GetCurrentSession()
         {
-            return GetDatabaseSessionFactory().OpenSession();
+            lock (lck)
+            {
+                return GetDatabaseSessionFactory().OpenSession();
+            }
         }
         /*
         private static AutoPersistenceModel CreateAutomappings()
@@ -118,7 +125,7 @@ namespace RadialReview.Utilities
 
             //Update Database:
             //new SchemaUpdate(config).Execute(true, true);
-            
+
             //Kill/Create Database:
             //new SchemaExport(config).Execute(true, true, false);
 

@@ -1,0 +1,51 @@
+﻿@model RadialReview.Models.ViewModels.ReviewsListViewModel
+
+@{
+    ViewBag.Title = "My reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "View";
+    ViewBag.Subheading = "View reports from your managers.";
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>Reports</h1>
+    </div>
+    
+}
+
+@section header{
+    @Html.Partial("_ReportsHeader")
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Which report?</h3>
+    </div>
+    @if (Model.Reviews.Any())
+    {
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>For Review:</th>
+                    <th class="alignCenter" style="width:100px">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var report in Model.Reviews.OrderByDescending(x=>x.DueDate))
+                {
+                    <tr class="clickable" onclick="location.href = '/Review/ClientDetails/@report.ClientReview.Id';">
+                        <td class="table-hover-underline">@report.Name</td>
+                        <td class="alignCenter">@report.DueDate.ToShortDateString()</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+    }
+    else
+    {
+        <div class="panel-body gray">No Reports at this time.</div>
+    }
+</div>

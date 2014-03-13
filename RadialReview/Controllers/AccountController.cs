@@ -24,8 +24,6 @@ namespace RadialReview.Controllers
     [Authorize]
     public partial class AccountController : BaseController
     {
-        protected static NexusAccessor _NexusAccessor = new NexusAccessor();
-        protected static ImageAccessor _ImageAccessor = new ImageAccessor();
 
         public AccountController()
             : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
@@ -53,7 +51,7 @@ namespace RadialReview.Controllers
         //[RecaptchaControlMvc.CaptchaValidator]
         public virtual async Task<ActionResult> ResetPassword(ResetPasswordViewModel rpvm)
         {
-            string message = null;
+            //string message = null;
             //the token is valid for one day
             var until = DateTime.UtcNow.AddDays(1);
             var user = _UserAccessor.GetUserByEmail(rpvm.Email);
@@ -97,7 +95,7 @@ namespace RadialReview.Controllers
         {
             if (ModelState.IsValid)
             {
-                string message = null;
+                //string message = null;
                 //reset the password
                 var nexus = _NexusAccessor.Get(rpwtvm.Token);
 
@@ -322,7 +320,7 @@ namespace RadialReview.Controllers
                 var user = GetUser();
                 ViewBag.ImageUrl = user.ImageUrl();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 ViewBag.ImageUrl = ConstantStrings.ImageUserPlaceholder;
             }

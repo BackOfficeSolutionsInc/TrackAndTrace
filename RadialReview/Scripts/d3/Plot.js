@@ -174,7 +174,12 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     this.xScale = this.xScale.range([0, width]); // value -> display
     //setup x
     var xValue = function (scatterDataPoint) {
-        return scatterDataPoint.Dimensions[options.xDimensionId].Value / scatterDataPoint.Dimensions[options.xDimensionId].Denominator;
+        try {
+            return scatterDataPoint.Dimensions[options.xDimensionId].Value / scatterDataPoint.Dimensions[options.xDimensionId].Denominator;
+        } catch (e) {
+            console.log(e);
+            return 0;
+        }
     }, // data -> value
         xMap = function (scatterDataPoint) {
             return that.xScale(xValue(scatterDataPoint)) + topLeft.x;
@@ -184,7 +189,12 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     this.yScale = this.yScale.range([height, 0]); // value -> display
     //setup y
     var yValue = function (scatterDataPoint) {
-        return scatterDataPoint.Dimensions[options.yDimensionId].Value / scatterDataPoint.Dimensions[options.yDimensionId].Denominator;
+        try{
+            return scatterDataPoint.Dimensions[options.yDimensionId].Value / scatterDataPoint.Dimensions[options.yDimensionId].Denominator;
+        } catch (e) {
+            console.log(e);
+            return 0;
+        }
     }, // data -> value
         yMap = function (scatterDataPoint) {
             return that.yScale(yValue(scatterDataPoint)) + topLeft.y;
@@ -513,9 +523,16 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
            .append("circle")
            .attr("cx", xMap)
            .attr("cy", yMap);
+    dataset.exit().transition().style("opacity", "0").duration(100).remove();
 
     dataset.attr("class", function (d) {
-        return "scatter-point " + d.Class + " " + d.Dimensions[options.xDimensionId].Class + " " + d.Dimensions[options.yDimensionId].Class;
+        try{
+            return "scatter-point " + d.Class + " " + d.Dimensions[options.xDimensionId].Class + " " + d.Dimensions[options.yDimensionId].Class;
+        }catch(e)
+        {
+            console.log(e);
+            return "scatter-point";
+        }
     });
 
     var lineSet = underContainer.selectAll(".scatter-link").data(dataPoints.filter(function (d) { return getPrevious(d, dataPoints) || false; }), dataIdFunction);
@@ -639,6 +656,6 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         });
 
     lineSet.exit().remove();
-    dataset.exit().transition().style("opacity", "0").duration(100).remove();
+    //dataset.exit().transition().style("opacity", "0").duration(100).remove();
 
 };

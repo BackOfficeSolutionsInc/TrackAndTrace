@@ -13,11 +13,6 @@ namespace RadialReview.Controllers
 {
     public class ManageController : BaseController
     {
-        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected static TeamAccessor _TeamAccessor = new TeamAccessor();
-        protected static PositionAccessor _PositionAccessor = new PositionAccessor();
-        protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
-        protected static UserEngine _UserEngine = new UserEngine();
         //
         // GET: /Manage/
         [Access(AccessLevel.Manager)]
@@ -143,12 +138,11 @@ namespace RadialReview.Controllers
             ViewBag.Success = "Successfully Saved.";
             return View(model);
         }
-
+        /*
         [Access(AccessLevel.Manager)]
         public ActionResult Reviews(int page=0)
         {
-            Session["Manage"] = "Reviews";
-
+            Session["Reports"] = "Create";
             double pageSize=10;
 
             var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false,(int)pageSize,page);
@@ -158,8 +152,10 @@ namespace RadialReview.Controllers
                 NumPages = (int)Math.Ceiling(_ReviewAccessor.GetNumberOfReviewsForOrganization(GetUser(), GetUser().Organization.Id) / pageSize),
                 Page=page
             };
+            ViewBag.Page = "Create";
+            ViewBag.Subheading = "Generate reports for subordinates";
 
             return View(model);
-        }
+        }*/
     }
 }

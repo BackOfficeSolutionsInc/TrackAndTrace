@@ -15,7 +15,9 @@ namespace RadialReview.Models
     {
         public virtual long Id { get; set; }
         public virtual long ForReviewId { get; set; }
+        public virtual ReviewModel ForReview { get; set; }
         public virtual long ForReviewContainerId { get; set; }
+        public virtual ReviewsModel ForReviewContainer { get; set; }
         public virtual Askable Askable { get; set; }
         public virtual bool Required { get; set; }
         public virtual bool Complete { get; set; }
@@ -69,8 +71,6 @@ namespace RadialReview.Models
             References(x => x.Askable).Not.LazyLoad();
             //.Cascade.SaveUpdate();
             Map(x => x.Required);
-            Map(x => x.ForReviewId);
-            Map(x => x.ForReviewContainerId);
             Map(x => x.Complete);
             Map(x => x.DeleteTime);
             Map(x => x.CompleteTime);
@@ -82,6 +82,12 @@ namespace RadialReview.Models
 
             Map(x => x.ByUserId).Column("ByUserId");
             References(x => x.ByUser).Column("ByUserId").Not.LazyLoad().ReadOnly();
+
+            Map(x => x.ForReviewContainerId).Column("ForReviewContainerId");
+            References(x => x.ForReviewContainer).Column("ForReviewContainerId").LazyLoad().ReadOnly();
+
+            Map(x => x.ForReviewId).Column("ForReviewId");
+            References(x => x.ForReview).Column("ForReviewId").LazyLoad().ReadOnly();
         }
     }
     public class FeedbackAnswerMap : SubclassMap<FeedbackAnswer>
