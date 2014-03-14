@@ -6,6 +6,8 @@
         <p class="well">
             Great! Managers will need some time to customize the reviews. During this pre-review period, managers will be able to customize who their subordinates review.
             Please specify when you want the prereview period to end. Afterwards, please specify when you want employees to be finished with their reviews.
+            <br />
+            The review will automatically be generated after the prereview deadline.
         </p>
     </div>
     <div class="col-md-7 col-md-pull-5 ">
@@ -20,7 +22,7 @@
         </div>
         <div class="row smallBreak2">
             <div class="col-md-6">
-                <label class="control-label">Manager customizations due:</label>
+                <label class="control-label">Manager prereview due:</label>
             </div>
             <div class="col-md-4">
                 <div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
@@ -46,24 +48,25 @@
                 </div>
             </div>
         </div>
-        <div class="row smallBreak2">
+        @*<div class="row smallBreak2">
             <div class="col-md-6">
                 <label class="control-label">Email employees:</label>
             </div>
             <div class="col-md-4">
                 @Html.CheckBox("SendEmails")
             </div>
-        </div>
+        </div>*@
     </div>
 </div>
-<button type="submit" name="review" class="btn btn-primary" value="issuePrereview">Begin Pre-Review</button>
+<input name="review" value="issuePrereview" type="hidden">
+<button type="submit" id="submitButton" class="btn btn-primary">Begin Pre-Review</button>
 
 <img src="~/Content/img/blank.gif" onload="startIssueOrg()" />
 <script>
     function startIssueOrg() {
-
         $("form").unbind("submit");
         $("form").submit(function (event) {
+            $("#submitButton").prop("disabled", true)
             if ($("#ReviewName").val().trim() == "") {
                 alert("You must specify a review name.");
                 event.preventDefault();

@@ -32,7 +32,7 @@ namespace RadialReview.Controllers
             var subordinates = _DeepSubordianteAccessor.GetSubordinatesAndSelf(caller, caller.Id);
 
             var editable = reviewContainers.Where(x => subordinates.Any(y => y == x.CreatedById)).Select(x => x.Id).ToList();
-            var takabled = usefulReviews.Where(x => x.ForUserId == selfId).ToDictionary(x => x.ForReviewsId, x => (long?)x.Id);
+            var takabled = usefulReviews.Where(x => x.ForUserId == selfId).Distinct(x=>x.ForReviewsId).ToDictionary(x => x.ForReviewsId, x => (long?)x.Id);
 
             var reviewsVM = reviewContainers.Select(x => new ReviewsViewModel(x){
                 Editable = editable.Any(y => y == x.Id),
@@ -49,7 +49,7 @@ namespace RadialReview.Controllers
             return model;
         }
 
-        [Access(AccessLevel.Manager)]
+        [Access(AccessLevel.UserOrganization)]
         public ActionResult Outstanding(int page = 0)
         {
             var model = GenerateReviewVM(GetUser(), DateTime.UtcNow);
@@ -59,7 +59,7 @@ namespace RadialReview.Controllers
             return View(model);
         }
 
-        [Access(AccessLevel.Manager)]
+        [Access(AccessLevel.UserOrganization)]
         public ActionResult History(int page = 0)
         {
             var model = GenerateReviewVM(GetUser(), DateTime.MinValue);

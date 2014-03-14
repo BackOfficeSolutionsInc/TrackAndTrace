@@ -8,7 +8,7 @@
 {
     foreach (var completion in c.GetCompletions())
     {
-        <div class="progress @(!completion.FullyComplete && !completion.ForceInactive ? "active progress-striped" : "") bar @completion.Class" style="margin-top: 0px; margin-bottom: 0px;position:relative;">
+        <div class="progress @(!completion.RequiredComplete && !completion.ForceInactive ? "active progress-striped" : "") bar @completion.Class" style="margin-top: 0px; margin-bottom: 0px;position:relative;">
             @if (!completion.FullyComplete)
             {
                 if (completion.TotalRequired > 0)

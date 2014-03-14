@@ -44,6 +44,19 @@ namespace RadialReview.Accessors
             }
         }
 
+        [Obsolete("Dont use this, its unsafe", false)]
+        public UserOrganizationModel GetUserOrganizationUnsafe(long userOrganizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    return s.Get<UserOrganizationModel>(userOrganizationId);
+                }
+            }
+        }
+
+
         public UserOrganizationModel GetUserOrganization(UserOrganizationModel caller, long userOrganizationId, bool asManager, bool sensitive)
         {
             using (var s = HibernateSession.GetCurrentSession())

@@ -9,10 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Web;
 
 namespace RadialReview.Utilities
 {
+
     public class HibernateSession
     {
         private static ISessionFactory factory;
@@ -22,6 +24,7 @@ namespace RadialReview.Utilities
             DbFile = file;
         }*/
         private static object lck = new object();
+        public static ISession Session { get; set; }
 
         public static ISessionFactory GetDatabaseSessionFactory()
         {
@@ -75,13 +78,22 @@ namespace RadialReview.Utilities
                 return factory;
             }
         }
-        
+
         public static ISession GetCurrentSession()
         {
-            lock (lck)
+            return GetDatabaseSessionFactory().OpenSession();
+            /*while(true)
             {
-                return GetDatabaseSessionFactory().OpenSession();
-            }
+                lock (lck)
+                {
+                    if ( Session == null || !Session.IsOpen )
+                    {
+                        Session = GetDatabaseSessionFactory().OpenSession();
+                        return Session;
+                    }
+                }
+                Thread.Sleep(10);
+            }*/
         }
         /*
         private static AutoPersistenceModel CreateAutomappings()

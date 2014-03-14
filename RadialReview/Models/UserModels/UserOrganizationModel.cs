@@ -18,6 +18,8 @@ namespace RadialReview.Models
 {
     public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable
     {
+        public static long ADMIN_ID = -1231331L;
+
         public virtual TempUserModel TempUser { get; set; }
         public virtual String EmailAtOrganization { get; set; }
         public virtual Boolean ManagerAtOrganization { get; set; }
@@ -153,7 +155,11 @@ namespace RadialReview.Models
         {
             return DisplayNameStrings.user;
         }
-
+        
+        public virtual string GetUsername()
+        {
+            return User.NotNull(x => x.UserName) ?? TempUser.Email;
+        }
     }
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>

@@ -24,6 +24,10 @@ namespace RadialReview
         {
             return long.Parse(s);
         }
+        public static int ToInt(this String s)
+        {
+            return int.Parse(s);
+        }
         public static double ToDouble(this String s)
         {
             return double.Parse(s);

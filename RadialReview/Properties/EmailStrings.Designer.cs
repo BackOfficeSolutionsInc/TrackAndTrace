@@ -84,14 +84,21 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;p&gt;{0}, {1} would like to link to your account. Simply click the following link:&lt;/p&gt;
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;br/&gt; {1} would like to link to your account. Simply click the following link:&lt;/p&gt;
         ///&lt;br&gt; 
         ///    &lt;a href=&quot;{2}&quot;&gt;{3}&lt;/a&gt;
-        ///&lt;br /&gt;&lt;br /&gt;If you believe you have received this message in error, you may simply ignore this email. If you have any questions, feedback, or concerns, you can reply to this e-mail address.
-        ///&lt;br /&gt;
-        ///&lt;br /&gt;
-        ///Sincerely,&lt;br/&gt;
-        ///The {4} Team.
+        ///&lt;br /&gt;&lt;br /&gt;If you are prompted for an access code, please use the following:
+        ///&lt;br/&gt;
+        ///&lt;br/&gt;
+        ///&lt;table  width=&quot;100%&quot; align=&quot;center&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot;&gt;
+        ///	&lt;tbody&gt;
+        ///		&lt;tr&gt;
+        ///		&lt;td&gt;&lt;/td&gt;
+        ///		&lt;td&gt;
+        ///			&lt;table width=&quot;450&quot; style=&quot;background-color:#f3f4f4&quot; cellpadding=&quot;10&quot; border=&quot;0&quot; bgcolor=&quot;#F3F4F4&quot; align=&quot;center&quot;&gt;
+        ///				&lt;tbody&gt;
+        ///					&lt;tr align=&quot;center&quot; &gt;
+        ///							&lt;td style=&quot;color:#77 [rest of string was truncated]&quot;;.
         /// </summary>
         public static string JoinOrganizationUnderManager_Body {
             get {

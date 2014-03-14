@@ -9,7 +9,7 @@ namespace RadialReview.Controllers
     public class StatisticsController : BaseController
     {
 
-        [Access(Controllers.AccessLevel.Manager)]
+        [Access(Controllers.AccessLevel.UserOrganization)]
         public ActionResult Review(long id)
         {            
             var reviewContainer= _ReviewAccessor.GetReviewContainer(GetUser(), id, true, true);

@@ -84,6 +84,9 @@
     <Reference Include="NHibernate">
       <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
+    <Reference Include="OpenPop">
+      <HintPath>..\packages\OpenPop.NET.2.0.4.369\lib\net20\OpenPop.dll</HintPath>
+    </Reference>
     <Reference Include="StructureMap">
       <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
     </Reference>
@@ -475,6 +478,7 @@
     <Compile Include="Utilities\Attributes\AccessAttribute.cs" />
     <Compile Include="Engines\ChartsEngine.cs" />
     <Compile Include="Utilities\Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Utilities\Pop3Utility.cs" />
     <Compile Include="Utilities\ServerUtility.cs" />
     <Compile Include="Utilities\Chart\ChartUtility.cs" />
     <Compile Include="Utilities\CsvUtility.cs" />
@@ -570,6 +574,7 @@
     <Content Include="Content\img\redlight.png" />
     <Content Include="Content\img\slider.png" />
     <Content Include="Content\jquery.nouislider.css" />
+    <Content Include="Content\jquery.qtip.css" />
     <Content Include="Content\print.css" />
     <Content Include="Content\Review.css" />
     <Content Include="Content\slider.css" />
@@ -812,6 +817,7 @@
     <Content Include="Views\D3\PieChart.cshtml" />
     <Content Include="Views\Reviews\Edit.cshtml" />
     <Content Include="Views\Organization\ForceDirected.cshtml" />
+    <Content Include="Scripts\jquery\jquery.qtip.js" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

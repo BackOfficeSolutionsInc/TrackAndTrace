@@ -1006,8 +1006,8 @@ tr.danger .strikable {
 
 @media (min-width: 1200px) {
     .sidebar-fixed {
-        position: fixed;
-        top: 160px;
+        /*position: fixed;
+        top: 160px;*/
         width: 255px;
     }
 }

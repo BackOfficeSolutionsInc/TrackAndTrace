@@ -32,29 +32,29 @@ namespace RadialReview.Utilities
             return true;
         }
 
-        public static async void CacheItemRemovedCallback(string key, object value, CacheItemRemovedReason reason)
+        public static async void Reschedule()
         {
-            //reschedule
-            await new Task(()=>{
-                var complete=false;
-                while (!complete)
+            while (true)
+            {
+                try
                 {
-                    try
-                    {
-                        WebClient client = new WebClient();
-                        client.DownloadData(GetConfigValue("BaseUrl") + "/Scheduler/Reschedule");
-                        complete = true;
-                    }
-                    catch (Exception e)
-                    {
-                        Thread.Sleep(6000);                        
-                    }
+                    WebClient client = new WebClient();
+                    var output = await client.DownloadDataTaskAsync(GetConfigValue("BaseUrl") + "/Scheduler/Reschedule");
+                    break;
                 }
-            });
-
-            await ExecuteAllTasks();
+                catch (Exception e)
+                {
+                    
+                }
+                Thread.Sleep(15000);
+            }
         }
 
+        public static async void CacheItemRemovedCallback(string key, object value, CacheItemRemovedReason reason)
+        {
+            Reschedule();
+        }
+        /*
         public static async Task ExecuteAllTasks()
         {
             await Task.Run(() =>
@@ -65,7 +65,7 @@ namespace RadialReview.Utilities
                     _TaskAccessor.ExecuteTask(GetConfigValue("BaseUrl"), task.Id);
                 });
             });
-        }
+        }*/
 
         public static String GetConfigValue(string key)
         {

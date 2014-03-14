@@ -10,5 +10,7 @@ namespace RadialReview.Models.ViewModels
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public String ImageUrl { get;set; }
+
+        public ManageUserViewModel Manage { get; set; }
     }
 }

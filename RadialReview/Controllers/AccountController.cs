@@ -104,7 +104,7 @@ namespace RadialReview.Controllers
 
                 var userId = nexus.GetArgs()[0];
                 var removeSuccess = true;
-                IdentityResult removeResult=null;
+                IdentityResult removeResult = null;
 
                 if (UserManager.HasPassword(userId))
                 {
@@ -182,16 +182,21 @@ namespace RadialReview.Controllers
         // GET: /Account/Login
         [AllowAnonymous]
         [Access(AccessLevel.Any)]
-        public ActionResult Login(string returnUrl, String message)
+        public ActionResult Login(string returnUrl, String message,string username)
         {
             if (User.Identity.GetUserId() != null)
             {
                 AuthenticationManager.SignOut();
-                return RedirectToAction("Login", new { returnUrl = returnUrl, message = message });
+                return RedirectToAction("Login", new { returnUrl = returnUrl, message = message, username = username });
             }
             ViewBag.Message = message;
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+            var model=new LoginViewModel
+            {
+                UserName = username
+            };
+
+            return View(model);
         }
 
         //
@@ -226,7 +231,7 @@ namespace RadialReview.Controllers
         // GET: /Account/Register
         [AllowAnonymous]
         [Access(AccessLevel.Any)]
-        public ActionResult Register(string returnUrl)
+        public ActionResult Register(string returnUrl,string username,string firstname,string lastname)
         {
 
             ViewBag.ReturnUrl = returnUrl;
@@ -245,6 +250,12 @@ namespace RadialReview.Controllers
                 {
                     log.Info(e);
                 }
+            }
+            else
+            {
+                model.Email = username;
+                model.fname = firstname;
+                model.lname = lastname;
             }
             return View(model);
         }
@@ -315,9 +326,10 @@ namespace RadialReview.Controllers
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
+
+            var user = GetUserModel();
             try
             {
-                var user = GetUser();
                 ViewBag.ImageUrl = user.ImageUrl();
             }
             catch (Exception)
@@ -325,16 +337,24 @@ namespace RadialReview.Controllers
                 ViewBag.ImageUrl = ConstantStrings.ImageUserPlaceholder;
             }
 
-            return View();
+
+            var model = new ProfileViewModel()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid)
+            };
+
+            return View(model);
         }
 
-        //
-        // POST: /Account/Manage
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Access(AccessLevel.User)]
-        public async Task<ActionResult> Manage(ManageUserViewModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Manage(ProfileViewModel model)
         {
+            _UserAccessor.EditUserModel(GetUserModel(), GetUserModel().Id, model.FirstName, model.LastName, null);
             bool hasPassword = HasPassword();
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
@@ -342,7 +362,7 @@ namespace RadialReview.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+                    IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.Manage.OldPassword, model.Manage.NewPassword);
                     if (result.Succeeded)
                     {
                         return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
@@ -364,7 +384,7 @@ namespace RadialReview.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
+                    IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.Manage.NewPassword);
                     if (result.Succeeded)
                     {
                         return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
@@ -378,7 +398,18 @@ namespace RadialReview.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+            return View(model);
         }
+
+        /*
+        //
+        // POST: /Account/Manage
+        [HttpPost]
+        [Access(AccessLevel.User)]
+        public async Task<ActionResult> Manage( model)
+        {
+            
+        }*/
 
         //
         // POST: /Account/ExternalLogin
@@ -525,26 +556,6 @@ namespace RadialReview.Controllers
             return Json(ResultObject.Success("Hints turned " + (hint.Value ? "on." : "off.")), JsonRequestBehavior.AllowGet);
         }
 
-        [Access(AccessLevel.User)]
-        public ActionResult Profile()
-        {
-            var user = GetUserModel();
-
-            return View(new ProfileViewModel()
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid)
-            });
-        }
-
-        [HttpPost]
-        [Access(AccessLevel.User)]
-        public ActionResult Profile(ProfileViewModel model)
-        {
-            _UserAccessor.EditUserModel(GetUserModel(), GetUserModel().Id, model.FirstName, model.LastName, null);
-            return RedirectToAction("Profile");
-        }
 
         protected override void Dispose(bool disposing)
         {

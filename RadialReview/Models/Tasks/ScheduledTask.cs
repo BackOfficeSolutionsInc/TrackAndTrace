@@ -15,6 +15,7 @@ namespace RadialReview.Models.Tasks
         public virtual DateTime? Executed { get; set; }
         public virtual int ExceptionCount { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
+
     }
 
     public class ScheduledTaskMap : ClassMap<ScheduledTask>

@@ -27,12 +27,16 @@ namespace RadialReview.Accessors
 
 
         #region Create
-        public ResultObject CreateReviewFromPrereview(ISession s, UserOrganizationModel caller, bool emails, List<Tuple<long, long>> whoReviewsWho)
+        public void CreateReviewFromPrereview(
+            DataInteraction dataInteraction, PermissionsUtility perms,
+            UserOrganizationModel caller, ReviewsModel reviewContainer,
+            string organizationName, bool emails, List<Tuple<long, long>> whoReviewsWho,
+            out int sent, out int errors, ref List<Exception> exceptions,
+            IHubContext hub = null, String userId = null, int total = 0)
         {
             int count = 0;
-            int total = usersToReview.Count();
-            int sent = 0;
-            int errors = 0;
+            sent = 0;
+            errors = 0;
 
             foreach (var uid in whoReviewsWho.Select(x => x.Item1).Distinct())
             {
@@ -60,34 +64,39 @@ namespace RadialReview.Accessors
                 if (allAskables.Any())
                 {
                     QuestionAccessor.GenerateReviewForUser(dataInteraction, perms, caller, user, reviewContainer, allAskables);
-                    hub.Clients.User(userId).status("Added " + count + " user".Pluralize(count) + " out of " + total + ".");
+                    if (hub != null)
+                    {
+                        hub.Clients.User(userId).status("Added " + count + " user".Pluralize(count) + " out of " + total + ".");
+                    }
+
+                    //Emails
+                    Guid guid = Guid.NewGuid();
+                    NexusModel nexus = new NexusModel(guid)
+                    {
+                        ForUserId = user.Id,
+                        ActionCode = NexusActions.TakeReview
+                    };
+                    NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
+                    if (emails)
+                    {
+                        try
+                        {
+                            //Send email
+                            var subject = String.Format(RadialReview.Properties.EmailStrings.NewReview_Subject, organizationName);
+                            var body = String.Format(EmailStrings.NewReview_Body, user.GetName(), caller.GetName(), reviewContainer.DueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
+                            Emailer.SendEmail(dataInteraction.GetUpdateProvider(), user.GetEmail(), subject, body);
+                            sent++;
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error(e.Message, e);
+                            errors++;
+                            exceptions.Add(e);
+                        }
+                    }
                 }
-
-
-                //Emails
-                Guid guid = Guid.NewGuid();
-                NexusModel nexus = new NexusModel(guid)
+                else
                 {
-                    ForUserId = user.Id,
-                    ActionCode = NexusActions.TakeReview
-                };
-                NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
-                if (emails)
-                {
-                    try
-                    {
-                        //Send email
-                        var subject = String.Format(RadialReview.Properties.EmailStrings.NewReview_Subject, organization.Name.Translate());
-                        var body = String.Format(EmailStrings.NewReview_Body, user.GetName(), caller.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
-                        Emailer.SendEmail(dataInteraction.GetUpdateProvider(), user.GetEmail(), subject, body);
-                        sent++;
-                    }
-                    catch (Exception e)
-                    {
-                        log.Error(e.Message, e);
-                        errors++;
-                        exceptions.Add(e);
-                    }
                 }
             }
         }
@@ -98,9 +107,9 @@ namespace RadialReview.Accessors
             using (var s = HibernateSession.GetCurrentSession())
             {
                 ReviewsModel reviewContainer;
-                var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+                IHubContext hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
                 var userId = caller.User.UserName;
-                
+
                 using (var tx = s.BeginTransaction())
                 {
 
@@ -134,7 +143,7 @@ namespace RadialReview.Accessors
 
                     hub.Clients.User(userId).status("Gathering Data");
 
-                    var dataInteraction = GetReviewDataInteraction(s,orgId);
+                    var dataInteraction = GetReviewDataInteraction(s, orgId);
 
                     team = dataInteraction.GetQueryProvider().All<OrganizationTeamModel>().First(x => x.Id == forTeamId);
 
@@ -143,8 +152,10 @@ namespace RadialReview.Accessors
                     List<Exception> exceptions = new List<Exception>();
 
                     var toReview = usersToReview.Select(x => x.User).ToList();
+                    var orgName = organization.Name.Translate();
+                    int sent, errors;
 
-                    CreateReviewFromPrereview(s, caller, emails, whoReviewsWho);
+                    CreateReviewFromPrereview(dataInteraction, perms, caller, reviewContainer, orgName, emails, whoReviewsWho, out sent, out errors, ref exceptions, hub, userId, usersToReview.Count());
 
                     tx.Commit();
                     s.Flush();

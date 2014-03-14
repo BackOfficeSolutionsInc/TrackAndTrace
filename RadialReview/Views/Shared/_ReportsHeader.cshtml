@@ -2,7 +2,7 @@
     <li class="@(ViewBag.Page == "View"   ? "active" : "")"><a href="/Reports/">                 My Reports</a></li>
     @if (ViewBag.IsManager ?? false)
     {
-        <li class="@(ViewBag.Page == "Create" ? "active" : "")"><a href="/Reports/Generate">     Employee Reports</a></li>
+        <li class="@(ViewBag.Page == "Create" ? "active" : "")" style="line-height:0px"><a href="/Reports/Generate" style="line-height: 15px;padding-top: 5px;">Create<br />Employee Reports</a></li>
     }
     @Html.Partial("_ExtraTab")
 </ul>

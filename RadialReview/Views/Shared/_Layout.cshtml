@@ -11,6 +11,7 @@
 
     <link href='http://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
     <title>@ViewBag.Title - @RadialReview.Properties.ProductStrings.ProductName</title>
+    <link href="~/Content/jquery.qtip.css" rel="stylesheet" />
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @RenderSection("styles", required: false)
@@ -53,6 +54,19 @@
                         <ul class="nav navbar-nav">
                             @if (Request.IsAuthenticated)
                             {
+                                if (((int?)ViewBag.Organizations ?? 0) == 0)
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Code", "Account")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
+                                            Access Code
+                                            <span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
+                                        </a>
+                                    </li>                                    
+                                }
+                                
+                                
+                                if (((int?)ViewBag.Organizations ?? 0) > 0)
+                                {
                                 <li>
                                     <a href="@Url.Action("Index", "Tasks")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
                                         Tasks
@@ -63,8 +77,6 @@
                                         <span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
                                     </a>
                                 </li>
-                                if (((int?)ViewBag.Organizations ?? 0) > 0)
-                                {
 
                                     <li>
                                         <a href="@Url.Action("Outstanding", "Reviews")">
@@ -136,15 +148,22 @@
                 }
 
                 $(function () {
+                    $('[title]').qtip({
+                        position: {
+                            my: 'bottom left',  // Position my top left...
+                            at: 'top center', // at the bottom right of...
+                            target:'mouse'
+                        }
+                    });
                     ForceUnhide();
                     @if(ViewBag.Alert!=null)
                     {
                         @:showAlert("@ViewBag.Alert");
-                                                                                                                                                                }
+                                                                                                                                                                                    }
                     @if(ViewBag.Success!=null)
                     {
                         @:showAlert("@ViewBag.Success", "alert-success", "Success!");
-                                                                                                                                                                }
+                                                                                                                                                                                    }
 
                     var data = localStorage.getItem("Alert");
                     localStorage.setItem("Alert", null);
@@ -370,6 +389,7 @@
         @Html.Partial("Partial/Footer")
     </div>
     @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/jquery/jquery.qtip.js"></script>
     <script src="~/Scripts/jquery.signalR-2.0.1.min.js"></script>
     <script src="~/signalr/hubs"></script>
     @Scripts.Render("~/bundles/bootstrap")

@@ -22,8 +22,10 @@
         debugger;
         $('.btn').button();
         $("#SelectedTeam").change(function () {
-            $("#TeamId").val($("#SelectedTeam").val());
-            loadPage("#pageIssueTeam", "/Issue/IssueOrganization/");
+            if ($(this).val() != "") {
+                $("#TeamId").val($("#SelectedTeam").val());
+                loadPage("#pageIssueTeam", "/Issue/IssueOrganization/");
+            }
         });
     }
     /*

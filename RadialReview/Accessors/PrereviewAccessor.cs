@@ -1,4 +1,5 @@
-﻿using RadialReview.Exceptions;
+﻿using NHibernate;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Prereview;
@@ -129,7 +130,8 @@ namespace RadialReview.Accessors
                         var nexus = new NexusModel(guid)
                         {
                             ActionCode = NexusActions.Prereview,
-                            ByUserId = mid,
+                            ByUserId = caller.Id,
+                            ForUserId = mid,
                         };
 
                         nexus.SetArgs("" + reviewContainer.Id, "" + prereview.Id);
@@ -188,10 +190,42 @@ namespace RadialReview.Accessors
             }
         }
 
+        public List<Tuple<long, long>> GetAllMatchesForReview(UserOrganizationModel caller, long reviewContainerId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId);
+
+                    var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId).List().ToList();
+
+                    var all = new List<Tuple<long, long>>();
+
+                    foreach (var prereview in prereviews)
+                    {
+                        all.AddRange(s.QueryOver<PrereviewMatchModel>().Where(x => x.PrereviewId == prereview.Id).List().ToListAlive().Select(x => Tuple.Create(x.FirstUserId, x.SecondUserId)).ToList());
+                    }
+
+                    return all.Distinct().ToList();
+                }
+            }
+        }
+
         public static List<PrereviewModel> GetPrereviewsForUser(AbstractQuery s, PermissionsUtility perms, long userOrgId)
         {
             perms.ViewUserOrganization(userOrgId, false);
             return s.Where<PrereviewModel>(x => x.ManagerId == userOrgId).ToList();
+        }
+
+        public void UnsafeExecuteAllPrereviews(ISession s, long reviewContainerId, DateTime now)
+        {
+            var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId).List().ToList();
+            foreach (var prereview in prereviews)
+            {
+                prereview.Executed = now;
+                s.Update(prereview);
+            }
         }
     }
 }

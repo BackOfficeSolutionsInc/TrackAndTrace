@@ -41,8 +41,9 @@ namespace RadialReview.Controllers
             var user = GetUserModel();
             var basicPlan=_PaymentAccessor.BasicPaymentPlan();
             var localizedName=new LocalizedStringModel(){Standard=name};
-            var organization=_OrganizationAccessor.CreateOrganization(user, localizedName,managersCanEdit,basicPlan);
-            return RedirectToAction("Index","Manage");
+            long newRoleId;
+            var organization = _OrganizationAccessor.CreateOrganization(user, localizedName, managersCanEdit, basicPlan,DateTime.UtcNow,out newRoleId);
+            return RedirectToAction("SetRole", "Account", new { id = newRoleId });
         }
 
         [Access(AccessLevel.Any)]

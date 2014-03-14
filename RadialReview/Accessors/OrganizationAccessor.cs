@@ -17,18 +17,22 @@ namespace RadialReview.Accessors
     public class OrganizationAccessor : BaseAccessor
     {
 
-        public OrganizationModel CreateOrganization(UserModel user, LocalizedStringModel name, Boolean managersCanAddQuestions, PaymentPlanModel paymentPlan)
+        public OrganizationModel CreateOrganization(UserModel user, LocalizedStringModel name, Boolean managersCanAddQuestions, PaymentPlanModel paymentPlan,DateTime now,out long newUserId)
         {
+            UserOrganizationModel userOrgModel;
+            OrganizationModel organization;
+
             using (var db = HibernateSession.GetCurrentSession())
             {
                 using (var tx = db.BeginTransaction())
                 {
-                    var organization = new OrganizationModel()
+                    organization = new OrganizationModel()
                     {
-                        CreationTime = DateTime.UtcNow,
+                        CreationTime = now,
                         PaymentPlan = paymentPlan,
                         Name = name,
                         ManagersCanEdit = managersCanAddQuestions,
+                        
                     };
 
                     db.Save(organization);
@@ -37,13 +41,14 @@ namespace RadialReview.Accessors
                     //db.UserModels.Attach(user);
                     user = db.Get<UserModel>(user.Id);
 
-                    var userOrgModel = new UserOrganizationModel()
+                    userOrgModel = new UserOrganizationModel()
                     {
                         Organization = organization,
                         User = user,
                         ManagerAtOrganization = true,
                         ManagingOrganization = true,
                         EmailAtOrganization = user.Email,
+                        AttachTime=now
                     };
 
 
@@ -83,15 +88,29 @@ namespace RadialReview.Accessors
                     db.Save(managerTeam);
 
                     tx.Commit();
-                    db.Flush();
-                    return organization;
                     //db.UserOrganizationModels.Add(userOrgModel);
                     //db.SaveChanges();
 
                     //organization.ManagedBy.Add(userOrgModel);
                     //db.SaveChanges();
                 }
+                using (var tx = db.BeginTransaction())
+                {
+                    db.Save(new DeepSubordinateModel
+                    {
+                        CreateTime = now,
+                        Links = 1,
+                        SubordinateId = userOrgModel.Id,
+                        ManagerId = userOrgModel.Id,
+                        OrganizationId = organization.Id,
+                    });
+                    newUserId = userOrgModel.Id;
+                    tx.Commit();
+                    db.Flush();
+                    return organization;
+                }
             }
+
 
         }
 
@@ -424,5 +443,17 @@ namespace RadialReview.Accessors
                 }
             }
         }*/
+
+        public OrganizationModel GetOrganization(UserOrganizationModel caller, long organizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+                    return s.Get<OrganizationModel>(organizationId);
+                }
+            }
+        }
     }
 }

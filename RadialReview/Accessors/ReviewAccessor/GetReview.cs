@@ -277,11 +277,20 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).EditUserOrganization(userId);
 
                     var user = s.Get<UserOrganizationModel>(userId);
+                    var orgId = user.Organization.Id;
 
-                    var reviews = s.QueryOver<ReviewModel>()
-                        .JoinQueryOver(x => x.ForReviewContainer)
-                        .Where(x => x.DueDate > afterTime && x.ForOrganizationId == user.Organization.Id)
+                    ReviewModel reviewAlias = null;
+                    ReviewsModel reviewsAlias = null;
+
+                    var reviews = s.QueryOver<ReviewModel>(() => reviewAlias)
+                        .JoinAlias(() => reviewAlias.ForReviewContainer, () => reviewsAlias)
+                        .Where(() => reviewsAlias.DueDate > afterTime && reviewsAlias.ForOrganizationId == orgId)
                         .List().ToList();
+                        /*.Fetch(x=>x.ForReviewContainer).Eager
+                        .Where(x => x.ForReviewContainer.DueDate > afterTime && x.ForReviewContainer.ForOrganizationId == orgId)
+                        //.JoinQueryOver(x => x.ForReviewContainer)
+                        //.Where(x => x.DueDate > afterTime && x.ForOrganizationId == user.Organization.Id)
+                        .List().ToList();*/
                     return reviews;
 
                     /*
@@ -473,14 +482,21 @@ namespace RadialReview.Accessors
         }
 
 
-        public ReviewsModel GetReviewContainer(UserOrganizationModel caller, long reviewContainerId, bool populateAnswers, bool populateReport)
+        public ReviewsModel GetReviewContainer(UserOrganizationModel caller, long reviewContainerId, bool populateAnswers, bool populateReport,bool sensitive=true)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId);
+                    var perms = PermissionsUtility.Create(s, caller);
+
                     var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+
+                    if (sensitive)
+                        perms.ViewReviews(reviewContainerId);
+                    else
+                        perms.ViewOrganization(reviewContainer.ForOrganizationId);
+
                     if (populateAnswers || populateReport)
                     {
                         PopulateReviewContainer(s.ToQueryProvider(true), reviewContainer, populateAnswers, populateReport);

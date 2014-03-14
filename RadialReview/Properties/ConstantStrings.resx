@@ -129,6 +129,18 @@
   <data name="ImageUserPlaceholder" xml:space="preserve">
     <value>placeholder/placeholder.png</value>
   </data>
+  <data name="PopHost" xml:space="preserve">
+    <value>pop.gmail.com</value>
+  </data>
+  <data name="PopLogin" xml:space="preserve">
+    <value>clay.upton@radialreview.com</value>
+  </data>
+  <data name="PopPassword" xml:space="preserve">
+    <value>4Ztdgavv49</value>
+  </data>
+  <data name="PopPort" xml:space="preserve">
+    <value>995</value>
+  </data>
   <data name="SmtpFromAddress" xml:space="preserve">
     <value>clay.upton@radialreview.com</value>
   </data>

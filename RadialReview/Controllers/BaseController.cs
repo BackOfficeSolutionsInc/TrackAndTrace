@@ -48,8 +48,6 @@ namespace RadialReview.Controllers
         protected static DeepSubordianteAccessor _DeepSubordianteAccessor = new DeepSubordianteAccessor();
         protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
 
-
-
         protected void ManagerAndCanEditOrException(UserOrganizationModel user)
         {
             if (!user.IsManagerCanEditOrganization())
@@ -72,14 +70,15 @@ namespace RadialReview.Controllers
 
         private UserOrganizationModel GetUserOrganization(long userOrganizationId)//, Boolean full = false)
         {
-            return HttpContextUtility.Get(HttpContext,"UserOrganization",x=>{
+            return HttpContextUtility.Get(HttpContext, "UserOrganization", x =>
+            {
                 var id = User.Identity.GetUserId();
                 return _UserAccessor.GetUserOrganizations(id, userOrganizationId/*, full*/);
-            },x=>x.Id!=userOrganizationId);
+            }, x => x.Id != userOrganizationId);
         }
 
         private UserOrganizationModel _CurrentUser = null;
-        private long? _CurrentUserOrganizationId   = null;
+        private long? _CurrentUserOrganizationId = null;
         /*
         protected void ChangeRole(long roleId)
         {
@@ -105,7 +104,7 @@ namespace RadialReview.Controllers
                 userOrganizationId = GetUserModel().GetCurrentRole();
             }
 
-            
+
             if (_CurrentUser != null && userOrganizationId == _CurrentUserOrganizationId)
                 return _CurrentUser;
 
@@ -116,7 +115,7 @@ namespace RadialReview.Controllers
                     throw new NoUserOrganizationException();
                 else if (found.Count == 1)
                 {
-                    _CurrentUser=found.First();
+                    _CurrentUser = found.First();
                     _CurrentUserOrganizationId = _CurrentUser.Id;
                     Session["UserOrganizationId"] = _CurrentUserOrganizationId;
                     return _CurrentUser;
@@ -161,7 +160,7 @@ namespace RadialReview.Controllers
 
             if (typeof(JsonResult).IsAssignableFrom(action.ReturnType))
             {
-                filterContext.Result = Json(new ResultObject(filterContext.Exception),JsonRequestBehavior.AllowGet);
+                filterContext.Result = Json(new ResultObject(filterContext.Exception), JsonRequestBehavior.AllowGet);
                 filterContext.ExceptionHandled = true;
                 return;
             }
@@ -176,14 +175,14 @@ namespace RadialReview.Controllers
                 var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                 if (redirectUrl == null)
                     redirectUrl = Request.Url.PathAndQuery;
-                log.Info("Login: [" + Request.Url.PathAndQuery+"] --> ["+redirectUrl+"]");
+                log.Info("Login: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
                 filterContext.Result = RedirectToAction("Login", "Account", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             }
             else if (filterContext.Exception is OrganizationIdException)
             {
-                var redirectUrl=((RedirectException)filterContext.Exception).RedirectUrl;
+                var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                 log.Info("Organization: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
                 filterContext.Result = RedirectToAction("Role", "Account", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
                 filterContext.ExceptionHandled = true;
@@ -193,14 +192,14 @@ namespace RadialReview.Controllers
             {
                 var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                 log.Info("Permissions: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
-                ViewBag.Message=filterContext.Exception.Message;
+                ViewBag.Message = filterContext.Exception.Message;
                 filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             }
             else if (filterContext.Exception is RedirectException)
             {
-                var returnUrl=((RedirectException)filterContext.Exception).RedirectUrl;
+                var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                 log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
                 filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
                 filterContext.ExceptionHandled = true;
@@ -208,8 +207,8 @@ namespace RadialReview.Controllers
             }
             else
             {
-               log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);
-               base.OnException(filterContext);
+                log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);
+                base.OnException(filterContext);
             }
         }
 
@@ -228,7 +227,7 @@ namespace RadialReview.Controllers
             filterContext.Controller.ViewBag.HasBaseController = true;
             if (IsLoggedIn())
             {
-                var userOrgs= GetUserOrganizations();
+                var userOrgs = GetUserOrganizations();
                 UserOrganizationModel oneUser = null;
                 try
                 {
@@ -246,17 +245,17 @@ namespace RadialReview.Controllers
                 filterContext.Controller.ViewBag.Organizations = userOrgs.Count();
                 filterContext.Controller.ViewBag.Hints = GetUserModel().Hints;
                 filterContext.Controller.ViewBag.ManagingOrganization = false;
-                
+
                 if (oneUser != null)
                 {
-                    HtmlString name= new HtmlString(oneUser.GetName());
+                    HtmlString name = new HtmlString(oneUser.GetName());
 
-                    if (userOrgs.Count>1)
+                    if (userOrgs.Count > 1)
                     {
                         name = new HtmlString(oneUser.GetNameAndTitle(1));
                         try
                         {
-                            name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate()+"</span>");
+                            name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate() + "</span>");
                         }
                         catch (Exception e)
                         {
@@ -264,12 +263,13 @@ namespace RadialReview.Controllers
                         }
                     }
 
-                    filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser,oneUser.Id,DateTime.UtcNow);
+                    filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser, oneUser.Id, DateTime.UtcNow);
                     //filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
                     filterContext.Controller.ViewBag.UserName = name;
                     filterContext.Controller.ViewBag.IsManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization;
-                    filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization;    
-                    filterContext.Controller.ViewBag.UserId = oneUser.Id;                    
+                    filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization;
+                    filterContext.Controller.ViewBag.UserId = oneUser.Id;
+                    filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
                 }
                 else
                 {
@@ -277,7 +277,8 @@ namespace RadialReview.Controllers
                     filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
                 }
 
-                ViewBag.OrganizationId = Session["OrganizationId"];
+                // ViewBag.OrganizationId = Session["OrganizationId"];
+
             }
 
             //Access Level Filtering

@@ -62,7 +62,7 @@ namespace RadialReview.Controllers
                     form["TeamId"].ToLong(),
                     form["DueDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
                     form["ReviewName"],
-                    form["SendEmails"].ToBoolean(),
+                    form["SendEmails"].ToLower().Contains("true"),//.ToBoolean(),
                     customized.ToList()
                     );
             }
@@ -72,7 +72,7 @@ namespace RadialReview.Controllers
                     GetUser(),
                     form["TeamId"].ToLong(),
                     form["ReviewName"],
-                    true,//form["SendEmails"].ToBoolean(),
+                    true,//form["SendEmails"].ToLower().Contains("true"),
                     form["DueDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
                     form["PrereviewDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24)
                     );
@@ -113,7 +113,9 @@ namespace RadialReview.Controllers
         public ActionResult IssueTeam()
         {
             var teams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id);
-            return PartialView(teams.Select(x => new SelectListItem() { Text = x.GetName(), Value = "" + x.Id }).ToList());
+            var teamSelects = teams.Select(x => new SelectListItem() { Text = x.GetName(), Value = "" + x.Id }).ToList();
+            teamSelects.Insert(0, new SelectListItem() { Selected = true, Text = "", Value = "" });
+            return PartialView(teamSelects);
         }
 
         [Access(AccessLevel.Manager)]

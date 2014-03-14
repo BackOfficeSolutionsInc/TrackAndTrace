@@ -21,13 +21,13 @@
 
 <div class="row">
     <div class="col-md-3 col-sm-4 alignCenter hidden-xs">
-        <div class="" onclick="window.location='@Url.Action("Profile","Account")'">
+        <div class="" onclick="window.location='@Url.Action("Manage","Account")'">
             <div>
                 @Html.Partial("_UserModel", Model.User)
             </div>
             @if (!Model.GetCompletion().FullyComplete)
             {
-                <div class="clickable" onclick="window.location='@Url.Action("Profile","Account")'">
+                <div class="clickable" onclick="window.location='@Url.Action("Manage", "Account")'">
                     <h4>Profile Completion</h4>
                     @Html.Partial("_Completion", Model)
                 </div>
@@ -39,48 +39,70 @@
         <div class="review welcome" style="min-height:30px">
             <h2 class="alignCenter">Welcome to Radial Review</h2>
             <div id="lipsum">
-                <h3>Instructions for employees:</h3>
-                <p>
-                    Welcome to Radial Review, your 360 review provider. 
-
-                    To begin taking your review, click on the 'Task' button above or click <a href="@Url.Action("Index","Task")">here</a>.
-                    After your coworkers have completed their reviews, Radial Review will aggregate the results for you and your manager to discuss.
-                </p>
-                <p>
-                    Your name and profile image are an important way for you to ensure you are accurately reviewed. You can edit your profile image by clicking <a href="@Url.Action("Profile","Account")">here.</a>
-                @if(ViewBag.IsManager)
+                @if (((int?)ViewBag.Organizations ?? 0) == 0)
                 {
-                <h3>Instructions for management:</h3>
+                    <h4>Instructions to access your organization:</h4>
                     <p>
-                        As a manager you can manage the organization from the 'Manage' tab, or by clicking here <a href="@Url.Action("Index","Manage")">here</a>.
-                        From the manage menu, you can add subordinates, job descriptions, questions, and teams for the organization.
-                    </p>
-                    <p>
-                        Questions are items an employee will be reviewed over.
-                        There are four types of questions.
-                        <ul>
-                            <li>Organization-wide</li>
-                            <li>Team</li>
-                            <li>Position</li>
-                            <li>Individual</li>
-                        </ul>
+                        Welcome to Radial Review, your 360 review provider.
 
-
-                        Employees can have questions to the whole organization, teams, positions, and can have personal responsibilities.
-                        Each employee can have a unique set of responsibilities. 
-                        Every user reviewing the employee will rate the employee on how well they are meeting their responsibilities.
+                        You'll need to enter your access code to begin. You should have received a code in your inbox. 
+                        Enter it here to begin:
                     </p>
-                    <p>
-                        Once all the responsibilities are in place, you can issue a review and specify a due date.
-                        This will email all reviewees to let them know that they have a task to complete.
-                    </p>
-                    <p>
-                        After everyone has completed their reviews, managers can view the results and create a report. 
-                        Reports consist of charts and anonymous feedback. 
-                        Subordinates will be able to view the report once they are authorized.
-                    </p>
+                    <form class="form-group" method="post" action="/Organization/Join">
+                        <input class="form-control smallBreak2" type="text" name="id" value="" placeholder="Access code" />
+                        
+                        <div class="row">
+                            <button class="btn btn-primary col-md-2 col-md-offset-5" type="submit">Submit</button>
+                        </div>
+                    </form>
                 }
-                
+                @if (((int?)ViewBag.Organizations ?? 0) != 0)
+                {
+                    <h3>Instructions for employees:</h3>
+                    <p>
+                        Welcome to Radial Review, your 360 review provider.
+
+                        To begin taking your review, click on the 'Task' button above or click <a href="@Url.Action("Index","Task")">here</a>.
+                        After your coworkers have completed their reviews, Radial Review will aggregate the results for you and your manager to discuss.
+                    </p>
+                    <p>
+                        Your name and profile image are an important way for you to ensure you are accurately reviewed. You can edit your profile image by clicking <a href="@Url.Action("Profile","Account")">here.</a>
+
+                        @if (ViewBag.IsManager)
+                        {
+                            <h3>Instructions for management:</h3>
+                            <p>
+                                As a manager you can manage the organization from the 'Manage' tab, or by clicking here <a href="@Url.Action("Index","Manage")">here</a>.
+                                From the manage menu, you can add subordinates, job descriptions, questions, and teams for the organization.
+                            </p>
+                            <p>
+                                Questions are items an employee will be reviewed over.
+                                There are four types of questions.
+                                <ul>
+                                    <li>Organization-wide</li>
+                                    <li>Team</li>
+                                    <li>Position</li>
+                                    <li>Individual</li>
+                                </ul>
+
+
+                                Employees can have questions to the whole organization, teams, positions, and can have personal responsibilities.
+                                Each employee can have a unique set of responsibilities.
+                                Every user reviewing the employee will rate the employee on how well they are meeting their responsibilities.
+                            </p>
+                            <p>
+                                Once all the responsibilities are in place, you can issue a review and specify a due date.
+                                This will email all reviewees to let them know that they have a task to complete.
+                            </p>
+                            <p>
+                                After everyone has completed their reviews, managers can view the results and create a report.
+                                Reports consist of charts and anonymous feedback.
+                                Subordinates will be able to view the report once they are authorized.
+                            </p>
+                        }
+                     </p>
+                }
+
             </div>
         </div>
     </div>

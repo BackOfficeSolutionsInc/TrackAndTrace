@@ -63,8 +63,8 @@
         <div class="col-sm-5 col-sm-push-7">
             <div class="well">
                 <p>
-                    From this menu, you can choose select who each employee will review. The "Default" option ensures that users that are Managers, Subordinates, Teammates, and Peers will review each other.
-                
+                    From this menu, you can choose select who each employee will review. The "Default" option ensures that users will review themselves and their Managers, Subordinates, Teammates, and Peers.
+
                     <i> For the most organizations, selecting "Default" is sufficient.</i>
                 </p>
             </div>
@@ -139,86 +139,86 @@
     </div>
 </div>
 <script>
+        function updateCount(parent) {
+            var count = 0;
+            $(".parent_" + parent).each(function () {
+                if ($(this).is(":checked")) {
+                    count++;
+                }
+            });
+            $("#" + parent + " .counter").html(count);
+        }
 
-    function updateCount(parent) {
-        var count = 0;
-        $(".parent_" + parent).each(function () {
-            if ($(this).is(":checked")) {
-                count++;
-            }
-        });
-        $("#" + parent + " .counter").html(count);
-    }
+        function start_Customize() {
+            debugger;
+            $(".quickSelect a").hover(function () {
+                var parent = $(this).parent().get(0);
+                var clss = $(parent).data("checkclass");
+                $("." + clss + " label").addClass("hovered");
+                if ($(this).hasClass("select")) {
+                    $("." + clss + " label").addClass("select");
+                }
+                if ($(this).hasClass("deselect")) {
+                    $("." + clss + " label").addClass("deselect");
+                }
+            }, function () {
+                var parent = $(this).parent().get(0);
+                var clss = $(parent).data("checkclass");
+                var value = $(this).hasClass("select");
+                $("." + clss + " label").removeClass("hovered");
+                $("." + clss + " label").removeClass("deselect");
+                $("." + clss + " label").removeClass("select");
 
-    function start_Customize() {
-        $(".quickSelect a").hover(function () {
-            var parent = $(this).parent().get(0);
-            var clss = $(parent).data("checkclass");
-            $("." + clss + " label").addClass("hovered");
-            if ($(this).hasClass("select")) {
-                $("." + clss + " label").addClass("select");
-            }
-            if ($(this).hasClass("deselect")) {
-                $("." + clss + " label").addClass("deselect");
-            }
-        }, function () {
-            var parent = $(this).parent().get(0);
-            var clss = $(parent).data("checkclass");
-            var value = $(this).hasClass("select");
-            $("." + clss + " label").removeClass("hovered");
-            $("." + clss + " label").removeClass("deselect");
-            $("." + clss + " label").removeClass("select");
+            })
 
-        })
+            $(".customizeBoxes").change(function () {
+                var parent = $(this).data("parent");
+                updateCount(parent);
+            });
 
-        $(".customizeBoxes").change(function () {
-            var parent = $(this).data("parent");
-            updateCount(parent);
-        });
+            $(".quickSelect a").click(function (item) {
+                var parent = $(this).parent().get(0);
 
-        $(".quickSelect a").click(function (item) {
-            var parent = $(this).parent().get(0);
-
-            var clss = $(parent).data("checkclass");
-            var value = $(this).hasClass("select");
-            $("." + clss + " input").prop("checked", value);
+                var clss = $(parent).data("checkclass");
+                var value = $(this).hasClass("select");
+                $("." + clss + " input").prop("checked", value);
+                updateAll();
+            });
             updateAll();
-        });
-        updateAll();
-    }
+        }
 
-    function unhide(id) {
-        $(".selectable").removeClass("selected");
-        $("#first_" + id).addClass("selected");
-        //var spd = 600;
-        // $(".hideable.selected").addClass("animateHide");
-        var toHide = $(".hideable.selected");
-        toHide.removeClass("selected");
-        setTimeout(function () {
-            toHide.addClass("hide");
-            $("#second_" + id).removeClass("hide");
-            $("#second_" + id).addClass("selected");
+        function unhide(id) {
+            $(".selectable").removeClass("selected");
+            $("#first_" + id).addClass("selected");
+            //var spd = 600;
+            // $(".hideable.selected").addClass("animateHide");
+            var toHide = $(".hideable.selected");
+            toHide.removeClass("selected");
+            setTimeout(function () {
+                toHide.addClass("hide");
+                $("#second_" + id).removeClass("hide");
+                $("#second_" + id).addClass("selected");
 
-        }, 400)
-        //$("#second_" + id).removeClass("animateHide");
-        /*$(".hideable.show").animate({ opacity: 0, left: "50" }, spd, function (){
-            var oldPage = $(this);
-            oldPage.removeClass("show");
-            oldPage.css("left", "0");
-            var newPage = $("#second_" + id);
-            newPage.css("opacity", "0");
-            newPage.css("left", "-50");
-            newPage.addClass("show");
-            newPage.animate({ opacity: 1, left: "0" }, spd);
-        });*/
-        //$(".hideable").removeClass("show");
+            }, 400)
+            //$("#second_" + id).removeClass("animateHide");
+            /*$(".hideable.show").animate({ opacity: 0, left: "50" }, spd, function (){
+                var oldPage = $(this);
+                oldPage.removeClass("show");
+                oldPage.css("left", "0");
+                var newPage = $("#second_" + id);
+                newPage.css("opacity", "0");
+                newPage.css("left", "-50");
+                newPage.addClass("show");
+                newPage.animate({ opacity: 1, left: "0" }, spd);
+            });*/
+            //$(".hideable").removeClass("show");
 
-    }
+        }
 
-    function updateAll() {
-        $(".selectable").each(function () {
-            updateCount($(this).attr("id"));
-        });
-    }
+        function updateAll() {
+            $(".selectable").each(function () {
+                updateCount($(this).attr("id"));
+            });
+        }
 </script>
-<img src="~/Content/img/blank.gif" onload="start_Customize()" />
+<img src="/i/wait" onload="start_Customize()" />

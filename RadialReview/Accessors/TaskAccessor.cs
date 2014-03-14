@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Accessors
@@ -26,7 +27,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var output=AddTask(s.ToUpdateProvider(), task);
+                    var output = AddTask(s.ToUpdateProvider(), task);
                     tx.Commit();
                     s.Flush();
                     return output;
@@ -45,7 +46,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
+        /*
         private void DownloadComplete(object sender, DownloadStringCompletedEventArgs e)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -74,45 +75,36 @@ namespace RadialReview.Accessors
                     s.Flush();
                 }
             }
-        }
+        }*/
 
-        public void ExecuteTask(String server, long taskId)
+        public async Task ExecuteTask(String server, ScheduledTask task)
         {
-            using (var s = HibernateSession.GetCurrentSession())
+            if (task != null)
             {
-                using (var tx = s.BeginTransaction())
+                try
                 {
-                    var task = s.Get<ScheduledTask>(taskId);
-                    if (task != null)
-                    {
-                        try
-                        {
-                            var webClient = new WebClient();
-                            webClient.DownloadStringCompleted += DownloadComplete;
-                            webClient.DownloadStringAsync(new Uri((server.TrimEnd('/') + "/" + task.Url.TrimStart('/')), UriKind.Absolute), taskId);
-                        }
-                        catch (Exception e)
-                        {
-                            log.Error("Scheduled task failed. " + task.Id, e);
-                            task.ExceptionCount += 1;
-                        }
-                        s.Update(task);
-                        tx.Commit();
-                        s.Flush();
-                    }
-
+                    var webClient = new WebClient();
+                    var str = await webClient.DownloadStringTaskAsync(new Uri((server.TrimEnd('/') + "/" + task.Url.TrimStart('/')), UriKind.Absolute));
+                    log.Debug("Scheduled task was executed. " + task.Id);
+                    task.Executed = DateTime.UtcNow;
+                }
+                catch (Exception e)
+                {
+                    log.Error("Scheduled task error. " + task.Id, e);
+                    task.ExceptionCount++;
+                    task.Fire = DateTime.UtcNow + TimeSpan.FromMinutes(Math.Pow(2, task.ExceptionCount + 1));
                 }
             }
         }
 
-        public int GetUnstartedTaskCountForUser(UserOrganizationModel caller, long forUserId,DateTime now)
+        public int GetUnstartedTaskCountForUser(UserOrganizationModel caller, long forUserId, DateTime now)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete).RowCount();
-                    var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId== forUserId && x.PrereviewDue > now && !x.Started).RowCount();
+                    var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started).RowCount();
                     return reviewCount + prereviewCount;
                 }
             }
@@ -129,15 +121,16 @@ namespace RadialReview.Accessors
 
                     //Reviews
                     var reviews = ReviewAccessor.GetReviewsForUser(s, perms, caller, forUserId, 0, int.MaxValue);
-                    var reviewTasks = reviews.Select(x => new TaskModel() { Id=x.Id, Type=TaskType.Review, Completion = x.GetCompletion(), DueDate = x.DueDate, Name = x.Name });
+                    var reviewTasks = reviews.Select(x => new TaskModel() { Id = x.Id, Type = TaskType.Review, Completion = x.GetCompletion(), DueDate = x.DueDate, Name = x.Name });
                     tasks.AddRange(reviewTasks);
 
                     //Prereviews
-                    var prereviews = PrereviewAccessor.GetPrereviewsForUser(s.ToQueryProvider(true), perms, forUserId);
+                    var prereviews = PrereviewAccessor.GetPrereviewsForUser(s.ToQueryProvider(true), perms, forUserId).Where(x=>x.Executed==null);
                     var reviewContainers = new Dictionary<long, String>();
                     var prereviewCount = new Dictionary<long, int>();
-                    foreach(var p in prereviews){
-                        reviewContainers[p.ReviewContainerId] = ReviewAccessor.GetReviewContainer(s.ToQueryProvider(true),perms,p.ReviewContainerId).ReviewName;
+                    foreach (var p in prereviews)
+                    {
+                        reviewContainers[p.ReviewContainerId] = ReviewAccessor.GetReviewContainer(s.ToQueryProvider(true), perms, p.ReviewContainerId).ReviewName;
                         prereviewCount[p.Id] = s.QueryOver<PrereviewMatchModel>().Where(x => x.PrereviewId == p.Id && x.DeleteTime == null).RowCount();
                     }
                     var prereviewTasks = prereviews.Select(x => new TaskModel() { Id = x.Id, Type = TaskType.Prereview, Count = prereviewCount[x.Id], DueDate = x.PrereviewDue, Name = reviewContainers[x.ReviewContainerId] });

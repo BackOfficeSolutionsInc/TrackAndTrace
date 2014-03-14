@@ -14,6 +14,7 @@ namespace RadialReview.Models.Prereview
         public virtual DateTime PrereviewDue { get; set; }
         public virtual long ReviewContainerId { get; set; }
         public virtual bool Started { get; set; }
+        public virtual DateTime? Executed { get; set; }
     }
 
     public class PrereviewModelMap : ClassMap<PrereviewModel>
@@ -25,6 +26,7 @@ namespace RadialReview.Models.Prereview
             Map(x => x.PrereviewDue);
             Map(x => x.ReviewContainerId);
             Map(x => x.ManagerId);
+            Map(x => x.Executed);
         }
     }
 }

@@ -44,7 +44,7 @@ namespace RadialReview.Utilities
         public static PermissionsUtility Create(ISession session, UserOrganizationModel caller)
         {
             var attached = caller;
-            if (!session.Contains(caller))
+            if (!session.Contains(caller) && caller.Id!=UserOrganizationModel.ADMIN_ID)
                 attached = session.Get<UserOrganizationModel>(caller.Id);
             return new PermissionsUtility(session, attached);
         }

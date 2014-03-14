@@ -26,7 +26,7 @@ namespace RadialReview
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             ServerUtility.RegisterCacheEntry();
-            await ServerUtility.ExecuteAllTasks();
+            ServerUtility.Reschedule();
 
             new ApplicationAccessor().EnsureApplicationExists();
 

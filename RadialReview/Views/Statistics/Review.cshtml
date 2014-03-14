@@ -70,50 +70,54 @@
             </div>
         </div>
     </div>
-    <div class="panel-heading">
-        <h3 class="panel-title">Individual progress</h3>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-condensed table-hover">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th class="alignCenter" style="width:10px;" >Reviewed by</th>
-                    <th class="alignCenter" style="width:10px;" ># Reviewed</th>
-                    <th class="alignCenter" style="width:150px;">Completion</th>
-                    @*<th style="width:10px;">Report</th>*@
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var review in Model.Reviews.OrderByDescending(x=>{
-                    double complete=Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
-                    double total = Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
-                    return complete / total;
-                }))
-                {
+    @if (ViewBag.IsManager ?? false)
+    {
+        <div class="panel-heading">
+            <h3 class="panel-title">Individual progress</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-condensed table-hover">
+                <thead>
                     <tr>
-                        <td class="table-hover-underline">@review.ForUser.GetNameAndTitle()</td>
-                        <td class="alignCenter">
-                            @Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete))/
-                            @Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count())
-                        </td>
-                        <td class="alignCenter"> 
-                            @Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete))/
-                            @Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count())
-                        </td>
-                        <td>@Html.Partial("_Completion", review.GetCompletion())</td>
-                        @*<td>
-                            @if (review.ForUser.GetPersonallyManaging())
-                            {
-                                <a href="/Review/Details/@review.ClientReview.Id">Report</a>
-                            }
-                        </td>*@
+                        <th>Name</th>
+                        <th class="alignCenter" style="width:10px;">Reviewed by</th>
+                        <th class="alignCenter" style="width:10px;"># Reviewed</th>
+                        <th class="alignCenter" style="width:150px;">Completion</th>
+                        @*<th style="width:10px;">Report</th>*@
                     </tr>
-                }
-            </tbody>
+                </thead>
+                <tbody>
+                    @foreach (var review in Model.Reviews.OrderByDescending(x =>
+                    {
+                        double complete = Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
+                        double total = Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
+                        return complete / total;
+                    }))
+                    {
+                        <tr>
+                            <td class="table-hover-underline">@review.ForUser.GetNameAndTitle()</td>
+                            <td class="alignCenter">
+                                @Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete))/
+                                @Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count())
+                            </td>
+                            <td class="alignCenter">
+                                @Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete))/
+                                @Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count())
+                            </td>
+                            <td>@Html.Partial("_Completion", review.GetCompletion())</td>
+                            @*<td>
+                                    @if (review.ForUser.GetPersonallyManaging())
+                                    {
+                                        <a href="/Review/Details/@review.ClientReview.Id">Report</a>
+                                    }
+                                </td>*@
+                        </tr>
+                    }
+                </tbody>
 
-        </table>
-    </div>
+            </table>
+        </div>
+    }
 </div>
 
 

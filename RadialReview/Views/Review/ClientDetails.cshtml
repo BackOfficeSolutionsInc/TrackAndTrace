@@ -92,6 +92,11 @@
             margin-top: 20px;
         }
 
+        .fixed {
+            position: fixed;
+            top: 60px;
+        }
+
             .row-title.first {
                 margin-top: -30px;
                 padding-top: 20px;
@@ -113,7 +118,7 @@
         Print
     </a-->
     <div class="col-lg-3 noPrint noPad">
-        <div class="sidebar noPad sidebar-fixed">
+        <div id="sidebar" class="sidebar noPad sidebar-fixed">
             <div class="sidebar-header alignCenter">
                 Quick Links
             </div>
@@ -370,11 +375,21 @@
     <script src="/scripts/d3/Plot.js"></script>
     <script src="~/Scripts/review/translateSlider.js"></script>
     <script>
+        var $sidebar = $("#sidebar"), $window = $(window), offset = $sidebar.offset(), topPadding = 60;
+
+            $window.scroll(function () {
+                if ($window.scrollTop() > offset.top-topPadding) {
+                    $sidebar.addClass('fixed');
+                } else {
+                    $sidebar.removeClass('fixed');
+                }
+            });
+
         var categoryLookup = {
             @foreach (var kv in Model.Categories)
             {
                     @:"@(kv.Key)": "@(kv.Value)",
-                                                                                                                                                                }
+                                                                                                                                                                            }
         };
 
         var updates = [];

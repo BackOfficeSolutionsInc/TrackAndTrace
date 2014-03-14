@@ -109,9 +109,11 @@
         }
     </script>
 }
+@{
+    var users = Model.Review.Reviews.ToListAlive().Where(x => x.ForUser.GetPersonallyManaging()).ToList();
+}
 
-
-    @if (!Model.Review.Reviews.ToListAlive().Any())
+    @if (!users.Any())
     {
         <div class="panel panel-primary">
             <div class="panel-heading">
@@ -119,7 +121,7 @@
                 <div class="pull-right"></div>
             </div>
             <div class="panel-body gray">
-                There aren't any users in this review.
+                You don't manage any users in this review.
             </div>
         </div>
     }
@@ -139,7 +141,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var r in Model.Review.Reviews.ToListAlive().Where(x =>true).OrderBy(x => x.ForUser.GetNameAndTitle()))
+                        @foreach (var r in users.OrderBy(x => x.ForUser.GetNameAndTitle()))
                         {
                             <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
                                 @if (r.ForUser.GetPersonallyManaging()) { @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"

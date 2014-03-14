@@ -49,12 +49,15 @@
     </div>
 
 </div>
-<button type="submit" name="review" class="btn btn-primary" value="issueReview">Issue Review</button>
+<input name="review" value="issueReview" type="hidden">
+<button type="submit" id="submitButton" class="btn btn-primary">Issue Review</button>
 
 <script>
     function startCustomize() {
         $('form').unbind('submit');
         $("form").submit(function (event) {
+            debugger;
+            $("#submitButton").prop("disabled", true)
             if ($(".customizeBoxes:checked").length == 0) {
                 alert("You haven't customized the review. You must ensure that some members review each other.");
                 event.preventDefault();

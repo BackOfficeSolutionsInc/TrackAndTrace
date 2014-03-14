@@ -232,10 +232,10 @@ namespace RadialReview.Controllers
         }
 
 
-        [Access(AccessLevel.Manager)]
+        [Access(AccessLevel.UserOrganization)]
         public JsonResult ReviewsData(long id)
         {
-            var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, true, true);
+            var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, true, true,false);
 
             /*var managers = review.Reviews.Where(x => x.ForUser.IsManager()).Count();
             var managersCompleted = review.Reviews.Where(x => x.ForUser.IsManager() && x.Complete).Count();
@@ -298,11 +298,11 @@ namespace RadialReview.Controllers
                 Completion=completion,
                 Reports =reports,
                 Stats=statistics,
-                Individuals = review.Reviews.Select(x => new
+                /*Individuals = review.Reviews.Select(x => new
                 {
                     Name = x.ForUser.GetName(),
                     Completion = x.GetCompletion(),
-                }).ToList()
+                }).ToList()*/
             };
 
             return Json(ResultObject.Create(output), JsonRequestBehavior.AllowGet);

@@ -8,13 +8,16 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 
 namespace RadialReview.Controllers
 {
     public class ImageController : BaseController
-    {
+    {                    
+        public static readonly byte[] TrackingGif = { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x1, 0x0, 0x1, 0x0, 0x80, 0x0, 0x0, 0xff, 0xff, 0xff, 0x0, 0x0, 0x0, 0x2c, 0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x1, 0x0, 0x0, 0x2, 0x2, 0x44, 0x1, 0x0, 0x3b };
+
         //
         // GET: /Img/
         [Access(AccessLevel.Any)]
@@ -29,7 +32,9 @@ namespace RadialReview.Controllers
                 else if (id == "placeholder")
                 {
                     imagePath = ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder; //Server.MapPath("~/" + ConstantStrings.ImagePlaceholder);
-
+                }else if(id=="wait"){
+                    Thread.Sleep(500);
+                    return File(TrackingGif, "image/gif");
                 }else{
                     var user = GetUserModel();
                     imagePath = _ImageAccessor.GetImagePath(user, id);
@@ -37,7 +42,6 @@ namespace RadialReview.Controllers
 
                 if (dim!=null)
                 {
-
                     try
                     {
                         var args = dim.Split('x');

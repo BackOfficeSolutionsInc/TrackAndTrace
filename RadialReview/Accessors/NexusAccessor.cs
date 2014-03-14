@@ -190,7 +190,7 @@ namespace RadialReview.Accessors
             var url = "Account/Register?message=Please%20login%20to%20join%20" + caller.Organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
             url = ProductStrings.BaseUrl + url;
             //var shorenedUrl = ProductStrings.BaseUrl + _UrlAccessor.RecordUrl(url, email);
-            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName);
+            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName,id);
             subject = Regex.Replace(subject, @"[^A-Za-z0-9 \.\,&]", "");
             Emailer.SendEmail(s.GetUpdateProvider(),emailAddress, subject, body);
             return id;

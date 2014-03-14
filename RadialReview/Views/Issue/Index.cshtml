@@ -33,17 +33,17 @@
                 </div>
                 <div class="col-md-7 col-md-pull-5" style="padding-top: 25px;">
                     <div class="row alignCenter" data-toggle="buttons">
-                        <div class="col-sm-4">
+                        @*<div class="col-sm-4">
                             <label class="btn btn-default fullWidth" onclick="loadOrganization()">
                                 <input type="radio" name="forWho" value="all" class="hidden" />All of @Model.OrganizationName
                             </label>
-                        </div>
-                        <div class="col-sm-4">
+                        </div>*@
+                        <div class="col-sm-6">
                             <label class="btn btn-default  fullWidth" onclick="loadTeam()">
-                                <input type="radio" name="forWho" value="team" class="hidden" />A particular team
+                                <input type="radio" name="forWho" value="team" class="hidden" />One of my teams
                             </label>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <label class="btn btn-default disabled fullWidth" title="Coming soon." onclick="loadClient()">
                                 <input type="radio" name="forWho" value="team" class="hidden" />An outside client
                             </label>
@@ -65,6 +65,7 @@
 @using (Html.BeginScripts())
 {
     <script>
+        
         var offset = new Date().getTimezoneOffset();
         $("#TimeZoneOffset").val(offset/60);
 
@@ -79,13 +80,12 @@
 
                 }
             });
-
         }
 
         function loadOrganization() {
-            loadPage("#pageIndex", "@Url.Action("IssueOrganization","Issue")");
+            $("#TeamId").val("@ViewBag.OrganizationId");
+            loadPage("#pageIndex", "/Issue/IssueOrganization/@ViewBag.OrganizationId");
         }
-
 
         function loadTeam() {
             loadPage("#pageIndex", "/Issue/IssueTeam/" + $("#team").val());
