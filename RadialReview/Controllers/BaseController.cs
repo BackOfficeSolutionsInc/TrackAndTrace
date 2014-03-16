@@ -17,6 +17,8 @@ using RadialReview.Models.Json;
 using RadialReview.Utilities.Attributes;
 using NHibernate;
 using RadialReview.Engines;
+using System.Configuration;
+using RadialReview.Utilities;
 
 
 namespace RadialReview.Controllers
@@ -223,7 +225,9 @@ namespace RadialReview.Controllers
                 Thread.CurrentThread.CurrentCulture = culture;
                 Thread.CurrentThread.CurrentUICulture = culture;
             }
-
+            
+            filterContext.Controller.ViewBag.IsLocal = ServerUtility.GetConfigValue("BaseUrl").Contains("localhost");
+            
             filterContext.Controller.ViewBag.HasBaseController = true;
             if (IsLoggedIn())
             {
@@ -266,8 +270,8 @@ namespace RadialReview.Controllers
                     filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser, oneUser.Id, DateTime.UtcNow);
                     //filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
                     filterContext.Controller.ViewBag.UserName = name;
-                    filterContext.Controller.ViewBag.IsManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization;
-                    filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization;
+                    filterContext.Controller.ViewBag.IsManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+                    filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
                     filterContext.Controller.ViewBag.UserId = oneUser.Id;
                     filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
                 }

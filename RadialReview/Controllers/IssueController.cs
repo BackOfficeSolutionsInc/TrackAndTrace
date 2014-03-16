@@ -62,7 +62,7 @@ namespace RadialReview.Controllers
                     form["TeamId"].ToLong(),
                     form["DueDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
                     form["ReviewName"],
-                    form["SendEmails"].ToLower().Contains("true"),//.ToBoolean(),
+                    form["SendEmails"].ToBooleanJS(),//.ToBoolean(),
                     customized.ToList()
                     );
             }
@@ -74,7 +74,8 @@ namespace RadialReview.Controllers
                     form["ReviewName"],
                     true,//form["SendEmails"].ToLower().Contains("true"),
                     form["DueDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
-                    form["PrereviewDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24)
+                    form["PrereviewDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
+                    form["EnsureDefault"].ToBooleanJS()
                     );
 
             }

@@ -274,8 +274,9 @@ namespace RadialReview.Engines
             var xDimId = dimensions.FirstOrDefault().NotNull(x => x.Id);
             var yDimId = dimensions.Skip(1).FirstOrDefault().NotNull(x => x.Id);
 
-            var dates=scatterDataPoints.Select(x=>x.Date);
-
+            var dates=scatterDataPoints.Select(x=>x.Date).ToList();
+            if (!dates.Any())
+                dates.Add(DateTime.UtcNow);
 
             var scatter = new ScatterPlot()
             {
@@ -285,7 +286,7 @@ namespace RadialReview.Engines
                 InitialXDimension = xDimId,
                 InitialYDimension = yDimId ?? xDimId,
                 Points = scatterDataPoints,
-                MinDate=dates.Min(),
+                MinDate = dates.Min(),
                 MaxDate = dates.Max(),
                 Legend=legend.ToList(),
             };

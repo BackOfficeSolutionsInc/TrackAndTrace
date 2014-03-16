@@ -81,7 +81,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.Askable.Id == askableId && x.AboutUserId == userId).List();
+                    var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.Askable.Id == askableId && x.AboutUserId == userId && x.DeleteTime == null).List();
                     var deleteTime = DateTime.UtcNow;
 
                     foreach (var answer in answers)
@@ -152,7 +152,7 @@ namespace RadialReview.Accessors
                     review.DeleteTime = deleteTime;
                     s.Update(review);
                     review.DeleteTime = deleteTime;
-                    var answers = s.QueryOver<AnswerModel>().Where(x => (x.AboutUserId == userOrganizationId || x.ByUserId == userOrganizationId) && x.ForReviewContainerId == reviewContainerId).List();
+                    var answers = s.QueryOver<AnswerModel>().Where(x => (x.AboutUserId == userOrganizationId || x.ByUserId == userOrganizationId) && x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null).List();
                     foreach (var a in answers)
                     {
                         a.DeleteTime = deleteTime;
@@ -258,7 +258,7 @@ namespace RadialReview.Accessors
 	            using(var tx=s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).EditReview(reviewId);
-                    var uncompleted=s.QueryOver<AnswerModel>().Where(x => x.ForReviewId == reviewId && x.Required && !x.Complete).RowCount();
+                    var uncompleted = s.QueryOver<AnswerModel>().Where(x => x.ForReviewId == reviewId && x.Required && !x.Complete && x.DeleteTime == null).RowCount();
                     var review = s.Get<ReviewModel>(reviewId);
 
                     var updated = false;

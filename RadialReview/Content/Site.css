@@ -405,6 +405,24 @@ body {
     border: 4px solid #6271a5;
 }
 
+#local {    
+    background-color:red;
+    width:20px;
+    height:20px;
+    position:fixed;
+    top:16px;
+    left:16px;
+    border-radius:16px;
+    z-index: 1000000;
+}
+#local:after {    
+    content:'Local';
+    left:40px;
+    position:fixed;
+    color:red;
+}
+
+
 #logo .circle2 {
     border-radius: 49px;
     width: 49px;

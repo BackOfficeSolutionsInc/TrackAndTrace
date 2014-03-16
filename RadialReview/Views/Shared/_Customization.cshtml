@@ -87,7 +87,7 @@
                         var first = true;
                         var firstId = -1L;
                     }
-                    @foreach (var user in Model.Subordinates)
+                    @foreach (var user in Model.Subordinates.OrderBy(x=>x.GetNameAndTitle()))
                     {
                         <div id="first_@user.Id" class="@(first?"selected":"") selectable clickable" data-id="@(user.Id)" onclick="unhide(@user.Id)">
                             <div class="pull-left counter">0</div>
@@ -110,10 +110,10 @@
                 @{
                     first = true;
                 }
-                @foreach (var firstUser in Model.Subordinates)
+                @foreach (var firstUser in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
                 {
                     <div id="second_@firstUser.Id" class="col-xs-6 noPad alignLeft customize hideable @(first ? "selected" : "hide")">
-                        @foreach (var secondUser in Model.AllUsers)
+                        @foreach (var secondUser in Model.AllUsers.OrderBy(x => x.GetNameAndTitle()))
                         {
                             var classes = new HashSet<String>();
                             foreach (var s in Model.Selectors)

@@ -85,6 +85,15 @@ namespace RadialReview.Controllers
             return View(model);
         }
 
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult Delete(long id)
+        {
+            _ReviewAccessor.DeleteReviewContainer(GetUser(), id);
+            return Json(ResultObject.Success("Removed review."), JsonRequestBehavior.AllowGet);
+        }
+
+
         /*
         [Access(AccessLevel.Manager)]
         public ActionResult Details(long id)

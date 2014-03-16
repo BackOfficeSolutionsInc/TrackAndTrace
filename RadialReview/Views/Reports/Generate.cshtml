@@ -51,7 +51,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var review in Model.Reviews.OrderByDescending(x => x.Review.DateCreated))
+                @foreach (var review in Model.Reviews.Where(x=>x.Review.Alive()).OrderByDescending(x => x.Review.DateCreated))
                 {
                     <tr class="startHidden clickable" onclick="location.href = '/Reports/List/@review.Review.Id';">
                         <td class="table-hover-underline">@review.Review.ReviewName</td>

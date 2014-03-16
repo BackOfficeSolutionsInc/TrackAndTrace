@@ -7,7 +7,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class ReviewsModel : ILongIdentifiable, ICompletable
+    public class ReviewsModel : ILongIdentifiable, ICompletable,IDeletable
     {
         public virtual long Id { get; protected set; }
         public virtual long CreatedById { get; set; }
@@ -15,6 +15,7 @@ namespace RadialReview.Models
         public virtual DateTime DueDate { get; set; }
         public virtual DateTime? ReportsDueDate { get; set; }
         public virtual String ReviewName { get; set; }
+        public virtual bool EnsureDefault { get; set; }
         public virtual bool ReviewManagers { get; set; }
         public virtual bool ReviewSelf { get; set; }
         public virtual bool ReviewSubordinates { get; set; }
@@ -26,6 +27,7 @@ namespace RadialReview.Models
         public virtual long ForTeamId { get; set; }
         public virtual CompletionModel Completion { get; set; }
         public virtual long? TaskId { get; set; }
+        public virtual DateTime? DeleteTime { get; set; }
         public virtual ICompletionModel GetCompletion(bool split=false)
         {
             return Completion;
@@ -69,6 +71,8 @@ namespace RadialReview.Models
             Map(x => x.ReviewTeammates);
             Map(x => x.ReviewPeers);
             Map(x => x.ReportsDueDate);
+            Map(x => x.EnsureDefault);
+            Map(x => x.DeleteTime);
 
             Map(x => x.ForTeamId);
 

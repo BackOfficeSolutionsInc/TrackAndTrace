@@ -20,56 +20,7 @@ namespace RadialReview.Controllers
         public static NexusAccessor NexusAccessor = new NexusAccessor();
         public static OrganizationAccessor OrganizationAccessor = new OrganizationAccessor();
 
-        [HttpPost]
-        [Access(AccessLevel.Manager)]
-        public JsonResult AddManagedUserToOrganization(CreateUserOrganizationViewModel model)
-        {
-            try
-            {
-                var user = GetUser().Hydrate().Organization().Execute();
-                var org = user.Organization;
-                if (org == null)
-                    throw new PermissionsException();
-                if (org.Id != model.OrgId)
-                    throw new PermissionsException();
-
-                if (model.Position.CustomPosition != null)
-                {
-                    var newPosition = OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, model.Position.CustomPositionId, model.Position.CustomPosition);
-                    model.Position.PositionId = newPosition.Id;
-                }
-
-                var nexusId = NexusAccessor.JoinOrganizationUnderManager(user, model.ManagerId, model.IsManager, model.Position.PositionId, model.Email, model.FirstName, model.LastName);
-
-                var message = "Successfully added " + model.FirstName + " " + model.LastName + ".";
-                if (GetUser().Organization.SendEmailImmediately)
-                {
-                    message += " An invitation has been sent to " + model.Email + ".";
-                    return Json(ResultObject.CreateMessage(StatusType.Success, message));
-                }
-                else
-                {
-                    message += " The invitation has NOT been sent. To send, click \"Send Invites\" below.";
-                    return Json(ResultObject.CreateMessage(StatusType.Warning, message));
-                }
-            }
-            catch (RedirectException e)
-            {
-                return Json(new ResultObject(e));
-            }
-            catch (Exception)
-            {
-                return Json(new ResultObject(true, ExceptionStrings.AnErrorOccuredContactUs));
-            }
-        }
-
-        [Access(AccessLevel.Manager)]
-        public JsonResult SendAllEmails()
-        {
-            var count = NexusAccessor.SendAllJoinEmails(GetUser(), GetUser().Organization.Id);
-            return Json(ResultObject.Create(true, "Sent " + count + " email".Pluralize(count) + "."), JsonRequestBehavior.AllowGet);
-        }
-
+       
         private ActionResult MatchingNexus(NexusModel nexus,Func<ActionResult> otherwise)
         {
             try
@@ -133,35 +84,7 @@ namespace RadialReview.Controllers
                         };
                     case NexusActions.CreateReview:
                         {
-                            await Task.Run(() =>
-                            {
-                                var now=DateTime.UtcNow;
-                                var admin = new UserOrganizationModel()
-                                {
-                                    IsRadialAdmin = true,
-                                    Id = UserOrganizationModel.ADMIN_ID,
-                                };
-                                var reviewContainerId = nexus.GetArgs()[0].ToLong();
-                                var whoReviewsWho = _PrereviewAccessor.GetAllMatchesForReview(admin, reviewContainerId);
-                                //var prereview = _PrereviewAccessor.GetPrereview(admin, prereviewId);
-                                var reviewContainer = _ReviewAccessor.GetReviewContainer(admin, reviewContainerId, false, false);
-                                var organization = _OrganizationAccessor.GetOrganization(admin, reviewContainer.ForOrganizationId);
-
-                                int sent, errors;
-                                List<Exception> exceptions = new List<Exception>();
-                                using (var s = HibernateSession.GetCurrentSession())
-                                {
-                                    using (var tx = s.BeginTransaction())
-                                    {
-                                        var perm = PermissionsUtility.Create(s, admin);
-                                        _ReviewAccessor.CreateReviewFromPrereview(s.ToDataInteraction(true), perm, admin, reviewContainer, organization.GetName(), true, whoReviewsWho, out sent, out errors, ref exceptions);
-                                        _PrereviewAccessor.UnsafeExecuteAllPrereviews(s, reviewContainerId, now);
-                                        //Keep these:
-                                        tx.Commit();
-                                        s.Flush();
-                                    }
-                                }
-                            });
+                            await _ReviewEngine.CreateReviewFromPrereview(nexus);
                             return RedirectToAction("Index", "Home");
                         };
                 }
@@ -174,5 +97,63 @@ namespace RadialReview.Controllers
             log.Fatal("Nexus fall-through");
             return View();
         }
+
+        [HttpPost]
+        [Access(AccessLevel.Manager)]
+        public JsonResult AddManagedUserToOrganization(CreateUserOrganizationViewModel model)
+        {
+            try
+            {
+                var user = GetUser().Hydrate().Organization().Execute();
+                var org = user.Organization;
+                if (org == null)
+                    throw new PermissionsException();
+                if (org.Id != model.OrgId)
+                    throw new PermissionsException();
+
+                if (model.Position.CustomPosition != null)
+                {
+                    var newPosition = OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, model.Position.CustomPositionId, model.Position.CustomPosition);
+                    model.Position.PositionId = newPosition.Id;
+                }
+
+                var nexusId = NexusAccessor.JoinOrganizationUnderManager(user, model.ManagerId, model.IsManager, model.Position.PositionId, model.Email, model.FirstName, model.LastName);
+
+                var message = "Successfully added " + model.FirstName + " " + model.LastName + ".";
+                if (GetUser().Organization.SendEmailImmediately)
+                {
+                    message += " An invitation has been sent to " + model.Email + ".";
+                    return Json(ResultObject.CreateMessage(StatusType.Success, message));
+                }
+                else
+                {
+                    message += " The invitation has NOT been sent. To send, click \"Send Invites\" below.";
+                    return Json(ResultObject.CreateMessage(StatusType.Warning, message));
+                }
+            }
+            catch (RedirectException e)
+            {
+                return Json(new ResultObject(e));
+            }
+            catch (Exception)
+            {
+                return Json(new ResultObject(true, ExceptionStrings.AnErrorOccuredContactUs));
+            }
+        }
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult SendAllEmails()
+        {
+            var count = NexusAccessor.SendAllJoinEmails(GetUser(), GetUser().Organization.Id);
+            return Json(ResultObject.Create(true, "Sent " + count + " email".Pluralize(count) + "."), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult ResendAllEmails()
+        {
+            var count = NexusAccessor.ResendAllEmails(GetUser(), GetUser().Organization.Id);
+            return Json(ResultObject.Create(true, "Sent " + count + " email".Pluralize(count) + "."), JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

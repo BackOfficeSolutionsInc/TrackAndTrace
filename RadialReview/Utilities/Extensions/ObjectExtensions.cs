@@ -37,6 +37,10 @@ namespace RadialReview
         {
             return bool.Parse(s);
         }
+        public static bool ToBooleanJS(this String s)
+        {
+            return s.ToLower().Contains("true");
+        }
 
         public static DateTime ToDateTime(this String s,String format,double offset=0.0)
         {

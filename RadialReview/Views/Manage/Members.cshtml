@@ -49,8 +49,20 @@
     <script>
 
         function SendEmails() {
+            $("#sendButton").prop("disabled", true);
             $.ajax({
                 url: "/Nexus/SendAllEmails",
+                success: function (data) {
+                    StoreJsonAlert(data);
+                    location.reload();
+                }
+            });
+        }
+
+        function ResendEmails() {
+            $("#resendButton").prop("disabled", true);
+            $.ajax({
+                url: "/Nexus/ResendAllEmails",
                 success: function (data) {
                     StoreJsonAlert(data);
                     location.reload();
@@ -63,8 +75,11 @@
 
 <div class="panel panel-primary">
     <div style="float:right;padding:2px;" class="">
-        <button class="btn btn-default  plus" onclick="SendEmails()">
-            Send Invites
+        <button id="resendButton" class="btn btn-default  plus" onclick="ResendEmails()">
+            Resend all invites
+        </button>
+        <button id="sendButton" class="btn btn-default  plus" onclick="SendEmails()">
+            Send invites
         </button>
         <button class="btn btn-default  plus" style="width: 69px;" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
             Add

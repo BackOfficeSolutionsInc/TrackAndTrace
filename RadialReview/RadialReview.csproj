@@ -236,6 +236,7 @@
     <Compile Include="Accessors\RelationshipAccessor.cs" />
     <Compile Include="Accessors\ResponsibilitiesAccessor.cs" />
     <Compile Include="Accessors\ReviewAccessor\CreateReview.cs" />
+    <Compile Include="Accessors\ReviewAccessor\DeleteReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\GenerateReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\GetReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\PopulateReview.cs" />

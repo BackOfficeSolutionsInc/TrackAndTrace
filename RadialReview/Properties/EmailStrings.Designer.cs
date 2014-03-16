@@ -171,12 +171,12 @@ namespace RadialReview.Properties {
         ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
         ///&lt;p&gt;The pre-review process has started. You&apos;ll need to customize your subordinates&apos; reviews by  {1}. You can begin your pre-review customizations by clicking the following link:&lt;/p&gt;
         ///&lt;br&gt; 
-        ///    &lt;a href=&quot;{3}&quot;&gt;{4}&lt;/a&gt;
+        ///    &lt;a href=&quot;{2}&quot;&gt;{3}&lt;/a&gt;
         ///&lt;br /&gt;&lt;br /&gt;If you believe you have received this message in error, you may simply ignore this email. If you have any questions, feedback, or concerns, you can reply to this e-mail address.
         ///&lt;br /&gt;
         ///&lt;br /&gt;
         ///Sincerely,&lt;br/&gt;
-        ///The {5} Team.
+        ///The {4} Team.
         /// </summary>
         public static string Prereview_Body {
             get {

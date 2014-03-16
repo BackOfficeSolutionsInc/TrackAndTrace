@@ -48,14 +48,23 @@
                 </div>
             </div>
         </div>
-        @*<div class="row smallBreak2">
-            <div class="col-md-6">
-                <label class="control-label">Email employees:</label>
+        <div class="row smallBreak2" >
+            
+            <div class="col-md-6" title="Any reviews resulting from managers that do not customize their pre-review will automatically be populated with a default review group consisting of themselves and thier peers, managers, and teammates.">
+                <label class="control-label">Ensure default:</label>
             </div>
             <div class="col-md-4">
-                @Html.CheckBox("SendEmails")
+                @Html.CheckBox("EnsureDefault",true)
             </div>
-        </div>*@
+        </div>
+        @*<div class="row smallBreak2">
+                <div class="col-md-6">
+                    <label class="control-label">Email employees:</label>
+                </div>
+                <div class="col-md-4">
+                    @Html.CheckBox("SendEmails")
+                </div>
+            </div>*@
     </div>
 </div>
 <input name="review" value="issuePrereview" type="hidden">
@@ -71,8 +80,7 @@
                 alert("You must specify a review name.");
                 event.preventDefault();
             }
-            if ($("#DueDate").val().trim()=="")
-            {
+            if ($("#DueDate").val().trim() == "") {
                 alert("You must specify a due date.");
                 event.preventDefault();
             }
@@ -82,6 +90,8 @@
             }
             return;
         });
+
+        qtip();
 
 
         var nowTemp = new Date();

@@ -21,19 +21,29 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public async Task<bool> Reschedule()
         {
-            var tasks =_TaskAccessor.GetTasksToExecute(DateTime.UtcNow);
-            await Task.WhenAll(tasks.Select( task =>
+
+            var now = DateTime.UtcNow;
+            var tasks =_TaskAccessor.GetTasksToExecute(now);
+            try
             {
-                try
+                _TaskAccessor.MarkStarted(tasks, now);
+                await Task.WhenAll(tasks.Select(task =>
                 {
-                   return _TaskAccessor.ExecuteTask(ServerUtility.GetConfigValue("BaseUrl"), task);
-                }
-                catch (Exception e)
-                {
-                    log.Error("Task execution exception.", e);
-                    return null;
-                }
-            }).Where(x=>x!=null));
+                    try
+                    {
+                        return _TaskAccessor.ExecuteTask(ServerUtility.GetConfigValue("BaseUrl"), task);
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Task execution exception.", e);
+                        return null;
+                    }
+                }).Where(x => x != null));
+            }
+            finally
+            {
+                _TaskAccessor.MarkStarted(tasks, null);
+            }
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())

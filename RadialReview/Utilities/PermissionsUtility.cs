@@ -459,9 +459,12 @@ namespace RadialReview.Utilities
             if (team.ManagedBy == caller.Id)
                 return this;
 
-            ManagerAtOrganization(caller.Id, caller.Organization.Id);
+            ManagingOrganization();
 
             return this;
+
+            //ManagerAtOrganization(caller.Id, caller.Organization.Id);
+            //return this;
         }
 
         public PermissionsUtility EditReview(long reviewId)

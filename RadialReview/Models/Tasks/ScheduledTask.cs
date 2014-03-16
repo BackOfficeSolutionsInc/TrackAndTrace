@@ -15,6 +15,7 @@ namespace RadialReview.Models.Tasks
         public virtual DateTime? Executed { get; set; }
         public virtual int ExceptionCount { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
+        public virtual DateTime? Started { get; set; }
 
     }
 
@@ -25,9 +26,10 @@ namespace RadialReview.Models.Tasks
             Id(x => x.Id);
             Map(x => x.Url);
             Map(x => x.Fire);
+            Map(x => x.Started);
             Map(x => x.Executed);
-            Map(x => x.ExceptionCount);
             Map(x => x.DeleteTime);
+            Map(x => x.ExceptionCount);
         }
     }
 }

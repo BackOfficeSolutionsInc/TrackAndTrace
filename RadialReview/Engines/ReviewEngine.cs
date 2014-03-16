@@ -6,12 +6,15 @@ using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Engines
 {
     public class ReviewEngine : BaseEngine
     {
+
+        public static string DEFAULT = "Default";
 
         public List<ReviewsModel> Filter(List<UserOrganizationModel> subordinates, List<ReviewsModel> allReviews)
         {
@@ -81,11 +84,9 @@ namespace RadialReview.Engines
             var Default = new CustomizeSelector()
             {
                 Name = "Default",
-                UniqueId = "Default",
+                UniqueId = DEFAULT, //Don't change
                 Pairs = managers.Pairs.Union(subordinates.Pairs).Union(peers.Pairs).Union(teams.Pairs).Union(self.Pairs).ToList()
             };
-
-            
 
             var combine=new List<CustomizeSelector>() {  Default,all, self, managers, subordinates, peers, teams };
 
@@ -122,6 +123,43 @@ namespace RadialReview.Engines
             return model;
         }
 
+        public async Task CreateReviewFromPrereview(NexusModel nexus)
+        {
+            await Task.Run(() =>
+            {
+                var now = DateTime.UtcNow;
+                var admin = new UserOrganizationModel()
+                {
+                    IsRadialAdmin = true,
+                    Id = UserOrganizationModel.ADMIN_ID,
+                };
+                var reviewContainerId = nexus.GetArgs()[0].ToLong();
+                
+                //var prereview = _PrereviewAccessor.GetPrereview(admin, prereviewId);
+                var reviewContainer = _ReviewAccessor.GetReviewContainer(admin, reviewContainerId, false, false);
+                admin.Organization = new OrganizationModel() { Id = reviewContainer.ForOrganizationId };
 
+
+                var defaultCustomize = GetCustomizeModel(admin, reviewContainer.ForTeamId).Selectors.Where(x=>x.UniqueId==DEFAULT).SelectMany(x=>x.Pairs).ToList();
+
+                var whoReviewsWho = _PrereviewAccessor.GetAllMatchesForReview(admin, reviewContainerId, defaultCustomize);
+                var organization = _OrganizationAccessor.GetOrganization(admin, reviewContainer.ForOrganizationId);
+
+                int sent, errors;
+                List<Exception> exceptions = new List<Exception>();
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    using (var tx = s.BeginTransaction())
+                    {
+                        var perm = PermissionsUtility.Create(s, admin);
+                        _ReviewAccessor.CreateReviewFromPrereview(s.ToDataInteraction(true), perm, admin, reviewContainer, organization.GetName(), true, whoReviewsWho, out sent, out errors, ref exceptions);
+                        _PrereviewAccessor.UnsafeExecuteAllPrereviews(s, reviewContainerId, now);
+                        //Keep these:
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            });
+        }
     }
 }

@@ -161,6 +161,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
         public static List<UserOrganizationModel> GetSubordinates(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forId)
         {
             perms.ViewUserOrganization(forId, false);

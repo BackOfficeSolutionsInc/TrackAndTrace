@@ -1,9 +1,11 @@
 ﻿using NHibernate;
+using RadialReview.Engines;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Prereview;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Models.Reviews;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.UserModels;
 using RadialReview.Properties;
@@ -69,7 +71,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void CreatePrereview(UserOrganizationModel caller, long forTeamId, String reviewName, bool sendEmails, DateTime dueDate, DateTime preReviewDue)
+        public void CreatePrereview(UserOrganizationModel caller, long forTeamId, String reviewName, bool sendEmails, DateTime dueDate, DateTime preReviewDue,bool ensureDefault)
         {
             if (preReviewDue >= dueDate)
                 throw new PermissionsException("The pre-review due date must be before the review due date.");
@@ -90,6 +92,7 @@ namespace RadialReview.Accessors
                     ReviewSubordinates = reviewSubordinates,
                     ReviewTeammates = reviewTeammates,*/
                     ForTeamId = forTeamId,
+                    EnsureDefault=ensureDefault,
                 };
                 ReviewAccessor.CreateReviewContainer(s, perms, caller, reviewContainer);
                 using (var tx = s.BeginTransaction())
@@ -144,7 +147,7 @@ namespace RadialReview.Accessors
                             {
                                 //Send email
                                 var subject = String.Format(RadialReview.Properties.EmailStrings.Prereview_Subject, caller.Organization.GetName());
-                                var body = String.Format(EmailStrings.Prereview_Body, manager.GetName(), caller.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
+                                var body = String.Format(EmailStrings.Prereview_Body, manager.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
                                 Emailer.SendEmail(dataInteraction.GetUpdateProvider(), manager.GetEmail(), subject, body);
                                 sent++;
                             }
@@ -182,31 +185,43 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).ViewPrereview(prereviewId);
                     return s.QueryOver<PrereviewMatchModel>()
-                        .Where(x => x.PrereviewId == prereviewId)
-                        .List().ToListAlive()
+                        .Where(x => x.PrereviewId == prereviewId && x.DeleteTime == null)
+                        .List()
                         .Select(x => Tuple.Create(x.FirstUserId, x.SecondUserId))
                         .ToList();
                 }
             }
         }
 
-        public List<Tuple<long, long>> GetAllMatchesForReview(UserOrganizationModel caller, long reviewContainerId)
+        public List<Tuple<long, long>> GetAllMatchesForReview(UserOrganizationModel caller, long reviewContainerId,List<Tuple<long, long>> defaultModel)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId);
-
-                    var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId).List().ToList();
-
+                    var perms=PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId);
+                    var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+                    
+                    var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId && x.DeleteTime==null).List().ToList();
+                    
                     var all = new List<Tuple<long, long>>();
 
                     foreach (var prereview in prereviews)
                     {
-                        all.AddRange(s.QueryOver<PrereviewMatchModel>().Where(x => x.PrereviewId == prereview.Id).List().ToListAlive().Select(x => Tuple.Create(x.FirstUserId, x.SecondUserId)).ToList());
+                        if (prereview.Started)
+                        {
+                            all.AddRange(s.QueryOver<PrereviewMatchModel>().Where(x => x.PrereviewId == prereview.Id && x.DeleteTime == null).List().Select(x => Tuple.Create(x.FirstUserId, x.SecondUserId)).ToList());
+                        }
+                        else
+                        {
+                            if (reviewContainer.EnsureDefault)
+                            {
+                                var subordinates = UserAccessor.GetSubordinates(s.ToQueryProvider(true),perms,caller,prereview.ManagerId).Select(x=>x.Id).Union(prereview.ManagerId.AsList());
+                                var managerCustomizeDefault=subordinates.SelectMany(sub => defaultModel.Where(x=>x.Item1==sub)).ToList();
+                                all.AddRange(managerCustomizeDefault);
+                            }
+                        }
                     }
-
                     return all.Distinct().ToList();
                 }
             }
@@ -215,12 +230,12 @@ namespace RadialReview.Accessors
         public static List<PrereviewModel> GetPrereviewsForUser(AbstractQuery s, PermissionsUtility perms, long userOrgId)
         {
             perms.ViewUserOrganization(userOrgId, false);
-            return s.Where<PrereviewModel>(x => x.ManagerId == userOrgId).ToList();
+            return s.Where<PrereviewModel>(x => x.ManagerId == userOrgId && x.DeleteTime==null).ToList();
         }
 
         public void UnsafeExecuteAllPrereviews(ISession s, long reviewContainerId, DateTime now)
         {
-            var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId).List().ToList();
+            var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId && x.DeleteTime == null).List().ToList();
             foreach (var prereview in prereviews)
             {
                 prereview.Executed = now;

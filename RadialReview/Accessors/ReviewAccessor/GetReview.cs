@@ -30,7 +30,7 @@ namespace RadialReview.Accessors
             ReviewModel reviewAlias = null;
             reviews = s.QueryOver<ReviewModel>(() => reviewAlias)
                                 .Left.JoinAlias(() => reviewAlias.ClientReview, () => clientReviewAlias)
-                                .Where(() => clientReviewAlias.Visible == true && reviewAlias.ForUserId == forUserId)
+                                .Where(() => clientReviewAlias.Visible == true && reviewAlias.ForUserId == forUserId && reviewAlias.DeleteTime==null)
                                 .OrderBy(() => reviewAlias.CreatedAt)
                                 .Desc.Skip(page * pageCount)
                                 .Take(pageCount)
@@ -46,7 +46,7 @@ namespace RadialReview.Accessors
 
             List<ReviewModel> reviews;
 
-            reviews = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId)
+            reviews = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DeleteTime == null)
                                 .OrderBy(x => x.CreatedAt)
                                 .Desc.Skip(page * pageCount)
                                 .Take(pageCount)
@@ -54,7 +54,7 @@ namespace RadialReview.Accessors
                 //add reviewModel Id to answers, query for that
                                 .List().ToList();
 
-            var allAnswers = s.QueryOver<AnswerModel>().Where(x => x.ByUserId == forUserId).List().ToListAlive();
+            var allAnswers = s.QueryOver<AnswerModel>().Where(x => x.ByUserId == forUserId && x.DeleteTime == null).List().ToListAlive();
 
             for (int i = 0; i < reviews.Count; i++)
                 PopulateAnswers(/*s,*/ reviews[i], allAnswers);
@@ -73,7 +73,7 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).ViewUserOrganization(forUserId, true);
 
                     return s.QueryOver<ReviewModel>()
-                        .Where(x => x.ForUserId == forUserId)
+                        .Where(x => x.ForUserId == forUserId && x.DeleteTime == null)
                         .RowCount();
                 }
             }
@@ -91,7 +91,7 @@ namespace RadialReview.Accessors
 
                     return s.QueryOver<ReviewModel>(() => reviewAlias)
                         .JoinAlias(() => reviewAlias.ClientReview, () => reportAlias)
-                        .Where(() => reviewAlias.ForUserId == forUserId && reportAlias.Visible)
+                        .Where(() => reviewAlias.ForUserId == forUserId && reportAlias.Visible && reviewAlias.DeleteTime == null)
                         .RowCount();
                 }
             }
@@ -128,7 +128,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, caller.Organization.Id).ViewReviews(reviewContainerId);
-                    return s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).List().ToList();
+                    return s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.DeleteTime == null).List().ToList();
                 }
             }
         }
@@ -144,7 +144,7 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).ViewUserOrganization(reviewPopulated.ForUserId, true).ViewReview(reviewId);
 
                     var allAnswers = s.QueryOver<AnswerModel>()
-                                        .Where(x => x.ForReviewId == reviewId)
+                                        .Where(x => x.ForReviewId == reviewId && x.DeleteTime == null)
                                         .List().ToListAlive();
 
                     PopulateAnswers(/*s,*/ reviewPopulated, allAnswers);
@@ -162,7 +162,7 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).ViewUserOrganization(userOrgId, false);
 
                     return s.QueryOver<AnswerModel>()
-                        .Where(x => x.DeleteTime == null && x.AboutUserId == userOrgId && x.ForReviewContainerId == reviewContainerId)
+                        .Where(x => x.DeleteTime == null && x.AboutUserId == userOrgId && x.ForReviewContainerId == reviewContainerId && x.DeleteTime==null)
                         .List().ToListAlive().Distinct(x => x.Askable.Id).ToList();
                 }
             }
@@ -177,7 +177,7 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).ViewUserOrganization(userOrgId, true);
 
                     var answers = s.QueryOver<AnswerModel>()
-                                        .Where(x => x.AboutUserId == userOrgId && x.ForReviewContainerId == reviewContainerId)
+                                        .Where(x => x.AboutUserId == userOrgId && x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null)
                                         .List()
                                         .ToListAlive();
                     return answers;
@@ -194,7 +194,7 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).ViewUserOrganization(userOrgId, true);
 
                     var answers = s.QueryOver<AnswerModel>()
-                                        .Where(x => x.AboutUserId == userOrgId)
+                                        .Where(x => x.AboutUserId == userOrgId && x.DeleteTime == null)
                                         .List()
                                         .ToListAlive();
                     return answers;
@@ -213,7 +213,7 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).ViewOrganization(reviewContainer.ForOrganization.Id);
 
                     var answers = s.QueryOver<AnswerModel>()
-                                        .Where(x => x.ForReviewContainerId == reviewContainerId)
+                                        .Where(x => x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null)
                                         .List()
                                         .ToListAlive();
                     return answers;
@@ -261,7 +261,7 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
                     var count = s.QueryOver<ReviewsModel>()
-                                                .Where(x => x.ForOrganization.Id == organizationId)
+                                                .Where(x => x.ForOrganization.Id == organizationId && x.DeleteTime == null)
                                                 .RowCountInt64();
                     return count;
                 }
@@ -284,7 +284,7 @@ namespace RadialReview.Accessors
 
                     var reviews = s.QueryOver<ReviewModel>(() => reviewAlias)
                         .JoinAlias(() => reviewAlias.ForReviewContainer, () => reviewsAlias)
-                        .Where(() => reviewsAlias.DueDate > afterTime && reviewsAlias.ForOrganizationId == orgId)
+                        .Where(() => reviewsAlias.DueDate > afterTime && reviewsAlias.ForOrganizationId == orgId && reviewsAlias.DeleteTime == null)
                         .List().ToList();
                         /*.Fetch(x=>x.ForReviewContainer).Eager
                         .Where(x => x.ForReviewContainer.DueDate > afterTime && x.ForReviewContainer.ForOrganizationId == orgId)
@@ -414,7 +414,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
-                    var reviewContainers = s.QueryOver<ReviewsModel>().Where(x => x.DueDate > afterTime && x.ForOrganization.Id == organizationId)
+                    var reviewContainers = s.QueryOver<ReviewsModel>().Where(x => x.DueDate > afterTime && x.ForOrganization.Id == organizationId && x.DeleteTime == null)
                                                 .OrderBy(x => x.DateCreated).Desc
                                                 .Skip(page * pageSize)
                                                 .Take(pageSize)

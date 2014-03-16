@@ -214,17 +214,17 @@ namespace RadialReview
 
                 var uOrgId = uOrg.Id;
 
-                var query = Session.QueryOver<ReviewsModel>().Where(x => x.CreatedById == uOrgId).List().ToList();
+                var query = Session.QueryOver<ReviewsModel>().Where(x => x.CreatedById == uOrgId && x.DeleteTime==null).List().ToList();
                 reviews = query;
                 foreach(var rs in reviews)
                 {
-                    var reviewList = Session.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == rs.Id).List().ToList();
+                    var reviewList = Session.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == rs.Id && x.DeleteTime == null).List().ToList();
                     rs.Reviews = reviewList;
                     if (answers)
                     {
                         foreach (var r in reviewList)
                         {
-                            var ans = Session.QueryOver<AnswerModel>().Where(x => x.ForReviewId == r.Id).List().ToListAlive();
+                            var ans = Session.QueryOver<AnswerModel>().Where(x => x.ForReviewId == r.Id && x.DeleteTime == null).List().ToListAlive();
                             r.Answers = ans;
                         }
                     }

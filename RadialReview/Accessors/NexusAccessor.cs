@@ -84,9 +84,9 @@ namespace RadialReview.Accessors
                     if (managerId > 0)
                     {
                         var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id) { Start = now };
-                        var manager=db.Get<UserOrganizationModel>(managerId);
+                        var manager = db.Get<UserOrganizationModel>(managerId);
                         db.Save(new DeepSubordinateModel() { CreateTime = now, Links = 1, ManagerId = newUserId, SubordinateId = newUserId });
-                        DeepSubordianteAccessor.Add(db, manager, newUser,caller.Organization.Id, now);
+                        DeepSubordianteAccessor.Add(db, manager, newUser, caller.Organization.Id, now);
                         newUser.ManagedBy.Add(managerDuration);
                     }
 
@@ -127,16 +127,36 @@ namespace RadialReview.Accessors
             return tempUser;
         }
 
-        public String JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email,String firstName,String lastName)
+        public String JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName)
         {
             var sendEmail = caller.Organization.SendEmailImmediately;
 
-            var tempUser=CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName);
+            var tempUser = CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName);
             if (sendEmail)
             {
                 SendJoinEmailToGuid(caller, tempUser);
             }
             return tempUser.Guid;
+        }
+
+        public int ResendAllEmails(UserOrganizationModel caller, long organizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
+
+                    var toSend = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.TempUser != null).Fetch(x=>x.TempUser).Eager.List().ToList();
+                    foreach (var user in toSend)
+                    {
+                        SendJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser);
+                    }
+                    tx.Commit();
+                    s.Flush();
+                    return toSend.Count;
+                }
+            }
         }
 
         public int SendAllJoinEmails(UserOrganizationModel caller, long organizationId)
@@ -147,7 +167,7 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
 
-                    var toSend=s.QueryOver<TempUserModel>().Where(x => x.OrganizationId == organizationId && x.LastSent == null).List().ToList();
+                    var toSend = s.QueryOver<TempUserModel>().Where(x => x.OrganizationId == organizationId && x.LastSent == null).List().ToList();
                     foreach (var tempUser in toSend)
                     {
                         SendJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
@@ -179,7 +199,7 @@ namespace RadialReview.Accessors
             var firstName = tempUser.FirstName;
             var lastName = tempUser.LastName;
             var id = tempUser.Guid;
-            
+
             tempUser = s.Get<TempUserModel>(tempUser.Id);
             tempUser.LastSent = DateTime.UtcNow;
             s.SaveOrUpdate(tempUser);
@@ -190,9 +210,9 @@ namespace RadialReview.Accessors
             var url = "Account/Register?message=Please%20login%20to%20join%20" + caller.Organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
             url = ProductStrings.BaseUrl + url;
             //var shorenedUrl = ProductStrings.BaseUrl + _UrlAccessor.RecordUrl(url, email);
-            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName,id);
+            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName, id);
             subject = Regex.Replace(subject, @"[^A-Za-z0-9 \.\,&]", "");
-            Emailer.SendEmail(s.GetUpdateProvider(),emailAddress, subject, body);
+            Emailer.SendEmail(s.GetUpdateProvider(), emailAddress, subject, body);
             return id;
         }
 
@@ -228,7 +248,7 @@ namespace RadialReview.Accessors
             return model;
         }
 
-        public static NexusModel Put(AbstractUpdate s,NexusModel model)
+        public static NexusModel Put(AbstractUpdate s, NexusModel model)
         {
             s.Save(model);
             return model;
@@ -245,8 +265,8 @@ namespace RadialReview.Accessors
                     if (found == null)
                         throw new PermissionsException();
                     return found;*/
-                    var found=s.Get<NexusModel>(id);
-                    if (found.DeleteTime!=null && DateTime.UtcNow>found.DeleteTime)
+                    var found = s.Get<NexusModel>(id);
+                    if (found.DeleteTime != null && DateTime.UtcNow > found.DeleteTime)
                         throw new PermissionsException("The request has expired.");
                     return found;
                 }

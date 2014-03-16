@@ -42,10 +42,29 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var all = s.QueryOver<ScheduledTask>().List().ToList();
-                    return s.QueryOver<ScheduledTask>().Where(x => x.Executed == null && now.AddMinutes(2) > x.Fire && x.DeleteTime == null && x.ExceptionCount <= 11).List().ToList();
+                    return s.QueryOver<ScheduledTask>().Where(x => x.Executed == null && x.Started==null && now.AddMinutes(2) > x.Fire && x.DeleteTime == null && x.ExceptionCount <= 11).List().ToList();
                 }
             }
         }
+
+        public void MarkStarted(List<ScheduledTask> tasks, DateTime? date)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    foreach (var t in tasks)
+                    {
+                        t.Started = date;
+                        s.Update(t);
+                    }
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+
+        }
+
         /*
         private void DownloadComplete(object sender, DownloadStringCompletedEventArgs e)
         {
@@ -103,8 +122,8 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete).RowCount();
-                    var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started).RowCount();
+                    var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).RowCount();
+                    var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started && x.DeleteTime == null).RowCount();
                     return reviewCount + prereviewCount;
                 }
             }
