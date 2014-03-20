@@ -12,6 +12,9 @@ using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using NHibernate;
 using RadialReview.Utilities.Query;
+using RadialReview.Models.Application;
+using System.Threading.Tasks;
+using RadialReview.Models.Json;
 
 namespace RadialReview.Accessors
 {
@@ -127,20 +130,22 @@ namespace RadialReview.Accessors
             return tempUser;
         }
 
-        public String JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName)
+        public async Task<string> JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName)
         {
             var sendEmail = caller.Organization.SendEmailImmediately;
 
             var tempUser = CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName);
             if (sendEmail)
             {
-                SendJoinEmailToGuid(caller, tempUser);
+                var mail=CreateJoinEmailToGuid(caller, tempUser);
+                await Emailer.SendEmail(mail);
             }
             return tempUser.Guid;
         }
 
-        public int ResendAllEmails(UserOrganizationModel caller, long organizationId)
+        public async Task<EmailResult> ResendAllEmails(UserOrganizationModel caller, long organizationId)
         {
+            var unsentEmails=new List<MailModel>();
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
@@ -150,17 +155,19 @@ namespace RadialReview.Accessors
                     var toSend = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.TempUser != null).Fetch(x=>x.TempUser).Eager.List().ToList();
                     foreach (var user in toSend)
                     {
-                        SendJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser);
+                       unsentEmails.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser));
                     }
                     tx.Commit();
                     s.Flush();
-                    return toSend.Count;
-                }
+                
+                } 
             }
+            return await Emailer.SendEmails(unsentEmails);
         }
 
-        public int SendAllJoinEmails(UserOrganizationModel caller, long organizationId)
+        public async Task<int> SendAllJoinEmails(UserOrganizationModel caller, long organizationId)
         {
+            var unsent = new List<MailModel>();
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
@@ -168,24 +175,23 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
 
                     var toSend = s.QueryOver<TempUserModel>().Where(x => x.OrganizationId == organizationId && x.LastSent == null).List().ToList();
+                    
                     foreach (var tempUser in toSend)
                     {
-                        SendJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
+                        unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
                     }
-                    tx.Commit();
-                    s.Flush();
-                    return toSend.Count;
                 }
             }
+            return ((await Emailer.SendEmails(unsent)).Sent);
         }
-
-        public String SendJoinEmailToGuid(UserOrganizationModel caller, TempUserModel tempUser)
+        
+        public MailModel CreateJoinEmailToGuid(UserOrganizationModel caller, TempUserModel tempUser)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var result = SendJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
+                    var result = CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
                     tx.Commit();
                     s.Flush();
                     return result;
@@ -193,7 +199,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static string SendJoinEmailToGuid(DataInteraction s, UserOrganizationModel caller, TempUserModel tempUser)
+        public static MailModel CreateJoinEmailToGuid(DataInteraction s, UserOrganizationModel caller, TempUserModel tempUser)
         {
             var emailAddress = tempUser.Email;
             var firstName = tempUser.FirstName;
@@ -205,15 +211,21 @@ namespace RadialReview.Accessors
             s.SaveOrUpdate(tempUser);
 
             //Send Email
-            var subject = String.Format(EmailStrings.JoinOrganizationUnderManager_Subject, firstName, caller.Organization.Name.Translate(), ProductStrings.ProductName);
             //[OrganizationName,LinkUrl,LinkDisplay,ProductName]            
             var url = "Account/Register?message=Please%20login%20to%20join%20" + caller.Organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
             url = ProductStrings.BaseUrl + url;
             //var shorenedUrl = ProductStrings.BaseUrl + _UrlAccessor.RecordUrl(url, email);
-            var body = String.Format(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName, id);
-            subject = Regex.Replace(subject, @"[^A-Za-z0-9 \.\,&]", "");
-            Emailer.SendEmail(s.GetUpdateProvider(), emailAddress, subject, body);
-            return id;
+            //var body = String.Format(;
+            //subject = ;
+
+            return MailModel.To(emailAddress)
+                .Subject(EmailStrings.JoinOrganizationUnderManager_Subject,firstName, caller.Organization.Name.Translate(), ProductStrings.ProductName)
+                .Body(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName, id.ToUpper());
+
+
+
+            //Emailer.SendEmail(s.GetUpdateProvider(), , subject, body);
+            //return id;
         }
 
 

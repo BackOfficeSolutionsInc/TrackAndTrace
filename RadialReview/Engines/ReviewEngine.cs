@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Models;
+using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Reviews;
 using RadialReview.Utilities;
@@ -125,7 +126,7 @@ namespace RadialReview.Engines
 
         public async Task CreateReviewFromPrereview(NexusModel nexus)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 var now = DateTime.UtcNow;
                 var admin = new UserOrganizationModel()
@@ -144,21 +145,21 @@ namespace RadialReview.Engines
 
                 var whoReviewsWho = _PrereviewAccessor.GetAllMatchesForReview(admin, reviewContainerId, defaultCustomize);
                 var organization = _OrganizationAccessor.GetOrganization(admin, reviewContainer.ForOrganizationId);
-
-                int sent, errors;
-                List<Exception> exceptions = new List<Exception>();
+                var unsentEmail = new List<MailModel>();
                 using (var s = HibernateSession.GetCurrentSession())
                 {
                     using (var tx = s.BeginTransaction())
                     {
                         var perm = PermissionsUtility.Create(s, admin);
-                        _ReviewAccessor.CreateReviewFromPrereview(s.ToDataInteraction(true), perm, admin, reviewContainer, organization.GetName(), true, whoReviewsWho, out sent, out errors, ref exceptions);
+                        unsentEmail=_ReviewAccessor.CreateReviewFromPrereview(s.ToDataInteraction(true), perm, admin, reviewContainer, organization.GetName(), whoReviewsWho);
                         _PrereviewAccessor.UnsafeExecuteAllPrereviews(s, reviewContainerId, now);
                         //Keep these:
                         tx.Commit();
                         s.Flush();
                     }
                 }
+
+                await Emailer.SendEmails(unsentEmail);
             });
         }
     }

@@ -42,16 +42,23 @@ namespace RadialReview.Utilities
                                 var connectionString = connectionStrings["DefaultConnection"].ConnectionString;
                                 var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
                                 DbFile = file;
-                                factory = Fluently.Configure().Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
-                                .Mappings(m =>
+                                try
                                 {
-                                    m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
-                                    m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-                                    //m.AutoMappings.Add(CreateAutomappings);
-                                    //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                    factory = Fluently.Configure().Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                                    .Mappings(m =>
+                                    {
+                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
+                                        m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                        //m.AutoMappings.Add(CreateAutomappings);
+                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-                                }).ExposeConfiguration(BuildSchema)
-                                .BuildSessionFactory();
+                                    }).ExposeConfiguration(BuildSchema)
+                                    .BuildSessionFactory();
+                                }
+                                catch (Exception e)
+                                {
+                                    throw e;
+                                }
                                 break;
                             }
                         case "mysql":

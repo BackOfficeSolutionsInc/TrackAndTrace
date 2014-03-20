@@ -142,17 +142,17 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public JsonResult SendAllEmails()
+        public async Task<JsonResult> SendAllEmails()
         {
-            var count = NexusAccessor.SendAllJoinEmails(GetUser(), GetUser().Organization.Id);
+            var count = await NexusAccessor.SendAllJoinEmails(GetUser(), GetUser().Organization.Id);
             return Json(ResultObject.Create(true, "Sent " + count + " email".Pluralize(count) + "."), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]
-        public JsonResult ResendAllEmails()
+        public async Task<JsonResult> ResendAllEmails()
         {
-            var count = NexusAccessor.ResendAllEmails(GetUser(), GetUser().Organization.Id);
-            return Json(ResultObject.Create(true, "Sent " + count + " email".Pluralize(count) + "."), JsonRequestBehavior.AllowGet);
+            var result = await NexusAccessor.ResendAllEmails(GetUser(), GetUser().Organization.Id);
+            return Json(result.ToResults("Successfully sent {0} out of {2}."), JsonRequestBehavior.AllowGet);
         }
 
     }

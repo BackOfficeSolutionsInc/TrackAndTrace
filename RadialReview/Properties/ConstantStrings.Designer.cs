@@ -97,6 +97,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to H48-__ZehIbJWPLqmd-Hgg.
+        /// </summary>
+        public static string MandrillApiKey {
+            get {
+                return ResourceManager.GetString("MandrillApiKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to pop.gmail.com.
         /// </summary>
         public static string PopHost {

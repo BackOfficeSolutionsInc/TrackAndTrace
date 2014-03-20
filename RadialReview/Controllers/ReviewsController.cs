@@ -23,15 +23,15 @@ namespace RadialReview.Controllers
 {
     public class ReviewsController : BaseController
     {
-        private static OrgReviewsViewModel GenerateReviewVM(UserOrganizationModel caller, DateTime date)
+        public static OrgReviewsViewModel GenerateReviewVM(UserOrganizationModel caller, DateTime date)
         {
             var selfId = caller.Id;
-            var usefulReviews = _ReviewAccessor.GetUsefulReview(caller, selfId, DateTime.UtcNow);
+            var usefulReviews = _ReviewAccessor.GetUsefulReview(caller, selfId, date);
             var reviewContainers = usefulReviews.Select(x => x.ForReviewContainer).Distinct(x => x.Id);
 
             var subordinates = _DeepSubordianteAccessor.GetSubordinatesAndSelf(caller, caller.Id);
 
-            var editable = reviewContainers.Where(x => subordinates.Any(y => y == x.CreatedById)).Select(x => x.Id).ToList();
+            var editable = reviewContainers.Where(x => caller.IsManagingOrganization() || subordinates.Any(y => y == x.CreatedById)).Select(x => x.Id).ToList();
             var takabled = usefulReviews.Where(x => x.ForUserId == selfId).Distinct(x=>x.ForReviewsId).ToDictionary(x => x.ForReviewsId, x => (long?)x.Id);
 
             var reviewsVM = reviewContainers.Select(x => new ReviewsViewModel(x){
@@ -284,12 +284,12 @@ namespace RadialReview.Controllers
             try
             {
                 //TODO HERE
-                var result = await Task.Run<ResultObject>(() =>
+                var result = await Task.Run<ResultObject>(async () =>
                 {
                     ResultObject output;
                     try
                     {
-                        output = _ReviewAccessor.AddUserToReviewContainer(user, model.ReviewId, model.SelectedUserId);
+                        output = await _ReviewAccessor.AddUserToReviewContainer(user, model.ReviewId, model.SelectedUserId,true);
                     }
                     catch (Exception e)
                     {

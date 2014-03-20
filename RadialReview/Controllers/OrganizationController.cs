@@ -8,6 +8,7 @@ using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -180,7 +181,7 @@ namespace RadialReview.Controllers
 
         [Access(AccessLevel.Manager)]
         [HttpPost]
-        public JsonResult ResendJoin(long id,TempUserModel model,long TempId)
+        public async Task<JsonResult> ResendJoin(long id,TempUserModel model,long TempId)
         {
             var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false);
             if (found.TempUser==null)
@@ -188,9 +189,9 @@ namespace RadialReview.Controllers
 
             _UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, model.LastSent);
             model.Id = TempId;
-            _NexusAccessor.SendJoinEmailToGuid(GetUser(), model);
+            var result = await Emailer.SendEmail(_NexusAccessor.CreateJoinEmailToGuid(GetUser(), model));
 
-            return Json(ResultObject.Success("Resent invite."));
+            return Json(result.ToResults("Resent invite to "+model.Name()+"."));
         }
     }
 }

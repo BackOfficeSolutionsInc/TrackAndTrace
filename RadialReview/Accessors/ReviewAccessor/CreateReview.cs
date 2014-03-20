@@ -4,6 +4,7 @@ using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Responsibilities;
@@ -27,17 +28,15 @@ namespace RadialReview.Accessors
 
 
         #region Create
-        public void CreateReviewFromPrereview(
+        public List<MailModel> CreateReviewFromPrereview(
             DataInteraction dataInteraction, PermissionsUtility perms,
             UserOrganizationModel caller, ReviewsModel reviewContainer,
-            string organizationName, bool emails, List<Tuple<long, long>> whoReviewsWho,
-            out int sent, out int errors, ref List<Exception> exceptions,
+            string organizationName, List<Tuple<long, long>> whoReviewsWho,
             IHubContext hub = null, String userId = null, int total = 0)
         {
             int count = 0;
-            sent = 0;
-            errors = 0;
 
+            var unsentEmails = new List<MailModel>();
             foreach (var uid in whoReviewsWho.Select(x => x.Item1).Distinct())
             {
                 //Create review for user
@@ -77,33 +76,24 @@ namespace RadialReview.Accessors
                         ActionCode = NexusActions.TakeReview
                     };
                     NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
-                    if (emails)
-                    {
-                        try
-                        {
-                            //Send email
-                            var subject = String.Format(RadialReview.Properties.EmailStrings.NewReview_Subject, organizationName);
-                            var body = String.Format(EmailStrings.NewReview_Body, user.GetName(), caller.GetName(), reviewContainer.DueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
-                            Emailer.SendEmail(dataInteraction.GetUpdateProvider(), user.GetEmail(), subject, body);
-                            sent++;
-                        }
-                        catch (Exception e)
-                        {
-                            log.Error(e.Message, e);
-                            errors++;
-                            exceptions.Add(e);
-                        }
-                    }
+                    
+                    unsentEmails.Add(
+                            MailModel.To(user.GetEmail())
+                            .Subject(EmailStrings.NewReview_Subject,organizationName)
+                            .Body(EmailStrings.NewReview_Body,user.GetName(), caller.GetName(), reviewContainer.DueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName)
+                        );
                 }
                 else
                 {
                 }
             }
+            return unsentEmails;
         }
 
 
-        public ResultObject CreateReviewFromCustom(UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, List<Tuple<long, long>> whoReviewsWho)
+        public async Task<ResultObject> CreateReviewFromCustom(UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, List<Tuple<long, long>> whoReviewsWho)
         {
+            var unsentEmails = new List<MailModel>();
             using (var s = HibernateSession.GetCurrentSession())
             {
                 ReviewsModel reviewContainer;
@@ -155,18 +145,14 @@ namespace RadialReview.Accessors
                     var orgName = organization.Name.Translate();
                     int sent, errors;
 
-                    CreateReviewFromPrereview(dataInteraction, perms, caller, reviewContainer, orgName, emails, whoReviewsWho, out sent, out errors, ref exceptions, hub, userId, usersToReview.Count());
+                    unsentEmails.AddRange(CreateReviewFromPrereview(dataInteraction, perms, caller, reviewContainer,
+                                orgName, whoReviewsWho, hub, userId, usersToReview.Count()));
+
 
                     tx.Commit();
                     s.Flush();
                     hub.Clients.User(userId).status("Done!");
 
-                    if (errors > 0)
-                    {
-                        var message = String.Join("\n", exceptions.Select(x => x.Message));
-                        return new ResultObject(new RedirectException(errors + " errors:\n" + message));
-                    }
-                    return ResultObject.Create(new { due = dueDate, sent = sent, errors = errors });
 
                     /*
                     forUser = dataInteraction.Get<UserOrganizationModel>(forUser.Id);
@@ -208,6 +194,18 @@ namespace RadialReview.Accessors
                      return ResultObject.Create(new { due = dueDate, sent = sent, errors = errors });*/
                 }
             }
+            var emailResult = new EmailResult();
+            if (emails)
+            {
+                emailResult = await Emailer.SendEmails(unsentEmails);
+                
+            }
+            if (emailResult.Errors.Count() > 0)
+            {
+                var message = String.Join("\n", emailResult.Errors.Select(x => x.Message));
+                return new ResultObject(new RedirectException(emailResult.Errors.Count() + " errors:\n" + message));
+            }
+            return ResultObject.Create(new { due = dueDate, sent = emailResult.Sent, errors = emailResult.Errors.Count() });
         }
 
         public static DataInteraction GetReviewDataInteraction(ISession s, long orgId)
@@ -246,14 +244,17 @@ namespace RadialReview.Accessors
             }
         }
 
-        public ResultObject CreateCompleteReview(UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails,
+        public async Task<ResultObject> CreateCompleteReview(UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails,
             bool reviewSelf, bool reviewManagers, bool reviewSubordinates, bool reviewTeammates, bool reviewPeers)
         {
+            var unsentEmails = new List<MailModel>();
+            var emailResult = new EmailResult();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+            var userId = caller.User.UserName;
+
             using (var s = HibernateSession.GetCurrentSession())
             {
                 ReviewsModel reviewContainer;
-                var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-                var userId = caller.User.UserName;
                 using (var tx = s.BeginTransaction())
                 {
 
@@ -326,35 +327,42 @@ namespace RadialReview.Accessors
                     foreach (var beingReviewed in usersToReview)
                     {
                         var beingReviewedUser = beingReviewed.User;
-                        AddUserToReview(caller, false, dueDate, emails,
+                        unsentEmails.AddRange(
+                            AddUserToReview(caller, false, dueDate,
                             reviewContainer.GetParameters(),
-                            dataInteraction, reviewContainer, perms, organization, team, exceptions, ref sent, ref errors, beingReviewedUser, toReview);
+                            dataInteraction, reviewContainer, perms, organization, team, ref exceptions, beingReviewedUser, toReview));
                         count++;
                         hub.Clients.User(userId).status("Added " + count + " user".Pluralize(count) + " out of " + total + ".");
                     }
+                    emailResult.Errors = exceptions;
                     tx.Commit();
                     s.Flush();
                     hub.Clients.User(userId).status("Done!");
 
-                    if (errors > 0)
-                    {
-                        var message = String.Join("\n", exceptions.Select(x => x.Message));
-                        return new ResultObject(new RedirectException(errors + " errors:\n" + message));
-                    }
-                    return ResultObject.Create(new { due = dueDate, sent = sent, errors = errors });
                 }
             }
+            if (emails)
+            {
+                hub.Clients.User(userId).status("Emailing users");
+                emailResult = await Emailer.SendEmails(unsentEmails);
+            }
+            if (emailResult.Errors.Count() > 0)
+            {
+                var message = String.Join("\n", emailResult.Errors.Select(x => x.Message));
+                return new ResultObject(new RedirectException(emailResult.Errors.Count() + " errors:\n" + message));
+            }
+            return ResultObject.Create(new { due = dueDate, sent = emailResult.Sent, errors = emailResult.Errors.Count() });
         }
 
-        private static void AddUserToReview(
+        private static List<MailModel> AddUserToReview(
             UserOrganizationModel caller,
             bool updateOthers, DateTime dueDate,
-            bool sendEmail, ReviewParameters parameters,
-            DataInteraction dataInteraction, ReviewsModel reviewContainer, PermissionsUtility perms,
-            OrganizationModel organization, OrganizationTeamModel team, List<Exception> exceptions, ref int sent, ref int errors,
+            ReviewParameters parameters,DataInteraction dataInteraction, ReviewsModel reviewContainer, PermissionsUtility perms,
+            OrganizationModel organization, OrganizationTeamModel team, ref List<Exception> exceptions,
             UserOrganizationModel beingReviewedUser,
             List<UserOrganizationModel> usersToReview)
         {
+            var unsentEmails = new List<MailModel>();
             try
             {
                 #region comment
@@ -389,14 +397,20 @@ namespace RadialReview.Accessors
                         ActionCode = NexusActions.TakeReview
                     };
                     NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
-                    if (sendEmail)
+                    unsentEmails.Add(MailModel
+                        .To(beingReviewedUser.GetEmail())
+                        .Subject(EmailStrings.NewReview_Subject, organization.Name.Translate())
+                        .Body(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName)
+                    );
+                    /*if (sendEmail)
                     {
                         try
                         {
                             //Send email
-                            var subject = String.Format(RadialReview.Properties.EmailStrings.NewReview_Subject, organization.Name.Translate());
-                            var body = String.Format(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
-                            Emailer.SendEmail(dataInteraction.GetUpdateProvider(), beingReviewedUser.GetEmail(), subject, body);
+                            var subject = String.Format(RadialReview.Properties.,);
+                            var body = String.Format();
+                            
+                            Emailer.SendEmail(dataInteraction.GetUpdateProvider(), , subject, body);
                         }
                         catch (Exception e)
                         {
@@ -405,7 +419,7 @@ namespace RadialReview.Accessors
                             exceptions.Add(e);
                         }
                     }
-                    sent++;
+                    sent++;*/
                 }
 
                 //TODO not wroking...
@@ -499,7 +513,6 @@ namespace RadialReview.Accessors
                         catch (Exception e)
                         {
                             log.Error(e.Message, e);
-                            errors++;
                             exceptions.Add(e);
 
                         }
@@ -510,9 +523,9 @@ namespace RadialReview.Accessors
             catch (Exception e)
             {
                 log.Error(e.Message, e);
-                errors++;
                 exceptions.Add(e);
             }
+            return unsentEmails;
         }
 
         /// <summary>
@@ -579,5 +592,6 @@ namespace RadialReview.Accessors
             perms.ViewReviews(reviewContainerId);
             return abstractQuery.Get<ReviewsModel>(reviewContainerId);
         }
+
     }
 }

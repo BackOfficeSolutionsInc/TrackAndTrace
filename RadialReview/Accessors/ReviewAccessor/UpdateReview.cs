@@ -2,6 +2,7 @@
 using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Responsibilities;
@@ -167,8 +168,10 @@ namespace RadialReview.Accessors
         }
 
         #region Update
-        public ResultObject AddUserToReviewContainer(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId)
+        public async Task<ResultObject> AddUserToReviewContainer(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId,bool sendEmails)
         {
+            var unsent = new List<MailModel>();
+            String userBeingReviewed = null;
             try
             {
                 using (var s = HibernateSession.GetCurrentSession())
@@ -178,7 +181,7 @@ namespace RadialReview.Accessors
                         var perms = PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId).ViewReviews(reviewContainerId);
                         var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
                         var dueDate = reviewContainer.DueDate;
-                        var sendEmails = false;
+                        //var sendEmails = false;
                         var reviewSelf = reviewContainer.ReviewSelf;
                         var reviewManagers = reviewContainer.ReviewManagers;
                         var reviewSubordinates = reviewContainer.ReviewSubordinates;
@@ -190,14 +193,11 @@ namespace RadialReview.Accessors
 
 
                         List<Exception> exceptions = new List<Exception>();
-                        int sent = 0;
-                        int errors = 0;
+                       // int sent = 0;
+                       //int errors = 0;
 
                         var beingReviewedUser = s.Get<UserOrganizationModel>(userOrganizationId);
-
-
-
-
+                        
                         var orgId = organization.Id;
 
                         var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
@@ -228,20 +228,13 @@ namespace RadialReview.Accessors
 
                         //TODO Populate a queryprovider structure here..
 
-                        AddUserToReview(caller, true, dueDate, sendEmails,
+                        unsent.AddRange(AddUserToReview(caller, true, dueDate,
                             reviewContainer.GetParameters(),
-                            new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team, exceptions,
-                            ref sent, ref errors, beingReviewedUser, usersToReview);
-
-                        if (errors > 0)
-                        {
-                            var message = String.Join("\n", exceptions.Select(x => x.Message));
-                            return new ResultObject(new RedirectException(errors + " errors:\n" + message));
-                        }
-
+                            new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team,ref exceptions,
+                            beingReviewedUser, usersToReview));
+                        userBeingReviewed = beingReviewedUser.GetName();
                         tx.Commit();
-                        s.Flush();
-                        return ResultObject.Create(false, "Successfully added " + beingReviewedUser.GetName() + " to the review.");
+                        s.Flush();  
                     }
                 }
             }
@@ -249,6 +242,17 @@ namespace RadialReview.Accessors
             {
                 return new ResultObject(e);
             }
+            var result = new EmailResult();
+
+            if (sendEmails)
+            {
+                result = await Emailer.SendEmails(unsent);
+            }
+
+            return result.ToResults("Successfully added " + userBeingReviewed + " to the review.");
+            
+
+            
         }
 
         public Boolean UpdateAllCompleted(UserOrganizationModel caller, long reviewId)

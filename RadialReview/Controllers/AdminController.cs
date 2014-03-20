@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using RadialReview.Models.Tasks;
+using RadialReview.Models.Application;
 
 namespace RadialReview.Controllers
 {
@@ -17,10 +18,20 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Radial)]
         public String TempDeep(long id)
         {
-            _UserAccessor.CreateDeepSubordinateTree(GetUser(), id,DateTime.UtcNow);
+            _UserAccessor.CreateDeepSubordinateTree(GetUser(), id, DateTime.UtcNow);
             return "done";
         }
 
+        [Access(AccessLevel.Radial)]
+        public async Task<JsonResult> Emails(int id)
+        {
+            var emails=Enumerable.Range(0,id).Select(x=>MailModel.To("clay.upton@gmail.com").Subject("TestBulk").Body("Email #{0}",""+x));
+            var result=(await Emailer.SendEmails(emails));
+            result.Errors=null;
+
+            return Json(result,JsonRequestBehavior.AllowGet);
+
+        }
 
         /*
         [Access(AccessLevel.Radial)]

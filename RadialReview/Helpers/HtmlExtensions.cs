@@ -109,6 +109,7 @@ namespace System.Web
 
         public static HtmlString ShowModal(this HtmlHelper html, String title, String pullUrl, String pushUrl, String callbackFunction = null, String preSubmitCheck = null, String onComplete = null)
         {
+            title = title.Replace("'", "\\'");
             if (onComplete != null)
                 return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction + "','" + preSubmitCheck + "','" + onComplete + "')");
             if (preSubmitCheck != null)

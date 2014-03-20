@@ -2,6 +2,7 @@
 using RadialReview.Engines;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Prereview;
 using RadialReview.Models.Responsibilities;
@@ -14,6 +15,7 @@ using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Accessors
@@ -71,11 +73,12 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void CreatePrereview(UserOrganizationModel caller, long forTeamId, String reviewName, bool sendEmails, DateTime dueDate, DateTime preReviewDue,bool ensureDefault)
+        public async Task CreatePrereview(UserOrganizationModel caller, long forTeamId, String reviewName, bool sendEmails, DateTime dueDate, DateTime preReviewDue,bool ensureDefault)
         {
             if (preReviewDue >= dueDate)
                 throw new PermissionsException("The pre-review due date must be before the review due date.");
 
+            var unsentEmails = new List<MailModel>();
             using (var s = HibernateSession.GetCurrentSession())
             {
                 var createReviewGuid = Guid.NewGuid();
@@ -119,6 +122,8 @@ namespace RadialReview.Accessors
 
                     reviewContainer.TaskId = task.Id;
 
+                    
+
                     foreach (var mid in managerIds)
                     {
                         var prereview = new PrereviewModel()
@@ -145,11 +150,11 @@ namespace RadialReview.Accessors
                         {
                             try
                             {
-                                //Send email
-                                var subject = String.Format(RadialReview.Properties.EmailStrings.Prereview_Subject, caller.Organization.GetName());
-                                var body = String.Format(EmailStrings.Prereview_Body, manager.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName);
-                                Emailer.SendEmail(dataInteraction.GetUpdateProvider(), manager.GetEmail(), subject, body);
-                                sent++;
+                                unsentEmails.Add(
+                                    MailModel.To(manager.GetEmail())
+                                    .Subject(EmailStrings.Prereview_Subject,caller.Organization.GetName())
+                                    .Body(EmailStrings.Prereview_Body, manager.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName)
+                                    );
                             }
                             catch (Exception e)
                             {
@@ -162,6 +167,8 @@ namespace RadialReview.Accessors
                     s.Flush();
                 }
             }
+            await Emailer.SendEmails(unsentEmails);
+
         }
 
         public PrereviewModel GetPrereview(UserOrganizationModel caller, long prereviewId)

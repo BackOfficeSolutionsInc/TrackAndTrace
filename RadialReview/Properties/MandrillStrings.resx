@@ -117,46 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AmazonS3Location" xml:space="preserve">
-    <value>https://s3.amazonaws.com/Radial/</value>
-  </data>
-  <data name="ImageOrganizationPlaceholder" xml:space="preserve">
-    <value>placeholder/orgPlaceholder.png</value>
-  </data>
-  <data name="ImagePlaceholder" xml:space="preserve">
-    <value>placeholder/orgPlaceholder.png</value>
-  </data>
-  <data name="ImageUserPlaceholder" xml:space="preserve">
-    <value>placeholder/placeholder.png</value>
-  </data>
-  <data name="MandrillApiKey" xml:space="preserve">
-    <value>H48-__ZehIbJWPLqmd-Hgg</value>
-  </data>
-  <data name="PopHost" xml:space="preserve">
-    <value>pop.gmail.com</value>
-  </data>
-  <data name="PopLogin" xml:space="preserve">
+  <data name="FromAddress" xml:space="preserve">
     <value>clay.upton@radialreview.com</value>
   </data>
-  <data name="PopPassword" xml:space="preserve">
-    <value>4Ztdgavv49</value>
-  </data>
-  <data name="PopPort" xml:space="preserve">
-    <value>995</value>
-  </data>
-  <data name="SmtpFromAddress" xml:space="preserve">
-    <value>clay.upton@radialreview.com</value>
-  </data>
-  <data name="SmtpHost" xml:space="preserve">
-    <value>smtp.gmail.com</value>
-  </data>
-  <data name="SmtpLogin" xml:space="preserve">
-    <value>clay.upton@radialreview.com</value>
-  </data>
-  <data name="SmtpPassword" xml:space="preserve">
-    <value>4Ztdgavv49</value>
-  </data>
-  <data name="SmtpPort" xml:space="preserve">
-    <value>587</value>
+  <data name="FromName" xml:space="preserve">
+    <value>Clay Upton</value>
   </data>
 </root>

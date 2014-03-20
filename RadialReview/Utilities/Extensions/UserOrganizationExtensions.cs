@@ -146,6 +146,10 @@ namespace RadialReview
         {
             return self.IsRadialAdmin || self.ManagerAtOrganization || self.ManagingOrganization;
         }
+        public static Boolean IsManagingOrganization(this UserOrganizationModel self)
+        {
+            return self.IsRadialAdmin || self.ManagingOrganization;
+        }
         public static Boolean IsManagerCanEditOrganization(this UserOrganizationModel self)
         {
             return (self.ManagerAtOrganization && self.Organization.ManagersCanEdit) || self.IsRadialAdmin || self.ManagingOrganization;

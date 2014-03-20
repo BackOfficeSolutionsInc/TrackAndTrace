@@ -131,6 +131,16 @@ namespace RadialReview.Models
 
             return this.EmailAtOrganization;
         }
+        public virtual string GetFirstName()
+        {
+            if (this.User != null && !String.IsNullOrWhiteSpace(this.User.FirstName))
+                return this.User.FirstName;
+
+            if (TempUser != null && !String.IsNullOrWhiteSpace(this.TempUser.FirstName))
+                return this.TempUser.FirstName;
+
+            return GetName();
+        }
 
         public virtual string GetTitles(int numToShow = int.MaxValue, long callerUserId = -1)
         {

@@ -18,6 +18,7 @@ using System.Text;
 using System.Security.Cryptography;
 using RadialReview.Models.Enums;
 using RadialReview.Exceptions;
+using RadialReview.Models.Application;
 
 namespace RadialReview.Controllers
 {
@@ -64,10 +65,10 @@ namespace RadialReview.Controllers
                 nexus.SetArgs(user.Id);
                 var result = _NexusAccessor.Put(nexus);
 
-                Emailer.SendEmail(
-                        user.Email,
-                        String.Format(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName),
-                        String.Format(EmailStrings.PasswordReset_Body, user.Name(), ProductStrings.BaseUrl + "n/" + token, ProductStrings.BaseUrl + "n/" + token, ProductStrings.ProductName)
+                await Emailer.SendEmail(
+                        MailModel.To(user.Email)
+                        .Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
+                        .Body(EmailStrings.PasswordReset_Body, user.Name(), ProductStrings.BaseUrl + "n/" + token, ProductStrings.BaseUrl + "n/" + token, ProductStrings.ProductName)
                     );
 
             }
