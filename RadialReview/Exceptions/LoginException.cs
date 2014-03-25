@@ -8,11 +8,11 @@ namespace RadialReview.Exceptions
 {
     public class LoginException : RedirectException
     {
-        public LoginException(String message)
-            : base(message)
+        public LoginException(String message,string redirectUrl) : base(message)
         {
+            RedirectUrl = redirectUrl;
         }
-        public LoginException() : base(ExceptionStrings.DefaultLoginException)
+        public LoginException(String redirectUrl=null) : this(ExceptionStrings.DefaultLoginException,redirectUrl)
         {
         }
     }

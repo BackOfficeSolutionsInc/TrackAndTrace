@@ -74,6 +74,7 @@
         function Delete(id) {
             $.ajax({
                 url: "/User/DeleteManager/" + id,
+                method:"POST",
                 success: function (data) {
                     $("#row_" + id).addClass("danger");
                     $("#row_" + id + " .deleteButton").html('<div class="fullWidth alignCenter" style="color: #929292">Deleted</div>');

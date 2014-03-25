@@ -223,7 +223,7 @@ namespace RadialReview.Accessors
                         {
                             if (reviewContainer.EnsureDefault)
                             {
-                                var subordinates = UserAccessor.GetSubordinates(s.ToQueryProvider(true),perms,caller,prereview.ManagerId).Select(x=>x.Id).Union(prereview.ManagerId.AsList());
+                                var subordinates = UserAccessor.GetDirectSubordinates(s.ToQueryProvider(true),perms,caller,prereview.ManagerId).Select(x=>x.Id).Union(prereview.ManagerId.AsList());
                                 var managerCustomizeDefault=subordinates.SelectMany(sub => defaultModel.Where(x=>x.Item1==sub)).ToList();
                                 all.AddRange(managerCustomizeDefault);
                             }

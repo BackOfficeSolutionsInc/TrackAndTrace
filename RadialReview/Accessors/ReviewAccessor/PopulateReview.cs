@@ -26,8 +26,7 @@ namespace RadialReview.Accessors
         {
             var reviewContainerId = reviewContainer.Id;
             //var reviewsQuery = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId).List();
-
-
+            
             var optional = s.QueryOver<AnswerModel>().Where(x => x.DeleteTime == null && x.ForReviewContainerId == reviewContainerId && !x.Required).Select(Projections.RowCount()).SingleOrDefault<int>();
             var required = s.QueryOver<AnswerModel>().Where(x => x.DeleteTime == null && x.ForReviewContainerId == reviewContainerId && x.Required).Select(Projections.RowCount()).SingleOrDefault<int>();
             var optComp = s.QueryOver<AnswerModel>().Where(x =>  x.DeleteTime == null && x.ForReviewContainerId == reviewContainerId && !x.Required && x.Complete).Select(Projections.RowCount()).SingleOrDefault<int>();

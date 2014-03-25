@@ -131,47 +131,20 @@
         @Html.Partial("Partial/_Modal")
         @using (var s = Html.BeginScripts())
         {
-            <script>
-
-                $(window).bind('beforeunload', function (event) {
-                    if ($(".unsaved").length > 0)
-                        return "@RadialReview.Properties.DisplayNameStrings.unsavedItems";
-                    return;
-                });
-
-                $(".modifiable").change(modify);
-                $(".modifiable").bind('input', modify);
-
-                function modify() {
-                    $(this).addClass("unsaved");
-                    $(".saveButton").addClass("unsaved");
-                }
-
-                function clearUnsaved() {
-                    $(".unsaved").removeClass("unsaved");
-                }
-
-                function qtip() {
-                    $('[title]').qtip({
-                        position: {
-                            my: 'bottom left',  // Position my top left...
-                            at: 'top center', // at the bottom right of...
-                            target: 'mouse'
-                        }
-                    });
-                }
-
+            <script src="~/Scripts/Main/radial.js"></script>
+            
+            <script>                
                 $(function () {
                     qtip();
                     ForceUnhide();
                     @if(ViewBag.Alert!=null)
                     {
                         @:showAlert("@ViewBag.Alert");
-                                                                                                                                                                                    }
+                    }
                     @if(ViewBag.Success!=null)
                     {
                         @:showAlert("@ViewBag.Success", "alert-success", "Success!");
-                                                                                                                                                                                    }
+                    }
 
                     var data = localStorage.getItem("Alert");
                     localStorage.setItem("Alert", null);
@@ -193,202 +166,7 @@
                     }
 
                 });
-
-                function ForceUnhide() {
-                    var speed = 40;
-                    $(".startHiddenGroup").each(function (i, e) {
-                        $(e).find(".startHidden").each(function (i, e2) {
-                            setTimeout(function () {
-                                $(e2).addClass("unhide");
-                            }, speed * i);
-                        });
-                    });
-                    /*$(".startHidden").each(function (i, e) {
-                        setTimeout(function () {
-                            $(e).addClass("unhide");
-                        }, speed * i);
-                    });*/
-                }
-
-                function ForceHide() {
-                    $(".startHidden")
-                        .removeClass("startHidden")
-                        .removeClass("unhide")
-                        .addClass("startHidden");
-                }
-
-
-                function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
-                    $("#modalMessage").html("");
-                    $("#modalMessage").addClass("hidden");
-                    $.ajax({
-                        url: pullUrl,
-                        type: "GET",
-                        //Couldnt retrieve modal partial view
-                        error: function (jqxhr, status, error) {
-                            $("#modalForm").unbind('submit');
-                            if (status == "timeout")
-                                showAlert("@RadialReview.Properties.ExceptionStrings.TimeoutException");
-                            else
-                                showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
-                        },
-                        //Retrieved Partial Modal
-                        success: function (modal) {
-                            if (!modal) {
-                                showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
-                                return;
-                            }
-                            $('#modalBody').html(modal);
-                            $("#modalTitle").html(title);
-                            //Reregister submit button
-                            $("#modalForm").unbind('submit');
-
-                            $("#modalForm").submit(function (e) {
-                                e.preventDefault();
-                                var serialized = $("#modalForm").serialize();
-
-                                if (validation) {
-                                    var message = eval(validation + '()');
-                                    if (message !== undefined && message != true) {
-                                        if (message == false) {
-                                            $("#modalMessage").html("@RadialReview.Properties.DisplayNameStrings.error");
-                                        }
-                                        else {
-                                            $("#modalMessage").html(message);
-                                        }
-                                        $("#modalMessage").removeClass("hidden");
-                                        return;
-                                    }
-                                }
-                                $("#modal").modal("hide");
-                                $.ajax({
-                                    url: pushUrl,
-                                    type: "POST",
-                                    data: serialized,
-                                    success: function (data, status, jqxhr) {
-                                        if (!data) {
-                                            $("#modal").modal("hide");
-                                            showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
-                                        } else {
-                                            StoreJsonAlert(data)
-                                            if (onSuccess) {
-                                                eval(onSuccess + "(data)");
-                                                //$("#modal").modal("hide");
-                                            }
-                                            else {
-                                                if (data.Error) {
-                                                    //console.log(data.Trace);
-                                                    //console.log(data.Message);
-                                                    //if (!data.ForceNoShow)
-                                                    showJsonAlert(data);
-                                                } else {
-                                                    //$("#modal").modal("hide");
-                                                    location.reload();
-                                                }
-                                            }
-                                        }
-                                    },
-                                    error: function (jqxhr, status, error) {
-                                        if (error == "timeout") {
-                                            showAlert("@RadialReview.Properties.ExceptionStrings.TimeoutException");
-                                        } else {
-                                            showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
-                                        }
-                                        $("#modal").modal("hide");
-                                    }
-                                });
-                            });
-                            $('#modal').modal('show');
-                            var count = 0;
-                            setTimeout(function () {
-                                if (callback) {
-                                    eval(callback + '()');
-                                } else {
-                                    $('#modal input:not([type=hidden]):first').focus();
-                                }
-                            }, 550);
-                        }
-
-
-                    });
-                }
-
-                function StoreJsonAlert(json) {
-                    var alert = new Object();
-                    alert.message = json.Message;
-                    alert.type = "alert-" + json.MessageType.toLowerCase();
-                    alert.title = json.Heading;
-                    localStorage.setItem("Alert", JSON.stringify(alert));
-                }
-
-                function showAlert(message, alertType, preface) {
-                    if (alertType === undefined)
-                        alertType = "alert-danger";
-                    if (preface === undefined)
-                        preface = "@RadialReview.Properties.MessageStrings.Warning";
-                    var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>" + preface + "</strong> <span class=\"message\">" + message + "</span></div>");
-                    $("#alerts").prepend(alert);
-                    setTimeout(function () { alert.removeClass("start"); }, 1);
-                }
-
-                function showJsonAlert(data, showSuccess, clearOthers) {
-                    if (clearOthers) {
-                        $("#alerts").html("");
-                    }
-
-                    if (!data) {
-                        showAlert("@RadialReview.Properties.ExceptionStrings.SomethingWentWrong");
-                    } else {
-                        var message = data.Message;
-                        if (message === undefined)
-                            message = "";
-                        console.log(data.Trace);
-                        console.log(data.Message);
-                        showAlert(message, "alert-" + data.MessageType.toLowerCase(), data.Heading);
-                    }
-                }
-
-                var alertHub = $.connection.alertHub;
-
-                alertHub.client.jsonAlert = function (data, showSuccess) {
-                    showJsonAlert(data, showSuccess);
-                };
-
-                alertHub.client.unhide = function (selector) {
-                    $(selector).show();
-                };
-
-                var statusTimeout;
-
-                alertHub.client.status = function (text) {
-
-                    $(".statusContainer").css("bottom", "0px");
-                    $(".statusContainer").css("display", "block");
-                    $(".statusContainer").css("opacity", "1");
-                    $("#status").html(text);
-                    clearTimeout(statusTimeout);
-                    statusTimeout = setTimeout(function () {
-                        $(".statusContainer").animate({
-                            opacity: 0,
-                            bottom: "-20px"
-                        }, 500, function () {
-                            $(".statusContainer").css("display", "none");
-                        })
-                    }, 2000);
-                };
-
-                $.connection.hub.start().done(function () {
-                });
-
-
-                (function ($) {
-                    $.fn.setCursorToTextEnd = function () {
-                        var $initialVal = this.val();
-                        this.val($initialVal);
-                    };
-                })(jQuery);
             </script>
-
         }
 
     </div>

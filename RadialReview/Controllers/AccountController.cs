@@ -151,7 +151,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public ActionResult Role(String ReturnUrl)
         {
-            var userOrgs = GetUserOrganizations();
+            var userOrgs = GetUserOrganizations(null);
             ViewBag.Admin = GetUserModel().IsRadialAdmin;
             ViewBag.ReturnUrl = ReturnUrl;
             return View(userOrgs.ToList());
@@ -349,13 +349,20 @@ namespace RadialReview.Controllers
             return View(model);
         }
 
-
         [HttpPost]
         [Access(AccessLevel.User)]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Manage(ProfileViewModel model)
         {
             _UserAccessor.EditUserModel(GetUserModel(), GetUserModel().Id, model.FirstName, model.LastName, null);
+            return RedirectToAction("Index","Home");
+        }
+
+        [HttpPost]
+        [Access(AccessLevel.User)]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Password(ManageUserViewModel model)
+        {
             bool hasPassword = HasPassword();
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
@@ -363,7 +370,7 @@ namespace RadialReview.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.Manage.OldPassword, model.Manage.NewPassword);
+                    IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
                     if (result.Succeeded)
                     {
                         return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
@@ -385,7 +392,7 @@ namespace RadialReview.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.Manage.NewPassword);
+                    IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
                     if (result.Succeeded)
                     {
                         return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });

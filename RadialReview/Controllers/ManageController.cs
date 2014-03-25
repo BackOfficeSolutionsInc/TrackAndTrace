@@ -1,6 +1,8 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Engines;
 using RadialReview.Exceptions;
+using RadialReview.Models;
+using RadialReview.Models.UserModels;
 using RadialReview.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,7 @@ namespace RadialReview.Controllers
         public ActionResult Index()
         {
             //Main page
-            var page = (string)Session["Manage"] ?? "Members";
+            var page = (string)Session["Manage"] ?? "Reorganize";
             return RedirectToAction(page);
             /*
             switch (page)
@@ -104,20 +106,51 @@ namespace RadialReview.Controllers
             {
                 var u = members[i];
                 u.PopulatePersonallyManaging(user, user.AllSubordinates);
+                u.Teams = u.Teams.OrderBy(x => x.Team.Type).ToList();
                 //var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
                 //members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Managers().Execute();
             }
-            var model = new OrgMembersViewModel(members);
+            var model = new OrgMembersViewModel(members,user.Organization);
             return View(model);
         }
+
+        public class ReorganizeVM
+        {
+            public List<UserOrganizationModel> AllUsers { get; set; }
+            public List<ManagerDuration> AllManagerLinks { get; set; }
+
+
+        }
+
+        [Access(AccessLevel.Manager)]
+        public ActionResult Reorganize()
+        {
+            Session["Manage"] = "Reorganize";
+            var orgId = GetUser().Organization.Id;
+            var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), orgId, false, false);
+            var allManagers = _OrganizationAccessor.GetOrganizationManagerLinks(GetUser(), orgId).ToListAlive();
+
+            var depth = _DeepSubordianteAccessor.GetOrganizationMap(GetUser(), orgId);
+
+            allUsers.ForEach(x => x.SetLevel(depth.Count(y => y.SubordinateId == x.Id)));
+            
+            var model = new ReorganizeVM()
+            {
+                AllManagerLinks = allManagers,
+                AllUsers = allUsers,
+            };
+
+            return View(model);
+        }
+
 
         [Access(AccessLevel.Manager)]
         public ActionResult Organization()
         {
             var user = GetUser().Hydrate().Organization().Execute();
-            if (!user.ManagingOrganization)
-                throw new PermissionsException();
 
+            _PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization());
+            
             var model = new OrganizationViewModel()
             {
                 Id = user.Organization.Id,
@@ -125,6 +158,7 @@ namespace RadialReview.Controllers
                 OrganizationName = user.Organization.Name.Standard,
                 StrictHierarchy = user.Organization.StrictHierarchy,
                 ManagersCanEditPositions = user.Organization.ManagersCanEditPositions,
+                ManagersCanRemoveUsers = user.Organization.ManagersCanRemoveUsers
             };
 
             return View(model);
@@ -134,7 +168,15 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Organization(OrganizationViewModel model)
         {
-            _OrganizationAccessor.Edit(GetUser(), model.Id, model.OrganizationName, model.ManagersCanEdit, model.StrictHierarchy, model.ManagersCanEditPositions, model.SendEmailImmediately);
+            _OrganizationAccessor.Edit(
+                GetUser(),
+                model.Id,
+                model.OrganizationName,
+                model.ManagersCanEdit,
+                model.StrictHierarchy,
+                model.ManagersCanEditPositions,
+                model.SendEmailImmediately,
+                model.ManagersCanRemoveUsers);
             ViewBag.Success = "Successfully Saved.";
             return View(model);
         }

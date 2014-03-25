@@ -8,8 +8,8 @@ namespace RadialReview.Models.Enums
     public enum TeamType
     {
         Standard = 0,
-        AllMembers = 1,
+        Subordinates = 1,
         Managers = 2,
-        Subordinates = 3,
+        AllMembers = 3,
     }
 }

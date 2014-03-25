@@ -23,11 +23,11 @@ namespace RadialReview.Utilities
 
         public PermissionsUtility RadialAdmin()
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
             throw new PermissionsException();
         }
-        protected Boolean IsRadialAdmin()
+        protected static Boolean IsRadialAdmin(UserOrganizationModel caller)
         {
             if (caller != null && (caller.IsRadialAdmin || (caller.User != null && caller.User.IsRadialAdmin)))
                 return true;
@@ -53,7 +53,7 @@ namespace RadialReview.Utilities
         #region User
         public PermissionsUtility EditUserModel(string userId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             if (caller.User.Id == userId)
@@ -65,10 +65,10 @@ namespace RadialReview.Utilities
             if (caller.Id == userId)
                 return this;
 
-            return ManagesUserOrganization(userId);
+            return ManagesUserOrganization(userId,false);
 
             /*
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             var user = session.Get<UserOrganizationModel>(userId);
@@ -85,7 +85,7 @@ namespace RadialReview.Utilities
         }
         public PermissionsUtility ViewUserOrganization(long userOrganizationId, Boolean sensitive)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
             var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
 
@@ -108,11 +108,11 @@ namespace RadialReview.Utilities
 
             throw new PermissionsException();
         }
-        public PermissionsUtility ManagesUserOrganization(long userOrganizationId)
+        public PermissionsUtility ManagesUserOrganization(long userOrganizationId,bool disableIfSelf)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
-
+            //Confirm allowed if we manage organization.. was below
             if (caller.ManagingOrganization)
             {
                 var subordinate = session.Get<UserOrganizationModel>(userOrganizationId);
@@ -120,8 +120,13 @@ namespace RadialReview.Utilities
                     return this;
             }
 
+            if (disableIfSelf && caller.Id == userOrganizationId)
+                throw new PermissionsException("You cannot do this to yourself.");
+
+            //..was here
+
             //Confirm this is correct. Do you want children to also be managers?
-            if ((userOrganizationId != caller.Id) && caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
+            if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
                 return this;
             throw new PermissionsException();
         }
@@ -130,7 +135,7 @@ namespace RadialReview.Utilities
         #region Organization
         public PermissionsUtility EditOrganization(long organizationId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             if (caller.Organization.Id == organizationId && caller.IsManagerCanEditOrganization())
@@ -140,12 +145,12 @@ namespace RadialReview.Utilities
         private bool IsManagingOrganization(long organizationId)
         {
             if (caller.Organization.Id == organizationId)
-                return caller.ManagingOrganization;
+                return caller.ManagingOrganization || (caller.ManagerAtOrganization && caller.Organization.ManagersCanEdit);
             return false;
         }
         public PermissionsUtility ViewOrganization(long organizationId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
             if (caller.Organization.Id == organizationId)
                 return this;
@@ -157,7 +162,7 @@ namespace RadialReview.Utilities
         #region Group
         public PermissionsUtility EditGroup(long groupId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.ManagingGroups.Any(y => y.Id == groupId)))
@@ -168,7 +173,7 @@ namespace RadialReview.Utilities
 
         public PermissionsUtility ViewGroup(long groupId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
             if (caller.Groups.Any(x => x.Id == groupId))
                 return this;
@@ -181,7 +186,7 @@ namespace RadialReview.Utilities
         #region Application
         public PermissionsUtility EditApplication(long forId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
             throw new PermissionsException();
         }
@@ -195,7 +200,7 @@ namespace RadialReview.Utilities
         #region Industry
         public PermissionsUtility EditIndustry(long forId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
             throw new PermissionsException();
         }
@@ -209,7 +214,7 @@ namespace RadialReview.Utilities
         #region Question
         public PermissionsUtility EditQuestion(QuestionModel question)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             var createdById = question.CreatedById;
@@ -222,7 +227,7 @@ namespace RadialReview.Utilities
 
         public PermissionsUtility ViewQuestion(QuestionModel question)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             switch (question.OriginType)
@@ -276,7 +281,7 @@ namespace RadialReview.Utilities
         #region Category
         public PermissionsUtility ViewCategory(long id)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             var category = session.Get<QuestionCategoryModel>(id);
@@ -290,7 +295,7 @@ namespace RadialReview.Utilities
         }
         public PermissionsUtility PairCategoryToQuestion(long categoryId, long questionId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             var category = session.Get<QuestionCategoryModel>(categoryId);
@@ -329,13 +334,13 @@ namespace RadialReview.Utilities
             var review = session.Get<ReviewModel>(reviewId);
             var userId = review.ForUserId;
 
-            ManagesUserOrganization(userId);
+            ManagesUserOrganization(userId,false);
 
             return this;
         }
         public PermissionsUtility ManagingOrganization()
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             if (IsManagingOrganization(caller.Organization.Id))
@@ -353,7 +358,7 @@ namespace RadialReview.Utilities
             //if (teamId == -5 && caller.IsManager()) 
             //    return this;
 
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             var team = session.Get<OrganizationTeamModel>(teamId);
@@ -382,7 +387,7 @@ namespace RadialReview.Utilities
 
         public PermissionsUtility EditTeam(long teamId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             //Creating
@@ -421,7 +426,7 @@ namespace RadialReview.Utilities
         }
         public PermissionsUtility ManagingTeam(long teamId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             //if (teamId == -5 && caller.IsManager())
@@ -448,7 +453,7 @@ namespace RadialReview.Utilities
         public PermissionsUtility EditReviewContainer(long reviewContainerId)
         {
             //TODO more permissions here?
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             var review = session.Get<ReviewsModel>(reviewContainerId);
@@ -470,7 +475,7 @@ namespace RadialReview.Utilities
         public PermissionsUtility EditReview(long reviewId)
         {
             //TODO more permissions here?
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
             var review = session.Get<ReviewModel>(reviewId);
             if (review.DueDate < DateTime.UtcNow)
@@ -483,7 +488,7 @@ namespace RadialReview.Utilities
         
         public PermissionsUtility ViewReviews(long reviewContainerId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
             var review = session.Get<ReviewsModel>(reviewContainerId);
             var orgId = review.ForOrganization.Id;
@@ -503,7 +508,7 @@ namespace RadialReview.Utilities
         
         public PermissionsUtility ViewReview(long reviewId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             var review = session.Get<ReviewModel>(reviewId);
@@ -529,7 +534,7 @@ namespace RadialReview.Utilities
         #region Responsbility
         public PermissionsUtility EditResponsibility(long responsibilityId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             var r = session.Get<ResponsibilityModel>(responsibilityId);
@@ -560,7 +565,7 @@ namespace RadialReview.Utilities
         #region Position
         public PermissionsUtility ManagingPosition(long positionId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             if (positionId == 0)
@@ -578,7 +583,7 @@ namespace RadialReview.Utilities
         }
         public PermissionsUtility EditPositions()
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             if (IsManagingOrganization(caller.Organization.Id))
@@ -595,7 +600,7 @@ namespace RadialReview.Utilities
         #region Prereview
         public PermissionsUtility ViewPrereview(long prereviewId)
         {
-            if (IsRadialAdmin())
+            if (IsRadialAdmin(caller))
                 return this;
 
             if (IsManagingOrganization(caller.Organization.Id))
@@ -670,6 +675,24 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }*/
 
-        
+
+
+        public PermissionsUtility RemoveUser(long userId)
+        {
+            var found = session.Get<UserOrganizationModel>(userId);
+
+            if (caller.ManagingOrganization || caller.Organization.Id==found.Organization.Id)
+                return this;
+
+            if (caller.Organization.ManagersCanRemoveUsers)
+                ManagesUserOrganization(userId, true);
+
+            throw new PermissionsException("You cannot remove this user.");
+        }
+
+        public static bool IsAdmin(UserOrganizationModel caller)
+        {
+            return IsRadialAdmin(caller);
+        }
     }
 }

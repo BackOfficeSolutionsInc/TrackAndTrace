@@ -129,11 +129,7 @@ namespace RadialReview.Engines
             await Task.Run(async () =>
             {
                 var now = DateTime.UtcNow;
-                var admin = new UserOrganizationModel()
-                {
-                    IsRadialAdmin = true,
-                    Id = UserOrganizationModel.ADMIN_ID,
-                };
+                var admin = UserOrganizationModel.ADMIN;
                 var reviewContainerId = nexus.GetArgs()[0].ToLong();
                 
                 //var prereview = _PrereviewAccessor.GetPrereview(admin, prereviewId);

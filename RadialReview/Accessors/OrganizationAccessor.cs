@@ -11,6 +11,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Utilities.DataTypes;
 using NHibernate;
 using RadialReview.Models.UserModels;
+using System.Text.RegularExpressions;
 
 namespace RadialReview.Accessors
 {
@@ -31,7 +32,7 @@ namespace RadialReview.Accessors
                         CreationTime = now,
                         PaymentPlan = paymentPlan,
                         Name = name,
-                        ManagersCanEdit = managersCanAddQuestions,
+                        ManagersCanEdit = false,
                         
                     };
 
@@ -176,6 +177,17 @@ namespace RadialReview.Accessors
         }
 
 
+        public List<ManagerDuration> GetOrganizationManagerLinks(UserOrganizationModel caller, long organizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+                    return s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == organizationId).List().ToList();
+                }
+            }
+        }
 
         public List<UserOrganizationModel> GetOrganizationMembers(UserOrganizationModel caller, long organizationId, bool teams, bool managers)
         {
@@ -202,9 +214,6 @@ namespace RadialReview.Accessors
                             user.PopulateTeams(allTeams, allTeamDurations);
                         }
                     }
-
-
-
                     return users;
                 }
             }
@@ -296,10 +305,11 @@ namespace RadialReview.Accessors
         }
 
         public void Edit(UserOrganizationModel caller, long organizationId, string organizationName = null,
-                                                                            bool? managersCanEdit = null,
+                                                                            bool? managersHaveAdmin = null,
                                                                             bool? strictHierarchy = null,
                                                                             bool? managersCanEditPositions = null,
-                                                                            bool? sendEmailImmediately = null)
+                                                                            bool? sendEmailImmediately = null,
+                                                                            bool? managersCanRemoveUsers = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -307,12 +317,12 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).EditOrganization(organizationId).ManagingOrganization();
                     var org = s.Get<OrganizationModel>(organizationId);
-                    if (managersCanEdit != null && managersCanEdit.Value != org.ManagersCanEdit)
+                    if (managersHaveAdmin != null && managersHaveAdmin.Value != org.ManagersCanEdit)
                     {
                         if (caller.ManagingOrganization)
-                            org.ManagersCanEdit = managersCanEdit.Value;
+                            org.ManagersCanEdit = managersHaveAdmin.Value;
                         else
-                            throw new PermissionsException();
+                            throw new PermissionsException("You cannot change whether managers are admins at the organization.");
                     }
                     if (organizationName != null)
                         org.Name.UpdateDefault(organizationName);
@@ -324,6 +334,9 @@ namespace RadialReview.Accessors
 
                     if (sendEmailImmediately != null)
                         org.SendEmailImmediately = sendEmailImmediately.Value;
+
+                    if (managersCanRemoveUsers != null)
+                        org.ManagersCanRemoveUsers = managersCanRemoveUsers.Value;
 
                     s.Update(org);
                     tx.Commit();
@@ -356,7 +369,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
+                    var perms = PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
 
                     var org = s.Get<OrganizationModel>(orgId);
 
@@ -366,36 +379,68 @@ namespace RadialReview.Accessors
                                         .List()
                                         .ToListAlive();
 
-                    var classes = "organizations".AsList("admin");
+                    var deep = DeepSubordianteAccessor.GetSubordinatesAndSelf(s,caller,caller.Id);
 
-                    return Children(org.Name.Translate(), "", "", -1, classes, managers);
+                    //var classes = "organizations".AsList("admin");
+
+                    var managingOrg = caller.ManagingOrganization && orgId ==caller.Organization.Id;
+
+                    var tree = new Tree(){
+                        name=org.Name.Translate(),
+                        @class="organizations",
+                        id = -1*orgId,
+                        children = managers.Select(x => x.GetTree(deep, caller.Id, force: managingOrg)).ToList()
+                    };
+
+                    return tree;
                 }
             }
         }
-
-        private Tree Children(String name, String subtext, String classStr, long id, List<String> classes, List<UserOrganizationModel> users)
+        /*
+        private Tree Children(String name, String subtext, String classStr,bool manager, long id, List<UserOrganizationModel> users,List<long> deep,long youId)
         {
-            var newClasses = classes.ToList();
+
+            /*var newClasses = classes.ToList();
             if (classes.Count > 0)
-                newClasses.RemoveAt(0);
+                newClasses.RemoveAt(0);*/
+            /*var managing =deep.Any(x=>x==id);
+
+            if (managing)
+                classStr += " managing";
+            if (id == youId)
+                classStr += " you";
 
             return new Tree()
             {
                 name = name,
                 id = id,
                 subtext = subtext,
-                @class = classes.FirstOrDefault() + " " + classStr,
-                children = users.ToListAlive().Select(x =>
-                    Children(
-                        x.GetTitles(),
-                        x.GetName(),
-                        String.Join(" ", x.Teams.ToListAlive().Select(y => y.Team.Name.Replace(' ', '_'))),
-                        x.Id,
-                        newClasses,
-                        x.ManagingUsers.ToListAlive().Select(y => y.Subordinate).ToList())
+                @class = classStr,
+                managing = managing,
+                manager = manager,
+                children = users.ToListAlive().Select(x =>{
+                    var selfClasses = x.Teams.ToListAlive().Select(y=>y.Team.Name).ToList();
+                    selfClasses.Add("employee");
+                    if (x.ManagingOrganization)
+                        selfClasses.Add("admin");
+                    if(x.ManagerAtOrganization)
+                        selfClasses.Add("manager");
+
+
+                    return Children(
+                            x.GetName(),
+                            x.GetTitles(),
+                            String.Join(" ", selfClasses.Select(y => Regex.Replace(y, "[^a-zA-Z0-9]", "_"))),
+                            x.IsManager(),
+                            x.Id,
+                            x.ManagingUsers.ToListAlive().Select(y => y.Subordinate).ToList(),
+                            deep,
+                            youId
+                        );
+                }
                     ).ToList()
-            };
-        }
+            };*
+        }*/
 
         public List<QuestionCategoryModel> GetOrganizationCategories(UserOrganizationModel caller, long organizationId)
         {

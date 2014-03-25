@@ -76,14 +76,14 @@ namespace RadialReview.Models.Json
             };
         }
 
-        public static ResultObject Create(object obj, String message = "Success")
+        public static ResultObject Create(object obj, String message = "Success",StatusType status = StatusType.Success)
         {
             return new ResultObject()
             {
                 Object = obj,
                 Error = false,
                 Message = message,
-                Status = StatusType.Success
+                Status = status
             };
         }
         

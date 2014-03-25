@@ -18,7 +18,12 @@ namespace RadialReview.Models
 {
     public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable
     {
-        public static long ADMIN_ID = -1231331L;
+        public static long ADMIN_ID = -7231398885982031L;
+
+        public static UserOrganizationModel ADMIN = new UserOrganizationModel(){
+            IsRadialAdmin = true,
+            Id = UserOrganizationModel.ADMIN_ID,
+        };
 
         public virtual TempUserModel TempUser { get; set; }
         public virtual String EmailAtOrganization { get; set; }
@@ -206,6 +211,7 @@ namespace RadialReview.Models
             References(x => x.User)
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();
+            //ORGANIZATION IS HOUSED IN RESPONSIBILITY GROUP
             /*References(x => x.Organization)
                 .Column("Organization_Id")
                 .Cascade.SaveUpdate();*/

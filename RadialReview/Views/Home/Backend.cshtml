@@ -16,6 +16,9 @@
         .welcome a {
             color: #4A79FF;
         }
+        h3 {
+            color: #6D6D6D;
+        }
     </style>
 }
 
@@ -39,7 +42,8 @@
         @if (Model.OutstandingReview != null)
         {
             <div class="review smallBreak2">
-                <h1 class="alignCenter">@Model.OutstandingReview.Name</h1>
+                <h5 class ="alignCenter noMargin gray">Review:</h5>
+                <hgroup class="alignCenter"><h1 style="margin-top:0px;">@Model.OutstandingReview.Name</h1></hgroup>
                 @Html.Partial("_ReviewStats", Model.OutstandingReview.ReviewContainerId)
             </div>
         }

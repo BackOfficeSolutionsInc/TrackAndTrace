@@ -144,7 +144,9 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var perms = PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId).EditReviewContainer(reviewContainerId);
+                    var perms = PermissionsUtility.Create(s, caller)
+                        .ManagesUserOrganization(userOrganizationId, false)
+                        .EditReviewContainer(reviewContainerId);
 
                     var deleteTime = DateTime.UtcNow;
                     var user = s.Get<UserOrganizationModel>(userOrganizationId);
@@ -178,7 +180,9 @@ namespace RadialReview.Accessors
                 {
                     using (var tx = s.BeginTransaction())
                     {
-                        var perms = PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId).ViewReviews(reviewContainerId);
+                        var perms = PermissionsUtility.Create(s, caller)
+                            .ManagesUserOrganization(userOrganizationId, false)
+                            .ViewReviews(reviewContainerId);
                         var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
                         var dueDate = reviewContainer.DueDate;
                         //var sendEmails = false;

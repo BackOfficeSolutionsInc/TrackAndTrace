@@ -86,6 +86,7 @@ namespace System.Web
         {
             var count = items.Count();
             var name = "" + count;
+            var after = "";
             var joined = String.Join(", ", items);
             if (count == 1)
                 name = items.First();
@@ -95,8 +96,13 @@ namespace System.Web
                 joined = "None";
             }
             else
-                name = "<i>Multiple</i> ("+count+")";
-            return new HtmlString("<span class='editFirst'>" + ViewOrEdit(html, edit).ToHtmlString() + "<span title='" + joined + "'>" + name + "</span></span>");
+            {
+                name = items.First() ;
+                after = "(+" + (count - 1) + ")";
+                joined = String.Join(",", items);
+            }
+
+            return new HtmlString("<span class='editFirst'><span class='icon'>" + ViewOrEdit(html, edit).ToHtmlString() + "</span><span title='" + joined + "' class='text'><span class='uncollapsable'>" + after + "</span><span class='collapsable'>" + name + "</span></span></span>");
         }
 
         public static HtmlString Badge<T>(this HtmlHelper<T> html, Func<T, int> count)

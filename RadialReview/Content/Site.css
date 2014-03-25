@@ -186,6 +186,9 @@ html, body {
 .jumbotron hgroup h1,hgroup h2,hgroup h3,hgroup h4,hgroup h5,hgroup h6{
     float:left;
 }*/
+hgroup h1, hgroup h2, hgroup h3, hgroup h4, hgroup h5, hgroup h6 {
+    display:inline-block;
+}
 
 ul a{
     -webkit-touch-callout: none;
@@ -643,6 +646,9 @@ input[type="checkbox"].input-validation-error {
 .footer.container {
     color: #C9C8D8;
 }
+.footer.container h4{
+    color: #C7C3F8
+}
 
 .footer a {
     color: #C9C8D8;
@@ -772,6 +778,10 @@ tr.danger .strikable {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #859BAD;
 }
+.strokeDarkBlue {
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #49789f;
+}
 
 .strokeLightGreen {
     -webkit-text-stroke-width: 1px;
@@ -792,6 +802,9 @@ tr.danger .strikable {
 
 .blue {
     color: #BAD9F3;
+}
+.darkblue {
+    color: #79a9cf;
 }
 
 .gray {
@@ -1132,4 +1145,46 @@ tr.grayRow {
 
     100% {
     }
+}
+
+table.tablesorter thead tr .tablesorter-headerAsc .tablesorter-header-inner:after {
+    content: "▾";
+}
+table.tablesorter thead tr .tablesorter-headerDesc .tablesorter-header-inner:after {
+    content: "▴";
+}
+
+table.tablesorter thead tr .tablesorter-header:not(.tablesorter-headerDesc):not(.tablesorter-headerAsc) .tablesorter-header-inner:after
+{
+    color:#e2e2e2;
+    content: "⇅";    
+}
+
+table.tablesorter thead tr .tablesorter-header:not(.tablesorter-headerDesc):not(.tablesorter-headerAsc):hover .tablesorter-header-inner:after
+{
+    color:#8a8a8a;
+}
+
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr  :not(.tablesorter-headerUnSorted) .tablesorter-header-inner{
+color: #559DC5;
+}
+
+.editFirst{
+    width:100%;
+}
+.editFirst .icon{
+    float:left;
+}
+
+.editFirst .uncollapsable{
+    float:right;
+    text-align:right;
+	white-space: nowrap;
+}
+
+.editFirst .collapsable{ 
+    display: block;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }

@@ -100,8 +100,9 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.Manager)]
-        public JsonResult AddManagedUserToOrganization(CreateUserOrganizationViewModel model)
+        public async Task<JsonResult> AddManagedUserToOrganization(CreateUserOrganizationViewModel model)
         {
+            UserOrganizationModel createdUser=null;
             try
             {
                 var user = GetUser().Hydrate().Organization().Execute();
@@ -117,18 +118,25 @@ namespace RadialReview.Controllers
                     model.Position.PositionId = newPosition.Id;
                 }
 
-                var nexusId = NexusAccessor.JoinOrganizationUnderManager(user, model.ManagerId, model.IsManager, model.Position.PositionId, model.Email, model.FirstName, model.LastName);
+                var nexusIdandUser = await NexusAccessor.JoinOrganizationUnderManager(
+                        user, model.ManagerId, model.IsManager,
+                        model.Position.PositionId, model.Email,
+                        model.FirstName, model.LastName
+                    );
+                createdUser=nexusIdandUser.Item2;
+                var nexusId=nexusIdandUser.Item1;
+
 
                 var message = "Successfully added " + model.FirstName + " " + model.LastName + ".";
                 if (GetUser().Organization.SendEmailImmediately)
                 {
                     message += " An invitation has been sent to " + model.Email + ".";
-                    return Json(ResultObject.CreateMessage(StatusType.Success, message));
+                    return Json(ResultObject.Create(createdUser.GetTree(createdUser.Id.AsList()),message));
                 }
                 else
                 {
                     message += " The invitation has NOT been sent. To send, click \"Send Invites\" below.";
-                    return Json(ResultObject.CreateMessage(StatusType.Warning, message));
+                    return Json(ResultObject.Create(createdUser.GetTree(createdUser.Id.AsList()), message, StatusType.Warning));
                 }
             }
             catch (RedirectException e)

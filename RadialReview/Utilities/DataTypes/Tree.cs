@@ -10,7 +10,9 @@ namespace RadialReview.Utilities.DataTypes
         public String name { get; set; }
         public String subtext { get; set; }
         public String @class { get; set; }
-        public long id {get;set;}
+        public long id { get; set; }
+        public bool managing { get; set; }
+        public bool manager { get; set; }
         public List<Tree> children { get; set; }
     }
 }

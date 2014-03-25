@@ -23,6 +23,7 @@ namespace RadialReview.Models
 
         [Display(Name = "managerCanAddQuestions", ResourceType = typeof(DisplayNameStrings))]
         public virtual Boolean ManagersCanEdit { get; set; }
+        public virtual Boolean ManagersCanRemoveUsers { get; set; }
         public virtual bool StrictHierarchy { get; set; }
         public virtual IList<UserOrganizationModel> Members { get; set; }
         public virtual IList<PaymentModel> Payments { get; set; }
@@ -62,6 +63,8 @@ namespace RadialReview.Models
             QuestionCategories = new List<QuestionCategoryModel>();
             Reviews = new List<ReviewsModel>();
             ManagersCanEditPositions = true;
+            ManagersCanEdit = false;
+
 
         }
 
@@ -105,6 +108,7 @@ namespace RadialReview.Models
             Map(x => x.CreationTime);
             Map(x => x.StrictHierarchy);
             Map(x => x.ManagersCanEditPositions);
+            Map(x => x.ManagersCanRemoveUsers);
             //Map(x => x.ImageUrl);
             Map(x => x.SendEmailImmediately);
 

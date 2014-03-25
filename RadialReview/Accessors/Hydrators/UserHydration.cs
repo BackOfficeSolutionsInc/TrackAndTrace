@@ -180,6 +180,7 @@ namespace RadialReview
 
             return this;
         }
+        /*
         public UserHydration Nexus()
         {
             List<NexusModel> nexus = new List<NexusModel>();
@@ -194,7 +195,7 @@ namespace RadialReview
             }
             User.CreatedNexuses = nexus;
             return this;
-        }
+        }*/
 
         public UserOrganizationModel Execute()
         {
@@ -270,7 +271,7 @@ namespace RadialReview
                 //Blah blah blah this is bad.. 
                 try
                 {
-                    PermissionsUtility.Create(Session, self).ManagesUserOrganization(uOrgId);
+                    PermissionsUtility.Create(Session, self).ManagesUserOrganization(uOrgId,false);
                     owned = true;
                 }
                 catch (PermissionsException)

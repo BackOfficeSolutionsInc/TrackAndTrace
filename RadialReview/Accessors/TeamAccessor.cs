@@ -130,7 +130,7 @@ namespace RadialReview.Accessors
                     }
                 case TeamType.AllMembers:
                     {
-                        var users = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id);
+                        var users = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id && x.DeleteTime==null);
                         return users.Select(x => new TeamDurationModel() { 
                             Id = -2, 
                             Start = x.AttachTime, 
@@ -303,7 +303,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditTeam(teamId).ManagesUserOrganization(userOrgId);
+                    PermissionsUtility.Create(s, caller).EditTeam(teamId).ManagesUserOrganization(userOrgId,false);
                     var team = s.Get<OrganizationTeamModel>(teamId);
 
                     if (team.Type != TeamType.Standard)

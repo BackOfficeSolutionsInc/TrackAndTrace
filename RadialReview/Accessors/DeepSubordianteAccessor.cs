@@ -1,4 +1,5 @@
 ﻿using NHibernate;
+using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Utilities;
@@ -22,16 +23,58 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
-        public static List<long> GetSubordinatesAndSelf(ISession s, UserOrganizationModel caller, long userId)
+        public List<UserOrganizationModel> GetSubordinatesAndSelfModels(UserOrganizationModel caller, long userId)
         {
-            if (caller.Id != userId)
+            using (var s = HibernateSession.GetCurrentSession())
             {
-                var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.DeleteTime == null && x.ManagerId == userId && x.SubordinateId==userId).SingleOrDefault();
+                using (var tx = s.BeginTransaction())
+                {
+                    return GetSubordinatesAndSelfModels(s, caller, userId);
+                }
+            }
+
+        }
+
+        public static List<UserOrganizationModel> GetSubordinatesAndSelfModels(ISession s, UserOrganizationModel caller, long userId)
+        {
+
+            if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller))
+            {
+                var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.DeleteTime == null && x.ManagerId == userId && x.SubordinateId == userId).SingleOrDefault();
                 if (found == null)
                     throw new PermissionsException("You don't have access to this user");
             }
-            var subordinates=s.QueryOver<DeepSubordinateModel>().Where(x => x.DeleteTime == null && x.ManagerId == userId).List().Select(x=>x.SubordinateId).ToList();
+
+            UserOrganizationModel alias=null;
+
+            var subordinates = s.QueryOver(()=>alias)
+                                .WithSubquery.WhereExists(
+                                    QueryOver.Of<DeepSubordinateModel>()
+                                        .Where(e => e.DeleteTime==null && e.ManagerId == userId)
+                                        .Where(d => d.SubordinateId == alias.Id)
+                                        .Select(d=>d.Id))
+                                        .List().ToList();
+
+                /*.Where(x => x.DeleteTime == null && x.ManagerId == userId)
+                .Fetch(e => e.Subordinate).Eager
+                .Select(x=>x.Subordinate).List<UserOrganizationModel>()
+                .ToList();*/
+            return subordinates;
+        }
+
+        public static List<long> GetSubordinatesAndSelf(ISession s, UserOrganizationModel caller, long userId)
+        {
+            if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller))
+            {
+                var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.DeleteTime == null && x.ManagerId == userId && x.SubordinateId == userId).SingleOrDefault();
+                if (found == null)
+                    throw new PermissionsException("You don't have access to this user");
+            }
+            var subordinates = s.QueryOver<DeepSubordinateModel>()
+                                    .Where(x => x.DeleteTime == null && x.ManagerId == userId)
+                                    .Select(x=>x.SubordinateId)
+                                    .List<long>()
+                                    .ToList();
             return subordinates;
         }
 
@@ -41,13 +84,16 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-
-                    return s.QueryOver<DeepSubordinateModel>().Where(x => x.OrganizationId == organizationId).List().ToList();
-
+                    var perm = PermissionsUtility.Create(s, caller);
+                    return GetOrganizationMap(s, perm, organizationId);
                 }
             }
+        }
 
+        public static List<DeepSubordinateModel> GetOrganizationMap(ISession s, PermissionsUtility perm, long organizationId)
+        {
+            perm.ViewOrganization(organizationId);
+            return s.QueryOver<DeepSubordinateModel>().Where(x => x.OrganizationId == organizationId).List().ToList();
         }
 
         public static void Remove(ISession s, UserOrganizationModel manager, UserOrganizationModel subordinate, DateTime now)
@@ -82,7 +128,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static void Add(ISession s, UserOrganizationModel manager, UserOrganizationModel subordinate,long organizationId,DateTime now)
+        public static void Add(ISession s, UserOrganizationModel manager, UserOrganizationModel subordinate, long organizationId, DateTime now)
         {
             //Get **users** subordinates, make them deep subordinates of manager
             var allSubordinates = SubordinateUtility.GetSubordinates(subordinate, false);
@@ -99,7 +145,7 @@ namespace RadialReview.Accessors
                 {
                     if (sub.Id == SUP.Id)
                         throw new PermissionsException("A circular dependency was found. " + manager.GetName() + " cannot manage " + subordinate.GetName() + " because " + manager.GetName() + " is " + subordinate.GetName() + "'s subordinate.");
-                    
+
                     var found = managerSubordinates.FirstOrDefault(x => x.SubordinateId == sub.Id);
                     if (found == null)
                     {
@@ -109,13 +155,27 @@ namespace RadialReview.Accessors
                             ManagerId = SUP.Id,
                             SubordinateId = sub.Id,
                             Links = 0,
-                            OrganizationId=organizationId
+                            OrganizationId = organizationId
                         };
                     }
                     found.Links += 1;
                     s.SaveOrUpdate(found);
                 }
             }
+        }
+
+
+        public static void RemoveAll(ISession s, UserOrganizationModel user, DateTime now)
+        {
+            var id = user.Id;
+            var all = s.QueryOver<DeepSubordinateModel>().Where(x => x.ManagerId == id || x.SubordinateId == id).List().ToList();
+
+            foreach (var a in all)
+            {
+                a.DeleteTime = now;
+                s.Update(a);
+            }
+
         }
 
     }

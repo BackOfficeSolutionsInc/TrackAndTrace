@@ -1,0 +1,174 @@
+﻿@model RadialReview.Controllers.ManageController.ReorganizeVM
+@{
+    ViewBag.Title = "Reorganize";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Reorganize";
+    //ViewBag.ExtraTabs = ExtraTab.Create("Reorganize", "/Manage/Reorganize");
+}
+@section top{
+    <div class="jumbotron">
+        <h1>Manage</h1>
+    </div>
+}
+
+@section header{
+    @Html.Partial("Partial/manageheader")
+}
+@section hints{
+    @Html.AlertBoxDismissable(@"From this page you can reorganize your employees. You can add employees by hovering over people you manage (including yourself)
+            and clicking the '+' icon. Circles with thicker edges are managed by you. You can promote employees that you manage to the manager role by hovering
+            over them and choosing the '▴' button. You can reorganize your management structure by dragging and dropping individuals under different managers. 
+            If the diagram is becoming too cluttered, you can also collapse individual nodes by clicking on the circles. Dark blue circles are managers,
+            gold circles are administrators, and blue circles are other employees. Try panning and scrolling to get a different perspective.", "alert-info", "Info:")
+}
+
+@using (Html.BeginStyles())
+{
+    <style>
+        .reorganize .managerLink {
+            border: 1px solid gray;
+            width: 10px;
+            height: 10px;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        #tree {
+            padding: 10px;
+            border: 1px solid #D1D1D1;
+            background-color:#fdfdfd;
+        }
+
+        .node {
+            cursor: pointer;
+        }
+
+        .overlay {
+            background-color: #fff;
+        }
+
+        .hoverIcon{
+            opacity:0;
+        } 
+        .node.employee .nodeCircle {
+            stroke: #859BAD;
+            fill: #BAD9F3;
+        }
+
+        .node.organizations .nodeCircle {
+            stroke: #767F99;
+            fill: #f1f1f1;
+        }
+
+        .node text  {
+            font-size: 10px;
+            font-family: sans-serif;
+        }
+
+        .setManager,
+        .addUser {
+            /*stroke: #BAD9F3;
+            -webkit-text-stroke-width: 1px;
+            -webkit-text-stroke-color: #859BAD;*/
+            fill: #859BAD;
+            stroke: #859BAD;
+            stroke-width: 1px;
+        }
+
+        .node.admin .setManager,
+        .node.admin .addUser {
+            fill: #FFE296;
+            stroke: #BFA970;
+            stroke-width: 1px;
+        }
+        
+        
+        .setManager {
+            font-size: 7px !important;
+        }
+
+        .node.manager .nodeCircle {
+            fill: #79A9CF;
+            stroke: #49789f;
+        }
+            .node.manager .nodeCircle.collapsed {
+                fill: #5786ad;
+                stroke: #49789f;
+            }
+
+        .node.admin .nodeCircle {
+            fill: #FFE296;
+            stroke: #BFA970;
+        }
+            .node.admin .nodeCircle.collapsed {
+                fill: #E2C26E;
+                stroke: #BFA970;
+            }
+
+        .node.managing .nodeCircle {
+            stroke-width: 2px;
+        }
+
+        .node:not(.managing) circle {
+            fill: white;
+            stroke-width: 1px;
+        }
+        
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px;
+        }
+
+        .templink {
+            fill: none;
+            stroke: red;
+            stroke-width: 3px;
+        }
+
+        .managing .ghostCircle.show:not(.hidden) {
+            display: block;
+            fill:green;
+        }
+
+        .ghostCircle, .activeDrag .ghostCircle {
+            display: none;
+        }
+
+    </style>
+}
+
+
+@using (Html.BeginScripts())
+{
+    <script src="~/Scripts/d3/orgchart.js"></script>
+    <script src="~/Scripts/d3/d3.v3.js"></script>
+    @*<script src="~/Scripts/d3/underscore.js"></script>*@
+
+    <script>
+        var chart;
+        $(function () {
+            @*chart=createOrgChart("#chart");
+            @foreach (var p in Model.AllUsers.ToListAlive())
+            {
+                    @:addNode(chart,@(p.Id),@(p.GetLevel()-1));
+            }
+
+            @foreach(var link in Model.AllManagerLinks.ToListAlive())
+            {
+                @:addLink(chart,@link.ManagerId,@link.SubordinateId);
+            }
+
+            updateOrgChart(chart);*@
+
+            startOrgChart("#tree",@ViewBag.OrganizationId);
+
+        });
+    </script>
+}
+
+
+<div class="reorganize" style="max-height:900px;">
+
+    <div id="tree"></div>
+</div>

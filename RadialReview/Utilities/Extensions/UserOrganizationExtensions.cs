@@ -2,9 +2,11 @@
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
+using RadialReview.Utilities.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace RadialReview
@@ -138,6 +140,38 @@ namespace RadialReview
         {
             return self.ManagingUsers.ToListAlive().Select(x => x.Subordinate).Union(self.AsList()).ToList();
         }
+
+
+        public static Tree GetTree(this UserOrganizationModel self,List<long> deepClaims,long? youId=null,bool force=false)
+        {
+            var managing = force || deepClaims.Any(x => x == self.Id);
+            var classes = new List<String>();
+            if (self.Teams!=null)
+                classes.AddRange(self.Teams.ToListAlive().Select(y => y.Team.Name));
+
+            if (self.ManagingOrganization)
+                classes.Add("admin");
+            if (self.ManagerAtOrganization)
+                classes.Add("manager");
+            if (managing)
+                classes.Add("managing");
+            if (self.Id == youId)
+                classes.Add("you");
+            classes.Add("employee");
+
+            return new Tree()
+            {
+                name = self.GetName(),
+                id = self.Id,
+                subtext = self.GetTitles(),
+                @class = String.Join(" ",classes.Select(y => Regex.Replace(y, "[^a-zA-Z0-9]", "_"))),
+                managing = managing,
+                manager = self.IsManager(),
+                children = self.ManagingUsers.NotNull(x=>x.ToListAlive()).Select(x=>x.Subordinate.GetTree(deepClaims,youId,force)).ToList()
+            };
+        }
+
+
         public static List<UserOrganizationModel> AllSubordinatesAndSelf(this UserOrganizationModel self)
         {
             return self.AllSubordinates.Union(new List<UserOrganizationModel> { self }).ToList();

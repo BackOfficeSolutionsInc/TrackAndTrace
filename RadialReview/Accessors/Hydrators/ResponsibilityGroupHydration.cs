@@ -73,7 +73,7 @@ namespace RadialReview
                 {
                     var perms=PermissionsUtility.Create(Session, self);
                     if (rg is UserOrganizationModel)
-                        perms.ManagesUserOrganization(rgId);
+                        perms.ManagesUserOrganization(rgId,false);
                     else if (rg is OrganizationTeamModel)
                         perms.ManagingTeam(rgId);
                     else if (rg is OrganizationPositionModel)

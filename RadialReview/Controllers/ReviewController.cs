@@ -466,7 +466,7 @@ namespace RadialReview.Controllers
             //Managers View
             else
             {
-                _PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId));
+                _PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false));
                 var model = GetReviewDetails(review);
                 //model.Supervisors = model.AnswersAbout.Where(x => x.ByUserId == GetUser().Id).ToList();
                 return View(model);
@@ -477,7 +477,7 @@ namespace RadialReview.Controllers
         public ActionResult ClientDetails(long id,bool print=false)
         {
             var review = _ReviewAccessor.GetReview(GetUser(), id);
-            var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId));
+            var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false));
             if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization)
             {
                 var model = GetReviewDetails(review);

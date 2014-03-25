@@ -20,8 +20,17 @@ namespace RadialReview.Controllers
 {
 
 
+
     public class UserController : BaseController
     {
+
+        public class RemoveUserVM
+        {
+            public long UserId { get; set; }
+            public string OrganizationName { get; set; }
+            public string UsersName { get; set; }
+            public List<string> SideEffects { get; set; }
+        }
 
         #region User
         public class SaveUserModel
@@ -87,8 +96,35 @@ namespace RadialReview.Controllers
             }
         }
 
+
         [Access(AccessLevel.Manager)]
-        public ActionResult AddModal()
+        public ActionResult Remove(long id)
+        {
+            var user=_UserAccessor.GetUserOrganization(GetUser(),id,true,true);
+            var sideeffect = _UserAccessor.SideEffectRemove(GetUser(),id);
+            
+            var model = new RemoveUserVM(){
+                UserId = user.Id, 
+                OrganizationName = GetUser().Organization.GetName(), 
+                UsersName = user.GetNameAndTitle(),
+                SideEffects = sideeffect
+            };
+
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        [Access(AccessLevel.Manager)]
+        public JsonResult Remove(RemoveUserVM model)
+        {
+            //var user = _UserAccessor.GetUserOrganization(GetUser(), , true, true);
+            var result = _UserAccessor.RemoveUser(GetUser(),model.UserId,DateTime.UtcNow);
+            return Json(result);
+        }
+
+
+        [Access(AccessLevel.Manager)]
+        public ActionResult AddModal(long? managerId = null)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -101,8 +137,7 @@ namespace RadialReview.Controllers
                             .GetOrganizationPositions(GetUser(), GetUser().Organization.Id)
                             .OrderBy(x => x.CustomName)
                             .ToSelectList(x => x.CustomName, x => x.Id).ToList();
-            if (caller.Organization.ManagersCanEditPositions || caller.ManagingOrganization)
-            {
+            if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditPositions())){
                 orgPos.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
             }
 
@@ -140,7 +175,7 @@ namespace RadialReview.Controllers
                 Position = posModel,
                 OrgId = caller.Organization.Id,
                 StrictlyHierarchical = strictHierarchy,
-                ManagerId = caller.Id,
+                ManagerId = managerId??caller.Id,
                 PotentialManagers = managers,
             };
             var e5 = sw.ElapsedMilliseconds;
@@ -191,6 +226,15 @@ namespace RadialReview.Controllers
             return Json(ResultObject.Success("User updated."));
         }
 
+        [HttpPost]
+        [Access(AccessLevel.Manager)]
+        public JsonResult SetManager(long id,bool manager)
+        {
+            _UserAccessor.EditUser(GetUser(), id, manager);
+            return Json(ResultObject.Success("Position updated."));
+        }
+
+
         #endregion
 
         #region Positions
@@ -220,9 +264,8 @@ namespace RadialReview.Controllers
             var orgPos = _OrganizationAccessor
                             .GetOrganizationPositions(GetUser(), GetUser().Organization.Id)
                             .OrderBy(x => x.CustomName)
-                            .ToSelectList(x => x.CustomName, x => x.Id, id).ToList();
-            if (GetUser().ManagingOrganization || GetUser().Organization.ManagersCanEditPositions)
-            {
+                            .ToSelectList(x => x.CustomName, x => x.Id, id).ToList();            
+            if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditPositions())){
                 orgPos.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
             }
 
@@ -355,15 +398,16 @@ namespace RadialReview.Controllers
         public ActionResult ManagerModal(long id)
         {
             var potentialManagers = new List<UserOrganizationModel>();
-            if (GetUser().Organization.StrictHierarchy || GetUser().ManagingOrganization)
+            if (GetUser().ManagingOrganization){
                 potentialManagers = _OrganizationAccessor.GetOrganizationManagers(GetUser(), GetUser().Organization.Id);
-            else
-                potentialManagers = _UserAccessor.GetSubordinates(GetUser(), GetUser().Id).Where(x => x.ManagerAtOrganization).ToListAlive();
-
-
+            }else if (GetUser().Organization.StrictHierarchy){                
+                potentialManagers = _UserAccessor.GetDirectSubordinates(GetUser(), GetUser().Id).Where(x => x.ManagerAtOrganization).ToListAlive();
+            }else{
+                potentialManagers = _DeepSubordianteAccessor.GetSubordinatesAndSelfModels(GetUser(), GetUser().Id).Where(x => x.ManagerAtOrganization).ToListAlive();
+            }
+            
             var selfId = GetUser().Id;
-            var model = new AddManagerViewModel()
-            {
+            var model = new AddManagerViewModel(){
                 UserId = id,
                 PotentialManagers = potentialManagers.ToSelectList(x => x.GetNameAndTitle(3, selfId), x => x.Id).ToList()
             };
@@ -372,9 +416,18 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
+        [HttpPost]
         public JsonResult DeleteManager(long id)
         {
-            _UserAccessor.RemoveManager(GetUser(), id);
+            _UserAccessor.RemoveManager(GetUser(), id,DateTime.UtcNow);
+            return Json(ResultObject.Success("Removed manager."));
+        }
+
+        [Access(AccessLevel.Manager)]
+        [HttpPost]
+        public JsonResult RemoveManager(long managerId,long userId)
+        {
+            _UserAccessor.RemoveManager(GetUser(), managerId, userId, DateTime.UtcNow);
             return Json(ResultObject.Success("Removed manager."));
         }
 
@@ -382,8 +435,16 @@ namespace RadialReview.Controllers
         [HttpPost]
         public JsonResult AddManager(AddManagerViewModel model)
         {
-            _UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId);
+            _UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId, DateTime.UtcNow);
             return Json(ResultObject.Success("Added manager."));
+        }
+
+        [Access(AccessLevel.Manager)]
+        [HttpPost]
+        public JsonResult SwapManager(long oldManagerId, long newManagerId, long userId)
+        {
+            _UserAccessor.SwapManager(GetUser(), userId, oldManagerId, newManagerId, DateTime.UtcNow);
+            return Json(ResultObject.Success("Swapped user."));
         }
         #endregion
 

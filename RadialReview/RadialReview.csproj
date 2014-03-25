@@ -50,8 +50,9 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="FluentNHibernate">
-      <HintPath>..\packages\FluentNHibernate.1.3.0.733\lib\FluentNHibernate.dll</HintPath>
+    <Reference Include="FluentNHibernate, Version=1.4.0.0, Culture=neutral, PublicKeyToken=8aa435e3cb308880, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\FluentNHibernate.1.4.0.0\lib\net35\FluentNHibernate.dll</HintPath>
     </Reference>
     <Reference Include="Iesi.Collections">
       <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
@@ -641,8 +642,13 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\d3\d3.csv.js" />
     <Content Include="Scripts\d3\d3.js" />
+    <Content Include="Scripts\d3\d3.v3.js" />
     <Content Include="Scripts\d3\d3.v3.min.js" />
+    <Content Include="Scripts\d3\orgchartBU.js" />
+    <Content Include="Scripts\d3\orgchart.js" />
     <Content Include="Scripts\d3\Plot.js" />
+    <Content Include="Scripts\d3\Tweens.js" />
+    <Content Include="Scripts\d3\underscore.js" />
     <Content Include="Scripts\home\analytics.js" />
     <Content Include="Scripts\home\application.js" />
     <Content Include="Scripts\home\fluidvids.js" />
@@ -661,6 +667,9 @@
     <Content Include="Scripts\jquery\jquery.hashchange.js" />
     <Content Include="Scripts\jquery\jquery.nouislider.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
+    <Content Include="Scripts\jquery\jquery.tablesorter.js" />
+    <Content Include="Scripts\Main\radial.js" />
+    <Content Include="Scripts\Main\realtime.js" />
     <Content Include="Scripts\moment-with-langs.js" />
     <Content Include="Scripts\moment-with-langs.min.js" />
     <Content Include="Scripts\moment.js" />
@@ -681,6 +690,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Radial_files\imgs\Thumbs.db" />
+    <Content Include="Scripts\d3\d3.v3.min.js.map">
+      <DependentUpon>d3.v3.js</DependentUpon>
+    </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -835,6 +847,8 @@
     <Content Include="Scripts\jquery\jquery.qtip.js" />
     <Content Include="Views\Shared\_ReviewStats.cshtml" />
     <Content Include="Views\Shared\_HierarchicalEdgeBundling.cshtml" />
+    <Content Include="Views\User\Remove.cshtml" />
+    <Content Include="Views\Manage\Reorganize.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1004,6 +1018,10 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

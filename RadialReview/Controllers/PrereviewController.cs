@@ -37,7 +37,7 @@ namespace RadialReview.Controllers
             var customization = _ReviewEngine.GetCustomizeModel(GetUser(), teamId);
             var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
-            var subordinates =GetUser().AsList().Union(_UserAccessor.GetSubordinates(GetUser(),GetUser().Id)).ToList();
+            var subordinates =GetUser().AsList().Union(_UserAccessor.GetDirectSubordinates(GetUser(),GetUser().Id)).ToList();
             customization.Subordinates = subordinates;
             customization.AllUsers = allUsers;
             ViewBag.PrereviewId = prereview.Id;            

@@ -17,8 +17,8 @@
 }
 
 @section hints{
-    @Html.AlertBoxDismissable(@"From this page you can add employees to your organization. 
-            Employees are assigned questions that evaluate how they are doing in the organization. 
+    @Html.AlertBoxDismissable(@"From this page you can add employees to your organization.
+            Employees are assigned questions that evaluate how they are doing in the organization.
             These can be questions unique to the individual or shared with their teams, positions, or the company as a whole.
             During the review process, peers, teammates, managers and subordinates answer questions of the employee to gauge how well they are fulfilling their responsibilities.
             To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
@@ -46,6 +46,7 @@
 
 @using (Html.BeginScripts())
 {
+    <script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
     <script>
 
         function SendEmails() {
@@ -69,6 +70,17 @@
                 }
             });
         }
+
+        $(function () {
+            $("table").tablesorter({
+                headers: {
+                    1: { sorter: 'attr' },
+                    2: { sorter: 'attr' }
+                },
+                sortForce: [[0, 1]],
+                sortStable:true,
+            });
+        });
     </script>
 }
 
@@ -84,6 +96,9 @@
         <button class="btn btn-default  plus" style="width: 69px;" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
             Add
         </button>
+        @*<a class="btn btn-default plus"  href="/Manage/Reorganize">
+            Reorganize
+        </a>*@
     </div>
     <div class="panel-heading">
 
@@ -91,87 +106,116 @@
 
     </div>
     <div class="table-responsive">
-        <table class="table table-condensed table-hover">
+        <table class="table table-condensed table-hover tablesorter">
             <thead>
                 <tr>
-                    <th style="width:15px;" class="alignCenter smallPad"></th>
+                    <th class="hidden"></th>
+                    <th style="width:15px;" class="alignCenter  noPadLeft"></th>
+                    <th style="width:15px;" class="alignCenter  noPadLeft"></th>
                     <th>Name</th>
                     <th>Email</th>
                     <th style="min-width:10px" class="NalignCenter">Positions</th>
                     <th style="min-width:10px" class="NalignCenter">Teams</th>
                     <th style="min-width:10px" class="NalignCenter">Managers</th>
-                    <th style="width:10px" class="NalignCenter">Questions</th>
+                    <th style="width:87px" class="NalignCenter">Questions</th>
+                    @if (Model.Organization.ManagersCanRemoveUsers)
+                    {
+                        <th style="width:10px" class="alignCenter"></th>
+                    }
                 </tr>
             </thead>
             <tbody>
-            @foreach (var p in Model.Users.OrderByDescending(x => x.Managing).ThenByDescending(x => x.Verified).ThenBy(x => x.Name))
-            {
-                <tr class="@(p.Managing?"managing":"grayRow")">
-                    <td class="alignCenter noselect">
-                        @*@((p.Managing).GetIcon("glyphicon-eye-open strokeLightGreen", "glyphicon-eye-close gray", "You are managing", "You are not managing"))*@
+                @foreach (var p in Model.Users.OrderByDescending(x => x.Managing).ThenBy(x=>-1*(x.Admin.ToInt()+x.Manager.ToInt())).ThenBy(x => x.Name))
+                {
+
+                    <tr class="@(p.Managing?"managing":"grayRow")">
+                        <td class="hidden">@(p.Managing ? 1 : 0)</td>
+                        <td class="alignCenter noselect  noPadLeft">
+                            @*@((p.Managing).GetIcon("glyphicon-eye-open strokeLightGreen", "glyphicon-eye-close gray", "You are managing", "You are not managing"))*@
 
 
-                        @*if (p.Managing)
+                            @*if (p.Managing)
+                                    {
+                                        <div onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))" class="editButton"></div>
+                                }*@
+
+                            <span @if (p.Manager) { if (p.Admin) {  @: class="glyphicon glyphicon-tower gold strokeGold" title="An admin" data-sort="1"
+                                                                                  } else { @: class="glyphicon glyphicon-tower darkblue strokeDarkBlue" title="A manager" data-sort="2"
+                                                                                      } } else {  @: class="glyphicon glyphicon-user blue strokeBlue" title="Not a manager" data-sort="3"
+                                                                                                                                                              }
+                                  @if (p.Managing) { @: style="cursor:pointer;" onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id = p.Id }), Url.Action("EditModal", "User"))"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }>
+                            </span>
+
+                        </td>
+                        <td class="alignCenter noselect noPadLeft">
+
+                            @if (p.Verified || !p.Managing)
                             {
-                                <div onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))" class="editButton"></div>
-                            }*@
-
-                        <span @if (p.Manager) { @: class="glyphicon glyphicon-tower gold strokeGold" title="A manager"
-                                                } else {  @: class="glyphicon glyphicon-user blue strokeBlue" title="Not a manager"
-                                                }
-                              @if (p.Managing) { @: style="cursor:pointer;" onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))"
-                                                                                                                                                                                                                  }>
-                        </span>
-
-
-                        @if (p.Verified || !p.Managing)
-                        {
-                            @p.Verified.GetIcon("glyphicon-ok-sign strokeGray gray", "glyphicon-envelope strokeGray gray", "Joined", "Has not joined")
-                        }
-                        else
-                        {
-                            if (p.EmailSent)
-                            {
-                                <span title="Resend Email" class="glyphicon glyphicon-envelope strokeRed red clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+                                if (p.Verified)
+                                {
+                                    <span title="Joined." class="glyphicon glyphicon-ok-sign strokeGray gray" data-sort="4"></span>
+                                }
+                                else
+                                {
+                                    <span title="Has not joined." class="glyphicon glyphicon-envelope strokeGray gray" data-sort="3"></span>
+                                }
                             }
                             else
                             {
-                                <span class="glyphicon glyphicon-exclamation-sign red strokeRed clickable icon" title="Invitation not sent." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+                                if (p.EmailSent)
+                                {
+                                    <span data-sort="2" title="Resend Email" class="glyphicon glyphicon-envelope strokeRed red clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+                                }
+                                else
+                                {
+                                    <span data-sort="1" class="glyphicon glyphicon-exclamation-sign red strokeRed clickable icon" title="Invitation not sent." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+                                }
                             }
-                        }
-                    </td>
-                    <td class="noOverflow" style="max-width: 160px;" title="@p.Name">
-                        <a href="~/Manage/UserDetails/@p.Id">
-                            @p.Name
-                        </a>
-                    </td>
-                    <td class="noOverflow" style="max-width: 150px;" title="@p.Email"><a href="mailto:@p.Email">@p.Email</a></td>
-                    <td class="NalignCenter noOverflow" style="max-width: 200px;">
-                        <a href="@Url.Action("Positions","User",new {id = p.Id})" class="fullWidth">
-                            @Html.EditFirstButton(p.PositionTitles, p.Managing)
-                        </a>
-                    </td>
-                    <td class="NalignCenter noOverflow" style="max-width: 80px;">
-                        <a href="@Url.Action("Teams","User",new {id = p.Id})" class="fullWidth">
-                            @Html.EditFirstButton(p.TeamsTitles, p.Managing)
-                        </a>
-                    </td>
-                    <td class="NalignCenter noOverflow" style="max-width: 180px;">
-                        <a href="@Url.Action("Managers", "User", new { id = p.Id })" class="fullWidth">
-                            @Html.EditFirstButton(p.ManagersTitles, p.Managing)
-                        </a>
-                    </td>
-                    <td class="NalignCenter noOverflow">
-                        <a href="@Url.Action("Edit", "Responsibilities", new { id = p.Id })" class="fullWidth">
-                            <span>
-                                @Html.ViewOrEdit(p.Managing)
-                                <span title="Number of individual questions">@(p.NumIndividualResponsibilities)</span>+<span title="Number of other questions">@(p.NumTotalResponsibilities - p.NumIndividualResponsibilities)</span>
-                            </span>
+                        </td>
+                        <td class="noOverflow" style="max-width: 160px;" title="@p.Name">
+                            <a href="~/Manage/UserDetails/@p.Id">
+                                @p.Name
+                            </a>
+                        </td>
+                        <td class="noOverflow" style="max-width: 150px;" title="@p.Email"><a href="mailto:@p.Email">@p.Email</a></td>
+                        <td class="NalignCenter noOverflow" style="max-width: 200px;">
+                            <a href="@Url.Action("Positions","User",new {id = p.Id})" class="fullWidth">
+                                @Html.EditFirstButton(p.PositionTitles, p.Managing)
+                            </a>
+                        </td>
+                        <td class="NalignCenter noOverflow" style="max-width: 80px;">
+                            <a href="@Url.Action("Teams","User",new {id = p.Id})" class="fullWidth">
+                                @Html.EditFirstButton(p.TeamsTitles, p.Managing)
+                            </a>
+                        </td>
+                        <td class="NalignCenter noOverflow" style="max-width: 180px;">
+                            <a href="@Url.Action("Managers", "User", new { id = p.Id })" class="">
+                                @Html.EditFirstButton(p.ManagersTitles, p.Managing)
+                            </a>
+                        </td>
+                        <td class="NalignCenter noOverflow">
+                            <a href="@Url.Action("Edit", "Responsibilities", new { id = p.Id })" class="fullWidth">
+                                <span>
+                                    @Html.ViewOrEdit(p.Managing)
+                                    <span title="Number of individual questions">@(p.NumIndividualResponsibilities)</span>+<span title="Number of other questions">@(p.NumTotalResponsibilities - p.NumIndividualResponsibilities)</span>
+                                </span>
 
-                        </a>
-                    </td>
-                </tr>
-            }
+                            </a>
+                        </td>
+                        @if (Model.Organization.ManagersCanRemoveUsers)
+                        {
+                            <td>
+                                @if (p.Managing)
+                                {
+                                    <span data-sort="1" onclick="@(Html.ShowModal("Remove "+p.Name+" from the organization?","/User/Remove/"+p.Id,"/User/Remove"))"
+                                          class="glyphicon glyphicon-trash clickable">
+                                    </span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
             </tbody>
 
         </table>

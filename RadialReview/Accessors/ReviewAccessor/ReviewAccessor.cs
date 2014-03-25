@@ -96,7 +96,7 @@ namespace RadialReview.Accessors
             {
                 if (forTeam.Type != TeamType.Standard)
                 {
-                    List<UserOrganizationModel> subordinates = UserAccessor.GetSubordinates(s.GetQueryProvider(), perms, caller, beingReviewed.Id)
+                    List<UserOrganizationModel> subordinates = UserAccessor.GetDirectSubordinates(s.GetQueryProvider(), perms, caller, beingReviewed.Id)
                                                               .Where(x => accessableUsers.Any(y => y.Id == x.Id))
                                                               .Where(x => x.Id != beingReviewed.Id)
                                                               .ToListAlive();

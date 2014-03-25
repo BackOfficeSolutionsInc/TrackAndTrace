@@ -236,35 +236,22 @@ namespace RadialReview.Controllers
         public JsonResult ReviewsData(long id)
         {
             var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, true, true,false);
-
-            /*var managers = review.Reviews.Where(x => x.ForUser.IsManager()).Count();
-            var managersCompleted = review.Reviews.Where(x => x.ForUser.IsManager() && x.Complete).Count();
-            var nonManager = review.Reviews.Where(x => !x.ForUser.IsManager()).Count();
-            var nonManagerComplete = review.Reviews.Where(x => !x.ForUser.IsManager() && x.Complete).Count();*/
-
+            
             var total = review.Reviews.Count();
             var started = review.Reviews.Where(x => !x.Complete && x.Answers.Any(y => y.Complete)).Count();
             var finished = review.Reviews.Where(x => x.Complete).Count();
-            var completion = new
-                {
+            var completion = new{
                     Total = total,
                     Started = started,
                     Finished = finished,
-                    Unstarted = total - started - finished,//.Where(x=>x.Answers.All(y=>!y.Complete)).Count()
-                    /*TotalPeople = review.Reviews.Count(),
-                    TotalCompleted = review.Reviews.Where(x => x.Complete).Count(),
-                    ManagersCompleted = review.Reviews.Where(x => x.ForUser.IsManager() && x.Complete).Count(),
-                    NonManagerComplete = review.Reviews.Where(x => !x.ForUser.IsManager() && x.Complete).Count(),
-                    NonManagerIncomplete = review.Reviews.Where(x => !x.ForUser.IsManager() && !x.Complete).Count(),
-                    ManagerIncomplete = review.Reviews.Where(x => x.ForUser.IsManager() && !x.Complete).Count(),*/
+                    Unstarted = total - started - finished,                   
                 };
 
             var reportsStarted  =review.Reviews.Where(x => x.ClientReview.Started() && !x.ClientReview.Visible && x.ClientReview.SignedTime==null).Count();
             var visible         =review.Reviews.Where(x =>!x.ClientReview.Started() &&  x.ClientReview.Visible && x.ClientReview.SignedTime==null).Count();
             var signed          =review.Reviews.Where(x =>!x.ClientReview.Started() && !x.ClientReview.Visible && x.ClientReview.SignedTime!=null).Count();
             var unstarted = total - visible - signed - reportsStarted;
-            var reports = new
-                {
+            var reports = new{
                     Total = total,
                     Unstarted = unstarted,
                     Started = reportsStarted,

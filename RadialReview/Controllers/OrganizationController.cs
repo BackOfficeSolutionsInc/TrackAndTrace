@@ -38,7 +38,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public ActionResult Create(String name)
         {
-            Boolean managersCanEdit = true;
+            Boolean managersCanEdit = false;
             var user = GetUserModel();
             var basicPlan=_PaymentAccessor.BasicPaymentPlan();
             var localizedName=new LocalizedStringModel(){Standard=name};

@@ -43,7 +43,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ManagesUserOrganization(forUserId);
+                    PermissionsUtility.Create(s, caller).ManagesUserOrganization(forUserId,false);
                     var position = s.Get<OrganizationPositionModel>(positionId);
 
                     var pd = new PositionDurationModel(position, caller.Id, forUserId);
@@ -64,7 +64,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var posDur=s.Get<PositionDurationModel>(positionDurationId);
-                    PermissionsUtility.Create(s, caller).ManagesUserOrganization(posDur.UserId);
+                    PermissionsUtility.Create(s, caller).ManagesUserOrganization(posDur.UserId, false);
                     if (posDur.DeleteTime != null)
                         throw new PermissionsException();
 
