@@ -129,7 +129,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public List<TaskModel> GetTasksForUser(UserOrganizationModel caller, long forUserId)
+        public List<TaskModel> GetTasksForUser(UserOrganizationModel caller, long forUserId,DateTime now)
         {
             var tasks = new List<TaskModel>();
             using (var s = HibernateSession.GetCurrentSession())
@@ -137,14 +137,14 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-
+                    
                     //Reviews
-                    var reviews = ReviewAccessor.GetReviewsForUser(s, perms, caller, forUserId, 0, int.MaxValue).ToListAlive();
+                    var reviews = ReviewAccessor.GetReviewsForUser(s, perms, caller, forUserId, 0, int.MaxValue,now).ToListAlive();
                     var reviewTasks = reviews.Select(x => new TaskModel() { Id = x.Id, Type = TaskType.Review, Completion = x.GetCompletion(), DueDate = x.DueDate, Name = x.Name });
                     tasks.AddRange(reviewTasks);
 
                     //Prereviews
-                    var prereviews = PrereviewAccessor.GetPrereviewsForUser(s.ToQueryProvider(true), perms, forUserId).Where(x => x.Executed == null).ToListAlive();
+                    var prereviews = PrereviewAccessor.GetPrereviewsForUser(s.ToQueryProvider(true), perms, forUserId,now).Where(x => x.Executed == null).ToListAlive();
                     var reviewContainers = new Dictionary<long, String>();
                     var prereviewCount = new Dictionary<long, int>();
                     foreach (var p in prereviews)

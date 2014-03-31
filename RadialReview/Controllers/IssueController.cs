@@ -6,6 +6,7 @@ using RadialReview.Models.Reviews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -47,7 +48,7 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.Manager)]
-        public ActionResult Index(FormCollection form)
+        public async Task<ActionResult> Index(FormCollection form)
         {
             if (form["review"] == "issueReview")
             {
@@ -57,7 +58,7 @@ namespace RadialReview.Controllers
                     return Tuple.Create(long.Parse(split[1]), long.Parse(split[2]));
                 });
 
-                _ReviewAccessor.CreateReviewFromCustom(
+                await _ReviewAccessor.CreateReviewFromCustom(
                     GetUser(),
                     form["TeamId"].ToLong(),
                     form["DueDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
@@ -68,7 +69,7 @@ namespace RadialReview.Controllers
             }
             else if (form["review"] == "issuePrereview")
             {
-                _PrereviewAccessor.CreatePrereview(
+                await _PrereviewAccessor.CreatePrereview(
                     GetUser(),
                     form["TeamId"].ToLong(),
                     form["ReviewName"],

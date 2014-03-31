@@ -91,7 +91,7 @@ namespace RadialReview
                 var uOrg = GetUnderlying();
                 foreach (var g in uOrg.Groups)
                 {
-                    var group = Session.Query<GroupModel>().Where(x => x.Id == g.Id).FetchMany(x => x.GroupUsers).SingleOrDefault();
+                    var group = Session.Query<GroupModel>().Where(x => x.Id == g.Id && x.DeleteTime==null).FetchMany(x => x.GroupUsers).SingleOrDefault();
                     groups.Add(group);
                 }
             }
@@ -107,7 +107,7 @@ namespace RadialReview
                 var uOrg = GetUnderlying();
                 foreach (var g in uOrg.ManagingUsers.ToListAlive())
                 {
-                    var user = Session.Query<ManagerDuration>().Where(x => x.Id == g.Id).SingleOrDefault();
+                    var user = Session.Query<ManagerDuration>().Where(x => x.Id == g.Id && x.DeleteTime==null).SingleOrDefault();
                     managing.Add(user);
                 }
             }

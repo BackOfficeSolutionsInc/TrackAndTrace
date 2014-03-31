@@ -58,6 +58,14 @@
         tr.not-managing {
             background-color: #aaaaaa;
         }
+
+        .equalWidth td {
+            width: 16.6%;
+        }
+
+        .equalWidth {
+            width: 100%;
+        }
     </style>
 }
 
@@ -73,6 +81,18 @@
             progressBar.attr("title", newTitle);
             return newTitle;
 
+        }
+
+        function deleteReview(id) {
+            if (window.confirm("Are you sure you want to delete this review?")) {
+                $.ajax({
+                    url: "/Reviews/Delete/@(Model.Review.Id)",
+                    success: function (data) {
+                        StoreJsonAlert(data);
+                        location.reload();
+                    }
+                });
+            }
         }
 
         $(function () {
@@ -97,7 +117,7 @@
             });
         });
 
-        function toggleComplete(){
+        function toggleComplete() {
             $('.toggle-completion').toggleClass('on');
         }
     </script>
@@ -109,32 +129,57 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-condensed">
-            <thead>
+        <table class="fullWidth equalWidth">
+            <tbody>
                 <tr>
-                    <th class="row" colspan="2">
-                        <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
-                            <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Add Question", "/Reviews/AddQuestion/" + Model.Review.Id, "/Reviews/AddQuestion/")">
-                                Add Question
-                            </div>
+                    <td>
+                        <div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Change due date", "/Reviews/DueDate/" + Model.Review.Id, "/Reviews/DueDate/")">
+                            Change Due Date
                         </div>
-                        <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
-                            <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Remove question", "/Reviews/RemoveQuestion/" + Model.Review.Id, "/Reviews/RemoveQuestion/", preSubmitCheck: "validateRemoval")">
-                                <span style="font-size: 90%;"> Remove Question</span> &nbsp;
-                            </div>
+                    </td>
+                    <td>
+                        <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Add Question", "/Reviews/AddQuestion/" + Model.Review.Id, "/Reviews/AddQuestion/")">
+                            Add Question
                         </div>
-                        <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
-                            <div class="btn btn-default  fullWidth" onclick="@Html.ShowModal("Add user", "/Reviews/Update/" + Model.Review.Id, "/Reviews/Update/")">
-                                Add User
-                            </div>
+                    </td>
+                    <td>
+                        <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Remove question", "/Reviews/RemoveQuestion/" + Model.Review.Id, "/Reviews/RemoveQuestion/", preSubmitCheck: "validateRemoval")">
+                            <span style="font-size: 90%;"> Remove Question</span> &nbsp;
                         </div>
-                        <div class="col-sm-6 col-md-3 smallPad" style="padding-bottom: 2px;">
-                            <div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Remove user", "/Reviews/RemoveUser/" + Model.Review.Id, "/Reviews/RemoveUser/")">
-                                Remove User
-                            </div>
+                    </td>
+                    <td>
+                        <div class="btn btn-default  fullWidth" onclick="@Html.ShowModal("Add user", "/Reviews/Update/" + Model.Review.Id, "/Reviews/Update/")">
+                            Add User
                         </div>
-                    </th>
+                    </td>
+                    <td>
+                        <div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Remove user", "/Reviews/RemoveUser/" + Model.Review.Id, "/Reviews/RemoveUser/")">
+                            Remove User
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Change due date", "/Reviews/DueDate/" + Model.Review.Id, "/Reviews/DueDate/")">
+                            Delete Review
+                        </div>
+                    </td>
                 </tr>
+                <tr>
+                    <td colspan=""></td>
+                    <td colspan="2" class="alignCenter"><b>Reviews due:</b>&nbsp; @Model.Review.DueDate.Subtract(TimeSpan.FromDays(1)).ToString("MM-dd-yyyy") </td>
+                    <td colspan="2" class="alignCenter"><b>Reports due:</b>&nbsp;
+                        @if (Model.Review.ReportsDueDate != null)
+                        {
+                            @Model.Review.ReportsDueDate.Value.Subtract(TimeSpan.FromDays(1)).ToString("MM-dd-yyyy")
+                        }
+                        else
+                        {
+                            <span class="gray">No due date</span>
+                        }
+                    </td>
+                </tr>
+        </table>
+        <table class="table table-condensed table-hover">
+            <thead>
                 <tr style="height:30px;">
                     <th>User</th>
                 </tr>

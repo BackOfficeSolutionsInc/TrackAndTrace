@@ -670,6 +670,13 @@ namespace RadialReview.Accessors
                     var user = s.Get<UserOrganizationModel>(userId);
                     user.DetachTime = now;
                     user.DeleteTime = now;
+
+                    var tempUser = user.TempUser;
+                    if (tempUser != null)
+                    {
+                        s.Delete(tempUser);
+                    }
+
                     var warnings = new List<String>();
                     //new management structure
                     DeepSubordianteAccessor.RemoveAll(s, user, now);

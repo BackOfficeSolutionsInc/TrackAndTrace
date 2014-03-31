@@ -30,7 +30,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public ActionResult Index()
         {
-            var tasks=_TaskAccessor.GetTasksForUser(GetUser(), GetUser().Id);
+            var tasks=_TaskAccessor.GetTasksForUser(GetUser(), GetUser().Id,DateTime.UtcNow);
             var model = new TaskVM()
             {
                 Tasks=tasks

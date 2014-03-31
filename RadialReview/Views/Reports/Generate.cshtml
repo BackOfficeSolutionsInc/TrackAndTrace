@@ -63,7 +63,7 @@
                             }
                             else
                             {
-                                @review.Review.ReportsDueDate.Value.ToShortDateString()
+                                @review.Review.ReportsDueDate.Value.Subtract(TimeSpan.FromDays(1)).ToShortDateString()
                             }
                         </td>
                         <td class="alignCenter">

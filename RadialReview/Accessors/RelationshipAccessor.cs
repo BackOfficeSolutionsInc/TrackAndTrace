@@ -29,15 +29,15 @@ namespace RadialReview.Accessors
             //Teammates
             var userTeams = q.Where<TeamDurationModel>(x => x.UserId == userId).ToListAlive();
             var otherTeams = q.Where<TeamDurationModel>(x => x.UserId == otherId).ToListAlive();
-            var sharedTeams=userTeams.Intersect(otherTeams, new EqualityComparer<TeamDurationModel>((x, y) => x.Id == y.Id, x => x.Id.GetHashCode()));
+            var sharedTeams = userTeams.Intersect(otherTeams, new EqualityComparer<TeamDurationModel>((x, y) => x.TeamId == y.TeamId, x => x.TeamId.GetHashCode()));
             if (sharedTeams.Any())
                 output.Add(AboutType.Teammate);
             //Peers
             var userManagers = q.Where<ManagerDuration>(x => x.SubordinateId == userId).ToListAlive();
             var otherManagers = q.Where<ManagerDuration>(x => x.SubordinateId == otherId).ToListAlive();
-            var sharedManagers = userManagers.Intersect(otherManagers, new EqualityComparer<ManagerDuration>((x, y) => x.Id == y.Id, x => x.Id.GetHashCode()));
+            var sharedManagers = userManagers.Intersect(otherManagers, new EqualityComparer<ManagerDuration>((x, y) => x.ManagerId == y.ManagerId, x => x.ManagerId.GetHashCode()));
             if (sharedManagers.Any())
-                output.Add(AboutType.Teammate);
+                output.Add(AboutType.Peer);
             //Subordinates
             var userSubordinates = q.Where<ManagerDuration>(x => x.ManagerId == userId && x.SubordinateId == otherId).ToListAlive();
             if (userSubordinates.Any())
@@ -50,7 +50,20 @@ namespace RadialReview.Accessors
             if (!output.Any())
                 output.Add(AboutType.NoRelationship);
 
-            return output.OrderByDescending(x=>(int)x).ToList();
+            var preferredOrder = new AboutType[] {
+                AboutType.Self,
+                AboutType.Manager,
+                AboutType.Subordinate,
+                AboutType.Peer,
+                AboutType.Teammate,
+                AboutType.NoRelationship,
+                AboutType.OldSelf 
+            };
+
+            var newOutput= preferredOrder.Where(x => output.Any(y => y == x)).ToList();
+            return newOutput;
+
+            //return output.OrderByDescending(x=>(int)x).ToList();
         }
 
     }

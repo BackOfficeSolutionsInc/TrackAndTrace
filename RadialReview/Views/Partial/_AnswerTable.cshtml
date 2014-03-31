@@ -5,6 +5,10 @@
 @using (Html.BeginStyles())
 {
     <style>
+        .allAnswers table {
+            margin-bottom: 0px;
+        }
+
         .allAnswers .bordered {
             border: 1px solid #DDD;
         }
@@ -181,7 +185,7 @@
                     <span class="lbl">Expanded</span>
                 </div>
                 <div class="col-xs-3 alignLeft">
-                    <input checked type="checkbox" class="update" data-class="simplify" />
+                    <input checked type="checkbox" class="update remember" data-key="Review-Details_Simplify" data-class="simplify" />
                 </div>
             </div>
             <div class="row simplify">
@@ -189,13 +193,13 @@
                     <span class="lbl">Order</span>
                 </div>
                 <div class="col-xs-3 alignLeft">
-                    <input checked type="checkbox" class="update" data-class="order" />
+                    <input checked type="checkbox" class="update remember" data-key="Review-Details_Order" data-class="order" />
                 </div>
                 <div class="col-xs-3 alignRight">
                     <span class="lbl">Detailed</span>
                 </div>
                 <div class="col-xs-3 alignLeft">
-                    <input checked type="checkbox" class="update" data-class="detail" />
+                    <input checked type="checkbox" class="update remember" data-key="Review-Details_Detail" data-class="detail" />
                 </div>
             </div>
 
@@ -204,27 +208,34 @@
                     <span class="lbl">People</span>
                 </div>
                 <div class="col-xs-3 alignLeft">
-                    <input checked type="checkbox" class="update" data-class="people" />
+                    <input checked type="checkbox" class="update remember" data-key="Review-Details_People" data-class="people" />
                 </div>
                 <div class="col-xs-3 alignRight">
                     <span class="lbl">Questions</span>
                 </div>
                 <div class="col-xs-3 alignLeft">
-                    <input checked type="checkbox" class="update" data-class="question" />
+                    <input checked type="checkbox" class="update remember" data-key="Review-Details_Question" data-class="question" />
                 </div>
             </div>
         </div>
     </form>
     <div class="table-responsive">
         <div class="simplify on">
+            @{
+                var old = ViewBag.IncludeTitles;
+                ViewBag.IncludeTitles = true;
+            }
             @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Item1, Model.Item2.Cast<RadialReview.Models.AnswerModel>().ToList()))
+            @{
+                ViewBag.IncludeTitles = old;
+            }
         </div>
         <div class="simplify">
             <div class="order padded alignCenter">
                 <table class="marginAuto">
                     <tr class="peopleRow"></tr>
                     <tr class="noPad">
-                        <th class="noPad question on">Question</th>
+                        <th class="noPad question on pull-right">Question&nbsp;</th>
                         @foreach (var person in defaultOrderedPeople)
                         {
                             <th title="@person.GetNameAndTitle()" class="noPad">
@@ -238,7 +249,7 @@
                     @foreach (var question in questions)
                     {
                         <tr class="noPad">
-                            <td class="noPad question on">@question.GetQuestion()&nbsp;</td>
+                            <td class="noPad question on pull-right">@question.GetQuestion()&nbsp;</td>
                             @foreach (var person in defaultOrderedPeople)
                             {
                                 <td class="bordered noPad">
@@ -260,7 +271,7 @@
                     <tr class="peopleRow"></tr>
                     <tr class="noPad">
 
-                        <th class="noPad question on">Question</th>
+                        <th class="noPad question on pull-right">Question&nbsp;</th>
                         @foreach (var person in pleasentOrderedPeople)
                         {
                             <th title="@person.GetNameAndTitle()" class="noPad">
@@ -274,7 +285,7 @@
                     @foreach (var question in pleasentOrderedQuestions)
                     {
                         <tr class="noPad">
-                            <td class="noPad question on">@question.GetQuestion()&nbsp;</td>
+                            <td class="noPad question on pull-right">@question.GetQuestion()&nbsp;</td>
                             @foreach (var person in pleasentOrderedPeople)
                             {
                                 <td class="bordered noPad">

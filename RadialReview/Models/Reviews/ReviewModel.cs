@@ -18,12 +18,14 @@ namespace RadialReview.Models
         public virtual long ForUserId { get; set; }
         public virtual String Name { get; set; }
         public virtual DateTime CreatedAt { get; set; }
-        public virtual DateTime De { get; set; }
+        //public virtual DateTime De { get; set; }
         public virtual DateTime DueDate { get; set; }
         public virtual ClientReviewModel ClientReview { get; set; }
         public virtual List<AnswerModel> Answers { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual bool Complete { get; set; }
+        public virtual double? DurationMinutes { get; set; }
+        public virtual bool Started { get; set; }
         
 
         /*public virtual decimal Completion { get; set; }
@@ -117,7 +119,8 @@ namespace RadialReview.Models
         }
 
 
-       
+
+
     }
 
     public class ReviewModelMap :ClassMap<ReviewModel>
@@ -141,7 +144,9 @@ namespace RadialReview.Models
             Map(x => x.Name);
             Map(x => x.Complete);
             Map(x => x.CreatedAt);
+            Map(x => x.DurationMinutes);
             Map(x => x.DueDate);
+            Map(x => x.Started);
             Map(x => x.DeleteTime);
             References(x => x.ClientReview)
                 .Not.LazyLoad()

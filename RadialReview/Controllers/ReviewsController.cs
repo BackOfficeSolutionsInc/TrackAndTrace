@@ -74,12 +74,18 @@ namespace RadialReview.Controllers
         {
             var user = GetUser().Hydrate().ManagingUsers(true).Execute();
             var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true,false);
+            var allDirectSubs   = user.ManagingUsers.Select(x=>x.Subordinate).ToList();
             foreach (var r in reviewContainer.Reviews)
             {
                 if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id)
+                {
                     r.ForUser.SetPersonallyManaging(true);
+                }
                 else
+                {
                     r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+                    r.ForUser.PopulateDirectlyManaging(user, allDirectSubs);
+                }
             }
             var model = new ReviewsViewModel(reviewContainer);
             return View(model);
@@ -495,6 +501,70 @@ namespace RadialReview.Controllers
             _ReviewAccessor.AddResponsibilityAboutUserToReview(GetUser(), model.ReviewContainerId, model.SelectedUserId, model.SelectedQuestionId);
             return Json(ResultObject.Success("Added question."));
         }
+
+        public class EditDueDate
+        {
+            public long ReviewContainerId { get; set; }
+            public String ReviewDueDate { get; set; }
+            public String ReportDueDate { get; set; }
+            public String PrereviewDueDate { get; set; }
+            public bool HasPrereview { get; set; }
+            public double Offset { get; set; }
+        }
+
+        [HttpGet]
+        [Access(AccessLevel.Manager)]
+        public ActionResult DueDate(long id)
+        {
+            _PermissionsAccessor.Permitted(GetUser(), x => x.EditReviewContainer(id));
+            var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false, false);
+
+            var maxDate = DateTime.UtcNow;
+            var minDate = DateTime.UtcNow;
+            if (review.DueDate > maxDate)
+            {
+                maxDate = review.DueDate;
+            }
+
+            if (minDate > review.DueDate)
+            {
+                minDate = review.DueDate;
+            }
+
+            var model = new EditDueDate()
+            {
+                ReviewContainerId = id,
+                PrereviewDueDate = (review.PrereviewDueDate ?? minDate).ToString("MM-dd-yyyy"),
+                ReviewDueDate       = review.DueDate.ToString("MM-dd-yyyy"),
+                ReportDueDate = (review.ReportsDueDate ?? maxDate).ToString("MM-dd-yyyy"),
+                HasPrereview = review.HasPrereview,
+            };
+
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        [Access(AccessLevel.Manager)]
+        public JsonResult DueDate(EditDueDate model)
+        {
+            DateTime? prereview,report;
+            try{
+                prereview = model.PrereviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
+            }catch(FormatException){
+                prereview=null;
+            }
+            DateTime review = model.ReviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
+            try{
+                report = model.ReportDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
+            }catch (FormatException){
+                report = null;
+            }
+
+            _ReviewAccessor.UpdateDueDates(GetUser(), model.ReviewContainerId, prereview, review, report);
+            return Json(ResultObject.Success("Due date changed."), JsonRequestBehavior.AllowGet);
+        }
+
+
 
         #endregion
 

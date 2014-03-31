@@ -5638,7 +5638,7 @@ a.list-group-item {
     border-bottom: 1px solid transparent;
 }
 
-.panel-heading:first-of-type{
+.panel-heading:first-of-type:not(.panel-square){
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
 }

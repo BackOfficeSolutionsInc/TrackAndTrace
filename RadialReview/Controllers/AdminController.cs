@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.Application;
+using RadialReview.Utilities;
+using RadialReview.Utilities.Query;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Controllers
 {
@@ -22,15 +25,100 @@ namespace RadialReview.Controllers
             return "done";
         }
 
+
+        [Access(AccessLevel.Radial)]
+        public String FixAnswers(long id)
+        {
+            var reviewContainerId = id;
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var reviewContainer = s.Get<ReviewsModel>(id);
+                    var orgId=reviewContainer.ForOrganizationId;
+
+
+                    var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == id).List().ToList();
+                    var perms = PermissionsUtility.Create(s,GetUser());
+
+                    int i = 0;
+
+                    var dataInteraction=ReviewAccessor.GetReviewDataInteraction(s,orgId);
+                    var qp = dataInteraction.GetQueryProvider();
+
+                    foreach(var a in answers)
+                    {
+                        var relationship=RelationshipAccessor.GetRelationships(perms, qp, a.ByUserId, a.AboutUserId).First();
+                        if (relationship == Models.Enums.AboutType.NoRelationship){
+                            int b = 0;
+                        }
+
+
+                        if (relationship != a.AboutType)
+                        {
+                            a.AboutType = relationship;
+                            s.Update(a);
+                            i++;
+                        }
+                    }
+
+
+                    tx.Commit();
+                    s.Flush();
+                    return ""+i;
+                }
+            }
+        }
+
+
         [Access(AccessLevel.Radial)]
         public async Task<JsonResult> Emails(int id)
         {
-            var emails=Enumerable.Range(0,id).Select(x=>MailModel.To("clay.upton@gmail.com").Subject("TestBulk").Body("Email #{0}",""+x));
-            var result=(await Emailer.SendEmails(emails));
-            result.Errors=null;
+            var emails = Enumerable.Range(0, id).Select(x => MailModel.To("clay.upton@gmail.com").Subject("TestBulk").Body("Email #{0}", "" + x));
+            var result = (await Emailer.SendEmails(emails));
+            result.Errors = null;
 
-            return Json(result,JsonRequestBehavior.AllowGet);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
+        [Access(AccessLevel.Radial)]
+        public JsonResult FixReviewData()
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var reviews = s.QueryOver<ReviewModel>().List().ToList();
+                    var allAnswers = s.QueryOver<AnswerModel>().List().ToList();
+                    
+                    foreach (var r in reviews)
+                    {
+                        var update = false;
+                        if (r.DurationMinutes == null && r.Complete)
+                        {
+                            var ans = allAnswers.Where(x => x.ForReviewId == r.Id).ToList();
+                            r.DurationMinutes = TimingUtility.ReviewDurationMinutes(ans, TimingUtility.ExcludeLongerThan);
+                            update = true;
+                        }
+
+                        if (r.Started == false)
+                        {
+                            var started = allAnswers.Any(x => x.ForReviewId == r.Id && x.Complete);
+                            r.Started = started;
+                            update = true;
+                        }
+                        if (update)
+                        {
+                            s.Update(r);
+                        }
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         /*
@@ -144,8 +232,9 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Any)]
-        public bool TestTask(long id){
-            var fire=DateTime.UtcNow.AddSeconds(id);
+        public bool TestTask(long id)
+        {
+            var fire = DateTime.UtcNow.AddSeconds(id);
             _TaskAccessor.AddTask(new ScheduledTask() { Fire = fire, Url = "/Account/TestTaskRecieve" });
             log.Debug("TestTaskRecieve scheduled for: " + fire.ToString());
             return true;
@@ -160,7 +249,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Any)]
-        public ActionResult TestChart(long id,long reviewsId)
+        public ActionResult TestChart(long id, long reviewsId)
         {
             var review = _ReviewAccessor.GetReview(GetUser(), id);
 
@@ -168,5 +257,5 @@ namespace RadialReview.Controllers
             return View(model);
         }
 
-	}
+    }
 }

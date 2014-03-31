@@ -1,0 +1,93 @@
+﻿@model RadialReview.Controllers.ReviewsController.EditDueDate
+
+@Html.HiddenFor(x=>x.ReviewContainerId)
+
+@if(Model.HasPrereview)
+{ 
+<div class="row smallBreak2">
+    <div class="col-md-6">
+        <label class="control-label">Pre-reviews are due:</label>
+    </div>
+    <div class="col-md-4">
+        <div class="date" data-date="@(Model.PrereviewDueDate)" data-date-format="mm-dd-yyyy">
+            @Html.TextBoxFor(x => x.PrereviewDueDate, null, new { @class = "form-control datePicker", id = "PrereviewDueDate" })
+            <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+            <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+    </div>
+</div>
+}else{
+@Html.HiddenFor(x=>x.PrereviewDueDate)
+}
+
+<div class="row smallBreak2">
+    <div class="col-md-6">
+        <label class="control-label">Reviews are due:</label>
+    </div>
+    <div class="col-md-4">
+        <div class="date" data-date="@(Model.ReviewDueDate)" data-date-format="mm-dd-yyyy">
+            @Html.TextBoxFor(x => x.ReviewDueDate, null, new { @class = "form-control datePicker" , id = "ReviewDueDate"})
+            <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+            <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+    </div>
+</div>
+
+<div class="row smallBreak2">
+    <div class="col-md-6">
+        <label class="control-label">Reports are due:</label>
+    </div>
+    <div class="col-md-4">
+        <div class="date" data-date="@(Model.ReportDueDate)" data-date-format="mm-dd-yyyy">
+            @Html.TextBoxFor(x => x.ReportDueDate, null, new { @class = "form-control datePicker", id = "ReportDueDate" })
+            <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+            <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+    </div>
+</div>
+
+@Html.HiddenFor(x => x.Offset, new { id ="TimeZoneOffset"})
+
+<script>
+    function startDueDateModal() {
+        var offset = new Date().getTimezoneOffset();
+        $("#TimeZoneOffset").val(offset / 60);
+
+
+        var nowTemp = new Date();
+        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+
+        var checkin = $('#ReviewDueDate').datepicker({
+            format: 'mm-dd-yyyy',
+            onRender: function (date) {return date.valueOf() < now.valueOf() ? 'disabled' : '';}
+        }).on('changeDate', function (ev) {
+            if (ev.date.valueOf() > checkout.date.valueOf()) {
+                var newDate = new Date(ev.date)
+                newDate.setDate(newDate.getDate() + 7);
+                checkout.setValue(newDate);
+            }
+            checkin.hide();
+            $('#ReportDueDate')[0].focus();
+        }).data('datepicker');
+
+        var checkout = $('#ReportDueDate').datepicker({
+            format: 'mm-dd-yyyy',
+            onRender: function (date) {
+                return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
+            }
+        }).on('changeDate', function (ev) {
+            checkout.hide();
+        }).data('datepicker');
+
+
+        var checkout2 = $('#PrereviewDueDate').datepicker({
+            format: 'mm-dd-yyyy',
+            onRender: function (date) { return date.valueOf() < now.valueOf() ? 'disabled' : ''; }
+        }).on('changeDate', function (ev) {
+            checkout2.hide();
+        }).data('datepicker');
+
+    }
+</script>
+
+<img src="~/Content/img/blank.gif" onload="startDueDateModal()" />

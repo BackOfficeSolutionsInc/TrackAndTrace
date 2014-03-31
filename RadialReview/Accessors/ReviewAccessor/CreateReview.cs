@@ -7,6 +7,7 @@ using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
+using RadialReview.Models.Prereview;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Reviews;
 using RadialReview.Models.UserModels;
@@ -105,17 +106,27 @@ namespace RadialReview.Accessors
 
                     hub.Clients.User(userId).status("Creating Review");
                     var perms = PermissionsUtility.Create(s, caller);
+
+                    bool reviewManagers = true,
+                         reviewPeers = true,
+                         reviewSelf = true,
+                         reviewSubordinates = true,
+                         reviewTeammates = true;
+
                     reviewContainer = new ReviewsModel()
                     {
                         DateCreated = DateTime.UtcNow,
                         DueDate = dueDate,
                         ReviewName = reviewName,
                         CreatedById = caller.Id,
-                        /*ReviewManagers = reviewManagers,
+                        HasPrereview = false,
+
+                        ReviewManagers = reviewManagers,
                         ReviewPeers = reviewPeers,
                         ReviewSelf = reviewSelf,
                         ReviewSubordinates = reviewSubordinates,
-                        ReviewTeammates = reviewTeammates,*/
+                        ReviewTeammates = reviewTeammates,
+
                         ForTeamId = forTeamId
                     };
                     ReviewAccessor.CreateReviewContainer(s, perms, caller, reviewContainer);
@@ -593,5 +604,56 @@ namespace RadialReview.Accessors
             return abstractQuery.Get<ReviewsModel>(reviewContainerId);
         }
 
+
+
+        public void UpdateDueDates(UserOrganizationModel caller, long reviewContainerId, DateTime? prereviewDueDate, DateTime reviewDueDate, DateTime? reportDueDate)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var perm = PermissionsUtility.Create(s, caller).EditReviewContainer(reviewContainerId);
+                    var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+                    var update = false;
+                    if (prereviewDueDate != null){
+                        if (reviewContainer.PrereviewDueDate != prereviewDueDate.Value){
+                            reviewContainer.PrereviewDueDate = prereviewDueDate.Value;
+                            update = true;
+                            var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId).List().ToList();
+                            foreach (var p in prereviews){
+                                p.PrereviewDue = prereviewDueDate.Value;
+                                s.Update(p);
+                            }
+                        }
+                    }
+
+                    if (reviewContainer.DueDate != reviewDueDate)
+                    {
+                        update = true;
+                        reviewContainer.DueDate = reviewDueDate;
+                        var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).List().ToList();
+                        foreach (var r in reviews)
+                        {
+                            r.DueDate = reviewDueDate;
+                            s.Update(r);
+                        }
+                    }
+
+                    if (reportDueDate!=null && reviewContainer.ReportsDueDate != reportDueDate)
+                    {
+                        update = true;
+                        reviewContainer.ReportsDueDate = reportDueDate;
+                    }
+
+                    if (update)
+                    {
+                        s.Update(reviewContainer);
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
+
+        }
     }
 }

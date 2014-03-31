@@ -26,6 +26,24 @@ function qtip() {
     });
 }
 
+function save(key, value) {
+    if ('localStorage' in window && window['localStorage'] !== null) {
+        window.localStorage[key] = value;
+    } else {
+        console.log("Could not save");
+    }
+}
+
+function load(key) {
+    if ('localStorage' in window && window['localStorage'] !== null) {
+        return window.localStorage[key];
+    } else {
+        console.log("Could not load");
+    }
+}
+
+
+
 function ForceUnhide() {
     var speed = 40;
     $(".startHiddenGroup").each(function (i, e) {
@@ -110,7 +128,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
                             if (onSuccess) {
                                 if (typeof onSuccess === "string") {
                                     eval(onSuccess + "(data)");
-                                }else if (typeof onSuccess === "function"){
+                                } else if (typeof onSuccess === "function") {
                                     onSuccess(data);
                                 }
                                 //$("#modal").modal("hide");
@@ -171,8 +189,8 @@ function showAlert(message, alertType, preface) {
 
 var alertsTimer = null;
 function clearAlerts() {
-    var found=$("#alerts .alert");
-    found.css({ height: "0px", opacity: 0.0,padding:"0px",border:"0px",margin:"0px" });
+    var found = $("#alerts .alert");
+    found.css({ height: "0px", opacity: 0.0, padding: "0px", border: "0px", margin: "0px" });
     if (alertsTimer) {
         clearTimeout(alertsTimer);
     }
@@ -195,8 +213,61 @@ function showJsonAlert(data, showSuccess, clearOthers) {
             message = "";
         console.log(data.Trace);
         console.log(data.Message);
-        showAlert(message, "alert-" + data.MessageType.toLowerCase(), data.Heading);
+        if (data.MessageType != "Success" || showSuccess) {
+            showAlert(message, "alert-" + data.MessageType.toLowerCase(), data.Heading);
+        }
     }
+}
+
+function getKeySelector(selector, prefix) {
+    prefix = prefix || "";
+    var output = { selector: selector, key: false };
+
+    if ($(selector).data("key")) {
+        output.key = prefix + $(selector).data("key");
+    } else if ($(selector).attr("name")) {
+        output.key = prefix + $(selector).attr("name");
+        output.selector = "[name=" + $(selector).attr("name") + "]";
+        /*if ($(selector).is("[type='radio']")) {
+            output.selector += ":checked";
+        }*/
+    } else if ($(selector).attr("id")) {
+        output.key = prefix + $(selector).attr("id");
+        output.selector = "#" + $(selector).attr("id");
+    }
+
+    return output;
+}
+
+function getVal(selector) {
+    var self = $(selector);
+    if (self.is("[type='checkbox']")) {
+        return self.is(':checked');
+    }
+    if (self.is("[type='radio']")) {
+        return self.filter(":checked").val();
+    }
+    else if (self.hasClass("panel-collapse")) {
+        return self.hasClass("in");
+    } else {
+        return self.val();
+    }
+}
+
+function setVal(selector, val) {
+    var self = $(selector);
+    if (self.is("[type='checkbox']")) {
+        self.prop('checked', val == "true");
+    } else if (self.is("[type='radio']")) {
+        self.prop('checked', function () {
+            return $(this).attr("value") == val;
+        });
+    } else if (self.hasClass("panel-collapse")) {
+        self.collapse(val == "true" ? "show" : "hide");
+    } else {
+        self.val(val);
+    }
+    self.change();
 }
 
 (function ($) {
@@ -204,4 +275,9 @@ function showJsonAlert(data, showSuccess, clearOthers) {
         var $initialVal = this.val();
         this.val($initialVal);
     };
+
+    $(".panel-collapse").collapse({
+        toggle: false
+    });
+
 })(jQuery);

@@ -27,8 +27,12 @@ namespace RadialReview
 
         public static String Pluralize(this String self, double count, String plural = null)
         {
-            if (count == 1)     return self;
-            else                return plural ?? (self + "s");
+            if (count == 1) return self;
+            else return plural ?? (self + "s");
+        }
+        public static String Possessive(this String self)
+        {
+            return self + "'s";
         }
     }
 }

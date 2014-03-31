@@ -14,6 +14,8 @@ namespace RadialReview.Models
         public virtual DateTime DateCreated { get; set; }
         public virtual DateTime DueDate { get; set; }
         public virtual DateTime? ReportsDueDate { get; set; }
+        public virtual DateTime? PrereviewDueDate { get; set; }
+        public virtual bool HasPrereview { get; set; }
         public virtual String ReviewName { get; set; }
         public virtual bool EnsureDefault { get; set; }
         public virtual bool ReviewManagers { get; set; }
@@ -73,6 +75,8 @@ namespace RadialReview.Models
             Map(x => x.ReportsDueDate);
             Map(x => x.EnsureDefault);
             Map(x => x.DeleteTime);
+            Map(x => x.HasPrereview);
+            Map(x => x.PrereviewDueDate);
 
             Map(x => x.ForTeamId);
 

@@ -50,10 +50,10 @@
     opacity: 0.1;
     stroke-width: 1px;
     vector-effect: non-scaling-stroke;
-    -moz-transition: all 250ms ease;
+    /*-moz-transition: all 250ms ease;
     -o-transition: all 250ms ease;
     -webkit-transition: all 250ms ease;
-    transition: all 250ms ease;
+    transition: all 250ms ease;*/
 }
 
 .nearest {
@@ -82,13 +82,6 @@
     stroke:black;
 }
 
-.about-Self {
-    border-width:2px ! important;
-    stroke: darkgoldenrod;
-    fill: yellow;
-    background-color: yellow;
-    border-color: darkgoldenrod ! important;
-}
 
 .about-Manager {
     border-width:2px ! important;
@@ -121,6 +114,23 @@
     fill: #7AD17A;
     background-color: #7AD17A;
 }
+
+.about-Self {
+    border-width:2px ! important;
+    stroke: darkgoldenrod;
+    fill: yellow;
+    background-color: yellow;
+    border-color: darkgoldenrod ! important;
+}
+
+.about-NoRelationship {
+    border-width:2px ! important;
+    stroke: #000;
+    fill: #808080;
+    background-color: #808080;
+    border-color: #000 ! important;
+}
+
 
 .axisTitle{
     font-family:'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;

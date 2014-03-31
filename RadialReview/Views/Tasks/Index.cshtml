@@ -50,7 +50,7 @@
                                 {
                                     <td class="alignCenter" style="width:120px;">@t.Count</td>
                                 }
-                                <td class="alignCenter" style="width:120px;">@t.DueDate.ToShortDateString()</td>
+                                <td class="alignCenter" style="width:120px;">@t.DueDate.Subtract(TimeSpan.FromDays(1)).ToShortDateString()</td>
                             </tr>
                         }
                     </tbody>

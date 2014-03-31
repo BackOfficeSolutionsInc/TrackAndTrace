@@ -21,6 +21,7 @@ namespace RadialReview.Controllers
         //
         // GET: /Img/
         [Access(AccessLevel.Any)]
+        [OutputCache(Duration = 60 * 60 * 24 * 30, VaryByParam = "id;dim")]
         public ActionResult Index(string id,string dim=null)
         {
             try
@@ -70,6 +71,8 @@ namespace RadialReview.Controllers
                     }
                 }
 
+                //Response.CacheControl = ""+(60*60*24*14);
+                //Response.Expires = (60 * 24 * 14);
 
                 return Redirect(imagePath);
 

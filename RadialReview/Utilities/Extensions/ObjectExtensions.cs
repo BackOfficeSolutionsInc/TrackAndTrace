@@ -10,7 +10,7 @@ namespace RadialReview
     public static class ObjectExtensions
     {
         //NotNull
-        public static R NotNull<T, R>(this T obj, Func<T, R> f) where T : class
+        public static R NotNull<T, R>(this T obj, Func<T, R> f) 
         {
             return obj != null ? f(obj) : default(R);
         }

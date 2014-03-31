@@ -1,4 +1,5 @@
-﻿using RadialReview.Models.ViewModels;
+﻿using RadialReview.Models;
+using RadialReview.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,32 +47,33 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult List(long id)
-        {
+        public ActionResult List(long id){
             var reviewContainerId = id; 
             //var reviewContainerAnswers = _ReviewAccessor.GetReviewContainerAnswers(GetUser(), id);
-
             //var reviewContainerPeople = reviewContainerAnswers.GroupBy(x => x.AboutUserId);
             var user = GetUser().Hydrate().ManagingUsers(true).Execute();
-
             var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false, true);
             //reviewContainer.Reviews = _ReviewAccessor.GetReviewsForReviewContainer(GetUser(), id);
-            
+            var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
+
+            var acceptedReviews = new List<ReviewModel>();
             foreach (var r in reviewContainer.Reviews)
             {
-                if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id)
-                {
+                var add = false;
+                r.ForUser.PopulateDirectlyManaging(user, directSubs);
+                if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id){
                     r.ForUser.SetPersonallyManaging(true);
+                    add = true;
+                }else{
+                    add = r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
                 }
-                else
-                {
-                    //r.ForUser.PopulateLevel(GetUser(), user.AllSubordinates);
-                    r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+                if (add){
+                    acceptedReviews.Add(r);
                 }
             }
+            reviewContainer.Reviews = acceptedReviews;
 
             var model = new ReviewsViewModel(reviewContainer);
-
             return View(model);
 
         }

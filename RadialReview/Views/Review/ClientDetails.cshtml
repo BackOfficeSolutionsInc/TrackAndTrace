@@ -13,7 +13,7 @@
     <div class="aboveJumbotron noPrint">
         <h2>Aggregate report for @Model.Review.Name.</h2>
     </div>
-    <div class="jumbotron noPrint">
+    <div class="jumbotron noPrint @(ViewBag.Reviewing??false?"reviewing":"") @(Model.Review.ClientReview.Visible?"on":"")">
         <h1>Report</h1>
     </div>
 }
@@ -22,6 +22,21 @@
 {
     <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
     <style>
+
+        .jumbotron.reviewing {
+            background-color: rgba(255, 60, 60, 0.14);
+            -moz-transition: background-color .2s ease-in-out;
+            -o-transition: background-color .2s ease-in-out;
+            -webkit-transition: background-color .2s ease-in-out;
+            transition: background-color .2s ease-in-out;
+        }
+
+            .jumbotron.reviewing.on {
+                background-color: rgba(60, 255, 99, 0.14);
+            } 
+        
+        
+
         .chart {
             width: 600px;
             height: 600px;
@@ -162,7 +177,7 @@
         <div class="smallBreak2"></div>
 
     </div>
-    <div class="col-lg-9 review">
+    <div class="col-lg-9 review" style="min-width:660px;">
         <div class="noBreak">
             <a id="name" class="shiftByTitle"></a>
             <div class="row-title first" style="">Review: @Model.Review.Name</div>
@@ -289,7 +304,8 @@
                 <a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
                 <div class="row-title">@chart.Title</div>
                 <div class="row">
-                    <div class="col-xs-9">
+                    @*<div class="col-xs-9">*@
+                        <div class="legend pull-right" id="legend_chart_@chart.Id"></div>
                         <div class="chart"
                              id="chart_@chart.Id"
                              data-id="@chart.Id"
@@ -300,11 +316,11 @@
                              data-title="@chart.Title">
                             <!--Chart Goes Here-->
                         </div>
-                    </div>
+                    @*</div>
                     <div class="col-xs-3">
 
                         <div class="legend" id="legend_chart_@chart.Id"></div>
-                    </div>
+                    </div>*@
                 </div>
             </div>
         }

@@ -182,7 +182,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         }
     }, // data -> value
         xMap = function (scatterDataPoint) {
-            return that.xScale(xValue(scatterDataPoint)) + topLeft.x;
+            return that.xScale(xValue(scatterDataPoint)) + topLeft.x + that.pointRadius/2;
         }, // data -> display
         xAxis = d3.svg.axis().scale(this.xScale).orient("bottom").tickSize(this.tickSize).tickSubdivide(true);
 
@@ -197,7 +197,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         }
     }, // data -> value
         yMap = function (scatterDataPoint) {
-            return that.yScale(yValue(scatterDataPoint)) + topLeft.y;
+            return that.yScale(yValue(scatterDataPoint)) + topLeft.y + that.pointRadius / 2;
         }, // data -> display
         yAxis = d3.svg.axis().scale(this.yScale).orient("left").tickSize(this.tickSize).tickSubdivide(true);
 
@@ -205,7 +205,8 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         this.xScale.domain([-1, 1]);
         this.yScale.domain([-1, 1]);
     }
-
+    
+    var svgContainerOuter = d3.select("#" + this.id);
     var svgContainer = d3.select("#" + this.id + " svg");
     var container = d3.select("#" + this.id + " svg g.middle");
     var underContainer = d3.select("#" + this.id + " svg g.bottom");
@@ -218,7 +219,16 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     options.legendFunc(scatterData.Legend,this);
 
     if (options.reset) {
-        svgContainer = d3.select("#" + this.id).html("").append("svg").attr("xmlns", "http://www.w3.org/2000/svg");
+        if (d3.select(".scatter-tooltip")[0][0]==null) {
+            d3.select("body").append("div")
+                .attr("class", "scatter-tooltip")
+                .style("position", "absolute")
+                .style("z-index", "10")
+                .style("visibility", "hidden");
+        }
+
+
+        svgContainer = svgContainerOuter.append("svg").attr("xmlns", "http://www.w3.org/2000/svg");
         svgContainer.html('<marker xmlns="http://www.w3.org/2000/svg" id="triangle" viewBox="0 0 10 10" refX="18" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"/></marker>');
 
         underContainer = svgContainer.append("g").attr("class", "bottom");
@@ -243,7 +253,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                     .attr("y2", topLeft.y + height / 2);
         xAxisTitle = container.append("g")
                         .attr("transform", function (d) { return "translate(" + (topLeft.x + width / 2) + "," + (topLeft.y + height + 43) + ")"; })
-                        .attr("class", "yAxisTitle axisTitle")
+                        .attr("class", "xAxisTitle axisTitle")
                         .append("text")
                         .attr("text-anchor", "middle");
 
@@ -255,7 +265,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 
         yAxisTitle = container.append("g")
                         .attr("transform", function (d) { return "translate(" + (topLeft.x - 33) + "," + (topLeft.y + height / 2) + ")"; })
-                        .attr("class", "xAxisTitle axisTitle")
+                        .attr("class", "yAxisTitle axisTitle")
                         .append("text")
                         .attr("text-anchor", "middle")
                         .attr("transform", function (d) { return "rotate(-90)"; });
@@ -307,7 +317,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         var comparableWildcards = [];
         for (var r = 0; r < required.length; r++) {
             var found = false;
-            var regexStr = required[r].replace("*", "[a-zA-Z0-9_\\-]+");
+            var regexStr = "^"+required[r].replace("*", "[a-zA-Z0-9_\\-]+")+"$";
             var re = new RegExp(regexStr, "g")
             for (var i = 0; i < list.length; i++) {
                 if (re.test(list[i])) {
@@ -329,7 +339,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         var comparableWildcards = [];
         for (var r = 0; r < required.length; r++) {
             var found = false;
-            var regexStr = required[r].replace("*", "[a-zA-Z0-9_\\-]+");
+            var regexStr = "^"+required[r].replace("*", "[a-zA-Z0-9_\\-]+")+"$";
             var re = new RegExp(regexStr, "g")
             for (var i = 0; i < list.length; i++) {
                 if (re.test(list[i])) {
@@ -347,10 +357,31 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         });
     }
 
-    function getClasses(classStr) {
+    function jqueryIntersection(array1, array2) {
+        var a2 = $.map(array2, function (d) { return d.outerHTML; });
+        return $.map(array1,function (d) { return d.outerHTML; }).filter(function (e) {
+            return a2.indexOf(e) != -1
+        });
+    }
+
+    function splitBySpace(classStr) {
         var trimmed = classStr.replace(/^\s+|\s+$/g, '');
         return trimmed.split(/\s+/g);
     }
+
+    function getClasses(classStr) {
+        return splitBySpace(classStr);
+    }
+
+    function getTitles(titles)
+    {
+        var titles = $("<div>" + titles + "</div>").find(".title");
+        return titles;/*
+        var trimmed = classStr.replace(/^\s+|\s+$/g, '');
+        return trimmed.split(/\s+/g);*/
+    }
+
+    
 
     function normalizedMatchingClasses(classes, requiredClasses) {
         var matches = [];
@@ -426,11 +457,14 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                     Date: point.Date,
                     Dimensions: {},
                     Class: point.Class,
-                    GroupId: groupId
+                    GroupId: groupId,
+                    Title: point.Title,
+                    Subtext: point.Subtext,
                 };
             }
 
             merged[key].Class = intersection(getClasses(merged[key].Class), getClasses(point.Class)).join(" ");
+            merged[key].Title = jqueryIntersection(getTitles(merged[key].Title), getTitles(point.Title)).join(" ");
 
             for (var d in point.Dimensions) {
                 var dim = point.Dimensions[d];
@@ -516,28 +550,41 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 
     var dataPoints = separateByGroups(filtered, options.groups);
 
-
     //On first call:
     var dataset = container.selectAll(".scatter-point").data(dataPoints, dataIdFunction);
     dataset.enter()
            .append("circle")
            .attr("cx", xMap)
            .attr("cy", yMap);
-    dataset.exit().transition().style("opacity", "0").duration(100).remove();
+
+    dataset.exit().transition().duration(200)
+        .attr("r",0)
+        .style("opacity", "0")
+        .remove();
 
     dataset.attr("class", function (d) {
-        try{
+        try {
             return "scatter-point " + d.Class + " " + d.Dimensions[options.xDimensionId].Class + " " + d.Dimensions[options.yDimensionId].Class;
-        }catch(e)
-        {
+        } catch (e) {
             console.log(e);
             return "scatter-point";
         }
-    });
+    });/*.on("mouseover", function () {
+        debugger;
+        return tooltip.style("visibility", "visible");
+    }).on("mousemove", function () {
+	    return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
+	}).on("mouseout", function () {
+	    debugger;
+	    return tooltip.style("visibility", "hidden");
+	}).text(function(d){
+        return d.Title;
+    });*/
 
     var lineSet = underContainer.selectAll(".scatter-link").data(dataPoints.filter(function (d) { return getPrevious(d, dataPoints) || false; }), dataIdFunction);
     lineSet.enter()
         .append("line")
+        .style("opacity","0")
         .attr("marker-end", "url(#triangle)")
         .attr("x1", xMap)
         .attr("x2", function (d) {
@@ -564,13 +611,20 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     transition.select(".x.axis").call(xAxis);
     transition.select(".y.axis").call(yAxis);
 
-
+    
+    var tooltip = d3.select(".scatter-tooltip");
     //Update point positions
     var pointSet = dataset
         .on("mouseover", function (d) {
             options.mouseover(d, that);
+            tooltip.style("visibility", "visible");
+            tooltip.html(d.Title);
+        }).on("mousemove", function (d) {
+            console.log(event);
+            tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
         }).on("mouseout", function (d) {
             options.mouseout(d, that);
+            tooltip.style("visibility", "hidden");
         }).classed("prior", function (d) {
             var date = new Date(parseInt(d.Date.substr(6)));
             return date < options.startTime;
@@ -653,9 +707,14 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         .attr("y1", yMap)
         .attr("y2", function (d) {
             return yMap(getPrevious(d, dataPoints));
+        })
+        .call(function (d) {
+            d.style("opacity", null);
         });
+        
 
     lineSet.exit().remove();
+        //.remove();
     //dataset.exit().transition().style("opacity", "0").duration(100).remove();
 
 };

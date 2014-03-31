@@ -13,11 +13,8 @@
     <title>@ViewBag.Title - @RadialReview.Properties.ProductStrings.ProductName</title>
     <link href="~/Content/jquery.qtip.css" rel="stylesheet" />
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
     @RenderSection("styles", required: false)
     @Html.PageStyles()
-
-
 </head>
 @if (ViewBag.HasBaseController == null)
 {
@@ -25,13 +22,11 @@
 }
 
 <body>
-    @if(ViewBag.IsLocal??false)
-    { 
+    @if (ViewBag.IsLocal ?? false)
+    {
         <div id="local"></div>
     }
-    <div class="statusContainer">
-        <div id="status">No status</div>
-    </div>
+    <div class="statusContainer"><div id="status">No status</div></div>
     <div id="wrap">
         <div id="main">
             <div class="navbar navbar-inverse navbar-fixed-top">
@@ -42,17 +37,7 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <div id="logo">
-                            <div class="link">
-                                <a href="@Url.Action("Index", "Home")" class="navbar-brand">
-                                    <span style="z-index:1000001;position:relative;">Radial</span>
-                                    <div class="circles">
-                                        <div class="circle2 navbar-brand"></div>
-                                        <div class="circle1 navbar-brand"></div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
+                        <div id="logo"><div class="link"><a href="@Url.Action("Index", "Home")" class="navbar-brand"><span style="z-index:1000001;position:relative;">Radial</span><div class="circles"><div class="circle2 navbar-brand"></div><div class="circle1 navbar-brand"></div></div></a></div></div>
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
@@ -65,23 +50,22 @@
                                             Access Code
                                             <span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
                                         </a>
-                                    </li>                                    
+                                    </li>
                                 }
-                                
-                                
+
+
                                 if (((int?)ViewBag.Organizations ?? 0) > 0)
                                 {
-                                <li>
-                                    <a href="@Url.Action("Index", "Tasks")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
-                                        Tasks
-                                        @if (ViewBag.TaskCount > 0)
-                                        {
-                                            @:[@ViewBag.TaskCount]
-                                        }
-                                        <span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
-                                    </a>
-                                </li>
-
+                                    <li>
+                                        <a href="@Url.Action("Index", "Tasks")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
+                                            Tasks
+                                            @if (ViewBag.TaskCount > 0)
+                                            {
+                                                @:[@ViewBag.TaskCount]
+                                            }
+                                            <span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
+                                        </a>
+                                    </li>
                                     <li>
                                         <a href="@Url.Action("Outstanding", "Reviews")">
                                             Reviews
@@ -131,20 +115,20 @@
         @Html.Partial("Partial/_Modal")
         @using (var s = Html.BeginScripts())
         {
-            <script src="~/Scripts/Main/radial.js"></script>
-            
-            <script>                
+            <!--script src="~/Scripts/Main/radial.js"></script-->
+
+            <script type="text/javascript" src="http://assets.freshdesk.com/widget/freshwidget.js"></script>
+            <script>
+                FreshWidget.init("", { "queryString": "&widgetType=popup", "widgetType": "popup", "buttonType": "text", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#767F99", "alignment": "4", "offset": "235px", "formHeight": "500px", "url": "http://radialreview.freshdesk.com" });
                 $(function () {
                     qtip();
                     ForceUnhide();
-                    @if(ViewBag.Alert!=null)
-                    {
+                    @if (ViewBag.Alert!=null){
                         @:showAlert("@ViewBag.Alert");
-                    }
-                    @if(ViewBag.Success!=null)
-                    {
+                                        }
+                    @if(ViewBag.Success!=null){
                         @:showAlert("@ViewBag.Success", "alert-success", "Success!");
-                    }
+                                        }
 
                     var data = localStorage.getItem("Alert");
                     localStorage.setItem("Alert", null);
@@ -154,33 +138,50 @@
                         var type = alert.type;
                         var title = alert.title;
                         var message = alert.message;
-
-                        if (type === undefined)
-                            type = "alert-success";
-                        if (title === undefined)
-                            title = "Success!";
-                        if (message === undefined)
-                            message = "";
-
+                        if (type === undefined) type = "alert-success";
+                        if (title === undefined) title = "Success!";
+                        if (message === undefined) message = "";
                         showAlert(message, type, title);
                     }
-
                 });
+
+                var statusTimeout;
+                var alertHub = $.connection.alertHub;
+                alertHub.client.jsonAlert = function (data, showSuccess) { showJsonAlert(data, showSuccess); };
+                alertHub.client.unhide = function (selector) { $(selector).show(); };
+                alertHub.client.status = function (text) {
+                    $(".statusContainer").css("bottom", "0px");
+                    $(".statusContainer").css("display", "block");
+                    $(".statusContainer").css("opacity", "1");
+                    $("#status").html(text);
+                    clearTimeout(statusTimeout);
+                    statusTimeout = setTimeout(function () {
+                        $(".statusContainer").animate({
+                            opacity: 0,
+                            bottom: "-20px"
+                        }, 500, function () {
+                            $(".statusContainer").css("display", "none");
+                        })
+                    }, 2000);
+                };
+                $.connection.hub.start().done(function () { });
             </script>
         }
-
     </div>
     <div id="footer">
         <p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName</p>
         @Html.Partial("Partial/Footer")
     </div>
+    @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
-    <script src="~/Scripts/jquery/jquery.qtip.js"></script>
-    <script src="~/Scripts/jquery.signalR-2.0.1.min.js"></script>
-    <script src="~/signalr/hubs"></script>
+    <!--script src="~/Scripts/jquery/jquery.qtip.js"></!--script>
+    <script src="~/Scripts/jquery.signalR-2.0.1.min.js"></script-->
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
     @RenderSection("modals", required: false)
+    @Scripts.Render("~/bundles/main")
+    <script src="~/signalr/hubs"></script>
     @Html.PageScripts()
+
 </body>
 </html>

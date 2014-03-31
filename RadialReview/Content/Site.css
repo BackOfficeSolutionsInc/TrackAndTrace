@@ -1062,10 +1062,12 @@ tr.danger .strikable {
     opacity: .2;
 }
 
+[onclick] .viewEdit,
 a .viewEdit {
     opacity: .2;
 }
 
+[onclick]:hover .viewEdit,
 a:hover .viewEdit {
     opacity: 1;
 }
@@ -1187,4 +1189,9 @@ color: #559DC5;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
+}
+
+
+.collapseIcon {
+
 }

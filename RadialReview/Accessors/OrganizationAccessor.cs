@@ -196,11 +196,11 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-                    var users = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+                    var users = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.DeleteTime==null).List().ToList();
 
                     if (managers)
                     {
-                        var allManagers = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == organizationId).List().ToList();
+                        var allManagers = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == organizationId && x.DeleteTime==null).List().ToList();
                         foreach (var user in users)
                             user.PopulateManagers(allManagers);
                     }

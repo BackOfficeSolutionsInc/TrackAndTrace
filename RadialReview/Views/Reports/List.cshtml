@@ -2,7 +2,6 @@
 @{
     ViewBag.Title = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
     ViewBag.Page = "Review: " + Model.Review.ReviewName;
     ViewBag.ExtraTabs = ExtraTab.Create(ViewBag.Page, "/Reports/List/" + Model.Review.Id);
     ViewBag.Subheading = "View or create reports for '" + Model.Review.ReviewName + "'";
@@ -16,7 +15,6 @@
 @section header{
     @Html.Partial("_ReportsHeader")
 }
-
 
 @using (Html.BeginStyles())
 {
@@ -74,31 +72,24 @@
         function newTitle(item, about) {
             var progressBar = $(item).find(".progress-bar");
             var oldTitle = progressBar.attr("title");
-
             var newTitle = "Answers about " + about + " [" + oldTitle + "]";
-
             progressBar.attr("title", newTitle);
             return newTitle;
-
         }
 
         $(function () {
             $(".bar.Self").attr("title", function () {
                 return newTitle(this, "self");
             });
-
             $(".bar.Manager").attr("title", function () {
                 return newTitle(this, "managers");
             });
-
             $(".bar.Subordinate").attr("title", function () {
                 return newTitle(this, "subordinates");
             });
-
             $(".bar.Peer").attr("title", function () {
                 return newTitle(this, "peers");
             });
-
             $(".bar.Teammate").attr("title", function () {
                 return newTitle(this, "teammates");
             });
@@ -108,63 +99,84 @@
             $('.toggle-completion').toggleClass('on');
         }
     </script>
+    <script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
+
+    <script>
+        $(function () {
+            $("table").tablesorter({
+                headers: {
+                    1: { sorter: 'attr' },
+                    2: { sorter: 'attr' }
+                },
+                sortStable: true,
+            });
+        });
+    </script>
 }
 @{
-    var users = Model.Review.Reviews.ToListAlive().Where(x => x.ForUser.GetPersonallyManaging()).ToList();
-}
+    //var users = Model.Review.Reviews.ToListAlive().Where(x => x.ForUser.GetPersonallyManaging()).ToList();
+    var direct = Model.Review.Reviews.ToListAlive().Where(x => x.ForUser.GetDirectlyManaging()).ToList();
+    var indirect = Model.Review.Reviews.ToListAlive().Where(x => !x.ForUser.GetDirectlyManaging()).ToList();
+    var panels = new List<Tuple<int, String, List<RadialReview.Models.ReviewModel>>>(){
+        Tuple.Create(1,"Direct Subordinates",direct),
+        Tuple.Create(2,"All Other Subordinates",indirect)
+    };
 
-    @if (!users.Any())
+}
+<div class="panel panel-primary">
+    @foreach (var panel in panels)
     {
-        <div class="panel panel-primary">
+        if (panel.Item1 == 1 || panel.Item3.Any())
+        {
             <div class="panel-heading">
-                <h3 class="panel-title">Reports</h3>
+                <h3 class="panel-title">@panel.Item2</h3>
                 <div class="pull-right"></div>
             </div>
-            <div class="panel-body gray">
-                You don't manage any users in this review.
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Direct subordinates:</h3>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-condensed table-hover">
-                    <thead>
-                        <tr style="">
-                            <th>User</th>
-                            <th style="width:10px" title="Subordinate is authorized to view this report.">Shared</th>
-                            <th style="width:30px" class="alignCenter" title="You and the subordinate have reviewed this report.">Signed </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var r in users.OrderBy(x => x.ForUser.GetNameAndTitle()))
-                        {
-                            <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
-                                @if (r.ForUser.GetPersonallyManaging()) { @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
-                                                                                                                                                                                                                                                                                                                    }>
-                                <td class="table-hover-underline">@r.ForUser.GetNameAndTitle()</td>
-                                <td class="alignCenter">
-                                    <a>@r.ClientReview.Visible.GetIcon()</a>
-                                </td>
-                                <td class="alignCenter">
-
-                                    @if (r.ClientReview.SignedTime.HasValue)
-                                    {
-                                        @r.ClientReview.SignedTime.Value.ToShortDateString()
-                                    }
-                                    else
-                                    {
-                                        <div class="gray">Unsigned</div>
-                                    }
-                                </td>
+            if (!panel.Item3.Any())
+            {
+                <div class="panel-body gray">
+                    You don't manage any users in this review.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-condensed table-hover tablesorter">
+                        <thead>
+                            <tr style="">
+                                <th>User</th>
+                                <th style="width:10px" title="Subordinate is authorized to view this report.">Shared</th>
+                                <th style="width:30px" class="alignCenter" title="You and the subordinate have reviewed this report.">Signed </th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in panel.Item3.OrderBy(x => x.ForUser.GetNameAndTitle()))
+                            {
+                                <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
+                                    @if (r.ForUser.GetPersonallyManaging()) { @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }>
+                                    <td class="table-hover-underline">@r.ForUser.GetNameAndTitle()</td>
+                                    <td class="alignCenter">
+                                        <a data-sort="@(r.ClientReview.Visible? "1" : "2")">@r.ClientReview.Visible.GetIcon()</a>
+                                    </td>
+                                    <td class="alignCenter">
+                                        <div data-sort="@(r.ClientReview.SignedTime.HasValue?"1":"2")">
+                                            @if (r.ClientReview.SignedTime.HasValue)
+                                            { 
+                                                @r.ClientReview.SignedTime.Value.ToShortDateString()  
+                                            }
+                                            else
+                                            {
+                                                <div class="gray">Unsigned</div>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
     }
+</div>

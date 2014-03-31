@@ -45,14 +45,8 @@ namespace RadialReview
             self.Teams = teams;
         }
 
-        public static void PopulatePersonallyManaging(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> allSubordinates)
-        {
-            sub.SetPersonallyManaging( (
-                caller.IsRadialAdmin ||
-                (caller.Organization.Id == sub.Organization.Id && caller.ManagingOrganization)||
-                (allSubordinates.Any(x => x.Id == sub.Id))
-            ));
-        }
+
+   
 
         public static void PopulateLevel(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> allSubordinates)
         {
@@ -63,15 +57,42 @@ namespace RadialReview
                 sub.SetLevel(level);
             }
         }
+        public static bool PopulatePersonallyManaging(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> allSubordinates)
+        {
+            var output =(caller.IsRadialAdmin ||
+                (caller.Organization.Id == sub.Organization.Id && caller.ManagingOrganization) ||
+                (allSubordinates.Any(x => x.Id == sub.Id)));
+            sub.SetPersonallyManaging(output);
+            return output;
+        }
 
         public static void SetPersonallyManaging(this UserOrganizationModel self, Boolean personallyManaging)
         {
             self.Set("_managing", personallyManaging.ToString());
         }
-        public static bool GetPersonallyManaging(this UserOrganizationModel self)
+          public static bool GetPersonallyManaging(this UserOrganizationModel self)
         {
             return bool.Parse(self.GetSingle("_managing"));
+        }     
+        
+        public static bool PopulateDirectlyManaging(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> directSubordinates)
+        {
+            var output = directSubordinates.Any(x => x.Id == sub.Id);
+            sub.SetDirectlyManaging(output);
+            return output;
         }
+
+        public static void SetDirectlyManaging(this UserOrganizationModel self, Boolean directlyManaging)
+        {
+            self.Set("_directlyManaging", directlyManaging.ToString());
+        }
+
+        public static bool GetDirectlyManaging(this UserOrganizationModel self)
+        {
+            return bool.Parse(self.GetSingle("_directlyManaging"));
+        }
+
+      
         public static void SetEditPosition(this UserOrganizationModel self, Boolean editPosition)
         {
             self.Set("_EditPosition", editPosition.ToString());

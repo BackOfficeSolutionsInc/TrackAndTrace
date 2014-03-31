@@ -47,6 +47,14 @@ namespace RadialReview.Engines
                                         filterStrs.Add("?"+r+"?");
                                     break;
                                 }
+                                case "reviews":
+                                    {
+                                        try{
+                                            filterStrs.Add(s.Get<ReviewsModel>(split[1].ToLong()).ReviewName);
+                                        }catch{                                            
+                                            filterStrs.Add("?"+r+"?");
+                                        }
+                                    }break;
                                 default:{
                                     filterStrs.Add("?"+r+"?");
                                     break;
@@ -54,8 +62,14 @@ namespace RadialReview.Engines
                             }
                         }
                     }
+                    var groupsStrs = new List<String>();
+
                     //Groups
                     var groups = ChartClassMatcher.CreateMatchers(tuple.Groups);
+                    if (!groups.Any()){
+                        groupsStrs.Add("Review");
+                    }
+
                     foreach(var g in groups)
                     {
                         foreach(var r in g.Requirements)
@@ -64,14 +78,14 @@ namespace RadialReview.Engines
                             switch(split[0].ToLower()){
                                 case "about":{
                                     if(split[1]=="*")
-                                        filterStrs.Add("Relationship");
+                                        groupsStrs.Add("Relationship");
                                     else
-                                        filterStrs.Add("?"+r+"?");
+                                        groupsStrs.Add("?" + r + "?");
                                     break;
                                 }
                                 case "user":
                                     {
-                                        filterStrs.Add("User");
+                                        groupsStrs.Add("User");
                                         break;
                                     }
                                 default:{
@@ -85,31 +99,36 @@ namespace RadialReview.Engines
                     var cat1=s.Get<QuestionCategoryModel>(tuple.Item1);
                     var cat2=s.Get<QuestionCategoryModel>(tuple.Item2);
 
-                    var filterStr="";
+                    var description="";
 
                     if(filterStrs.Count>0)
                     {
-                        filterStr=" (By "+String.Join(",",filterStrs)+")";
+                        description+= " (" + String.Join(",", filterStrs) + ")";
+                    }
+                    if (groupsStrs.Count > 0)
+                    {
+                        description += " By " + String.Join(",", groupsStrs);
                     }
 
-                    return String.Format("{0} vs {1}{2}", cat2.Category.Translate(), cat1.Category.Translate(), filterStr);
+
+                    return String.Format("{0} vs {1}{2}", cat2.Category.Translate(), cat1.Category.Translate(), description);
                 }
             }
         }
 
-        public ScatterPlot ScatterFromOptions(UserOrganizationModel caller, ChartOptions options)
+        public ScatterPlot ScatterFromOptions(UserOrganizationModel caller, ChartOptions options, bool sensitive)
         {
             switch (options.Source)
             {
-                case ChartDataSource.Review: return ReviewScatterFromOptions(caller, options);
+                case ChartDataSource.Review: return ReviewScatterFromOptions(caller, options, sensitive);
                 default: throw new ArgumentException("Unknown ChartDataSource");
             }
         }
 
-        protected ScatterPlot ReviewScatterFromOptions(UserOrganizationModel caller, ChartOptions options)
+        protected ScatterPlot ReviewScatterFromOptions(UserOrganizationModel caller, ChartOptions options,bool sensitive)
         {
             var reviewsId = long.Parse(options.Options.Split(',')[0]);
-            var unfilteredPlot = ReviewScatter(caller, options.ForUserId, reviewsId);
+            var unfilteredPlot = ReviewScatter(caller, options.ForUserId, reviewsId,sensitive);
 
             var filterPack = options.Filters.Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -167,8 +186,13 @@ namespace RadialReview.Engines
             return filteredPlot;
         }
 
-        public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId)
+        public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId,bool sensitive)
         {
+            if (sensitive)
+            {
+                new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, true));
+            }
+
             var categories = _OrganizationAccessor.GetOrganizationCategories(caller, caller.Organization.Id);
             var review = _ReviewAccessor.GetAnswersForUserReview(caller, forUserId, reviewsId);
             var history = new List<AnswerModel>();
@@ -197,12 +221,15 @@ namespace RadialReview.Engines
             var groups = new HashSet<ScatterGroup>(new EqualityComparer<ScatterGroup>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
 
             var legend = new HashSet<ScatterLegendItem>(new EqualityComparer<ScatterLegendItem>((x,y)=>x.Class.Equals(y.Class),x=>x.Class.GetHashCode()));
-            
+
+            var remapper = RandomUtility.CreateRemapper();
+            var remapperUser = RandomUtility.CreateRemapper();
+
             foreach (var userAnswers in groupedByUsers) //<UserId>
             {
                 var byReviewOrdered = userAnswers.GroupBy(x => x.ForReviewContainerId).OrderBy(x => x.Max(y => y.CompleteTime)).ToList();
                 long? prevId = null;
-                var safeUserIdMap = userAnswers.Min(x => x.Id); //We'll use the Min-Answer Id because its unique and not traceable
+                var safeUserIdMap = remapperUser.Remap(userAnswers.Min(x => x.Id)); //We'll use the Min-Answer Id because its unique and not traceable
 
 
                 foreach (var userReviewAnswers in byReviewOrdered)
@@ -210,9 +237,11 @@ namespace RadialReview.Engines
                     //Each review container
                     var userId = userReviewAnswers.First().ByUserId;
                     var reviewContainerId = userReviewAnswers.First().ForReviewContainerId;
+                    var reviewContainer = _ReviewAccessor.GetReviewContainer(caller, reviewContainerId, false, false, false);
 
+                    // userReviewAnswers.First().ForReviewContainer;
                     var datums = new Dictionary<String,ScatterDatum>();
-
+                    
                     foreach (var answer in userReviewAnswers)
                     {
                         var catClass = "category-" + answer.Askable.Category.Id;
@@ -226,14 +255,13 @@ namespace RadialReview.Engines
 
                         datums[catClass].Denominator += (double)answer.Askable.Weight;
                         datums[catClass].Value += ((double)(answer.Percentage.Value ) * 200 - 100)* (double)answer.Askable.Weight;
-
-                        
                         //filters.Add(new ScatterFilter(answer.Askable.Category.Category.Translate(), catClass));
                         groups.Add(new ScatterGroup(answer.Askable.Category.Category.Translate(), catClass));
                     }
 
-                    var teams = teamMembers.Where(x => x.UserId == userId).Distinct(x => x.TeamId);
+                    filters.Add(new ScatterFilter(reviewContainer.ReviewName, "reviews-" + reviewContainerId, on: reviewsId==reviewContainerId));
 
+                    var teams = teamMembers.Where(x => x.UserId == userId).Distinct(x => x.TeamId);
                     var teamClasses = new List<String>();
 
                     foreach (var team in teams)
@@ -256,7 +284,19 @@ namespace RadialReview.Engines
                     var userClassStr = "user-" + safeUserIdMap;
 
                     //The first answer id should be unique for all this stuff, so lets just use it for convenience
-                    var uniqueId = userReviewAnswers.First().Id;
+                    var uniqueId = remapper.Remap(userReviewAnswers.First().Id);
+
+                    String title, subtext="";
+                    if (sensitive)
+                    {
+                        var user = userReviewAnswers.First().ByUser;
+                        title = "<span class='name title'>" + user.GetNameAndTitle() + "</span> <span class='about title'>" + aboutType + "</span> <span class='review title'>" + reviewContainer.ReviewName + "</span>";
+                    }
+                    else
+                    {
+                        title = "<span class='about title'>" + aboutType.ToString() + "</span> <span class='review title'>" + reviewContainer.ReviewName + "</span>";
+                    }
+
                     scatterDataPoints.Add(new ScatterData()
                     {
                         Class = String.Join(" ", aboutClass, reviewsClass, teamClassesStr, userClassStr),
@@ -264,6 +304,8 @@ namespace RadialReview.Engines
                         Dimensions = datums,
                         SliceId=reviewContainerId,
                         //PreviousId = prevId,
+                        Title = title,
+                        Subtext = subtext,
                         Id = uniqueId
                     });
 
@@ -281,7 +323,7 @@ namespace RadialReview.Engines
             var scatter = new ScatterPlot()
             {
                 Dimensions = dimensions.ToDictionary(x => x.Id, x => x),
-                Filters = filters.ToList(),
+                Filters = filters.OrderByDescending(x=>x.On).ToList(),
                 Groups = groups.ToList(),
                 InitialXDimension = xDimId,
                 InitialYDimension = yDimId ?? xDimId,

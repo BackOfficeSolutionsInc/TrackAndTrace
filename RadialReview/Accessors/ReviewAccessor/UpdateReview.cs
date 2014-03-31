@@ -253,13 +253,32 @@ namespace RadialReview.Accessors
                 result = await Emailer.SendEmails(unsent);
             }
 
-            return result.ToResults("Successfully added " + userBeingReviewed + " to the review.");
-            
-
-            
+            return result.ToResults("Successfully added " + userBeingReviewed + " to the review.");            
         }
+        
+        /*public void UpdateStarted(UserOrganizationModel userOrganizationModel, List<AnswerModel> answers, DateTime now)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    foreach (var p in answers)
+                    {
+                        if (p.CompleteTime == null)
+                        {
+                            p.StartTime = now;
+                        }
 
-        public Boolean UpdateAllCompleted(UserOrganizationModel caller, long reviewId)
+
+                    }
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+
+        }*/
+
+        public Boolean UpdateAllCompleted(UserOrganizationModel caller, long reviewId,bool started, double durationMinutes)
         {
             using(var s = HibernateSession.GetCurrentSession())
             {
@@ -271,22 +290,30 @@ namespace RadialReview.Accessors
 
                     var updated = false;
 
-                    if (uncompleted == 0 && !review.Complete)
+                    if (durationMinutes != 0)
                     {
+                        review.DurationMinutes += Math.Min(durationMinutes,TimingUtility.ExcludeLongerThan.TotalMinutes);
+                        updated = true;
+                    }
+
+                    if (uncompleted == 0 && !review.Complete){
                         review.Complete = true;
-                        s.Update(review);
                         updated = true;
                     }
 
-                    if (uncompleted != 0 && review.Complete)
-                    {
+                    if (started && !review.Started){
+                        review.Started = true;
+                        updated = true;                        
+                    }
+
+                    if (uncompleted != 0 && review.Complete){
                         review.Complete = false;
-                        s.Update(review);
+                        review.DurationMinutes = null;
                         updated = true;
                     }
 
-                    if (updated)
-                    {
+                    if (updated){
+                        s.Update(review);
                         tx.Commit();
                         s.Flush();
                     }
@@ -303,7 +330,7 @@ namespace RadialReview.Accessors
         /// <param name="id"></param>
         /// <param name="value"></param>
         /// <returns>Complete</returns>
-        public Boolean UpdateSliderAnswer(UserOrganizationModel caller, long id, decimal? value)
+        public Boolean UpdateSliderAnswer(UserOrganizationModel caller, long id, decimal? value,DateTime now, out bool edited)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -311,22 +338,27 @@ namespace RadialReview.Accessors
                 {
                     var answer = s.Get<SliderAnswer>(id);
                     PermissionsUtility.Create(s, caller).EditReview(answer.ForReviewId);
-
-                    answer.Complete = value.HasValue;
-                    answer.Percentage = value;
-                    if (answer.Complete)
+                    edited = false;
+                    if (answer.Percentage != value)
                     {
-                        answer.CompleteTime = DateTime.UtcNow;
-                    }
-                    else
-                    {
-                        answer.CompleteTime = null;
-                    }
-                    s.Update(answer);
+                        edited = true;
+                        answer.Complete = value.HasValue;
+                        answer.Percentage = value;
+                        if (answer.Complete)
+                        {
+                            answer.CompleteTime = now;
+                        }
+                        else
+                        {
+                            answer.CompleteTime = null;
+                        }
+                        s.Update(answer);
 
-                    tx.Commit();
-                    s.Flush();
+                        tx.Commit();
+                        s.Flush();
+                    }
                     return answer.Complete || !answer.Required;
+
                 }
             }
         }
@@ -337,7 +369,7 @@ namespace RadialReview.Accessors
         /// <param name="id"></param>
         /// <param name="value"></param>
         /// <returns>Complete</returns>
-        public Boolean UpdateThumbsAnswer(UserOrganizationModel caller, long id, ThumbsType value)
+        public Boolean UpdateThumbsAnswer(UserOrganizationModel caller, long id, ThumbsType value,DateTime now,out bool edited)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -346,24 +378,29 @@ namespace RadialReview.Accessors
                     var answer = s.Get<ThumbsAnswer>(id);
                     PermissionsUtility.Create(s, caller).EditReview(answer.ForReviewId);
 
-                    answer.Complete = value != ThumbsType.None;
-                    answer.Thumbs = value;
-                    if (answer.Complete)
+                    edited = false;
+                    if (value != answer.Thumbs)
                     {
-                        answer.CompleteTime = DateTime.UtcNow;
-                    }
-                    else
-                    {
-                        answer.CompleteTime = null;
-                    }
-                    s.Update(answer);
-                    tx.Commit();
-                    s.Flush();
+                        edited = true;
+                        answer.Complete = value != ThumbsType.None;
+                        answer.Thumbs = value;
+                        if (answer.Complete)
+                        {
+                            answer.CompleteTime = now;
+                        }
+                        else
+                        {
+                            answer.CompleteTime = null;
+                        }
+                        s.Update(answer);
+                        tx.Commit();
+                        s.Flush();
+                    }                        
                     return answer.Complete || !answer.Required;
                 }
             }
         }
-        public Boolean UpdateRelativeComparisonAnswer(UserOrganizationModel caller, long questionId, RelativeComparisonType choice)
+        public Boolean UpdateRelativeComparisonAnswer(UserOrganizationModel caller, long questionId, RelativeComparisonType choice,DateTime now, out bool edited)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -372,25 +409,31 @@ namespace RadialReview.Accessors
                     var answer = s.Get<RelativeComparisonAnswer>(questionId);
                     PermissionsUtility.Create(s, caller).EditReview(answer.ForReviewId);
 
-                    answer.Complete = (choice != RelativeComparisonType.None);
-                    if (answer.Complete)
+                    edited = false;
+                    if (choice != answer.Choice)
                     {
-                        answer.CompleteTime = DateTime.UtcNow;
+                        edited = true;
+                        answer.Complete = (choice != RelativeComparisonType.None);
+                        if (answer.Complete)
+                        {
+                            answer.CompleteTime = now;
+                        }
+                        else
+                        {
+                            answer.CompleteTime = null;
+                        }
+                        answer.Choice = choice;
+                        s.Update(answer);
+                        tx.Commit();
+                        s.Flush();
                     }
-                    else
-                    {
-                        answer.CompleteTime = null;
-                    }
-                    answer.Choice = choice;
-                    s.Update(answer);
-                    tx.Commit();
-                    s.Flush();
+
                     return answer.Complete || !answer.Required;
                 }
             }
         }
 
-        public Boolean UpdateFeedbackAnswer(UserOrganizationModel caller, long questionId, string feedback)
+        public Boolean UpdateFeedbackAnswer(UserOrganizationModel caller, long questionId, string feedback,DateTime now,out bool edited)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -398,19 +441,24 @@ namespace RadialReview.Accessors
                 {
                     var answer = s.Get<FeedbackAnswer>(questionId);
                     PermissionsUtility.Create(s, caller).EditReview(answer.ForReviewId);
-                    answer.Complete = !String.IsNullOrWhiteSpace(feedback);
-                    if (answer.Complete)
+                    edited = false;
+                    if (answer.Feedback != feedback)
                     {
-                        answer.CompleteTime = DateTime.UtcNow;
+                        edited = true;
+                        answer.Complete = !String.IsNullOrWhiteSpace(feedback);
+                        if (answer.Complete)
+                        {
+                            answer.CompleteTime = now;
+                        }
+                        else
+                        {
+                            answer.CompleteTime = null;
+                        }
+                        answer.Feedback = feedback;
+                        s.Update(answer);
+                        tx.Commit();
+                        s.Flush();
                     }
-                    else
-                    {
-                        answer.CompleteTime = null;
-                    }
-                    answer.Feedback = feedback;
-                    s.Update(answer);
-                    tx.Commit();
-                    s.Flush();
                     return answer.Complete || !answer.Required;
                 }
             }
@@ -560,7 +608,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void Authorize(UserOrganizationModel caller, long reviewId, bool authorized)
+        public ResultObject Authorize(UserOrganizationModel caller, long reviewId, bool authorized)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -572,6 +620,10 @@ namespace RadialReview.Accessors
                     s.Update(review);
                     tx.Commit();
                     s.Flush();
+                    if (authorized)
+                        return ResultObject.Success(review.ForUser.GetFirstName() + " is authorized to view this report.");
+                    else
+                        return ResultObject.Success(review.ForUser.GetFirstName() + " is NOT authorized to view this report.");
                 }
             }
         }

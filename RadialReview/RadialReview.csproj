@@ -334,6 +334,7 @@
     <Compile Include="Models\Enums\WeightType.cs" />
     <Compile Include="Models\Reviews\ClientReviewModel.cs" />
     <Compile Include="Models\Reviews\CustomizeModel.cs" />
+    <Compile Include="Models\Reviews\ReviewContainerStats.cs" />
     <Compile Include="Models\Reviews\ReviewParameters.cs" />
     <Compile Include="Models\Reviews\ReviewWhoModel.cs" />
     <Compile Include="Models\Rockstars\RockstarModel.cs" />
@@ -492,6 +493,7 @@
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
     <Compile Include="Utilities\Attributes\AccessAttribute.cs" />
     <Compile Include="Engines\ChartsEngine.cs" />
+    <Compile Include="Utilities\DataTypes\MultiQuery.cs" />
     <Compile Include="Utilities\Extensions\DateTimeExtensions.cs" />
     <Compile Include="Utilities\DataTypes\Pool.cs" />
     <Compile Include="Utilities\Pop3Utility.cs" />
@@ -668,6 +670,7 @@
     <Content Include="Scripts\jquery\jquery.nouislider.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
     <Content Include="Scripts\jquery\jquery.tablesorter.js" />
+    <Content Include="Scripts\Main\finally.js" />
     <Content Include="Scripts\Main\radial.js" />
     <Content Include="Scripts\Main\realtime.js" />
     <Content Include="Scripts\moment-with-langs.js" />
@@ -849,6 +852,7 @@
     <Content Include="Views\Shared\_HierarchicalEdgeBundling.cshtml" />
     <Content Include="Views\User\Remove.cshtml" />
     <Content Include="Views\Manage\Reorganize.cshtml" />
+    <Content Include="Views\Reviews\DueDate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

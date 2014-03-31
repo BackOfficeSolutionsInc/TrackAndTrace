@@ -155,7 +155,7 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
 
-                    var toSend = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.TempUser != null).Fetch(x=>x.TempUser).Eager.List().ToList();
+                    var toSend = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.TempUser != null && x.DeleteTime==null).Fetch(x=>x.TempUser).Eager.List().ToList();
                     foreach (var user in toSend)
                     {
                        unsentEmails.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser));

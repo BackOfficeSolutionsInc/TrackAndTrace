@@ -83,17 +83,27 @@ namespace RadialReview.Accessors
             {
                 var createReviewGuid = Guid.NewGuid();
                 var perms = PermissionsUtility.Create(s, caller);
+                bool reviewManagers = true,
+                     reviewPeers = true,
+                     reviewSelf = true,
+                     reviewSubordinates = true,
+                     reviewTeammates = true;
+
                 var reviewContainer = new ReviewsModel()
                 {
                     DateCreated = DateTime.UtcNow,
                     DueDate = dueDate,
                     ReviewName = reviewName,
                     CreatedById = caller.Id,
-                    /*ReviewManagers = reviewManagers,
+                    PrereviewDueDate = preReviewDue,
+                    HasPrereview =true,
+
+                    ReviewManagers = reviewManagers,
                     ReviewPeers = reviewPeers,
                     ReviewSelf = reviewSelf,
                     ReviewSubordinates = reviewSubordinates,
-                    ReviewTeammates = reviewTeammates,*/
+                    ReviewTeammates = reviewTeammates,
+
                     ForTeamId = forTeamId,
                     EnsureDefault=ensureDefault,
                 };
@@ -112,17 +122,13 @@ namespace RadialReview.Accessors
                     createReviewNexus.SetArgs("" + reviewContainer.Id);
                     NexusAccessor.Put(s.ToUpdateProvider(), createReviewNexus);
 
-                    var task = new ScheduledTask()
-                    {
+                    var task = new ScheduledTask(){
                         Fire = preReviewDue,
                         Url = "/n/" + createReviewGuid
                     };
 
                     TaskAccessor.AddTask(dataInteraction.GetUpdateProvider(), task);
-
-                    reviewContainer.TaskId = task.Id;
-
-                    
+                    reviewContainer.TaskId = task.Id;                   
 
                     foreach (var mid in managerIds)
                     {
@@ -234,10 +240,10 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static List<PrereviewModel> GetPrereviewsForUser(AbstractQuery s, PermissionsUtility perms, long userOrgId)
+        public static List<PrereviewModel> GetPrereviewsForUser(AbstractQuery s, PermissionsUtility perms, long userOrgId,DateTime dueAfter)
         {
             perms.ViewUserOrganization(userOrgId, false);
-            return s.Where<PrereviewModel>(x => x.ManagerId == userOrgId && x.DeleteTime==null).ToList();
+            return s.Where<PrereviewModel>(x => x.ManagerId == userOrgId && x.DeleteTime == null && x.PrereviewDue > dueAfter).ToList();
         }
 
         public void UnsafeExecuteAllPrereviews(ISession s, long reviewContainerId, DateTime now)

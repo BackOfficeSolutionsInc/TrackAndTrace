@@ -15,19 +15,7 @@
 
 @using (Html.BeginScripts())
 {
-    <script>
-        function deleteReview(id) {
-            if (window.confirm("Are you sure you want to delete this review?")) {
-                $.ajax({
-                    url: "/Reviews/Delete/" + id,
-                    success: function (data) {
-                        StoreJsonAlert(data);
-                        location.reload();
-                    }
-                });
-            }
-        }
-    </script>
+
 }
 
 @*section hints{
@@ -51,12 +39,13 @@
                         <th style="width: 20px;" class="alignCenter">Stats</th>
                         @if (Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
                         {
-                            <th style="width: 20px;" class="alignCenter">Edit</th>
-                        }
-                        @if (ViewBag.ManagingOrganization ?? false)
-                        {
                             <th style="width: 20px;" class="alignCenter"></th>
                         }
+                        
+                        @*if (ViewBag.ManagingOrganization ?? false)
+                        {
+                            <th style="width: 20px;" class="alignCenter"></th>
+                        }*@
                     </tr>
                 </thead>
                 <tbody>
@@ -66,13 +55,24 @@
                         @*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
                         <tr class="startHidden ">
                             <td class="@(review.TakableId != null ? "table-hover-underline clickable" : "")"
-                                @if (review.TakableId != null) {    @: onclick="location.href = '/Review/Take/@review.TakableId.Value';"
-                                                                                                                                                    }>
-                                @review.Review.ReviewName
+                                @if (review.TakableId != null) {     @: onclick="location.href = '/Review/Take/@review.TakableId.Value';"
+                                                                }>
+                                @if (review.TakableId != null)
+                                {
+                                    @Html.ViewOrEdit(review.Review.DueDate>DateTime.UtcNow)
+                                }
+                                else
+                                {
+                                    <span class="glyphicon glyphicon-edit"  style="color:transparent;"></span>
+                                }
+                                <span>
+
+                                    @review.Review.ReviewName
+                                </span>
                             </td>
 
                             <td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>
-                            <td class="alignCenter">@review.Review.DueDate.ToShortDateString()</td>
+                            <td class="alignCenter">@review.Review.DueDate.Subtract(TimeSpan.FromDays(1)).ToShortDateString()</td>
                             @*<td style="padding-right: 0px; padding-left: 0px; ">
                                     @Html.Partial("_Completion", review.Review)
                                 </td>*@
@@ -82,15 +82,15 @@
                             @if (review.Editable && Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
                             {
                                 <td class="alignCenter">
-                                    <a href="/Reviews/Edit/@review.Review.Id"><span class="glyphicon glyphicon-@(true ? "pencil" : "eye-open")"></span></a>
+                                    <a href="/Reviews/Edit/@review.Review.Id"><span class="glyphicon glyphicon-cog"></span></a>
                                 </td>
                             }
-                            @if (ViewBag.ManagingOrganization ?? false)
+                            @*if (ViewBag.ManagingOrganization ?? false)
                             {
                                 <td>
                                     <div onclick="deleteReview(@review.Review.Id)"><span class="glyphicon glyphicon-trash clickable"></span></div>
                                 </td>
-                            }
+                            }*@
 
                         </tr>
                     }

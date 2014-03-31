@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section top{
@@ -26,9 +25,9 @@
             -webkit-text-stroke: 1px #B94A48;
         }
 
-        hr{
-            margin-top:0px;
-            margin-bottom:0px;
+        hr {
+            margin-top: 0px;
+            margin-bottom: 0px;
         }
 
         /*.slider {
@@ -36,28 +35,33 @@
         }*/
 
         .side {
-            padding-top:25px;
+            padding-top: 25px;
             text-align: center;
             display: inline-block;
         }
 
         h4.question {
-            padding:0px 0px 0px 0px;
-            margin:0px;
+            padding: 0px 0px 0px 0px;
+            margin: 0px;
         }
 
-        .row.question{
-            padding-bottom:15px;
+        .row.question {
+            padding-bottom: 15px;
         }
-
     </style>
 }
 
 
 <div class="startHiddenGroup">
     <div class="row startHidden">
-        @Html.AlertBoxDismissable((string)ViewBag.Message,(string)ViewBag.AlertType,(string)ViewBag.AlertMessage)
-        <div class="col-md-9" >
+        @Html.AlertBoxDismissable((string)ViewBag.Message, (string)ViewBag.AlertType, (string)ViewBag.AlertMessage)
+
+        <div class="col-md-3 sidebar  col-md-push-9" style=" position: relative;">
+            <div class="sidebar-contents">
+                @RenderSection("sidebar")
+            </div>
+        </div>
+        <div class="col-md-9 col-md-pull-3">
             <div class="review2">
                 @using (var form = Html.BeginForm("Take", "Review", FormMethod.Post, new { id = "form" }))
                 {
@@ -76,10 +80,10 @@
                                 <input type="submit" class="btn btn-primary btn-lg" value="Next" />
                             }
                             @*else
-                            {
-                                <input type="submit" class="btn btn-primary btn-lg" value="@RadialReview.Properties.DisplayNameStrings.submit" />
-                                <input type="submit" class="btn btn-info btn-lg" value="@RadialReview.Properties.DisplayNameStrings.skip" />
-                            }*@
+                                {
+                                    <input type="submit" class="btn btn-primary btn-lg" value="@RadialReview.Properties.DisplayNameStrings.submit" />
+                                    <input type="submit" class="btn btn-info btn-lg" value="@RadialReview.Properties.DisplayNameStrings.skip" />
+                                }*@
                         </div>
                     </div>
                 }
@@ -87,10 +91,6 @@
             <div class="smallBreak"></div>
             <div class="smallBreak"></div>
         </div>
-        <div class="col-md-3 sidebar" style=" position: relative;">
-            <div class="sidebar-contents">
-            @RenderSection("sidebar")
-            </div>
-        </div>
+
     </div>
 </div>

@@ -111,6 +111,10 @@ namespace RadialReview.Models.Charts
         public Dictionary<String,ScatterDatum> Dimensions { get; set; }
         public String Class { get; set; }
 
+        public String Title { get; set; }
+        public String Subtext { get; set; }
+
+
         public dynamic OtherData { get; set; }
 
         public ScatterData Copy()
@@ -155,7 +159,7 @@ namespace RadialReview.Models.Charts
 
         public ScatterDatum()
         {
-            Denominator = 1;
+            Denominator = 0;
         }
 
         public ScatterDatum Copy()

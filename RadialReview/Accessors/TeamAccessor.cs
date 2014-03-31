@@ -143,7 +143,7 @@ namespace RadialReview.Accessors
                     }
                 case TeamType.Managers:
                     {
-                        var managers = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id && (x.ManagerAtOrganization || x.ManagingOrganization));
+                        var managers = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id && (x.ManagerAtOrganization || x.ManagingOrganization) && x.DeleteTime == null);
                         return managers.Select(x => new TeamDurationModel() { 
                             Id = -2, 
                             Start = x.AttachTime, 
@@ -159,7 +159,7 @@ namespace RadialReview.Accessors
                         //var subordinates = caller.Hydrate(s).ManagingUsers(true).Execute().AllSubordinates;
                         permissions.OwnedBelowOrEqual(x=>x.Id==team.ManagedBy);
                         var callerUnderlying = s.Get<UserOrganizationModel>(team.ManagedBy);
-                        var subordinates = SubordinateUtility.GetSubordinates(callerUnderlying,false).Union(callerUnderlying.AsList());
+                        var subordinates = SubordinateUtility.GetSubordinates(callerUnderlying,false).Union(callerUnderlying.AsList(),new EqualityComparer<UserOrganizationModel>((x,y)=>x.Id==y.Id,x=>x.Id.GetHashCode()));
                         return subordinates.Select(x => new TeamDurationModel() {
                             Id = -2,
                             Start = x.AttachTime,

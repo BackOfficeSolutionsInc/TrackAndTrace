@@ -235,7 +235,11 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult ReviewsData(long id)
         {
-            var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, true, true,false);
+            var reviewContainerId = id;
+            var output = _ReviewAccessor.GetReviewStats(GetUser(), reviewContainerId);
+            return Json(ResultObject.Create(output), JsonRequestBehavior.AllowGet);
+
+            /*var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, true, true,false);
             
             var total = review.Reviews.Count();
             var started = review.Reviews.Where(x => !x.Complete && x.Answers.Any(y => y.Complete)).Count();
@@ -289,10 +293,11 @@ namespace RadialReview.Controllers
                 {
                     Name = x.ForUser.GetName(),
                     Completion = x.GetCompletion(),
-                }).ToList()*/
+                }).ToList()*
             };
 
-            return Json(ResultObject.Create(output), JsonRequestBehavior.AllowGet);
+
+            return Json(ResultObject.Create(output), JsonRequestBehavior.AllowGet);*/
         }
 
         [Access(AccessLevel.UserOrganization)]
@@ -317,7 +322,7 @@ namespace RadialReview.Controllers
                 Options = "" + reviewContainer.Id,
                 Source = ChartDataSource.Review,
             };
-            var scatter = _ChartsEngine.ScatterFromOptions(GetUser(), options);
+            var scatter = _ChartsEngine.ScatterFromOptions(GetUser(), options, false);
             return Json(ResultObject.Create(scatter), JsonRequestBehavior.AllowGet);
         }
 
@@ -326,7 +331,7 @@ namespace RadialReview.Controllers
         public JsonResult ReviewScatter(long id, long reviewsId)
         {
 
-            var newScatter = _ChartsEngine.ReviewScatter(GetUser(), id, reviewsId);
+            var newScatter = _ChartsEngine.ReviewScatter(GetUser(), id, reviewsId,true);
             return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
 
             //return null;

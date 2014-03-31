@@ -3,6 +3,7 @@ using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.SqlCommand;
 using NHibernate.Tool.hbm2ddl;
 using RadialReview.Models;
 using System;
@@ -14,6 +15,18 @@ using System.Web;
 
 namespace RadialReview.Utilities
 {
+    public static class NHSQL
+    {       
+        public static string NHibernateSQL { get; set; }
+    }
+    public class NHSQLInterceptor : EmptyInterceptor, IInterceptor
+    {
+        SqlString IInterceptor.OnPrepareStatement(SqlString sql)
+        {
+            NHSQL.NHibernateSQL = sql.ToString();
+            return sql;
+        }
+    }
 
     public class HibernateSession
     {
@@ -25,7 +38,7 @@ namespace RadialReview.Utilities
         }*/
         private static object lck = new object();
         public static ISession Session { get; set; }
-
+        
         public static ISessionFactory GetDatabaseSessionFactory()
         {
             lock (lck)
@@ -44,7 +57,9 @@ namespace RadialReview.Utilities
                                 DbFile = file;
                                 try
                                 {
-                                    factory = Fluently.Configure().Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                                    var c = new Configuration();
+                                    c.SetInterceptor(new NHSQLInterceptor());
+                                    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                                     .Mappings(m =>
                                     {
                                         m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();

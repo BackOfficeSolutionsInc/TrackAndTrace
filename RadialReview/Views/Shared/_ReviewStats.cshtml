@@ -13,292 +13,307 @@
     <div class="row">
         <div class="col-md-6">
             <h3 class="alignCenter noMargin">Reviews Completed</h3>
-            <div id="pie1" style="min-height: 250px; height: 250px; "></div>
+            <div id="pie1" style="min-height: 400px; height: 400px; "></div>
         </div>
         <div class="col-md-6">
             <h3 class="alignCenter noMargin">Reports Completed</h3>
-            <div id="pie2" style="min-height: 250px; height: 250px;"></div>
+            <div id="pie2" style="min-height: 400px; height: 400px;"></div>
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-3 smallPad">
-            <div class="stats">
-                <h1 id="reviewsCompleted" class="scramble" data-range="99"></h1>
-                <h6>reviews completed</h6>
-            </div>
-        </div>
-        <div class="col-sm-3 smallPad">
-            <div class="stats">
-                <h1 id="questionsAnswered" class="scramble" data-range="1500"></h1>
-                <h6>questions answered</h6>
-            </div>
-        </div>
-        <div class="col-sm-3 smallPad">
-            <div class="stats">
-                <div class="alignCenter" style="margin-left:20px">
-                    <h1 id="minutesPerReview" class="scramble" data-range="26"></h1>
-                    <h5 class="scramble">mins</h5>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-xs-6 smallPad smallBreak2">
+                    <div class="stats">
+                        <h1 id="reviewsCompleted" class="scramble" data-range="99"></h1>
+                        <h6>reviews completed</h6>
+                    </div>
                 </div>
-                <h6>per review</h6>
-                <h4>(on average)</h4>
+                <div class="col-xs-6 smallPad smallBreak2">
+                    <div class="stats">
+                        <h1 id="questionsAnswered" class="scramble" data-range="1500"></h1>
+                        <h6>questions answered</h6>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-sm-3 smallPad">
-            <div class="stats">
-                <h1 id="optionalAnswered" class="scramble" data-range="200"></h1>
-                <h6>optional questions answered</h6>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-xs-6 smallPad smallBreak2">
+                    <div class="stats">
+                        <div class="alignCenter" style="margin-left:20px">
+                            <h1 id="minutesPerReview" class="scramble" data-range="26"></h1>
+                            <h5 class="scramble">mins</h5>
+                        </div>
+                        <h6>per review</h6>
+                        <h4>(on average)</h4>
+                    </div>
+                </div>
+                <div class="col-xs-6 smallPad smallBreak2">
+                    <div class="stats">
+                        <h1 id="optionalAnswered" class="scramble" data-range="200"></h1>
+                        <h6>optional questions answered</h6>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-@using (Html.BeginScripts())
-{
-    <script src="~/Scripts/d3/d3.v3.min.js"></script>
-    <script src="~/Scripts/d3/Tweens.js"></script>
-    <script>
-        pullData();
+    @using (Html.BeginScripts())
+    {
+        <script src="~/Scripts/d3/d3.v3.min.js"></script>
+        <script src="~/Scripts/d3/Tweens.js"></script>
+        <script>
+            pullData();
 
-        function pullData() {
+            function pullData() {
 
-            var interval = setInterval(function () {
-                $(".scramble").each(function () {
-                    if ($(this).data("range")) {
-                        var max = parseInt($(this).data("range"));
-                        $(this).html(Math.round((Math.random() / 2.0 + 0.5) * max));
+                var interval = setInterval(function () {
+                    $(".scramble").each(function () {
+                        if ($(this).data("range")) {
+                            var max = parseInt($(this).data("range"));
+                            $(this).html(Math.round((Math.random() / 2.0 + 0.5) * max));
+                        }
+                    });
+                }, 50);
+
+                $(".scramble").addClass("scrambling");
+
+
+                createPie("#pie1", ["Unstarted"], [1], ["#7b6888"]);
+                createPie("#pie2", ["Unstarted"], [1], ["#A05D56"]);
+
+                $.ajax({
+                    url: "/Data/ReviewsData/@Model",
+                    success: function (data) {
+                        data = data.Object;
+                        if (true) {
+                            var titles1 = [];
+                            var values1 = [];
+                            var colors1 = [];
+                            if (data.Completion.Started > 0) {
+                                titles1.push("Started");
+                                values1.push(data.Completion.Started);
+                                colors1.push("#8a89a6");
+                            }
+                            if (data.Completion.Finished > 0) {
+                                titles1.push("Completed");
+                                values1.push(data.Completion.Finished);
+                                colors1.push("#98abc5");
+                            }
+                            if (data.Completion.Unstarted > 0) {
+                                titles1.push("Unstarted");
+                                values1.push(data.Completion.Unstarted);
+                                colors1.push("#7b6888");
+                            }
+                            //values2 = [3, 4, 5, 6];
+                            updatePie("#pie1", titles1, values1, colors1,1000);
+                        }
+                        if (true) {
+                            var titles1 = [];
+                            var values1 = [];
+                            var colors1 = [];
+                            if (data.Reports.Unstarted > 0) {
+                                titles1.push("Unstarted");
+                                values1.push(data.Reports.Unstarted);
+                                colors1.push("#A05D56");
+                            }
+                            if (data.Reports.Started > 0) {
+                                titles1.push("Started");
+                                values1.push(data.Reports.Started);
+                                colors1.push("#D0743C");
+                            }
+                            if (data.Reports.Signed > 0) {
+                                titles1.push("Signed");
+                                values1.push(data.Reports.Signed);
+                                colors1.push("#FF8C00");
+                            }
+                            if (data.Reports.Visible > 0) {
+                                titles1.push("Shared");
+                                values1.push(data.Reports.Visible);
+                                colors1.push("#FFC01D");
+                            }
+
+                            updatePie("#pie2", titles1, values1, colors1,1000);
+                        }
+                        clearInterval(interval);
+                        $(".scramble").removeClass("scrambling");
+                        $("#reviewsCompleted").html(data.Stats.ReviewsCompleted);
+                        $("#questionsAnswered").html(data.Stats.QuestionsAnswered);
+                        var mins = data.Stats.MinsPerReview;
+
+                        if (mins > 10)
+                            mins = Math.round(mins);
+                        else
+                            mins = (Math.round(mins * 10) / 10).toFixed(1);
+
+                        $("#minutesPerReview").html(mins);
+                        $("#optionalAnswered").html(data.Stats.OptionalsAnswered);
                     }
-                });
-            }, 50);
-
-            $(".scramble").addClass("scrambling");
-
-
-            createPie("#pie1", ["Unstarted"], [1], ["#7b6888"]);
-            createPie("#pie2", ["Unstarted"], [1], ["#A05D56"]);
-
-            $.ajax({
-                url: "/Data/ReviewsData/@Model",
-                success: function (data) {
-                    data = data.Object;
-                    if (true) {
-                        var titles1 = [];
-                        var values1 = [];
-                        var colors1 = [];
-                        if (data.Completion.Started > 0) {
-                            titles1.push("Started");
-                            values1.push(data.Completion.Started);
-                            colors1.push("#8a89a6");
-                        }
-                        if (data.Completion.Finished > 0) {
-                            titles1.push("Completed");
-                            values1.push(data.Completion.Finished);
-                            colors1.push("#98abc5");
-                        }
-                        if (data.Completion.Unstarted > 0) {
-                            titles1.push("Unstarted");
-                            values1.push(data.Completion.Unstarted);
-                            colors1.push("#7b6888");
-                        }
-                        //values2 = [3, 4, 5, 6];
-                        updatePie("#pie1", titles1, values1, colors1);
-                    }
-                    if (true) {
-                        var titles1 = [];
-                        var values1 = [];
-                        var colors1 = [];
-                        if (data.Reports.Unstarted > 0) {
-                            titles1.push("Unstarted");
-                            values1.push(data.Reports.Unstarted);
-                            colors1.push("#A05D56");
-                        }
-                        if (data.Reports.Started > 0) {
-                            titles1.push("Started");
-                            values1.push(data.Reports.Started);
-                            colors1.push("#D0743C");
-                        }
-                        if (data.Reports.Signed > 0) {
-                            titles1.push("Signed");
-                            values1.push(data.Reports.Signed);
-                            colors1.push("#FF8C00");
-                        }
-                        if (data.Reports.Visible > 0) {
-                            titles1.push("Visible");
-                            values1.push(data.Reports.Visible);
-                            colors1.push("#FFC01D");
-                        }
-
-                        updatePie("#pie2", titles1, values1, colors1);
-                    }
-                    clearInterval(interval);
-                    $(".scramble").removeClass("scrambling");
-                    $("#reviewsCompleted").html(data.Stats.ReviewsCompleted);
-                    $("#questionsAnswered").html(data.Stats.QuestionsAnswered);
-                    $("#minutesPerReview").html(Math.round(data.Stats.MinsPerReview));
-                    $("#optionalAnswered").html(data.Stats.OptionalsAnswered);
-                }
-            });
-        }
-
-        var charts = 0;
-
-        function createPie(selector, titles, values, colors) {
-            var ref = 800;
-            var svg = d3.select(selector + "").html("").append("svg")
-                            .attr("viewBox", "0 0 " + ref + " " + ref / 2)
-                            .attr("height", "100%")
-                            .attr("width", "100%")
-                            .attr("class", "piechart")
-                        .append("g");
-
-            svg.append("g").attr("class", "slices");
-            svg.append("g").attr("class", "labels");
-            svg.append("g").attr("class", "lines");
-
-            svg.attr("transform", "translate(" + ref / 2 + "," + ref / 2 / 2 + ")");
-            var center = svg.append("g").attr("class", "centerNumber").attr("transform", "translate(0,10)").style("text-anchor", "middle").append("text")
-                .text(d3.sum(values));
-            var centerText = svg.append("g").attr("class", "centerText").attr("transform", "translate(0,30)").style("text-anchor", "middle").append("text")
-                .text("Total");
-
-            updatePie(selector, titles, values, colors);
-        }
-
-        function updatePie(selector, titles, values, colors) {
-            var ref = 800;
-            var svg = d3.select(selector + " svg");
-            var width = ref * .7, height = ref, radius = Math.min(width, height) / 2;
-            var startA = 1.7;
-            var endA = startA + 2 * Math.PI;
-
-            var color = d3.scale.ordinal().domain(titles).range(colors);
-            var pie = d3.layout.pie().sort(null).startAngle(startA).endAngle(endA).value(function (d) { return d.value; });
-            var key = function (d) { return d.data.label; };
-            var outerArc = d3.svg.arc().innerRadius(radius * 0.9).outerRadius(radius * 0.9);
-            var arc = d3.svg.arc().outerRadius(radius * 0.8).innerRadius(radius * 0.4);
-
-            var center = svg.select(".centerNumber text");
-            var centerText = svg.select(".centerText text");
-
-            center.transition().duration(200).tween("text", function (d) { return tweenValue(this,d3.sum(values)); });
-            centerText.transition().duration(200).text("Total");
-
-            function genDat() {
-                var labels = color.domain();
-                return labels.map(function (label, i) {
-                    return { label: label, value: values[i] }
                 });
             }
 
-            change(genDat());
+            var charts = 0;
 
-            function change(data) {
+            function createPie(selector, titles, values, colors) {
+                var ref = 900;
+                var svg = d3.select(selector + "").html("").append("svg")
+                                .attr("viewBox", "0 0 " + ref + " " + ref / 2)
+                                .attr("height", "100%")
+                                .attr("width", "100%")
+                                .attr("class", "piechart")
+                            .append("g");
 
+                svg.append("g").attr("class", "slices");
+                svg.append("g").attr("class", "labels");
+                svg.append("g").attr("class", "lines");
 
-                /* ------- PIE SLICES -------*/
-                /*debugger;
-                var shifted=pie(data);
-                var by=2.35619449019;
+                svg.attr("transform", "translate(" + ref / 2 + "," + ref / 2 / 2 + ")");
+                var center = svg.append("g").attr("class", "centerNumber").attr("transform", "translate(0,10)").style("text-anchor", "middle").append("text")
+                    .text(d3.sum(values));
+                var centerText = svg.append("g").attr("class", "centerText").attr("transform", "translate(0,30)").style("text-anchor", "middle").append("text")
+                    .text("Total");
 
-                for(var i=0;i<shifted.length;i++)
-                {
-                    shifted[i].
-                }*/
-                var animationSpeed = 300;
+                updatePie(selector, titles, values, colors);
+            }
 
-                var slice = svg.select(".slices").selectAll("path.slice").data(pie(data), key);
+            function updatePie(selector, titles, values, colors, animationSpeed) {
+                var ref = 900;
+                var svg = d3.select(selector + " svg");
+                var width = ref * .7, height = ref, radius = Math.min(width, height) / 2;
+                var startA = 1.7;
+                var endA = startA + 2 * Math.PI;
 
-                slice.enter().insert("path")
-                    .style("fill", function (d) { return color(d.data.label); }).attr("class", "slice");
+                var color = d3.scale.ordinal().domain(titles).range(colors);
+                var pie = d3.layout.pie().sort(null).startAngle(startA).endAngle(endA).value(function (d) { return d.value; });
+                var key = function (d) { return d.data.label; };
+                var outerArc = d3.svg.arc().innerRadius(radius * 0.9).outerRadius(radius * 0.9);
+                var arc = d3.svg.arc().outerRadius(radius * 0.8).innerRadius(radius * 0.4);
 
-                slice.on("mouseover", function (d) {
-                    center.transition().duration(animationSpeed).tween("text", function (e) { return tweenValue(this, d.value); });
-                    centerText.text(d.data.label);
-                }).on("mouseout", function (d) {
-                    center.transition().duration(animationSpeed).tween("text", function (e) { return tweenValue(this, d3.sum(values)); });
-                    centerText.text("Total");
-                }).transition().duration(animationSpeed).attrTween("d", function (d) {
-                    this._current = this._current || d;
-                    var interpolate = d3.interpolate(this._current, d);
-                    this._current = interpolate(0);
-                    return function (t) {
-                        return arc(interpolate(t));
-                    };
-                })
+                var center = svg.select(".centerNumber text");
+                var centerText = svg.select(".centerText text");
 
-                slice.exit().remove();
+                center.transition().duration(200).tween("text", function (d) { return tweenValue(this, d3.sum(values)); });
+                centerText.transition().duration(200).text("Total");
 
-                /* ------- TEXT LABELS -------*/
-
-                var text = svg.select(".labels").selectAll("text")
-                    .data(pie(data), key);
-
-                text.enter()
-                    .append("text")
-                    .attr("dy", ".35em")
-                    .text(function (d) {
-                        return d.data.label;
+                function genDat() {
+                    var labels = color.domain();
+                    return labels.map(function (label, i) {
+                        return { label: label, value: values[i] }
                     });
-
-                function resetAngle(a) {
-                    return a - 2 * Math.PI * Math.floor(a / (2 * Math.PI));
                 }
 
-                function midAngle(d) {
-                    return resetAngle(d.startAngle + (d.endAngle - d.startAngle) / 2);
-                }
+                change(genDat(),animationSpeed);
+
+                function change(data,animationSpeed) {
 
 
-                text.transition().duration(animationSpeed)
-                    .attrTween("transform", function (d) {
+                    /* ------- PIE SLICES -------*/
+                    /*debugger;
+                    var shifted=pie(data);
+                    var by=2.35619449019;
+
+                    for(var i=0;i<shifted.length;i++)
+                    {
+                        shifted[i].
+                    }*/
+                    var animationSpeed = animationSpeed||300;
+
+                    var slice = svg.select(".slices").selectAll("path.slice").data(pie(data), key);
+
+                    slice.enter().insert("path")
+                        .style("fill", function (d) { return color(d.data.label); }).attr("class", "slice");
+
+                    slice.on("mouseover", function (d) {
+                        center.transition().duration(300).tween("text", function (e) { return tweenValue(this, d.value); });
+                        centerText.text(d.data.label);
+                    }).on("mouseout", function (d) {
+                        center.transition().duration(300).tween("text", function (e) { return tweenValue(this, d3.sum(values)); });
+                        centerText.text("Total");
+                    }).transition().duration(animationSpeed).attrTween("d", function (d) {
                         this._current = this._current || d;
                         var interpolate = d3.interpolate(this._current, d);
                         this._current = interpolate(0);
                         return function (t) {
-                            var d2 = interpolate(t);
-                            var pos = outerArc.centroid(d2);
-                            pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
-                            return "translate(" + pos + ")";
+                            return arc(interpolate(t));
                         };
                     })
-                    .styleTween("text-anchor", function (d) {
-                        this._current = this._current || d;
-                        var interpolate = d3.interpolate(this._current, d);
-                        this._current = interpolate(0);
-                        return function (t) {
-                            var d2 = interpolate(t);
-                            return midAngle(d2) < Math.PI ? "start" : "end";
-                        };
-                    });
 
-                text.exit().remove();
+                    slice.exit().remove();
 
-                /* ------- SLICE TO TEXT POLYLINES -------*/
+                    /* ------- TEXT LABELS -------*/
 
-                var polyline = svg.select(".lines").selectAll("polyline")
-                    .data(pie(data), key);
+                    var text = svg.select(".labels").selectAll("text")
+                        .data(pie(data), key);
 
-                polyline.enter()
-                    .append("polyline");
+                    text.enter()
+                        .append("text")
+                        .attr("dy", ".35em")
+                        .text(function (d) {
+                            return d.data.label;
+                        });
 
-                polyline.transition().duration(animationSpeed)
-                    .attrTween("points", function (d) {
-                        this._current = this._current || d;
-                        var interpolate = d3.interpolate(this._current, d);
-                        this._current = interpolate(0);
-                        return function (t) {
-                            var d2 = interpolate(t);
-                            var pos = outerArc.centroid(d2);
-                            pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
-                            return [arc.centroid(d2), outerArc.centroid(d2), pos];
-                        };
-                    });
+                    function resetAngle(a) {
+                        return a - 2 * Math.PI * Math.floor(a / (2 * Math.PI));
+                    }
 
-                polyline.exit().remove();
-            };
-        }
+                    function midAngle(d) {
+                        return resetAngle(d.startAngle + (d.endAngle - d.startAngle) / 2);
+                    }
 
 
+                    text.transition().duration(animationSpeed)
+                        .attrTween("transform", function (d) {
+                            this._current = this._current || d;
+                            var interpolate = d3.interpolate(this._current, d);
+                            this._current = interpolate(0);
+                            return function (t) {
+                                var d2 = interpolate(t);
+                                var pos = outerArc.centroid(d2);
+                                pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+                                return "translate(" + pos + ")";
+                            };
+                        })
+                        .styleTween("text-anchor", function (d) {
+                            this._current = this._current || d;
+                            var interpolate = d3.interpolate(this._current, d);
+                            this._current = interpolate(0);
+                            return function (t) {
+                                var d2 = interpolate(t);
+                                return midAngle(d2) < Math.PI ? "start" : "end";
+                            };
+                        });
+
+                    text.exit().remove();
+
+                    /* ------- SLICE TO TEXT POLYLINES -------*/
+
+                    var polyline = svg.select(".lines").selectAll("polyline")
+                        .data(pie(data), key);
+
+                    polyline.enter()
+                        .append("polyline");
+
+                    polyline.transition().duration(animationSpeed)
+                        .attrTween("points", function (d) {
+                            this._current = this._current || d;
+                            var interpolate = d3.interpolate(this._current, d);
+                            this._current = interpolate(0);
+                            return function (t) {
+                                var d2 = interpolate(t);
+                                var pos = outerArc.centroid(d2);
+                                pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+                                return [arc.centroid(d2), outerArc.centroid(d2), pos];
+                            };
+                        });
+
+                    polyline.exit().remove();
+                };
+            }
 
 
-    </script>
 
-}
+
+        </script>
+
+    }

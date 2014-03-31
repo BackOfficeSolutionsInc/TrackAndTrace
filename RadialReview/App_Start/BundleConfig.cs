@@ -37,6 +37,20 @@ namespace RadialReview
                       "~/Content/bootstrap.css",
                       "~/Content/slider.css",
                       "~/Content/site.css"));
+
+
+            bundles.Add(new ScriptBundle("~/bundles/main").Include(
+                      "~/Scripts/Main/radial.js",
+                      "~/Scripts/jquery.signalR-{version}.js",
+                      "~/Scripts/jquery/jquery.qtip.js",
+                      "~/Scripts/Main/finally.js"
+                      ));
+
+            #if DEBUG
+                BundleTable.EnableOptimizations = false;
+            #else
+                BundleTable.EnableOptimizations = true;
+            #endif
         }
     }
 }
