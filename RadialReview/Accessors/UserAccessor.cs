@@ -12,12 +12,28 @@ using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities.Query;
 using RadialReview.Models.Json;
+using System.Security.Principal;
 
 namespace RadialReview.Accessors
 {
 
     public class UserAccessor : BaseAccessor
     {
+        public String GetUserIdByUsername(String username)
+        {
+            return (string)CacheLookup.GetOrAddDefault("username_" + username, x =>
+            {
+                return GetUserByEmail(username).Id;
+            });
+        }
+        public String GetUserNameByUserOrganizationId(long userOrgId)
+        {
+            return (string)CacheLookup.GetOrAddDefault("userorgid_" + userOrgId, x =>
+            {
+                return GetUserOrganizationUnsafe(userOrgId).User.UserName;
+            });
+        }
+
         public UserModel GetUserById(String userId)
         {
             if (userId == null)

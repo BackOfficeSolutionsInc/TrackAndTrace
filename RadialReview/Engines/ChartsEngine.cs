@@ -290,11 +290,11 @@ namespace RadialReview.Engines
                     if (sensitive)
                     {
                         var user = userReviewAnswers.First().ByUser;
-                        title = "<span class='name title'>" + user.GetNameAndTitle() + "</span> <span class='about title'>" + aboutType + "</span> <span class='review title'>" + reviewContainer.ReviewName + "</span>";
+                        title = "<span class='nameAndTitle hoverTitle'>" + user.GetNameAndTitle() + "</span> <span class='aboutType hoverTitle'>" + aboutType + "</span> <span class='reviewName hoverTitle'>" + reviewContainer.ReviewName + "</span>";
                     }
                     else
                     {
-                        title = "<span class='about title'>" + aboutType.ToString() + "</span> <span class='review title'>" + reviewContainer.ReviewName + "</span>";
+                        title = "<span class='aboutType hoverTitle'>" + aboutType.ToString() + "</span> <span class='reviewName hoverTitle'>" + reviewContainer.ReviewName + "</span>";
                     }
 
                     scatterDataPoints.Add(new ScatterData()

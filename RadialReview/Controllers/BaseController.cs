@@ -19,6 +19,10 @@ using NHibernate;
 using RadialReview.Engines;
 using System.Configuration;
 using RadialReview.Utilities;
+using Microsoft.AspNet.SignalR;
+using RadialReview.Hubs;
+using System.Web.Security;
+using System.Security.Principal;
 
 
 namespace RadialReview.Controllers
@@ -144,6 +148,9 @@ namespace RadialReview.Controllers
         {
             Session["UserOrganizationId"] = null;
             AuthenticationManager.SignOut();
+            FormsAuthentication.SignOut();
+            HttpContext.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
+            Session.Clear();
         }
 
         private static MethodInfo GetActionMethod(ExceptionContext filterContext)
@@ -216,6 +223,31 @@ namespace RadialReview.Controllers
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            //Access Level Filtering
+            var accessAttributes = filterContext.ActionDescriptor.GetCustomAttributes(typeof(AccessAttribute), false).Cast<AccessAttribute>();
+            if (accessAttributes.Count() == 0)
+                throw new NotImplementedException("Access attribute missing.");
+
+            switch ((AccessLevel)accessAttributes.Min(x => (int)x.AccessLevel))
+            {
+                case AccessLevel.SignedOut: {
+                    if (Request.IsAuthenticated){
+                        SignOut();
+                        //HttpContext.User.Identity = null;
+                        //throw new LoginException(Request.Url.PathAndQuery);
+                    }
+                } break;
+                case AccessLevel.Any: break;
+                case AccessLevel.User: GetUserModel(); break;
+                case AccessLevel.UserOrganization: GetUser(); break;
+                case AccessLevel.Manager: if (!GetUser().IsManager()) throw new PermissionsException("You must be a manager to view this resource."); break;
+                case AccessLevel.Radial: if (!(GetUserModel().IsRadialAdmin || GetUser().IsRadialAdmin)) throw new PermissionsException("You must be a Radial Admin to view this resource."); break;
+                default: throw new Exception("Unknown Access Type");
+            }
+
+
+
+
             // eat the cookie (if any) and set the culture
             if (Request.Cookies["lang"] != null)
             {
@@ -271,11 +303,13 @@ namespace RadialReview.Controllers
                     filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser, oneUser.Id, DateTime.UtcNow);
                     //filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
                     filterContext.Controller.ViewBag.UserName = name;
-                    filterContext.Controller.ViewBag.IsManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+                    var isManager=oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+                    filterContext.Controller.ViewBag.IsManager = isManager;
                     filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
                     filterContext.Controller.ViewBag.UserId = oneUser.Id;
                     filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
                     filterContext.Controller.ViewBag.Organization = oneUser.Organization;
+                    
                 }
                 else
                 {
@@ -284,22 +318,6 @@ namespace RadialReview.Controllers
                 }
 
                 // ViewBag.OrganizationId = Session["OrganizationId"];
-
-            }
-
-            //Access Level Filtering
-            var accessAttributes = filterContext.ActionDescriptor.GetCustomAttributes(typeof(AccessAttribute), false).Cast<AccessAttribute>();
-            if (accessAttributes.Count() == 0)
-                throw new NotImplementedException("Access attribute missing.");
-
-            switch ((AccessLevel)accessAttributes.Min(x => (int)x.AccessLevel))
-            {
-                case AccessLevel.Any: break;
-                case AccessLevel.User: GetUserModel(); break;
-                case AccessLevel.UserOrganization: GetUser(); break;
-                case AccessLevel.Manager: if (!GetUser().IsManager()) throw new PermissionsException("You must be a manager to view this resource."); break;
-                case AccessLevel.Radial: if (!(GetUserModel().IsRadialAdmin || GetUser().IsRadialAdmin)) throw new PermissionsException("You must be a Radial Admin to view this resource."); break;
-                default: throw new Exception("Unknown Access Type");
             }
 
             base.OnActionExecuting(filterContext);

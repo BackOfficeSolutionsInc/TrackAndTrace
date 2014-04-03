@@ -15,6 +15,18 @@ namespace RadialReview
             return defaultValue;
         }
 
+        public static V GetOrAddDefault<K, V>(this Dictionary<K, V> dictionary, K key, Func<K, V> defaultValue)
+        {
+            V value;
+            if (dictionary.TryGetValue(key, out value))
+            {
+                return value;
+            }
+            value =defaultValue(key);
+            dictionary[key] = value;
+            return dictionary[key];
+        }
+
         public static void Update<K, V>(this Dictionary<K, V> dictionary, K key, V defaultValue, Func<V, V> updateTo)
         {
             var old = GetOrDefault(dictionary, key, defaultValue);

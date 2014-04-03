@@ -48,6 +48,7 @@ namespace Sqlite
                 case ColumnType.@decimal: return "NUMERIC";
                 case ColumnType.@int: return "INT";
                 case ColumnType.text: return "TEXT";
+                case ColumnType.@double: return "DOUBLE";
                 default: throw new Exception(type.ToString());
             }
         }
@@ -64,6 +65,7 @@ namespace Sqlite
                 case "INT": return ColumnType.bigint;
                 case "NUMERIC": return ColumnType.@decimal;
                 case "UNIQUEIDENTIFIER": return ColumnType.intQ;
+                case "DOUBLE": return ColumnType.@double;
                 default: throw new Exception(type);
             }
         }

@@ -182,7 +182,7 @@ namespace RadialReview.Controllers
         //
         // GET: /Account/Login
         [AllowAnonymous]
-        [Access(AccessLevel.Any)]
+        [Access(AccessLevel.SignedOut)]
         public ActionResult Login(string returnUrl, String message,string username)
         {
             if (User.Identity.GetUserId() != null)
@@ -205,7 +205,7 @@ namespace RadialReview.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [Access(AccessLevel.Any)]
+        [Access(AccessLevel.SignedOut)]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
@@ -231,10 +231,10 @@ namespace RadialReview.Controllers
         //
         // GET: /Account/Register
         [AllowAnonymous]
-        [Access(AccessLevel.Any)]
+        [Access(AccessLevel.SignedOut)]
         public ActionResult Register(string returnUrl,string username,string firstname,string lastname)
         {
-
+            SignOut();
             ViewBag.ReturnUrl = returnUrl;
             var model = new RegisterViewModel() { ReturnUrl = returnUrl };
             if (returnUrl != null && returnUrl.StartsWith("/Organization/Join/"))
@@ -243,7 +243,15 @@ namespace RadialReview.Controllers
                 {
                     var guid = returnUrl.Substring(19);
                     var nexus = _NexusAccessor.Get(guid);//[organizationId,EmailAddress,userOrgId,Firstname,Lastname]
+
                     model.Email = nexus.GetArgs()[1];
+                    if (nexus.DateExecuted != null)
+                    {
+                        var userOrgId = nexus.GetArgs()[2].ToLong();
+                        var uname = _UserAccessor.GetUserNameByUserOrganizationId(userOrgId);
+                        return RedirectToAction("Login", new { username = uname, returnUrl = "" });
+                    }
+
                     model.fname = nexus.GetArgs()[3];
                     model.lname = nexus.GetArgs()[4];
                 }
@@ -266,7 +274,7 @@ namespace RadialReview.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [Access(AccessLevel.Any)]
+        [Access(AccessLevel.SignedOut)]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
 

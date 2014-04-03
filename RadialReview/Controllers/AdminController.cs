@@ -25,6 +25,21 @@ namespace RadialReview.Controllers
             return "done";
         }
 
+        /*[Access(AccessLevel.Radial)]
+        public String FixManagerGroups()
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }*/
+
+
 
         [Access(AccessLevel.Radial)]
         public String FixAnswers(long id)
@@ -97,7 +112,7 @@ namespace RadialReview.Controllers
                         if (r.DurationMinutes == null && r.Complete)
                         {
                             var ans = allAnswers.Where(x => x.ForReviewId == r.Id).ToList();
-                            r.DurationMinutes = TimingUtility.ReviewDurationMinutes(ans, TimingUtility.ExcludeLongerThan);
+                            r.DurationMinutes = (decimal?)TimingUtility.ReviewDurationMinutes(ans, TimingUtility.ExcludeLongerThan);
                             update = true;
                         }
 

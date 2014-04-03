@@ -13,7 +13,7 @@ namespace RadialReview.Models.Reviews
             public int QuestionsAnswered { get; set; }
             public int OptionalsAnswered { get; set; }
             public int TotalQuestions { get; set; }
-            public double? MinsPerReview { get; set; }
+            public decimal? MinsPerReview { get; set; }
             public int NumberOfPeopleTakingReview { get; set; }
             public int NumberOfUniqueMatches { get; set; }
         }
@@ -34,6 +34,15 @@ namespace RadialReview.Models.Reviews
             public int Finished { get; set; }
         }
 
+        public ReviewContainerStats(long reviewContainerId)
+        {
+            Completion = new CompletionStats();
+            Reports = new ReportStats();
+            Stats = new OverallStats();
+            ReviewId = reviewContainerId;
+        }
+
+        public long ReviewId { get; set; }
         public CompletionStats Completion { get; set; }
         public ReportStats Reports { get; set; }
         public OverallStats Stats { get; set; }

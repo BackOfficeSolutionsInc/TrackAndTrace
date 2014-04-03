@@ -73,6 +73,7 @@ namespace Sqlite
                 case ColumnType.text: return "text";
                 case ColumnType.varchar: return "varchar(65000)";
                 case ColumnType.intQ: return "bigint";
+                case ColumnType.@double: return "double";
                 default: throw new Exception(type.ToString());
             }
         }
@@ -88,6 +89,7 @@ namespace Sqlite
                 case "text": return ColumnType.text;
                 case "varchar": return ColumnType.varchar;
                 case "decimal": return ColumnType.@decimal;
+                case "double": return ColumnType.@double;
                 default: throw new Exception(type);
             }
         }

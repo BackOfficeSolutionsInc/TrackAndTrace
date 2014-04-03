@@ -59,103 +59,171 @@
         </div>
     </div>
 </div>
-    @using (Html.BeginScripts())
-    {
-        <script src="~/Scripts/d3/d3.v3.min.js"></script>
-        <script src="~/Scripts/d3/Tweens.js"></script>
-        <script>
+@using (Html.BeginScripts())
+{
+    <script src="~/Scripts/d3/d3.v3.min.js"></script>
+    <script src="~/Scripts/d3/Tweens.js"></script>
+    <script>
+        $(function () {
             pullData();
 
-            function pullData() {
+            var reviewsData = {};
+            var reportsData = {};
 
-                var interval = setInterval(function () {
+            var interval = null;
+            var reviewId =  @Model;
+            var currentData = null;
+            function updateReviewStats(data) {
+                if (currentData==null)
+                {
+                    currentData = {
+                        Completion : {
+                            Started :0,
+                            Finished:0,
+                            Unstarted:0,
+                        },
+                        Reports :{
+                            Unstarted:0,
+                            Started:0,
+                            Signed:0,
+                            Visible:0,
+                        },
+                        Stats:{
+                            ReviewsCompleted:0,
+                            QuestionsAnswered:0,
+                            MinsPerReview :0,
+                            OptionalsAnswered:0,
+                        }
+                    };
+                }
+
+                debugger;
+                data = data.Object;
+                if (reviewId == data.ReviewId) {
+                    if (true) {
+                        if (data.Completion && data.Completion.Started) {
+                            currentData.Completion.Started+=data.Completion.Started;
+                            reviewsData["Started"] = { title: "Started", value: currentData.Completion.Started, color: "#8a89a6" };
+                        }
+                        if (data.Completion && data.Completion.Finished) {
+                            currentData.Completion.Finished+=data.Completion.Finished;
+                            reviewsData["Completed"] = { title: "Completed", value: currentData.Completion.Finished, color: "#98abc5" };
+                        }
+                        if (data.Completion && data.Completion.Unstarted) {
+                            currentData.Completion.Unstarted+=data.Completion.Unstarted;
+                            reviewsData["Unstarted"] = { title: "Unstarted", value: currentData.Completion.Unstarted, color: "#7b6888" };
+                        }
+                        //values2 = [3, 4, 5, 6];
+                        updatePie("#pie1", reviewsData, 1000);
+                    }
+                    if (true) {
+                        if (data.Reports && data.Reports.Unstarted) {
+                            currentData.Reports.Unstarted+=data.Reports.Unstarted;
+                            reportsData["Unstarted"] = { title: "Unstarted", value: currentData.Reports.Unstarted, color: "#A05D56" };
+                        }
+                        if (data.Reports && data.Reports.Started) {
+                            currentData.Reports.Started+=data.Reports.Started;
+                            reportsData["Started"] = { title: "Started", value: currentData.Reports.Started, color: "#D0743C" };
+                        }
+                        if (data.Reports && data.Reports.Signed) {
+                            currentData.Reports.Signed+=data.Reports.Signed;
+                            reportsData["Signed"] = { title: "Signed", value: currentData.Reports.Signed, color: "#FF8C00" };
+                        }
+                        if (data.Reports && data.Reports.Visible) {
+                            currentData.Reports.Visible+=data.Reports.Visible;
+                            reportsData["Shared"] = { title: "Shared", value: currentData.Reports.Visible, color: "#FFC01D" };
+                        }
+
+                        updatePie("#pie2", reportsData, 1000);
+                    }
+                    if (interval) {
+                        clearInterval(interval);
+                    }
+                    $(".scramble").removeClass("scrambling");
+                    if (data.Stats && data.Stats.ReviewsCompleted !== undefined)
+                    {
+                        currentData.Stats.ReviewsCompleted+=data.Stats.ReviewsCompleted;
+                        $("#reviewsCompleted").html(currentData.Stats.ReviewsCompleted).removeClass("scrambling");
+                    }
+                    if (data.Stats && data.Stats.QuestionsAnswered !== undefined){
+                        currentData.Stats.QuestionsAnswered+=data.Stats.QuestionsAnswered;
+                        $("#questionsAnswered").html(currentData.Stats.QuestionsAnswered).removeClass("scrambling");
+                    }
+
+                    if (data.Stats && data.Stats.MinsPerReview !== undefined) {
+                        currentData.Stats.MinsPerReview+=data.Stats.MinsPerReview;
+                        var mins = currentData.Stats.MinsPerReview;
+                        if (mins > 10)
+                            mins = Math.round(mins);
+                        else
+                            mins = (Math.round(mins * 10) / 10).toFixed(1);
+                        $("#minutesPerReview").html(mins).removeClass("scrambling");
+                    }
+                    if (data.Stats && data.Stats.OptionalsAnswered !== undefined) {
+                        currentData.Stats.OptionalsAnswered+=data.Stats.OptionalsAnswered;
+                        $("#optionalAnswered").html(currentData.Stats.OptionalsAnswered).removeClass("scrambling");
+                    }
+                }
+            }
+
+            alertHub.client.updateReviewStats = updateReviewStats;
+
+            function pullData() {
+                /*interval = setInterval(function () {
                     $(".scramble").each(function () {
                         if ($(this).data("range")) {
                             var max = parseInt($(this).data("range"));
                             $(this).html(Math.round((Math.random() / 2.0 + 0.5) * max));
                         }
                     });
-                }, 50);
+                }, 50);*/
+                $(".scramble [data-range]").html("NA");
 
                 $(".scramble").addClass("scrambling");
 
-
-                createPie("#pie1", ["Unstarted"], [1], ["#7b6888"]);
-                createPie("#pie2", ["Unstarted"], [1], ["#A05D56"]);
-
+                createPie("#pie1", { "empty": { title: "Loading", value: 1, color: "#7b6888" } }); // ["Unstarted"], [1], ["#7b6888"]);
+                createPie("#pie2", { "empty": { title: "Loading", value: 1, color: "#A05D56" } }); // ["Unstarted"], [1], ["#A05D56"]);
+                debugger;
                 $.ajax({
                     url: "/Data/ReviewsData/@Model",
-                    success: function (data) {
-                        data = data.Object;
-                        if (true) {
-                            var titles1 = [];
-                            var values1 = [];
-                            var colors1 = [];
-                            if (data.Completion.Started > 0) {
-                                titles1.push("Started");
-                                values1.push(data.Completion.Started);
-                                colors1.push("#8a89a6");
-                            }
-                            if (data.Completion.Finished > 0) {
-                                titles1.push("Completed");
-                                values1.push(data.Completion.Finished);
-                                colors1.push("#98abc5");
-                            }
-                            if (data.Completion.Unstarted > 0) {
-                                titles1.push("Unstarted");
-                                values1.push(data.Completion.Unstarted);
-                                colors1.push("#7b6888");
-                            }
-                            //values2 = [3, 4, 5, 6];
-                            updatePie("#pie1", titles1, values1, colors1,1000);
-                        }
-                        if (true) {
-                            var titles1 = [];
-                            var values1 = [];
-                            var colors1 = [];
-                            if (data.Reports.Unstarted > 0) {
-                                titles1.push("Unstarted");
-                                values1.push(data.Reports.Unstarted);
-                                colors1.push("#A05D56");
-                            }
-                            if (data.Reports.Started > 0) {
-                                titles1.push("Started");
-                                values1.push(data.Reports.Started);
-                                colors1.push("#D0743C");
-                            }
-                            if (data.Reports.Signed > 0) {
-                                titles1.push("Signed");
-                                values1.push(data.Reports.Signed);
-                                colors1.push("#FF8C00");
-                            }
-                            if (data.Reports.Visible > 0) {
-                                titles1.push("Shared");
-                                values1.push(data.Reports.Visible);
-                                colors1.push("#FFC01D");
-                            }
-
-                            updatePie("#pie2", titles1, values1, colors1,1000);
-                        }
-                        clearInterval(interval);
-                        $(".scramble").removeClass("scrambling");
-                        $("#reviewsCompleted").html(data.Stats.ReviewsCompleted);
-                        $("#questionsAnswered").html(data.Stats.QuestionsAnswered);
-                        var mins = data.Stats.MinsPerReview;
-
-                        if (mins > 10)
-                            mins = Math.round(mins);
-                        else
-                            mins = (Math.round(mins * 10) / 10).toFixed(1);
-
-                        $("#minutesPerReview").html(mins);
-                        $("#optionalAnswered").html(data.Stats.OptionalsAnswered);
-                    }
+                    success: updateReviewStats
                 });
             }
 
             var charts = 0;
 
-            function createPie(selector, titles, values, colors) {
+            function sumPieSlices(pieData) {
+                var sum = 0;
+                for (var k in pieData) {
+                    sum += pieData[k].value;
+                }
+                return sum;
+            }
+
+            function pieTitles(pieData) {
+                var titles = [];
+                for (var k in pieData) {
+                    titles.push(pieData[k].title);
+                }
+                return titles;
+            }
+
+            function pieColors(pieData) {
+                var colors = [];
+                for (var k in pieData) {
+                    colors.push(pieData[k].color);
+                }
+                return colors;
+            }
+            function pieValues(pieData) {
+                var values = [];
+                for (var k in pieData) {
+                    values.push(pieData[k].value);
+                }
+                return values;
+            }
+
+            function createPie(selector, pieData) {
                 var ref = 900;
                 var svg = d3.select(selector + "").html("").append("svg")
                                 .attr("viewBox", "0 0 " + ref + " " + ref / 2)
@@ -170,19 +238,23 @@
 
                 svg.attr("transform", "translate(" + ref / 2 + "," + ref / 2 / 2 + ")");
                 var center = svg.append("g").attr("class", "centerNumber").attr("transform", "translate(0,10)").style("text-anchor", "middle").append("text")
-                    .text(d3.sum(values));
+                    .text(sumPieSlices(pieData));
                 var centerText = svg.append("g").attr("class", "centerText").attr("transform", "translate(0,30)").style("text-anchor", "middle").append("text")
                     .text("Total");
 
-                updatePie(selector, titles, values, colors);
+                updatePie(selector, pieData,0);
             }
 
-            function updatePie(selector, titles, values, colors, animationSpeed) {
+            function updatePie(selector, pieData, animationSpeed) {
                 var ref = 900;
                 var svg = d3.select(selector + " svg");
                 var width = ref * .7, height = ref, radius = Math.min(width, height) / 2;
                 var startA = 1.7;
                 var endA = startA + 2 * Math.PI;
+
+                var titles = pieTitles(pieData);
+                var colors = pieColors(pieData);
+                var values = pieValues(pieData);
 
                 var color = d3.scale.ordinal().domain(titles).range(colors);
                 var pie = d3.layout.pie().sort(null).startAngle(startA).endAngle(endA).value(function (d) { return d.value; });
@@ -193,7 +265,7 @@
                 var center = svg.select(".centerNumber text");
                 var centerText = svg.select(".centerText text");
 
-                center.transition().duration(200).tween("text", function (d) { return tweenValue(this, d3.sum(values)); });
+                center.transition().duration(200).tween("text", function (d) { return tweenValue(this, sumPieSlices(pieData)); });
                 centerText.transition().duration(200).text("Total");
 
                 function genDat() {
@@ -203,9 +275,9 @@
                     });
                 }
 
-                change(genDat(),animationSpeed);
+                change(genDat(), animationSpeed);
 
-                function change(data,animationSpeed) {
+                function change(data, animationSpeed) {
 
 
                     /* ------- PIE SLICES -------*/
@@ -217,7 +289,7 @@
                     {
                         shifted[i].
                     }*/
-                    var animationSpeed = animationSpeed||300;
+                    var animationSpeed = animationSpeed || 300;
 
                     var slice = svg.select(".slices").selectAll("path.slice").data(pie(data), key);
 
@@ -311,9 +383,9 @@
                 };
             }
 
+        });
 
 
+    </script>
 
-        </script>
-
-    }
+}

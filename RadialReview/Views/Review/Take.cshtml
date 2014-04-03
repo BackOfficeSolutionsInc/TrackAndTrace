@@ -22,7 +22,7 @@
     <div class="col-md-12">
         <div>
             <div class="smallBreak"></div>
-            @foreach (var group in Model.Answers.GroupBy(x => x.Askable.Category.Id).OrderByDescending(x=>x.Key))
+            @foreach (var group in Model.Answers.GroupBy(x => x.Askable.Category.Id).OrderByDescending(x => x.Key))
             {
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -42,11 +42,11 @@
 
 @section sidebar{
 
-<div class="">
-    @Html.Partial("_User", Model.ForUser)
-</div>
+    <div class="">
+        @Html.Partial("_User", Model.ForUser)
+    </div>
     <ol>
-        @for(int i=0;i<Model.OrderedPeople.Count;i++)
+        @for (int i = 0; i < Model.OrderedPeople.Count; i++)
         {
             <li class="@(Model.OrderedPeople[i].Item2?"complete":"incomplete")"><a href="@Url.Action("take", new {id=Model.Id, page = i})">@Model.OrderedPeople[i].Item1</a></li>
         }
@@ -54,13 +54,81 @@
     </ol>
 }
 
-@using(Html.BeginStyles())
-{    
+@using (Html.BeginScripts())
+{
+    <script src="~/Scripts/review/translateSlider.js"></script>
+    <script src="~/Scripts/jquery/jquery-simple-slider.js"></script>
+    <script>
+        var canUpdate = true;
+
+        function sliderUpdateInternal(self) {
+            var d = { value: parseInt($(self).val()) };
+            var disp = d.value;
+            if (d.value == 0) {
+                disp = "NA";
+            }
+
+            $("#" + $(self).attr("name") + " .rangevalue").html(disp).addClass("show");
+
+            slideUpdate.call(self, d);
+
+        }
+
+        function slideUpdate(d) {
+            var name = $(this).attr("name");
+            /* var answers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
+             var div = 100 / answers.length;
+             var i = Math.floor(d.value / div);
+
+             var answer = answers[i];
+             if (d.value == 0)
+                 answer = "No Answer";*/
+            
+            var disp = d.value;
+            if (d.value == 0) {
+                disp = "NA";
+            }
+
+            var answer = sliderToText(d.value);
+
+            $("#" + $(this).attr("name") + " .rangevalue").html(disp);
+
+            $("#" + name + "_title").html(answer);
+            $(this).val()
+            $(this).attr("name");
+        }
+
+        $(function () {
+
+            /*
+            $(".sliderInput").slider().on('calculate', slideUpdate);//.on('click', slideUpdate).on('slideStop', slideUpdate);
+
+            $(".sliderBar").each(function () {
+                sliderUpdateInternal(this);
+            });*/
+            $(".sliderBar").bind("slider:changed", function (event, data) {
+                // The currently selected value of the slider
+
+                slideUpdate.call(this,data);
+            });
+
+            $('.btn-group').button();
+
+
+        });
+    </script>
+
+}
+
+@using (Html.BeginStyles())
+{
+    <link href="~/Content/simple-slider.css" rel="stylesheet" />
     <link href="~/Content/Review.css" rel="stylesheet" />
     <style>
         .complete a {
             /*color: #52AC52 !important;*/
         }
+
         .incomplete a {
             color: #D68585 !important;
         }

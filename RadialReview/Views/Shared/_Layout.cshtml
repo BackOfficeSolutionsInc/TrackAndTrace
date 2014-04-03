@@ -146,7 +146,14 @@
                 });
 
                 var statusTimeout;
-                var alertHub = $.connection.alertHub;
+
+                alertHub = $.connection.alertHub;
+
+                alertHub.error = function (error) {
+                    console.log(error);
+                };
+
+
                 alertHub.client.jsonAlert = function (data, showSuccess) { showJsonAlert(data, showSuccess); };
                 alertHub.client.unhide = function (selector) { $(selector).show(); };
                 alertHub.client.status = function (text) {
@@ -164,7 +171,6 @@
                         })
                     }, 2000);
                 };
-                $.connection.hub.start().done(function () { });
             </script>
         }
     </div>
@@ -182,6 +188,11 @@
     @Scripts.Render("~/bundles/main")
     <script src="~/signalr/hubs"></script>
     @Html.PageScripts()
+    <script>
+        $(function () {
+            $.connection.hub.start().done(function () { });
+        });
+    </script>
 
 </body>
 </html>

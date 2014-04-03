@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Exceptions;
+using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Json;
 using RadialReview.Models.UserModels;
@@ -54,6 +55,9 @@ namespace RadialReview.Controllers
             if (nexus.DateExecuted != null)
                 throw new RedirectException(ExceptionStrings.AlreadyMember);
             var user = GetUserModel();
+
+            HttpContext.CacheInvalidate(AlertHub.REGISTERED_KEY + user.UserName);
+
             var orgId = int.Parse(nexus.GetArgs()[0]);
             var placeholderUserId = long.Parse(nexus.GetArgs()[2]);
             if (user == null)

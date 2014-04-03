@@ -126,6 +126,9 @@ namespace RadialReview.Models.Charts
                 Dimensions = Dimensions.Keys.Select(k => Dimensions[k].Copy()).ToDictionary(x => x.DimensionId, x => x),
                 Id = Id,
                 SliceId = SliceId,
+                Title=this.Title,
+                Subtext=this.Subtext,
+                OtherData=this.OtherData
             };
         }
     }

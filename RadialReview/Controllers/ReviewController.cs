@@ -224,6 +224,8 @@ namespace RadialReview.Controllers
                 
                 var started = false;
                 var editAny = false;
+                var questionsAnswered = 0;
+                var optionalAnswered = 0;
                 foreach (var k in collection.AllKeys){
                     var args = k.Split('_');
                     if (args[0] == "question")
@@ -242,17 +244,17 @@ namespace RadialReview.Controllers
                                         output = value / 100.0m;
                                     if (value == 0)
                                         output = null;
-                                    currentComplete = _ReviewAccessor.UpdateSliderAnswer(user, questionId, output,now, out edited);
+                                    currentComplete = _ReviewAccessor.UpdateSliderAnswer(user, questionId, output,now, out edited,ref questionsAnswered,ref optionalAnswered);
                                     
                                 } break;
-                            case QuestionType.Thumbs: currentComplete= 
-                                _ReviewAccessor.UpdateThumbsAnswer(user, questionId, collection[k].Parse<ThumbsType>(),now,out edited); 
+                            case QuestionType.Thumbs: currentComplete=
+                                _ReviewAccessor.UpdateThumbsAnswer(user, questionId, collection[k].Parse<ThumbsType>(), now, out edited, ref questionsAnswered, ref optionalAnswered); 
                                 break;
-                            case QuestionType.Feedback: 
-                                currentComplete = _ReviewAccessor.UpdateFeedbackAnswer(user, questionId, collection[k],now, out edited); 
+                            case QuestionType.Feedback:
+                                currentComplete = _ReviewAccessor.UpdateFeedbackAnswer(user, questionId, collection[k], now, out edited, ref questionsAnswered, ref optionalAnswered); 
                                 break;
-                            case QuestionType.RelativeComparison: 
-                                currentComplete = _ReviewAccessor.UpdateRelativeComparisonAnswer(user, questionId, collection[k].Parse<RelativeComparisonType>(),now, out edited);
+                            case QuestionType.RelativeComparison:
+                                currentComplete = _ReviewAccessor.UpdateRelativeComparisonAnswer(user, questionId, collection[k].Parse<RelativeComparisonType>(), now, out edited, ref questionsAnswered, ref optionalAnswered);
                                 break;
                             default: throw new Exception();
                         }
@@ -263,15 +265,14 @@ namespace RadialReview.Controllers
                 }
                 dueDate = review.DueDate;
 
-                var durationMinutes = 0.0;
+                var durationMinutes = 0.0m;
 
                 var startTime = new DateTime(collection["StartTime.Ticks"].ToLong());
                 if (editAny){
-                    durationMinutes = (now - startTime).TotalMinutes;
+                    durationMinutes = (decimal)(now - startTime).TotalMinutes;
                 }
 
-
-                _ReviewAccessor.UpdateAllCompleted(GetUser(), review.Id, started, durationMinutes);
+                _ReviewAccessor.UpdateAllCompleted(GetUser(), review.Id, started, durationMinutes, questionsAnswered,optionalAnswered);
 
                 return allComplete;
             }

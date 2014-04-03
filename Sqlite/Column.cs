@@ -16,6 +16,7 @@ namespace Sqlite
         text,
         varchar,
         intQ,
+        @double,
     }
 
     public class Column

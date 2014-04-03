@@ -57,7 +57,6 @@ namespace RadialReview.Accessors
                 AboutType.Peer,
                 AboutType.Teammate,
                 AboutType.NoRelationship,
-                AboutType.OldSelf 
             };
 
             var newOutput= preferredOrder.Where(x => output.Any(y => y == x)).ToList();

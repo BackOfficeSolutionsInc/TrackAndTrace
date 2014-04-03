@@ -24,7 +24,7 @@ namespace RadialReview.Models
         public virtual List<AnswerModel> Answers { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual bool Complete { get; set; }
-        public virtual double? DurationMinutes { get; set; }
+        public virtual decimal? DurationMinutes { get; set; }
         public virtual bool Started { get; set; }
         
 

@@ -7,6 +7,7 @@ namespace RadialReview.Controllers
 {
     public enum AccessLevel
     {
+        SignedOut=-1,
         Any = 1,
         User = 2,
         UserOrganization = 3,

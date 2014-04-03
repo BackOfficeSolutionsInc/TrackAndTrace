@@ -1,6 +1,8 @@
-﻿using NHibernate;
+﻿using Microsoft.AspNet.SignalR;
+using NHibernate;
 using NHibernate.Criterion;
 using RadialReview.Exceptions;
+using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
@@ -170,7 +172,7 @@ namespace RadialReview.Accessors
         }
 
         #region Update
-        public async Task<ResultObject> AddUserToReviewContainer(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId,bool sendEmails)
+        public async Task<ResultObject> AddUserToReviewContainer(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId, bool sendEmails)
         {
             var unsent = new List<MailModel>();
             String userBeingReviewed = null;
@@ -197,11 +199,11 @@ namespace RadialReview.Accessors
 
 
                         List<Exception> exceptions = new List<Exception>();
-                       // int sent = 0;
-                       //int errors = 0;
+                        // int sent = 0;
+                        //int errors = 0;
 
                         var beingReviewedUser = s.Get<UserOrganizationModel>(userOrganizationId);
-                        
+
                         var orgId = organization.Id;
 
                         var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
@@ -234,11 +236,11 @@ namespace RadialReview.Accessors
 
                         unsent.AddRange(AddUserToReview(caller, true, dueDate,
                             reviewContainer.GetParameters(),
-                            new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team,ref exceptions,
+                            new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team, ref exceptions,
                             beingReviewedUser, usersToReview));
                         userBeingReviewed = beingReviewedUser.GetName();
                         tx.Commit();
-                        s.Flush();  
+                        s.Flush();
                     }
                 }
             }
@@ -253,9 +255,9 @@ namespace RadialReview.Accessors
                 result = await Emailer.SendEmails(unsent);
             }
 
-            return result.ToResults("Successfully added " + userBeingReviewed + " to the review.");            
+            return result.ToResults("Successfully added " + userBeingReviewed + " to the review.");
         }
-        
+
         /*public void UpdateStarted(UserOrganizationModel userOrganizationModel, List<AnswerModel> answers, DateTime now)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -278,48 +280,97 @@ namespace RadialReview.Accessors
 
         }*/
 
-        public Boolean UpdateAllCompleted(UserOrganizationModel caller, long reviewId,bool started, double durationMinutes)
+        public ReviewContainerStats UpdateAllCompleted(UserOrganizationModel caller, long reviewId, bool started, decimal durationMinutes, int additionalAnswered, int optionalAnswered)
         {
-            using(var s = HibernateSession.GetCurrentSession())
+            using (var s = HibernateSession.GetCurrentSession())
             {
-	            using(var tx=s.BeginTransaction())
+                using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).EditReview(reviewId);
                     var uncompleted = s.QueryOver<AnswerModel>().Where(x => x.ForReviewId == reviewId && x.Required && !x.Complete && x.DeleteTime == null).RowCount();
                     var review = s.Get<ReviewModel>(reviewId);
 
-                    var updated = false;
+                    var output = new ReviewContainerStats(review.ForReviewsId);
 
+                    var updated = false;
                     if (durationMinutes != 0)
                     {
-                        review.DurationMinutes += Math.Min(durationMinutes,TimingUtility.ExcludeLongerThan.TotalMinutes);
+                        if (review.DurationMinutes == null)
+                            review.DurationMinutes = 0;
+                        review.DurationMinutes += (decimal)Math.Min(durationMinutes, (decimal)TimingUtility.ExcludeLongerThan.TotalMinutes);
                         updated = true;
                     }
 
-                    if (uncompleted == 0 && !review.Complete){
+                    if (uncompleted == 0 && !review.Complete)
+                    {
                         review.Complete = true;
                         updated = true;
+                        output.Stats.ReviewsCompleted += 1;
+                        output.Completion.Started -= 1;
+                        output.Completion.Finished += 1;
                     }
 
-                    if (started && !review.Started){
+                    if (started && !review.Started)
+                    {
                         review.Started = true;
-                        updated = true;                        
+                        updated = true;
+                        output.Completion.Started += 1;
+                        output.Completion.Unstarted -= 1;
                     }
 
-                    if (uncompleted != 0 && review.Complete){
+                    if (uncompleted != 0 && review.Complete)
+                    {
                         review.Complete = false;
                         review.DurationMinutes = null;
                         updated = true;
+                        output.Stats.ReviewsCompleted -= 1;
+                        output.Completion.Started += 1;
                     }
 
-                    if (updated){
+                    output.Stats.QuestionsAnswered += additionalAnswered;
+                    output.Stats.OptionalsAnswered += optionalAnswered;
+
+                    if (updated || output.Stats.QuestionsAnswered!=0 || output.Stats.OptionalsAnswered!=0)
+                    {
+                        IHubContext hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+                        //hub.Clients.All.updateReviewStats(ResultObject.Create(output));
+                        hub.Clients.Group("manager_" + caller.Organization.Id).updateReviewStats(ResultObject.Create(output));
+                    }
+
+                    if (updated)
+                    {
                         s.Update(review);
                         tx.Commit();
                         s.Flush();
                     }
 
-                    return review.Complete;
-	            }
+                    return output;
+                    //return review.Complete;
+                }
+            }
+        }
+
+        private void UpdateCompletion(AnswerModel answer, DateTime now, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
+        {
+            if (answer.Complete)
+            {
+                if (answer.CompleteTime == null)
+                {
+                    if (!answer.Required)
+                        optionalAnsweredDelta += 1;
+                    questionsAnsweredDelta += 1;
+                }
+                answer.CompleteTime = now;
+            }
+            else
+            {
+                if (answer.CompleteTime != null)
+                {
+                    if (!answer.Required)
+                        optionalAnsweredDelta -= 1;
+                    questionsAnsweredDelta -= 1;
+                }
+                answer.CompleteTime = null;
             }
         }
 
@@ -330,7 +381,7 @@ namespace RadialReview.Accessors
         /// <param name="id"></param>
         /// <param name="value"></param>
         /// <returns>Complete</returns>
-        public Boolean UpdateSliderAnswer(UserOrganizationModel caller, long id, decimal? value,DateTime now, out bool edited)
+        public Boolean UpdateSliderAnswer(UserOrganizationModel caller, long id, decimal? value, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -344,14 +395,7 @@ namespace RadialReview.Accessors
                         edited = true;
                         answer.Complete = value.HasValue;
                         answer.Percentage = value;
-                        if (answer.Complete)
-                        {
-                            answer.CompleteTime = now;
-                        }
-                        else
-                        {
-                            answer.CompleteTime = null;
-                        }
+                        UpdateCompletion(answer, now, ref questionsAnsweredDelta, ref optionalAnsweredDelta);
                         s.Update(answer);
 
                         tx.Commit();
@@ -369,7 +413,7 @@ namespace RadialReview.Accessors
         /// <param name="id"></param>
         /// <param name="value"></param>
         /// <returns>Complete</returns>
-        public Boolean UpdateThumbsAnswer(UserOrganizationModel caller, long id, ThumbsType value,DateTime now,out bool edited)
+        public Boolean UpdateThumbsAnswer(UserOrganizationModel caller, long id, ThumbsType value, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -384,23 +428,17 @@ namespace RadialReview.Accessors
                         edited = true;
                         answer.Complete = value != ThumbsType.None;
                         answer.Thumbs = value;
-                        if (answer.Complete)
-                        {
-                            answer.CompleteTime = now;
-                        }
-                        else
-                        {
-                            answer.CompleteTime = null;
-                        }
+                        UpdateCompletion(answer, now, ref  questionsAnsweredDelta, ref  optionalAnsweredDelta);
+
                         s.Update(answer);
                         tx.Commit();
                         s.Flush();
-                    }                        
+                    }
                     return answer.Complete || !answer.Required;
                 }
             }
         }
-        public Boolean UpdateRelativeComparisonAnswer(UserOrganizationModel caller, long questionId, RelativeComparisonType choice,DateTime now, out bool edited)
+        public Boolean UpdateRelativeComparisonAnswer(UserOrganizationModel caller, long questionId, RelativeComparisonType choice, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -414,14 +452,7 @@ namespace RadialReview.Accessors
                     {
                         edited = true;
                         answer.Complete = (choice != RelativeComparisonType.None);
-                        if (answer.Complete)
-                        {
-                            answer.CompleteTime = now;
-                        }
-                        else
-                        {
-                            answer.CompleteTime = null;
-                        }
+                        UpdateCompletion(answer, now, ref  questionsAnsweredDelta, ref  optionalAnsweredDelta);
                         answer.Choice = choice;
                         s.Update(answer);
                         tx.Commit();
@@ -433,7 +464,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public Boolean UpdateFeedbackAnswer(UserOrganizationModel caller, long questionId, string feedback,DateTime now,out bool edited)
+        public Boolean UpdateFeedbackAnswer(UserOrganizationModel caller, long questionId, string feedback, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -446,14 +477,7 @@ namespace RadialReview.Accessors
                     {
                         edited = true;
                         answer.Complete = !String.IsNullOrWhiteSpace(feedback);
-                        if (answer.Complete)
-                        {
-                            answer.CompleteTime = now;
-                        }
-                        else
-                        {
-                            answer.CompleteTime = null;
-                        }
+                        UpdateCompletion(answer, now, ref questionsAnsweredDelta, ref optionalAnsweredDelta);
                         answer.Feedback = feedback;
                         s.Update(answer);
                         tx.Commit();

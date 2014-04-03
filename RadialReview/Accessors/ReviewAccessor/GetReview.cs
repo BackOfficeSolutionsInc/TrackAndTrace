@@ -484,7 +484,7 @@ namespace RadialReview.Accessors
 
         public ReviewContainerStats GetReviewStats(UserOrganizationModel caller, long reviewContainerId)
         {
-            var output = new ReviewContainerStats();
+            var output = new ReviewContainerStats(reviewContainerId);
 
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -517,9 +517,8 @@ namespace RadialReview.Accessors
                         //var avg = matchingReview.Where(x => x.Duration != null).Select(Projections.Avg<ReviewModel>(x => x.Duration)).SingleOrDefault<double>();
                         //var match = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.DeleteTime == null).Where(x => x.Duration != null).List().ToList();
 
-                        multiCriteria.Add<ReviewModel, double?>(s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.DeleteTime == null).Where(x => x.DurationMinutes != null)
-                            .Select(
-                                Projections.Avg<ReviewModel>(x => x.DurationMinutes)
+                        multiCriteria.Add<ReviewModel,decimal>(s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.DeleteTime == null).Where(x => x.DurationMinutes != null)
+                            .Select(Projections.Property<ReviewModel>(x => x.DurationMinutes)
                                 //Projections.Count<ReviewModel>(x=>x.Id)
                             ));
 
@@ -612,7 +611,10 @@ namespace RadialReview.Accessors
                         int startedReviews = result.Get<int>();
                         int finishedReviews = result.Get<int>();
                         List<ClientReviewModel> clientReports = result.GetList<ClientReviewModel>();
-                        double? avgDuration = result.Get<double?>();
+                        var avgList = result.GetList<decimal>();
+                        decimal? avgDuration=null;
+                        if (avgList.Any())
+                            avgDuration = avgList.Average();
                         /*try{
                             var dur = result.GetList<double>();
                             if (dur[0] == null || dur[1] == 0)
@@ -640,7 +642,6 @@ namespace RadialReview.Accessors
 
                         //Completion 
                         int unstartedReviews = totalReviews - startedReviews - finishedReviews;
-
                         output.Completion = new ReviewContainerStats.CompletionStats
                         {
                             Total = totalReviews,

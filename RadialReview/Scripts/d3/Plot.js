@@ -224,7 +224,12 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                 .attr("class", "scatter-tooltip")
                 .style("position", "absolute")
                 .style("z-index", "10")
-                .style("visibility", "hidden");
+                .style("visibility", "hidden")
+                .style("background-color", "white")
+                .style("padding", "10px")
+                .style("background-color", "white")
+                .style("border", "1px solid #808080")
+                .style("border-radius","3px");
         }
 
 
