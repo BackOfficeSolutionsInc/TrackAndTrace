@@ -324,6 +324,7 @@ namespace RadialReview.Accessors
                         review.DurationMinutes = null;
                         updated = true;
                         output.Stats.ReviewsCompleted -= 1;
+                        output.Completion.Finished -= 1;
                         output.Completion.Started += 1;
                     }
 

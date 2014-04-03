@@ -17,6 +17,8 @@
     </div>
 }
 
+
+
 @Html.HiddenFor(x => x.StartTime.Ticks)
 <div class="row">
     <div class="col-md-12">
@@ -24,14 +26,26 @@
             <div class="smallBreak"></div>
             @foreach (var group in Model.Answers.GroupBy(x => x.Askable.Category.Id).OrderByDescending(x => x.Key))
             {
+                var dict = new ViewDataDictionary();
+                
+                var sliders =group.ToList().Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList();
+                var thumbs  =group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList();
+                var feedbacks=group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList();
+                
+                
+                dict["Max"] = group.Count();
+                
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">@group.FirstOrDefault().NotNull(x => x.Askable.Category.Category.Translate())</h3>
                     </div>
-                    <div class="panel-body">
-                        @Html.Partial("Slider", Tuple.Create(group.ToList().Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList(), Model.Editable))
-                        @Html.Partial("Thumbs", Tuple.Create(group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList(), Model.Editable))
-                        @Html.Partial("Feedback", Tuple.Create(group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList(), Model.Editable))
+                    <div class="panel-body">                        
+                        @{dict["I"] = 0;}
+                        @Html.Partial("Slider", Tuple.Create(sliders, Model.Editable), dict)
+                        @{dict["I"] = sliders.Count();}
+                        @Html.Partial("Thumbs", Tuple.Create(thumbs, Model.Editable), dict)
+                        @{dict["I"] = sliders.Count() + thumbs.Count();}
+                        @Html.Partial("Feedback", Tuple.Create(feedbacks, Model.Editable), dict)
                     </div>
                 </div>
             }
@@ -131,6 +145,10 @@
 
         .incomplete a {
             color: #D68585 !important;
+        }
+
+        textarea {
+            border: 1px solid #A9A9A9;
         }
     </style>
 }

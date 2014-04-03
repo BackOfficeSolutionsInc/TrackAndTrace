@@ -25,13 +25,13 @@
             <div class="row">
                 <div class="col-xs-6 smallPad smallBreak2">
                     <div class="stats">
-                        <h1 id="reviewsCompleted" class="scramble" data-range="99"></h1>
+                        <h1 id="reviewsCompleted" class="scramble resize" data-range="99"></h1>
                         <h6>reviews completed</h6>
                     </div>
                 </div>
                 <div class="col-xs-6 smallPad smallBreak2">
                     <div class="stats">
-                        <h1 id="questionsAnswered" class="scramble" data-range="1500"></h1>
+                        <h1 id="questionsAnswered" class="scramble resize" data-range="1500"></h1>
                         <h6>questions answered</h6>
                     </div>
                 </div>
@@ -40,10 +40,12 @@
         <div class="col-md-6">
             <div class="row">
                 <div class="col-xs-6 smallPad smallBreak2">
-                    <div class="stats">
-                        <div class="alignCenter" style="margin-left:20px">
-                            <h1 id="minutesPerReview" class="scramble" data-range="26"></h1>
-                            <h5 class="scramble">mins</h5>
+                    <div class="stats" >
+                        <div class="alignCenter">
+                            <div class="resize" style="margin-top: 20px; margin-bottom: 10px; line-height: 1.1;">
+                                <span id="minutesPerReview" class="scramble" data-range="26"></span>
+                                <span class="scramble" style="width: 0px; font-size: 25%; display: inline-block; margin-left: -10px; ">mins</span>
+                            </div>
                         </div>
                         <h6>per review</h6>
                         <h4>(on average)</h4>
@@ -51,7 +53,7 @@
                 </div>
                 <div class="col-xs-6 smallPad smallBreak2">
                     <div class="stats">
-                        <h1 id="optionalAnswered" class="scramble" data-range="200"></h1>
+                        <h1 id="optionalAnswered" class="scramble resize" data-range="200"></h1>
                         <h6>optional questions answered</h6>
                     </div>
                 </div>
@@ -63,9 +65,16 @@
 {
     <script src="~/Scripts/d3/d3.v3.min.js"></script>
     <script src="~/Scripts/d3/Tweens.js"></script>
+    <script src="~/Scripts/jquery/jquery.fittext.js"></script>
     <script>
+        function playSound(soundfile) {
+            $(".sound").html("").append("<embed src=\""+soundfile+"\" hidden=\"true\" autostart=\"true\" loop=\"false\" />");
+        }
+
         $(function () {
             pullData();
+
+            $("body").append("<div class='sound'></div>");
 
             var reviewsData = {};
             var reportsData = {};
@@ -73,6 +82,17 @@
             var interval = null;
             var reviewId =  @Model;
             var currentData = null;
+
+            var compress=1.0;
+            
+            fitToBox(".resize");
+
+            window.addEventListener('resize', function(event){
+                fitToBox(".resize");
+            });
+
+            var allowSound=false;
+
             function updateReviewStats(data) {
                 if (currentData==null)
                 {
@@ -97,7 +117,6 @@
                     };
                 }
 
-                debugger;
                 data = data.Object;
                 if (reviewId == data.ReviewId) {
                     if (true) {
@@ -140,14 +159,17 @@
                         clearInterval(interval);
                     }
                     $(".scramble").removeClass("scrambling");
+                    var resize = false;
                     if (data.Stats && data.Stats.ReviewsCompleted !== undefined)
                     {
                         currentData.Stats.ReviewsCompleted+=data.Stats.ReviewsCompleted;
                         $("#reviewsCompleted").html(currentData.Stats.ReviewsCompleted).removeClass("scrambling");
+                        resize=true;
                     }
                     if (data.Stats && data.Stats.QuestionsAnswered !== undefined){
                         currentData.Stats.QuestionsAnswered+=data.Stats.QuestionsAnswered;
                         $("#questionsAnswered").html(currentData.Stats.QuestionsAnswered).removeClass("scrambling");
+                        resize=true;
                     }
 
                     if (data.Stats && data.Stats.MinsPerReview !== undefined) {
@@ -158,11 +180,23 @@
                         else
                             mins = (Math.round(mins * 10) / 10).toFixed(1);
                         $("#minutesPerReview").html(mins).removeClass("scrambling");
+                        resize=true;
                     }
                     if (data.Stats && data.Stats.OptionalsAnswered !== undefined) {
                         currentData.Stats.OptionalsAnswered+=data.Stats.OptionalsAnswered;
                         $("#optionalAnswered").html(currentData.Stats.OptionalsAnswered).removeClass("scrambling");
+                        resize=true;
                     }
+
+                    if (resize){
+                        fitToBox(".resize");
+                    }
+
+                    if (allowSound){
+                        playSound("/Content/audio/tick.mp3");
+                    }
+
+                    allowSound =true;
                 }
             }
 
@@ -183,7 +217,7 @@
 
                 createPie("#pie1", { "empty": { title: "Loading", value: 1, color: "#7b6888" } }); // ["Unstarted"], [1], ["#7b6888"]);
                 createPie("#pie2", { "empty": { title: "Loading", value: 1, color: "#A05D56" } }); // ["Unstarted"], [1], ["#A05D56"]);
-                debugger;
+
                 $.ajax({
                     url: "/Data/ReviewsData/@Model",
                     success: updateReviewStats
@@ -384,8 +418,5 @@
             }
 
         });
-
-
     </script>
-
 }

@@ -597,6 +597,7 @@
     <Content Include="Content\Review.css" />
     <Content Include="Content\simple-slider.css" />
     <Content Include="Content\slider.css" />
+    <Content Include="Content\audio\tick.mp3" />
     <Content Include="Content\toggle.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -668,6 +669,7 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery\jquery-simple-slider.js" />
     <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.js" />
+    <Content Include="Scripts\jquery\jquery.fittext.js" />
     <Content Include="Scripts\jquery\jquery.hashchange.js" />
     <Content Include="Scripts\jquery\jquery.nouislider.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />

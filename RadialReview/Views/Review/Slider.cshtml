@@ -17,10 +17,12 @@
     }
 
 }
+
 @foreach (var slider in Model.Item1.OrderBy(x => x.Askable.GetQuestion()))
 {
-    <div class="row question" >
-        <div i class="col-md-6 alignCenter startHidden">
+    ViewData["I"] = ((int)ViewData["I"]) + 1;
+    <div class="row question">
+        <div class="col-md-6 alignCenter startHidden">
             @if (slider.Required)
             {
                 <div class="pull-left star @((ViewBag.Incomplete != null && !slider.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
@@ -48,13 +50,13 @@
                         <div class="sliderr noselect" id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id">
 
                             @*<input class="sliderBar bar"
-                                   type="range"
-                                   name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
-                                   value="@((int?)(slider.Percentage*100)??0)"
-                                   min="0"
-                                   max="100"
-                                   step="5"
-                                   onchange="sliderUpdateInternal(this)">*@
+                                type="range"
+                                name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
+                                value="@((int?)(slider.Percentage*100)??0)"
+                                min="0"
+                                max="100"
+                                step="5"
+                                onchange="sliderUpdateInternal(this)">*@
 
                             <input class="sliderBar"
                                    type="text"
@@ -89,6 +91,10 @@
             </div>
         </div>
     </div>
+    if ((int)ViewData["I"] < (int)ViewData["Max"])
+    {
+        <hr class="smallBreak2" style="margin-top: 8px;" />
+    }
 }
 <br />
 
@@ -113,7 +119,7 @@
 @using (var scripts = Html.BeginScripts())
 {
     <script>
-        
+
         @*
         function Thumbs(id) {
             if ($("#" + id).val() == "@ThumbsType.Up") {

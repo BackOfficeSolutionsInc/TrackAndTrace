@@ -3,6 +3,7 @@
 <div class="startHiddenGroup">
     @foreach (var f in Model.Item1)
     {
+        ViewData["I"] = ((int)ViewData["I"]) + 1;
         <div class="startHidden row">
             <div class="col-md-6 alignRight startHidden">
                 @if (f.Required)
@@ -27,7 +28,10 @@
                 >@f.Feedback</textarea>
             </div>
         </div>
-        <hr />
+        if ((int)ViewData["I"] < (int)ViewData["Max"])
+        {
+            <hr class="smallBreak2" style="margin-top: 8px;" />
+        }
     }
 </div>
 

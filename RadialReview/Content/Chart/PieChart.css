@@ -34,3 +34,8 @@ div .piechart{
     position: relative;
     margin: auto;
 }
+
+.resize{
+    width:100%;
+    height:77px;
+}
