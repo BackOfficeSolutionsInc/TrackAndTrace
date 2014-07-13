@@ -219,7 +219,7 @@
                 <div class="noBreak">
                     Questions:
                     <ol>
-                        @foreach (var q in Model.Questions)
+                        @foreach (var q in Model.ActiveQuestions)
                         {
                             <li>@q.GetQuestion()</li>
                         }

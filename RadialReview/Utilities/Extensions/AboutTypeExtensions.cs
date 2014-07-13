@@ -10,16 +10,20 @@ namespace RadialReview
     {
         public static AboutType Invert(this AboutType self)
         {
-            switch (self)
-            {
-                case AboutType.Manager: return AboutType.Subordinate;
-                case AboutType.NoRelationship: return AboutType.NoRelationship;
-                case AboutType.Peer: return AboutType.Peer;
-                case AboutType.Self: return AboutType.Self;
-                case AboutType.Subordinate: return AboutType.Manager;
-                case AboutType.Teammate: return AboutType.Teammate;
-                default:throw new ArgumentException("Unknown about type ("+self+")");
+            AboutType build=AboutType.NoRelationship;
+            foreach (AboutType flag in self.GetFlags()) {
+                switch (flag) {
+                    case AboutType.Manager       : build = build | AboutType.Subordinate;break;
+                    case AboutType.NoRelationship: build = build | AboutType.NoRelationship;break;
+                    case AboutType.Peer          : build = build | AboutType.Peer;break;
+                    case AboutType.Self          : build = build | AboutType.Self;break;
+                    case AboutType.Subordinate   : build = build | AboutType.Manager;break;
+                    case AboutType.Teammate      : build = build | AboutType.Teammate;break;
+                    default:
+                        throw new ArgumentException("Unknown about type (" + self + ")");
+                }
             }
+            return build;
         }
     }
 }

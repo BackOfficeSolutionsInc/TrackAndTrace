@@ -427,17 +427,20 @@ namespace RadialReview.Controllers
             public List<String> Responsibilities { get; set; }
             public List<ResponsibilityModel> Questions { get; set; }
             public List<UserOrganizationModel> Supervisers { get; set; }
+            public List<ResponsibilityModel> ActiveQuestions { get; set; }
 
 
             public ReviewDetailsViewModel()
             {
-                Axis = new List<SelectListItem>();
-                AnswersAbout = new List<AnswerModel>();
-                Categories = new Dictionary<long, string>();
+                Axis             = new List<SelectListItem>();
+                AnswersAbout     = new List<AnswerModel>();
+                Categories       = new Dictionary<long, string>();
                 Responsibilities = new List<string>();
-                Questions = new List<ResponsibilityModel>();
-                Supervisers = new List<UserOrganizationModel>();
+                Questions        = new List<ResponsibilityModel>();
+                Supervisers      = new List<UserOrganizationModel>();
+                ActiveQuestions  = new List<ResponsibilityModel>();
             }
+
 
         }
 
@@ -456,7 +459,8 @@ namespace RadialReview.Controllers
             }
 
 
-            var questions = _ResponsibilitiesAccessor.GetResponsibilitiesForUser(GetUser(),review.ForUserId);
+            var questions = _ResponsibilitiesAccessor.GetResponsibilitiesForUser(GetUser(), review.ForUserId);
+            var activeQuestions = questions.Where(x => answers.Any(y => y.Askable.Id == x.Id)).ToList();
             var model = new ReviewDetailsViewModel()
             {
                 Review = review,
@@ -467,8 +471,8 @@ namespace RadialReview.Controllers
                 Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate()),
                 Supervisers =managers,
                 Questions = questions,
-                JobDescription = user.JobDescription,
-                
+                ActiveQuestions = activeQuestions,
+                JobDescription = user.JobDescription,                
             };
             return model;
         }

@@ -101,8 +101,8 @@
     // var pleasentOrderedPeople = Model.Item1.OrderBy(x => x.GetName()).ToList();
 
 
-    var dataPeople = defaultOrderedPeople.Select((p, i) => Tuple.Create(i, questions.Select(q => Model.Item2.First(x => x.Askable.Id == q.Id && x.ByUserId == p.Id).Percentage).ToArray())).ToArray();
-    var dataQuestion = questions.Select((q, i) => Tuple.Create(i, defaultOrderedPeople.Select(p => Model.Item2.First(x => x.Askable.Id == q.Id && x.ByUserId == p.Id).Percentage).ToArray())).ToArray();
+    var dataPeople = defaultOrderedPeople.Select((p, i) => Tuple.Create(i, questions.Select(q => Model.Item2.FirstOrDefault(x => x.Askable.Id == q.Id && x.ByUserId == p.Id).NotNull(z=>z.Percentage)).ToArray())).ToArray();
+    var dataQuestion = questions.Select((q, i) => Tuple.Create(i, defaultOrderedPeople.Select(p => Model.Item2.FirstOrDefault(x => x.Askable.Id == q.Id && x.ByUserId == p.Id).NotNull(z => z.Percentage)).ToArray())).ToArray();
 
 
     var orderingPeople = dataPeople.OrderByDescending(x => x.Item2.Sum()).Select(x => x.Item1);
@@ -254,10 +254,10 @@
                             {
                                 <td class="bordered noPad">
                                     <div class="detail color-percentage square noPad">
-                                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                                        @Model.Item2.FirstOrDefault(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).NotNull(x=>x.Percentage)
                                     </div>
                                     <div class="detail on color-value-percentage smallPad">
-                                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                                        @Model.Item2.FirstOrDefault(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).NotNull(x => x.Percentage)
                                     </div>
                                 </td>
                             }
@@ -290,10 +290,10 @@
                             {
                                 <td class="bordered noPad">
                                     <div class="detail color-percentage square noPad">
-                                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                                        @Model.Item2.FirstOrDefault(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).NotNull(x => x.Percentage)
                                     </div>
                                     <div class="detail on detail color-value-percentage smallPad">
-                                        @Model.Item2.First(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).Percentage
+                                        @Model.Item2.FirstOrDefault(x => x.Askable.Id == question.Id && x.ByUserId == person.Id).NotNull(x => x.Percentage)
                                     </div>
                                 </td>
                             }
