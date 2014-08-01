@@ -48,9 +48,6 @@ namespace RadialReview.Controllers
                 }catch(Exception){
 
                 }
-                
-
-
                 return View("Backend", model);
             }
             return RedirectToAction("Login","Account");

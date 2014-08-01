@@ -124,6 +124,9 @@
   <data name="CompanyName" xml:space="preserve">
     <value>Radial Inc.</value>
   </data>
+  <data name="MarketingUrl" xml:space="preserve">
+    <value>http://radialreview.com/</value>
+  </data>
   <data name="ProductName" xml:space="preserve">
     <value>Radial Review</value>
   </data>

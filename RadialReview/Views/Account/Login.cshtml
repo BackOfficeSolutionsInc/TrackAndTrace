@@ -4,7 +4,6 @@
     ViewBag.Title = "Log in";
 }
 
-<h2>@ViewBag.Title.</h2>
 <div class="row">
 
     <div class=" col-md-11" >
@@ -54,9 +53,9 @@
                 <p>
                     @Html.ActionLink("Forgot my password", "ResetPassword", new { returnUrl = ViewBag.ReturnUrl })
                 </p>
-                <p>
+                @*<p>
                     or @Html.ActionLink("Register", "Register", new { returnUrl = ViewBag.ReturnUrl }) if you don't have a Radial account.
-                </p>
+                </p>*@
             }
         </section>
     </div>

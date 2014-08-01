@@ -79,6 +79,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to http://radialreview.com/.
+        /// </summary>
+        public static string MarketingUrl {
+            get {
+                return ResourceManager.GetString("MarketingUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Radial Review.
         /// </summary>
         public static string ProductName {

@@ -121,10 +121,7 @@
         @using (var s = Html.BeginScripts())
         {
             <!--script src="~/Scripts/Main/radial.js"></script-->
-
-            <script type="text/javascript" src="http://assets.freshdesk.com/widget/freshwidget.js"></script>
             <script>
-                FreshWidget.init("", { "queryString": "&widgetType=popup", "widgetType": "popup", "buttonType": "text", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#767F99", "alignment": "4", "offset": "235px", "formHeight": "500px", "url": "http://radialreview.freshdesk.com" });
                 $(function () {
                     qtip();
                     ForceUnhide();
@@ -193,6 +190,12 @@
     @Scripts.Render("~/bundles/main")
     <script src="~/signalr/hubs"></script>
     @Html.PageScripts()
+    <script type="text/javascript" src="http://assets.freshdesk.com/widget/freshwidget.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            FreshWidget.init("", { "queryString": "&widgetType=popup", "widgetType": "popup", "buttonType": "text", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#767F99", "alignment": "4", "offset": "235px", "formHeight": "500px", "url": "http://radialreview.freshdesk.com" });
+        });
+    </script>
     <script>
         $(function () {
             $.connection.hub.start().done(function () { });
