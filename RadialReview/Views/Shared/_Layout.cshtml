@@ -91,10 +91,15 @@
                             }
                             else
                             {
-                                <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "Index", "Home")</li>
+                                if (!(ViewBag.IsLogin ?? false)) {
+                                    <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "Index", "Home")</li>
+                                }
                             }
                         </ul>
-                        @Html.Partial("_LoginPartial", (string)ViewBag.ReturnUrl)
+                        @if (!(ViewBag.IsLogin ?? false))
+                        {
+                            @Html.Partial("_LoginPartial", (string) ViewBag.ReturnUrl)
+                        }
                     </div>
                 </div>
             </div>

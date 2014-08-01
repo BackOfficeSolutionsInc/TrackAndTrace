@@ -185,6 +185,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.SignedOut)]
         public ActionResult Login(string returnUrl, String message,string username)
         {
+            ViewBag.IsLogin = true;
             if (User.Identity.GetUserId() != null)
             {
                 AuthenticationManager.SignOut();
