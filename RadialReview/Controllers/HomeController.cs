@@ -53,7 +53,7 @@ namespace RadialReview.Controllers
 
                 return View("Backend", model);
             }
-            return View();
+            return RedirectToAction("Login","Account");
         }
 
 

@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BaseUrl" xml:space="preserve">
-    <value>http://radialreview.com/</value>
+    <value>http://review.radialreview.com/</value>
     <comment>http://localhost:2200/</comment>
   </data>
   <data name="CompanyName" xml:space="preserve">
@@ -131,6 +131,6 @@
     <value>Clay.Upton@gmail.com</value>
   </data>
   <data name="PurchaseNumber" xml:space="preserve">
-    <value>(402)-477-9717</value>
+    <value>1-402-437-0099</value>
   </data>
 </root>
