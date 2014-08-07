@@ -1,9 +1,6 @@
 ﻿using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace RadialReview.Models.Tasks
 {
@@ -14,7 +11,6 @@ namespace RadialReview.Models.Tasks
         public virtual DateTime DueDate { get; set; }
         public virtual ICompletionModel Completion { get; set; }
         public virtual TaskType Type { get; set; }
-
         public virtual int Count { get; set; }
     }
 }
