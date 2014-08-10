@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
+using NHibernate.Dialect.Function;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
@@ -92,39 +93,7 @@ namespace RadialReview.Controllers
         }
 
 
-        [Access(AccessLevel.Manager)]
-        public JsonResult Delete(long id)
-        {
-            _ReviewAccessor.DeleteReviewContainer(GetUser(), id);
-            return Json(ResultObject.Success("Removed review."), JsonRequestBehavior.AllowGet);
-        }
-
-
-        /*
-        [Access(AccessLevel.Manager)]
-        public ActionResult Details(long id)
-        {
-            //var reviewContainerAnswers = _ReviewAccessor.GetReviewContainerAnswers(GetUser(), id);
-
-            //var reviewContainerPeople = reviewContainerAnswers.GroupBy(x => x.AboutUserId);
-            var user = GetUser().Hydrate().ManagingUsers(true).Execute();
-
-            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true);
-            //reviewContainer.Reviews = _ReviewAccessor.GetReviewsForReviewContainer(GetUser(), id);
-
-
-            foreach (var r in reviewContainer.Reviews)
-            {
-                if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id)
-                    r.ForUser.SetPersonallyManaging(true);
-                else
-                    r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
-            }
-
-            var model = new ReviewsViewModel(reviewContainer);
-
-            return View(model);
-        }*/
+       
 
         public class UpdateReviewsViewModel
         {
@@ -155,28 +124,7 @@ namespace RadialReview.Controllers
             public Dictionary<long,UserOrganizationModel> AvailableUsers { get; set; }
         }
 
-        /*[HttpPost]
-        public ActionResult IssueDetails(IssueReviewViewModel model)
-        {
-            var reviewParams = new ReviewParameters()
-                    {
-                        ReviewManagers = model.ReviewManagers,
-                        ReviewSelf = model.ReviewSelf,
-                        ReviewSubordinates = model.ReviewSubordinates,
-                        ReviewPeers = model.ReviewPeers,
-                        ReviewTeammates = model.ReviewTeammates,
-                    };
-
-            var members=_OrganizationAccessor.GetOrganizationMembers(GetUser(),GetUser().Organization.Id,false,false);
-                       
-            var output = new IssueDetailsViewModel()
-            {
-                ReviewWho=_ReviewAccessor.GetUsersWhoReviewUsers(GetUser(), reviewParams, model.ForTeamId),
-                AvailableUsers = members.ToDictionary(x=>x.Id,x=>x)
-            };
-
-            return View(output);
-        }*/
+        
 
         [HttpPost]
         public ActionResult IssueDetailsSubmit(IssueReviewViewModel model)
@@ -339,6 +287,30 @@ namespace RadialReview.Controllers
             public List<SelectListItem> PossibleUsers { get; set; }
         }
 
+        public class DeleteReview
+        {
+            public long ReviewContainerId { get; set; }
+        }
+
+        [Access(AccessLevel.Manager)]
+        [HttpPost]
+        public ActionResult Delete(DeleteReview model)
+        {
+            _ReviewAccessor.DeleteReviewContainer(GetUser(), model.ReviewContainerId);
+            ViewBag.Success = "Removed review.";
+            return RedirectToAction("Outstanding","Reviews");
+            //return Json(ResultObject.Success(), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.Manager)]
+        [HttpGet]
+        public ActionResult Delete(long id)
+        {
+            _PermissionsAccessor.Permitted(GetUser(),x=>x.EditReviewContainer(id));
+            var model=new DeleteReview(){ReviewContainerId = id};
+            return PartialView(model);
+        }
+
         [Access(AccessLevel.Manager)]
         public ActionResult RemoveUser(long id)
         {
@@ -351,8 +323,6 @@ namespace RadialReview.Controllers
 
             return PartialView(model);
         }
-
-
         [HttpPost]
         [Access(AccessLevel.Manager)]
         public async Task<JsonResult> RemoveUser(RemoveUserVM model)
@@ -360,7 +330,54 @@ namespace RadialReview.Controllers
             var result = _ReviewAccessor.RemoveUserFromReview(GetUser(), model.ReviewContainerId, model.SelectedUser);
             return Json(result);
         }
+/*
+        [Access(AccessLevel.Manager)]
+        public ActionResult Details(long id)
+        {
+            //var reviewContainerAnswers = _ReviewAccessor.GetReviewContainerAnswers(GetUser(), id);
 
+            //var reviewContainerPeople = reviewContainerAnswers.GroupBy(x => x.AboutUserId);
+            var user = GetUser().Hydrate().ManagingUsers(true).Execute();
+
+            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true);
+            //reviewContainer.Reviews = _ReviewAccessor.GetReviewsForReviewContainer(GetUser(), id);
+
+
+            foreach (var r in reviewContainer.Reviews)
+            {
+                if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id)
+                    r.ForUser.SetPersonallyManaging(true);
+                else
+                    r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+            }
+
+            var model = new ReviewsViewModel(reviewContainer);
+
+            return View(model);
+        }*/
+
+        /*[HttpPost]
+        public ActionResult IssueDetails(IssueReviewViewModel model)
+        {
+            var reviewParams = new ReviewParameters()
+                    {
+                        ReviewManagers = model.ReviewManagers,
+                        ReviewSelf = model.ReviewSelf,
+                        ReviewSubordinates = model.ReviewSubordinates,
+                        ReviewPeers = model.ReviewPeers,
+                        ReviewTeammates = model.ReviewTeammates,
+                    };
+
+            var members=_OrganizationAccessor.GetOrganizationMembers(GetUser(),GetUser().Organization.Id,false,false);
+                       
+            var output = new IssueDetailsViewModel()
+            {
+                ReviewWho=_ReviewAccessor.GetUsersWhoReviewUsers(GetUser(), reviewParams, model.ForTeamId),
+                AvailableUsers = members.ToDictionary(x=>x.Id,x=>x)
+            };
+
+            return View(output);
+        }*/
         /*
         [HttpPost]
         [Access(AccessLevel.Manager)]
