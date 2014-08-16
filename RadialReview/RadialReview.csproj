@@ -858,6 +858,7 @@
     <Content Include="Views\Manage\Reorganize.cshtml" />
     <Content Include="Views\Reviews\DueDate.cshtml" />
     <Content Include="Views\Reviews\Delete.cshtml" />
+    <Content Include="Views\Reviews\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

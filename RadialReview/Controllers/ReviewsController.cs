@@ -51,6 +51,16 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
+        public ActionResult Index()
+        {
+            var model = GenerateReviewVM(GetUser(), DateTime.UtcNow);
+            ViewBag.Page = "Reviews";
+            ViewBag.Title = "Reviews";
+            ViewBag.Subheading = "Reviews";
+            return View(model);
+        }
+
+        [Access(AccessLevel.UserOrganization)]
         public ActionResult Outstanding(int page = 0)
         {
             var model = GenerateReviewVM(GetUser(), DateTime.UtcNow);
