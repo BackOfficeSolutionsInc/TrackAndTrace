@@ -1205,3 +1205,9 @@ color: #559DC5;
 .hover:hover {
     opacity: 1;
 }
+
+.subtext {
+    font-family: 'Lato',sans-serif;
+    font-weight: 500;
+    color: #767F99;
+}

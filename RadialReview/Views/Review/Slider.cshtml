@@ -64,14 +64,15 @@
                                    value="@((int?)(slider.Percentage*100)??0)"
                                    data-slider="true"
                                    data-slider-range="0,100"
-                                   data-slider-step="5"
+                                   data-slider-step="14.2857142857"
                                    data-slider-highlight="true"
-                                   data-slider-snap="true" />
+                                   data-slider-snap="true"
+                                />
 
 
 
                             <!--span class=" highlight"></span-->
-                            <div class="rangevalue">
+                            @*<div class="rangevalue">
                                 @if (slider.Percentage == null)
                                 {
                                     @:NA
@@ -80,7 +81,7 @@
                                 {
                                     @((int?)(slider.Percentage * 100))
                                 }
-                            </div>
+                            </div>*@
                         </div>
                     </div>
                     <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.max</h5></div>
@@ -119,7 +120,6 @@
 @using (var scripts = Html.BeginScripts())
 {
     <script>
-
         @*
         function Thumbs(id) {
             if ($("#" + id).val() == "@ThumbsType.Up") {

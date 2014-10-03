@@ -75,9 +75,10 @@
                             {
                                 if (ViewBag.Page != 0)
                                 {
-                                    <input type="submit" name="back" class="btn btn-default btn-lg" value="Back" />
+                                    <input type="submit" name="back" class="btn btn-default btn-lg submitButton" value="Back" />
                                 }
-                                <input type="submit" class="btn btn-primary btn-lg" value="Next" />
+                                <input type="submit" class="btn btn-primary btn-lg submitButton" value="Next" />
+                                <div class="subtext">You can always come back to this review later!</div>
                             }
                             @*else
                                 {
@@ -94,3 +95,41 @@
 
     </div>
 </div>
+
+@using (Html.BeginScripts())
+{
+    if (ViewBag.NoSubmit == null)
+    {
+        <script>
+            //$(function() {
+            //    document.getElementsByClassName('submitButton')[0].onclick = function() {
+            //        debugger;
+            //        window.btn_clicked = true; /*or use addEventListener ↑ */
+            //    };
+            //    $(window).beforeunload(function() {
+            //        if (!window.btn_clicked) {
+            //            return 'Are you sure you want to leave this page? Without clicking Back or Next, your changes will be lost.';
+            //        }
+            //    });/*
+            //    window.onbeforeunload = function() {
+            //        if (!window.btn_clicked) {
+            //            return 'Are you sure you want to leave this page? Without clicking Back or Next, your changes will be lost.';
+            //        }
+            //    };*/
+            //});
+            $(document).ready(function () {
+                $('.submitButton').on('mousedown', stopNavigate);
+                $('.submitButton').on('mouseleave', function () {
+                    $(window).on('beforeunload', function () {
+                        return 'Are you sure you want to leave this page? Without clicking Back or Next, your changes will be lost.';
+                    });
+                });
+            });
+
+            function stopNavigate() {
+                $(window).off('beforeunload');
+            }
+
+        </script>
+    }
+}
