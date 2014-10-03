@@ -125,7 +125,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var p in Model.Users.OrderByDescending(x => x.Managing).ThenBy(x=>-1*(x.Admin.ToInt()+x.Manager.ToInt())).ThenBy(x => x.Name))
+                @foreach (var p in Model.Users.OrderByDescending(x => x.Managing)/*.ThenBy(x=>-1*(x.Admin.ToInt()+x.Manager.ToInt()))*/.ThenBy(x => x.Name))
                 {
 
                     <tr class="@(p.Managing?"managing":"grayRow")">

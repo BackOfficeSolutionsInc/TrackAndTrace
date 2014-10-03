@@ -21,7 +21,7 @@ namespace RadialReview.Controllers
         public ActionResult Index()
         {
             //Main page
-            var page = (string)Session["Manage"] ?? "Reorganize";
+            var page = (string)Session["Manage"] ?? "Members";
             return RedirectToAction(page);
             /*
             switch (page)

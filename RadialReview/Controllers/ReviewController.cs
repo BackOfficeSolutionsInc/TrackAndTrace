@@ -315,10 +315,9 @@ namespace RadialReview.Controllers
 
             var permittedUsers = organizationUsers.Where(x => !review.Answers.Any(y => y.AboutUserId == x.Id));
 
-            var selectList = permittedUsers.Select(x => new SelectListItem() { Text = x.GetNameAndTitle(), Value = "" + x.Id }).ToList();
+            var selectList = permittedUsers.OrderBy(x=>x.GetName()).Select(x => new SelectListItem() { Text = x.GetNameAndTitle(), Value = "" + x.Id }).ToList();
 
-            var model = new AdditionalReviewViewModel()
-            {
+            var model = new AdditionalReviewViewModel(){
                 Id = id,
                 Possible = selectList,
                 Page = page
