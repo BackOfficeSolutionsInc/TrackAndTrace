@@ -117,14 +117,25 @@
             //        }
             //    };*/
             //});
+            $(".changeable").change(function () {
+                reviewChanges = true;
+            });
+
+            var onleaving= function () {
+                if (reviewChanges){
+                    return 'Are you sure you want to leave this page? Without clicking Back or Next, your changes will be lost.';
+                }
+            };
+
             $(document).ready(function () {
                 $('.submitButton').on('mousedown', stopNavigate);
                 $('.submitButton').on('mouseleave', function () {
-                    $(window).on('beforeunload', function () {
-                        return 'Are you sure you want to leave this page? Without clicking Back or Next, your changes will be lost.';
-                    });
+                    $(window).on('beforeunload', onleaving)
                 });
             });
+
+            $(window).on('beforeunload', onleaving);
+
 
             function stopNavigate() {
                 $(window).off('beforeunload');

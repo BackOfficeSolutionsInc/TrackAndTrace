@@ -22,18 +22,19 @@
                     <div class="btn-group" data-toggle="buttons">
                         <label class="btn btn-lg btn-default successRadio @(thumbs.Thumbs == ThumbsType.Up ? "active" : "")">
                             <input type="radio"
+                                   class="changeable"
                                    @(thumbs.Thumbs == ThumbsType.Up ? "checked" : "")
                                    @if (Model.Item2) { @: name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id"
-                                                                      } else {  @: disabled
-                                                                      }
+                                                                                                         } else {  @: disabled
+                                                                                                         }
                                    value="@ThumbsType.Up">
                             <span class="glyphicon glyphicon-thumbs-up"></span>
                         </label>
                         <label class="btn btn-lg btn-default dangerRadio @(thumbs.Thumbs == ThumbsType.Down ? "active" : "") ">
-                            <input type="radio" @(thumbs.Thumbs == ThumbsType.Down ? "checked" : "")
+                            <input class="changeable" type="radio" @(thumbs.Thumbs == ThumbsType.Down ? "checked" : "")
                                    @if (Model.Item2) {  @: name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id"
-                                                                      } else {  @: disabled
-                                                                      }
+                                                                                                         } else {  @: disabled
+                                                                                                         }
                                    value="@ThumbsType.Down">
 
                             <span class="glyphicon glyphicon-thumbs-down"></span>

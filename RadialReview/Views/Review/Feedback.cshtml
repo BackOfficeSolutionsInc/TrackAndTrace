@@ -13,19 +13,12 @@
                 <h4 class="alignCenter question">@f.Askable.GetQuestion()</h4>
             </div>
             <div class="col-md-6 alignRight startHidden">
-                <textarea
-                placeholder="@(f.Required ? "" : "Optional")"
-                class="feedback"
-                @if (Model.Item2)
-                {
-                    @:name="question_@(RadialReview.Models.Enums.QuestionType.Feedback)_@f.Id"
-                          }
-                else
-                {
-                    @:disabled
-                         }
+                <textarea placeholder="@(f.Required ? "" : "Optional")"
+                          class="feedback changeable"
+                          @if (Model.Item2) { @: name="question_@(RadialReview.Models.Enums.QuestionType.Feedback)_@f.Id"
+                                                    } else { @: disabled
+                                                   }>@f.Feedback</textarea>
 
-                >@f.Feedback</textarea>
             </div>
         </div>
         if ((int)ViewData["I"] < (int)ViewData["Max"])
