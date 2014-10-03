@@ -1195,3 +1195,13 @@ color: #559DC5;
 .collapseIcon {
 
 }
+
+
+.hover {
+    opacity: .6;
+    transition: opacity .2s ease;
+}
+
+.hover:hover {
+    opacity: 1;
+}

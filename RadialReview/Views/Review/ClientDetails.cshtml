@@ -136,6 +136,7 @@
         <div id="sidebar" class="sidebar noPad sidebar-fixed">
             <div class="sidebar-header alignCenter">
                 Quick Links
+                <span class="glyphicon glyphicon-print pull-right clickable hover" onclick="window.print()"></span>
             </div>
             <div class="sidebar-contents">
                 <ol>
@@ -157,10 +158,15 @@
                     {
                         <li><a href="#questionTable">Answer Distribution</a></li>
                     }
+                    @if (Model.Review.ClientReview.IncludeSelfFeedback)
+                    {
+                        <li><a href="#selfFeedback">@Model.Review.ForUser.GetName().Possessive() Answers</a></li>
+                    }
                     @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
                     {
                         <li><a href="#managerFeedback">Supervisor's Answers</a></li>
                     }
+                   
                     @if (feedbacks.Count > 0)
                     {
                         <li><a href="#feedback">Feedback</a></li>
@@ -336,6 +342,17 @@
             </div>
 
         }
+        @if (Model.Review.ClientReview.IncludeSelfFeedback)
+        {
+            <a id="selfFeedback" class="shiftByTitle"></a>
+            <div class="row-title" style="margin-bottom:10px;">@Model.Review.ForUser.GetName().Possessive() Answers</div>
+            <div class="row">
+                <div class="col-sm-12">
+                    @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
+                </div>
+            </div>
+        }
+
         @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
         {
             <a id="managerFeedback" class="shiftByTitle"></a>

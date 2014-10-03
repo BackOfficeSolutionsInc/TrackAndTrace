@@ -1,4 +1,5 @@
 ﻿body {
+    height: 0px;
 }
 
 .noPrint {
@@ -118,4 +119,12 @@
 .You {
     fill: #ffcb00;
     fill-opacity: 1;
+}
+
+#freshwidget-button {
+    display: none !important;
+}
+
+#wrap {
+ min-height: 0%; 
 }

@@ -446,7 +446,7 @@ namespace RadialReview.Controllers
         private ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
         {
             var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.Id);
-            var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId);
+            var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId).Alive().ToList();
             var managers = _UserAccessor.GetManagers(GetUser(), review.ForUserId);
 
             var user =_UserAccessor.GetUserOrganization(GetUser(),review.ForUserId,false,false);
