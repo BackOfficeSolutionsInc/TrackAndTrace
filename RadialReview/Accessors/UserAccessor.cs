@@ -690,7 +690,7 @@ namespace RadialReview.Accessors
                     var tempUser = user.TempUser;
                     if (tempUser != null)
                     {
-                        s.Delete(tempUser);
+                        //s.Delete(tempUser);
                     }
 
                     var warnings = new List<String>();
