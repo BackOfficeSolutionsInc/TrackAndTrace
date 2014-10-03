@@ -32,7 +32,7 @@
 @section header{
     @Html.Partial("_ReportsHeader")
 }
-
+<a href="top"></a>
 <div class="row">
     <div class="col-md-3 ">
         <div class="row">
@@ -47,7 +47,7 @@
                     <div class="sidebar-header" style="padding-left: 20px;">
                         <div class="row alignCenter">
                             <div class="col-lg-5" style="padding-top: 5px;">
-                                <span>Share</span>
+                                <span> <div style="font-size:18px">Share with Employee</div></span>
                             </div>
                             <div class="col-lg-7 noPad">
                                 <input id="Authorize"
@@ -86,12 +86,19 @@
                         @*Feedback*@
                         <h4 class="alignCenter">Feedback</h4>
                         <ul class="noBullet" id="feedbacks">
-                            @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete && Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())
+                            @*&& Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())*@
+                            @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>())
                             {
+                                var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
+                                            
                                 <li class="feedback feedback_@feedback.Id">
-                                    @feedback.Feedback
-                                    <span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
-                                </li>
+                                    @*<input name="feedback_input_@feedback.Id" onchange="SetFeedback(@feedback.Id)">*@
+                                <span title="@feedback.Feedback">@feedback.ByUser.GetName()</span>
+
+
+                                <input class="pull-right feedback_input_@feedback.Id" type="checkbox" @(on?"checked":"") onchange="OnclickFeedback(this,@feedback.Id)" />
+                                @*<span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>*@
+                            </li>
                             }
                         </ul>
                         <hr />
@@ -123,7 +130,7 @@
                         @Html.TextAreaFor(x => x.Review.ClientReview.ManagerNotes, new { placeholder = "Optional notes...", style = "width:100%;height:150px;resize:vertical;border: 1px solid #DBDBDB;", id = "ManagerNotes" })
                         <hr />
                         <div class="alignCenter">
-                            <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View</div>
+                            <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View/Print</div>
                             <div class="smallBreak"></div>
                         </div>
                     </div>
@@ -275,35 +282,37 @@
 
                             @if (feedbacks.Count() > 0)
                             {
-                            <table class="fullWidth">
-                                <tr>
-                                    <th></th>
-                                    <th style="width:120px">By</th>
-                                    <th>Feedback</th>
-                                    <th class="rightButton alignCenter">Included</th>
-                                </tr>
-                                @foreach (var feedback in feedbacks)
-                                    {
-                                    <tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
-                                        <td></td>
-                                        <td>@feedback.ByUser.GetName()</td>
-                                        <td class="text">@feedback.Feedback</td>
-                                        <td class="alignCenter clickable">
-                                            @{
-                                        var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
-                                            }
-                                            <div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">
-                                            </div>
-                                        </td>
+                                <table class="fullWidth">
+                                    <tr>
+                                        <th></th>
+                                        <th style="width:120px">By</th>
+                                        <th>Feedback</th>
+                                        <th class="rightButton alignCenter">Included</th>
                                     </tr>
+                                    @foreach (var feedback in feedbacks)
+                                    {
+                                        <tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
+                                            <td></td>
+                                            <td>@feedback.ByUser.GetName()</td>
+                                            <td class="text">@feedback.Feedback</td>
+                                            <td class="alignCenter clickable">
+                                                @{
+                                                var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
+                                                }
+                                                <input @(on ? "checked" : "") class="feedback_input_@feedback.Id" type="checkbox" onchange="OnclickFeedback(this,@feedback.Id)" />
+
+
+                                                @*<div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">    </div>*@
+                                            </td>
+                                        </tr>
                                     }
-                            </table>
+                                </table>
                             }
                             else
                             {
-                            <div class="panel-body gray">
-                                No feedback has been supplied.
-                            </div>
+                                <div class="panel-body gray">
+                                    No feedback has been supplied.
+                                </div>
                             }
                         </div>
                     </div>
@@ -519,14 +528,20 @@
             });
         }
 
+        function OnclickFeedback(self,id) {
+            SetFeedback(id, $(self).is(':checked'));
+        }
+
         function SetFeedback(id, on) {
             var dat = new Object();
             dat.feedbackId = id;
             dat.reviewId = "@Model.Review.Id";
-            if (on === undefined) {
+            /*if (on === undefined) {
                 on = !$(".feedback_" + id + " .check").hasClass("on");
-            }
+            }*/
             dat.on = on;
+
+            $(".feedback_input_" + id /*+ " .check"*/).prop("disabled", true);
 
             $.ajax({
                 url: "/Review/SetFeedback",
@@ -534,19 +549,25 @@
                 method: "GET",
                 success: function (data) {
                     if (data.Object) {
-                        if (data.Object.On) {
-                            $(".feedback_" + data.Object.FeedbackId + " .check").addClass("on");
-                            var text = $(".feedback_" + data.Object.FeedbackId + " .text").html();
-                            var toAppend = '<li class="feedback feedback_' + data.Object.FeedbackId + '">' + text + '<span onclick="SetFeedback(' + data.Object.FeedbackId + ',false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></li>';
-                            $("#feedbacks").append(toAppend);
-                        } else {
-                            $(".feedback_" + data.Object.FeedbackId + " .check").removeClass("on");
-                            $("#feedbacks .feedback_" + data.Object.FeedbackId).remove();
+                        if (on != data.Object.On) {
+                            showAlert("An error occurred.");
+                            location.href = "#top";
                         }
+                        $(".feedback_input_" + data.Object.FeedbackId /*+ " .check"*/).prop("checked", data.Object.On);
+                        //if (data.Object.On) {
+                        //    $(".feedback_" + data.Object.FeedbackId + " .check").addClass("on");
+                        //    var text = $(".feedback_" + data.Object.FeedbackId + " .text").html();
+                        //    var toAppend = '<li class="feedback feedback_' + data.Object.FeedbackId + '">' + text + '<span onclick="SetFeedback(' + data.Object.FeedbackId + ',false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></li>';
+                        //    $("#feedbacks").append(toAppend);
+                        //} else {
+                        //    $(".feedback_" + data.Object.FeedbackId + " .check").removeClass("on");
+                        //    $("#feedbacks .feedback_" + data.Object.FeedbackId).remove();
+                        //}
                     }
                 },
                 complete: function () {
                     UpdateFeedbacks();
+                    $(".feedback_input_" +id /*+ " .check"*/).prop("disabled", false);
                 }
             })
         }
@@ -564,7 +585,7 @@
             @if(!((bool?)ViewBag.Hints ?? true))
             {
                 @:return true;
-                                                                                                                                                                                    }
+                                                                                                                                                                                                }
 
             return ($("#charts tr").size() != 0 || $("#feedbacks li").size() != 0 || $("#includes li .includable.on").size() != 0);
         }
