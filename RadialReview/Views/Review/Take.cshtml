@@ -125,7 +125,9 @@
 
                 slideUpdate.call(this,data);
             });
-
+            $(".sliderBar").each(function (d) {
+                slideUpdate.call(this, this);
+            });
             $('.btn-group').button();
 
 
