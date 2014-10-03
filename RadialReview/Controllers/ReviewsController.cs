@@ -57,7 +57,7 @@ namespace RadialReview.Controllers
             ViewBag.Page = "Reviews";
             ViewBag.Title = "Reviews";
             ViewBag.Subheading = "Reviews";
-            return View(model);
+            return RedirectToAction("Outstanding");
         }
 
         [Access(AccessLevel.UserOrganization)]

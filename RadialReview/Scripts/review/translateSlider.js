@@ -28,7 +28,8 @@ function sliderToColor(value) {
 
 $(function () {
     $(".percentage").each(function () {
-        var value = parseFloat($(this).html()) * 100;
+        debugger;
+        var value = parseFloat($(this).html());// * 100;
         var text = sliderToText(value);
         $(this).html(text);
     });
