@@ -76,8 +76,45 @@ function SetManagerAnswers() {
     });
 }
 
-function OnclickSelfAnswers(self) {
+function UpdateInclude(url, on, inputs) {
+    inputs.prop("disabled", true);
+    var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
+    $.ajax({
+        url: url,
+        data: dat,
+        method: "GET",
+        success: function (data) {
+            if (data.Object && on == data.Object.On) {
+                inputs.prop("checked", data.Object.On);
+            } else {
+                clearAlerts();
+                showAlert("An error occurred.");
+                console.log(data.Object);
+                location.href = "#top";
+            }
+        },
+        complete: function () {
+            UpdateFeedbacks();
+            inputs.prop("disabled", false);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            clearAlerts();
+            showAlert("An error occurred.");
+            console.log("Error:" + textStatus);
+            console.log(errorThrown);
+            location.href = "#top";
+        }
+    });
 
+}
+
+function OnclickSelfAnswers(self) {
+    debugger;
+    console.error("wat");
+}
+
+function OnclickScatter(self) {
+    UpdateInclude("/Review/SetIncludeScatter", $(self).is(':checked'), $(".includeScatter"));
 }
 
 function SetSelfAnswers() {
@@ -320,7 +357,6 @@ function update(reset) {
     
     $(".group:checked").each(function (x) {
 
-
         var split = $(this).data("class").split(" ");
 
         if (split[0] == "")
@@ -368,8 +404,8 @@ chart.Pull(dataUrl, null, function (dat) {
     AllScatterData = dat;
     for (var key in dat.Dimensions) {
         var item = dat.Dimensions[key];
-        $("#xAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>")
-        $("#yAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>")
+        $("#xAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>");
+        $("#yAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>");
     }
 
     $("#xAxis").val(dat.InitialXDimension);

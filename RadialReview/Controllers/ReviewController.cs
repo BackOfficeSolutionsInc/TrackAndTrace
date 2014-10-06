@@ -298,7 +298,7 @@ namespace RadialReview.Controllers
             public List<Tuple<String, bool>> OrderedPeople { get; set; }
 
         }
-
+        
         [HttpPost]
         [Access(AccessLevel.Manager)]
         public JsonResult SetNotes(long id, string notes)
@@ -516,6 +516,8 @@ namespace RadialReview.Controllers
             }
         }
 
+
+
         [Access(AccessLevel.UserOrganization)]
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult ClientDetails(long id,bool print=false,bool reviewing=false)
@@ -538,6 +540,22 @@ namespace RadialReview.Controllers
             }
         }
 
+
+        [Access(AccessLevel.Manager)]
+        public JsonResult SetIncludeScatter(long reviewId, bool on)
+        {
+            _ReviewAccessor.SetIncludeScatter(GetUser(), reviewId, on);
+            return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+        }
+        [Access(AccessLevel.Manager)]
+        public JsonResult SetIncludeTimeline(long id, bool on)
+        {
+            var reviewId = id;
+            _ReviewAccessor.SetIncludeTimeline(GetUser(), reviewId, on);
+            return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+        }
+
+
         [Access(AccessLevel.Manager)]
         public JsonResult SetFeedback(long feedbackId, long reviewId, bool on)
         {
@@ -550,7 +568,6 @@ namespace RadialReview.Controllers
         public JsonResult SetIncludeTable(long reviewId, bool on)
         {
             _ReviewAccessor.SetIncludeQuestionTable(GetUser(), reviewId, on);
-
             return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
         }
 

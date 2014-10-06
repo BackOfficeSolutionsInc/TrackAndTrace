@@ -1222,7 +1222,10 @@ color: #559DC5;
 }
 
 .info:after {
-    font-size: 70%;
+    font-size: 85%;
     color: #767F99;
     content: "[?]";
+    width: 4px;
+    margin-right: -7px;
+    display: inline-block;
 }

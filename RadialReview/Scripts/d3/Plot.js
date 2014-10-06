@@ -218,9 +218,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     var yAxisTitle = d3.select("#" + this.id + " svg g.yAxisTitle text");
     var title = d3.select("#" + this.id + " svg g.title text");
 
-    options.legendFunc(scatterData.Legend,this);
-    svgContainer.attr("class",options.extraClasses.join(" "));
-
+    options.legendFunc(scatterData.Legend, this);
 
     if (options.reset) {
         if (d3.select(".scatter-tooltip")[0][0]==null) {
@@ -303,6 +301,8 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
             .attr("height", this.legendHeight);
 
     }
+
+    svgContainer.attr("class", options.extraClasses.join(" "));
 
     xAxisTitle.text(options.xAxis);
     yAxisTitle.text(options.yAxis);
@@ -561,15 +561,19 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 
     //On first call:
     var dataset = container.selectAll(".scatter-point").data(dataPoints, dataIdFunction);
-    dataset.enter()
-           .append("circle")
-           .attr("cx", xMap)
-           .attr("cy", yMap);
+    //dataset.enter().append("circle").attr("cx", xMap).attr("cy", yMap);
+    dataset.enter().append("g")
+        .attr("transform", function(d) {
+            var x = xMap(d);
+            var y = yMap(d);
+            return "translate(" + x + "," + y + ")";
+        }).append("circle").attr("cx", 0).attr("cy", 0).attr("r",10).classed("point",true);
 
-    dataset.exit().transition().duration(200)
-        .attr("r",0)
-        .style("opacity", "0")
-        .remove();
+    var onExit = dataset.exit().transition().duration(200);
+    onExit.remove();
+    onExit.select(".point")
+        .attr("r", 0)
+        .style("opacity", "0");
 
     dataset.attr("class", function (d) {
         try {
@@ -683,12 +687,13 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         .delay(function (d) { return 0; })
         .duration(500).ease("exp-in-out");
     }
-    pointSet.attr("cx", xMap)
-    .attr("cy", yMap)
-    .attr("r", function (d) {
-        return that.pointRadius;
-    });
-
+    //pointSet.attr("cx", xMap).attr("cy", yMap).attr("r", function (d) {return that.pointRadius;});
+    
+    pointSet.attr("transform", function (d) {
+        var x = xMap(d);
+        var y = yMap(d);
+        return "translate(" + x + "," + y + ")";
+    })
 
     lineSet.attr("class", function (d) {
         return "scatter-link " + d.Class + " " + d.Dimensions[options.xDimensionId].Class + " " + d.Dimensions[options.yDimensionId].Class;

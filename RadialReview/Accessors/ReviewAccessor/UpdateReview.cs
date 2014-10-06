@@ -581,6 +581,40 @@ namespace RadialReview.Accessors
             }
         }
 
+        public void SetIncludeScatter(UserOrganizationModel caller, long reviewId, bool on)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.IncludeScatterChart = on;
+                    s.Update(review);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+        public void SetIncludeTimeline(UserOrganizationModel caller, long reviewId, bool on)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.IncludeTimelineChart = on;
+                    s.Update(review);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+
         public void SetIncludeQuestionTable(UserOrganizationModel caller, long reviewId, bool on)
         {
             using (var s = HibernateSession.GetCurrentSession())
