@@ -22,7 +22,6 @@
 {
     <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
     <style>
-
         .jumbotron.reviewing {
             background-color: rgba(255, 60, 60, 0.14);
             -moz-transition: background-color .2s ease-in-out;
@@ -33,9 +32,9 @@
 
             .jumbotron.reviewing.on {
                 background-color: rgba(60, 255, 99, 0.14);
-            } 
-        
-        
+            }
+
+
 
         .chart {
             width: 600px;
@@ -107,22 +106,26 @@
             margin-top: 20px;
         }
 
+        .subtitle {
+            font-size: 23px;
+        }
+
         .fixed {
             position: fixed;
             top: 60px;
         }
 
-            .row-title.first {
-                margin-top: -30px;
-                padding-top: 20px;
-                padding-bottom: 15px;
-                /*color: #84858B;*/
-                border-top-left-radius: 9px;
-                border-top-right-radius: 9px;
-                font-size: 30px;
-                margin-bottom: 25px;
-                border-top: 1px solid #E0E0E0;
-            }
+        .row-title.first {
+            margin-top: -30px;
+            padding-top: 0px;
+            padding-bottom: 10px;
+            /*color: #84858B;*/
+            border-top-left-radius: 9px;
+            border-top-right-radius: 9px;
+            font-size: 38px;
+            margin-bottom: 10px;
+            border-top: 1px solid #E0E0E0;
+        }
     </style>
     <link href="~/Content/chart.css" rel="stylesheet" />
     <link href="~/Content/print.css" media="print" rel="stylesheet" />
@@ -166,7 +169,7 @@
                     {
                         <li><a href="#managerFeedback">Supervisor's Answers</a></li>
                     }
-                   
+
                     @if (feedbacks.Count > 0)
                     {
                         <li><a href="#feedback">Feedback</a></li>
@@ -186,9 +189,12 @@
     <div class="col-lg-9 review" style="min-width:660px;">
         <div class="noBreak">
             <a id="name" class="shiftByTitle"></a>
-            <div class="row-title first" style="">Review: @Model.Review.Name</div>
+            <div class="row-title first" style="">
+                <div>@Model.Review.ForUser.GetName()</div>
+                <div class="subtitle">@Model.Review.Name</div>
+            </div>
+
             <div>
-                <div class="name">Name: @Model.Review.ForUser.GetName()</div>
                 <div class="role">Role: @Model.Review.ForUser.GetTitles()</div>
             </div>
 
@@ -311,22 +317,22 @@
                 <div class="row-title">@chart.Title</div>
                 <div class="row">
                     @*<div class="col-xs-9">*@
-                        <div class="legend pull-right" id="legend_chart_@chart.Id"></div>
-                        <div class="chart"
-                             id="chart_@chart.Id"
-                             data-id="@chart.Id"
-                             data-start="@chart.StartDate.ToJavascriptMilliseconds()"
-                             data-end="@chart.EndDate.ToJavascriptMilliseconds()"
-                             data-xaxis="@chart.Item1"
-                             data-yaxis="@chart.Item2"
-                             data-title="@chart.Title">
-                            <!--Chart Goes Here-->
-                        </div>
+                    <div class="legend pull-right" id="legend_chart_@chart.Id"></div>
+                    <div class="chart"
+                         id="chart_@chart.Id"
+                         data-id="@chart.Id"
+                         data-start="@chart.StartDate.ToJavascriptMilliseconds()"
+                         data-end="@chart.EndDate.ToJavascriptMilliseconds()"
+                         data-xaxis="@chart.Item1"
+                         data-yaxis="@chart.Item2"
+                         data-title="@chart.Title">
+                        <!--Chart Goes Here-->
+                    </div>
                     @*</div>
-                    <div class="col-xs-3">
+                        <div class="col-xs-3">
 
-                        <div class="legend" id="legend_chart_@chart.Id"></div>
-                    </div>*@
+                            <div class="legend" id="legend_chart_@chart.Id"></div>
+                        </div>*@
                 </div>
             </div>
         }
@@ -410,19 +416,19 @@
     <script>
         var $sidebar = $("#sidebar"), $window = $(window), offset = $sidebar.offset(), topPadding = 60;
 
-            $window.scroll(function () {
-                if ($window.scrollTop() > offset.top-topPadding) {
-                    $sidebar.addClass('fixed');
-                } else {
-                    $sidebar.removeClass('fixed');
-                }
-            });
+        $window.scroll(function () {
+            if ($window.scrollTop() > offset.top - topPadding) {
+                $sidebar.addClass('fixed');
+            } else {
+                $sidebar.removeClass('fixed');
+            }
+        });
 
         var categoryLookup = {
             @foreach (var kv in Model.Categories)
             {
                     @:"@(kv.Key)": "@(kv.Value)",
-                                                                                                                                                                            }
+                                                                                                                                                                                        }
         };
 
         var updates = [];

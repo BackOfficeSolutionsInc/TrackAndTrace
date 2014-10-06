@@ -1,0 +1,18 @@
+﻿@model object
+@{
+    var partialViewName = (string)ViewData["PartialViewName"] ?? "";
+    var sectionTitle = (string)ViewData["SectionTitle"] ?? "";
+    var sectionId = "pvn_" + Guid.NewGuid();
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading panel-square">
+        <a class="collapseHeading " data-toggle="collapse" data-parent="#accordion" href="#collapse@(sectionId)">
+            <div class="collapseIcon glyphicon glyphicon-collapse-down"></div>
+            <h3 class="panel-title" style="padding-left: 12px;">@sectionTitle</h3>
+        </a>
+    </div>
+    <div id="collapse@(sectionId)" class="panel-collapse collapse in remember" style="padding: 8px;">
+        @Html.Partial(partialViewName, Model, ViewData)
+    </div>
+</div>

@@ -1,0 +1,94 @@
+﻿<div class="noselect">
+    <form id="controls">
+        <div class="row" style="padding-top:5px">
+
+            <div class="hidden">
+                <b style="padding-left: 28px;">Axis:</b>
+                <div style="height: 75px; margin-top: 3px; clear: both; width: 100%; padding-left: 10px;">
+                    @*<li>X<select id="xAxis" class="form-control inlineBlock" style=""></select></li>
+                        <li>Y<select id="yAxis" class="form-control inlineBlock"></select></li>*@
+                    <table class="fullWidth">
+                        <tr>
+                            <td><b>X</b></td>
+                            <td><select id="xAxis" class="form-control inlineBlock"></select></td>
+                        </tr>
+                        <tr>
+                            <td><b>Y</b></td>
+                            <td><select id="yAxis" class="form-control inlineBlock"></select></td>
+                        </tr>
+                    </table>
+                </div>
+                @*<table class="pull-right">
+                        <tr>
+                            <td><h4 class="axisTitle ">X</h4></td>
+                            <td><select id="xAxis" class="form-control inlineBlock"></select></td>
+                        </tr>
+                        <tr>
+                            <td><h4 class="axisTitle ">Y</h4></td>
+                            <td><select id="yAxis" class="form-control inlineBlock"></select></td>
+                        </tr>
+                    </table>*@
+            </div>
+            <div class="col-xs-4 col-sm-offset-1">
+                <b>Separate by:</b>
+                <div style="overflow-y: auto; overflow-x: hidden; height: 90px; border: 1px solid #CACACA; padding-left: 5px;">
+                    <ul class="noBullet separation" id="groupSet">
+                        <li>
+                            <input name="separate" id="separateUsers" class="update group remember" type="radio" data-class="user-*" value="user-*" />
+                            <label for="separateUsers">Users</label>
+                        </li>
+                        <li>
+                            <input name="separate" id="separateRelationship" class="update group remember" type="radio" data-class="about-*" value="about-*" />
+                            <label for="separateRelationship">Relationship</label>
+                        </li>
+                        <li>
+                            <input checked name="separate" id="separateReview" class="update group remember" type="radio" data-class value />
+                            <label for="separateReview">Review</label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-xs-4 noPad">
+                <b>Filter By:</b>
+                <div id="filtersContainer" class="hidden" style="overflow-y: auto; overflow-x: hidden; height: 90px; border: 1px solid #CACACA; padding-left: 5px;">
+                    <ul id="filterSet" class="noBullet separation" style="/*zoom: 67%;*/"></ul>
+                </div>
+            </div>
+            <div class="col-xs-2 noPad alignCenter">
+                <div class="btn btn-default" onclick="IncludeChart()">Add Chart</div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="row noselect">
+    <div class="col-md-12">
+        <div class="alignCenter">
+            <div class="" style="width: calc( 100% - 145px ); float: left; padding-left: 13px;">
+                <div id="chart" class="inline ">
+                    <!--Chart Goes Here-->
+                </div>
+            </div>
+            <div style="width: 136px; float: right;">
+                <div id="legend" class="legend inline">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="clear: both;padding-top: 10px;">
+        <div class="col-xs-3">
+            <div id="StartDate" class="bordered alignCenter">--</div>
+        </div>
+        <div class="col-xs-6">
+            <div id="DateSlider"></div>
+        </div>
+        <div class="col-xs-3">
+            <div id="EndDate" class="bordered alignCenter">--</div>
+        </div>
+    </div>
+    <br />
+</div>
+<div class="row alignCenter" style="font-size:80%;">
+    <div class="col-xs-3"></div>
+    <div class="col-xs-3"><div class="clickable" onclick="collapseAll();">(Hide All)</div></div>
+    <div class="col-xs-3"><div class="clickable" onclick="expandAll();">(Show All)</div></div>
+</div>

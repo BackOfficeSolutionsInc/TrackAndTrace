@@ -130,6 +130,8 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     options.yAxis = options.yAxis || "y";
     options.title = options.title || "";
 
+    options.extraClasses = options.extraClasses || "";
+
     options.xDimensionId = options.xDimensionId || scatterData.InitialXDimension;
     options.yDimensionId = options.yDimensionId || scatterData.InitialYDimension;
 
@@ -217,6 +219,8 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     var title = d3.select("#" + this.id + " svg g.title text");
 
     options.legendFunc(scatterData.Legend,this);
+    svgContainer.attr("class",options.extraClasses.join(" "));
+
 
     if (options.reset) {
         if (d3.select(".scatter-tooltip")[0][0]==null) {
@@ -257,7 +261,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                     .attr("y1", topLeft.y + height / 2)
                     .attr("y2", topLeft.y + height / 2);
         xAxisTitle = container.append("g")
-                        .attr("transform", function (d) { return "translate(" + (topLeft.x + width / 2) + "," + (topLeft.y + height + 43) + ")"; })
+                        .attr("transform", function (d) { return "translate(" + (topLeft.x + width *.10) + "," + (topLeft.y + height/2 - 2) + ")"; })
                         .attr("class", "xAxisTitle axisTitle")
                         .append("text")
                         .attr("text-anchor", "middle");
@@ -269,7 +273,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                     .call(yAxis);
 
         yAxisTitle = container.append("g")
-                        .attr("transform", function (d) { return "translate(" + (topLeft.x - 33) + "," + (topLeft.y + height / 2) + ")"; })
+                        .attr("transform", function (d) { return "translate(" + (topLeft.x +width/2 -2) + "," + (topLeft.y + height *.90) + ")"; })
                         .attr("class", "yAxisTitle axisTitle")
                         .append("text")
                         .attr("text-anchor", "middle")

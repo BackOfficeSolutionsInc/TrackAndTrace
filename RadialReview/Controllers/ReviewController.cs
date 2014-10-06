@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using System.Collections;
+using Microsoft.AspNet.SignalR;
 using RadialReview.Accessors;
 using RadialReview.Engines;
 using RadialReview.Exceptions;
@@ -427,7 +428,15 @@ namespace RadialReview.Controllers
             public List<ResponsibilityModel> Questions { get; set; }
             public List<UserOrganizationModel> Supervisers { get; set; }
             public List<ResponsibilityModel> ActiveQuestions { get; set; }
+            public List<ChartType> ChartTypes { get; set; }
 
+            public class ChartType
+            {
+                public String Title { get; set; }
+                public String ImageUrl { get; set; }
+                public bool Checked { get; set; }
+
+            }
 
             public ReviewDetailsViewModel()
             {
@@ -460,6 +469,13 @@ namespace RadialReview.Controllers
 
             var questions = _ResponsibilitiesAccessor.GetResponsibilitiesForUser(GetUser(), review.ForUserId);
             var activeQuestions = questions.Where(x => answers.Any(y => y.Askable.Id == x.Id)).ToList();
+
+            var chartTypes = new List<ReviewDetailsViewModel.ChartType>();
+            chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Aggregate All",               ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/AggAll.png" });
+            chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Aggregate By Relationship",   ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/AggByRelation.png" });
+            chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Show All",                    ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/All.png" });
+            chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Show All (Uncolored)",        ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/AllGray.png" });
+
             var model = new ReviewDetailsViewModel()
             {
                 Review = review,
@@ -471,7 +487,8 @@ namespace RadialReview.Controllers
                 Supervisers =managers,
                 Questions = questions,
                 ActiveQuestions = activeQuestions,
-                JobDescription = user.JobDescription,                
+                JobDescription = user.JobDescription,
+                ChartTypes = chartTypes,
             };
             return model;
         }

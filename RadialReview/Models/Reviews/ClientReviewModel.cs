@@ -16,9 +16,14 @@ namespace RadialReview.Models.Reviews
         public virtual long ReviewId { get; set; }
         public virtual IList<LongModel> FeedbackIds { get; set; }
         public virtual IList<LongTuple> Charts { get; set; }
+
+        public virtual LongTuple ScatterChart { get; set; }
+
         public virtual Boolean IncludeManagerFeedback { get; set; }
         public virtual Boolean IncludeQuestionTable { get; set; }
         public virtual bool IncludeSelfFeedback { get; set; }
+        public virtual bool IncludeScatterChart { get; set; }
+        public virtual bool IncludeTimelineChart { get; set; }
         public virtual bool Visible { get; set; }
         public virtual String ManagerNotes { get; set; }
         public virtual DateTime? SignedTime { get; set; }
@@ -32,6 +37,8 @@ namespace RadialReview.Models.Reviews
         {
             FeedbackIds = new List<LongModel>();
             Charts = new List<LongTuple>();
+            ScatterChart = new LongTuple();
+
         }
 
     }
@@ -47,7 +54,13 @@ namespace RadialReview.Models.Reviews
             Map(x => x.IncludeManagerFeedback);
             Map(x => x.IncludeQuestionTable);
             Map(x => x.IncludeSelfFeedback);
+
+            Map(x => x.IncludeScatterChart);
+            Map(x => x.IncludeTimelineChart);
+
             Map(x => x.SignedTime);
+
+            References(x => x.ScatterChart);
 
             HasMany(x => x.FeedbackIds)
                 .Not.LazyLoad()

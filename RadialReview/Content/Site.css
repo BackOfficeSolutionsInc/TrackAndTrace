@@ -558,7 +558,7 @@ body {
     transition: 0.15s linear !important;
 }
 
-    .drag ul.dragging, .drop ul.dragging: {
+    .drag ul.dragging, .drop ul.dragging{
         border: 2px dashed #dbe3e5;
         -webkit-transition: 0.15s linear !important;
         -moz-transition: 0.15s linear !important;
@@ -599,8 +599,8 @@ body {
 
 
 /* Set width on the form input elements since they're 100% wide by default */
-input, select, textarea; {
-    max-width: 280px;
+input, select, textarea {
+    /*max-width: 280px;*/
 }
 
 /* styles for validation helpers */
@@ -1193,8 +1193,17 @@ color: #559DC5;
 
 
 .collapseIcon {
-
+    display: inline-block;
+    float: left;
+    pointer-events: none;
+    margin-left: -6px;
 }
+/*.collapsed .collapseIcon:after {
+    content: "[-]";
+}
+.collapseIcon:after {
+    content: "[+]";
+}*/
 
 
 .hover {
@@ -1210,4 +1219,10 @@ color: #559DC5;
     font-family: 'Lato',sans-serif;
     font-weight: 500;
     color: #767F99;
+}
+
+.info:after {
+    font-size: 70%;
+    color: #767F99;
+    content: "[?]";
 }

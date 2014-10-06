@@ -1,0 +1,42 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+@using RadialReview.Models;
+
+<div class="sidebar noPad">
+    <div class="sidebar-header" style="padding-left: 20px;">
+        <div class="row alignCenter">
+            <div class="col-lg-5" style="padding-top: 5px;">
+                <span> <div style="font-size:18px">Share with Employee</div></span>
+            </div>
+            <div class="col-lg-7 noPad">
+                <input id="Authorize"
+                       type="checkbox" @(Model.Review.ClientReview.Visible ? "checked" : "")
+                       class="switch switch-large fullWidth"
+                       style="min-width:128px;"
+                       data-on-color="success"
+                       data-off-color="danger"
+                       data-on-text="Sharing"
+                       data-off-text="Private"
+                       data-size="large"
+                       data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-contents">
+
+        <h4 class="alignCenter">Charts</h4>
+        <input class="pull-right" type="checkbox" @(Model.Review.ClientReview.IncludeScatterChart ? "checked" : "") onchange="OnclickScatter(this)" />
+
+        <div>
+            Chart
+            <input type="checkbox" />
+        </div>
+        @{
+            var visible = Model.Review.ClientReview.Visible;
+        }
+        <div class="alignCenter">
+            <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View/Print</div>
+            <div class="smallBreak"></div>
+        </div>
+    </div>
+</div>

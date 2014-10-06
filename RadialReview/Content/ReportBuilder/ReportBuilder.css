@@ -1,0 +1,190 @@
+﻿.jumbotron.authorized {
+    background-color: rgba(255, 60, 60, 0.14);
+    -moz-transition: background-color .2s ease-in-out;
+    -o-transition: background-color .2s ease-in-out;
+    -webkit-transition: background-color .2s ease-in-out;
+    transition: background-color .2s ease-in-out;
+}
+
+    .jumbotron.authorized.on {
+        background-color: rgba(60, 255, 99, 0.14);
+    }
+
+
+.panel {
+    margin-bottom: 0px;
+}
+
+.collapseHeading {
+    color: white;
+}
+
+    .collapseHeading:hover {
+        color: white;
+    }
+
+.unsigned {
+    cursor: default;
+    color: #EEC8C8;
+    -moz-transition: color 0.3s ease;
+    -o-transition: color 0.3s ease;
+    -webkit-transition: color 0.3s ease;
+    transition: color 0.3s ease;
+}
+
+    .unsigned:hover {
+        color: #F55F5F;
+    }
+
+.includable {
+    float: right;
+    width: 70px;
+    margin-top: 9px;
+    margin-right: 14px;
+    cursor: pointer;
+}
+
+    .includable:hover .text {
+        visibility: inherit;
+        color: #B8B8B8;
+    }
+
+    .includable:hover .light-icon {
+        opacity: 1;
+    }
+
+    .includable .light-icon {
+        opacity: .4;
+        width: 12px;
+        height: 12px;
+        float: right;
+        margin-top: 4px;
+        background-image: url("/Content/img/redlight.png");
+        -moz-transition: opacity .2s ease-in-out;
+        -o-transition: opacity .2s ease-in-out;
+        -webkit-transition: opacity .2s ease-in-out;
+        transition: opacity .2s ease-in-out;
+    }
+
+    .includable.on .light-icon {
+        background-image: url("/Content/img/greenlight.png");
+    }
+
+    .includable .text {
+        float: left;
+        visibility: hidden;
+    }
+
+    .includable:not(.on) .text:before {
+        content: "Excluded";
+    }
+
+    .includable.on .text:before {
+        content: "Included";
+    }
+
+.legend {
+    position: absolute;
+    right: 0px;
+    padding-right: 25px;
+}
+
+    .legend .container {
+        margin-top: 30px;
+        border: 1px solid #E7E7E7;
+        padding: 10px;
+        -webkit-print-color-adjust: exact;
+        text-align: left;
+    }
+
+    .legend .title {
+        font-size: 16px;
+    }
+
+    .legend .circle {
+        border: 1px solid black;
+        border-radius: 6px;
+        width: 12px;
+        height: 12px;
+        display: inline-block;
+        margin-right: 5px;
+    }
+/*
+        .btn.includable {
+            opacity: .45;
+            -moz-transition: opacity 200ms ease;
+            -o-transition: opacity 200ms ease;
+            -webkit-transition: opacity 200ms ease;
+            transition: opacity 200ms ease;
+        }
+
+            .btn.includable:hover {
+                opacity: 1;
+            }
+
+
+            .btn.includable.on {
+                color: #FFF;
+                background-color: #5CB85C;
+                border-color: #4CAE4C;
+            }
+
+            .btn.includable:not(.on) {
+                color: #FFF;
+                background-color: #D9534F;
+                border-color: #D43F3A;
+            }*/
+.chartButton; {
+    top: 39px;
+    position: absolute;
+    right: 39px;
+}
+
+.save {
+    position: absolute;
+    right: 26px;
+    display: inline-block;
+    border: 1px solid #AFADAD;
+    padding: 3px;
+    border-bottom-left-radius: 3px;
+    background-color: #D1FCD1;
+    opacity: 0;
+    -webkit-transition: all .10s ease;
+    -moz-transition: all .10s ease;
+    -ms-transition: all .10s ease;
+    -o-transition: all .10s ease;
+    transition: all .10s ease;
+}
+
+.saving {
+    opacity: .5;
+}
+
+.has-switch {
+}
+
+#chart {
+    /*width: 650px;*/
+    height: 650px;
+    position: relative;
+    margin: auto;
+}
+
+.separation label {
+    font-weight: normal;
+    margin-bottom: 0px;
+}
+
+#charts:empty:after {
+    content: "No charts";
+    color: #aaa;
+}
+
+#feedbacks:empty:after {
+    content: "No feedback";
+    color: #aaa;
+}
+
+ul.empty:empty {
+    content: "Nothing to display.";
+}

@@ -1,0 +1,95 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+@using RadialReview.Models;
+
+<div class="noselect">
+    <form id="controls">
+        <div class="row" style="padding-top:5px">
+            <div class="hidden">
+                <b style="padding-left: 28px;">Axis:</b>
+                <div style="height: 75px; margin-top: 3px; clear: both; width: 100%; padding-left: 10px;">
+                    <table class="fullWidth">
+                        <tr>
+                            <td><b>X</b></td>
+                            <td><select id="xAxis" class="form-control inlineBlock"></select></td>
+                        </tr>
+                        <tr>
+                            <td><b>Y</b></td>
+                            <td><select id="yAxis" class="form-control inlineBlock"></select></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-xs-4 col-sm-offset-1">
+                <b>Aggregate by:</b>
+                <div style="overflow-y: auto; overflow-x: hidden; height: 90px; border: 1px solid #CACACA; padding-left: 5px;">
+                    <ul class="noBullet separation" id="groupSet">
+                        <li>
+                            <input name="separate" id="separateUsers" class="update group remember" type="radio" data-class="user-*" data-addclass="separateUser" value="user-*" />
+                            <label for="separateUsers">Users</label>
+                            <span class="info" title="Each user will show up as a dot on the chart."></span>
+                        </li>
+                        <li>
+                            <input name="separate" id="separateRelationship" class="update group remember" type="radio" data-class="about-*" data-addclass="separateAbout" value="about-*" />
+                            <label for="separateRelationship">Relationship</label>
+                            <span class="info" title="Each dot represents the average of each relationship group."></span>
+                        </li>
+                        <li >
+                            <input checked name="separate" id="separateReview" class="update group remember" type="radio" data-addclass="separateReview" data-class value />
+                            <label for="separateReview">Review</label>
+                            <span class="info" title="The dot represents the aggregate average for this individual."></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-xs-4 hidden">
+                <b>Other Options:</b>
+                <div style="overflow-y: auto; overflow-x: hidden; height: 90px; border: 1px solid #CACACA; padding-left: 5px;">
+                    <ul class="noBullet separation" id="groupSet">
+                        <li>
+                            <input id="includeReviewAverage" class="update group remember" type="checkbox"/>
+                            <label for="separateUsers">Include Review-Wide Average</label>
+                            <span class="info" title="Include the average for all employees in the review."></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-xs-4 noPad hidden">
+                <b>Filter By:</b>
+                <div id="filtersContainer" class="hidden" style="overflow-y: auto; overflow-x: hidden; height: 90px; border: 1px solid #CACACA; padding-left: 5px;">
+                    <ul id="filterSet" class="noBullet separation" style="/*zoom: 67%;*/"></ul>
+                </div>
+            </div>
+            <div class="col-xs-2 noPad alignCenter hidden">
+                <div class="btn btn-default" onclick="IncludeChart()">Add Chart</div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="row noselect">
+    <div class="col-md-12">
+        <div class="alignCenter">
+            <div class="" style="width: calc( 100% - 145px ); float: left; padding-left: 13px;">
+                <div id="chart" class="inline ">
+                    <!--Chart Goes Here-->
+                </div>
+            </div>
+            <div style="width: 136px; float: right;">
+                <div id="legend" class="legend inline">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row hidden" style="clear: both;padding-top: 10px;">
+        <div class="col-xs-3">
+            <div id="StartDate" class="bordered alignCenter">--</div>
+        </div>
+        <div class="col-xs-6">
+            <div id="DateSlider"></div>
+        </div>
+        <div class="col-xs-3">
+            <div id="EndDate" class="bordered alignCenter">--</div>
+        </div>
+    </div>
+    <br />
+</div>
