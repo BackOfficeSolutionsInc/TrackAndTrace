@@ -563,7 +563,13 @@ namespace RadialReview.Controllers
             else _ReviewAccessor.RemoveAnswerFromReview(GetUser(), reviewId, feedbackId);
             return Json(ResultObject.Create(new { FeedbackId = feedbackId, On = on }), JsonRequestBehavior.AllowGet);
         }
-
+        [Access(AccessLevel.Manager)]
+        public JsonResult SetScatterChart(long reviewId, string on)
+        {
+            var aggregateBy = on;
+            _ReviewAccessor.SetAggregateBy(GetUser(), reviewId, aggregateBy,);
+            return Json(ResultObject.Create(new { ReviewId = reviewId, On = aggregateBy }), JsonRequestBehavior.AllowGet);
+        }
         [Access(AccessLevel.Manager)]
         public JsonResult SetIncludeTable(long reviewId, bool on)
         {

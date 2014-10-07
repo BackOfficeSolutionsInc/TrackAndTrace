@@ -581,6 +581,22 @@ namespace RadialReview.Accessors
             }
         }
 
+        public void SetAggregateBy(UserOrganizationModel caller, long reviewId, string aggregateBy)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.ScatterChart.AggregateBy = aggregateBy;
+                    s.Update(review.ClientReview);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
         public void SetIncludeScatter(UserOrganizationModel caller, long reviewId, bool on)
         {
             using (var s = HibernateSession.GetCurrentSession())

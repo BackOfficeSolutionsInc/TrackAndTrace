@@ -82,6 +82,26 @@ function ScatterChart(id) {
         var y = this.titleHeight + this.chartPadding + additionalTop;
         return { x: x, y: y };
     };
+    var a = 24, b = 8;
+    var builder = "";
+    builder += (-b / 2) + "," + (-b / 2) + " ";
+    builder += (-b / 2) + "," + (-a / 2) + " ";
+    builder += (b / 2) + "," + (-a / 2) + " ";
+    builder += (b / 2) + "," + (-b / 2) + " ";
+    builder += (a / 2) + "," + (-b / 2) + " ";
+    builder += (a / 2) + "," + (b / 2) + " ";
+    builder += (b / 2) + "," + (b / 2) + " ";
+    builder += (b / 2) + "," + (a / 2) + " ";
+    builder += (-b / 2) + "," + (a / 2) + " ";
+    builder += (-b / 2) + "," + (b / 2) + " ";
+    builder += (-a / 2) + "," + (b / 2) + " ";
+    builder += (-a / 2) + "," + (-b / 2);
+    this.cross = builder;
+
+    a = 18;
+    var t = -0.433012702;
+    this.triangle = "0," + (a * t) + " " + (a * .5) + "," + (-a * t) + " " + (a * -0.5) + "," + (-a * t);
+
 };
 
 ScatterChart.prototype.Pull = function Pull(url, data, callback) {
@@ -142,7 +162,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     options.time = options.time || Date.now;
     this.legend = (options.legend || this.legend || "right").toLowerCase();
 
-    options.legendFunc = options.legendFunc || function (legendData,chart) { };
+    options.legendFunc = options.legendFunc || function (legendData, chart) { };
 
     options.filters = options.filters || [];
 
@@ -184,14 +204,14 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         }
     }, // data -> value
         xMap = function (scatterDataPoint) {
-            return that.xScale(xValue(scatterDataPoint)) + topLeft.x + that.pointRadius/2;
+            return that.xScale(xValue(scatterDataPoint)) + topLeft.x + that.pointRadius / 2;
         }, // data -> display
         xAxis = d3.svg.axis().scale(this.xScale).orient("bottom").tickSize(this.tickSize).tickSubdivide(true);
 
     this.yScale = this.yScale.range([height, 0]); // value -> display
     //setup y
     var yValue = function (scatterDataPoint) {
-        try{
+        try {
             return scatterDataPoint.Dimensions[options.yDimensionId].Value / scatterDataPoint.Dimensions[options.yDimensionId].Denominator;
         } catch (e) {
             console.log(e);
@@ -207,7 +227,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         this.xScale.domain([-1, 1]);
         this.yScale.domain([-1, 1]);
     }
-    
+
     var svgContainerOuter = d3.select("#" + this.id);
     var svgContainer = d3.select("#" + this.id + " svg");
     var container = d3.select("#" + this.id + " svg g.middle");
@@ -221,7 +241,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     options.legendFunc(scatterData.Legend, this);
 
     if (options.reset) {
-        if (d3.select(".scatter-tooltip")[0][0]==null) {
+        if (d3.select(".scatter-tooltip")[0][0] == null) {
             d3.select("body").append("div")
                 .attr("class", "scatter-tooltip")
                 .style("position", "absolute")
@@ -231,7 +251,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                 .style("padding", "10px")
                 .style("background-color", "white")
                 .style("border", "1px solid #808080")
-                .style("border-radius","3px");
+                .style("border-radius", "3px");
         }
 
 
@@ -259,7 +279,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                     .attr("y1", topLeft.y + height / 2)
                     .attr("y2", topLeft.y + height / 2);
         xAxisTitle = container.append("g")
-                        .attr("transform", function (d) { return "translate(" + (topLeft.x + width *.10) + "," + (topLeft.y + height/2 - 2) + ")"; })
+                        .attr("transform", function (d) { return "translate(" + (topLeft.x + width * .10) + "," + (topLeft.y + height / 2 - 2) + ")"; })
                         .attr("class", "xAxisTitle axisTitle")
                         .append("text")
                         .attr("text-anchor", "middle");
@@ -271,7 +291,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                     .call(yAxis);
 
         yAxisTitle = container.append("g")
-                        .attr("transform", function (d) { return "translate(" + (topLeft.x +width/2 -2) + "," + (topLeft.y + height *.90) + ")"; })
+                        .attr("transform", function (d) { return "translate(" + (topLeft.x + width / 2 - 2) + "," + (topLeft.y + height * .90) + ")"; })
                         .attr("class", "yAxisTitle axisTitle")
                         .append("text")
                         .attr("text-anchor", "middle")
@@ -285,7 +305,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
                     .attr("y2", topLeft.y + height);
 
         title = container.append("g")
-                    .attr("transform", function (d) { return "translate(" + (topLeft.x + width/2) + "," + (topLeft.y -10) + ")"; })
+                    .attr("transform", function (d) { return "translate(" + (topLeft.x + width / 2) + "," + (topLeft.y - 10) + ")"; })
                     .attr("class", "title")
                     .append("text")
                     .attr("text-anchor", "middle");
@@ -326,7 +346,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         var comparableWildcards = [];
         for (var r = 0; r < required.length; r++) {
             var found = false;
-            var regexStr = "^"+required[r].replace("*", "[a-zA-Z0-9_\\-]+")+"$";
+            var regexStr = "^" + required[r].replace("*", "[a-zA-Z0-9_\\-]+") + "$";
             var re = new RegExp(regexStr, "g")
             for (var i = 0; i < list.length; i++) {
                 if (re.test(list[i])) {
@@ -348,7 +368,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         var comparableWildcards = [];
         for (var r = 0; r < required.length; r++) {
             var found = false;
-            var regexStr = "^"+required[r].replace("*", "[a-zA-Z0-9_\\-]+")+"$";
+            var regexStr = "^" + required[r].replace("*", "[a-zA-Z0-9_\\-]+") + "$";
             var re = new RegExp(regexStr, "g")
             for (var i = 0; i < list.length; i++) {
                 if (re.test(list[i])) {
@@ -368,7 +388,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 
     function jqueryIntersection(array1, array2) {
         var a2 = $.map(array2, function (d) { return d.outerHTML; });
-        return $.map(array1,function (d) { return d.outerHTML; }).filter(function (e) {
+        return $.map(array1, function (d) { return d.outerHTML; }).filter(function (e) {
             return a2.indexOf(e) != -1
         });
     }
@@ -382,15 +402,14 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         return splitBySpace(classStr);
     }
 
-    function getTitles(titles)
-    {
+    function getTitles(titles) {
         var titles = $("<div>" + titles + "</div>").find(".title");
         return titles;/*
         var trimmed = classStr.replace(/^\s+|\s+$/g, '');
         return trimmed.split(/\s+/g);*/
     }
 
-    
+
 
     function normalizedMatchingClasses(classes, requiredClasses) {
         var matches = [];
@@ -504,8 +523,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         /*if (groups.length == 0)
             return points;*/
         if (groups == "none") {
-            for (var key in points)
-            {
+            for (var key in points) {
                 points[key].GroupId = points[key].OtherData.GroupId;
             }
 
@@ -563,11 +581,22 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     var dataset = container.selectAll(".scatter-point").data(dataPoints, dataIdFunction);
     //dataset.enter().append("circle").attr("cx", xMap).attr("cy", yMap);
     dataset.enter().append("g")
-        .attr("transform", function(d) {
+        .attr("transform", function (d) {
             var x = xMap(d);
             var y = yMap(d);
             return "translate(" + x + "," + y + ")";
-        }).append("circle").attr("cx", 0).attr("cy", 0).attr("r",10).classed("point",true);
+        }).each(function (d) {
+            if (d.Class.indexOf("about-Manager") != -1) {
+                d3.select(this).append("rect").attr("x", -8).attr("y", -8).attr("width", 16).attr("height", 16).classed("point", true);
+            } else if (d.Class.indexOf("about-Peer") != -1) {
+                d3.select(this).append("polygon").attr("points", chart.triangle);
+            } else if (d.Class.indexOf("about-Self") != -1) {
+                d3.select(this).append("polygon").attr("points", chart.cross).attr("transform", "rotate(45)");
+            } else {
+                d3.select(this).append("circle").attr("cx", 0).attr("cy", 0).attr("r", 10).classed("point", true);
+            }
+        });
+
 
     var onExit = dataset.exit().transition().duration(200);
     onExit.remove();
@@ -597,7 +626,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     var lineSet = underContainer.selectAll(".scatter-link").data(dataPoints.filter(function (d) { return getPrevious(d, dataPoints) || false; }), dataIdFunction);
     lineSet.enter()
         .append("line")
-        .style("opacity","0")
+        .style("opacity", "0")
         .attr("marker-end", "url(#triangle)")
         .attr("x1", xMap)
         .attr("x2", function (d) {
@@ -624,7 +653,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     transition.select(".x.axis").call(xAxis);
     transition.select(".y.axis").call(yAxis);
 
-    
+
     var tooltip = d3.select(".scatter-tooltip");
     //Update point positions
     var pointSet = dataset
@@ -688,7 +717,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         .duration(500).ease("exp-in-out");
     }
     //pointSet.attr("cx", xMap).attr("cy", yMap).attr("r", function (d) {return that.pointRadius;});
-    
+
     pointSet.attr("transform", function (d) {
         var x = xMap(d);
         var y = yMap(d);
@@ -725,10 +754,10 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         .call(function (d) {
             d.style("opacity", null);
         });
-        
+
 
     lineSet.exit().remove();
-        //.remove();
+    //.remove();
     //dataset.exit().transition().style("opacity", "0").duration(100).remove();
 
 };

@@ -8,6 +8,7 @@ using System.IO;
 using System.Web.Mvc;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using RadialReview.Models.Reviews;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.Application;
 using RadialReview.Utilities;
@@ -39,6 +40,33 @@ namespace RadialReview.Controllers
             }
         }*/
 
+        [Access(AccessLevel.Radial)]
+        public String FixScatterChart()
+        {
+            var i = 0;
+            using (var s = HibernateSession.GetCurrentSession()){
+                using (var tx = s.BeginTransaction()){
+                    var scatters = s.QueryOver<ClientReviewModel>().List();
+                    foreach (var sc in scatters){
+                        if (sc.ScatterChart == null){
+                            i++;
+                            sc.ScatterChart = new ReportScatter();
+                            if (sc.Charts.Any())
+                            {
+                                sc.ScatterChart.Filters = sc.Charts.First().Filters;
+                                sc.ScatterChart.Groups = sc.Charts.First().Groups;
+                                sc.ScatterChart.Title = sc.Charts.First().Title;
+                            }
+                            s.Update(sc);
+                        }
+                    } 
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+
+            return ""+i;
+        }
 
 
         [Access(AccessLevel.Radial)]

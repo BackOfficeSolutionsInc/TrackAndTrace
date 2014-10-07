@@ -75,7 +75,7 @@ var Chart = function (selector,getAxis,dataFunc,legendData) {
             .attr("class", "legendTitle")
             .attr("x", width - rightPadding)
             .attr("y", 35)
-            .text("Legend:")
+            .text("Legend:");
         /*
         vis.append("text")
             .attr("class", "hover")

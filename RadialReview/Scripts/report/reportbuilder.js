@@ -105,7 +105,36 @@ function UpdateInclude(url, on, inputs) {
             location.href = "#top";
         }
     });
+}
 
+function OnclickAggregate(self) {
+    var on = $(self).attr('id');
+    var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
+    $.ajax({
+        url: "/Review/SetScatterChart",
+        data: dat,
+        method: "GET",
+        success: function (data) {
+            if (data.Object && on == data.Object.On) {
+
+            } else {
+                clearAlerts();
+                showAlert("An error occurred.");
+                console.log(data.Object);
+                location.href = "#top";
+            }
+        },
+        complete: function () {
+            UpdateFeedbacks();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            clearAlerts();
+            showAlert("An error occurred.");
+            console.log("Error:" + textStatus);
+            console.log(errorThrown);
+            location.href = "#top";
+        }
+    });
 }
 
 function OnclickSelfAnswers(self) {
@@ -329,10 +358,27 @@ function legend(legendData, chart) {
     if (legendData.length > 0) {
         $("#legend").html("<div class='container'><div class='title'>Legend:</div><div class='contents'></div></div>");
 
+        var peer = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><polygon transform=\"translate(10,10)\" class=\"about-Peer scatter-point nearest inclusive\" points=\"" + chart.triangle + "\"></svg>";
+        $("#legend .contents").append("<div>" + peer + " <div class='inlineBlock'>Peer</div></div>");
+
+        var subordinate = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><circle r=\"8\" transform=\"translate(10,10)\" class=\"about-Subordinate scatter-point nearest inclusive\"/></svg>";
+        $("#legend .contents").append("<div>" + subordinate + " <div class='inlineBlock'>Subordinate</div></div>");
+
+        var manager = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><rect x=\"-7\" y=\"-7\" width=\"14\" height=\"14\" transform=\"translate(9,9)\"  class=\"about-Manager scatter-point nearest inclusive\"/></svg>";
+        $("#legend .contents").append("<div>" + manager + " <div class='inlineBlock'>Manager</div></div>");
+
+        var self = "<svg viewBox=\"-6 -6 26 26\" width=\"12\" height=\"12\"><polygon transform=\"translate(7,7) rotate(45)\" class=\"about-Self scatter-point nearest inclusive\" points=\"" + chart.cross + "\"></svg>";
+        $("#legend .contents").append("<div>" + self + " <div class='inlineBlock'>Peer</div></div>");
+
+        var noRel = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><circle r=\"8\" transform=\"translate(10,10)\" class=\"scatter-point nearest inclusive\"/></svg>";
+        $("#legend .contents").append("<div>" + noRel + " <div class='inlineBlock'>No Relationship</div></div>");
+
+        /*var peer = "<svg><rect class=\"about-Manager\" x=\"" + chart.triangle + "\"></svg>";
+
         for (var i in legendData) {
             var item = legendData[i];
             $("#legend .contents").append("<div><div class='" + item.Class + " circle inlineBlock'></div><div class='inlineBlock'>" + item.Name + "</div></div>");
-        }
+        }*/
     }
 }
 function legendReview(legendData, chart) {
@@ -344,6 +390,10 @@ function legendReview(legendData, chart) {
 }
 
 var chart = new ScatterChart("chart");
+
+$(".group").change(function() {
+    OnclickAggregate($(this));
+});
 
 function update(reset) {
     var date1 = new Date(+$("#DateSlider").val()[0]);

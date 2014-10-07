@@ -60,8 +60,6 @@ namespace RadialReview.Models.Charts
                 Name=Name
             };
         }
-
-
     }
 
     public class ScatterFilter
