@@ -10,5 +10,6 @@ namespace RadialReview.Models.Interfaces
     {
         double NumPages { get; set; }
         int Page { get; set; }
+
     }
 }

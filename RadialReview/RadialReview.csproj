@@ -496,6 +496,7 @@
     <Compile Include="Utilities\DataTypes\MultiQuery.cs" />
     <Compile Include="Utilities\Extensions\DateTimeExtensions.cs" />
     <Compile Include="Utilities\DataTypes\Pool.cs" />
+    <Compile Include="Utilities\Extensions\PaginationExtensions.cs" />
     <Compile Include="Utilities\Pop3Utility.cs" />
     <Compile Include="Utilities\ServerUtility.cs" />
     <Compile Include="Utilities\Chart\ChartUtility.cs" />
@@ -550,6 +551,10 @@
     <Content Include="Content\Chart\PieChart.css" />
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\favicon.ico" />
+    <Content Include="Content\Fonts.css" />
+    <Content Include="Content\fonts\new.svg" />
+    <Content Include="Content\fonts\Ref\icons-reference.html" />
+    <Content Include="Content\fonts\Ref\styles.css" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\home\bootstrap.css" />
     <Content Include="Content\home\cityscape.jpg" />
@@ -601,6 +606,7 @@
     <Content Include="Content\toggle.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\fonts\reports.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\img\titlebarTiles.png" />
@@ -700,6 +706,12 @@
     <Content Include="Scripts\d3\d3.v3.min.js.map">
       <DependentUpon>d3.v3.js</DependentUpon>
     </Content>
+    <Content Include="Content\fonts\reports.eot" />
+    <Content Include="Content\fonts\reports.ttf" />
+    <Content Include="Content\fonts\reports.woff" />
+    <Content Include="Content\fonts\new.eot" />
+    <Content Include="Content\fonts\new.ttf" />
+    <Content Include="Content\fonts\new.woff" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

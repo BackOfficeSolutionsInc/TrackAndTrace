@@ -24,7 +24,7 @@ namespace RadialReview.Controllers
 {
     public class ReviewsController : BaseController
     {
-        public static OrgReviewsViewModel GenerateReviewVM(UserOrganizationModel caller, DateTime date)
+        public static OrgReviewsViewModel GenerateReviewVM(UserOrganizationModel caller, DateTime date,int page)
         {
             var selfId = caller.Id;
             var usefulReviews = _ReviewAccessor.GetUsefulReview(caller, selfId, date);
@@ -34,36 +34,43 @@ namespace RadialReview.Controllers
 
             var editable = reviewContainers.Where(x => caller.IsManagingOrganization() || subordinates.Any(y => y == x.CreatedById)).Select(x => x.Id).ToList();
             var takabled = usefulReviews.Where(x => x.ForUserId == selfId).Distinct(x=>x.ForReviewsId).ToDictionary(x => x.ForReviewsId, x => (long?)x.Id);
+            
 
             var reviewsVM = reviewContainers.Select(x => new ReviewsViewModel(x){
                 Editable = editable.Any(y => y == x.Id),
                 Viewable = true,
-                TakableId = takabled.GetOrDefault(x.Id, null)
-            }).ToList();
+                TakableId = takabled.GetOrDefault(x.Id, null),
 
+                UserReview = usefulReviews.First(y=>y.ForReviewsId==x.Id)
 
-            var model = new OrgReviewsViewModel()
-            {
-                Reviews = reviewsVM,
-                AllowEdit = true
+            }).OrderByDescending(x => x.Review.DateCreated).ToList();
+
+            var resultPerPage = 10;
+
+            var model = new OrgReviewsViewModel(){
+                Reviews = reviewsVM.Paginate(page, resultPerPage).ToList(),
+                NumPages = reviewsVM.PageCount(resultPerPage),
+                AllowEdit = true,
+                Page = page,
+
             };
             return model;
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Index()
+        public ActionResult Index(int page = 0)
         {
-            var model = GenerateReviewVM(GetUser(), DateTime.UtcNow);
+            var model = GenerateReviewVM(GetUser(), DateTime.MinValue,page);
             ViewBag.Page = "Reviews";
             ViewBag.Title = "Reviews";
             ViewBag.Subheading = "Reviews";
-            return RedirectToAction("Outstanding");
+            return View(model);
         }
 
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Outstanding(int page = 0)
         {
-            var model = GenerateReviewVM(GetUser(), DateTime.UtcNow);
+            var model = GenerateReviewVM(GetUser(), DateTime.UtcNow,page);
             ViewBag.Page = "Outstanding";
             ViewBag.Title = "Outstanding";
             ViewBag.Subheading = "Reviews in progress.";
@@ -73,7 +80,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult History(int page = 0)
         {
-            var model = GenerateReviewVM(GetUser(), DateTime.MinValue);
+            var model = GenerateReviewVM(GetUser(), DateTime.MinValue, page);
             ViewBag.Page = "History";
             ViewBag.Title = "History";
             ViewBag.Subheading = "All reviews.";

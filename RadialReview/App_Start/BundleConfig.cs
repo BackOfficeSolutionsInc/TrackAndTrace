@@ -36,7 +36,8 @@ namespace RadialReview
                       "~/Content/datepicker.css",
                       "~/Content/bootstrap.css",
                       "~/Content/slider.css",
-                      "~/Content/site.css"));
+                      "~/Content/site.css",
+                      "~/Content/Fonts.css"));
 
 
             bundles.Add(new ScriptBundle("~/bundles/main").Include(

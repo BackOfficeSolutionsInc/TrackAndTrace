@@ -13,7 +13,7 @@
 }
 
 @section header{
-    @Html.Partial("_ReportsHeader")
+    @*@Html.Partial("_ReportsHeader")*@
 }
 
 @using (Html.BeginStyles())
@@ -146,7 +146,8 @@
                             <tr style="">
                                 <th>User</th>
                                 <th style="width:10px" title="Subordinate is authorized to view this report.">Shared</th>
-                                <th style="width:30px" class="alignCenter" title="You and the subordinate have reviewed this report.">Signed </th>
+
+                                @*<th style="width:30px" class="alignCenter" title="You and the subordinate have reviewed this report.">Signed </th>*@
                             </tr>
                         </thead>
                         <tbody>
@@ -159,7 +160,7 @@
                                     <td class="alignCenter">
                                         <a data-sort="@(r.ClientReview.Visible? "1" : "2")">@r.ClientReview.Visible.GetIcon()</a>
                                     </td>
-                                    <td class="alignCenter">
+                                    @*<td class="alignCenter">
                                         <div data-sort="@(r.ClientReview.SignedTime.HasValue?"1":"2")">
                                             @if (r.ClientReview.SignedTime.HasValue)
                                             { 
@@ -170,7 +171,7 @@
                                                 <div class="gray">Unsigned</div>
                                             }
                                         </div>
-                                    </td>
+                                    </td>*@
                                 </tr>
                             }
                         </tbody>

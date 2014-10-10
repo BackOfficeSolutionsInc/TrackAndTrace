@@ -24,6 +24,22 @@ function qtip() {
             target: 'mouse'
         }
     });
+    
+    /*$('td').hover(function() {
+        var index = $(this).index();
+        var f = $(this).closest('table');
+        if (f) {
+            var found = f.find("th:nth-child(" + (index) + ")");
+            if (found) {
+
+                found.qtip('show');
+                found.data('visible', true);
+            }
+        }
+    }, function () {
+
+    });*/
+
 }
 
 function save(key, value) {

@@ -29,6 +29,8 @@ namespace RadialReview
 
     public static class EnumerableExtensions
     {
+        
+
         public static List<SelectListItem> ToSelectList<T, TText, TId>(this IEnumerable<T> self, Func<T, TText> textSelector, Func<T, TId> idSelector, TId selected = default(TId))
         {
             return self.Select((x, i) =>

@@ -9,6 +9,8 @@ namespace RadialReview.Models.ViewModels
     public class ReviewsViewModel 
     {
 
+        public ReviewModel UserReview { get; set; }
+
         public ReviewsModel Review {get;set;}
 
         public long? TakableId { get; set; }

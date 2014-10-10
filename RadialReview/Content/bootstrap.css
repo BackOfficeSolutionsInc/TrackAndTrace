@@ -365,7 +365,8 @@ a {
     a:hover,
     a:focus {
         color: #2a6496;
-        text-decoration: underline;
+        /*text-decoration: underline;*/
+        text-decoration: none;
     }
 
     a:focus {
@@ -1674,7 +1675,7 @@ th {
 
 .table-hover > tbody > tr:hover > td,
 .table-hover > tbody > tr:hover > th {
-    background-color: #f1f1f1;
+    background-color: #E7E7E7;/*#f1f1f1;*/
 }
 
 table col[class*="col-"] {
