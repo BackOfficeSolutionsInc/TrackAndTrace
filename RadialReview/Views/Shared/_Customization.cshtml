@@ -25,7 +25,7 @@
     }
 
     .customizeSelection .customize .selected {
-        background-color: #F5F5F5;
+        background-color: #D7D8FF;
         color: #000;
     }
 
@@ -81,13 +81,13 @@
 
     <div class="row">
         <div class="col-sm-10 col-sm-offset-1 bordered noselect">
-            <div class="row">
+            <div class="row" style="overflow: hidden;">
                 <div class="col-xs-6 customize noPad">
                     @{
                         var first = true;
                         var firstId = -1L;
                     }
-                    @foreach (var user in Model.Subordinates.OrderBy(x=>x.GetNameAndTitle()))
+                    @foreach (var user in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
                     {
                         <div id="first_@user.Id" class="@(first?"selected":"") selectable clickable" data-id="@(user.Id)" onclick="unhide(@user.Id)">
                             <div class="pull-left counter">0</div>

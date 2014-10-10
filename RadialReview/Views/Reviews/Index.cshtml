@@ -18,6 +18,11 @@
 {
 
 }
+@if (ViewBag.IsManager ?? false){
+    <div style="float: right; margin-top: -41px;">
+        <a class="btn btn-primary" href="/Issue/">Issue New Review</a>
+    </div>
+}
 
 <div class="panel panel-primary startHiddenGroup">
     <div class="panel-heading">
@@ -95,7 +100,7 @@
                             @if (ViewBag.IsManager ?? false)
                             {
                                 <td class="alignCenter">
-                                    <a href="/Reports/List/@review.Review.Id"><span class="icon new-icon-page-multiple" title="View edit or print your subordinates' reports"></span></a>
+                                    <a href="/Reports/List/@review.Review.Id"><span class="icon new-icon-page-multiple" title="View, edit, or print your subordinates' reports"></span></a>
                                 </td>
                             }
 
