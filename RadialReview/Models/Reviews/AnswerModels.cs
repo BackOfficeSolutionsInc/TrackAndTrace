@@ -60,6 +60,14 @@ namespace RadialReview.Models
     {
         public virtual ThumbsType Thumbs { get; set; }
     }
+
+    public class GetWantCapacityAnswer : AnswerModel
+    {
+        public virtual Tristate GetIt { get; set; }
+        public virtual Tristate WantIt { get; set; }
+        public virtual Tristate HasCapacity { get; set; }
+    }
+
     #endregion
 
     #region ClassMaps
@@ -118,6 +126,15 @@ namespace RadialReview.Models
             Map(x => x.Choice);
             References(x => x.First).Not.LazyLoad();
             References(x => x.Second).Not.LazyLoad();
+        }
+    }
+    public class GetWantCapacityAnswerMap : SubclassMap<GetWantCapacityAnswer>
+    {
+        public GetWantCapacityAnswerMap()
+        {
+            Map(x => x.GetIt);
+            Map(x => x.WantIt);
+            Map(x => x.HasCapacity);
         }
     }
     #endregion

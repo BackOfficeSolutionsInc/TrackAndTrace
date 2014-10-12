@@ -1,40 +1,40 @@
-﻿@model Tuple<List<RadialReview.Models.ThumbsAnswer>, bool>
+﻿@model Tuple<List<GetWantCapacityAnswer>, bool>
 
 @using RadialReview.Models
 @using RadialReview.Models.Enums
 
-@foreach (var thumbs in Model.Item1)
+@foreach (var gwc in Model.Item1)
 {
-    ViewData["I"] = (int)ViewData["I"]+1;
-    <div class="row question">
+    ViewData["I"] = (int)ViewData["I"] + 1;
+    <div class="row">
 
         <div class="col-md-6 alignRight startHidden">
-            @if (thumbs.Required)
+            @if (gwc.Required)
             {
-                <div class="pull-left star @((ViewBag.Incomplete!=null && !thumbs.Complete)?"red":"")"><span class="glyphicon glyphicon-asterisk"></span></div>
+                <div class="pull-left star @((ViewBag.Incomplete != null && !gwc.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
             }
-            <h4 class="question alignCenter" style="padding-bottom: 10px;">@thumbs.Askable.GetQuestion()</h4>
+            <h4 class="question">@thumbs.Askable.GetQuestion()</h4>
         </div>
         <div class="col-md-6            startHidden">
             <input type="radio" class="hidden" @(thumbs.Thumbs == ThumbsType.None ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.None" />
             <div class="row">
-                <div class="col-sm-12 alignCenter">
+                <div class="col-sm-4 col-sm-offset-4 alignCenter">
                     <div class="btn-group" data-toggle="buttons">
                         <label class="btn btn-lg btn-default successRadio @(thumbs.Thumbs == ThumbsType.Up ? "active" : "")">
                             <input type="radio"
                                    class="changeable"
                                    @(thumbs.Thumbs == ThumbsType.Up ? "checked" : "")
                                    @if (Model.Item2) { @: name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id"
-                                                                                                         } else {  @: disabled
-                                                                                                         }
+                                                                                                                                            } else {  @: disabled
+                                                                                                                                            }
                                    value="@ThumbsType.Up">
                             <span class="glyphicon glyphicon-thumbs-up"></span>
                         </label>
                         <label class="btn btn-lg btn-default dangerRadio @(thumbs.Thumbs == ThumbsType.Down ? "active" : "") ">
                             <input class="changeable" type="radio" @(thumbs.Thumbs == ThumbsType.Down ? "checked" : "")
                                    @if (Model.Item2) {  @: name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id"
-                                                                                                         } else {  @: disabled
-                                                                                                         }
+                                                                                                                                            } else {  @: disabled
+                                                                                                                                            }
                                    value="@ThumbsType.Down">
 
                             <span class="glyphicon glyphicon-thumbs-down"></span>

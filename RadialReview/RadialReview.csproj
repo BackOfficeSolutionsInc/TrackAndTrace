@@ -318,6 +318,7 @@
     <Compile Include="Models\Enums\ChartDataSource.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Enums\TaskType.cs" />
+    <Compile Include="Models\Enums\Tristate.cs" />
     <Compile Include="Models\ExtraTab.cs" />
     <Compile Include="Models\Interfaces\ICompletable.cs" />
     <Compile Include="Models\Enums\AboutType.cs" />
@@ -871,6 +872,8 @@
     <Content Include="Views\Reviews\DueDate.cshtml" />
     <Content Include="Views\Reviews\Delete.cshtml" />
     <Content Include="Views\Reviews\Index.cshtml" />
+    <Content Include="Views\Review\GetWantCap.cshtml" />
+    <Content Include="Views\Partial\ThumbTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

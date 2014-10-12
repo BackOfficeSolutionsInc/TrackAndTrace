@@ -45,7 +45,7 @@ namespace RadialReview.Accessors
                 var user = dataInteraction.Get<UserOrganizationModel>(uid);
                 var allAskables = new List<AskableAbout>();
 
-                var applicationQuestion = ApplicationAccessor.GetApplicationQuestion(dataInteraction.GetQueryProvider(), ApplicationAccessor.FEEDBACK);
+                var applicationQuestions = ApplicationAccessor.GetApplicationQuestions(dataInteraction.GetQueryProvider()).ToList();
 
                 foreach (var oid in uReviewsTheseUIDs.Select(x => x.Item2))
                 {
@@ -58,7 +58,8 @@ namespace RadialReview.Accessors
                     var bestRelationship = relationships.First();
 
                     allAskables.AddRange(responsibilities.Select(x => new AskableAbout() { AboutType = bestRelationship, AboutUserId = oid, Askable = x }));
-                    allAskables.Add(new AskableAbout() { AboutType = bestRelationship, AboutUserId = oid, Askable = applicationQuestion });
+
+                    allAskables.AddRange(applicationQuestions.Select(aq => new AskableAbout(){AboutType = bestRelationship, AboutUserId = oid, Askable = aq}));
                 }
 
                 if (allAskables.Any())

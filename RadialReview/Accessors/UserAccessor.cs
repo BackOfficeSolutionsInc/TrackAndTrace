@@ -1,4 +1,5 @@
-﻿using RadialReview.Models;
+﻿using FluentNHibernate.Utils;
+using RadialReview.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -164,6 +165,15 @@ namespace RadialReview.Accessors
                             .Where(x => x.Id != forUserId)
                             .ToList();
         }
+
+
+        public static List<long> WasAliveAt(ISession s, List<long> userOrgIds,DateTime time)
+        {
+            return s.QueryOver<UserOrganizationModel>()
+                .WhereRestrictionOn(x => x.Id).IsIn(userOrgIds)
+                .Where(x => (x.CreateTime <= time) && (x.DeleteTime == null || time <= x.DeleteTime))
+                .Select(x => x.Id).List<long>().ToList();
+        } 
 
 
 

@@ -46,6 +46,7 @@ namespace RadialReview.Models
         public virtual IList<PositionDurationModel> Positions { get; set; }
         public virtual IList<TeamDurationModel> Teams { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
+        public virtual DateTime CreateTime { get; set; }
         public virtual int CountPerPage { get; set; }
         public virtual String JobDescription { get; set; }
 
@@ -86,6 +87,7 @@ namespace RadialReview.Models
         public UserOrganizationModel()
             : base()
         {
+            CreateTime = DateTime.UtcNow;
             ManagedBy = new List<ManagerDuration>();
             ManagingUsers = new List<ManagerDuration>();
             Groups = new List<GroupModel>();
@@ -188,6 +190,7 @@ namespace RadialReview.Models
             Map(x => x.ManagingOrganization);
             Map(x => x.ManagerAtOrganization);
             Map(x => x.AttachTime);
+            Map(x => x.CreateTime);
             Map(x => x.DetachTime);
             Map(x => x.DeleteTime);
             Map(x => x.EmailAtOrganization);

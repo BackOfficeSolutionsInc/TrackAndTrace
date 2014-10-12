@@ -120,11 +120,11 @@ namespace RadialReview.Accessors
             //var feedbackCategory = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK);
             #endregion
 
-            var feedbackQuestion = ApplicationAccessor.GetApplicationQuestion(s.GetQueryProvider(), ApplicationAccessor.FEEDBACK);
+            var appQuestions = ApplicationAccessor.GetApplicationQuestions(s.GetQueryProvider()).ToList();//, ApplicationAccessor.FEEDBACK);
             
             //Ensures uniqueness and removes people not in the review.
             var askable = new AskableUtility();
-            CoworkerRelationships reviewUsers = GetUsersThatReviewUser(caller, perms, s, beingReviewed, parameters, team, usersToReview);
+            var reviewUsers = GetUsersThatReviewUser(caller, perms, s, beingReviewed, parameters, team, usersToReview);
             var questions = QuestionAccessor.GetQuestionsForUser(s.GetQueryProvider(), perms, caller, beingReviewed.Id);
             
             if (parameters.ReviewSelf){
@@ -133,7 +133,7 @@ namespace RadialReview.Accessors
 
             foreach(var user in reviewUsers.Relationships)
             {
-                long id =/* aboutSelf ? beingReviewed.Id :*/ user.Key.Id;
+                var id =/* aboutSelf ? beingReviewed.Id :*/ user.Key.Id;
 
                 var responsibilities = ResponsibilitiesAccessor.GetResponsibilitiesForUser(caller,s.GetQueryProvider(),perms,id).ToListAlive();
                            /* .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, id)
@@ -141,11 +141,10 @@ namespace RadialReview.Accessors
                 foreach (var aboutType in user.Value)
                 {
                     foreach (var responsibility in responsibilities)
-                    {
                         askable.AddUnique(responsibility, aboutType, id);
-                    }
 
-                    askable.AddUnique(feedbackQuestion, aboutType, id);
+                    foreach(var aq in appQuestions)
+                        askable.AddUnique(aq, aboutType, id);
                     askable.AddUser(user.Key, aboutType);
 
                 }

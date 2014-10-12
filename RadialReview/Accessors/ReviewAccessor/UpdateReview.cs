@@ -64,13 +64,14 @@ namespace RadialReview.Accessors
 
             var askable = new AskableUtility();
 
-            var feedbackQuestion = ApplicationAccessor.GetApplicationQuestion(s.GetQueryProvider(), ApplicationAccessor.FEEDBACK);
+            var appQuestions = ApplicationAccessor.GetApplicationQuestions(s.GetQueryProvider()).ToList();//, ApplicationAccessor.FEEDBACK);
             var userResponsibilities = ResponsibilitiesAccessor
                                                   .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, aboutUserId)
                                                   .SelectMany(x => x.Responsibilities)
                                                   .ToListAlive();
             askable.AddUnique(userResponsibilities, aboutType, aboutUserId);
-            askable.AddUnique(feedbackQuestion, aboutType, aboutUserId);
+            foreach(var aq in appQuestions)
+                askable.AddUnique(aq, aboutType, aboutUserId);
 
             var forUser = s.Get<UserOrganizationModel>(review.ForUserId);
             //var review=s.QueryOver<ReviewModel>().Where(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).SingleOrDefault();

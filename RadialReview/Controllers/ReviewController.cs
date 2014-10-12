@@ -54,6 +54,11 @@ namespace RadialReview.Controllers
             return Take(reviewId, page + 1);
         }
 
+        private List<IGrouping<long, AnswerModel>> GetPages(ReviewModel review)
+        {
+            return review.Answers.GroupBy(x => x.AboutUserId).ToList();
+        }
+            
         [HttpGet]
         [Access(AccessLevel.UserOrganization)]
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
@@ -70,7 +75,9 @@ namespace RadialReview.Controllers
             ViewBag.OrganizationId = user.Organization.Id;
             ViewBag.Page = page;
 
-            var pages = review.Answers.GroupBy(x => x.AboutUserId).ToList();
+
+            var pages = GetPages(review);
+
 
             try
             {
@@ -332,7 +339,12 @@ namespace RadialReview.Controllers
         public ActionResult AdditionalReview(AdditionalReviewViewModel model)
         {
             _ReviewAccessor.AddToReview(GetUser(), GetUser().Id, model.Id, model.User);
-            return RedirectToAction("Take", new { id = model.Id, page = model.Page });
+            
+            var review = _ReviewAccessor.GetReview(GetUser(), model.Id);
+
+            var pageNum = GetPages(review).Count;
+
+            return RedirectToAction("Take", new { id = model.Id, page = pageNum-1 });
         }
 
         [HttpGet]

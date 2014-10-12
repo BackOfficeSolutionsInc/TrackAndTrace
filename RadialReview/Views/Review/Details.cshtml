@@ -315,88 +315,102 @@
                                 </div>
                             }
                         </div>
-                    </div>
-                    @*Self Answers*@
-                    <a id="SelfAnswers" class="shiftByTitle"></a>
+                    </div>                    
+                    
+                    @*Thumbs Answers*@
+                    <a id="ThumbAnswer" class="shiftByTitle"></a>
                     <div class="panel panel-primary">
-                        <div onclick="SetSelfAnswers()"
-                             class="SelfAnswers includable @(Model.Review.ClientReview.IncludeSelfFeedback?"on":"")"
-                             style="">
-                            <div class="text"></div>
-                            <div class="light-icon"></div>
-                        </div>
                         <div class="panel-heading  panel-square">
                             <div class="collapseIcon"></div>
-                            <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseSelfAnswers">
-                                <h3 class="panel-title">@Model.Review.ForUser.GetName()'s Answers</h3>
+                            <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseThumbAnswers">
+                                <h3 class="panel-title">True/False Answers</h3>
                             </a>
                         </div>
-                        <div id="collapseSelfAnswers" class="panel-collapse collapse in remember">
-                            @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
+                        <div id="collapseThumbAnswers" class="panel-collapse collapse in remember">
+                            @Html.Partial("~/Views/Partial/ThumbTable.cshtml", Model.AnswersAbout)
                         </div>
                     </div>
-                    @*Manager Answers*@
-                    <a id="ManagerAnswers" class="shiftByTitle"></a>
-                    <div class="panel panel-primary">
-                        @*<div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>*@
-                        <div onclick="SetManagerAnswers()"
-                             class="ManagerAnswers includable @(Model.Review.ClientReview.IncludeManagerFeedback ? "on" : "")"
-                             style="">
-                            <div class="text"></div>
-                            <div class="light-icon"></div>
+                        @*Self Answers*@
+                        <a id="SelfAnswers" class="shiftByTitle"></a>
+                        <div class="panel panel-primary">
+                            <div onclick="SetSelfAnswers()"
+                                 class="SelfAnswers includable @(Model.Review.ClientReview.IncludeSelfFeedback?"on":"")"
+                                 style="">
+                                <div class="text"></div>
+                                <div class="light-icon"></div>
+                            </div>
+                            <div class="panel-heading  panel-square">
+                                <div class="collapseIcon"></div>
+                                <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseSelfAnswers">
+                                    <h3 class="panel-title">@Model.Review.ForUser.GetName()'s Answers</h3>
+                                </a>
+                            </div>
+                            <div id="collapseSelfAnswers" class="panel-collapse collapse in remember">
+                                @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
+                            </div>
                         </div>
+                        @*Manager Answers*@
+                        <a id="ManagerAnswers" class="shiftByTitle"></a>
+                        <div class="panel panel-primary">
+                            @*<div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>*@
+                            <div onclick="SetManagerAnswers()"
+                                 class="ManagerAnswers includable @(Model.Review.ClientReview.IncludeManagerFeedback ? "on" : "")"
+                                 style="">
+                                <div class="text"></div>
+                                <div class="light-icon"></div>
+                            </div>
 
-                        <div class="panel-heading panel-square">
-                            <div class="collapseIcon"></div>
-                            <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseManagerAnswers">
-                                <h3 class="panel-title">Manager Answers</h3>
-                            </a>
+                            <div class="panel-heading panel-square">
+                                <div class="collapseIcon"></div>
+                                <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseManagerAnswers">
+                                    <h3 class="panel-title">Manager Answers</h3>
+                                </a>
+                            </div>
+                            <div id="collapseManagerAnswers" class="panel-collapse collapse in remember">
+                                @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+                            </div>
                         </div>
-                        <div id="collapseManagerAnswers" class="panel-collapse collapse in remember">
-                            @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
-                        </div>
-                    </div>
-                    @*All Answers*@
-                    <a id="AggregateAnswers" class="shiftByTitle"></a>
-                    <div class="panel panel-primary">
-                        @*<div onclick="SetQuestionTable()" class="QuestionTable btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")" style=""></div>*@
+                        @*All Answers*@
+                        <a id="AggregateAnswers" class="shiftByTitle"></a>
+                        <div class="panel panel-primary">
+                            @*<div onclick="SetQuestionTable()" class="QuestionTable btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")" style=""></div>*@
 
-                        <div onclick="SetQuestionTable()"
-                             class="QuestionTable includable @(Model.Review.ClientReview.IncludeQuestionTable ? "on" : "")"
-                             style="">
-                            <div class="text"></div>
-                            <div class="light-icon"></div>
+                            <div onclick="SetQuestionTable()"
+                                 class="QuestionTable includable @(Model.Review.ClientReview.IncludeQuestionTable ? "on" : "")"
+                                 style="">
+                                <div class="text"></div>
+                                <div class="light-icon"></div>
+                            </div>
+                            <div class="panel-heading panel-square">
+                                <div class="collapseIcon"></div>
+                                <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseAllAnswers">
+                                    <h3 class="panel-title">Aggregate Answers</h3>
+                                </a>
+                            </div>
+                            <div id="collapseAllAnswers" class="panel-collapse collapse in remember">
+                                @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
+                            </div>
                         </div>
-                        <div class="panel-heading panel-square">
-                            <div class="collapseIcon"></div>
-                            <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseAllAnswers">
-                                <h3 class="panel-title">Aggregate Answers</h3>
-                            </a>
-                        </div>
-                        <div id="collapseAllAnswers" class="panel-collapse collapse in remember">
-                            @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
+                        @*All other answers*@
+                        <a id="OtherAnswers" class="shiftByTitle"></a>
+                        <div class="panel panel-primary">
+                            <div class="panel-heading panel-square">
+                                <div class="collapseIcon"></div>
+                                <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseAllOtherAnswers">
+                                    <h3 class="panel-title">All Answers</h3>
+                                </a>
+                            </div>
+                            <div id="collapseAllOtherAnswers" class="panel-collapse collapse in remember">
+                                @{
+                                    var allOtherUsers = Model.AnswersAbout
+                                        .GroupBy(x => x.ByUserId)
+                                        .Select(x => x.First().ByUser)
+                                        .ToList();
+                                }
+                                @Html.Partial("~/Views/Partial/_AnswerTable.cshtml", Tuple.Create(allOtherUsers, Model.AnswersAbout.Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList()))
+                            </div>
                         </div>
                     </div>
-                    @*All other answers*@
-                    <a id="OtherAnswers" class="shiftByTitle"></a>
-                    <div class="panel panel-primary">
-                        <div class="panel-heading panel-square">
-                            <div class="collapseIcon"></div>
-                            <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseAllOtherAnswers">
-                                <h3 class="panel-title">All Answers</h3>
-                            </a>
-                        </div>
-                        <div id="collapseAllOtherAnswers" class="panel-collapse collapse in remember">
-                            @{
-                                var allOtherUsers = Model.AnswersAbout
-                                    .GroupBy(x => x.ByUserId)
-                                    .Select(x => x.First().ByUser)
-                                    .ToList();
-                            }
-                            @Html.Partial("~/Views/Partial/_AnswerTable.cshtml", Tuple.Create(allOtherUsers, Model.AnswersAbout.Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList()))
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="smallBreak"></div>

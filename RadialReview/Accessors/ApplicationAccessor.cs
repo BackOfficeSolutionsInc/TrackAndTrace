@@ -30,16 +30,21 @@ namespace RadialReview.Accessors
             public String Question;
             public QuestionType Type;
             public String Category;
-            public Q(QuestionType type,String question,String category)
+            public bool Required;
+            public Q(QuestionType type,String question,String category,bool required)
             {
-                this.Question = question;
-                this.Type = type;
-                this.Category = category;
+                Question = question;
+                Type = type;
+                Category = category;
+                Required = required;
             }
         }
 
         private static Q[] ApplicationQuestions = new Q[]{
-            new Q(QuestionType.Feedback,"Feedback","Feedback")
+            new Q(QuestionType.Feedback,"Feedback","Feedback",false),
+            new Q(QuestionType.Thumbs,"Gets it","Feedback",true),
+            new Q(QuestionType.Thumbs,"Wants it","Feedback",true),
+            new Q(QuestionType.Thumbs,"Capacity to do it","Feedback",true),
         };
 
 
@@ -192,14 +197,19 @@ namespace RadialReview.Accessors
                         OriginType = OriginType.Application,
                         CreatedById = -1,
                         DateCreated =DateTime.UtcNow,
-                        Required = false,
+                        Required = appQ.Required,
                     };
                     session.Save(newQuestion);
                 }
             }
         }
 
-        public static QuestionModel GetApplicationQuestion(AbstractQuery session,String question)
+        public static IEnumerable<QuestionModel> GetApplicationQuestions(AbstractQuery session)
+        {
+            return session.Where<QuestionModel>(x => x.OriginId == APPLICATION_ID && x.OriginType == OriginType.Application).ToList();
+        } 
+
+        private static QuestionModel GetApplicationQuestion(AbstractQuery session,String question)
         {
             var found = ApplicationQuestions.FirstOrDefault(x => x.Question.ToLower() == question.ToLower());
             if (found == null)

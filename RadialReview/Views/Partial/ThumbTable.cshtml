@@ -1,0 +1,42 @@
+﻿@using RadialReview.Models.Enums
+@model List<RadialReview.Models.AnswerModel>
+
+
+<table class="table table-condensed" style="min-width:50%">
+    <tr class="noPad">
+        <th class="noPad" style="width:1px;"></th>
+        <th class="noPad" style="text-align:left;padding-left:10px !important;">Question</th>
+
+        <th class="noPad" style="width:100px;text-align:center">Incomplete</th>
+        <th class="noPad" style="width:30px;text-align:center">No</th>
+        <th class="noPad" style="width:30px;text-align:center">Yes</th>
+        <th class="noPad" style="width:100px;text-align:center">Average</th>
+    </tr>
+    @foreach (var answer in Model.Where(x => x is RadialReview.Models.ThumbsAnswer).Cast<RadialReview.Models.ThumbsAnswer>().GroupBy(x => x.Askable.Id))
+    {
+
+        var total = answer.Count();
+        var totalComplete = answer.Count(x => x.Complete && x.Thumbs != ThumbsType.None);
+        var incomplete = answer.Count(x => !x.Complete || x.Thumbs != ThumbsType.None);
+        var yes = answer.Count(x => x.Complete && x.Thumbs == ThumbsType.Up);
+        var no = answer.Count(x => x.Complete && x.Thumbs == ThumbsType.Down);
+        var alpha = .5;
+        double average = 0;
+        if (totalComplete > 0){
+            average = (double) yes/(double) totalComplete;
+        }
+
+        <tr class="noPad">
+            <td class="noPad"></td>
+            <td class="noPad alignLeft" style="padding-left: 10px !important;">
+                @answer.First().Askable.GetQuestion()
+            </td>
+            <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(incomplete  ,0,total,alpha)">             @incomplete </td>
+            <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(no          ,0,totalComplete*1.5,alpha)"> @no         </td>
+            <td class="text" style="padding:0px;text-align:center;width:40px;max-width:40px;min-width:40px;background-color:@Html.GrayScale(yes         ,0,totalComplete*1.5,alpha)"> @yes        </td>
+            <td style="width:30px;text-align:center; background-color: @Html.Color(average,0,.5,1,alpha)" class="oneline alignCenter noPad">
+                @(average<=.5?"No":"Yes") 
+            </td>
+        </tr>
+    }
+</table>

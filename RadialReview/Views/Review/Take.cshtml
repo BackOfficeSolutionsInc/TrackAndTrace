@@ -29,8 +29,9 @@
                 var dict = new ViewDataDictionary();
                 
                 var sliders =group.ToList().Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList();
-                var thumbs  =group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList();
-                var feedbacks=group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList();
+                var thumbs = group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList();
+                var feedbacks = group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList();
+                //var gwc = group.ToList().Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().ToList();
                 
                 
                 dict["Max"] = group.Count();
@@ -46,6 +47,8 @@
                         @Html.Partial("Thumbs", Tuple.Create(thumbs, Model.Editable), dict)
                         @{dict["I"] = sliders.Count() + thumbs.Count();}
                         @Html.Partial("Feedback", Tuple.Create(feedbacks, Model.Editable), dict)
+                        @*@{dict["I"] = sliders.Count() + thumbs.Count();}
+                        @Html.Partial("GetWantCap", Tuple.Create(gwc, Model.Editable), dict)*@
                     </div>
                 </div>
             }
