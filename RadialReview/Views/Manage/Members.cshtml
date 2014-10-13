@@ -41,12 +41,17 @@
         span:hover .viewEdit {
             opacity: 1;
         }
+
+        .filter-table .quick { margin-left: 0.5em; font-size: 0.8em; text-decoration: none; }
+        .fitler-table .quick:hover { text-decoration: underline; }
+        td.alt { background-color: #ffc; background-color: rgba(255, 255, 0, 0.2); }
     </style>
 }
 
 @using (Html.BeginScripts())
 {
     <script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
+    <script src="~/Scripts/jquery/jquery.filtertable.min.js"></script>
     <script>
 
         function SendEmails() {
@@ -72,6 +77,8 @@
         }
 
         $(function () {
+            $(".tablefilter").filterTable({inputSelector: '#input-filter'});
+
             $("table").tablesorter({
                 headers: {
                     1: { sorter: 'attr' },
@@ -82,11 +89,15 @@
             });
         });
     </script>
+    
+    
 }
 
 
 <div class="panel panel-primary">
-    <div style="float:right;padding:2px;" class="">
+    <div style="float:right;padding:2px;width: calc(100% - 170px); min-width:620px;text-align: right;" class="">
+
+        <input id="input-filter" style="max-width: 296px;display: inline-block;" type="text" class="form-control" placeholder="Filter by.. (ex. 'Joe', 'CEO', 'Sales Dept.' etc)" />
         <button id="resendButton" class="btn btn-default  plus" onclick="ResendEmails()">
             Resend all invites
         </button>
@@ -106,7 +117,7 @@
 
     </div>
     <div class="table-responsive">
-        <table class="table table-condensed table-hover tablesorter">
+        <table class="table table-condensed table-hover tablesorter tablefilter">
             <thead>
                 <tr>
                     <th class="hidden"></th>

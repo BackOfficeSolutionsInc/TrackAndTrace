@@ -97,7 +97,7 @@ namespace System.Web
             }
             else
             {
-                name = items.First() ;
+                name = items.First()+"<span class='hidden'>"+String.Join(",",items.Skip(1))+"</span>";
                 after = "(+" + (count - 1) + ")";
                 joined = String.Join(",", items);
             }
