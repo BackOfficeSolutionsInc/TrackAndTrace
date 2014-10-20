@@ -101,9 +101,11 @@
         <button id="resendButton" class="btn btn-default  plus" onclick="ResendEmails()">
             Resend all invites
         </button>
-        <button id="sendButton" class="btn btn-default  plus" onclick="SendEmails()">
-            Send invites
-        </button>
+        @if (Model.Users.Any(p => p.EmailSent) || !Model.Organization.SendEmailImmediately){
+            <button id="sendButton" class="btn btn-default  plus" onclick=" SendEmails() ">
+                Send invites
+            </button>
+        }
         <button class="btn btn-default  plus" style="width: 69px;" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
             Add
         </button>

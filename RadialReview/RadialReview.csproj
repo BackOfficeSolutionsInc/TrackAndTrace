@@ -551,7 +551,11 @@
     <Content Include="Content\Chart\Chart.css" />
     <Content Include="Content\Chart\PieChart.css" />
     <Content Include="Content\datepicker.css" />
+    <Content Include="Content\favicon-old.ico" />
     <Content Include="Content\favicon.ico" />
+    <Content Include="Content\favicon2.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Fonts.css" />
     <Content Include="Content\fonts\new.svg" />
     <Content Include="Content\fonts\Ref\icons-reference.html" />
