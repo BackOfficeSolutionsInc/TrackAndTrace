@@ -24,6 +24,9 @@ namespace RadialReview.Models
         public virtual IndustryModel ForIndustry { get; set; }
         public virtual GroupModel ForGroup { get; set; }*/
         public virtual QuestionType QuestionType { get;set;}
+
+        public virtual AboutType AskWho { get; set; }
+        
         public virtual OriginType OriginType { get; set; }
         public virtual long OriginId { get; set; }
 

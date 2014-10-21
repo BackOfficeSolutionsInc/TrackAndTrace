@@ -42,9 +42,9 @@ namespace RadialReview.Accessors
 
         private static Q[] ApplicationQuestions = new Q[]{
             new Q(QuestionType.Feedback,"Feedback","Feedback",false),
-            new Q(QuestionType.Thumbs,"Gets it","Feedback",true),
-            new Q(QuestionType.Thumbs,"Wants it","Feedback",true),
-            new Q(QuestionType.Thumbs,"Capacity to do it","Feedback",true),
+            //new Q(QuestionType.Thumbs,"Gets it","Feedback",true),
+            //new Q(QuestionType.Thumbs,"Wants it","Feedback",true),
+            //new Q(QuestionType.Thumbs,"Capacity to do it","Feedback",true),
         };
 
 
@@ -204,9 +204,8 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static IEnumerable<QuestionModel> GetApplicationQuestions(AbstractQuery session)
-        {
-            return session.Where<QuestionModel>(x => x.OriginId == APPLICATION_ID && x.OriginType == OriginType.Application).ToList();
+        public static IEnumerable<QuestionModel> GetApplicationQuestions(AbstractQuery session){
+            return session.Where<QuestionModel>(x => x.OriginId == APPLICATION_ID && x.OriginType == OriginType.Application).ToList().Where(x=>ApplicationQuestions.Any(y=>y.Question==x.GetQuestion() && y.Type == x.GetQuestionType() ));
         } 
 
         private static QuestionModel GetApplicationQuestion(AbstractQuery session,String question)
