@@ -272,7 +272,33 @@
                 </div>
             </div>
         *@
+        @if (Model.Review.ClientReview.IncludeScatterChart){
+		
+            var chart = Model.Review.ClientReview.ScatterChart;
+             <div class="noselect noBreak">
+                <a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
+                <div class="row-title">@chart.Title</div>
+                <div class="row">
+                    @*<div class="col-xs-9">*@
+                    <div class="legend pull-right" id="legend_chart_@chart.Id"></div>
+                    <div class="chart"
+                         id="chart_@chart.Id"
+                         data-id="@chart.Id"
+                         data-start="@chart.StartDate.ToJavascriptMilliseconds()"
+                         data-end="@chart.EndDate.ToJavascriptMilliseconds()"
+                         data-xaxis="@chart.Item1"
+                         data-yaxis="@chart.Item2"
+                         data-title="@chart.Title">
+                        <!--Chart Goes Here-->
+                    </div>
+                    @*</div>
+                        <div class="col-xs-3">
 
+                            <div class="legend" id="legend_chart_@chart.Id"></div>
+                        </div>*@
+                </div>
+            </div>
+        }
 
         @foreach (var chart in charts)
         {

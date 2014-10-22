@@ -690,6 +690,7 @@
     <Content Include="Scripts\review\review.js" />
     <Content Include="Scripts\review\translateSlider.js" />
     <Content Include="Views\Review\Details\ChartBuilder2.cshtml" />
+    <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

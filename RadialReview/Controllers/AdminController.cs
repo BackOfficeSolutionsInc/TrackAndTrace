@@ -39,18 +39,19 @@ namespace RadialReview.Controllers
                 }
             }
         }*/
+	
 
         [Access(AccessLevel.Radial)]
-        public String FixScatterChart()
+        public String FixScatterChart(bool delete=false)
         {
             var i = 0;
             using (var s = HibernateSession.GetCurrentSession()){
                 using (var tx = s.BeginTransaction()){
                     var scatters = s.QueryOver<ClientReviewModel>().List();
                     foreach (var sc in scatters){
-                        if (sc.ScatterChart == null){
+                        if (sc.ScatterChart == null || delete){
                             i++;
-                            sc.ScatterChart = new ReportScatter();
+                            sc.ScatterChart = new LongTuple();
                             if (sc.Charts.Any())
                             {
                                 sc.ScatterChart.Filters = sc.Charts.First().Filters;

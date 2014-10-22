@@ -1,4 +1,4 @@
-﻿
+
 var last = null;
 
 function removeEmpty(array, deleteValue) {
@@ -107,8 +107,74 @@ function UpdateInclude(url, on, inputs) {
     });
 }
 
+function UpdateChart() {
+    var date1 = new Date(+$("#DateSlider").val()[0]);
+    var date2 = new Date(+$("#DateSlider").val()[1]);
+    var date3 = new Date();
+    var groups = [];
+    var filters = [];
+    var extraClasses = [];
+    var legendFunc = legend;
+
+    $(".group:checked").each(function (x) {
+        var split = $(this).data("class").split(" ");
+        if (split[0] == "")
+            legendFunc = legendReview;
+
+        extraClasses.push($(this).data("addclass"));
+        for (var i in split) {
+            groups.push(split[i]);
+        }
+    });
+
+    $(".filters:checked").each(function (x) {
+        var split = $(this).data("class");//.split(" ");
+        extraClasses.push($(this).data("addclass"));
+        filters.push(split);
+    });
+    var dat = {
+        reviewId: ReviewId,
+        aggregateBy: groups.join(" "),
+        filterBy: filters.join(" "),
+        title: $(".title").val(),
+        xAxis: $("#xAxis").val(),
+        yAxis: $("#yAxis").val(),
+    
+        startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
+        endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
+        time: date3,//new Date(parseInt($("#date").val()))
+    };
+
+    $.ajax({
+        url: "/Review/UpdateScatterChart",
+        data: dat,
+        method: "GET",
+        success: function (data) {
+            if (data.Object && data.Error === false) {
+                console.log("UPDATED CHART");
+            } else {
+                clearAlerts();
+                showAlert("An error occurred.");
+                console.log(data.Object);
+                location.href = "#top";
+            }
+        },
+        complete: function () {
+            //UpdateFeedbacks();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            clearAlerts();
+            showAlert("An error occurred.");
+            console.log("Error:" + textStatus);
+            console.log(errorThrown);
+            location.href = "#top";
+        }
+    });
+
+}
+
 function OnclickAggregate(self) {
-    var on = $(self).attr('id');
+    var on = $(self).val();//.attr('value');
     var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
     $.ajax({
         url: "/Review/SetScatterChart",
@@ -125,7 +191,7 @@ function OnclickAggregate(self) {
             }
         },
         complete: function () {
-            UpdateFeedbacks();
+            //UpdateFeedbacks();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             clearAlerts();
@@ -406,9 +472,7 @@ function update(reset) {
     var legendFunc = legend;
     
     $(".group:checked").each(function (x) {
-
         var split = $(this).data("class").split(" ");
-
         if (split[0] == "")
             legendFunc = legendReview;
 
@@ -430,6 +494,7 @@ function update(reset) {
 
 
 
+    UpdateChart();
     chart.Plot(AllScatterData, {
         //mouseout: mouseout,
         //mouseover: mouseover,

@@ -28,52 +28,54 @@
             @*@Html.CollapseSection("TEST","Details/ChartBuilder",Model)*@   
             
                      
-                        @Html.CollapseSection("Charts", "Details/ChartBuilder2", Model)
-                        @Html.CollapseSection("Feedback", "Details/Feedback", Model)
-                        @Html.CollapseSection(Model.Review.ForUser.GetName() + "'s Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
-                        @Html.CollapseSection("Notes", "Details/Notes", Model)
+            @Html.CollapseSection("Charts", "Details/ChartBuilder2", Model)		    
+            @Html.CollapseSection("Notes", "Details/Notes", Model)
+            @Html.CollapseSection("Feedback", "Details/Feedback", Model)
+            @Html.CollapseSection(Model.Review.ForUser.GetName() + "'s Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
+            @Html.CollapseSection("Manager Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+            @Html.CollapseSection("Aggregate Answers", "Details/AggregateAnswers", Model)
             
+<!--
+    @*Self Answers*@
+    <a id="SelfAnswers" class="shiftByTitle"></a>
+    <div class="panel panel-primary">
+        <div onclick="SetSelfAnswers()"
+             class="SelfAnswers includable @(Model.Review.ClientReview.IncludeSelfFeedback?"on":"")"
+             style="">
+            <div class="text"></div>
+            <div class="light-icon"></div>
+        </div>
+        <div class="panel-heading  panel-square">
+            <div class="collapseIcon"></div>
+            <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseSelfAnswers">
+                <h3 class="panel-title"></h3>
+            </a>
+        </div>
+        <div id="collapseSelfAnswers" class="panel-collapse collapse in remember">
+            @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
+        </div>
+    </div>
+    @*Manager Answers*@
+    <a id="ManagerAnswers" class="shiftByTitle"></a>
+    <div class="panel panel-primary">
+        @*<div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>*@
+        <div onclick="SetManagerAnswers()"
+             class="ManagerAnswers includable @(Model.Review.ClientReview.IncludeManagerFeedback ? "on" : "")"
+             style="">
+            <div class="text"></div>
+            <div class="light-icon"></div>
+        </div>
 
-            @*Self Answers*@
-            <a id="SelfAnswers" class="shiftByTitle"></a>
-            <div class="panel panel-primary">
-                <div onclick="SetSelfAnswers()"
-                     class="SelfAnswers includable @(Model.Review.ClientReview.IncludeSelfFeedback?"on":"")"
-                     style="">
-                    <div class="text"></div>
-                    <div class="light-icon"></div>
-                </div>
-                <div class="panel-heading  panel-square">
-                    <div class="collapseIcon"></div>
-                    <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseSelfAnswers">
-                        <h3 class="panel-title"></h3>
-                    </a>
-                </div>
-                <div id="collapseSelfAnswers" class="panel-collapse collapse in remember">
-                    @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
-                </div>
-            </div>
-            @*Manager Answers*@
-            <a id="ManagerAnswers" class="shiftByTitle"></a>
-            <div class="panel panel-primary">
-                @*<div onclick="SetManagerAnswers()" class="ManagerAnswers btn btn-default pull-right headerButton includable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")" style=""></div>*@
-                <div onclick="SetManagerAnswers()"
-                     class="ManagerAnswers includable @(Model.Review.ClientReview.IncludeManagerFeedback ? "on" : "")"
-                     style="">
-                    <div class="text"></div>
-                    <div class="light-icon"></div>
-                </div>
-
-                <div class="panel-heading panel-square">
-                    <div class="collapseIcon"></div>
-                    <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseManagerAnswers">
-                        <h3 class="panel-title">Manager Answers</h3>
-                    </a>
-                </div>
-                <div id="collapseManagerAnswers" class="panel-collapse collapse in remember">
-                    @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
-                </div>
-            </div>
+        <div class="panel-heading panel-square">
+            <div class="collapseIcon"></div>
+            <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseManagerAnswers">
+                <h3 class="panel-title">Manager Answers</h3>
+            </a>
+        </div>
+        <div id="collapseManagerAnswers" class="panel-collapse collapse in remember">
+            @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+        </div>
+    </div>
             @*All Answers*@
             <a id="AggregateAnswers" class="shiftByTitle"></a>
             <div class="panel panel-primary">
@@ -95,6 +97,7 @@
                     @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
                 </div>
             </div>
+-->
             @*All other answers*@
             <a id="OtherAnswers" class="shiftByTitle"></a>
             <div class="panel panel-primary">

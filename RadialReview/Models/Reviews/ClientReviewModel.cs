@@ -17,8 +17,8 @@ namespace RadialReview.Models.Reviews
         public virtual long ReviewId { get; set; }
         public virtual IList<LongModel> FeedbackIds { get; set; }
         public virtual IList<LongTuple> Charts { get; set; }
-
-        public virtual ReportScatter ScatterChart { get; set; }
+        
+        public virtual LongTuple ScatterChart { get; set; }
 
         public virtual Boolean IncludeManagerFeedback { get; set; }
         public virtual Boolean IncludeQuestionTable { get; set; }
@@ -38,7 +38,7 @@ namespace RadialReview.Models.Reviews
         {
             FeedbackIds = new List<LongModel>();
             Charts = new List<LongTuple>();
-            ScatterChart = new ReportScatter();
+            ScatterChart = new LongTuple();
 
         }
 
@@ -72,12 +72,13 @@ namespace RadialReview.Models.Reviews
         }
     }
 
-    public class ReportScatter
+    /*public class ReportScatter
     {
         public virtual long Id { get; set; }
         public virtual String Groups { get; set; }
         public virtual String Filters { get; set; }
         public virtual String Title { get; set; }
+	
         public virtual String AggregateBy { get; set; } 
 
         public class RSMap:ClassMap<ReportScatter>
@@ -91,7 +92,7 @@ namespace RadialReview.Models.Reviews
                 Map(x => x.AggregateBy);
             }
         }
-    }
+    }*/
 
     
     public class LongTuple : IDeletable
@@ -99,7 +100,7 @@ namespace RadialReview.Models.Reviews
         public virtual long Id { get; set; }
         public virtual long Item1 { get; set; }
         public virtual long Item2 { get; set; }
-        public virtual String Title { get; set; }
+         public virtual String Title { get; set; }
         public virtual String Groups { get; set; }
         public virtual String Filters { get; set; }
         public virtual DateTime? DeleteTime { get; set; }

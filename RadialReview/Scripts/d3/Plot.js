@@ -150,7 +150,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     options.yAxis = options.yAxis || "y";
     options.title = options.title || "";
 
-    options.extraClasses = options.extraClasses || "";
+    options.extraClasses = options.extraClasses || [];
 
     options.xDimensionId = options.xDimensionId || scatterData.InitialXDimension;
     options.yDimensionId = options.yDimensionId || scatterData.InitialYDimension;
@@ -572,7 +572,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
     if (options.filters.length != 0) {
         filtered = findMatches(scatterData.Points, options.filters, false);
     } else {
-        filtered = scatterData.Points;
+        filtered = [];//scatterData.Points;
     }
 
     var dataPoints = separateByGroups(filtered, options.groups);
