@@ -6,7 +6,7 @@ using System.Web;
 namespace RadialReview.Models.Charts
 {
     public class ScatterPlot
-    {
+    { 
         public List<ScatterLegendItem> Legend { get; set; }
         public List<ScatterFilter> Filters { get; set; }
         public List<ScatterGroup> Groups { get; set; }
@@ -15,6 +15,7 @@ namespace RadialReview.Models.Charts
         public Dictionary<String,ScatterDimension> Dimensions { get; set; }
         public String InitialXDimension { get; set; }
         public String InitialYDimension { get; set; }
+		public string LegendType { get; set; }
 
         public dynamic OtherData { get; set; }
 
@@ -35,7 +36,8 @@ namespace RadialReview.Models.Charts
 
         public DateTime? MinDate { get; set; }
         public DateTime? MaxDate { get; set; }
-    }
+
+	}
 
     public class ScatterLegendItem
     {

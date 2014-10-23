@@ -3,16 +3,27 @@
     var partialViewName = (string)ViewData["PartialViewName"] ?? "";
     var sectionTitle = (string)ViewData["SectionTitle"] ?? "";
     var sectionId = "pvn_" + Guid.NewGuid();
+
+	var checkboxClass = (string)ViewData["CheckboxClass"];
 }
 
-<div class="panel panel-primary">
-    <div class="panel-heading panel-square">
-        <a class="collapseHeading " data-toggle="collapse" data-parent="#accordion" href="#collapse@(sectionId)">
-            <div class="collapseIcon glyphicon glyphicon-collapse-down"></div>
-            <h3 class="panel-title" style="padding-left: 12px;">@sectionTitle</h3>
-        </a>
-    </div>
-    <div id="collapse@(sectionId)" class="panel-collapse collapse in remember" style="padding: 8px;">
-        @Html.Partial(partialViewName, Model, ViewData)
-    </div>
+<div class="panel panel-primary @checkboxClass.NotNull(x => "panel-includable panel-class-" + x)" style="position: relative;">
+	<div class="panel-heading panel-square">
+		<a class="collapseHeading " data-toggle="collapse" data-parent="#accordion" href="#collapse@(sectionId)">
+			<div class="collapseIcon glyphicon glyphicon-collapse-down"></div>
+			<h3 class="panel-title" style="padding-left: 12px; display:inline-block">@sectionTitle</h3>
+		</a>
+		@if (checkboxClass != null) {
+			<div class="pull-right">
+				<span style="top: -3px;position: relative;margin-right: 4px;color: #DFDFDF;">Include:</span>
+				<input type="checkbox" class="@checkboxClass" />
+			</div>
+		}
+	</div>
+	<div id="collapse@(sectionId)" class="panel-collapse collapse in remember" style="padding: 8px;">
+		@Html.Partial(partialViewName, Model, ViewData)
+	</div>
+	<div class="excludeOverlay flex-center">
+		<div>EXCLUDED</div>
+	</div>
 </div>

@@ -220,16 +220,17 @@
         </div>
     </form>
     <div class="table-responsive">
-        <div class="simplify on">
-            @{
-                var old = ViewBag.IncludeTitles;
-                ViewBag.IncludeTitles = true;
-            }
-            @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Item1, Model.Item2.Cast<RadialReview.Models.AnswerModel>().ToList()))
-            @{
-                ViewBag.IncludeTitles = old;
-            }
-        </div>
+		<div class="simplify on" style="padding-left: 10px;">
+			@{
+				var old = ViewBag.IncludeTitles;
+				ViewBag.IncludeTitles = true;
+			}
+			@Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Item1, Model.Item2.Cast<RadialReview.Models.AnswerModel>().ToList()))
+			@{
+				ViewBag.IncludeTitles = old;
+			}
+		</div>
+
         <div class="simplify">
             <div class="order padded alignCenter">
                 <table class="marginAuto">

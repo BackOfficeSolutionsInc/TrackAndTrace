@@ -487,6 +487,8 @@ namespace RadialReview.Controllers {
         public ActionResult ClientDetails(long id, bool print = false, bool reviewing = false) {
             var review = _ReviewAccessor.GetReview(GetUser(), id);
             var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false));
+	        if (managesUser)
+		        ViewBag.Reviewing = true;
 
             if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization) {
                 var model = GetReviewDetails(review);
@@ -561,11 +563,17 @@ namespace RadialReview.Controllers {
             return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
         }
 
-        [Access(AccessLevel.Manager)]
-        public JsonResult SetIncludeSelfAnswers(long reviewId, bool on) {
-            _ReviewAccessor.SetIncludeSelfAnswers(GetUser(), reviewId, on);
-            return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
-        }
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeSelfAnswers(long reviewId, bool on) {
+			_ReviewAccessor.SetIncludeSelfAnswers(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeNotes(long reviewId, bool on) {
+			_ReviewAccessor.SetIncludeNotes(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
 
         /*[Access(AccessLevel.Manager)]
         public JsonResult AddChart(long x, long y, long reviewId, String groups, String filters, long start, long end) {

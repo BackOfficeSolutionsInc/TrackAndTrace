@@ -27,14 +27,18 @@
             </div>
             @*@Html.CollapseSection("TEST","Details/ChartBuilder",Model)*@   
             
-                     
-            @Html.CollapseSection("Charts", "Details/ChartBuilder2", Model)		    
-            @Html.CollapseSection("Notes", "Details/Notes", Model)
-            @Html.CollapseSection("Feedback", "Details/Feedback", Model)
-            @Html.CollapseSection(Model.Review.ForUser.GetName() + "'s Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
-            @Html.CollapseSection("Manager Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
-            @Html.CollapseSection("Aggregate Answers", "Details/AggregateAnswers", Model)
-            
+	        <div class="row">
+		        <div class="col-sm-6"><a class="pull-right clickable" onclick="expandAll()">Expand All</a></div>
+		        <div class="col-sm-6"><a class="pull-left clickable" onclick="collapseAll()">Collapse All</a></div>
+	        </div>
+			@Html.CollapseSection("Notes", "Details/Notes", Model, "includeNotes")
+            @Html.CollapseSection("Charts", "Details/ChartBuilder2", Model,"includeScatter")
+            @Html.CollapseSection(Model.Review.ForUser.GetName() + "'s Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout),"includeSelfAnswers")
+            @Html.CollapseSection("Manager Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout), "includeManagerAnswers")
+			@Html.CollapseSection("Aggregate Answers", "Details/AggregateAnswers", Model, "includeAggregateAnswers")
+			@Html.CollapseSection("Feedback", "Details/Feedback", Model)
+
+
 <!--
     @*Self Answers*@
     <a id="SelfAnswers" class="shiftByTitle"></a>
@@ -104,10 +108,11 @@
                 <div class="panel-heading panel-square">
                     <div class="collapseIcon"></div>
                     <a class="collapseHeading" data-toggle="collapse" data-parent="#accordion" href="#collapseAllOtherAnswers">
-                        <h3 class="panel-title">All Answers</h3>
+						<div class="collapseIcon glyphicon glyphicon-collapse-down"></div>
+						<h3 class="panel-title" style="padding-left: 20px;">All Answers</h3>
                     </a>
                 </div>
-                <div id="collapseAllOtherAnswers" class="panel-collapse collapse in remember">
+                <div id="collapseAllOtherAnswers" class="panel-collapse collapse in remember" style="padding-left: 10px;">
                     @{
                         var allOtherUsers = Model.AnswersAbout
                             .GroupBy(x => x.ByUserId)

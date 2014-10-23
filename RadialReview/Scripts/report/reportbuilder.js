@@ -1,4 +1,6 @@
-
+﻿$(function () {
+	collapseAll();
+});
 var last = null;
 
 function removeEmpty(array, deleteValue) {
@@ -17,6 +19,9 @@ function collapseAll() {
 function expandAll() {
     $('.panel-collapse').collapse('show');
 }
+
+
+
 
 function Group() {
 }
@@ -42,11 +47,18 @@ function saveText() {
     }
 }
 
+function Advanced() {
+	$(".advanced").toggleClass("hidden");
+}
+
 function clickDetails() {
     //if (allowed() || confirm("You need to include data in the review. Add some feedback and charts before viewing. You may turn off this indicator by turning off hints. Continue anyway?")) {
     window.location = "/Review/ClientDetails/" + ReviewId + "?reviewing=true";
     //}
+}
 
+function clickPrint() {
+	w = window.open("/Review/ClientDetails/" + ReviewId + "?reviewing=true&printing=true");
 }
 
 function clickAuthorize() {
@@ -54,57 +66,7 @@ function clickAuthorize() {
     setAuthorize();
     //} else {
     //    ;
-    //}
-}
-
-function SetManagerAnswers() {
-    var on = !$(".ManagerAnswers").hasClass("on");
-    var dat = { reviewId:ReviewId/* "@Model.Review.Id"*/, on: on };
-    $.ajax({
-        url: "/Review/SetIncludeManagerAnswers",
-        data: dat,
-        method: "GET",
-        success: function (data) {
-            if (data.Object) {
-                if (data.Object.On) {
-                    $(".ManagerAnswers").addClass("on");
-                } else {
-                    $(".ManagerAnswers").removeClass("on");
-                }
-            }
-        }
-    });
-}
-
-function UpdateInclude(url, on, inputs) {
-    inputs.prop("disabled", true);
-    var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
-    $.ajax({
-        url: url,
-        data: dat,
-        method: "GET",
-        success: function (data) {
-            if (data.Object && on == data.Object.On) {
-                inputs.prop("checked", data.Object.On);
-            } else {
-                clearAlerts();
-                showAlert("An error occurred.");
-                console.log(data.Object);
-                location.href = "#top";
-            }
-        },
-        complete: function () {
-            UpdateFeedbacks();
-            inputs.prop("disabled", false);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            clearAlerts();
-            showAlert("An error occurred.");
-            console.log("Error:" + textStatus);
-            console.log(errorThrown);
-            location.href = "#top";
-        }
-    });
+    //}i
 }
 
 function UpdateChart() {
@@ -117,29 +79,29 @@ function UpdateChart() {
     var legendFunc = legend;
 
     $(".group:checked").each(function (x) {
-        var split = $(this).data("class").split(" ");
-        if (split[0] == "")
-            legendFunc = legendReview;
+    	var split = $(this).data("class").split(" ");
+    	if (split[0] == "")
+    		legendFunc = legendReview;
 
-        extraClasses.push($(this).data("addclass"));
-        for (var i in split) {
-            groups.push(split[i]);
-        }
+    	extraClasses.push($(this).data("addclass"));
+    	for (var i in split) {
+    		groups.push(split[i]);
+    	}
     });
 
     $(".filters:checked").each(function (x) {
-        var split = $(this).data("class");//.split(" ");
-        extraClasses.push($(this).data("addclass"));
-        filters.push(split);
+    	var split = $(this).data("class");//.split(" ");
+    	extraClasses.push($(this).data("addclass"));
+    	filters.push(split);
     });
     var dat = {
         reviewId: ReviewId,
         aggregateBy: groups.join(" "),
-        filterBy: filters.join(" "),
+        filterBy: filters.join(","),
         title: $(".title").val(),
-        xAxis: $("#xAxis").val(),
-        yAxis: $("#yAxis").val(),
-    
+        xAxis: parseInt($("#xAxis").val().split("category-")[1]),
+    	yAxis: parseInt($("#yAxis").val().split("category-")[1]),
+	
         startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
         endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
         time: date3,//new Date(parseInt($("#date").val()))
@@ -173,16 +135,19 @@ function UpdateChart() {
 
 }
 
-function OnclickAggregate(self) {
-    var on = $(self).val();//.attr('value');
+
+function UpdateInclude(url, on, inputClass) {
+	var inputs = $("." + inputClass);
+    inputs.prop("disabled", true);
     var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
     $.ajax({
-        url: "/Review/SetScatterChart",
+        url: url,
         data: dat,
         method: "GET",
         success: function (data) {
             if (data.Object && on == data.Object.On) {
-
+            	inputs.prop("checked", data.Object.On);
+	            $(".panel-class-" + inputClass).toggleClass("isIncluded", on);
             } else {
                 clearAlerts();
                 showAlert("An error occurred.");
@@ -191,7 +156,7 @@ function OnclickAggregate(self) {
             }
         },
         complete: function () {
-            //UpdateFeedbacks();
+            inputs.prop("disabled", false);
         },
         error: function (jqXHR, textStatus, errorThrown) {
             clearAlerts();
@@ -199,34 +164,6 @@ function OnclickAggregate(self) {
             console.log("Error:" + textStatus);
             console.log(errorThrown);
             location.href = "#top";
-        }
-    });
-}
-
-function OnclickSelfAnswers(self) {
-    debugger;
-    console.error("wat");
-}
-
-function OnclickScatter(self) {
-    UpdateInclude("/Review/SetIncludeScatter", $(self).is(':checked'), $(".includeScatter"));
-}
-
-function SetSelfAnswers() {
-    var on = !$(".SelfAnswers").hasClass("on");
-    var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
-    $.ajax({
-        url: "/Review/SetIncludeSelfAnswers",
-        data: dat,
-        method: "GET",
-        success: function (data) {
-            if (data.Object) {
-                if (data.Object.On) {
-                    $(".SelfAnswers").addClass("on");
-                } else {
-                    $(".SelfAnswers").removeClass("on");
-                }
-            }
         }
     });
 }
@@ -288,20 +225,12 @@ function SetFeedback(id, on) {
             }
         },
         complete: function () {
-            UpdateFeedbacks();
+           // UpdateFeedbacks();
             $(".feedback_input_" + id /*+ " .check"*/).prop("disabled", false);
         }
     })
 }
 
-function UpdateFeedbacks() {
-    $(".feedback .check").each(function (i, e) {
-        if ($(e).hasClass("on"))
-            $(e).html('<span title="Included" class="glyphicon glyphicon glyphicon-ok   green strokeGreen"></span>');
-        else
-            $(e).html('<span title="Excluded" class="glyphicon glyphicon-ban-circle     red strokeRed"></span>');
-    });
-}
 
 function allowed() {
     return ($("#charts tr").size() != 0 || $("#feedbacks li").size() != 0 || $("#includes li .includable.on").size() != 0);
@@ -329,9 +258,6 @@ function setAuthorize(auth) {
     });
 }
 
-$(function () {
-    UpdateFeedbacks();
-});
 
 function IncludeChart() {
     var xId = $("#xAxis").val().substring(9);
@@ -381,60 +307,32 @@ function RemoveChart(chartId) {
     var dat = new Object();
     dat.chartId = chartId;
     dat.reviewId = ReviewId;//"@Model.Review.Id";
-    $.ajax({
-        url: "/Review/RemoveChart",
-        data: dat,
-        method: "GET",
-        success: function (data) {
-            $(".chart_" + data.Object.ChartId).remove();
-        }
-    })
+	$.ajax({
+		url: "/Review/RemoveChart",
+		data: dat,
+		method: "GET",
+		success: function(data) {
+			$(".chart_" + data.Object.ChartId).remove();
+		}
+	});
 }
 
-var slider;
-$(function () {
-    $('.switch').bootstrapSwitch();
-    $('#Authorize').on('switchChange', function (e, data) {
-        setAuthorize(data.value);
-    });
-    $('#ManagerNotes').keyup($.debounce(500, saveText));
-    slider = $("#DateSlider").noUiSlider({
-        range: [0, 1],
-        start: [0, 0],
-        handles: 2,
-        step: 10,
-        margin: 20,
-        connect: true,
-        direction: 'ltr',
-        orientation: 'horizontal',
-        behaviour: 'tap-drag',
-        serialization: {
-            resolution: 1,
-            to: [function (v) {
-                $("#StartDate").html(moment(+v).format("MMMM Do YYYY"));
-            }, function (v) {
-                $("#EndDate").html(moment(+v).format("MMMM Do YYYY"));
-            }]
-        }
-    });
-});
 
 function legend(legendData, chart) {
 
     if (legendData.length > 0) {
         $("#legend").html("<div class='container'><div class='title'>Legend:</div><div class='contents'></div></div>");
-
-        var peer = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><polygon transform=\"translate(10,10)\" class=\"about-Peer scatter-point nearest inclusive\" points=\"" + chart.triangle + "\"></svg>";
-        $("#legend .contents").append("<div>" + peer + " <div class='inlineBlock'>Peer</div></div>");
-
-        var subordinate = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><circle r=\"8\" transform=\"translate(10,10)\" class=\"about-Subordinate scatter-point nearest inclusive\"/></svg>";
-        $("#legend .contents").append("<div>" + subordinate + " <div class='inlineBlock'>Subordinate</div></div>");
+        var self = "<svg viewBox=\"-6 -6 26 26\" width=\"12\" height=\"12\"><polygon transform=\"translate(7,7) rotate(45)\" class=\"about-Self scatter-point nearest inclusive\" points=\"" + chart.cross + "\"></svg>";
+        $("#legend .contents").append("<div>" + self + " <div class='inlineBlock'>Self</div></div>");
 
         var manager = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><rect x=\"-7\" y=\"-7\" width=\"14\" height=\"14\" transform=\"translate(9,9)\"  class=\"about-Manager scatter-point nearest inclusive\"/></svg>";
         $("#legend .contents").append("<div>" + manager + " <div class='inlineBlock'>Manager</div></div>");
 
-        var self = "<svg viewBox=\"-6 -6 26 26\" width=\"12\" height=\"12\"><polygon transform=\"translate(7,7) rotate(45)\" class=\"about-Self scatter-point nearest inclusive\" points=\"" + chart.cross + "\"></svg>";
-        $("#legend .contents").append("<div>" + self + " <div class='inlineBlock'>Peer</div></div>");
+        var subordinate = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><rect x=\"-5\" y=\"-5\" width=\"10\" height=\"10\" transform=\"translate(9,9)rotate(45)\"  class=\"about-Subordinate scatter-point nearest inclusive\"/></svg>";
+        $("#legend .contents").append("<div>" + subordinate + " <div class='inlineBlock'>Subordinate</div></div>");
+
+        var peer = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><polygon transform=\"translate(10,10)\" class=\"about-Peer scatter-point nearest inclusive\" points=\"" + chart.triangle + "\"></svg>";
+        $("#legend .contents").append("<div>" + peer + " <div class='inlineBlock'>Peer</div></div>");
 
         var noRel = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><circle r=\"8\" transform=\"translate(10,10)\" class=\"scatter-point nearest inclusive\"/></svg>";
         $("#legend .contents").append("<div>" + noRel + " <div class='inlineBlock'>No Relationship</div></div>");
@@ -457,9 +355,6 @@ function legendReview(legendData, chart) {
 
 var chart = new ScatterChart("chart");
 
-$(".group").change(function() {
-    OnclickAggregate($(this));
-});
 
 function update(reset) {
     var date1 = new Date(+$("#DateSlider").val()[0]);
@@ -514,6 +409,33 @@ function update(reset) {
     });
 }
 
+var slider;
+$(function () {
+    $('.switch').bootstrapSwitch();
+    $('#Authorize').on('switchChange', function (e, data) {
+        setAuthorize(data.value);
+    });
+    $('#ManagerNotes').keyup($.debounce(500, saveText));
+    slider = $("#DateSlider").noUiSlider({
+        range: [0, 1],
+        start: [0, 0],
+        handles: 2,
+        step: 10,
+        margin: 20,
+        connect: true,
+        direction: 'ltr',
+        orientation: 'horizontal',
+        behaviour: 'tap-drag',
+        serialization: {
+            resolution: 1,
+            to: [function (v) {
+                $("#StartDate").html(moment(+v).format("MMMM Do YYYY"));
+            }, function (v) {
+                $("#EndDate").html(moment(+v).format("MMMM Do YYYY"));
+            }]
+        }
+    });
+});
 var dataUrl = "/Data/ReviewScatter/" + ForUserId + "?reviewsId=" + ForReviewsId;//"@Model.Review.ForReviewsId";
 chart.Pull(dataUrl, null, function (dat) {
     AllScatterData = dat;
@@ -562,8 +484,102 @@ chart.Pull(dataUrl, null, function (dat) {
     update(true);
 });
 
+
 document.getElementById("controls").addEventListener("click", chart.update, false);
 document.getElementById("controls").addEventListener("keyup", chart.update, false);
 document.getElementById("xAxis").addEventListener("change", chart.update, false);
 document.getElementById("yAxis").addEventListener("change", chart.update, false);
-//document.getElementById("grouped").addEventListener("change", chart.update, false);
+
+//function SetManagerAnswers() {
+//    var on = !$(".ManagerAnswers").hasClass("on");
+//    var dat = { reviewId:ReviewId/* "@Model.Review.Id"*/, on: on };
+//    $.ajax({
+//        url: "/Review/SetIncludeManagerAnswers",
+//        data: dat,
+//        method: "GET",
+//        success: function (data) {
+//            if (data.Object) {
+//                if (data.Object.On) {
+//                    $(".ManagerAnswers").addClass("on");
+//                } else {
+//                    $(".ManagerAnswers").removeClass("on");
+//                }
+//            }
+//        }
+//    });
+//}
+//function OnclickAggregate() {
+//	var self = $(this);
+//    var on = $(self).val();//.attr('value');
+//    var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
+//    $.ajax({
+//        url: "/Review/SetScatterChart",
+//        data: dat,
+//        method: "GET",
+//        success: function (data) {
+//            if (data.Object && on == data.Object.On) {
+
+//            } else {
+//                clearAlerts();
+//                showAlert("An error occurred.");
+//                console.log(data.Object);
+//                location.href = "#top";
+//            }
+//        },
+//        complete: function () {
+//            //UpdateFeedbacks();
+//        },
+//        error: function (jqXHR, textStatus, errorThrown) {
+//            clearAlerts();
+//            showAlert("An error occurred.");
+//            console.log("Error:" + textStatus);
+//            console.log(errorThrown);
+//            location.href = "#top";
+//        }
+//    });
+//}
+//function OnclickSelfAnswers() {
+//	UpdateInclude("/Review/SetIncludeSelfAnswers", $(this).is(':checked'), "includeSelf");
+//}
+//function OnclickScatter() {
+//	UpdateInclude("/Review/SetIncludeScatter", $(this).is(':checked'), "includeScatter");
+//}
+//function OnclickNotes() {
+//	UpdateInclude("/Review/SetIncludeNotes", $(this).is(':checked'), "includeScatter");
+//}
+
+
+//function SetSelfAnswers() {
+//    var on = !$(".SelfAnswers").hasClass("on");
+//    var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
+//    $.ajax({
+//        url: "/Review/SetIncludeSelfAnswers",
+//        data: dat,
+//        method: "GET",
+//        success: function (data) {
+//            if (data.Object) {
+//                if (data.Object.On) {
+//                    $(".SelfAnswers").addClass("on");
+//                } else {
+//                    $(".SelfAnswers").removeClass("on");
+//                }
+//            }
+//        }
+//    });
+//}
+/*function UpdateFeedbacks() {
+    $(".feedback .check").each(function (i, e) {
+        if ($(e).hasClass("on"))
+            $(e).html('<span title="Included" class="glyphicon glyphicon glyphicon-ok   green strokeGreen"></span>');
+        else
+            $(e).html('<span title="Excluded" class="glyphicon glyphicon-ban-circle     red strokeRed"></span>');
+    });
+}*/
+/*
+$(".group").change(function() {
+    OnclickAggregate($(this));
+});*/
+/*
+$(function () {
+	UpdateFeedbacks();
+});*/

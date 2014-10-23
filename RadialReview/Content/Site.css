@@ -1195,7 +1195,7 @@ color: #559DC5;
 .collapseIcon {
     display: inline-block;
     float: left;
-    pointer-events: none;
+    /*pointer-events: none;*/
     margin-left: -6px;
 }
 /*.collapsed .collapseIcon:after {

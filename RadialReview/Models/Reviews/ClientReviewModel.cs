@@ -23,8 +23,9 @@ namespace RadialReview.Models.Reviews
         public virtual Boolean IncludeManagerFeedback { get; set; }
         public virtual Boolean IncludeQuestionTable { get; set; }
         public virtual bool IncludeSelfFeedback { get; set; }
-        public virtual bool IncludeScatterChart { get; set; }
-        public virtual bool IncludeTimelineChart { get; set; }
+		public virtual bool IncludeScatterChart { get; set; }
+		public virtual bool IncludeTimelineChart { get; set; }
+		public virtual bool IncludeNotes { get; set; }
         public virtual bool Visible { get; set; }
         public virtual String ManagerNotes { get; set; }
         public virtual DateTime? SignedTime { get; set; }
@@ -50,8 +51,9 @@ namespace RadialReview.Models.Reviews
         {
             Id(x => x.Id);
             Map(x => x.ReviewId);
-            Map(x => x.Visible);
-            Map(x => x.ManagerNotes);
+			Map(x => x.Visible);
+			Map(x => x.ManagerNotes);
+			Map(x => x.IncludeNotes);
             Map(x => x.IncludeManagerFeedback);
             Map(x => x.IncludeQuestionTable);
             Map(x => x.IncludeSelfFeedback);

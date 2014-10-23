@@ -24,6 +24,11 @@
     page-break-after:always;
 }
 
+.together {
+	-moz-page-break-inside: avoid;
+	page-break-inside: avoid
+}
+
 .table-responsive{
     overflow-x: hidden;
 }
@@ -128,4 +133,16 @@
 
 #wrap {
  min-height: 0%; 
+}
+
+.row-title.first {
+	border-radius: 10px;
+	border: 7px solid #cacaca;
+	opacity: .5;
+}
+
+.row-title {
+	font-weight: bold;
+	border-top: 2px dotted #cacaca;
+	border-bottom: 0px solid #cacaca;
 }

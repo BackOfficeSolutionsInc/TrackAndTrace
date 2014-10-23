@@ -11,39 +11,63 @@
     </div>
 
     <div class="sidebar-contents">
-
-        <h4 class="alignCenter">Charts</h4>
+		@*Notes*@
+		<h4 class="alignCenter">Notes</h4>
+		<div>
+			<span>Include Notes:</span>
+			<input class="pull-right includeNotes" type="checkbox" />
+		</div>
+		<hr />
+		@*Charts*@
+	    <h4 class="alignCenter">Charts</h4>
         <div>
             <span>Include Scatter Chart:</span>
-            <input class="pull-right includeScatter" type="checkbox" @(Model.Review.ClientReview.IncludeScatterChart ? "checked" : "") onchange="OnclickScatter(this)" />
+			<input class="pull-right includeScatter" type="checkbox"/>
         </div>
-        <hr />
-        @*Feedback*@
-        @{
-            var feedbacks = Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>();
-        }
-        @if (feedbacks.Any())
-        {
-            <h4 class="alignCenter">Feedback</h4>
-            <ul class="noBullet empty" id="feedbacks">
-                @*&& Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())*@
-                @foreach (var feedback in feedbacks)
-                {
-                    var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
+	    <hr />		
+	
 
-                    <li class="feedback feedback_@feedback.Id">
-                        @*<input name="feedback_input_@feedback.Id" onchange="SetFeedback(@feedback.Id)">*@
-                        <span title="@feedback.Feedback">@feedback.ByUser.GetName()</span>
+		
+		@*Answers*@
+	    <h4 class="alignCenter">Answers</h4>
+		<div>
+			<span>Include @Model.Review.ForUser.GetFirstName().Possessive() Answers:</span>
+			<input class="pull-right includeSelfAnswers" type="checkbox" />
+		</div>
+		<div>
+			<span>Include Manager Answers:</span>
+			<input class="pull-right includeManagerAnswers" type="checkbox" />
+		</div>
+		<div>
+			<span>Include Aggregate Answers:</span>
+			<input class="pull-right includeAggregateAnswers" type="checkbox" />
+		</div>
+		<hr />
+		@*Feedback*@
+		@{
+			var feedbacks = Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>();
+		}
+		@if (feedbacks.Any()) {
+			<h4 class="alignCenter">Feedback</h4>
+			<ul class="noBullet empty" id="feedbacks">
+				@*&& Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())*@
+				@foreach (var feedback in feedbacks) {
+					var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
+
+					<li class="feedback feedback_@feedback.Id">
+						@*<input name="feedback_input_@feedback.Id" onchange="SetFeedback(@feedback.Id)">*@
+						<span title="@feedback.Feedback">@feedback.ByUser.GetName()</span>
 
 
-                        <input class="pull-right feedback_input_@feedback.Id" type="checkbox" @(on ? "checked" : "") onchange="OnclickFeedback(this,@feedback.Id)" />
-                        @*<span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>*@
-                    </li>
-                }
-            </ul>
-            <hr />
-        }
-        @{
+						<input class="pull-right feedback_input_@feedback.Id" type="checkbox" @(on ? "checked" : "") onchange="OnclickFeedback(this,@feedback.Id)" />
+						@*<span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>*@
+					</li>
+				}
+			</ul>
+			<hr />
+		}
+
+	    @{
             var visible = Model.Review.ClientReview.Visible;
         }
         <div class="alignCenter">
@@ -63,9 +87,14 @@
             <div class="smallBreak2"></div>
 
         </div>
-        <div class="alignCenter">
-            <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View/Print</div>
-            <div class="smallBreak"></div>
-        </div>
+		<div class="alignCenter">
+			<div class=" btn-group">
+				<div onclick="clickDetails()" class="btn btn-default" style="width:72px;">View</div>
+				<div onclick="clickPrint()" class="btn btn-default" style="height: 34px;padding: 8px 16px;">
+					<span class="glyphicon glyphicon-print pull-right clickable hover"></span>
+				</div>
+			</div>
+		    <div class="smallBreak"></div>
+	    </div>
     </div>
 </div>

@@ -168,10 +168,18 @@ namespace RadialReview.Engines
                 minDate = groupedPoints.Min(x => x.Date);
                 maxDate = groupedPoints.Max(x => x.Date);
             }
-
+			
             var title = GetChartTitle(caller, options.Id);
 
-            var filteredPlot = new ScatterPlot()
+	        var legendType = "";
+	        if (options.GroupBy == ""){
+		        legendType = "Review";
+	        }
+	        else{
+		        legendType = "All";
+	        }
+
+	        var filteredPlot = new ScatterPlot()
             {
                 Class = unfilteredPlot.Class,
                 Dimensions = filteredDimensions,
@@ -183,7 +191,8 @@ namespace RadialReview.Engines
                 MinDate = minDate,
                 MaxDate = maxDate,
                 OtherData = new { Title= title },
-                Legend = unfilteredPlot.Legend
+                Legend = unfilteredPlot.Legend,
+				LegendType = legendType
             };
 
             return filteredPlot;

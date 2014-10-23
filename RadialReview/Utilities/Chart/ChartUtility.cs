@@ -55,7 +55,7 @@ namespace RadialReview.Utilities.Chart
                 return true;
             return Requirements.All(required =>
             {
-                var pattern = required.Replace("*", "[a-zA-Z0-9_\\-]*");
+                var pattern = "^"+required.Replace("*", "[a-zA-Z0-9_\\-]*")+"$";
                 return classes.Any(y =>
                 {
                     return Regex.Matches(y, pattern).Count > 0;

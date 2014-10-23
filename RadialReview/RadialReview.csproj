@@ -593,6 +593,7 @@
     <Content Include="Content\home\radial.png" />
     <Content Include="Content\home\radial2.png" />
     <Content Include="Content\img\redlight.png" />
+    <Content Include="Content\img\redstripe.png" />
     <Content Include="Content\img\slider.png" />
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />

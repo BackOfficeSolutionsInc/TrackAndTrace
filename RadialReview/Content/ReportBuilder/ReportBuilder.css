@@ -95,6 +95,7 @@
         padding: 10px;
         -webkit-print-color-adjust: exact;
         text-align: left;
+		background-color: rgba(255, 255, 255, 0.5);
     }
 
     .legend .title {
@@ -134,7 +135,7 @@
                 background-color: #D9534F;
                 border-color: #D43F3A;
             }*/
-.chartButton; {
+.chartButton {
     top: 39px;
     position: absolute;
     right: 39px;
@@ -164,8 +165,8 @@
 }
 
 #chart {
-    /*width: 650px;*/
-    height: 650px;
+    /*width: 650px;
+    height: 650px;*/
     position: relative;
     margin: auto;
 }
@@ -188,3 +189,74 @@
 ul.empty:empty {
     content: "Nothing to display.";
 }
+
+
+.panel-includable:not(.isIncluded) .excludeOverlay{
+	opacity: .2;
+}
+
+.panel-includable:not(.isIncluded):hover .excludeOverlay{
+	opacity: .2;
+}
+
+.excludeOverlay {
+	opacity: 0;
+	background-image: url("/Content/img/graystripe.png");
+	background-color: rgba(73, 37, 37, 0.75);
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	pointer-events: none;
+	-webkit-transition: opacity .5s ease;
+	-moz-transition: opacity .5s ease;
+	-ms-transition: opacity .5s ease;
+	-o-transition: opacity .5s ease;
+	transition: opacity .5s ease;
+}
+
+.flex-center {
+	display: flex;
+	justify-content: center;
+	/*align-items: center;*/
+	color: rgba(255, 255, 255, 0.00);
+	font-size: 72px;
+	top: 40px;
+	overflow: hidden;
+}
+
+.flex-center div {
+	 
+}
+
+
+/*.panel-includable {
+	transition: opacity .25s;
+}
+
+	.panel-includable .panel-collapse,*/
+	.panel-includable .panel-heading {
+		-webkit-transition: background-color .5s ease;
+		-moz-transition: background-color .5s ease;
+		-ms-transition: background-color .5s ease;
+		-o-transition: background-color .5s ease;
+		transition: background-color .5s ease;
+	}
+	/*
+.panel-includable:not(.isIncluded) .panel-collapse {
+	background-image: url("/Content/img/graystripe.png");
+	background-color: #F9ECEC;
+}
+.panel-includable:not(.isIncluded) .panel-collapse textarea{
+	background-color: rgba(255, 255, 255, 0.25);
+}*/
+
+.panel-includable:not(.isIncluded) .panel-heading{
+	background-color: #baa0a0;
+	background-image: url("/Content/img/graystripe.png");
+	background-position-x: 5px;
+}
+.panel-includable:not(.isIncluded) span{
+	color: #F5F5F5 !important; 
+}*/

@@ -66,11 +66,48 @@
     <script src="~/Scripts/d3/Plot.js"></script>
     <script src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript">
-        var ReviewId = "@Model.Review.Id";
-        var ForReviewsId = "@Model.Review.ForReviewsId";
-        var ForUserId = "@Model.Review.ForUserId";
+	    var ReviewId = "@Model.Review.Id";
+	    var ForReviewsId = "@Model.Review.ForReviewsId";
+	    var ForUserId = "@Model.Review.ForUserId";
     </script>
-    <script src="~/Scripts/report/reportbuilder.js"></script>
+	<script src="~/Scripts/report/reportbuilder.js"></script>
+	<script>
+		@{
+			var client = Model.Review.ClientReview;
+		}
+
+	function setupSection(inputClass, initialValue, url) {
+		var select = $("." + inputClass);
+		select.prop("checked", initialValue);
+		$(".panel-class-" + inputClass).toggleClass("isIncluded", initialValue);
+		select.change(function() {
+			UpdateInclude(url, $(this).is(':checked'), inputClass);
+		});
+	}
+
+	$(function() {
+		var False = false;
+		var True = true;		
+		setupSection("includeNotes",@client.IncludeNotes, "/Review/SetIncludeNotes");
+		setupSection("includeScatter",@client.IncludeScatterChart,"/Review/SetIncludeScatter");
+		setupSection("includeSelfAnswers",@client.IncludeSelfFeedback,"/Review/SetIncludeSelfAnswers");
+		setupSection("includeManagerAnswers",@client.IncludeManagerFeedback,"/Review/SetIncludeManagerAnswers");
+		setupSection("includeAggregateAnswers",@client.IncludeQuestionTable,"/Review/SetIncludeTable");
+
+		@*$(".includeScatter").prop("checked", @(client.IncludeScatterChart?"true":"false"));
+		$(".includeScatter").change(OnclickScatter);
+
+		$(".includeSelf").prop("checked", @(client.IncludeSelfFeedback?"true":"false"));
+		$(".includeSelf").change(OnclickSelfAnswers);
+
+		$(".includeNotes").prop("checked", @(client.IncludeNotes?"true":"false"));
+		$(".includeNotes").change(OnclickNotes);*@
+
+
+	});
+
+</script>
+	
 }
 
 @using (Html.BeginStyles())
