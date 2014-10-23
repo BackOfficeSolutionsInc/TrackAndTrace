@@ -49,7 +49,7 @@
         </div>
         <div class="smallBreak2"></div>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-9 mainContent hidden">
         <!--Main Content-->
         @Html.Partial("Details/MainContent", Model)
         <div class="smallBreak"></div>
@@ -93,6 +93,10 @@
 		setupSection("includeSelfAnswers",@client.IncludeSelfFeedback,"/Review/SetIncludeSelfAnswers");
 		setupSection("includeManagerAnswers",@client.IncludeManagerFeedback,"/Review/SetIncludeManagerAnswers");
 		setupSection("includeAggregateAnswers",@client.IncludeQuestionTable,"/Review/SetIncludeTable");
+
+		setTimeout(function() {
+			$(".mainContent").removeClass("hidden");
+		}, 250);
 
 		@*$(".includeScatter").prop("checked", @(client.IncludeScatterChart?"true":"false"));
 		$(".includeScatter").change(OnclickScatter);
