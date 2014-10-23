@@ -1,0 +1,6 @@
+﻿
+@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+
+
+<div class="save">Saving</div>
+@Html.TextAreaFor(x => x.Review.ClientReview.ManagerNotes, new { placeholder = "Optional notes...", style = "width:100%;height:150px;resize:vertical;border: 1px solid #DBDBDB;", id = "ManagerNotes" })

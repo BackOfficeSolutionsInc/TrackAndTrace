@@ -14,6 +14,14 @@ namespace System.Web
     public static class HtmlExtensions
     {
 
+        public static MvcHtmlString CollapseSection(this HtmlHelper html,String title,String viewName,object model,string checkboxClass=null)
+        {
+			html.ViewData["PartialViewName"] = viewName;
+			html.ViewData["SectionTitle"] = title;
+			html.ViewData["CheckboxClass"] = checkboxClass;
+            return html.Partial("Partial/Collapsable",model,html.ViewData);
+        }
+
         public static HtmlString ViewOrEdit(this HtmlHelper html, bool edit,bool icon=true)
         {
             if(icon)

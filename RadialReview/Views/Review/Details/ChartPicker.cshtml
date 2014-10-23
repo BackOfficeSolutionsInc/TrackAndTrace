@@ -1,0 +1,66 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+@using RadialReview.Models;
+
+<div class="subtext ">Click on a chart to add it to the report.</div>
+
+@foreach (var chart in Model.ChartTypes)
+{
+    <div class="chartSelector">
+        <div>@chart.Title</div>
+        <span class="overlay">
+            <img class="thumbnail" width="127" height="127" src="@chart.ImageUrl" />
+            <span class="color"></span>
+        </span>
+    </div>
+}
+
+@using (Html.BeginScripts())
+{
+    <script>
+        $(function () {
+            $(".chartSelector").click(function () {
+                $(this).toggleClass("on");
+            });
+        });
+    </script>
+}
+
+@using (Html.BeginStyles())
+{
+    <style>
+        .chartSelector {
+            /*height: 128px;
+            width: 128px;*/
+            text-align: center;
+            cursor: pointer;
+            margin: 5px;
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+        }
+
+            .chartSelector img {
+                margin: auto;
+                height: 127px;
+                width: 127px;
+            }
+
+            .chartSelector.on img {
+                -ms-opacity: .5;
+                opacity: .5;
+                background-color: rgb(143,219,110);
+                /*bottom: 0;
+                display: block;
+                left: 0;
+                opacity: 0.5;
+                position: absolute;
+                right: 0;
+                top: 0;*/
+                z-index: 1;
+            }
+
+        .chartSelector.on img:after {
+            content: "☑";
+        }
+    </style>
+}

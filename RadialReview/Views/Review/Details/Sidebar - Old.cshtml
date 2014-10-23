@@ -1,0 +1,97 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+@using RadialReview.Models;
+
+<div class="sidebar noPad">
+    <div class="sidebar-header" style="padding-left: 20px;">
+        <div class="row alignCenter">
+            <div class="col-lg-5" style="padding-top: 5px;">
+                <span> <div style="font-size:18px">Share with Employee</div></span>
+            </div>
+            <div class="col-lg-7 noPad">
+                <input id="Authorize"
+                       type="checkbox" @(Model.Review.ClientReview.Visible ? "checked" : "")
+                       class="switch switch-large fullWidth"
+                       style="min-width:128px;"
+                       data-on-color="success"
+                       data-off-color="danger"
+                       data-on-text="Sharing"
+                       data-off-text="Private"
+                       data-size="large"
+                       data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
+            </div>
+        </div>
+    </div>
+    <div class="sidebar-contents">
+        @{
+            var visible = Model.Review.ClientReview.Visible;
+        }
+        <div class="smallBreak"></div>
+        @*Charts*@
+        <h4 class="alignCenter">Charts</h4>
+        <table id="charts empty" style="vertical-align: top;font-size:80%;width:100%;">
+            @foreach (var chart in Model.Review.ClientReview.Charts.ToListAlive())
+            {
+                <tr class="chart_@chart.Id">
+                    <td>@chart.Title</td>
+                    <td>
+                        <span onclick="RemoveChart(@chart.Id)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>
+                    </td>
+                </tr>
+
+            }
+        </table>
+        <hr />
+        @*Feedback*@
+        <h4 class="alignCenter">Feedback</h4>
+        <ul class="noBullet empty" id="feedbacks">
+            @*&& Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())*@
+            @foreach (var feedback in Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>())
+            {
+                var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
+
+                <li class="feedback feedback_@feedback.Id">
+                    @*<input name="feedback_input_@feedback.Id" onchange="SetFeedback(@feedback.Id)">*@
+                    <span title="@feedback.Feedback">@feedback.ByUser.GetName()</span>
+
+
+                    <input class="pull-right feedback_input_@feedback.Id" type="checkbox" @(on ? "checked" : "") onchange="OnclickFeedback(this,@feedback.Id)" />
+                    @*<span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>*@
+                </li>
+            }
+        </ul>
+        <hr />
+        @*Include*@
+        <h4 class="alignCenter">Include</h4>
+        <ul class="noBullet" id="includes">
+            <li class="clearfix">
+                <a href="#SelfAnswers">@Model.Review.ForUser.GetName()'s Answers</a>
+                @*<div onclick="SetSelfAnswers()"
+                         class="SelfAnswers glyphicon includable pull-right clickable @( ? "on" : "")">
+                    </div>*@
+                <input class="pull-right SelfAnswers" type="checkbox" @(Model.Review.ClientReview.IncludeSelfFeedback ? "checked" : "") onchange="OnclickSelfAnswers(this)" />
+
+            </li>
+            <li class="clearfix">
+                <a href="#ManagerAnswers">Managers' Answers</a>
+                <div onclick="SetManagerAnswers()"
+                     class="ManagerAnswers glyphicon includable pull-right clickable @(Model.Review.ClientReview.IncludeManagerFeedback?"on":"")">
+                </div>
+            </li>
+            <li class="clearfix">
+                <a href="#AggregateAnswers">Aggregate Answers</a>
+                <span onclick="SetQuestionTable()"
+                      class="QuestionTable glyphicon includable pull-right clickable @(Model.Review.ClientReview.IncludeQuestionTable?"on":"")">
+                </span>
+            </li>
+        </ul>
+        <hr />
+        <h4 class="alignCenter">Notes</h4>
+        <div class="save">Saving</div>
+        @Html.TextAreaFor(x => x.Review.ClientReview.ManagerNotes, new { placeholder = "Optional notes...", style = "width:100%;height:150px;resize:vertical;border: 1px solid #DBDBDB;", id = "ManagerNotes" })
+        <hr />
+        <div class="alignCenter">
+            <div onclick="clickDetails()" class="btn btn-default" style="width:120px;">View/Print</div>
+            <div class="smallBreak"></div>
+        </div>
+    </div>
+</div>

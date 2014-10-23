@@ -25,6 +25,8 @@
     font-size: 32px;
 }
 
+
+
 .scatter-point {
     stroke:black;
     stroke-width:1px;
@@ -84,53 +86,57 @@
 
 
 .about-Manager {
-    border-width:2px ! important;
-    border-color: blue ! important;
+    border-width:2px !important;
+    border-color: blue !important;
     stroke: blue;
     fill: lightblue;
     background-color: lightblue;
 }
 
 .about-Subordinate {
-    border-width:2px ! important;
-    border-color: darkred ! important;
+    border-width:2px !important;
+    border-color: darkred !important;
     stroke: darkred;
     fill: red;
     background-color: red;
 }
 
 .about-Teammate {
-    border-width:2px ! important;
-    border-color: darkorange ! important;
+    border-width:2px !important;
+    border-color: darkorange !important;
     stroke: darkorange;
     fill: orange;
     background-color: orange;
 }
 
 .about-Peer {
-    border-width:2px ! important;
-    border-color: #000 ! important;
+    border-width:2px !important;
+    border-color: #000 !important;
     stroke: #000;
     fill: #7AD17A;
     background-color: #7AD17A;
 }
 
 .about-Self {
-    border-width:2px ! important;
+    border-width:2px !important;
     stroke: darkgoldenrod;
     fill: yellow;
     background-color: yellow;
-    border-color: darkgoldenrod ! important;
+    border-color: darkgoldenrod !important;
 }
 
 .about-NoRelationship {
-    border-width:2px ! important;
+    border-width:2px !important;
     stroke: #000;
     fill: #808080;
     background-color: #808080;
-    border-color: #000 ! important;
+    border-color: #000 !important;
 }
 
+.separateReview .scatter-point {
+    stroke: #000 !important;
+    fill: #808080 !important;
+}
 
 .axisTitle{
     font-family:'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;

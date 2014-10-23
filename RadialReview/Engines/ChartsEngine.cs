@@ -31,6 +31,9 @@ namespace RadialReview.Engines
                     //Tuple
                     var tuple= s.Get<LongTuple>(chartTupleId);
 
+                    if (tuple.Title != null)
+                        return tuple.Title;
+
                     //Filters
                     var filters = ChartClassMatcher.CreateMatchers(tuple.Filters);
                     var filterStrs=new List<String>();
@@ -111,7 +114,7 @@ namespace RadialReview.Engines
                     }
 
 
-                    return String.Format("{0} vs {1}{2}", cat2.Category.Translate(), cat1.Category.Translate(), description);
+                    return String.Format("{0} vs {1}{2}", cat2.NotNull(x=>x.Category.Translate())??"?", cat1.NotNull(x=>x.Category.Translate())??"?", description);
                 }
             }
         }
@@ -124,13 +127,13 @@ namespace RadialReview.Engines
                 default: throw new ArgumentException("Unknown ChartDataSource");
             }
         }
-
+	
         protected ScatterPlot ReviewScatterFromOptions(UserOrganizationModel caller, ChartOptions options,bool sensitive)
         {
             var reviewsId = long.Parse(options.Options.Split(',')[0]);
             var unfilteredPlot = ReviewScatter(caller, options.ForUserId, reviewsId,sensitive);
 
-            var filterPack = options.Filters.Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var filterPack = (options.Filters??"").Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
             var allowableDimensions = options.DimensionIds.Split(',').Select(x => x.Trim().ToLower()).ToList();
             var filteredDimensions = unfilteredPlot.Dimensions.Where(x => allowableDimensions.Any(y => y.Equals(x.Key.Trim().ToLower()))).ToDictionary(x => x.Key, x => x.Value);
@@ -165,10 +168,18 @@ namespace RadialReview.Engines
                 minDate = groupedPoints.Min(x => x.Date);
                 maxDate = groupedPoints.Max(x => x.Date);
             }
-
+			
             var title = GetChartTitle(caller, options.Id);
 
-            var filteredPlot = new ScatterPlot()
+	        var legendType = "";
+	        if (options.GroupBy == ""){
+		        legendType = "Review";
+	        }
+	        else{
+		        legendType = "All";
+	        }
+
+	        var filteredPlot = new ScatterPlot()
             {
                 Class = unfilteredPlot.Class,
                 Dimensions = filteredDimensions,
@@ -180,7 +191,8 @@ namespace RadialReview.Engines
                 MinDate = minDate,
                 MaxDate = maxDate,
                 OtherData = new { Title= title },
-                Legend = unfilteredPlot.Legend
+                Legend = unfilteredPlot.Legend,
+				LegendType = legendType
             };
 
             return filteredPlot;

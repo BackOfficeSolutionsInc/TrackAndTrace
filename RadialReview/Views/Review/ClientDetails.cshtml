@@ -1,432 +1,510 @@
 ﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 @{
-    ViewBag.Title = Model.Review.ForUser.GetNameAndTitle() + " Review";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    var charts = Model.Review.ClientReview.Charts.ToListAlive();
-    var feedbacks = Model.Review.ClientReview.FeedbackIds.ToListAlive().GroupBy(x => x.Value).Select(x => x.First()).ToList();
-    var notes = Model.Review.ClientReview.ManagerNotes;
-    var i = 0;
+	ViewBag.Title = Model.Review.ForUser.GetNameAndTitle() + " Review";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	var charts = Model.Review.ClientReview.Charts.ToListAlive();
+	var feedbacks = Model.Review.ClientReview.FeedbackIds.ToListAlive().GroupBy(x => x.Value).Select(x => x.First()).ToList();
+	var notes = Model.Review.ClientReview.ManagerNotes;
+	var i = 0;
 }
 
 @section top{
-    <div class="aboveJumbotron noPrint">
-        <h2>Aggregate report for @Model.Review.Name.</h2>
-    </div>
-    <div class="jumbotron noPrint @(ViewBag.Reviewing??false?"reviewing":"") @(Model.Review.ClientReview.Visible?"on":"")">
-        <h1>Report</h1>
-    </div>
+	<div class="aboveJumbotron noPrint">
+		<h2>Aggregate report for @Model.Review.Name.</h2>
+	</div>
+	<div class="jumbotron noPrint @(ViewBag.Reviewing??false?"reviewing":"") @(Model.Review.ClientReview.Visible?"on":"")">
+		<h1>Report</h1>
+	</div>
 }
 
-@using (Html.BeginStyles())
-{
-    <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
-    <style>
+@using (Html.BeginStyles()) {
+	<link href="~/Content/Chart/Chart.css" rel="stylesheet" />
+	<style>
+		.jumbotron.reviewing {
+			background-color: rgba(255, 60, 60, 0.14);
+			-moz-transition: background-color .2s ease-in-out;
+			-o-transition: background-color .2s ease-in-out;
+			-webkit-transition: background-color .2s ease-in-out;
+			transition: background-color .2s ease-in-out;
+		}
 
-        .jumbotron.reviewing {
-            background-color: rgba(255, 60, 60, 0.14);
-            -moz-transition: background-color .2s ease-in-out;
-            -o-transition: background-color .2s ease-in-out;
-            -webkit-transition: background-color .2s ease-in-out;
-            transition: background-color .2s ease-in-out;
-        }
+			.jumbotron.reviewing.on {
+				background-color: rgba(60, 255, 99, 0.14);
+			}
 
-            .jumbotron.reviewing.on {
-                background-color: rgba(60, 255, 99, 0.14);
-            } 
-        
-        
 
-        .chart {
-            width: 600px;
-            height: 600px;
-            position: relative;
-            margin: auto;
-        }
 
-        .chartButton {
-            top: 39px;
-            position: absolute;
-            right: 39px;
-        }
+		.chart {
+			width: 600px;
+			height: 600px;
+			position: relative;
+			margin: auto;
+		}
 
-        .sidebar-contents {
-            padding: 6px;
-        }
+		.chartButton {
+			top: 39px;
+			position: absolute;
+			right: 39px;
+		}
 
-            .sidebar-contents ol {
-                padding-left: 25px;
-            }
+		.sidebar-contents {
+			padding: 6px;
+		}
 
-        .sidebar {
-            /*padding: 10px;
-                font-size: 12px;
-                background-color: #FDFDFD;
-                border: 1px solid #DFDFDF;
-                -webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
-                box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);*/
-        }
+			.sidebar-contents ol {
+				padding-left: 25px;
+			}
 
-        .legend .container {
-            margin-top: 30px;
-            border: 1px solid #E7E7E7;
-            padding: 10px;
-            -webkit-print-color-adjust: exact;
-        }
+		.sidebar {
+			/*padding: 10px;
+				font-size: 12px;
+				background-color: #FDFDFD;
+				border: 1px solid #DFDFDF;
+				-webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
+				box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);*/
+		}
 
-        .legend .title {
-            font-size: 16px;
-        }
+		.legend {
+			position: absolute;
+			right: 0px;
+			padding-right: 25px;
+		}
 
-        .legend .circle {
-            border: 1px solid black;
-            border-radius: 6px;
-            width: 12px;
-            height: 12px;
-            display: inline-block;
-            margin-right: 5px;
-        }
+			.legend .container {
+				margin-top: 30px;
+				border: 1px solid #E7E7E7;
+				padding: 10px;
+				-webkit-print-color-adjust: exact;
+				text-align: left;
+			}
 
-        .shiftContainer {
-            padding-top: 20px;
-        }
+			.legend svg {
+				position: relative;
+			}
 
-        .row-title {
-            margin-left: -30px;
-            margin-right: -30px;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            background-color: #E4E5E9;
-            text-align: center;
-            font-size: 18px;
-            color: #6E7392;
-            -webkit-text-shadow: 0 1px 0px #F3F3F3;
-            text-shadow: 0 1px 0px #F3F3F3;
-            border-top: 1px solid #C5C9DF;
-            border-bottom: 1px solid #C5C9DF;
-            margin-top: 20px;
-        }
+			.legend .title {
+				font-size: 16px;
+			}
 
-        .fixed {
-            position: fixed;
-            top: 60px;
-        }
+			.legend .circle {
+				border: 1px solid black;
+				border-radius: 6px;
+				width: 12px;
+				height: 12px;
+				display: inline-block;
+				margin-right: 5px;
+			}
+		/*
 
-            .row-title.first {
-                margin-top: -30px;
-                padding-top: 20px;
-                padding-bottom: 15px;
-                /*color: #84858B;*/
-                border-top-left-radius: 9px;
-                border-top-right-radius: 9px;
-                font-size: 30px;
-                margin-bottom: 25px;
-                border-top: 1px solid #E0E0E0;
-            }
-    </style>
-    <link href="~/Content/chart.css" rel="stylesheet" />
-    <link href="~/Content/print.css" media="print" rel="stylesheet" />
+		.legend .container {
+			margin-top: 30px;
+			border: 1px solid #E7E7E7;
+			padding: 10px;
+			-webkit-print-color-adjust: exact;
+		}
+
+		.legend .title {
+			font-size: 16px;
+		}
+
+		.legend .circle {
+			border: 1px solid black;
+			border-radius: 6px;
+			width: 12px;
+			height: 12px;
+			display: inline-block;
+			margin-right: 5px;
+		}*/
+
+		.shiftContainer {
+			padding-top: 20px;
+		}
+
+		.row-title {
+			margin-left: -30px;
+			margin-right: -30px;
+			padding-top: 10px;
+			padding-bottom: 10px;
+			background-color: #E4E5E9;
+			text-align: center;
+			font-size: 18px;
+			color: #6E7392;
+			-webkit-text-shadow: 0 1px 0px #F3F3F3;
+			text-shadow: 0 1px 0px #F3F3F3;
+			border-top: 1px solid #C5C9DF;
+			border-bottom: 1px solid #C5C9DF;
+			margin-top: 20px;
+		}
+
+		.subtitle {
+			font-size: 23px;
+		}
+
+		.fixed {
+			position: fixed;
+			top: 60px;
+		}
+
+		.row-title.first {
+			margin-top: -30px;
+			padding-top: 0px;
+			padding-bottom: 10px;
+			/*color: #84858B;*/
+			border-top-left-radius: 9px;
+			border-top-right-radius: 9px;
+			font-size: 38px;
+			margin-bottom: 10px;
+			border-top: 1px solid #E0E0E0;
+		}
+	</style>
+	<link href="~/Content/chart.css" rel="stylesheet" />
+	<link href="~/Content/print.css" media="print" rel="stylesheet" />
 }
 
 <div class="shiftContainer" style="">
-    <!--a href="?print=true" class="btn btn-default pull-right">
-        Print
-    </a-->
-    <div class="col-lg-3 noPrint noPad">
-        <div id="sidebar" class="sidebar noPad sidebar-fixed">
-            <div class="sidebar-header alignCenter">
-                Quick Links
-                <span class="glyphicon glyphicon-print pull-right clickable hover" onclick="window.print()"></span>
-            </div>
-            <div class="sidebar-contents">
-                <ol>
-                    <li><a href="#name">Name</a></li>
-                    @if (!String.IsNullOrWhiteSpace(Model.JobDescription))
-                    {
-                        <li><a href="#jobDescription">Job Description</a></li>
-                    }
-                    @if (Model.Responsibilities.Any())
-                    {
-                        <li><a href="#responsibilities">Responsibilities</a></li>
-                    }
-                    <li><a href="#questions">Questions</a></li>
-                    @foreach (var chart in charts)
-                    {
-                        <li><a href="#ql_chart_@chart.Id">@chart.Title</a></li>
-                    }
-                    @if (Model.Review.ClientReview.IncludeQuestionTable)
-                    {
-                        <li><a href="#questionTable">Answer Distribution</a></li>
-                    }
-                    @if (Model.Review.ClientReview.IncludeSelfFeedback)
-                    {
-                        <li><a href="#selfFeedback">@Model.Review.ForUser.GetName().Possessive() Answers</a></li>
-                    }
-                    @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
-                    {
-                        <li><a href="#managerFeedback">Supervisor's Answers</a></li>
-                    }
-                   
-                    @if (feedbacks.Count > 0)
-                    {
-                        <li><a href="#feedback">Feedback</a></li>
-                    }
-                    @if (!String.IsNullOrWhiteSpace(notes))
-                    {
-                        <li><a href="#notes">Supervisor's Notes</a></li>
-                    }
-                </ol>
-            </div>
+	<!--a href="?print=true" class="btn btn-default pull-right">
+		Print
+	</a-->
+	<div class="col-lg-3 noPrint noPad">
+		<div id="sidebar" class="sidebar noPad sidebar-fixed">
+			<div class="sidebar-header alignCenter">
+				@if (ViewBag.Reviewing ?? false) {
+					<a class="glyphicon glyphicon-circle-arrow-left pull-left clickable hover" title="Back to Report Builder" style="text-decoration:none;color: #5C5C5C;" href="/Review/Details/@Model.Review.Id"></a>
+				}
+				Quick Links
+				<span class="glyphicon glyphicon-print pull-right clickable hover" onclick="window.print()"></span>
+			</div>
+			<div class="sidebar-contents">
+				<ol>
+					<li><a href="#name">Name</a></li>
+					@if (!String.IsNullOrWhiteSpace(Model.JobDescription)) {
+						<li><a href="#jobDescription">Job Description</a></li>
+					}
+					@if (Model.Responsibilities.Any()) {
+						<li><a href="#responsibilities">Responsibilities</a></li>
+					}
+					<li><a href="#questions">Questions</a></li>
+					@if (Model.Review.ClientReview.IncludeScatterChart) {
+						<li><a href="#scatter">
+							    @if (!string.IsNullOrWhiteSpace(Model.Review.ClientReview.ScatterChart.Title)) {
+									@Model.Review.ClientReview.ScatterChart.Title
+								}
+								else {
+									@:Scatter Chart
+								}
+						    </a></li>
+					}
 
-        </div>
-        <div class="smallBreak2"></div>
-        <div class="smallBreak2"></div>
+					@foreach (var chart in charts) {
+						<li><a href="#ql_chart_@chart.Id">@chart.Title</a></li>
+					}
+					@if (Model.Review.ClientReview.IncludeQuestionTable) {
+						<li><a href="#questionTable">Answer Distribution</a></li>
+					}
+					@if (Model.Review.ClientReview.IncludeSelfFeedback) {
+						<li><a href="#selfFeedback">@Model.Review.ForUser.GetName().Possessive() Answers</a></li>
+					}
+					@if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any()) {
+						<li><a href="#managerFeedback">Supervisor's Answers</a></li>
+					}
 
-    </div>
-    <div class="col-lg-9 review" style="min-width:660px;">
-        <div class="noBreak">
-            <a id="name" class="shiftByTitle"></a>
-            <div class="row-title first" style="">Review: @Model.Review.Name</div>
-            <div>
-                <div class="name">Name: @Model.Review.ForUser.GetName()</div>
-                <div class="role">Role: @Model.Review.ForUser.GetTitles()</div>
-            </div>
+					@if (feedbacks.Count > 0) {
+						<li><a href="#feedback">Feedback</a></li>
+					}
+					@if (!String.IsNullOrWhiteSpace(notes) && Model.Review.ClientReview.IncludeNotes) {
+						<li><a href="#notes">Supervisor's Notes</a></li>
+					}
+				</ol>
+			</div>
 
-            @* JOB DESCRIPTION HERE*@
-            @if (!String.IsNullOrWhiteSpace(Model.JobDescription))
+		</div>
+		<div class="smallBreak2"></div>
+		<div class="smallBreak2"></div>
+
+	</div>
+	<div class="col-lg-9 review" style="min-width:660px;">
+		<div class="noBreak">
+			<a id="name" class="shiftByTitle"></a>
+			<div class="row-title first" style="">
+				<div>@Model.Review.ForUser.GetName()</div>
+				<div class="subtitle">@Model.Review.Name</div>
+			</div>
+
+			<div>
+				<div class="role">Role: @Model.Review.ForUser.GetTitles()</div>
+			</div>
+
+			@* JOB DESCRIPTION HERE*@
+			@if (!String.IsNullOrWhiteSpace(Model.JobDescription))
             {
-                <p>
-                    <a id="jobDescription" class="shiftByTitle"></a>
-                    <div class="jobDescriptionHeading">Job Description:</div>
-                    <div class="jobDescription">@Model.JobDescription</div>
-                </p>
+			<p>
+				<a id="jobDescription" class="shiftByTitle"></a>
+				<div class="jobDescriptionHeading">Job Description:</div>
+				<div class="jobDescription">@Model.JobDescription</div>
+			</p>
             }
 
-            @*Task and Responsibilities here*@
-            <a id="responsibilities" class="shiftByTitle"></a>
-            @if (Model.Responsibilities.Any())
+			@*Task and Responsibilities here*@
+			<a id="responsibilities" class="shiftByTitle"></a>
+			@if (Model.Responsibilities.Any())
             {
-                <p>
-                    <div class="noBreak">
-                        Responsibilities:
-                        <ol>
-                            @foreach (var r in Model.Responsibilities)
+			<p>
+				<div class="noBreak">
+					Responsibilities:
+					<ol>
+						@foreach (var r in Model.Responsibilities)
                             {
-                                <li>@r</li>
+							<li>@r</li>
                             }
-                        </ol>
-                    </div>
-                </p>
+					</ol>
+				</div>
+			</p>
             }
 
-            @*Questions here*@
-            <a id="questions" class="shiftByTitle"></a>
-            <p>
-                <div class="noBreak">
-                    Questions:
-                    <ol>
-                        @foreach (var q in Model.ActiveQuestions)
+			@*Questions here*@
+			<a id="questions" class="shiftByTitle"></a>
+			<p>
+				<div class="noBreak">
+					Questions:
+					<ol>
+						@foreach (var q in Model.ActiveQuestions)
                         {
-                            <li>@q.GetQuestion()</li>
+						<li>@q.GetQuestion()</li>
                         }
-                    </ol>
-                </div>
-            </p>
-        </div>
+					</ol>
+				</div>
+			</p>
+		</div>
 
-        @*
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        Organization
-                    </h4>
-                </div>
-                <div class="panel-body noPad">
-                    <div class="row noselect">
-                        <form id="controls">
-                            <div class="col-xs-6 alignRight ">
-                                <div class="inlineBlock">
-                                    <div class="alignCenter"><h4 class="axisTitle">X-Axis</h4></div>
-                                    <div style="top:10px;"> @Html.DropDownListFor(x => x.xAxis, Model.Axis, new { @class = "form-control" })</div>
-                                </div>
-                            </div>
-                            <div class="col-xs-6 alignLeft">
-                                <div class="inlineBlock">
-                                    <div class="alignCenter"><h4 class="axisTitle">Y-Axis</h4></div>
-                                    <div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="orgChart"></svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        *@
+		@*
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						Organization
+					</h4>
+				</div>
+				<div class="panel-body noPad">
+					<div class="row noselect">
+						<form id="controls">
+							<div class="col-xs-6 alignRight ">
+								<div class="inlineBlock">
+									<div class="alignCenter"><h4 class="axisTitle">X-Axis</h4></div>
+									<div style="top:10px;"> @Html.DropDownListFor(x => x.xAxis, Model.Axis, new { @class = "form-control" })</div>
+								</div>
+							</div>
+							<div class="col-xs-6 alignLeft">
+								<div class="inlineBlock">
+									<div class="alignCenter"><h4 class="axisTitle">Y-Axis</h4></div>
+									<div> @Html.DropDownListFor(x => x.yAxis, Model.Axis, new { @class = "form-control" })</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="orgChart"></svg>
+						</div>
+					</div>
+				</div>
+			</div>
+		*@
+		@if (Model.Review.ClientReview.IncludeScatterChart) {
 
+			var chart = Model.Review.ClientReview.ScatterChart;
+			<div class="noselect noBreak">
+				<a id="scatter" class="shiftByTitle"></a>
+				<div class="row-title">
+					@if (!string.IsNullOrWhiteSpace(chart.Title)){
+						@chart.Title
+					}
+					else{
+						@:Scatter Chart
+					}
+				</div>
+				<div class="row">
+					@*<div class="col-xs-9">*@
+					<div class="legend" style="width: 168px; float: right;" id="legend"></div>
+					<div class="chart"
+						 style="width: calc( 100% - 178px ); float: left; padding-left: 13px;"
+						 id="chart_@chart.Id"
+						 data-id="@chart.Id"
+						 data-start="@chart.StartDate.ToJavascriptMilliseconds()"
+						 data-end="@chart.EndDate.ToJavascriptMilliseconds()"
+						 data-xaxis="@chart.Item1"
+						 data-yaxis="@chart.Item2"
+						 data-title="@chart.Title">
+						<!--Chart Goes Here-->
+					</div>
+					@*</div>
+						<div class="col-xs-3">
 
-        @foreach (var chart in charts)
-        {
-            @*<a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
-                <div class="panel panel-primary noBreak">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            @Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
-                        </h4>
-                    </div>
-                    <div class="panel-body noPad">
-                        <svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id">
-                            <defs>
-                                <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
-                                    <path d="M-1,1 l2,-2
-                                                M0,4 l4,-4
-                                                M3,5 l2,-2" stroke-width="2" stroke="black" />
-                                </pattern>
-                                <pattern id="diagonalHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
-                                    <rect x="0" y="0" width="4" height="4" fill="black"></rect>
-                                    <path d="M-1,1 l2,-2
-                                                M0,4 l4,-4
-                                                M3,5 l2,-2" stroke-width="2" stroke="#65c14e" />
-                                </pattern>
-                                <pattern id="diagonalRightHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
-                                    <rect width='8' height='8' fill='white' />
-                                    <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='2' stroke='#e99654' />
-                                </pattern>
-                                <pattern id="crossHatch" patternUnits="userSpaceOnUse" width="8" height="8">
-                                    <rect width='8' height='8' fill='#cccccc' />
-                                    <path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='1' stroke='black' />
-                                </pattern>
-                                <pattern id="verticalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
-                                    <path d="M -1,2 l 6,0" stroke-width="1" stroke="black" />
-                                </pattern>
-                            </defs>
-                        </svg>
-                    </div>
-                </div>*@
-            <div class="noselect noBreak">
-                <a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
-                <div class="row-title">@chart.Title</div>
-                <div class="row">
-                    @*<div class="col-xs-9">*@
-                        <div class="legend pull-right" id="legend_chart_@chart.Id"></div>
-                        <div class="chart"
-                             id="chart_@chart.Id"
-                             data-id="@chart.Id"
-                             data-start="@chart.StartDate.ToJavascriptMilliseconds()"
-                             data-end="@chart.EndDate.ToJavascriptMilliseconds()"
-                             data-xaxis="@chart.Item1"
-                             data-yaxis="@chart.Item2"
-                             data-title="@chart.Title">
-                            <!--Chart Goes Here-->
-                        </div>
-                    @*</div>
-                    <div class="col-xs-3">
+							<div class="legend" id="legend_chart_@chart.Id"></div>
+						</div>*@
+				</div>
+			</div>
+		}
 
-                        <div class="legend" id="legend_chart_@chart.Id"></div>
-                    </div>*@
-                </div>
-            </div>
-        }
+		@foreach (var chart in charts) {
+			@*<a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
+				<div class="panel panel-primary noBreak">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							@Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
+						</h4>
+					</div>
+					<div class="panel-body noPad">
+						<svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id">
+							<defs>
+								<pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+									<path d="M-1,1 l2,-2
+												M0,4 l4,-4
+												M3,5 l2,-2" stroke-width="2" stroke="black" />
+								</pattern>
+								<pattern id="diagonalHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+									<rect x="0" y="0" width="4" height="4" fill="black"></rect>
+									<path d="M-1,1 l2,-2
+												M0,4 l4,-4
+												M3,5 l2,-2" stroke-width="2" stroke="#65c14e" />
+								</pattern>
+								<pattern id="diagonalRightHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+									<rect width='8' height='8' fill='white' />
+									<path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='2' stroke='#e99654' />
+								</pattern>
+								<pattern id="crossHatch" patternUnits="userSpaceOnUse" width="8" height="8">
+									<rect width='8' height='8' fill='#cccccc' />
+									<path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='1' stroke='black' />
+								</pattern>
+								<pattern id="verticalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+									<path d="M -1,2 l 6,0" stroke-width="1" stroke="black" />
+								</pattern>
+							</defs>
+						</svg>
+					</div>
+				</div>*@
+			<div class="noselect noBreak">
+				<a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
+				<div class="row-title">@chart.Title</div>
+				<div class="row">
+					@*<div class="col-xs-9">*@
+					<div class="legend pull-right" id="legend_chart_@chart.Id"></div>
+					<div class="chart"
+						 id="chart_@chart.Id"
+						 data-id="@chart.Id"
+						 data-start="@chart.StartDate.ToJavascriptMilliseconds()"
+						 data-end="@chart.EndDate.ToJavascriptMilliseconds()"
+						 data-xaxis="@chart.Item1"
+						 data-yaxis="@chart.Item2"
+						 data-title="@chart.Title">
+						<!--Chart Goes Here-->
+					</div>
 
-        @if (Model.Review.ClientReview.IncludeQuestionTable)
-        {
-            <a id="questionTable" class="shiftByTitle"></a>
-            <div class="row-title">Answer Distribution</div>
-            <div class="row">
-                <div class="col-sm-12">
-                    @Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
-                </div>
-            </div>
+					@*</div>
+						<div class="col-xs-3">
 
-        }
-        @if (Model.Review.ClientReview.IncludeSelfFeedback)
-        {
-            <a id="selfFeedback" class="shiftByTitle"></a>
-            <div class="row-title" style="margin-bottom:10px;">@Model.Review.ForUser.GetName().Possessive() Answers</div>
-            <div class="row">
-                <div class="col-sm-12">
-                    @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
-                </div>
-            </div>
-        }
+							<div class="legend" id="legend_chart_@chart.Id"></div>
+						</div>*@
+				</div>
+			</div>
+		}
 
-        @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any())
-        {
-            <a id="managerFeedback" class="shiftByTitle"></a>
-            <div class="row-title" style="margin-bottom:10px;">Supervisors' Answers</div>
-            <div class="row">
-                <div class="col-sm-12">
-                    @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
-                </div>
-            </div>
-        }
+		@if (Model.Review.ClientReview.IncludeQuestionTable) {
+			<a id="questionTable" class="shiftByTitle"></a>
+			<div class="noBreak">
+				<div class="row-title">Answer Distribution</div>
+				<div class="row">
+					<div class="col-sm-12">
+						@Html.Partial("~/Views/Partial/_QuestionColorTable.cshtml", Model.AnswersAbout)
+					</div>
+				</div>
+			</div>
 
-        @if (!String.IsNullOrWhiteSpace(notes))
-        {
-            <a id="notes" class="shiftByTitle"></a>
-            <div class="row-title">Supervisors' Notes</div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="smallBreak2"></div>
-                    <div class="smallBreak2"></div>
-                    <div id="notes" style="white-space: pre-line" class="feedback">@notes</div>
-                    <div class="smallBreak"></div>
-                    <div class="smallBreak"></div>
-                </div>
-            </div>
-        }
+		}
+		@if (Model.Review.ClientReview.IncludeSelfFeedback) {
+			<div class="noBreak">
+				<a id="selfFeedback" class="shiftByTitle"></a>
+				<div class="row-title" style="margin-bottom:10px;">@Model.Review.ForUser.GetName().Possessive() Answers</div>
+				<div class="row">
+					<div class="col-sm-12">
+						@Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
+					</div>
+				</div>
+			</div>
+		}
 
-        @if (feedbacks.Count > 0)
-        {
-            <a id="feedback" class="shiftByTitle"></a>
-            <div class="row-title">Feedback</div>
-            <div class="row">
-                <div class="col-sm-12">
-                    @foreach (var f in feedbacks)
-                    {
-                        <div style="white-space: pre-line" id="feedback_@f.Value" class="feedback">@(((RadialReview.Models.FeedbackAnswer)Model.AnswersAbout.FirstOrDefault(x => x.Id == f.Value)).Feedback)</div>
-                        <div class="smallBreak"></div>
-                        <div class="smallBreak"></div>
-                    }
-                </div>
-            </div>
-        }
+		@if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any()) {
+			<div class="noBreak">
+				<a id="managerFeedback" class="shiftByTitle"></a>
+				<div class="row-title" style="margin-bottom:10px;">Supervisors' Answers</div>
+				<div class="row">
+					<div class="col-sm-12">
+						@Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout))
+					</div>
+				</div>
+			</div>
+		}
 
+	
 
-    </div>
+		@if (feedbacks.Count > 0) {
+			<div class="noBreak">
+				<a id="feedback" class="shiftByTitle"></a>
+				<div class="row-title">Feedback</div>
+				<div class="row">
+					<div class="col-sm-12">
+						@foreach (var f in feedbacks) {
+							<div style="white-space: pre-line;padding-top: 20px;padding-left: 20px;" id="feedback_@f.Value" class="feedback">@(((RadialReview.Models.FeedbackAnswer)Model.AnswersAbout.FirstOrDefault(x => x.Id == f.Value)).Feedback)</div>
+							<div class="smallBreak"></div>
+							<div class="smallBreak"></div>
+						}
+					</div>
+				</div>
+			</div>
+		}	
+		
+		@if (!String.IsNullOrWhiteSpace(notes) && Model.Review.ClientReview.IncludeNotes) {
+			<div class="noBreak">
+				<a id="notes" class="shiftByTitle"></a>
+				<div class="row-title">Supervisors' Notes</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<div id="notes" style="white-space: pre-line;padding-top: 20px;padding-left: 20px;" class="feedback">@notes</div>
+						<div class="smallBreak"></div>
+						<div class="smallBreak"></div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
 </div>
 
 
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
 
-    <script src="/scripts/d3/d3.js"></script>
-    <script src="/scripts/d3/d3.csv.js"></script>
-    <script src="/scripts/d3/Plot.js"></script>
-    <script src="~/Scripts/review/translateSlider.js"></script>
-    <script>
-        var $sidebar = $("#sidebar"), $window = $(window), offset = $sidebar.offset(), topPadding = 60;
+	<script src="/scripts/d3/d3.js"></script>
+	<script src="/scripts/d3/d3.csv.js"></script>
+	<script src="/scripts/d3/Plot.js"></script>
+	<script src="~/Scripts/review/translateSlider.js"></script>
+	<script>
+		var $sidebar = $("#sidebar"), $window = $(window), offset = $sidebar.offset(), topPadding = 60;
 
-            $window.scroll(function () {
-                if ($window.scrollTop() > offset.top-topPadding) {
-                    $sidebar.addClass('fixed');
-                } else {
-                    $sidebar.removeClass('fixed');
-                }
-            });
+		$window.scroll(function () {
+			if ($window.scrollTop() > offset.top - topPadding) {
+				$sidebar.addClass('fixed');
+			} else {
+				$sidebar.removeClass('fixed');
+			}
+		});
 
-        var categoryLookup = {
-            @foreach (var kv in Model.Categories)
+		var categoryLookup = {
+			@foreach (var kv in Model.Categories)
             {
                     @:"@(kv.Key)": "@(kv.Value)",
-                                                                                                                                                                            }
-        };
+			                                                                                                                                                                                        }
+		};
 
-        var updates = [];
-
+		var updates = [];
+		/*
         function legend(legendData, chart) {
             if (legendData.length > 0) {
                 $("#legend_" + chart.id).html("<div class='container'><div class='title'>Legend:</div><div class='contents'></div></div>");
@@ -437,60 +515,117 @@
                 }
             }
         }
-
-        function update() {
-            $(updates).each(function (indexInArray) {
-                var item = this;
-                setTimeout(function () {
-                    var reset = item[0];
-                    var data = item[1];
-                    var that = item[2];
-                    var chart = item[3];
-
-                    var date1 = +$(that).data("start");
-                    var date2 = +$(that).data("end");
-                    var date3 = new Date();
-
-                    var groups = null;
-                    var filters = [];
-                    chart.Plot(data, {
-
-                        animate: true,
-                        reset: reset,
-                        xAxis: categoryLookup[$(that).data("xaxis")],
-                        yAxis: categoryLookup[$(that).data("yaxis")],
-                        xDimensionId: "category-" + $(that).data("xaxis"),
-                        yDimensionId: "category-" + $(that).data("yaxis"),
-                        startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
-                        endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
-                        time: date3,//new Date(parseInt($("#date").val()))
-                        groups: "none",
-                        legendFunc: legend
-                        //filters: filters
-                    });
-                }, indexInArray * 150);
-            });
-        }
-
-        var count = 0;
-        var required = $(".chart").length;
-
-        $(".chart").each(function () {
-            var id = $(this).attr("id");
-            var chart = new ScatterChart(id);
-            var that = this;
+		*/
 
 
-            var id = $(this).data("id");
-            var dataUrl = "/Data/Scatter/" + id + "?reviewId=@Model.Review.Id";
-            chart.Pull(dataUrl, null, function (dat) {
-                data = dat;
-                updates.push([true, data, that, chart]);
-                count++;
-                if (count == required) {
-                    update();
-                }
-            });
-        });
-    </script>
+		function legend(legendData, chart) {
+
+			if (legendData.length > 0) {
+
+				$("#legend").html("<div class='container'><div class='title'>Legend:</div><div class='contents'></div></div>");
+				var self = "<svg viewBox=\"-6 -6 26 26\" width=\"12\" height=\"12\"><polygon transform=\"translate(7,7) rotate(45)\" class=\"about-Self scatter-point nearest inclusive\" points=\"" + chart.cross + "\"></svg>";
+				$("#legend .contents").append("<div>" + self + " <div class='inlineBlock'>Self</div></div>");
+
+				var manager = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><rect x=\"-7\" y=\"-7\" width=\"14\" height=\"14\" transform=\"translate(9,9)\"  class=\"about-Manager scatter-point nearest inclusive\"/></svg>";
+				$("#legend .contents").append("<div>" + manager + " <div class='inlineBlock'>Manager</div></div>");
+
+				var subordinate = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><rect x=\"-5\" y=\"-5\" width=\"10\" height=\"10\" transform=\"translate(9,9)rotate(45)\"  class=\"about-Subordinate scatter-point nearest inclusive\"/></svg>";
+				$("#legend .contents").append("<div>" + subordinate + " <div class='inlineBlock'>Subordinate</div></div>");
+
+				var peer = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><polygon transform=\"translate(10,10)\" class=\"about-Peer scatter-point nearest inclusive\" points=\"" + chart.triangle + "\"></svg>";
+				$("#legend .contents").append("<div>" + peer + " <div class='inlineBlock'>Peer</div></div>");
+
+				var noRel = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><circle r=\"8\" transform=\"translate(10,10)\" class=\"scatter-point nearest inclusive\"/></svg>";
+				$("#legend .contents").append("<div>" + noRel + " <div class='inlineBlock'>No Relationship</div></div>");
+
+				/*var peer = "<svg><rect class=\"about-Manager\" x=\"" + chart.triangle + "\"></svg>";
+
+				for (var i in legendData) {
+					var item = legendData[i];
+					$("#legend .contents").append("<div><div class='" + item.Class + " circle inlineBlock'></div><div class='inlineBlock'>" + item.Name + "</div></div>");
+				}*/
+			}
+		}
+		function legendReview(legendData, chart) {
+
+			if (legendData.length > 0) {
+				$("#legend").html("<div class='container'><div class='title'>Legend:</div><div class='contents'></div></div>");
+				$("#legend .contents").append("<div><div class='about-NoRelationship circle inlineBlock'></div><div class='inlineBlock'>Review Average</div></div>");
+			}
+		}
+
+		var counter = 0;
+
+		function update() {
+			var eachs = $(updates);
+			counter = eachs.length;
+			eachs.each(function (indexInArray) {
+				var item = this;
+				setTimeout(function () {
+					var reset = item[0];
+					var data = item[1];
+					var that = item[2];
+					var chart = item[3];
+
+					var date1 = +$(that).data("start");
+					var date2 = +$(that).data("end");
+					var date3 = new Date();
+
+					var groups = null;
+					var filters = [];
+
+					var legendFunc = legend;
+					if (data.LegendType && data.LegendType == "Review")
+						legendFunc = legendReview;
+
+					chart.Plot(data, {
+
+						animate: true,
+						reset: reset,
+						xAxis: categoryLookup[$(that).data("xaxis")],
+						yAxis: categoryLookup[$(that).data("yaxis")],
+						xDimensionId: "category-" + $(that).data("xaxis"),
+						yDimensionId: "category-" + $(that).data("yaxis"),
+						startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
+						endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
+						time: date3,//new Date(parseInt($("#date").val()))
+						//groups: "none",
+						legendFunc: legendFunc,
+						filters: filters,
+						defaultFilter: "all",
+						callback : function() {
+							counter--;
+							if (counter == 0) {
+								if (window.location.href.indexOf("printing=true") != -1) {
+									window.print();
+									window.close();
+								}
+							}
+						}
+					});
+				}, indexInArray * 150);
+			});
+		}
+
+		var count = 0;
+		var required = $(".chart").length;
+
+		var c = $(".chart");
+		var counter = c.length;
+		c.each(function () {
+			var id = $(this).attr("id");
+			var chart = new ScatterChart(id);
+			var that = this;
+			var id = $(this).data("id");
+			var dataUrl = "/Data/Scatter/" + id + "?reviewId=@Model.Review.Id";
+			chart.Pull(dataUrl, null, function (dat) {
+				data = dat;
+				updates.push([true, data, that, chart]);
+				counter--;
+				if (counter <= 0) {
+					update();
+				}
+			});
+		});
+	</script>
 }

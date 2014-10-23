@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR;
 using NHibernate;
 using NHibernate.Criterion;
 using RadialReview.Exceptions;
@@ -582,6 +582,100 @@ namespace RadialReview.Accessors
             }
         }
 
+        private void SetAggregateBy(UserOrganizationModel caller, long reviewId, string aggregateBy)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.ScatterChart.Groups = aggregateBy;
+                    s.Update(review.ClientReview);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public void UpdateScatterChart(
+            UserOrganizationModel   caller, 
+            long                    reviewId, 
+            string                  aggregateBy, 
+            string                  filterBy, 
+            string                  title, 
+            long?                   xAxis, 
+            long?                   yAxis, 
+            DateTime?               startTime,
+            DateTime?               endTime,
+            bool?                   included) 
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    if (aggregateBy != null)
+                        review.ClientReview.ScatterChart.Groups = aggregateBy;
+                    if (filterBy != null)
+                        review.ClientReview.ScatterChart.Filters = filterBy;
+                    if (title != null)
+                        review.ClientReview.ScatterChart.Title = title;
+
+                    if (xAxis != null)
+                        review.ClientReview.ScatterChart.Item1 = xAxis.Value;
+                    if (yAxis != null)
+                        review.ClientReview.ScatterChart.Item2 = yAxis.Value;
+                    if (startTime != null)
+                        review.ClientReview.ScatterChart.StartDate = startTime.Value;
+                    if (endTime != null)
+                        review.ClientReview.ScatterChart.EndDate = endTime.Value;
+                    if (included != null)
+                        review.ClientReview.IncludeScatterChart = included.Value;
+                
+                    s.Update(review.ClientReview);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+    
+        public void SetIncludeScatter(UserOrganizationModel caller, long reviewId, bool on)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.IncludeScatterChart = on;
+                    s.Update(review);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+        public void SetIncludeTimeline(UserOrganizationModel caller, long reviewId, bool on)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.IncludeTimelineChart = on;
+                    s.Update(review);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+
+
         public void SetIncludeQuestionTable(UserOrganizationModel caller, long reviewId, bool on)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -615,7 +709,19 @@ namespace RadialReview.Accessors
                 }
             }
         }
+		public void SetIncludeNotes(UserOrganizationModel caller, long reviewId, bool on) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).ManageReview(reviewId);
 
+					var review = s.Get<ReviewModel>(reviewId);
+					review.ClientReview.IncludeNotes = on;
+					s.Update(review);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 
         public void SetIncludeSelfAnswers(UserOrganizationModel caller, long reviewId, bool on)
         {

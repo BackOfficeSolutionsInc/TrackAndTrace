@@ -169,6 +169,9 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="VortexSoft.Bootstrap">
+      <HintPath>..\packages\VortexSoft.Bootstrap.1.0.0\lib\VortexSoft.Bootstrap.dll</HintPath>
+    </Reference>
     <Reference Include="WebActivator">
       <HintPath>..\packages\WebActivator.1.5.3\lib\net40\WebActivator.dll</HintPath>
     </Reference>
@@ -600,10 +603,12 @@
     <Content Include="Content\home\radial.png" />
     <Content Include="Content\home\radial2.png" />
     <Content Include="Content\img\redlight.png" />
+    <Content Include="Content\img\redstripe.png" />
     <Content Include="Content\img\slider.png" />
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />
     <Content Include="Content\print.css" />
+    <Content Include="Content\ReportBuilder\ReportBuilder.css" />
     <Content Include="Content\Review.css" />
     <Content Include="Content\simple-slider.css" />
     <Content Include="Content\slider.css" />
@@ -694,8 +699,12 @@
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\d3\ScatterChart.js" />
+    <Content Include="Scripts\report\reportbuilder.js" />
     <Content Include="Scripts\review\review.js" />
     <Content Include="Scripts\review\translateSlider.js" />
+    <Content Include="Views\Review\Details\ChartBuilder2.cshtml" />
+    <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
+    <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -879,6 +888,12 @@
     <Content Include="Views\Reviews\Index.cshtml" />
     <Content Include="Views\Review\GetWantCap.cshtml" />
     <Content Include="Views\Partial\ThumbTable.cshtml" />
+    <Content Include="Views\Review\Details\Sidebar.cshtml" />
+    <Content Include="Views\Review\Details\MainContent.cshtml" />
+    <Content Include="Views\Review\Details\ChartBuilder.cshtml" />
+    <Content Include="Views\Shared\Partial\Collapsable.cshtml" />
+    <Content Include="Views\Review\Details\Sidebar - Old.cshtml" />
+    <Content Include="Views\Review\Details\Notes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
