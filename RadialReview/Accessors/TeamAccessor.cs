@@ -60,7 +60,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-                    var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+                    var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId).List().ToListAlive();
                     //teams.ForEach(x => Populate(s, x));
                     return teams;
                 }

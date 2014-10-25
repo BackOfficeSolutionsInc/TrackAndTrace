@@ -9,7 +9,7 @@ using System.Web;
 
 namespace RadialReview.Models.Responsibilities
 {
-    public abstract class ResponsibilityGroupModel : ILongIdentifiable
+    public abstract class ResponsibilityGroupModel : ILongIdentifiable, IDeletable
     {
         public virtual long Id { get; set; }
         public abstract String GetName();
@@ -31,7 +31,13 @@ namespace RadialReview.Models.Responsibilities
         {
             Responsibilities = new List<ResponsibilityModel>();
         }
-    }
+
+		#region IDeletable Members
+
+		public virtual DateTime? DeleteTime { get;set; }
+
+		#endregion
+	}
 
     public class OrganizationPositionModel : ResponsibilityGroupModel
     {
@@ -137,8 +143,9 @@ namespace RadialReview.Models.Responsibilities
     {
         public ResponsibilityGroupModelMap()
         {
-            Id(x => x.Id);
-            References(x => x.Organization).Not.LazyLoad();
+			Id(x => x.Id);
+			Map(x => x.DeleteTime);
+			References(x => x.Organization).Not.LazyLoad();
             HasMany(x => x.Responsibilities)
                 .Cascade.SaveUpdate()
                 .Not.LazyLoad();

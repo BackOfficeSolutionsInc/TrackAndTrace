@@ -54,12 +54,26 @@ namespace RadialReview.Controllers
         public JsonResult Modal(ResponsibilityViewModel model)
         {
             var caller = GetUser();
-            if (model.CategoryId == -1)
+            /*if (model.CategoryId == -1)
             {
                 var category=_CategoryAccessor.Edit(caller, 0, new Origin(OriginType.Organization, caller.Organization.Id), new LocalizedStringModel(model.NewCategory), true);
                 model.CategoryId = category.Id;
             }
-            _ResponsibilitiesAccessor.EditResponsibility(caller, model.Id, model.Responsibility, model.CategoryId, model.ResponsibilityGroupId,model.Active,model.Weight);
+	        var catagoryId = 0L;
+	        var questionType = QuestionType.Invalid;
+	        if (model.TypeSelected > 0){
+		        catagoryId = model.TypeSelected;
+				questionType=QuestionType.Slider;
+			}
+			if (model.TypeSelected == -9) {// Thumbs
+				questionType = QuestionType.Thumbs;
+			}
+			if (model.TypeSelected == -10) {// Feedback
+				questionType = QuestionType.Feedback;
+			}
+			*/
+			
+	        _ResponsibilitiesAccessor.EditResponsibility(caller, model.Id, model.Responsibility, model.CategoryId, model.ResponsibilityGroupId,model.Active,model.Weight,model.Required);
             return Json(ResultObject.Success("Responsibility updated."));
         }
 

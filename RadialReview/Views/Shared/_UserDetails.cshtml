@@ -1,39 +1,61 @@
 ﻿@model RadialReview.Models.ViewModels.UserOrganizationDetails
 
-@using (Html.BeginStyles())
-{
-    <style>
-        .numbers ul li {
-            list-style-type: decimal;
-        }
-    </style>
+@using (Html.BeginStyles()) {
+	<style>
+		.numbers ul li {
+			list-style-type: decimal;
+		}
+	</style>
+}
+@{
+	var edit = Model.User.GetPersonallyManaging();
 }
 
-
 <div class="review">
-    <div class="row">
-        <div class="col-sm-4">
-            @Html.Partial("_User", Model.User)
-            <div class="smallBreak"></div>
-            <div class="smallBreak"></div>
-        </div>
-        <div class="col-sm-8">
-            <div class="panel panel-default">
-                <a class="headerButton" href="~/Responsibilities/Edit/@Model.User.Id">Edit</a>
-                <div class="panel-heading">
-                    <h3 class="panel-title">Questions</h3>
-                </div>
-                <div class="panel-body numbers">
-                    <ul>
-                        @foreach (var r in Model.Responsibilities)
-                        {
-                            <li class="font-size:19px;">
-                                @r
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-sm-4">
+			@Html.Partial("_User", Model.User)
+			<div class="smallBreak"></div>
+			<div class="smallBreak"></div>
+		</div>
+		<div class="col-sm-8">
+			<div class="panel panel-default">
+				@if (edit) {
+
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/Modal/" + Model.User.Id, "/JobDescription/Modal/", onComplete: "location.reload()")">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Job Description</h3>
+				</div>
+				<div class="panel-body">
+					@if (String.IsNullOrWhiteSpace(Model.User.JobDescription)) {
+						<span style="color:gray">None entered.</span>
+					}
+					else {
+						@Model.User.JobDescription
+					}
+				</div>
+			</div>
+
+
+
+			<div class="panel panel-default">
+				@if (edit) {
+					<a class="headerButton" href="~/Responsibilities/Edit/@Model.User.Id">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Questions</h3>
+				</div>
+				<div class="panel-body numbers">
+					<ul>
+						@foreach (var r in Model.Responsibilities) {
+							<li class="font-size:19px;">
+								@r
+							</li>
+						}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

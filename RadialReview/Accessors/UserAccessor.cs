@@ -1,4 +1,5 @@
-﻿using FluentNHibernate.Utils;
+﻿using Amazon.ElasticTranscoder.Model;
+using FluentNHibernate.Utils;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -744,6 +745,9 @@ namespace RadialReview.Accessors
                                 t.DeleteTime = now;
                                 s.Update(t);
                             }
+
+							m.DeleteTime = now;
+							s.Update(m);
                         }
                     }
                     tx.Commit();
@@ -758,5 +762,18 @@ namespace RadialReview.Accessors
             }
         }
 
-    }
+
+		public void EditJobDescription(UserOrganizationModel caller, long userId, string jobDescription) {
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId, false);
+					var user = s.Get<UserOrganizationModel>(userId);
+					user.JobDescription = jobDescription;
+					s.Update(user);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+	}
 }

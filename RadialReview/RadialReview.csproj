@@ -266,6 +266,7 @@
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\FaqController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
+    <Compile Include="Controllers\JobDescriptionController.cs" />
     <Compile Include="Controllers\PrereviewController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Controllers\ResultsController.cs" />
@@ -602,6 +603,8 @@
     <Content Include="Content\home\placelogo8.png" />
     <Content Include="Content\home\radial.png" />
     <Content Include="Content\home\radial2.png" />
+    <Content Include="Content\img\logoWhite.png" />
+    <Content Include="Content\img\logoWhiteTiny.png" />
     <Content Include="Content\img\redlight.png" />
     <Content Include="Content\img\redstripe.png" />
     <Content Include="Content\img\slider.png" />
@@ -704,6 +707,8 @@
     <Content Include="Scripts\review\translateSlider.js" />
     <Content Include="Views\Review\Details\ChartBuilder2.cshtml" />
     <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
+    <Content Include="Views\JobDescription\Edit.cshtml" />
+    <Content Include="Views\JobDescription\Modal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

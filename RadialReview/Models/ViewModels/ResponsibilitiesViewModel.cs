@@ -47,8 +47,9 @@ namespace RadialReview.Models.ViewModels
     public class ResponsibilityRowViewModel
     {
         public long Id {get;set;}
-        public String Responsibility {get;set;}
-        public String Category { get; set; }
+		public String Responsibility { get; set; }
+		public String Category { get; set; }
+		public String Type { get; set; }
         public Boolean Active {get;set;}
         public WeightType Weight { get; set; }
         public ResponsibilityRowViewModel()
@@ -62,6 +63,7 @@ namespace RadialReview.Models.ViewModels
             Category = r.Category.Category.Translate();
             Active = r.DeleteTime == null;
             Weight = r.Weight;
+	        Type = r.GetQuestionType()+"";
         }
         
     }

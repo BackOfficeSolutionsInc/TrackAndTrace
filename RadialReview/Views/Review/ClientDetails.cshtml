@@ -157,6 +157,10 @@
 			margin-bottom: 10px;
 			border-top: 1px solid #E0E0E0;
 		}
+
+		.padBottom td {
+			padding-bottom: 15px !important;
+		}
 	</style>
 	<link href="~/Content/chart.css" rel="stylesheet" />
 	<link href="~/Content/print.css" media="print" rel="stylesheet" />
@@ -178,22 +182,24 @@
 			<div class="sidebar-contents">
 				<ol>
 					<li><a href="#name">Name</a></li>
-					@if (!String.IsNullOrWhiteSpace(Model.JobDescription)) {
-						<li><a href="#jobDescription">Job Description</a></li>
-					}
+					@*@if (!String.IsNullOrWhiteSpace(Model.JobDescription)) {
+							<li><a href="#jobDescription">Job Description</a></li>
+						}*@
 					@if (Model.Responsibilities.Any()) {
 						<li><a href="#responsibilities">Responsibilities</a></li>
 					}
 					<li><a href="#questions">Questions</a></li>
 					@if (Model.Review.ClientReview.IncludeScatterChart) {
-						<li><a href="#scatter">
-							    @if (!string.IsNullOrWhiteSpace(Model.Review.ClientReview.ScatterChart.Title)) {
+						<li>
+							<a href="#scatter">
+								@if (!string.IsNullOrWhiteSpace(Model.Review.ClientReview.ScatterChart.Title)) {
 									@Model.Review.ClientReview.ScatterChart.Title
 								}
 								else {
 									@:Scatter Chart
 								}
-						    </a></li>
+							</a>
+						</li>
 					}
 
 					@foreach (var chart in charts) {
@@ -231,50 +237,62 @@
 				<div class="subtitle">@Model.Review.Name</div>
 			</div>
 
-			<div>
-				<div class="role">Role: @Model.Review.ForUser.GetTitles()</div>
-			</div>
+			<table class="padBottom">
+				<tr>
+					<td class="role alignRight"><b>Role:</b></td>
+					<td style="padding-left: 10px;">@Model.Review.ForUser.GetTitles()</td>
+				</tr>
 
-			@* JOB DESCRIPTION HERE*@
-			@if (!String.IsNullOrWhiteSpace(Model.JobDescription))
-            {
-			<p>
-				<a id="jobDescription" class="shiftByTitle"></a>
-				<div class="jobDescriptionHeading">Job Description:</div>
-				<div class="jobDescription">@Model.JobDescription</div>
-			</p>
-            }
 
-			@*Task and Responsibilities here*@
-			<a id="responsibilities" class="shiftByTitle"></a>
-			@if (Model.Responsibilities.Any())
-            {
-			<p>
-				<div class="noBreak">
-					Responsibilities:
-					<ol>
-						@foreach (var r in Model.Responsibilities)
-                            {
-							<li>@r</li>
-                            }
-					</ol>
-				</div>
-			</p>
-            }
 
-			@*Questions here*@
-			<a id="questions" class="shiftByTitle"></a>
-			<p>
-				<div class="noBreak">
-					Questions:
-					<ol>
-						@foreach (var q in Model.ActiveQuestions)
-                        {
-						<li>@q.GetQuestion()</li>
-                        }
-					</ol>
-				</div>
-			</p>
+				@* JOB DESCRIPTION HERE*@
+				@if (!String.IsNullOrWhiteSpace(Model.JobDescription)) {
+					<tr>
+						<td class="jobDescriptionHeading alignRight" style="width:125px; vertical-align: top;">
+							<a id="jobDescription" class="shiftByTitle"></a>
+							<b>Job Description:</b>
+						</td>
+						<td class="jobDescription" style="padding-left: 10px;">
+							@Model.JobDescription
+						</td>
+					</tr>
+				}
+
+				@*Task and Responsibilities here*@
+				@if (Model.Responsibilities.Any()) {
+					<tr class="noBreak">
+						<td class="alignRight" style="vertical-align: top;">
+							<a id="responsibilities" class="shiftByTitle"></a>
+							<b>Responsibilities:</b>
+						</td>
+						<td>
+							<ol>
+								@foreach (var r in Model.Responsibilities) {
+									<li>@r</li>
+								}
+							</ol>
+						</td>
+					</tr>
+				}
+
+				@*Questions here*@
+				@if (Model.ActiveQuestions.Any()) {
+					<tr class="noBreak">
+						<td class="alignRight" style="vertical-align: top;">
+							<a id="questions" class="shiftByTitle"></a>
+							<b>Questions:</b>
+						</td>
+						<td class="">
+							<ol>
+								@foreach (var q in Model.ActiveQuestions) {
+									<li>@q.GetQuestion()</li>
+								}
+							</ol>
+						</td>
+					</tr>
+				}
+			</table>
+
 		</div>
 
 		@*
@@ -315,10 +333,10 @@
 			<div class="noselect noBreak">
 				<a id="scatter" class="shiftByTitle"></a>
 				<div class="row-title">
-					@if (!string.IsNullOrWhiteSpace(chart.Title)){
+					@if (!string.IsNullOrWhiteSpace(chart.Title)) {
 						@chart.Title
 					}
-					else{
+					else {
 						@:Scatter Chart
 					}
 				</div>
@@ -444,7 +462,7 @@
 			</div>
 		}
 
-	
+
 
 		@if (feedbacks.Count > 0) {
 			<div class="noBreak">
@@ -460,8 +478,8 @@
 					</div>
 				</div>
 			</div>
-		}	
-		
+		}
+
 		@if (!String.IsNullOrWhiteSpace(notes) && Model.Review.ClientReview.IncludeNotes) {
 			<div class="noBreak">
 				<a id="notes" class="shiftByTitle"></a>
@@ -500,7 +518,7 @@
 			@foreach (var kv in Model.Categories)
             {
                     @:"@(kv.Key)": "@(kv.Value)",
-			                                                                                                                                                                                        }
+						                                                                                                                                                                                        }
 		};
 
 		var updates = [];
@@ -593,7 +611,7 @@
 						legendFunc: legendFunc,
 						filters: filters,
 						defaultFilter: "all",
-						callback : function() {
+						callback: function () {
 							counter--;
 							if (counter == 0) {
 								if (window.location.href.indexOf("printing=true") != -1) {

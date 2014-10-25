@@ -1,6 +1,7 @@
 ﻿using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
@@ -118,7 +119,7 @@ namespace RadialReview.Accessors
             return responsibilityGroups;
         }
 
-        public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null, long? categoryId = null, long? responsibilityGroupId = null, bool? active = null, WeightType? weight = null)
+        public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null, long? categoryId = null, long? responsibilityGroupId = null, bool? active = null, WeightType? weight = null,bool? required = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -141,10 +142,7 @@ namespace RadialReview.Accessors
                         s.Save(r);
                         rg.Responsibilities.Add(r);
                         s.Update(rg);
-
-                    }
-                    else
-                    {
+                    }else{
                         r = s.Get<ResponsibilityModel>(responsibilityId);
 
                         if (responsibilityGroupId != null && responsibilityGroupId != r.ForResponsibilityGroup)//Cant change responsibility Group
@@ -154,11 +152,18 @@ namespace RadialReview.Accessors
                     if (responsibility != null)
                         r.Responsibility = responsibility;
 
-                    if (categoryId != null)
-                    {
+                    if (categoryId != null){
                         permissions.ViewCategory(categoryId.Value);
                         var cat = s.Get<QuestionCategoryModel>(categoryId.Value);
                         r.Category = cat;
+
+						if (ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.THUMBS).Id == cat.Id) {
+							r.SetQuestionType(QuestionType.Thumbs);
+						}
+						if (ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK).Id == cat.Id) {
+							r.SetQuestionType(QuestionType.Feedback);
+						}
+
                     }
 
                     if (active != null)
@@ -168,6 +173,9 @@ namespace RadialReview.Accessors
                         else
                             r.DeleteTime = DateTime.UtcNow;
                     }
+
+	                if (required != null)
+		                r.Required = required.Value;
 
                     if (weight != null)
                     {

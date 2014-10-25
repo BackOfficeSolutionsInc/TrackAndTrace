@@ -1,0 +1,11 @@
+﻿@model RadialReview.Controllers.JobDescriptionController.JobDescriptionVM
+
+@Html.HiddenFor(x => x.UserId)
+<div class="row">
+	<div class="col-sm-3">
+		<label>Job Description:</label>
+	</div>
+	<div class="col-sm-9">
+		@Html.TextAreaFor(x => x.JobDescription, new { @class = "form-control verticalOnly" })
+	</div>
+</div>

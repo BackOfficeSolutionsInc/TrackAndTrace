@@ -17,12 +17,14 @@ namespace RadialReview.Accessors
     {
         public const long APPLICATION_ID = 1;
 
-        public const string FEEDBACK = "Feedback";
+		public const string FEEDBACK = "Feedback";
+		public const string THUMBS = "Yes/No";
 
         private static string[] ApplicationCategories = new string[]{ 
                 "Performance",
                 "Culture",
-                "Feedback",
+                FEEDBACK,
+                THUMBS,
         };
 
         private class Q
@@ -41,7 +43,7 @@ namespace RadialReview.Accessors
         }
 
         private static Q[] ApplicationQuestions = new Q[]{
-            new Q(QuestionType.Feedback,"Feedback","Feedback",false),
+            //new Q(QuestionType.Feedback,"Feedback","Feedback",false),
             //new Q(QuestionType.Thumbs,"Gets it","Feedback",true),
             //new Q(QuestionType.Thumbs,"Wants it","Feedback",true),
             //new Q(QuestionType.Thumbs,"Capacity to do it","Feedback",true),

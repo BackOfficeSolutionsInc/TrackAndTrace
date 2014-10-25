@@ -9,7 +9,7 @@
     @Html.HiddenFor(x => x.ResponsibilityGroupId)
     <div class="row">
         <div class="col-sm-3">
-            <label>Category:</label>
+            <label>Question Type:</label>
         </div>
         <div class="col-sm-9 catContainer">
             @Html.DropDownListFor(x => x.CategoryId, Model.Categories.OrderBy(x => x.Id == -1).ThenBy(y => y.Id==1).ThenBy(y => y.Id).Select(x =>
@@ -36,20 +36,31 @@
     </div>
     <div class="smallBreak"></div>
     <div class="smallBreak"></div>
-    <div class="row">
-        <div class="col-sm-3">
-            <label>Question:</label>
-        </div>
-        <div class="col-sm-9">
-            @Html.TextBoxFor(x => x.Responsibility, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="smallBreak"></div>
-    <div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Question:</label>
+		</div>
+		<div class="col-sm-9">
+			@Html.TextBoxFor(x => x.Responsibility, new { @class = "form-control" })
+		</div>
+	</div>
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
+
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Required:</label>
+		</div>
+		<div class="col-sm-1">
+			@Html.CheckBoxFor(x => x.Required, new { @class = "checkbox" })
+		</div>
+	</div>
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
 
     <div class="row">
         <div class="col-sm-3">
-            <label>Active:</label>
+            <label>Enabled:</label>
         </div>
         <div class="col-sm-1">
             @Html.CheckBoxFor(x => x.Active, new { @class = "checkbox" })
@@ -60,13 +71,13 @@
     function Update() {
         if ($("#positionSelector").val() == -1) {
             $("#newCategory").removeClass("hidden");
-            $(".catContainer").addClass("col-sm-4")
-            $(".catContainer").removeClass("col-sm-9")
+            $(".catContainer").addClass("col-sm-4");
+	        $(".catContainer").removeClass("col-sm-9");
         } else {
             $("#newCategory").addClass("hidden");
             $("#newCategoryInput").val(null);
-            $(".catContainer").addClass("col-sm-9")
-            $(".catContainer").removeClass("col-sm-4")
+	        $(".catContainer").addClass("col-sm-9");
+	        $(".catContainer").removeClass("col-sm-4");
         }
     }
 

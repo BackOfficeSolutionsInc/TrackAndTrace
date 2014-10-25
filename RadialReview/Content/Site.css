@@ -1229,3 +1229,7 @@ color: #559DC5;
     margin-right: -7px;
     display: inline-block;
 }
+
+.verticalOnly {
+	resize: vertical;
+}

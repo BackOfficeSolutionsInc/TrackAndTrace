@@ -1,4 +1,5 @@
-﻿using RadialReview.Accessors;
+﻿using NHibernate.Hql.Ast.ANTLR;
+using RadialReview.Accessors;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,8 @@ using System.IO;
 using System.Web.Mvc;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using RadialReview.Models.Enums;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Reviews;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.Application;
@@ -39,9 +42,36 @@ namespace RadialReview.Controllers
                 }
             }
         }*/
-	
 
-        [Access(AccessLevel.Radial)]
+
+	    [Access(AccessLevel.Radial)]
+	    public int FixTeams()
+	    {
+		    var count = 0;
+		    using (var s = HibernateSession.GetCurrentSession()){
+			    using (var tx = s.BeginTransaction()){
+				    var teams = s.QueryOver<OrganizationTeamModel>().List();
+				    foreach (var t in teams){
+					    if (t.Type == TeamType.Subordinates && t.DeleteTime ==null){
+						    var mid = t.ManagedBy;
+						    var m= s.Get<UserOrganizationModel>(mid);
+						    if (m.DeleteTime != null ){
+							    t.DeleteTime = m.DeleteTime;
+								s.Update(t);
+							    count++;
+						    }
+					    }
+				    }
+					tx.Commit();
+					s.Flush();
+			    }
+		    }
+		    return count;
+
+	    }
+
+
+	    [Access(AccessLevel.Radial)]
         public String FixScatterChart(bool delete=false)
         {
             var i = 0;
