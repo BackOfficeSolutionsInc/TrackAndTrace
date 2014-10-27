@@ -449,11 +449,11 @@ namespace RadialReview.Controllers
         #endregion
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Details(long id)
-        {
-            var model = _UserEngine.GetUserDetails(GetUser(), id);
-
-            return View(model);
+        public ActionResult Details(long id) {
+			var caller=GetUser().Hydrate().ManagingUsers(true).Execute();
+			var details=_UserEngine.GetUserDetails(GetUser(), id);
+			details.User.PopulatePersonallyManaging(caller, caller.AllSubordinates);
+			return View(details);
         }
 
     }

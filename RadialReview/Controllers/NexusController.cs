@@ -131,12 +131,12 @@ namespace RadialReview.Controllers
                 if (GetUser().Organization.SendEmailImmediately)
                 {
                     message += " An invitation has been sent to " + model.Email + ".";
-                    return Json(ResultObject.Create(createdUser.GetTree(createdUser.Id.AsList()),message));
+                    return Json(ResultObject.Create(null/*createdUser.GetTree(createdUser.Id.AsList())*/,message));
                 }
                 else
                 {
                     message += " The invitation has NOT been sent. To send, click \"Send Invites\" below.";
-                    return Json(ResultObject.Create(createdUser.GetTree(createdUser.Id.AsList()), message, StatusType.Warning));
+                    return Json(ResultObject.Create(null/*createdUser.GetTree(createdUser.Id.AsList())*/, message, StatusType.Warning));
                 }
             }
             catch (RedirectException e)

@@ -1,0 +1,47 @@
+﻿@using RadialReview.Models.UserModels
+@model RadialReview.Controllers.RolesController.RoleVM
+
+
+<div class="form">
+	<div class="alignRight">
+		<div class="btn btn-default clickable" onclick="addRole();">Add Role</div>
+		<div class="smallBreak2"></div>
+	</div>
+	@Html.HiddenFor(x => x.UserId)
+	<div class="">
+		<div class="row">
+			<div class="col-sm-3">
+				<label>Role:</label>
+			</div>
+			<div class="col-sm-9" id="allRoles">
+				@foreach (var item in Model.Roles) {
+					Html.RenderPartial("_RoleRow", item);
+				}
+			</div>
+		</div>
+	</div> 
+</div>
+
+<script>
+	function addRole() {
+		$.ajax({
+			url: "/Roles/BlankEditorRow",
+			cache: false,
+			success: function(html) {
+				 $("#allRoles").append(html);
+			}
+		});
+		return false;
+	}
+
+	$(function () {
+		$("div.deleteRow").on("click", function () {
+			$(this).parents("div.roleRow:first").hide();
+			$(this).parents("div.roleRow:first").find("[name*='DeleteTime']").val("@Model.CurrentTime.ToString()");
+
+			return false;
+		});
+	});
+
+
+</script>

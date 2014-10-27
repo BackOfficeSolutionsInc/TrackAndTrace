@@ -449,12 +449,19 @@ namespace RadialReview.Controllers
             return Json(null, JsonRequestBehavior.AllowGet);*/
         }
 
+	    [Access(AccessLevel.UserOrganization)]
+		public JsonResult OrganizationAccountability(long id)
+	    {
+			var orgId = id;
+			var tree = _OrganizationAccessor.GetOrganizationTree(GetUser(), orgId,includeRoles:true);
+		    return Json(tree, JsonRequestBehavior.AllowGet);
+	    }
+
 
         [Access(AccessLevel.UserOrganization)]
         public JsonResult OrganizationHierarchy(long id)
         {
             var tree = _OrganizationAccessor.GetOrganizationTree(GetUser(), id);
-
             return Json(tree, JsonRequestBehavior.AllowGet);
         }
 

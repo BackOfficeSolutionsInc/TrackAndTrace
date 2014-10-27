@@ -1,4 +1,6 @@
-﻿using RadialReview.Models;
+﻿using System.Dynamic;
+using NHibernate;
+using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
@@ -163,7 +165,7 @@ namespace RadialReview
         }
 
 
-        public static Tree GetTree(this UserOrganizationModel self,List<long> deepClaims,long? youId=null,bool force=false)
+		public static Tree GetTree(this UserOrganizationModel self,ISession s, List<long> deepClaims, long? youId = null, bool force = false, bool includeRoles=false)
         {
             var managing = force || deepClaims.Any(x => x == self.Id);
             var classes = new List<String>();
@@ -180,6 +182,13 @@ namespace RadialReview
                 classes.Add("you");
             classes.Add("employee");
 
+			var data = new Dictionary<string, object>();
+
+			if (includeRoles){
+				var roles =s.QueryOver<RoleModel>().Where(x => x.DeleteTime == null && x.ForUserId == self.Id).List();
+				data["Roles"] = roles.ToList();
+			}
+
             return new Tree()
             {
                 name = self.GetName(),
@@ -188,7 +197,8 @@ namespace RadialReview
                 @class = String.Join(" ",classes.Select(y => Regex.Replace(y, "[^a-zA-Z0-9]", "_"))),
                 managing = managing,
                 manager = self.IsManager(),
-                children = self.ManagingUsers.NotNull(x=>x.ToListAlive()).Select(x=>x.Subordinate.GetTree(deepClaims,youId,force)).ToList()
+                children = self.ManagingUsers.NotNull(x=>x.ToListAlive()).Select(x=>x.Subordinate.GetTree(s,deepClaims,youId,force)).ToList(),
+				data = data,
             };
         }
 

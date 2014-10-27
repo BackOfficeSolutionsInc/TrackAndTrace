@@ -775,5 +775,26 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+
+		public List<RoleModel> GetRoles(UserOrganizationModel caller, long id) {
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ViewUserOrganization(id,false);
+					return s.QueryOver<RoleModel>().Where(x => x.ForUserId == id && x.DeleteTime == null).List().ToList();
+				}
+			}
+		}
+
+		public void EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId, false);
+					foreach(var r in roles)
+						s.SaveOrUpdate(r);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 	}
 }

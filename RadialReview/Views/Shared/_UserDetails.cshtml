@@ -21,7 +21,6 @@
 		<div class="col-sm-8">
 			<div class="panel panel-default">
 				@if (edit) {
-
 					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/Modal/" + Model.User.Id, "/JobDescription/Modal/", onComplete: "location.reload()")">Edit</a>
 				}
 				<div class="panel-heading">
@@ -56,6 +55,31 @@
 					</ul>
 				</div>
 			</div>
+			
+			<div class="panel panel-default">
+				@if (edit) {
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Roles", "/Roles/Modal/" + Model.User.Id, "/Roles/Modal/", onComplete: "location.reload()")">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Roles</h3>
+				</div>
+				<div class="panel-body numbers">
+					@if (Model.Roles.Any()){
+						<ul>
+							@foreach (var r in Model.Roles){
+								<li class="font-size:19px;">
+									@r.Role
+								</li>
+							}
+						</ul>
+					}
+					else{
+						<div class="gray">No roles. Click 'Edit' to add a role.</div>
+					}
+				</div>
+			</div>
+
+
 		</div>
 	</div>
 </div>

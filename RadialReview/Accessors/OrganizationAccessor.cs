@@ -363,7 +363,7 @@ namespace RadialReview.Accessors
 
 
 
-        public Tree GetOrganizationTree(UserOrganizationModel caller, long orgId)
+        public Tree GetOrganizationTree(UserOrganizationModel caller, long orgId, bool includeRoles = false)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -389,7 +389,7 @@ namespace RadialReview.Accessors
                         name=org.Name.Translate(),
                         @class="organizations",
                         id = -1*orgId,
-                        children = managers.Select(x => x.GetTree(deep, caller.Id, force: managingOrg)).ToList()
+						children = managers.Select(x => x.GetTree(s,deep, caller.Id, force: managingOrg, includeRoles: includeRoles)).ToList()
                     };
 
                     return tree;

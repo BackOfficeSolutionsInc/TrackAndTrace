@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Models.ViewModels
 {
@@ -53,7 +54,8 @@ namespace RadialReview.Models.ViewModels
 
     public class UserOrganizationDetails
     {
-        public UserOrganizationModel User { get; set; }
-        public List<String> Responsibilities { get; set; }
+		public UserOrganizationModel User { get; set; }
+		public List<String> Responsibilities { get; set; }
+		public List<RoleModel> Roles { get; set; }
     }
 }

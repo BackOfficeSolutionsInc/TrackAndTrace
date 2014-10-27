@@ -14,5 +14,6 @@ namespace RadialReview.Utilities.DataTypes
         public bool managing { get; set; }
         public bool manager { get; set; }
         public List<Tree> children { get; set; }
+		public Dictionary<string,object> data { get; set; }
     }
 }

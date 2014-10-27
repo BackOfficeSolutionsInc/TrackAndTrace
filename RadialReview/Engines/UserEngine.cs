@@ -1,4 +1,5 @@
-﻿using RadialReview.Accessors;
+﻿using System.Web.Security;
+using RadialReview.Accessors;
 using RadialReview.Models;
 using RadialReview.Models.ViewModels;
 using System;
@@ -38,11 +39,14 @@ namespace RadialReview.Engines
                 responsibilities.AddRange(teamResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
             }
 
+	        var roles = _UserAccessor.GetRoles(caller, id);
+
 
             var model = new UserOrganizationDetails()
             {
                 User=foundUser,
                 Responsibilities = responsibilities,
+				Roles = roles,
             };
 
             return model;

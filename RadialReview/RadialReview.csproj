@@ -263,6 +263,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\StructuremapMvc.cs" />
+    <Compile Include="Controllers\AccountabilityController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\FaqController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
@@ -271,6 +272,7 @@
     <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Controllers\ResultsController.cs" />
     <Compile Include="Controllers\RockstarController.cs" />
+    <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\StatisticsController.cs" />
     <Compile Include="Controllers\TasksController.cs" />
@@ -313,6 +315,7 @@
     <Compile Include="Engines\ReviewEngine.cs" />
     <Compile Include="Engines\UserEngine.cs" />
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
+    <Compile Include="Helpers\HtmlPrefixScopeExtensions.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
@@ -351,6 +354,7 @@
     <Compile Include="Models\Template\TemplateItemGroup.cs" />
     <Compile Include="Models\Template\TemplateModel.cs" />
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
+    <Compile Include="Models\UserModels\RoleModel.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
     <Compile Include="Models\ViewModels\AdditionalReviewViewModel.cs" />
     <Compile Include="Models\Completion\TwoBarCompletion.cs" />
@@ -709,6 +713,7 @@
     <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
     <Content Include="Views\JobDescription\Edit.cshtml" />
     <Content Include="Views\JobDescription\Modal.cshtml" />
+    <Content Include="Views\Accountability\Chart.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -899,6 +904,8 @@
     <Content Include="Views\Shared\Partial\Collapsable.cshtml" />
     <Content Include="Views\Review\Details\Sidebar - Old.cshtml" />
     <Content Include="Views\Review\Details\Notes.cshtml" />
+    <Content Include="Views\Roles\Modal.cshtml" />
+    <Content Include="Views\Roles\_RoleRow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
