@@ -86,7 +86,7 @@
             height = 1224;
 
 		var boxWidth = 142;
-		var boxHeight = 100;
+		var boxHeight = 32;
 		var titleFontSize = 16;
 
 		var tree = d3.layout.tree()
@@ -127,7 +127,7 @@
 				.attr("width", boxWidth)
 				.attr("height", function (d) {
 					if (d.data && d.data.Roles) {
-						return Math.max(boxHeight, d.data.Roles.length * 15 + titleFontSize * 2);
+						return Math.max(boxHeight, d.data.Roles.length * 15 + titleFontSize * 3);
 					}
 					return boxHeight;
 				})
@@ -135,7 +135,12 @@
 					.attr("class", "acc");
 
 			accountabilities.append("rect")
-				.attr("width", boxWidth).attr("height", titleFontSize * 2.5)
+				.attr("width", boxWidth)
+				.attr("height", function (d) {
+					if (d.id!=-1)
+						return titleFontSize * 2.5;
+					return titleFontSize * 3.5;
+				})
 		        .attr("transform", function (d) { return "translate(" + -(boxWidth / 2) + "," + (-(boxHeight / 2)) + ")"; })
 				.attr("class", "accBar")
 				.style(function (d) {
@@ -159,13 +164,13 @@
 
 			accountabilities.append("text")
 				.attr("transform", function (d) {
-					return "translate(" + -(boxWidth / 2 - 6) + "," + (-(boxHeight / 2) + titleFontSize * 3 + 6) + ")";
+					return "translate(" + -(boxWidth / 2 - 6) + "," + (-(boxHeight / 2) + titleFontSize * 2 + 12) + ")";
 				})
 				.attr("class", "accRoles")
-				.text(function (d) {
+				.each(function (d) {
 					if (d.data && d.data.Roles) {
-						for (var i = 0; i < d.data.Roles.length; d++) {
-							d3.select(this).append("tspan").text(function (d) {
+						for (var i = 0; i < d.data.Roles.length; i++) {
+							d3.select(this).append("tspan").attr("dy", "1.2em").attr("x", "0").text(function (d) {
 								return (i+1)+". "+d.data.Roles[i].Role;
 							});
 						}

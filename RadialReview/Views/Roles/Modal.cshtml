@@ -3,10 +3,6 @@
 
 
 <div class="form">
-	<div class="alignRight">
-		<div class="btn btn-default clickable" onclick="addRole();">Add Role</div>
-		<div class="smallBreak2"></div>
-	</div>
 	@Html.HiddenFor(x => x.UserId)
 	<div class="">
 		<div class="row">
@@ -22,6 +18,10 @@
 	</div> 
 </div>
 
+<div class="alignLeft">
+	<div class="btn btn-default clickable" onclick="addRole();">Add Role</div>
+	<div class="smallBreak2"></div>
+</div>
 <script>
 	function addRole() {
 		$.ajax({

@@ -197,7 +197,7 @@ namespace RadialReview
                 @class = String.Join(" ",classes.Select(y => Regex.Replace(y, "[^a-zA-Z0-9]", "_"))),
                 managing = managing,
                 manager = self.IsManager(),
-                children = self.ManagingUsers.NotNull(x=>x.ToListAlive()).Select(x=>x.Subordinate.GetTree(s,deepClaims,youId,force)).ToList(),
+				children = self.ManagingUsers.NotNull(x => x.ToListAlive()).Select(x => x.Subordinate.GetTree(s, deepClaims, youId, force, includeRoles)).ToList(),
 				data = data,
             };
         }
