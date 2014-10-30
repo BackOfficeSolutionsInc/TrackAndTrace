@@ -39,12 +39,11 @@
                         <th style="width:100px" class="alignCenter">Created</th>
                         <th style="width:100px" class="alignCenter">Due</th>
                         @*<th style="width: 120px; padding-right: 0px; padding-left: 0px; " class="alignCenter">Completion</th>*@
-                        <th style="width: 20px;" class="alignCenter" data-title="Review statistics"></th>
 
-                        @if (ViewBag.IsManager ?? false)
-                        {
+                        @if (ViewBag.IsManager ?? false) {
+							<th style="width: 20px;" class="alignCenter" data-title="Review statistics"></th>
                             <th class="alignCenter" style="width:1px" data-title="Edit your subordinate's reports"></th>
-                        }
+						}
                         @if (Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
                         {
                             <th style="width: 20px;" class="alignCenter" data-title="Edit the review"></th>
@@ -94,11 +93,10 @@
                             @*<td style="padding-right: 0px; padding-left: 0px; ">
                                     @Html.Partial("_Completion", review.Review)
                                 </td>*@
-                            <td class="alignCenter">
-                                <a href="/Statistics/Review/@review.Review.Id"><span class="glyphicon glyphicon-stats" title="Review statistics"></span></a>
-                            </td>
-                            @if (ViewBag.IsManager ?? false)
-                            {
+                            @if (ViewBag.IsManager ?? false) {
+								<td class="alignCenter">
+									<a href="/Statistics/Review/@review.Review.Id"><span class="glyphicon glyphicon-stats" title="Review statistics"></span></a>
+								</td>
                                 <td class="alignCenter">
                                     <a href="/Reports/List/@review.Review.Id"><span class="icon new-icon-page-multiple" title="View, edit, or print your subordinates' reports"></span></a>
                                 </td>

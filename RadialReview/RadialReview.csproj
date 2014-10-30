@@ -76,9 +76,6 @@
       <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.0.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
-    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -98,9 +95,6 @@
     <Reference Include="RestSharp">
       <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="StructureMap">
-      <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
@@ -110,21 +104,12 @@
       <HintPath>..\packages\System.Data.SQLite.1.0.88.0\lib\net45\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.4.0.30506.0\lib\net40\System.Web.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -171,9 +156,6 @@
     </Reference>
     <Reference Include="VortexSoft.Bootstrap">
       <HintPath>..\packages\VortexSoft.Bootstrap.1.0.0\lib\VortexSoft.Bootstrap.dll</HintPath>
-    </Reference>
-    <Reference Include="WebActivator">
-      <HintPath>..\packages\WebActivator.1.5.3\lib\net40\WebActivator.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
@@ -262,7 +244,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="App_Start\StructuremapMvc.cs" />
     <Compile Include="Controllers\AccountabilityController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\FaqController.cs" />
@@ -309,8 +290,6 @@
     <Compile Include="Controllers\UrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
-    <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
-    <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
     <Compile Include="Engines\BaseEngine.cs" />
     <Compile Include="Engines\ReviewEngine.cs" />
     <Compile Include="Engines\UserEngine.cs" />
@@ -320,6 +299,7 @@
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Application\MailModel.cs" />
+    <Compile Include="Models\Charts\LineChart.cs" />
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
@@ -591,6 +571,7 @@
     <Content Include="Content\home\features5.png" />
     <Content Include="Content\home\features6.png" />
     <Content Include="Content\img\footer.png" />
+    <Content Include="Content\img\graystripe.png" />
     <Content Include="Content\img\greenlight.png" />
     <Content Include="Content\img\little_pluses.png" />
     <Content Include="Content\home\logo1.png" />
@@ -671,6 +652,7 @@
     <Content Include="Scripts\d3\d3.js" />
     <Content Include="Scripts\d3\d3.v3.js" />
     <Content Include="Scripts\d3\d3.v3.min.js" />
+    <Content Include="Scripts\d3\line.js" />
     <Content Include="Scripts\d3\orgchartBU.js" />
     <Content Include="Scripts\d3\orgchart.js" />
     <Content Include="Scripts\d3\Plot.js" />
@@ -714,6 +696,7 @@
     <Content Include="Views\JobDescription\Edit.cshtml" />
     <Content Include="Views\JobDescription\Modal.cshtml" />
     <Content Include="Views\Accountability\Chart.cshtml" />
+    <Content Include="Views\Charts\Line.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -906,6 +889,7 @@
     <Content Include="Views\Review\Details\Notes.cshtml" />
     <Content Include="Views\Roles\Modal.cshtml" />
     <Content Include="Views\Roles\_RoleRow.cshtml" />
+    <Content Include="Views\Review\Details\Feedback.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

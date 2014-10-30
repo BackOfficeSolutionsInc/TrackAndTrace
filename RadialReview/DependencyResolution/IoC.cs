@@ -15,7 +15,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-
+/*
 using StructureMap;
 namespace RadialReview.DependencyResolution {
     public static class IoC {
@@ -32,4 +32,4 @@ namespace RadialReview.DependencyResolution {
             return ObjectFactory.Container;
         }
     }
-}
+}*/

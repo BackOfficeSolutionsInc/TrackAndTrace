@@ -326,6 +326,39 @@ namespace RadialReview.Controllers
             return Json(ResultObject.Create(scatter), JsonRequestBehavior.AllowGet);
         }
 
+	    [Access(AccessLevel.UserOrganization)]
+	    public JsonResult Line(long userId, long reviewId,string categories)
+	    {
+
+		    return null;
+	    }
+		/*
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult Scatter(long id, long reviewId)
+        {
+            var chartTuple = _ReviewAccessor.GetChartTuple(GetUser(), reviewId, id);
+
+            var reviewContainer = _ReviewAccessor.GetReviewContainerByReviewId(GetUser(), reviewId);
+            var review = _ReviewAccessor.GetReview(GetUser(), reviewId);
+
+            var title = _ChartsEngine.GetChartTitle(GetUser(), id);
+
+            var options = new ChartOptions()
+            {
+                Id = id,
+                ChartName = title,
+                DeleteTime = chartTuple.DeleteTime,
+                DimensionIds = "category-" + chartTuple.Item1 + ",category-" + chartTuple.Item2,
+                Filters = chartTuple.Filters,
+                ForUserId = review.ForUserId,
+                GroupBy = chartTuple.Groups,
+                Options = "" + reviewContainer.Id,
+                Source = ChartDataSource.Review,
+            };
+            var scatter = _ChartsEngine.ScatterFromOptions(GetUser(), options, false);
+            return Json(ResultObject.Create(scatter), JsonRequestBehavior.AllowGet);
+        }*/
+
 
         [Access(AccessLevel.UserOrganization)]
         public JsonResult ReviewScatter(long id, long reviewsId)
