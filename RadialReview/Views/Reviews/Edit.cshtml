@@ -181,14 +181,22 @@
         <table class="table table-condensed table-hover">
             <thead>
                 <tr style="height:30px;">
-                    <th>User</th>
+					<th>User</th>
+					<th style="width:1px;">Due Date</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ForUser.GetPersonallyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle()))
                 {
                     <tr>
-                        <td class="">@r.ForUser.GetNameAndTitle()</td>
+						<td class="">@r.ForUser.GetNameAndTitle()</td>
+	                    <td class="">
+		                    <span style="padding: 0;" class="btn btn-link" 
+			                    onclick="@Html.ShowModal("Edit Due Date", "/Reviews/EditDueDateModal/" + r.Id, "/Reviews/EditDueDateModal")"
+							>
+			                    @r.DueDate.ToString("MM-dd-yyyy")
+		                    </span>
+	                    </td>
                     </tr>
                 }
             </tbody>

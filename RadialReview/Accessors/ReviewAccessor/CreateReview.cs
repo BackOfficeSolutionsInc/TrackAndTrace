@@ -607,6 +607,24 @@ namespace RadialReview.Accessors {
             }
         
         }
-        
-    }
+
+
+		public void UpdateDueDate(UserOrganizationModel caller, long reviewId, DateTime dueDate) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var review = s.Get<ReviewModel>(reviewId);
+					if (review==null)
+						throw new PermissionsException("Review does not exist. ("+reviewId+")");
+					
+					PermissionsUtility.Create(s, caller).EditReviewContainer(review.ForReviewsId);
+
+					review.DueDate = dueDate;
+					s.Update(review);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+	}
 }

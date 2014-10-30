@@ -697,6 +697,7 @@
     <Content Include="Views\JobDescription\Modal.cshtml" />
     <Content Include="Views\Accountability\Chart.cshtml" />
     <Content Include="Views\Charts\Line.cshtml" />
+    <Content Include="Views\Reviews\EditDueDateModal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

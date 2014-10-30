@@ -21,10 +21,10 @@
             </div>
         </div>
         <div class="row smallBreak2">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <label class="control-label">Manager prereview due:</label>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
                     <div class="">
                         @Html.TextBox("PrereviewDate", null, new { @class = "form-control datePicker", id = "PrereviewDate" })
@@ -35,10 +35,10 @@
             </div>
         </div>
         <div class="row smallBreak2">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <label class="control-label ">Reviews are due:</label>
             </div>
-            <div class="col-md-4 alignCenter">
+            <div class="col-md-6 alignCenter">
                 <div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
                     <div class="">
                         @Html.TextBox("DueDate", null, new { @class = "form-control datePicker", id = "DueDate" })

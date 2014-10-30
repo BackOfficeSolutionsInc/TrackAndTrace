@@ -40,7 +40,6 @@ namespace RadialReview.Controllers
                 Editable = editable.Any(y => y == x.Id),
                 Viewable = true,
                 TakableId = takabled.GetOrDefault(x.Id, null),
-
                 UserReview = usefulReviews.First(y=>y.ForReviewsId==x.Id)
 
             }).OrderByDescending(x => x.Review.DateCreated).ToList();
@@ -119,7 +118,35 @@ namespace RadialReview.Controllers
             public long SelectedUserId { get; set; }
         }
 
-        public ActionResult Issue()
+
+	    public class DueDateVM
+	    {
+			public long RReviewId { get; set; }
+			public DateTime DueDate { get; set; }
+	    }
+
+	    [Access(AccessLevel.Manager)]
+	    public ActionResult EditDueDateModal(long id)
+	    {
+		    var review = _ReviewAccessor.GetReview(GetUser(), id);
+
+		    var model = new DueDateVM(){
+				RReviewId = review.Id,
+				DueDate = review.DueDate,
+		    };
+			return PartialView("EditDueDateModal", model);
+	    }
+
+	    [HttpPost]
+	    [Access(AccessLevel.Manager)]
+		public JsonResult EditDueDateModal(DueDateVM model)
+	    {
+			_ReviewAccessor.UpdateDueDate(GetUser(), model.RReviewId, model.DueDate);
+		    return Json(ResultObject.Success("Updated due date."));
+	    }
+
+
+	    public ActionResult Issue()
         {
             var today = DateTime.UtcNow.ToLocalTime();
             var user = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
@@ -140,8 +167,7 @@ namespace RadialReview.Controllers
 
             public Dictionary<long,UserOrganizationModel> AvailableUsers { get; set; }
         }
-
-        
+		
 
         [HttpPost]
         public ActionResult IssueDetailsSubmit(IssueReviewViewModel model)
