@@ -126,7 +126,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult AddModal(long? managerId = null)
         {
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
             var caller = GetUser().Hydrate().Organization().Execute();
             //var positions = _OrganizationAccessor.GetOrganizationPositions(caller, caller.Organization.Id);

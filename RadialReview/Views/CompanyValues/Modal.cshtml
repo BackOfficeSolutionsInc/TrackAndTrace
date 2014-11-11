@@ -1,0 +1,43 @@
+﻿@model RadialReview.Controllers.CompanyValuesController.CompanyValueVM
+
+
+<div class="form">
+	@Html.HiddenFor(x => x.OrgId)
+	<div class="">
+		<div class="row">
+			<div class="col-sm-2">
+				<label>Values:</label>
+			</div>
+			<div class="col-sm-8" id="allRoles">
+				@foreach (var item in Model.CompanyValues) {
+					Html.RenderPartial("_ValueRow", item);
+				}
+			</div>
+			<div class="col-sm-2">
+				<div class="btn btn-default clickable" onclick="addRole();">Add</div>
+			</div>
+		</div>
+	</div> 
+</div>
+<script>
+	function addRole() {
+		$.ajax({
+			url: "/CompanyValues/BlankEditorRow",
+			cache: false,
+			success: function(html) {
+				 $("#allRoles").append(html);
+			}
+		});
+		return false;
+	}
+
+	$(function () {
+		$(document).on("click","span.deleteRow", function () {
+			$(this).parents("div.roleRow:first").hide();
+			$(this).parents("div.roleRow:first").find("[name*='DeleteTime']").val("@Model.CurrentTime.ToString()");
+			return false;
+		});
+	});
+
+
+</script>

@@ -1,4 +1,5 @@
-﻿using RadialReview.Models.Interfaces;
+﻿using RadialReview.Models.Askables;
+using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
 using System;
 using System.Collections.Generic;
@@ -57,5 +58,6 @@ namespace RadialReview.Models.ViewModels
 		public UserOrganizationModel User { get; set; }
 		public List<String> Responsibilities { get; set; }
 		public List<RoleModel> Roles { get; set; }
+		public List<RockModel> Rocks { get; set; }
     }
 }

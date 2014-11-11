@@ -2,6 +2,7 @@
 using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Responsibilities;
@@ -21,94 +22,6 @@ namespace RadialReview.Accessors
 {
     public partial class ReviewAccessor : BaseAccessor
     {
-
-        /// <summary>
-        /// Requires:
-        ///     <br/>
-        /// </summary>
-        /// <param name="caller"></param>
-        /// <param name="perms"></param>
-        /// <param name="s"></param>
-        /// <param name="beingReviewed"></param>
-        /// <param name="parameters"></param>
-        /// <param name="forTeam"></param>
-        /// <param name="accessableUsers"></param>
-        /// <returns></returns>
-        public static CoworkerRelationships GetUsersThatReviewUser(
-            UserOrganizationModel caller, PermissionsUtility perms,
-            DataInteraction s, UserOrganizationModel beingReviewed,
-            ReviewParameters parameters, OrganizationTeamModel forTeam,
-            List<UserOrganizationModel> accessableUsers)
-        {
-
-
-            CoworkerRelationships coworkerRelationship = new CoworkerRelationships(beingReviewed);
-
-
-            var responsibilityGroups = ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, beingReviewed.Id);
-
-            if (parameters.ReviewSelf){
-                coworkerRelationship.Add(beingReviewed, AboutType.Self);
-            }
-            if (parameters.ReviewTeammates) // Team members 
-            {
-                List<OrganizationTeamModel> teams;
-
-                if (forTeam.Type != TeamType.Standard)
-                    teams = responsibilityGroups.Where(x => x is OrganizationTeamModel).Cast<OrganizationTeamModel>().Where(x => x.InterReview).ToList();
-                else
-                    teams = forTeam.AsList();
-
-                foreach (var team in teams)
-                {
-                    var teamMembers = TeamAccessor.GetTeamMembers(s.GetQueryProvider(), perms, caller, team.Id).Where(x => x.User.Id != beingReviewed.Id && accessableUsers.Any(y => y.Id == x.UserId)).ToListAlive();
-                    foreach (var teammember in teamMembers)
-                        coworkerRelationship.Add(teammember.User, AboutType.Teammate);
-                }
-            }
-            if (parameters.ReviewPeers)// Peers
-            {
-                if (forTeam.Type != TeamType.Standard)
-                {
-                    List<UserOrganizationModel> peers = UserAccessor.GetPeers(s.GetQueryProvider(), perms, caller, beingReviewed.Id).Where(x => accessableUsers.Any(y => y.Id == x.Id)).ToListAlive();
-                    foreach (var peer in peers)
-                        coworkerRelationship.Add(peer, AboutType.Peer);
-                }
-            }
-            // Managers
-            if (parameters.ReviewManagers)
-            {
-                List<UserOrganizationModel> managers = new List<UserOrganizationModel>();
-                //also want to add the issuer of the review
-                if (forTeam.Type != TeamType.Standard && forTeam.ManagedBy != beingReviewed.Id && accessableUsers.Any(y => y.Id == forTeam.ManagedBy))
-                {
-                    managers = UserAccessor.GetUserOrganization(s.GetQueryProvider(), perms, caller, forTeam.ManagedBy, false, false).AsList().ToListAlive();
-                }
-                managers.AddRange(UserAccessor.GetManagers(s.GetQueryProvider(), perms, caller, beingReviewed.Id).Where(x => accessableUsers.Any(y => y.Id == x.Id)).ToListAlive());
-
-                foreach (var manager in managers)
-                {
-                    coworkerRelationship.Add(manager, AboutType.Manager);
-                }
-            }
-            // Subordinates
-            if (parameters.ReviewSubordinates)
-            {
-                if (forTeam.Type != TeamType.Standard)
-                {
-                    List<UserOrganizationModel> subordinates = UserAccessor.GetDirectSubordinates(s.GetQueryProvider(), perms, caller, beingReviewed.Id)
-                                                              .Where(x => accessableUsers.Any(y => y.Id == x.Id))
-                                                              .Where(x => x.Id != beingReviewed.Id)
-                                                              .ToListAlive();
-                    foreach (var subordinate in subordinates)
-                    {
-                        coworkerRelationship.Add(subordinate, AboutType.Subordinate);
-                    }
-                }
-            }
-
-            return coworkerRelationship;
-        }
         private IEnumerableQuery GetReviewQueryProvider(ISession s, long orgId, long? reviewContainerId = null)
         {
             var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();

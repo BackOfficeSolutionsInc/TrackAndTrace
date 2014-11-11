@@ -1,0 +1,12 @@
+﻿@model RadialReview.Models.Enums.PositiveNegativeNeutral
+
+<div class="posneg">
+	<div class="posneg-contents">
+		<input type="hidden" class="changeable" value="@Model" name="@ViewData["name"]"/>
+		<span class="posneg-val posneg-negative" data-value="Negative"><span class="center"> - </span></span>
+		<span class="posneg-val posneg-neutral" data-value="Neutral"> <span class="center">+/-</span></span>
+		<span class="posneg-val posneg-positive" data-value="Positive"><span class="center"> + </span></span>
+		<div class="fill cursor"></div>
+		<div class="fill hover"></div>
+	</div>
+</div>

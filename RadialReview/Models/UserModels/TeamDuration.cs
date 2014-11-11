@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
 using System;

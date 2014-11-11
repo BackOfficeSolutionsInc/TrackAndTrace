@@ -32,7 +32,7 @@ namespace RadialReview.Engines
                 ReviewSubordinates = true,
                 ReviewTeammates = true
             };
-            var reviewWho = _ReviewAccessor.GetUsersWhoReviewUsers(caller, parameters, teamId);
+            var reviewWho = _ReviewAccessor.GetReviewersForUsers(caller, parameters, teamId);
             var teamMembers = _TeamAccessor.GetTeamMembers(caller, teamId);
             var team = _TeamAccessor.GetTeam(caller, teamId);
             var reviewWhoRefined = reviewWho.SelectMany(x => x.ToList().SelectMany(y => y.Value.Select(z => new { First = x.User, Second = y.Key, Relationship = z }))).ToList();

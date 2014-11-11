@@ -1,10 +1,6 @@
 ﻿using RadialReview.Models.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace RadialReview.Models.Responsibilities
+namespace RadialReview.Models.Askables
 {
     public class AskableAbout
     {

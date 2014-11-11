@@ -1,11 +1,9 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace RadialReview.Models
 {
@@ -14,7 +12,13 @@ namespace RadialReview.Models
     public abstract class AnswerModel : ILongIdentifiable,ICompletable,IDeletable
     {
         public virtual long Id { get; set; }
-        public virtual long ForReviewId { get; set; }
+
+	    public virtual string Identifier
+	    {
+		    get { return Askable.Id + "_" + AboutUserId+"_"+ForReviewContainerId; }
+	    }
+
+	    public virtual long ForReviewId { get; set; }
         public virtual ReviewModel ForReview { get; set; }
         public virtual long ForReviewContainerId { get; set; }
         public virtual ReviewsModel ForReviewContainer { get; set; }
@@ -36,6 +40,31 @@ namespace RadialReview.Models
 
         public virtual DateTime? DeleteTime { get; set; }
         public virtual DateTime? CompleteTime { get; set; }
+		public class AnswerModelMap : ClassMap<AnswerModel> {
+			public AnswerModelMap() {
+				Id(x => x.Id);
+				References(x => x.Askable).Not.LazyLoad();
+				//.Cascade.SaveUpdate();
+				Map(x => x.Required);
+				Map(x => x.Complete);
+				Map(x => x.DeleteTime);
+				Map(x => x.CompleteTime);
+
+				Map(x => x.AboutType).CustomType(typeof(Int64));
+
+				Map(x => x.AboutUserId).Column("AboutUserId");
+				References(x => x.AboutUser).Column("AboutUserId").Not.LazyLoad().ReadOnly();
+
+				Map(x => x.ByUserId).Column("ByUserId");
+				References(x => x.ByUser).Column("ByUserId").Not.LazyLoad().ReadOnly();
+
+				Map(x => x.ForReviewContainerId).Column("ForReviewContainerId");
+				References(x => x.ForReviewContainer).Column("ForReviewContainerId").LazyLoad().ReadOnly();
+
+				Map(x => x.ForReviewId).Column("ForReviewId");
+				References(x => x.ForReview).Column("ForReviewId").LazyLoad().ReadOnly();
+			}
+		}
     }
     #endregion
 
@@ -43,100 +72,82 @@ namespace RadialReview.Models
     public class FeedbackAnswer : AnswerModel
     {
         public virtual String Feedback { get; set; }
+		public class FeedbackAnswerMap : SubclassMap<FeedbackAnswer> {
+			public FeedbackAnswerMap() {
+				Map(x => x.Feedback);
+			}
+		}
     }
-
     public class RelativeComparisonAnswer : AnswerModel
     {
         public virtual UserOrganizationModel First { get;set;}
         public virtual UserOrganizationModel Second { get; set; }
         public virtual RelativeComparisonType Choice { get;set; }
+		public class RelativeComparisonAnswerMap : SubclassMap<RelativeComparisonAnswer> {
+			public RelativeComparisonAnswerMap() {
+				Map(x => x.Choice);
+				References(x => x.First).Not.LazyLoad();
+				References(x => x.Second).Not.LazyLoad();
+			}
+		}
     }
-
     public class SliderAnswer : AnswerModel
     {
         public virtual decimal? Percentage { get; set; }
+		public class SliderAnswerMap : SubclassMap<SliderAnswer> {
+			public SliderAnswerMap() {
+				Map(x => x.Percentage);
+			}
+		}
     }
     public class ThumbsAnswer : AnswerModel
     {
         public virtual ThumbsType Thumbs { get; set; }
+		public class ThumbAnswerMap : SubclassMap<ThumbsAnswer> {
+			public ThumbAnswerMap() {
+				Map(x => x.Thumbs);
+			}
+		}
     }
-
-    public class GetWantCapacityAnswer : AnswerModel
-    {
-        public virtual Tristate GetIt { get; set; }
-        public virtual Tristate WantIt { get; set; }
-        public virtual Tristate HasCapacity { get; set; }
-    }
+	public class GetWantCapacityAnswer : AnswerModel {
+		public virtual Tristate GetIt { get; set; }
+		public virtual Tristate WantIt { get; set; }
+		public virtual Tristate HasCapacity { get; set; }
+		public virtual String Reason { get; set; }
+		public class GetWantCapacityAnswerMap : SubclassMap<GetWantCapacityAnswer> {
+			public GetWantCapacityAnswerMap() {
+				Map(x => x.GetIt);
+				Map(x => x.WantIt);
+				Map(x => x.HasCapacity);
+				Map(x => x.Reason);
+			}
+		}
+	}
+	public class RockAnswer : AnswerModel {
+		public virtual Tristate Finished { get; set; }
+		public virtual String Reason { get; set; }
+		public class RockAnswerMap : SubclassMap<RockAnswer> {
+			public RockAnswerMap() {
+				Map(x => x.Finished);
+				Map(x => x.Reason);
+			}
+		}
+	}
+	public class CompanyValueAnswer : AnswerModel
+	{
+		public virtual PositiveNegativeNeutral Exhibits { get; set; }
+		public virtual String Reason { get; set; }
+		public class CompanyValueAnswerMap : SubclassMap<CompanyValueAnswer>
+		{
+			public CompanyValueAnswerMap()
+			{
+				Map(x => x.Exhibits);
+				Map(x => x.Reason);
+			}
+		}
+	}
 
     #endregion
 
-    #region ClassMaps
-    public class AnswerModelMap : ClassMap<AnswerModel>
-    {
-        public AnswerModelMap()
-        {
-            Id(x => x.Id);
-            References(x => x.Askable).Not.LazyLoad();
-            //.Cascade.SaveUpdate();
-            Map(x => x.Required);
-            Map(x => x.Complete);
-            Map(x => x.DeleteTime);
-            Map(x => x.CompleteTime);
-
-            Map(x=> x.AboutType).CustomType(typeof(Int64));
-
-            Map(x => x.AboutUserId).Column("AboutUserId");
-            References(x => x.AboutUser).Column("AboutUserId").Not.LazyLoad().ReadOnly();
-
-            Map(x => x.ByUserId).Column("ByUserId");
-            References(x => x.ByUser).Column("ByUserId").Not.LazyLoad().ReadOnly();
-
-            Map(x => x.ForReviewContainerId).Column("ForReviewContainerId");
-            References(x => x.ForReviewContainer).Column("ForReviewContainerId").LazyLoad().ReadOnly();
-
-            Map(x => x.ForReviewId).Column("ForReviewId");
-            References(x => x.ForReview).Column("ForReviewId").LazyLoad().ReadOnly();
-        }
-    }
-    public class FeedbackAnswerMap : SubclassMap<FeedbackAnswer>
-    {
-        public FeedbackAnswerMap()
-        {
-            Map(x => x.Feedback);
-        }
-    }
-    public class ThumbAnswerMap : SubclassMap<ThumbsAnswer>
-    {
-        public ThumbAnswerMap()
-        {
-            Map(x => x.Thumbs);
-        }
-    }
-    public class SliderAnswerMap : SubclassMap<SliderAnswer>
-    {
-        public SliderAnswerMap()
-        {
-            Map(x => x.Percentage);
-        }
-    }
-    public class RelativeComparisonAnswerMap : SubclassMap<RelativeComparisonAnswer>
-    {
-        public RelativeComparisonAnswerMap()
-        {
-            Map(x => x.Choice);
-            References(x => x.First).Not.LazyLoad();
-            References(x => x.Second).Not.LazyLoad();
-        }
-    }
-    public class GetWantCapacityAnswerMap : SubclassMap<GetWantCapacityAnswer>
-    {
-        public GetWantCapacityAnswerMap()
-        {
-            Map(x => x.GetIt);
-            Map(x => x.WantIt);
-            Map(x => x.HasCapacity);
-        }
-    }
-    #endregion
 
 }

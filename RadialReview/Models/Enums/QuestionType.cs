@@ -17,9 +17,15 @@ namespace RadialReview.Models.Enums
         [Display(Name = "slider", ResourceType = typeof(DisplayNameStrings)),Icon(BootstrapGlyphs.tasks)]
         Slider = 2,
         [Display(Name = "thumbs", ResourceType = typeof(DisplayNameStrings)), Icon(BootstrapGlyphs.thumbs_up)]
-        Thumbs = 3,
-        [Display(Name = "feedback", ResourceType = typeof(DisplayNameStrings)), Icon(BootstrapGlyphs.pencil)]
-        Feedback = 4
+		Thumbs = 3,
+		[Display(Name = "feedback", ResourceType = typeof(DisplayNameStrings)), Icon(BootstrapGlyphs.pencil)]
+		Feedback = 4,
+		[Display(Name = "GWC"), Icon(BootstrapGlyphs.pencil)]
+		GWC = 5,
+		[Display(Name = "Rock"), Icon(BootstrapGlyphs.pencil)]
+		Rock = 6,
+		[Display(Name = "CompanyValue"), Icon(BootstrapGlyphs.pencil)]
+		CompanyValue = 7
 
         //Ranking
 

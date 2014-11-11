@@ -1,12 +1,10 @@
-﻿using FluentNHibernate.Mapping;
+﻿using System;
+using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using RadialReview.Models.Responsibilities;
 
-namespace RadialReview.Models.Responsibilities
+namespace RadialReview.Models.Askables
 {
     public abstract class Askable : ILongIdentifiable, IDeletable
     {
@@ -18,12 +16,15 @@ namespace RadialReview.Models.Responsibilities
         public virtual WeightType Weight { get; set; }
         public virtual bool Required { get;set; }
 
-        public Askable()
+		public virtual AboutType OnlyAsk { get; set; }
+
+	    protected Askable()
         {
             Required = true;
             DeleteTime = null;
             Category = new QuestionCategoryModel();
             Weight = WeightType.Normal;
+	        OnlyAsk = (AboutType)long.MaxValue;
         }
     }
 

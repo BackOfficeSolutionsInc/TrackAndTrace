@@ -6,6 +6,7 @@
 }
 
 @using RadialReview.Models
+@using RadialReview.Models.Askables
 
 
 @section header{
@@ -24,32 +25,38 @@
     <div class="col-md-12">
         <div>
             <div class="smallBreak"></div>
-            @foreach (var group in Model.Answers.GroupBy(x => x.Askable.Category.Id).OrderByDescending(x => x.Key))
+            @foreach (var group in Model.Answers.GroupBy(x => x.BaseAnswer.Askable.Category.Id).OrderByDescending(x => x.Key))
             {
                 var dict = new ViewDataDictionary();
                 
-                var sliders =group.ToList().Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList();
-                var thumbs = group.ToList().Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().ToList();
-                var feedbacks = group.ToList().Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().ToList();
-                //var gwc = group.ToList().Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().ToList();
+                var sliders =group.ToList().Where(x => x.BaseAnswer is SliderAnswer).Select(x=>x.BaseAnswer).Cast<SliderAnswer>().ToList();
+				var thumbs = group.ToList().Where(x => x.BaseAnswer is ThumbsAnswer).Select(x => x.BaseAnswer).Cast<ThumbsAnswer>().ToList();
+				var feedbacks = group.ToList().Where(x => x.BaseAnswer is FeedbackAnswer).Select(x => x.BaseAnswer).Cast<FeedbackAnswer>().ToList();
+				var gwcs = group.ToList().Where(x => x.BaseAnswer is GetWantCapacityAnswer).Select(x => x.BaseAnswer).Cast<GetWantCapacityAnswer>().ToList();
+				var values = group.ToList().Where(x => x.BaseAnswer is CompanyValueAnswer).Select(x => x.BaseAnswer).Cast<CompanyValueAnswer>().ToList();
+				var rocks = group.ToList().Where(x => x.BaseAnswer is RockAnswer).Select(x => x.BaseAnswer).Cast<RockAnswer>().ToList();
+				//var gwc = group.ToList().Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().ToList();
                 
                 
                 dict["Max"] = group.Count();
                 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">@group.FirstOrDefault().NotNull(x => x.Askable.Category.Category.Translate())</h3>
+                        <h3 class="panel-title">@group.FirstOrDefault().NotNull(x => x.BaseAnswer.Askable.Category.Category.Translate())</h3>
                     </div>
-                    <div class="panel-body">                        
-                        @{dict["I"] = 0;}
-                        @Html.Partial("Slider", Tuple.Create(sliders, Model.Editable), dict)
-                        @{dict["I"] = sliders.Count();}
-                        @Html.Partial("Thumbs", Tuple.Create(thumbs, Model.Editable), dict)
-                        @{dict["I"] = sliders.Count() + thumbs.Count();}
-                        @Html.Partial("Feedback", Tuple.Create(feedbacks, Model.Editable), dict)
-                        @*@{dict["I"] = sliders.Count() + thumbs.Count();}
+	                <div class="panel-body">
+						@Html.Partial("Take/GWC",	 Tuple.Create(gwcs, Model.Editable), dict)
+						@Html.Partial("Take/Values", Tuple.Create(values, Model.Editable), dict)
+						@Html.Partial("Take/Rocks",  Tuple.Create(rocks, Model.Editable), dict)
+		                @{dict["I"] = 0;}
+		                @Html.Partial("Slider", Tuple.Create(sliders, Model.Editable), dict)
+		                @{dict["I"] = sliders.Count();}
+		                @Html.Partial("Thumbs", Tuple.Create(thumbs, Model.Editable), dict)
+		                @{dict["I"] = sliders.Count() + thumbs.Count();}
+		                @Html.Partial("Feedback", Tuple.Create(feedbacks, Model.Editable), dict)
+		                @*@{dict["I"] = sliders.Count() + thumbs.Count();}
                         @Html.Partial("GetWantCap", Tuple.Create(gwc, Model.Editable), dict)*@
-                    </div>
+	                </div>
                 </div>
             }
         </div>
@@ -59,9 +66,10 @@
 
 @section sidebar{
 
-    <div class="">
-        @Html.Partial("_User", Model.ForUser)
-    </div>
+	<div class="">
+		@Html.Partial("_User", Model.ForUser)
+	</div>
+	<hr/>
     <ol>
         @for (int i = 0; i < Model.OrderedPeople.Count; i++)
         {

@@ -1,0 +1,20 @@
+﻿@model RadialReview.Models.Enums.Tristate
+
+<div class="tristate">
+	<div class="tristate-contents">
+		<input name="@ViewData["name"]" class="changeable" type="hidden" value="@Model" />
+		<span class="tristate-val tristate-on">YES</span>
+		<span class="tristate-val tristate-off">NO</span>
+		<span class="tristate-val tristate-na">n/a</span>
+		<div class="fill"></div>
+	</div>
+</div>
+
+
+@*if (ViewBag.TRISTATE == null){
+	<link href="~/Content/components/tristate.css" rel="stylesheet" />
+	using (Html.BeginScripts()){
+		<script src="~/Scripts/components/tristate.js"></script>
+	}
+	ViewBag.TRISTATE = true;
+}*@

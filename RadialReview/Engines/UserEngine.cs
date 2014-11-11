@@ -39,7 +39,8 @@ namespace RadialReview.Engines
                 responsibilities.AddRange(teamResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
             }
 
-	        var roles = _UserAccessor.GetRoles(caller, id);
+			var roles = _UserAccessor.GetRoles(caller, id);
+			var rocks = _UserAccessor.GetRocks(caller, id);
 
 
             var model = new UserOrganizationDetails()
@@ -47,6 +48,7 @@ namespace RadialReview.Engines
                 User=foundUser,
                 Responsibilities = responsibilities,
 				Roles = roles,
+				Rocks = rocks,
             };
 
             return model;

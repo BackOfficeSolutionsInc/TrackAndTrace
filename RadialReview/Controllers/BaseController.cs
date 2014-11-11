@@ -19,8 +19,6 @@ using NHibernate;
 using RadialReview.Engines;
 using System.Configuration;
 using RadialReview.Utilities;
-using Microsoft.AspNet.SignalR;
-using RadialReview.Hubs;
 using System.Web.Security;
 using System.Security.Principal;
 
@@ -41,9 +39,10 @@ namespace RadialReview.Controllers
         protected static NexusAccessor _NexusAccessor = new NexusAccessor();
         protected static ImageAccessor _ImageAccessor = new ImageAccessor();
         protected static GroupAccessor _GroupAccessor = new GroupAccessor();
-        protected static OriginAccessor _OriginAccessor = new OriginAccessor();
-        protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
-        protected static PaymentAccessor _PaymentAccessor = new PaymentAccessor();
+		protected static OriginAccessor _OriginAccessor = new OriginAccessor();
+		protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
+		protected static AskableAccessor _AskableAccessor = new AskableAccessor();
+		protected static PaymentAccessor _PaymentAccessor = new PaymentAccessor();
         protected static KeyValueAccessor _KeyValueAccessor = new KeyValueAccessor();
         protected static PositionAccessor _PositionAccessor = new PositionAccessor();
         protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();

@@ -26,14 +26,21 @@ namespace RadialReview
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
-            bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+			bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+					  "~/Scripts/components/posneg.js",
+					  "~/Scripts/components/tristate.js",
+					  "~/Scripts/select2.min.js",
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js",
                       "~/Scripts/bootstrap-slider.js",
                       "~/Scripts/bootstrap-datepicker.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/datepicker.css",
+			bundles.Add(new StyleBundle("~/Content/css").Include(
+					  "~/Content/components/posneg.css",
+					  "~/Content/components/tristate.css",
+					  "~/Content/select2-bootstrap.css",
+					  "~/Content/select2.css",
+					  "~/Content/datepicker.css",
                       "~/Content/bootstrap.css",
                       "~/Content/slider.css",
                       "~/Content/site.css",

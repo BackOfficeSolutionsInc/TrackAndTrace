@@ -38,7 +38,7 @@ namespace RadialReview
                 var id = idSelector(x);
                 var text = textSelector(x);
                 var isSelected = id.Equals(selected);
-                if (selected.Equals(default(TId)))
+                if (selected==null || selected.Equals(default(TId)))
                     isSelected = i == 0;
                 return new SelectListItem() { Selected = isSelected, Text = text.ToString(), Value = id.ToString() };
             }).ToList();

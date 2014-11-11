@@ -1,6 +1,7 @@
 ﻿@model RadialReview.Models.ViewModels.UserOrganizationDetails
 
-@using (Html.BeginStyles()) {
+@using (Html.BeginStyles())
+{
 	<style>
 		.numbers ul li {
 			list-style-type: decimal;
@@ -11,26 +12,34 @@
 	var edit = Model.User.GetPersonallyManaging();
 }
 
-<div class="review">
+<div class="revieww">
 	<div class="row">
-		<div class="col-sm-4">
+		<div class="col-sm-3">
 			@Html.Partial("_User", Model.User)
 			<div class="smallBreak"></div>
 			<div class="smallBreak"></div>
 		</div>
-		<div class="col-sm-8">
+		<div class="col-sm-9">
 			<div class="panel panel-default">
-				@if (edit) {
+				@if (edit)
+				{
 					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/Modal/" + Model.User.Id, "/JobDescription/Modal/", onComplete: "location.reload()")">Edit</a>
 				}
 				<div class="panel-heading">
 					<h3 class="panel-title">Job Description</h3>
 				</div>
 				<div class="panel-body">
-					@if (String.IsNullOrWhiteSpace(Model.User.JobDescription)) {
-						<span style="color:gray">None entered.</span>
+					@if (String.IsNullOrWhiteSpace(Model.User.JobDescription))
+					{
+						<span class="gray">
+							None entered.
+							@if (edit){
+								@:Click 'Edit' to add a job description.
+							}
+						</span>
 					}
-					else {
+					else
+					{
 						@Model.User.JobDescription
 					}
 				</div>
@@ -39,7 +48,75 @@
 
 
 			<div class="panel panel-default">
-				@if (edit) {
+				@if (edit)
+				{
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Individual Rocks", "/Rocks/Modal/" + Model.User.Id, "/Rocks/Modal/", onComplete: "location.reload()")">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Individual Rocks</h3>
+				</div>
+				<div class="panel-body numbers">
+					@if (Model.Rocks.Any())
+					{
+						<ul>
+							@foreach (var r in Model.Rocks)
+							{
+								<li class="font-size:19px;">
+									@r.Rock
+								</li>
+							}
+						</ul>
+					}
+					else
+					{
+						<div class="gray">No rocks.
+							@if (edit)
+							{
+								@:Click 'Edit' to add an individual rock.
+							}
+						</div>
+					}
+				</div>
+			</div>
+
+
+
+			<div class="panel panel-default">
+				@if (edit)
+				{
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Roles", "/Roles/Modal/" + Model.User.Id, "/Roles/Modal/", onComplete: "location.reload()")">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Individual Roles</h3>
+				</div>
+				<div class="panel-body numbers">
+					@if (Model.Roles.Any())
+					{
+						<ul>
+							@foreach (var r in Model.Roles)
+							{
+								<li class="font-size:19px;">
+									@r.Role
+								</li>
+							}
+						</ul>
+					}
+					else
+					{
+						<div class="gray">
+							No roles.
+							@if (edit)
+							{
+								@:Click 'Edit' to add a role.
+							}
+						</div>
+					}
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				@if (edit)
+				{
 					<a class="headerButton" href="~/Responsibilities/Edit/@Model.User.Id">Edit</a>
 				}
 				<div class="panel-heading">
@@ -47,7 +124,8 @@
 				</div>
 				<div class="panel-body numbers">
 					<ul>
-						@foreach (var r in Model.Responsibilities) {
+						@foreach (var r in Model.Responsibilities)
+						{
 							<li class="font-size:19px;">
 								@r
 							</li>
@@ -55,30 +133,6 @@
 					</ul>
 				</div>
 			</div>
-			
-			<div class="panel panel-default">
-				@if (edit) {
-					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Roles", "/Roles/Modal/" + Model.User.Id, "/Roles/Modal/", onComplete: "location.reload()")">Edit</a>
-				}
-				<div class="panel-heading">
-					<h3 class="panel-title">Roles</h3>
-				</div>
-				<div class="panel-body numbers">
-					@if (Model.Roles.Any()){
-						<ul>
-							@foreach (var r in Model.Roles){
-								<li class="font-size:19px;">
-									@r.Role
-								</li>
-							}
-						</ul>
-					}
-					else{
-						<div class="gray">No roles. Click 'Edit' to add a role.</div>
-					}
-				</div>
-			</div>
-
 
 		</div>
 	</div>

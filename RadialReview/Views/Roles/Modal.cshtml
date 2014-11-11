@@ -6,39 +6,37 @@
 	@Html.HiddenFor(x => x.UserId)
 	<div class="">
 		<div class="row">
-			<div class="col-sm-3">
-				<label>Role:</label>
+			<div class="col-sm-2">
+				<label>Roles:</label>
 			</div>
-			<div class="col-sm-9" id="allRoles">
+			<div class="col-sm-8" id="allRows">
 				@foreach (var item in Model.Roles) {
 					Html.RenderPartial("_RoleRow", item);
 				}
+			</div>
+			<div class="col-sm-2">
+				<div class="btn btn-default clickable" onclick="addRow();">Add</div>
 			</div>
 		</div>
 	</div> 
 </div>
 
-<div class="alignLeft">
-	<div class="btn btn-default clickable" onclick="addRole();">Add Role</div>
-	<div class="smallBreak2"></div>
-</div>
 <script>
-	function addRole() {
+	function addRow() {
 		$.ajax({
 			url: "/Roles/BlankEditorRow",
 			cache: false,
 			success: function(html) {
-				 $("#allRoles").append(html);
+				$("#allRows").append(html);
 			}
 		});
 		return false;
 	}
 
 	$(function () {
-		$("div.deleteRow").on("click", function () {
+		$(document).on("click", "span.deleteRow", function () {
 			$(this).parents("div.roleRow:first").hide();
 			$(this).parents("div.roleRow:first").find("[name*='DeleteTime']").val("@Model.CurrentTime.ToString()");
-
 			return false;
 		});
 	});

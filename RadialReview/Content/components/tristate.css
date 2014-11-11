@@ -1,0 +1,72 @@
+﻿.tristate {
+	height: 80px;
+	width: 80px;
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	color: white;
+	cursor: pointer;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	padding: 0px;
+	margin: -2px;
+}
+
+.tristate-container {
+	height: 100%;
+	width: 100%;
+	position: relative;
+}
+
+.tristate .fill {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color:#CDCDCD;
+	z-index: 2;
+	-webkit-transition:background-color .3s;
+	-moz-transition:background-color .3s;
+	-ms-transition:background-color .3s;
+	-o-transition:background-color .3s;
+	transition:background-color .3s;
+}
+
+.fill:hover {
+	-webkit-filter: brightness(90%);
+}
+
+.tristate .tristate-val {
+	display: none;
+	position: relative;
+	z-index: 3;
+	pointer-events: none;
+}
+
+.tristate input[value='True'] ~ .fill {
+	background-color: #449D44;
+}
+
+.tristate input[value='False'] ~ .fill {
+	background-color: #D9534F;
+}
+
+
+.tristate input[value='True'] ~ .tristate-on {
+	display: inherit;
+}
+
+.tristate input[value='False'] ~ .tristate-off {
+	display: inherit;
+}
+
+.tristate input[value='Indeterminate'] ~ .tristate-na {
+	display: inherit;
+}

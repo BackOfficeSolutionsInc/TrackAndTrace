@@ -82,6 +82,13 @@ namespace RadialReview
         }
 
 
+		public static bool IsSubsetOf<T>(this T a,T b) where T : struct, IConvertible {
+			var aa = (long)(object)a;
+			var bb = (long)(object)b;
+
+			return (aa & bb) == aa;
+		}
+
 
         public static HtmlString GetIcon<T>(this T value) where T : struct, IConvertible
         {

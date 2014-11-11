@@ -16,7 +16,7 @@
             <h4 class="question alignCenter" style="padding-bottom: 10px;">@thumbs.Askable.GetQuestion()</h4>
         </div>
         <div class="col-md-6            startHidden">
-            <input type="radio" class="hidden" @(thumbs.Thumbs == ThumbsType.None ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id" value="@ThumbsType.None" />
+            <input type="radio" class="hidden" @(thumbs.Thumbs == ThumbsType.None ? "checked" : "") name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@(thumbs.Identifier)" value="@ThumbsType.None" />
             <div class="row">
                 <div class="col-sm-12 alignCenter">
                     <div class="btn-group" data-toggle="buttons">
@@ -24,7 +24,7 @@
                             <input type="radio"
                                    class="changeable"
                                    @(thumbs.Thumbs == ThumbsType.Up ? "checked" : "")
-                                   @if (Model.Item2) { @: name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id"
+                                   @if (Model.Item2) { @: name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@(thumbs.Identifier)"
                                                                                                          } else {  @: disabled
                                                                                                          }
                                    value="@ThumbsType.Up">
@@ -32,7 +32,7 @@
                         </label>
                         <label class="btn btn-lg btn-default dangerRadio @(thumbs.Thumbs == ThumbsType.Down ? "active" : "") ">
                             <input class="changeable" type="radio" @(thumbs.Thumbs == ThumbsType.Down ? "checked" : "")
-                                   @if (Model.Item2) {  @: name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@thumbs.Id"
+                                   @if (Model.Item2) {  @: name="question_@(RadialReview.Models.Enums.QuestionType.Thumbs)_@(thumbs.Identifier)"
                                                                                                          } else {  @: disabled
                                                                                                          }
                                    value="@ThumbsType.Down">

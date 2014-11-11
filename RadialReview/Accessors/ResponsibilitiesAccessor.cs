@@ -1,6 +1,7 @@
 ﻿using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
@@ -39,7 +40,7 @@ namespace RadialReview.Accessors
             }
         }
 
-
+		[Obsolete("Use AskableAccessor.GetAskablesForUser",false)]
         public static List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller,AbstractQuery queryProvider, PermissionsUtility perms,  long forUserId)
         {
             return GetResponsibilityGroupsForUser(queryProvider, perms, caller, forUserId)
@@ -108,15 +109,14 @@ namespace RadialReview.Accessors
             permissions.ViewUserOrganization(userId, false);
             var user = s.Get<UserOrganizationModel>(userId);
 
-            List<ResponsibilityGroupModel> responsibilityGroups = new List<ResponsibilityGroupModel>();
+            var responsibilityGroups = new List<ResponsibilityGroupModel>();
             //User
             responsibilityGroups.Add(user);
             //Positions
             responsibilityGroups.AddRange(user.Positions.ToListAlive().Select(x => x.Position));
             //Teams
             responsibilityGroups.AddRange(teams.ToListAlive().Select(x => x.Team));
-
-            return responsibilityGroups;
+			return responsibilityGroups;
         }
 
         public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null, long? categoryId = null, long? responsibilityGroupId = null, bool? active = null, WeightType? weight = null,bool? required = null)
@@ -163,6 +163,9 @@ namespace RadialReview.Accessors
 						if (ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK).Id == cat.Id) {
 							r.SetQuestionType(QuestionType.Feedback);
 						}
+						/*if (ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.GWC).Id == cat.Id) {
+							r.SetQuestionType(QuestionType.GWC);
+						}*/
 
                     }
 

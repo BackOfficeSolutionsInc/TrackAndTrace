@@ -24,14 +24,14 @@
     </div>
 }
 
-<div class="panel panel-primary startHiddenGroup">
+<div class="panel panel-primary startHiddennGroup">
     <div class="panel-heading">
         <h3 class="panel-title">Your reviews:</h3>
     </div>
     @if (Model.Reviews.Any())
     {
         <div class="table-responsive">
-            <table class="table table-condensed table-hover">
+            <table class="table table-condensed tablesorter tablefilter tablesorter-default">
                 <thead>
                     <tr>
                         <th style="width:1px;" data-title="Your Report"></th>
@@ -61,7 +61,7 @@
                     {
                         var takable = review.TakableId;
                         @*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
-                        <tr class="startHidden @(review.Review.DueDate > DateTime.UtcNow ? "" : "grayRow")">
+                        <tr class="startHiddenn @(review.Review.DueDate > DateTime.UtcNow ? "" : "grayRow")">
                             <td>
                                 @if (review.UserReview.ClientReview.Visible)
                                 {
@@ -72,9 +72,7 @@
                                     <span class="icon icon new-icon-clipboard-notes gray hover" title="Your manager has not shared this report with you yet."></span>
                                 }
                             </td>
-                            <td class="@(review.TakableId != null ? "table-hover-underline clickable" : "")"
-                                @if (review.TakableId != null) {     @: onclick="location.href = '/Review/Take/@review.TakableId.Value';"
-                                                                                                                                                        }>
+                            <td class="@(review.TakableId != null ? "table-hover-underline" : "")">
                                 @*if (review.TakableId != null)
                                     {
                                     }
@@ -83,8 +81,14 @@
                                         <span class="glyphicon glyphicon-edit" style="color:transparent;"></span>
                                     }*@
                                 <span>
-
+									@if (review.TakableId != null) {     
+										@:<a href='/Review/Take/@review.Review.Id'>
+									}
                                     @review.Review.ReviewName
+									@if (review.TakableId != null)
+									{
+										@:</a>
+									}
                                 </span>
                             </td>
 

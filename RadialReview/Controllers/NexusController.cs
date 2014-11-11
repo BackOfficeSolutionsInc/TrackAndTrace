@@ -105,26 +105,28 @@ namespace RadialReview.Controllers
             UserOrganizationModel createdUser=null;
             try
             {
-                var user = GetUser().Hydrate().Organization().Execute();
-                var org = user.Organization;
-                if (org == null)
-                    throw new PermissionsException();
-                if (org.Id != model.OrgId)
-                    throw new PermissionsException();
+				//var user = GetUser().Hydrate().Organization().Execute();
+				//var org = user.Organization;
+				//if (org == null)
+				//	throw new PermissionsException();
+				//if (org.Id != model.OrgId)
+				//	throw new PermissionsException();
 
-                if (model.Position.CustomPosition != null)
-                {
-                    var newPosition = OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, model.Position.CustomPositionId, model.Position.CustomPosition);
-                    model.Position.PositionId = newPosition.Id;
-                }
+				//if (model.Position.CustomPosition != null)
+				//{
+				//	var newPosition = OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, model.Position.CustomPositionId, model.Position.CustomPosition);
+				//	model.Position.PositionId = newPosition.Id;
+				//}
 
-                var nexusIdandUser = await NexusAccessor.JoinOrganizationUnderManager(
-                        user, model.ManagerId, model.IsManager,
-                        model.Position.PositionId, model.Email,
-                        model.FirstName, model.LastName
-                    );
-                createdUser=nexusIdandUser.Item2;
-                var nexusId=nexusIdandUser.Item1;
+				//var nexusIdandUser = await NexusAccessor.JoinOrganizationUnderManager(
+				//		user, model.ManagerId, model.IsManager,
+				//		model.Position.PositionId, model.Email,
+				//		model.FirstName, model.LastName
+				//	);
+				//createdUser=nexusIdandUser.Item2;
+				//var nexusId=nexusIdandUser.Item1;
+
+	            await _UserAccessor.CreateUser(GetUser(), model);
 
 
                 var message = "Successfully added " + model.FirstName + " " + model.LastName + ".";

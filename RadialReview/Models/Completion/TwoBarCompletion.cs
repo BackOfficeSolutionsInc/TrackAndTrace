@@ -110,7 +110,12 @@ namespace RadialReview.Models
             return combine;
         }
 
-        public static CompletionModel FromList(IEnumerable<CompletionModel> completions)
+	    public static CompletionModel FromList(IEnumerable<ICompletionModel> completions)
+	    {
+		    return CompletionModel._FromList(completions.SelectMany(y => y.GetCompletions()));
+	    }
+
+        private static CompletionModel _FromList(IEnumerable<CompletionModel> completions)
         {
             var combined=new CompletionModel();
 

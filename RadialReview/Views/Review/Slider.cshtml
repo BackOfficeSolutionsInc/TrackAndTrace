@@ -47,7 +47,7 @@
                             data-slider-orientation="horizontal"
                             data-slider-selection="after">*@
 
-                        <div class="sliderr noselect" id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id">
+                        <div class="sliderr noselect" id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@(slider.Identifier)">
 
                             @*<input class="sliderBar bar"
                                 type="range"
@@ -58,15 +58,15 @@
                                 step="5"
                                 onchange="sliderUpdateInternal(this)">*@
 
-                            <input class="sliderBar changeable"
-                                   type="text"
-                                   name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@slider.Id"
-                                   value="@((int?)(slider.Percentage*100)??0)"
-                                   data-slider="true"
-                                   data-slider-range="0,100"
-                                   data-slider-step="14.2857142857"
-                                   data-slider-highlight="true"
-                                   data-slider-snap="true" />
+							<input class="sliderBar changeable"
+								   type="text"
+								   name="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@(slider.Identifier)"
+								   value="@((int?)(slider.Percentage*100)??0)"
+								   data-slider="true"
+								   data-slider-range="0,100"
+								   data-slider-step="14.2857142857"
+								   data-slider-highlight="true"
+								   data-slider-snap="true" />
 
 
 
@@ -86,7 +86,7 @@
                     <div class="side col-xs-3"><h5>@RadialReview.Properties.DisplayNameStrings.max</h5></div>
                 </div>
             }
-            <div id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@(slider.Id)_title" class="bold alignCenter percentage">
+            <div id="question_@(RadialReview.Models.Enums.QuestionType.Slider)_@(slider.Identifier)_title" class="bold alignCenter percentage">
                 @((int?)(slider.Percentage * 100))
             </div>
         </div>

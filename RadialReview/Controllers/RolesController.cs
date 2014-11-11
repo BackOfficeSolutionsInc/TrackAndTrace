@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Accessors;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Json;
 using RadialReview.Models.UserModels;
 
@@ -31,6 +33,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public JsonResult Modal(RoleVM model) {
 			
+
 			foreach (var r in model.Roles){
 				r.ForUserId = model.UserId;
 			}

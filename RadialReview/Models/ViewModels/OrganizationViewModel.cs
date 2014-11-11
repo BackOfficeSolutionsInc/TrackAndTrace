@@ -16,5 +16,7 @@ namespace RadialReview.Models.ViewModels
         public bool ManagersCanRemoveUsers { get; set; }
         public String ImageUrl { get; set; }
 
+		public List<String> CompanyValues { get; set; } 
+
     }
 }

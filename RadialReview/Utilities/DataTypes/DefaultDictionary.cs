@@ -7,7 +7,11 @@ namespace RadialReview.Utilities.DataTypes
 {
     public class DefaultDictionary<K,V>: IEnumerable<KeyValuePair<K,V>>
     {
-        public Dictionary<K, V> Backing { get; private set; }
+	    public IEnumerable<K> Keys {
+		    get { return Backing.Keys.ToList(); }
+	    }
+
+	    public Dictionary<K, V> Backing { get; private set; }
 
         //Key,Value,=DefaultValue
         public Func<K, V> DefaultFunction { get; private set; }

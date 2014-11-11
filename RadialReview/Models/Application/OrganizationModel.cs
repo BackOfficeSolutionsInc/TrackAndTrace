@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using NHibernate.Mapping;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;

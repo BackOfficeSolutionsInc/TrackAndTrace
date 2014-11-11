@@ -1,5 +1,8 @@
-﻿using RadialReview.Exceptions;
+﻿using FluentNHibernate.Utils;
+using NHibernate.Util;
+using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Interfaces;
 using RadialReview.Utilities;
@@ -12,6 +15,7 @@ using RadialReview.Utilities.DataTypes;
 using NHibernate;
 using RadialReview.Models.UserModels;
 using System.Text.RegularExpressions;
+using RadialReview.Utilities.Query;
 
 namespace RadialReview.Accessors
 {
@@ -500,5 +504,41 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
+	    public static List<CompanyValueModel> GetCompanyValues(AbstractQuery query,PermissionsUtility perms, long organizationId)
+	    {
+			perms.ViewOrganization(organizationId);
+			return query.Where<CompanyValueModel>(x => x.DeleteTime == null && x.OrganizationId == organizationId)
+				.ToList();
+	    }
+
+		public List<CompanyValueModel> GetCompanyValues(UserOrganizationModel caller, long organizationId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetCompanyValues(s.ToQueryProvider(true), perms, organizationId);
+				}
+			}
+	    }
+
+		public void EditCompanyValues(UserOrganizationModel caller, long organizationId, List<CompanyValueModel> companyValues)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).EditOrganization(organizationId);
+					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+
+					foreach (var r in companyValues){
+						r.Category = category;
+						s.SaveOrUpdate(r);
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+	    }
+		
     }
 }

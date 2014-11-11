@@ -1,13 +1,11 @@
-﻿using FluentNHibernate.Mapping;
+﻿using System;
+using System.Collections.Generic;
+using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace RadialReview.Models.Responsibilities
+namespace RadialReview.Models.Askables
 {
     public abstract class ResponsibilityGroupModel : ILongIdentifiable, IDeletable
     {

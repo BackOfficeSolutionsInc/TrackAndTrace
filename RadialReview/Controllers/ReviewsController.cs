@@ -91,6 +91,9 @@ namespace RadialReview.Controllers
         {
             var user = GetUser().Hydrate().ManagingUsers(true).Execute();
             var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true,false);
+			if (reviewContainer.DeleteTime!=null)
+				throw new PermissionsException("This review has been deleted.");
+
             var allDirectSubs   = user.ManagingUsers.Select(x=>x.Subordinate).ToList();
             foreach (var r in reviewContainer.Reviews)
             {
@@ -503,7 +506,7 @@ namespace RadialReview.Controllers
         public JsonResult PopulatePossibleAnswersForUser(long reviewId, long userId)
         {
             var existing = _ReviewAccessor.GetDistinctQuestionsAboutUserFromReview(GetUser(), userId, reviewId);
-            var answers = _ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(GetUser(), userId).SelectMany(x => x.Responsibilities).Where(x => !existing.Any(y => y.Askable.Id == x.Id)).ToListAlive();
+            var answers = _AskableAccessor.GetAskablesForUser(GetUser(), userId).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
 
             return Json(answers.ToSelectList(x => x.GetQuestion(), x => x.Id), JsonRequestBehavior.AllowGet);
 

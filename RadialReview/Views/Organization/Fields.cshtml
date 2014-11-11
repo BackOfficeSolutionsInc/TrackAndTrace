@@ -1,0 +1,62 @@
+﻿@model RadialReview.Controllers.OrganizationController.FieldsVM
+@{
+    ViewBag.Title = "Fields";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Select Fields</h2>
+@using (Html.BeginForm()){
+	<div class="row">
+		<div class="col-sm-3">
+			<label>First Name Column</label>
+		</div>
+		<div class="col-sm-6">
+			@Html.DropDownListFor(x => x.FirstNameColumn, Model.Fields.ToSelectList(x => x, x => x))
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Last Name Column</label>
+		</div>
+		<div class="col-sm-6">
+			@Html.DropDownListFor(x => x.LastNameColumn, Model.Fields.ToSelectList(x => x, x => x))
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Email Column</label>
+		</div>
+		<div class="col-sm-6">
+			@Html.DropDownListFor(x => x.EmailColumn, Model.Fields.ToSelectList(x => x, x => x))
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Position Column</label>
+		</div>
+		<div class="col-sm-6">
+			@Html.DropDownListFor(x => x.PositionColumn, Model.Fields.ToSelectList(x => x, x => x))
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Manager First Name Column</label>
+		</div>
+		<div class="col-sm-6">
+			@Html.DropDownListFor(x => x.ManagerFirstNameColumn, Model.Fields.ToSelectList(x => x, x => x))
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Manager Last Name Column</label>
+		</div>
+		<div class="col-sm-6">
+			@Html.DropDownListFor(x => x.ManagerLastNameColumn, Model.Fields.ToSelectList(x => x, x => x))
+		</div>
+	</div>
+	<br/>
+	@Html.HiddenFor(x=>x.Guid)
+
+	<input class="btn btn-primary" type="submit" />
+}
+

@@ -1,5 +1,6 @@
 ﻿using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Properties;
 using RadialReview.Utilities;
@@ -40,14 +41,15 @@ namespace RadialReview.Accessors
 
                     var newUser = new UserOrganizationModel();
                     createdUser = newUser;
-                    if (managerId == -3)
-                    {
+	                if (managerId == -4){
+		                //No manager
+
+	                }else if (managerId == -3){
+						//Manager at organization
                         if (!caller.ManagingOrganization)
                             throw new PermissionsException();
                         newUser.ManagingOrganization = true;
-                    }
-                    else
-                    {
+                    }else{
                         var manager = db.Get<UserOrganizationModel>(managerId);
                         //Manager and Caller are in the same organization
                         if (manager.Organization.Id != caller.Organization.Id)

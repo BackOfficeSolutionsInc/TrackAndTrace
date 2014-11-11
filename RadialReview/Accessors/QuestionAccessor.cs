@@ -2,6 +2,7 @@
 using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Reviews;
@@ -107,7 +108,7 @@ namespace RadialReview.Accessors
 
             forUser = dataInteraction.Get<UserOrganizationModel>(forUser.Id);
 
-            var askable = new List<Askable>();
+			// var askable = new List<Askable>();
 
             var reviewModel = new ReviewModel()
             {
@@ -170,14 +171,15 @@ namespace RadialReview.Accessors
             }
         }*/
 
-        public static List<QuestionModel> GetQuestionsForUser(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forUserId)
+		[Obsolete("Use AskableAccessor.GetAskablesForUser",false)]
+        public static List<QuestionModel> GetQuestionsForUser(AbstractQuery s, PermissionsUtility perms, long forUserId)
         {
             perms.ViewUserOrganization(forUserId, false);
             var forUser = s.Get<UserOrganizationModel>(forUserId);
 
-            caller = s.Get<UserOrganizationModel>(caller.Id);
+            //caller = s.Get<UserOrganizationModel>(caller.Id);
             forUser = s.Get<UserOrganizationModel>(forUser.Id);
-            List<QuestionModel> questions = new List<QuestionModel>();
+            var questions = new List<QuestionModel>();
             //Self Questions
             questions.AddRange(forUser.CustomQuestions);
             //Group Questions
@@ -187,7 +189,7 @@ namespace RadialReview.Accessors
             var orgQuestions = s.Where<QuestionModel>(x => x.OriginId == orgId && x.OriginType == OriginType.Organization);
             questions.AddRange(orgQuestions);
             //Application Questions
-            var applicationQuestions = s.Where<ApplicationWideModel>(x => true).SelectMany(x => x.CustomQuestions).ToList();
+            var applicationQuestions = s.All<ApplicationWideModel>().SelectMany(x => x.CustomQuestions).ToList();
             questions.AddRange(applicationQuestions);
             return questions;
         }
@@ -199,7 +201,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetQuestionsForUser(s.ToQueryProvider(true), perms, caller, forUserId);
+                    return GetQuestionsForUser(s.ToQueryProvider(true), perms, forUserId);
                 }
             }
         }

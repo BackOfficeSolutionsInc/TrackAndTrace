@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Controllers
 {
@@ -31,5 +32,13 @@ namespace RadialReview.Controllers
             var hubUsers = hub.Clients.User(GetUserModel().UserName);
             hubUsers.status(text);
         }
+
+
+
+	    [Access(AccessLevel.Radial)]
+		public ActionResult Tristate(Tristate state = Models.Enums.Tristate.Indeterminate)
+	    {
+			return View(state);
+	    }
 	}
 }

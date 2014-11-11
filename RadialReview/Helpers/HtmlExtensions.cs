@@ -13,7 +13,7 @@ namespace System.Web
 {
     public static class HtmlExtensions
     {
-
+		
         public static MvcHtmlString CollapseSection(this HtmlHelper html,String title,String viewName,object model,string checkboxClass=null)
         {
 			html.ViewData["PartialViewName"] = viewName;
@@ -110,8 +110,9 @@ namespace System.Web
                 joined = String.Join(",", items);
             }
 
-            return new HtmlString("<span class='editFirst'><span class='icon'>" + ViewOrEdit(html, edit).ToHtmlString() + "</span><span title='" + joined + "' class='text'><span class='uncollapsable'>" + after + "</span><span class='collapsable'>" + name + "</span></span></span>");
-        }
+			//return new HtmlString("<span class='editFirst'><span class='icon'>" + ViewOrEdit(html, edit).ToHtmlString() + "</span><span title='" + joined + "' class='text'><span class='uncollapsable'>" + after + "</span><span class='collapsable'>" + name + "</span></span></span>");
+			return new HtmlString("<span class='editFirst'><span title='" + joined + "' class='text'><span class='uncollapsable'>" + after + "</span><span class='collapsable'>" + name + "</span></span></span>");
+		}
 
         public static HtmlString Badge<T>(this HtmlHelper<T> html, Func<T, int> count)
         {

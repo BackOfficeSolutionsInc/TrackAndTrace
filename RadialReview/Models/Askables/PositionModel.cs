@@ -1,12 +1,7 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
-using RadialReview.Models.Responsibilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace RadialReview.Models.Responsibilities
+namespace RadialReview.Models.Askables
 {
     public class PositionModel :ILongIdentifiable
     {

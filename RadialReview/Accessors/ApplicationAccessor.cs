@@ -1,6 +1,7 @@
 ﻿using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Utilities;
@@ -19,12 +20,20 @@ namespace RadialReview.Accessors
 
 		public const string FEEDBACK = "Feedback";
 		public const string THUMBS = "Yes/No";
+		//public const string GWC = "Get It/Want It/Capacity To Do It";
+		//public const string COMPANY_VALUES = "Company Values";
+		//public const string ROCKS = "Rocks";
+	    public const string EVALUATION = "Evaluation";
 
         private static string[] ApplicationCategories = new string[]{ 
                 "Performance",
                 "Culture",
                 FEEDBACK,
                 THUMBS,
+				//GWC,
+				//COMPANY_VALUES,
+				//ROCKS,
+				EVALUATION
         };
 
         private class Q

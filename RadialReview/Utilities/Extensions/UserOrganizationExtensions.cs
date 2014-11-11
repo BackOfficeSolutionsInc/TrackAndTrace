@@ -1,6 +1,7 @@
 ﻿using System.Dynamic;
 using NHibernate;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;

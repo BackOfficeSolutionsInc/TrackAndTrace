@@ -3,8 +3,8 @@
     padding-top: 00px;
     padding-bottom: 0;
     /*padding-top: 50px;*/
-    background-color: #FEFEFE;
-    background-image: url("img/box.png");
+    background-color: #F1F1F1;
+    /*background-image: url("img/box.png");*/
 }
 
 .mainContainer {
@@ -143,15 +143,18 @@ html, body {
 
 
 #footer {
-    text-align: center;
-    position: relative;
-    margin-top: -40px; /* negative value of footer height */
-    height: 300px;
-    clear: both;
-    background-color: rgba(0, 0, 0, 0.41);
-    color: #c9c8d8;
-    overflow-y: hidden;
-    border-top: 1px solid #505050;
+	text-align: center;
+	position: relative;
+	margin-top: -40px; /* negative value of footer height */
+	height: 300px;
+	clear: both;
+	background-color: rgba(0, 0, 0, 0.41);
+	color: #F1F1F1;
+	overflow-y: hidden;
+	padding-top: 10px;
+}
+#footer-COMMENT {
+    border-top: 1px solid #505050; 
     background: url('img/footer.png');
     background: url('img/footer.png'),-moz-linear-gradient(top, #1c2235 0%,#262e4a 6%, #000000 100%); /* FF3.6+ */
     background: url('img/footer.png'),-webkit-gradient(linear, left top, left bottom, color-stop(0%,#1c2235), color-stop( 6%,#262e4a ), color-stop(100%,#000000)); /* Chrome,Safari4+ */
@@ -160,7 +163,6 @@ html, body {
     background: url('img/footer.png'),-ms-linear-gradient(top, #1c2235 0%,#262e4a 6%,#000000 100%); /* IE10+ */
     background: url('img/footer.png'),linear-gradient(to bottom, #1c2235 0%,#262e4a 6%,#000000 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#57569c', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
-    padding-top: 10px;
 }
 
 #alerts, #alerts * {
@@ -207,8 +209,9 @@ ul a{
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    background-image: url("img/little_pluses.png");
-    background-color: rgba(60, 104, 255, 0.14);
+     /*background-image: url("img/little_pluses.png");
+   background-color: rgba(60, 104, 255, 0.14);*/
+	background-color: #C1C9E5;
     /*-webkit-box-shadow: 0px 0px 3px 0px rgba(1, 1, 1, 0.25);
     box-shadow: 0px 0px 3px 0px rgba(1, 1, 1, 0.25);*/
     /*margin-bottom: -30px;*/
@@ -437,8 +440,11 @@ body {
 .navbar {
     min-height: 54px;
 }
-
 .navbar-inverse {
+	background-color: #413452;
+}
+
+.navbar-inverse-COMMENT {
     background: url('img/titlebarTiles.png');
     background: url('img/titlebarTiles.png'),-moz-linear-gradient(top, #36426d 16%, #152042 85%); /* FF3.6+ */
     background: url('img/titlebarTiles.png'),-webkit-gradient(linear, left top, left bottom, color-stop(16%,#36426d), color-stop(85%,#152042)); /* Chrome,Safari4+ */
@@ -452,7 +458,7 @@ body {
 }
 
     .navbar-inverse .navbar-nav > li > a, .navbar-inverse .navbar-brand {
-        color: #D5E8FF;
+	    color: #F1F1F1;/*#D5E8FF;*/
         -webkit-transition: .15s linear !important;
         -moz-transition: .15s linear !important;
         -ms-transition: .15s linear !important;
@@ -460,7 +466,7 @@ body {
         transition: .15s linear !important;
     }
 
-        .navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-brand:hover {
+        /*.navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-brand:hover {
             color: #98c7ff;
             text-shadow: 0px -1px 10px #286D9B;
             filter: dropshadow(color=#286D9B, offx=0, offy=-1);
@@ -469,7 +475,7 @@ body {
         .navbar-inverse .navbar-nav > li > a:hover {
             padding-top: 17px;
             padding-bottom: 13px;
-        }
+        }*/
 
 .badge {
     display: inline-block;
@@ -690,16 +696,16 @@ input[type="checkbox"].input-validation-error {
 .btn.heading:not(.open) {
     background-color: transparent;
     border-color: transparent;
-    color: #98C7FF;
+	color: #F1F1F1;/*#98C7FF;*/
     /*text-shadow: 0px -1px 10px #286D9B;
     filter: dropshadow(color=#286D9B, offx=0, offy=-1);*/
 }
 
 .btn-group.heading:hover .btn,
 .btn-group.heading.open .btn {
-    color: #333333;
-    background-color: #ffffff;
-    border-color: #cccccc;
+    /*color: #333333;
+    background-color: #ffffff;*/
+    border-color: rgba(204, 204, 204, 0.5);
     text-shadow: inherit;
     filter: inherit;
 }
@@ -1100,7 +1106,7 @@ a:hover .viewEdit {
 }
 
 tr.grayRow {
-    background-color: #F1F1F1;
+	background-color: #DCD8FF;/*#F1F1F1;*/
 }
 
 .flashing:not(:hover) {

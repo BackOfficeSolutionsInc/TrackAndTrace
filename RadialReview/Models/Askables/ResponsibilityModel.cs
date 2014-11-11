@@ -1,12 +1,9 @@
-﻿using FluentNHibernate.Mapping;
+﻿using System;
+using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace RadialReview.Models.Responsibilities {
+namespace RadialReview.Models.Askables {
 	public class ResponsibilityModel : Askable, ILongIdentifiable {
 		public virtual long ForOrganizationId { get; set; }
 		public virtual long ForResponsibilityGroup { get; set; }

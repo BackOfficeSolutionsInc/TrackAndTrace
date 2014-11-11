@@ -3,6 +3,7 @@ using FluentNHibernate.Automapping;
 using FluentNHibernate.Automapping.Alterations;
 using FluentNHibernate.Mapping;
 using NHibernate.Proxy;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
@@ -34,7 +35,13 @@ namespace RadialReview.Models
         public virtual DateTime AttachTime { get; set; }
         public virtual DateTime? DetachTime { get; set; }
         public virtual UserModel User { get; set; }
-        public virtual IList<ManagerDuration> ManagingUsers { get; set; }
+
+	    public virtual long[] UserIds
+	    {
+		    get { return User.UserOrganization.Select(x => x.Id).ToArray(); }
+	    }
+
+	    public virtual IList<ManagerDuration> ManagingUsers { get; set; }
         public virtual IList<ManagerDuration> ManagedBy { get; set; }
         public virtual IList<GroupModel> Groups { get; set; }
         public virtual IList<GroupModel> ManagingGroups { get; set; }
@@ -138,16 +145,24 @@ namespace RadialReview.Models
 
             return this.EmailAtOrganization;
         }
-        public virtual string GetFirstName()
-        {
-            if (this.User != null && !String.IsNullOrWhiteSpace(this.User.FirstName))
-                return this.User.FirstName;
+		public virtual string GetFirstName() {
+			if (this.User != null && !String.IsNullOrWhiteSpace(this.User.FirstName))
+				return this.User.FirstName;
 
-            if (TempUser != null && !String.IsNullOrWhiteSpace(this.TempUser.FirstName))
-                return this.TempUser.FirstName;
+			if (TempUser != null && !String.IsNullOrWhiteSpace(this.TempUser.FirstName))
+				return this.TempUser.FirstName;
 
-            return GetName();
-        }
+			return GetName();
+		}
+		public virtual string GetLastName() {
+			if (this.User != null && !String.IsNullOrWhiteSpace(this.User.LastName))
+				return this.User.LastName;
+
+			if (TempUser != null && !String.IsNullOrWhiteSpace(this.TempUser.LastName))
+				return this.TempUser.LastName;
+
+			return GetName();
+		}
 
         public virtual string GetTitles(int numToShow = int.MaxValue, long callerUserId = -1)
         {

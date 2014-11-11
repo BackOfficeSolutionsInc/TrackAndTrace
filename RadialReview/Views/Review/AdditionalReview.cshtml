@@ -1,6 +1,6 @@
 ﻿@model RadialReview.Models.ViewModels.AdditionalReviewViewModel
 @{
-    ViewBag.Title = "AdditionalReview";
+    ViewBag.Title = "Additional Review";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -14,7 +14,7 @@
             @Html.HiddenFor(x => x.Id)
             @Html.HiddenFor(x => x.Page)
             <p>
-                @Html.DropDownListFor(x => x.User, Model.Possible.OrderBy(x=>x.Text), new { @class = "form-control" })
+                @Html.ListBoxFor(x => x.Users, Model.Possible.OrderBy(x => x.Text), new { @class = "select2", style = "max-width:600px;width:100%;", multiple =""})
             </p>
             <button class="btn btn-primary">Review</button>
             <a href="/" class="btn btn-default">Exit</a>
@@ -25,3 +25,24 @@
         <a href="/" class="btn btn-default">Exit</a>
     }
 </div>
+
+
+@using (Html.BeginScripts())
+{
+	<script>
+		$(".select2").select2({
+			matcher: function (term, text) {
+				var split = text.split("(")[0].split(" ");
+				var t = term.toUpperCase();
+				for (var i = 0; i < split.length; i++) {
+					var s = split[i].toUpperCase();
+					if ($.trim(s) == '')
+						continue;
+					if (s.indexOf(t) == 0)
+						return true;
+				}
+				return false;
+			}
+		});
+	</script>
+}

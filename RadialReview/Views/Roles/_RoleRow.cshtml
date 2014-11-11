@@ -1,15 +1,15 @@
-﻿@model RadialReview.Models.UserModels.RoleModel
+﻿@model RadialReview.Models.Askables.RoleModel
 <div class="roleRow">
-	@using (Html.BeginCollectionItem("roles")) {
-		<div class="row">
-			<div class="col-xs-10">
+	@using (Html.BeginCollectionItem("roles"))
+	{
+		<div class="roww">
+			<div style="width:calc( 100% - 25px );display:inline-block">
 				@Html.HiddenFor(x => x.Id)
 				@Html.TextBoxFor(x => x.Role, new { @class = "form-control roleItem" })
 				@Html.HiddenFor(x => x.DeleteTime)
 			</div>
-			<div class="col-xs-2">
-				<div class="btn btn-link deleteRow">delete</div>
-			</div>
+			<span style="padding-left:8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+
 		</div>
 	}
 	<div class="smallBreak"></div>

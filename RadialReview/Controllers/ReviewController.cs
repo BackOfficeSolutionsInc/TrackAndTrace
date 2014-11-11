@@ -1,10 +1,12 @@
 using System.Collections;
+using System.Web.UI;
 using Microsoft.AspNet.SignalR;
 using RadialReview.Accessors;
 using RadialReview.Engines;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Responsibilities;
@@ -19,6 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Controllers {
 	public class ReviewController : BaseController {
@@ -54,6 +57,11 @@ namespace RadialReview.Controllers {
 		private List<IGrouping<long, AnswerModel>> GetPages(ReviewModel review) {
 			return review.Answers.GroupBy(x => x.AboutUserId).ToList();
 		}
+		private List<IGrouping<long, AnswerModel>> GetPages(IEnumerable<ReviewModel> reviews) {
+			return reviews.SelectMany(x => x.Answers).GroupBy(x => x.AboutUserId).ToList();
+		}
+
+
 
 		[HttpGet]
 		[Access(AccessLevel.UserOrganization)]
@@ -61,17 +69,21 @@ namespace RadialReview.Controllers {
 		public ActionResult Take(long id, int? page) {
 			var now=DateTime.UtcNow;
 			var user = GetUser();
-			var review = _ReviewAccessor.GetReview(user, id);
+			//var review = _ReviewAccessor.GetReview(user, id);
 
-			if (review.ForUserId != user.Id)
+			var reviews =_ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, id);
+
+			if (!reviews.Any())
+				throw new PermissionsException("Review does not exist.");
+			
+			if (!reviews.All(x => user.UserIds.Any(y => y == x.ForUserId)))
 				throw new PermissionsException("You cannot take this review.");
 
 			ViewBag.ReviewId = id;
 			ViewBag.OrganizationId = user.Organization.Id;
 			ViewBag.Page = page;
 
-
-			var pages = GetPages(review);
+			var pages = GetPages(reviews);
 
 
 			try {
@@ -83,12 +95,12 @@ namespace RadialReview.Controllers {
 				var forUser = p.FirstOrDefault().NotNull(x => x.AboutUser);
 				ViewBag.Subheading = "Only " + forUser.GetFirstName().Possessive() + " manager will see your answers.";
 
-				var model = new TakeViewModel() {
+				var model = new TakeViewModel(p) {
 					Id = id,
 					StartTime = now,
 					Page = pageConcrete,
-					Answers = p,
-					Editable = review.DueDate > now,
+					//Answers = p,
+					Editable = reviews.Any(x => x.DueDate > now),
 					ForUser = forUser,
 					OrderedPeople = pages.Select(x =>
 						Tuple.Create(
@@ -183,7 +195,7 @@ namespace RadialReview.Controllers {
 			long reviewId = -1;
 			int page = -1;
 			DateTime dueDate;
-
+			
 			if (ParseAndSave(collection, out reviewId, out page, out dueDate)) {
 				return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
 			}
@@ -210,55 +222,115 @@ namespace RadialReview.Controllers {
 				}
 
 				var user = GetUser();
-				var review = _ReviewAccessor.GetReview(user, reviewId);
-				dueDate = review.DueDate;
-				if (review.DueDate < DateTime.UtcNow) {
+				//var review = _ReviewAccessor.GetReview(user, reviewId);
+
+
+
+				/**/
+				var reviews =_ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, reviewId);
+
+				if (!reviews.All(x => user.UserIds.Any(y => y == x.ForUserId)))
+					throw new PermissionsException("You cannot take this review.");
+
+				var answers = reviews.SelectMany(x => x.Answers).ToList();
+				/**/
+
+
+				dueDate = reviews.Max(x => x.DueDate);
+				if (dueDate < DateTime.UtcNow) {
 					return false;
 				}
-				if (review.ForUserId != user.Id)
-					throw new PermissionsException("You cannot take this review.");
+				//if (reviews.First().ForUserId != user.Id)
+				//	throw new PermissionsException("You cannot take this review.");
 				var allComplete = true;
 				var values = collection.AllKeys.Select(k => collection[k]).ToList();
 
 				var started = false;
 				var editAny = false;
-				var questionsAnswered = 0;
-				var optionalAnswered = 0;
+				//var questionsAnswered = 0;
+				//var optionalAnswered = 0;
+
+				var questionsAnswered = new DefaultDictionary<long, int>(x => 0);
+				var optionalAnswered = new DefaultDictionary<long, int>(x => 0);
+
 				foreach (var k in collection.AllKeys) {
 					var args = k.Split('_');
 					if (args[0] == "question") {
-						var questionId = long.Parse(args[2]);
+						var askableId = long.Parse(args[2]);
+						var aboutUserId = long.Parse(args[3]);
+						var forReviewContainerId = long.Parse(args[4]);
 						var edited = false;
 						var currentComplete = false;
 
-						switch (args[1].Parse<QuestionType>()) {
-							case QuestionType.Slider: {
-									decimal value = 0;
-									decimal? output = null;
-									if (decimal.TryParse(collection[k], out value))
-										output = value / 100.0m;
-									if (value == 0)
-										output = null;
-									currentComplete = _ReviewAccessor.UpdateSliderAnswer(user, questionId, output, now, out edited, ref questionsAnswered, ref optionalAnswered);
+						var matchingQuestions = answers.Where(x => x.Askable.Id == askableId && x.AboutUserId == aboutUserId && x.ForReviewContainerId == forReviewContainerId);
 
-								}
-								break;
-							case QuestionType.Thumbs:
-								currentComplete =
-									_ReviewAccessor.UpdateThumbsAnswer(user, questionId, collection[k].Parse<ThumbsType>(), now, out edited, ref questionsAnswered, ref optionalAnswered);
-								break;
-							case QuestionType.Feedback:
-								currentComplete = _ReviewAccessor.UpdateFeedbackAnswer(user, questionId, collection[k], now, out edited, ref questionsAnswered, ref optionalAnswered);
-								break;
-							case QuestionType.RelativeComparison:
-								currentComplete = _ReviewAccessor.UpdateRelativeComparisonAnswer(user, questionId, collection[k].Parse<RelativeComparisonType>(), now, out edited, ref questionsAnswered, ref optionalAnswered);
-								break;
-							default:
-								throw new Exception();
+						foreach (var question in matchingQuestions){
+							var rid = question.ForReviewId;
+							var questionId = question.Id;
+							var qA = 0;
+							var oA = 0;
+							switch (args[1].Parse<QuestionType>()) {
+								case QuestionType.Slider: {
+										decimal value = 0;
+										decimal? output = null;
+										if (decimal.TryParse(collection[k], out value))
+											output = value / 100.0m;
+										if (value == 0)
+											output = null;
+										currentComplete = _ReviewAccessor.UpdateSliderAnswer(user, questionId, output, now, out edited, ref qA, ref oA);
+
+									}
+									break;
+								case QuestionType.Thumbs:
+									currentComplete =
+										_ReviewAccessor.UpdateThumbsAnswer(user, questionId, collection[k].Parse<ThumbsType>(), now, out edited, ref qA, ref oA);
+									break;
+								case QuestionType.Feedback:
+									currentComplete = _ReviewAccessor.UpdateFeedbackAnswer(user, questionId, collection[k], now, out edited, ref qA, ref oA);
+									break;
+								case QuestionType.RelativeComparison:
+									currentComplete = _ReviewAccessor.UpdateRelativeComparisonAnswer(user, questionId, collection[k].Parse<RelativeComparisonType>(), now, out edited, ref qA, ref oA);
+									break;
+								case QuestionType.GWC:
+										if (args[5]=="Reason")
+											currentComplete = _ReviewAccessor.UpdateGWCReasonAnswer(user, questionId, collection[k], now, out edited, ref qA, ref oA);
+										else
+											currentComplete = _ReviewAccessor.UpdateGWCAnswer(user, questionId, args[5], collection[k].Parse<Tristate>(), now, out edited, ref qA, ref oA);
+										break;
+								case QuestionType.CompanyValue:
+
+										if (args.Length == 6){
+											if (args[5] != "Reason")
+												throw new Exception("Unexpected CompanyValue argument.");
+											currentComplete = _ReviewAccessor.UpdateCompanyValueReasonAnswer(user, questionId, collection[k], now, out edited, ref qA, ref oA);
+										}
+										else
+										{
+											currentComplete = _ReviewAccessor.UpdateCompanyValueAnswer(user, questionId, collection[k].Parse<PositiveNegativeNeutral>(), now, out edited, ref qA, ref oA);
+										}
+										break;
+								case QuestionType.Rock:
+
+										if (args.Length == 6){//reason
+											if (args[5] != "Reason")
+												throw new Exception("Unexpected Rock argument.");
+											currentComplete = _ReviewAccessor.UpdateRockReasonAnswer(user, questionId, collection[k], now, out edited, ref qA, ref oA);
+										}
+										else
+										{
+											currentComplete = _ReviewAccessor.UpdateRockAnswer(user, questionId, collection[k].Parse<Tristate>(), now, out edited, ref qA, ref oA);
+										}
+										break;
+								default:
+									throw new Exception();
+							}
+							allComplete = allComplete && currentComplete;
+							started = started || currentComplete;
+							editAny = editAny || edited;
+							questionsAnswered[rid] += qA;
+							optionalAnswered[rid] += oA;
+
 						}
-						allComplete = allComplete && currentComplete;
-						started = started || currentComplete;
-						editAny = editAny || edited;
 					}
 				}
 
@@ -268,17 +340,24 @@ namespace RadialReview.Controllers {
 				if (editAny) {
 					durationMinutes = (decimal)(now - startTime).TotalMinutes;
 				}
-
-				_ReviewAccessor.UpdateAllCompleted(GetUser(), review.Id, started, durationMinutes, questionsAnswered, optionalAnswered);
+				foreach (var rId in questionsAnswered.Keys) {
+					_ReviewAccessor.UpdateAllCompleted(GetUser(), rId, started, durationMinutes, questionsAnswered[rId], optionalAnswered[rId]);
+				}
 
 				return allComplete;
 			}
 			catch (PermissionsException e) {
 				throw e;
 			}
-			catch (Exception) {
+			catch (Exception e) {
 				throw new PermissionsException();
 			}
+		}
+
+		public class AnswerVM {
+			public string Identifier { get; set; }
+			public List<AnswerModel> FromAnswers { get; set; }
+			public AnswerModel BaseAnswer { get; set; }
 		}
 
 		public class TakeViewModel {
@@ -286,9 +365,16 @@ namespace RadialReview.Controllers {
 			public long Page { get; set; }
 			public bool Editable { get; set; }
 			public DateTime StartTime { get; set; }
-			public List<AnswerModel> Answers { get; set; }
+			public List<AnswerVM> Answers { get; set; }
 			public UserOrganizationModel ForUser { get; set; }
 			public List<Tuple<String, bool>> OrderedPeople { get; set; }
+
+			public TakeViewModel(List<AnswerModel> answers) {
+				Answers = answers.GroupBy(x => Tuple.Create(x.Askable.Id, x.AboutUserId)).Select(x => new AnswerVM() {
+					BaseAnswer = x.First(),
+					FromAnswers = x.ToList()
+				}).ToList();
+			}
 
 		}
 
@@ -303,9 +389,14 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult AdditionalReview(long id, long page = 0) {
 			var organizationUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
-			var review = _ReviewAccessor.GetReview(GetUser(), id);
+			//var review = _ReviewAccessor.GetReview(GetUser(), id);
 
-			var permittedUsers = organizationUsers.Where(x => !review.Answers.Any(y => y.AboutUserId == x.Id));
+
+			var existingUsers = _ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, id).SelectMany(x=>x.Answers.Select(y=>y.AboutUserId).Distinct()).Distinct();
+
+
+
+			var permittedUsers = organizationUsers.Where(orgUser => existingUsers.All(existingUserId => existingUserId != orgUser.Id));
 
 			var selectList = permittedUsers.OrderBy(x => x.GetName()).Select(x => new SelectListItem() { Text = x.GetNameAndTitle(), Value = "" + x.Id }).ToList();
 
@@ -322,13 +413,17 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult AdditionalReview(AdditionalReviewViewModel model) {
-			_ReviewAccessor.AddToReview(GetUser(), GetUser().Id, model.Id, model.User);
+			foreach (var userId in model.Users){
+				_ReviewAccessor.AddToReview(GetUser(), GetUser().Id, model.Id, userId);
+			}
 
-			var review = _ReviewAccessor.GetReview(GetUser(), model.Id);
-
-			var pageNum = GetPages(review).Count;
-
-			return RedirectToAction("Take", new { id = model.Id, page = pageNum - 1 });
+			var reviews = _ReviewAccessor.GetReviewForUser(GetUser(),GetUser().Id,model.Id);
+			var pages = GetPages(reviews);
+			var found = pages.Select((x,i) => Tuple.Create(x.Key,i)).FirstOrDefault(x=>x.Item1==model.Users.FirstOrDefault());
+			var pageNum = (pages.Count - 1);
+			if (found != null)
+				pageNum = found.Item2;
+			return RedirectToAction("Take", new { id = model.Id, page = pageNum });
 		}
 
 		[HttpGet]
@@ -348,59 +443,59 @@ namespace RadialReview.Controllers {
 				PotentialTeams = teams
 			});
 		}
+		
+		//[HttpPost]
+		//[Access(AccessLevel.Manager)]
+		//public async Task<JsonResult> Create(IssueReviewViewModel model) {
+		//	var userId = GetUserModel().UserName;
+		//	try {
+		//		var dueDate = DateTime.Parse(model.Date);
+		//		//var caller = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
 
-		[HttpPost]
-		[Access(AccessLevel.Manager)]
-		public async Task<JsonResult> Create(IssueReviewViewModel model) {
-			var userId = GetUserModel().UserName;
-			try {
-				var dueDate = DateTime.Parse(model.Date);
-				//var caller = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
+		//		/*if (!caller.ManagingOrganization)
+		//			throw new PermissionsException();*/
 
-				/*if (!caller.ManagingOrganization)
-					throw new PermissionsException();*/
+		//		var user = GetUser();
 
-				var user = GetUser();
+		//		// try
+		//		// {
+		//		//throw new Exception("Todo");
+		//		var result = await Task.Run(() => {
+		//			return _ReviewAccessor.CreateCompleteReview(user, model.ForTeamId, dueDate,
+		//				model.Name, model.Emails, model.ReviewSelf, model.ReviewManagers, model.ReviewSubordinates,
+		//				model.ReviewTeammates, model.ReviewPeers);
+		//		});
+		//		new Thread(() => {
+		//			Thread.Sleep(4000);
+		//			var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+		//			var hubUsers =  hub.Clients.User(userId);
+		//			//var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+		//			hubUsers.jsonAlert(ResultObject.Create(false, "Finished creating review \"" + model.Name + "\"."), true);
+		//			hubUsers.unhide("#ManageNotification");
+		//		}).Start();
+		//		//return true;
+		//		/* }
+		//			catch (Exception e)
+		//			{
+		//				//var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+		//				// hub.Clients.User(userId).jsonAlert(new ResultObject(e));
+		//				//hub.Clients.User(userId).unhide("#ManageNotification");
+		//				log.Error(e);
+		//				throw e;
+		//				// return false;
+		//			}*/
 
-				// try
-				// {
-				//throw new Exception("Todo");
-				var result = await Task.Run(() => {
-					return _ReviewAccessor.CreateCompleteReview(user, model.ForTeamId, dueDate,
-						model.Name, model.Emails, model.ReviewSelf, model.ReviewManagers, model.ReviewSubordinates,
-						model.ReviewTeammates, model.ReviewPeers);
-				});
-				new Thread(() => {
-					Thread.Sleep(4000);
-					var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-					var hubUsers =  hub.Clients.User(userId);
-					//var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-					hubUsers.jsonAlert(ResultObject.Create(false, "Finished creating review \"" + model.Name + "\"."), true);
-					hubUsers.unhide("#ManageNotification");
-				}).Start();
-				//return true;
-				/* }
-					catch (Exception e)
-					{
-						//var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-						// hub.Clients.User(userId).jsonAlert(new ResultObject(e));
-						//hub.Clients.User(userId).unhide("#ManageNotification");
-						log.Error(e);
-						throw e;
-						// return false;
-					}*/
-
-			}
-			catch (Exception e) {
-				log.Error(e);
-				new Thread(() => {
-					var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-					hub.Clients.User(userId).jsonAlert(new ResultObject(e));
-					hub.Clients.User(userId).unhide("#ManageNotification");
-				}).Start();
-			}
-			return Json(ResultObject.SilentSuccess());
-		}
+		//	}
+		//	catch (Exception e) {
+		//		log.Error(e);
+		//		new Thread(() => {
+		//			var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+		//			hub.Clients.User(userId).jsonAlert(new ResultObject(e));
+		//			hub.Clients.User(userId).unhide("#ManageNotification");
+		//		}).Start();
+		//	}
+		//	return Json(ResultObject.SilentSuccess());
+		//}
 
 		public class ReviewDetailsViewModel {
 			public ReviewModel Review { get; set; }
@@ -411,9 +506,9 @@ namespace RadialReview.Controllers {
 			public List<AnswerModel> AnswersAbout { get; set; }
 			public Dictionary<long, String> Categories { get; set; }
 			public List<String> Responsibilities { get; set; }
-			public List<ResponsibilityModel> Questions { get; set; }
+			public List<Askable> Questions { get; set; }
 			public List<UserOrganizationModel> Supervisers { get; set; }
-			public List<ResponsibilityModel> ActiveQuestions { get; set; }
+			public List<Askable> ActiveQuestions { get; set; }
 			public List<ChartType> ChartTypes { get; set; }
 
 			public class ChartType {
@@ -428,12 +523,10 @@ namespace RadialReview.Controllers {
 				AnswersAbout = new List<AnswerModel>();
 				Categories = new Dictionary<long, string>();
 				Responsibilities = new List<string>();
-				Questions = new List<ResponsibilityModel>();
+				Questions = new List<Askable>();
 				Supervisers = new List<UserOrganizationModel>();
-				ActiveQuestions = new List<ResponsibilityModel>();
+				ActiveQuestions = new List<Askable>();
 			}
-
-
 		}
 
 		private ReviewDetailsViewModel GetReviewDetails(ReviewModel review) {
@@ -449,7 +542,7 @@ namespace RadialReview.Controllers {
 			}
 
 
-			var questions = _ResponsibilitiesAccessor.GetResponsibilitiesForUser(GetUser(), review.ForUserId);
+			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), review.ForUserId);
 			var activeQuestions = questions.Where(x => answers.Any(y => y.Askable.Id == x.Id)).ToList();
 
 			var chartTypes = new List<ReviewDetailsViewModel.ChartType>();

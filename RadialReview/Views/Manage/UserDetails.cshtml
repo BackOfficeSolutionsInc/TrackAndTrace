@@ -1,7 +1,7 @@
 ﻿@model RadialReview.Controllers.ManageController.ManageUserModel
 
 @{
-    ViewBag.Title = "User";
+    ViewBag.Title = Model.Details.User.GetName()+" Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 

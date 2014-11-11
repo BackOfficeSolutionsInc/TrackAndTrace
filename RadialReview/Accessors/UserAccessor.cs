@@ -1,4 +1,6 @@
-﻿using Amazon.ElasticTranscoder.Model;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using Amazon.ElasticTranscoder.Model;
 using FluentNHibernate.Utils;
 using RadialReview.Models;
 using System;
@@ -6,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Exceptions;
+using RadialReview.Models.Askables;
+using RadialReview.Models.ViewModels;
+using RadialReview.Properties;
 using RadialReview.Utilities;
 using NHibernate.Linq;
 using NHibernate;
@@ -138,11 +143,14 @@ namespace RadialReview.Accessors
         {
             perms.ViewUserOrganization(forId, false);
             var forUser = s.Get<UserOrganizationModel>(forId);
-            return forUser.ManagedBy.ToListAlive()
-                          .Select(x => x.Manager)
-                          .SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate))
-                          .Where(x => x.Id != forId)
-                          .ToList();
+			if (forUser.ManagingUsers.All(x => x.DeleteTime != null)) {
+		        return forUser.ManagedBy.ToListAlive()
+			        .Select(x => x.Manager)
+			        .SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate))
+			        .Where(x => x.Id != forId)
+			        .ToList();
+	        }
+			return new List<UserOrganizationModel>();
         }
 
         public List<UserOrganizationModel> GetManagers(UserOrganizationModel caller, long forUserId)
@@ -761,8 +769,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
-
+		
 		public void EditJobDescription(UserOrganizationModel caller, long userId, string jobDescription) {
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
@@ -776,25 +783,122 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public List<RoleModel> GetRoles(UserOrganizationModel caller, long id) {
-			using (var s = HibernateSession.GetCurrentSession()){
+		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
 				using (var tx = s.BeginTransaction()){
-					PermissionsUtility.Create(s, caller).ViewUserOrganization(id,false);
-					return s.QueryOver<RoleModel>().Where(x => x.ForUserId == id && x.DeleteTime == null).List().ToList();
+					var perm = PermissionsUtility.Create(s, caller);
+					return GetRocks(s.ToQueryProvider(true), perm, forUserId);
 				}
 			}
 		}
+		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId)
+		{
+			perms.ViewUserOrganization(forUserId, false);
+			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.DeleteTime == null);
+		}
 
-		public void EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
+		public void EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					if (rocks.Any(x=>x.ForUserId!=userId))
+						throw new PermissionsException("Rock UserId does not match UserId");
+					
 					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId, false);
-					foreach(var r in roles)
+					var user = s.Get<UserOrganizationModel>(userId);
+					var orgId = user.Organization.Id;
+					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+					
+					foreach (var r in rocks)
+					{
+						r.OnlyAsk = AboutType.Manager | AboutType.Self; 
+						r.Category = category;
+						r.OrganizationId = orgId;
 						s.SaveOrUpdate(r);
+					}
 					tx.Commit();
 					s.Flush();
 				}
 			}
+		}
+
+
+		public List<RoleModel> GetRoles(UserOrganizationModel caller, long id) {
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetRoles(s.ToQueryProvider(true), perms, id);
+				}
+			}
+		}
+
+		public static List<RoleModel> GetRoles(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId){
+			perms.ViewUserOrganization(forUserId, false);
+			return queryProvider.Where<RoleModel>(x => x.ForUserId == forUserId && x.DeleteTime == null);
+		}
+		
+		public void EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					if (roles.Any(x => x.ForUserId != userId))
+						throw new PermissionsException("Role UserId does not match UserId");
+
+					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId, false);
+					var user=s.Get<UserOrganizationModel>(userId);
+					var orgId = user.Organization.Id;
+					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+
+
+					foreach (var r in roles){
+						r.Category = category;
+						r.OrganizationId = orgId;
+						s.SaveOrUpdate(r);
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public async Task<System.Tuple<string, UserOrganizationModel>> CreateUser(UserOrganizationModel caller, CreateUserOrganizationViewModel model) {
+			var _OrganizationAccessor = new OrganizationAccessor();
+			var _NexusAccessor = new NexusAccessor();
+			UserOrganizationModel createdUser=null;
+			var user = caller.Hydrate().Organization().Execute();
+			var org = user.Organization;
+			if (org == null)
+				throw new PermissionsException();
+			if (org.Id != model.OrgId)
+				throw new PermissionsException();
+
+			if (model.Position.CustomPosition != null) {
+				var newPosition = _OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, model.Position.CustomPositionId, model.Position.CustomPosition);
+				model.Position.PositionId = newPosition.Id;
+			}
+
+			var nexusIdandUser = await _NexusAccessor.JoinOrganizationUnderManager(
+					user, model.ManagerId, model.IsManager,
+					model.Position.PositionId, model.Email,
+					model.FirstName, model.LastName
+				);
+			createdUser = nexusIdandUser.Item2;
+			var nexusId=nexusIdandUser.Item1;
+
+			return nexusIdandUser;
+			//var message = "Successfully added " + model.FirstName + " " + model.LastName + ".";
+			//if (caller.Organization.SendEmailImmediately) {
+			//	message += " An invitation has been sent to " + model.Email + ".";
+			//	return Json(ResultObject.Create(null/*createdUser.GetTree(createdUser.Id.AsList())*/, message));
+			//}
+			//else {
+			//	message += " The invitation has NOT been sent. To send, click \"Send Invites\" below.";
+			//	return Json(ResultObject.Create(null/*createdUser.GetTree(createdUser.Id.AsList())*/, message, StatusType.Warning));
+			//}
 		}
 	}
 }

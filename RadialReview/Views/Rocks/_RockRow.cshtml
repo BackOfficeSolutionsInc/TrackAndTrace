@@ -1,0 +1,16 @@
+﻿@model RadialReview.Models.Askables.RockModel
+<div class="roleRow">
+	@using (Html.BeginCollectionItem("Rocks"))
+	{
+		<div class="roww">
+				<div style="width:calc( 100% - 25px );display:inline-block">
+					@Html.HiddenFor(x => x.Id)
+					@Html.TextBoxFor(x => x.Rock, new { @class = "form-control roleItem" })
+					@Html.HiddenFor(x => x.DeleteTime)
+				</div>
+			<span style="padding-left:8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+		</div>
+	}
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
+</div>

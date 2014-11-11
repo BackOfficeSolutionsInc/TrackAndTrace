@@ -1,0 +1,35 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+@using RadialReview.Models;
+@using RadialReview.Models.Enums
+
+<table class="table table-condensed table-hover">
+	<tr>
+		<th>Question</th>
+		<th class="alignCenter" style="width:1px;">Incomplete</th>
+		<th class="alignCenter" style="width:32px;">No</th>
+		<th class="alignCenter" style="width:32px;">Yes</th>
+		<th class="alignCenter" style="width:80px;">Average</th>
+	</tr>
+	@foreach (var y in Model.AnswersAbout.Where(x => x is ThumbsAnswer).Cast<ThumbsAnswer>().GroupBy(x=>x.Askable.Id)){
+
+		<tr>
+			<td>@y.First().Askable.GetQuestion()</td>
+			<td class="alignCenter">@y.Count(x => x.Thumbs == ThumbsType.None)</td>
+			<td class="alignCenter">@y.Count(x => x.Thumbs == ThumbsType.Down)</td>
+			<td class="alignCenter">@y.Count(x => x.Thumbs == ThumbsType.Up)</td>
+			<td class="alignCenter">
+				@{
+					double num = y.Count(x => x.Thumbs == ThumbsType.Up);
+					double total = y.Count(x=>x.Thumbs!=ThumbsType.None);
+					int percent = (int)(num/total*100);
+					var words = percent + "% Yes";
+					if (total == 0){
+						words = "NA";
+					}
+				}
+				@words
+			</td>
+		</tr>
+	}
+
+</table>

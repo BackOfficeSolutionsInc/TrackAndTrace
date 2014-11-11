@@ -139,20 +139,39 @@ namespace RadialReview.Accessors
                     var perms = PermissionsUtility.Create(s, caller);
                     
                     //Reviews
-                    var reviews = ReviewAccessor.GetReviewsForUser(s, perms, caller, forUserId, 0, int.MaxValue,now).ToListAlive();
-                    var reviewTasks = reviews.Select(x => new TaskModel() { Id = x.Id, Type = TaskType.Review, Completion = x.GetCompletion(), DueDate = x.DueDate, Name = x.Name });
+                    var reviews = ReviewAccessor
+						.GetReviewsForUser(s, perms, caller, forUserId, 0, int.MaxValue,now)
+						.ToListAlive()
+						.GroupBy(x=>x.ForReviewsId);
+
+                    var reviewTasks = reviews.Select(x => new TaskModel(){
+	                    Id = x.First().ForReviewsId,
+						Type = TaskType.Review,
+						Completion = CompletionModel.FromList(x.Select(y=>y.GetCompletion())),
+						DueDate = x.Max(y=>y.DueDate),
+						Name = x.First().Name
+                    });
                     tasks.AddRange(reviewTasks);
 
                     //Prereviews
-                    var prereviews = PrereviewAccessor.GetPrereviewsForUser(s.ToQueryProvider(true), perms, forUserId,now).Where(x => x.Executed == null).ToListAlive();
+                    var prereviews = PrereviewAccessor.GetPrereviewsForUser(s.ToQueryProvider(true), perms, forUserId,now)
+						.Where(x => x.Executed == null).ToListAlive();
                     var reviewContainers = new Dictionary<long, String>();
                     var prereviewCount = new Dictionary<long, int>();
                     foreach (var p in prereviews)
                     {
                         reviewContainers[p.ReviewContainerId] = ReviewAccessor.GetReviewContainer(s.ToQueryProvider(true), perms, p.ReviewContainerId).ReviewName;
-                        prereviewCount[p.Id] = s.QueryOver<PrereviewMatchModel>().Where(x => x.PrereviewId == p.Id && x.DeleteTime == null).RowCount();
+                        prereviewCount[p.Id] = s.QueryOver<PrereviewMatchModel>()
+							.Where(x => x.PrereviewId == p.Id && x.DeleteTime == null)
+							.RowCount();
                     }
-                    var prereviewTasks = prereviews.Select(x => new TaskModel() { Id = x.Id, Type = TaskType.Prereview, Count = prereviewCount[x.Id], DueDate = x.PrereviewDue, Name = reviewContainers[x.ReviewContainerId] });
+                    var prereviewTasks = prereviews.Select(x => new TaskModel(){
+	                    Id = x.Id,
+						Type = TaskType.Prereview,
+						Count = prereviewCount[x.Id],
+						DueDate = x.PrereviewDue,
+						Name = reviewContainers[x.ReviewContainerId]
+                    });
                     tasks.AddRange(prereviewTasks);
 
                 }

@@ -44,6 +44,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AWSSDK.2.0.3.0\lib\net45\AWSSDK.dll</HintPath>
     </Reference>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.8.2\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -206,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accessors\ApplicationAccessor.cs" />
+    <Compile Include="Accessors\AskableAccessor.cs" />
     <Compile Include="Accessors\BaseAccessor.cs" />
     <Compile Include="Accessors\CategoryAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
@@ -227,13 +231,18 @@
     <Compile Include="Accessors\QuestionAccessor.cs" />
     <Compile Include="Accessors\RelationshipAccessor.cs" />
     <Compile Include="Accessors\ResponsibilitiesAccessor.cs" />
+    <Compile Include="Accessors\ReviewAccessor\Coworkers.cs" />
     <Compile Include="Accessors\ReviewAccessor\CreateReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\DeleteReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\GenerateReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\GetReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\PopulateReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\ReviewAccessor.cs" />
+    <Compile Include="Accessors\ReviewAccessor\UpdateClientReport.cs" />
+    <Compile Include="Accessors\ReviewAccessor\UpdateEOSAnswers.cs" />
     <Compile Include="Accessors\ReviewAccessor\UpdateReview.cs" />
+    <Compile Include="Accessors\ReviewAccessor\UpdateStandardAnswers.cs" />
+    <Compile Include="Accessors\RoleAccessor.cs" />
     <Compile Include="Accessors\S3Response.cs" />
     <Compile Include="Accessors\SettingsAccessor.cs" />
     <Compile Include="Accessors\TaskAccessor.cs" />
@@ -245,10 +254,13 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountabilityController.cs" />
+    <Compile Include="Controllers\CompanyValuesController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\FaqController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\JobDescriptionController.cs" />
+    <Compile Include="Controllers\RocksController.cs" />
+    <Compile Include="Controllers\_MigrationController.cs" />
     <Compile Include="Controllers\PrereviewController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Controllers\ResultsController.cs" />
@@ -299,11 +311,14 @@
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Application\MailModel.cs" />
+    <Compile Include="Models\Askables\RockModel.cs" />
+    <Compile Include="Models\Askables\CompanyValueModel.cs" />
     <Compile Include="Models\Charts\LineChart.cs" />
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
+    <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
     <Compile Include="Models\Enums\TaskType.cs" />
     <Compile Include="Models\Enums\Tristate.cs" />
     <Compile Include="Models\ExtraTab.cs" />
@@ -318,7 +333,7 @@
     <Compile Include="Models\Prereview\PrereviewMatchModel.cs" />
     <Compile Include="Models\Prereview\PrereviewModel.cs" />
     <Compile Include="Models\RatioModel.cs" />
-    <Compile Include="Models\Responsibilities\AskableAbout.cs" />
+    <Compile Include="Models\Askables\AskableAbout.cs" />
     <Compile Include="Models\Enums\WeightType.cs" />
     <Compile Include="Models\Reviews\ClientReviewModel.cs" />
     <Compile Include="Models\Reviews\CustomizeModel.cs" />
@@ -334,16 +349,16 @@
     <Compile Include="Models\Template\TemplateItemGroup.cs" />
     <Compile Include="Models\Template\TemplateModel.cs" />
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
-    <Compile Include="Models\UserModels\RoleModel.cs" />
+    <Compile Include="Models\Askables\RoleModel.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
     <Compile Include="Models\ViewModels\AdditionalReviewViewModel.cs" />
     <Compile Include="Models\Completion\TwoBarCompletion.cs" />
     <Compile Include="Models\Enums\TeamType.cs" />
-    <Compile Include="Models\Responsibilities\Askable.cs" />
-    <Compile Include="Models\Responsibilities\ResponsibilityModel.cs" />
-    <Compile Include="Models\Responsibilities\ResponsibilityGroups.cs" />
+    <Compile Include="Models\Askables\Askable.cs" />
+    <Compile Include="Models\Askables\ResponsibilityModel.cs" />
+    <Compile Include="Models\Askables\ResponsibilityGroups.cs" />
     <Compile Include="Models\Enums\ThumbsType.cs" />
-    <Compile Include="Models\Responsibilities\PositionModel.cs" />
+    <Compile Include="Models\Askables\PositionModel.cs" />
     <Compile Include="Models\Reviews\AnswerModels.cs" />
     <Compile Include="Models\Enums\BootstrapGlyphs.cs" />
     <Compile Include="Models\Enums\OriginType.cs" />
@@ -482,10 +497,12 @@
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
     <Compile Include="Utilities\Attributes\AccessAttribute.cs" />
     <Compile Include="Engines\ChartsEngine.cs" />
+    <Compile Include="Utilities\DataTypes\CounterSet.cs" />
     <Compile Include="Utilities\DataTypes\MultiQuery.cs" />
     <Compile Include="Utilities\Extensions\DateTimeExtensions.cs" />
     <Compile Include="Utilities\DataTypes\Pool.cs" />
     <Compile Include="Utilities\Extensions\PaginationExtensions.cs" />
+    <Compile Include="Utilities\Extensions\StreamExtension.cs" />
     <Compile Include="Utilities\Pop3Utility.cs" />
     <Compile Include="Utilities\ServerUtility.cs" />
     <Compile Include="Utilities\Chart\ChartUtility.cs" />
@@ -538,6 +555,8 @@
     <Content Include="Content\chart.css" />
     <Content Include="Content\Chart\Chart.css" />
     <Content Include="Content\Chart\PieChart.css" />
+    <Content Include="Content\components\posneg.css" />
+    <Content Include="Content\components\tristate.css" />
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\favicon-old.ico" />
     <Content Include="Content\favicon.ico" />
@@ -598,6 +617,11 @@
     <Content Include="Content\print.css" />
     <Content Include="Content\ReportBuilder\ReportBuilder.css" />
     <Content Include="Content\Review.css" />
+    <Content Include="Content\select2-bootstrap.css" />
+    <Content Include="Content\select2-spinner.gif" />
+    <Content Include="Content\select2.css" />
+    <Content Include="Content\select2.png" />
+    <Content Include="Content\select2x2.png" />
     <Content Include="Content\simple-slider.css" />
     <Content Include="Content\slider.css" />
     <Content Include="Content\audio\tick.mp3" />
@@ -648,6 +672,8 @@
     <Content Include="Scripts\bootstrap-switch.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\components\posneg.js" />
+    <Content Include="Scripts\components\tristate.js" />
     <Content Include="Scripts\d3\d3.csv.js" />
     <Content Include="Scripts\d3\d3.js" />
     <Content Include="Scripts\d3\d3.v3.js" />
@@ -691,6 +717,7 @@
     <Content Include="Scripts\report\reportbuilder.js" />
     <Content Include="Scripts\review\review.js" />
     <Content Include="Scripts\review\translateSlider.js" />
+    <Content Include="Scripts\select2.min.js" />
     <Content Include="Views\Review\Details\ChartBuilder2.cshtml" />
     <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
     <Content Include="Views\JobDescription\Edit.cshtml" />
@@ -698,6 +725,10 @@
     <Content Include="Views\Accountability\Chart.cshtml" />
     <Content Include="Views\Charts\Line.cshtml" />
     <Content Include="Views\Reviews\EditDueDateModal.cshtml" />
+    <Content Include="Views\Organization\Upload.cshtml" />
+    <Content Include="Views\Organization\Fields.cshtml" />
+    <Content Include="Views\CompanyValues\_ValueRow.cshtml" />
+    <Content Include="Views\CompanyValues\Modal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -891,17 +922,26 @@
     <Content Include="Views\Roles\Modal.cshtml" />
     <Content Include="Views\Roles\_RoleRow.cshtml" />
     <Content Include="Views\Review\Details\Feedback.cshtml" />
+    <Content Include="Views\Review\Details\YesNo.cshtml" />
+    <Content Include="Views\Review\Take\GWC.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Tristate.cshtml" />
+    <Content Include="Views\UnitTest\Tristate.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\PositiveNegativeNeutral.cshtml" />
+    <Content Include="Views\Review\Take\Values.cshtml" />
+    <Content Include="Views\Rocks\_RockRow.cshtml" />
+    <Content Include="Views\Rocks\Modal.cshtml" />
+    <Content Include="Views\Review\Take\Rocks.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\NewFolder1\" />
     <Folder Include="External\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\Img\" />
     <Folder Include="Views\Members\" />
-    <Folder Include="Views\Rocks\" />
+    <Folder Include="Views\Migration\" />
     <Folder Include="Views\Scheduler\" />
-    <Folder Include="Views\UnitTest\" />
     <Folder Include="Views\Url\" />
   </ItemGroup>
   <ItemGroup>

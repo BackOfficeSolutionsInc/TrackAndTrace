@@ -150,7 +150,11 @@ namespace RadialReview.Controllers
             var user = GetUser().Hydrate().Organization().Execute();
 
             _PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization());
-            
+
+	        var companyValues =_OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
+				.Select(x=>x.CompanyValue)
+				.ToList();
+
             var model = new OrganizationViewModel()
             {
                 Id = user.Organization.Id,
@@ -158,7 +162,9 @@ namespace RadialReview.Controllers
                 OrganizationName = user.Organization.Name.Standard,
                 StrictHierarchy = user.Organization.StrictHierarchy,
                 ManagersCanEditPositions = user.Organization.ManagersCanEditPositions,
-                ManagersCanRemoveUsers = user.Organization.ManagersCanRemoveUsers
+                ManagersCanRemoveUsers = user.Organization.ManagersCanRemoveUsers,
+				CompanyValues = companyValues
+				
             };
 
             return View(model);

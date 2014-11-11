@@ -1,0 +1,42 @@
+﻿@model Tuple<List<RadialReview.Models.GetWantCapacityAnswer>, bool>
+
+@using RadialReview.Models.Enums
+
+@if (Model.Item1.Any())
+{
+
+	<div class="subsection subsection-roles">
+		<table class="table-gwc">
+			<thead>
+				<tr>
+					<th></th>
+					<th class="header" title="Does this person understand this role?">Gets It <span class="infoo"></span></th>
+					<th class="header" title="Does this person genuinely enjoy this role?">Wants It <span class="infoo"></span></th>
+					<th class="header" title="Does this person have the time, mental, physical, and emotional capacity to perform this role well?">Capacity To Do It <span class="infoo"></span></th>
+					<th class="header"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+	var questions = Model.Item1.OrderBy(x => x.Askable.GetQuestion()).ToList();
+				}
+				@for (var i = 0; i < questions.Count(); i++)
+				{
+					<tr>
+						<td style="width:50%"><h4 class="question alignRight" style="padding-right:15px;">@questions[i].Askable.GetQuestion()</h4></td>
+						<td>@Html.EditorFor(x => questions[i].GetIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt" })</td>
+						<td>@Html.EditorFor(x => questions[i].WantIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt" })</td>
+						<td>@Html.EditorFor(x => questions[i].HasCapacity, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_HasCapacity" })</td>
+						<td style="vertical-align:top;width:50%">
+							<textarea name="question_@(QuestionType.GWC)_@(questions[i].Identifier)_Reason" class="full-width changeable reason" placeholder="Add Reason">@questions[i].Reason</textarea>
+						</td>
+
+						@*<td><h4 class="question alignLeft noselect" style="padding-left:15px;color:transparent">@questions[i].Askable.GetQuestion()</h4></td>*@
+
+					</tr>
+				}
+			</tbody>
+		</table>
+		<div class="evaluation-heading">Roles</div>
+	</div>
+}
