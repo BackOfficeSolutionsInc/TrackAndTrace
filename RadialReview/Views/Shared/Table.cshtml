@@ -1,0 +1,32 @@
+﻿@model RadialReview.Models.Charts.Table
+
+
+<div class="table-responsive">
+	<table class="table-header-rotated table-io @Model.TableClass">
+		<thead>
+			<tr>
+				<!-- First column header is not rotated -->
+				<th></th>
+				<!-- Following headers are rotated -->
+				@foreach (var c in Model.Columns)
+				{
+					<th class="rotate-45"><div><span>@c</span></div></th>
+				}
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var r in Model.Rows)
+			{
+				<tr>
+					<td class="row-header fixedWidth">@r</td>
+					@foreach (var c in Model.Columns)
+					{
+						<td class="cell">@Model.Data.Get(r, c)</td>
+					}
+					<td class="fixedWidth"></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

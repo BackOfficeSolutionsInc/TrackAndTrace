@@ -1,4 +1,5 @@
-﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+﻿@using RadialReview.Models.Enums
+@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 @{
 	ViewBag.Title = Model.Review.ForUser.GetNameAndTitle() + " Review";
@@ -19,6 +20,7 @@
 }
 
 @using (Html.BeginStyles()) {
+	<link href="~/Content/ReportBuilder/evaluation.css" rel="stylesheet" />
 	<link href="~/Content/Chart/Chart.css" rel="stylesheet" />
 	<style>
 		.jumbotron.reviewing {
@@ -239,7 +241,7 @@
 
 			<table class="padBottom">
 				<tr>
-					<td class="role alignRight"><b>Role:</b></td>
+					<td class="role alignRight"><b>Position:</b></td>
 					<td style="padding-left: 10px;">@Model.Review.ForUser.GetTitles()</td>
 				</tr>
 
@@ -274,9 +276,64 @@
 						</td>
 					</tr>
 				}
-
+				@{
+					var roles = Model.ActiveQuestions.Where(x => x.GetQuestionType() == QuestionType.GWC).ToList();
+					var rocks = Model.ActiveQuestions.Where(x => x.GetQuestionType() == QuestionType.Rock).ToList();
+					var values = Model.ActiveQuestions.Where(x => x.GetQuestionType() == QuestionType.CompanyValue).ToList();
+					var questions = Model.ActiveQuestions.Where(x => x.GetQuestionType() != QuestionType.GWC && x.GetQuestionType() != QuestionType.Rock && x.GetQuestionType() != QuestionType.CompanyValue).ToList();
+					//var values = Model.ActiveQuestions.Where(x => x.GetQuestionType() == QuestionType.GWC).ToList();
+				}@if (rocks.Any())
+				{
+					<tr class="noBreak">
+						<td class="alignRight" style="vertical-align: top;">
+							<a id="questions" class="shiftByTitle"></a>
+							<b>Rocks:</b>
+						</td>
+						<td class="">
+							<ol>
+								@foreach (var q in rocks)
+								{
+									<li>@q.GetQuestion()</li>
+								}
+							</ol>
+						</td>
+					</tr>
+				}
+				@if (roles.Any())
+				{
+					<tr class="noBreak">
+						<td class="alignRight" style="vertical-align: top;">
+							<a id="questions" class="shiftByTitle"></a>
+							<b>Roles:</b>
+						</td>
+						<td class="">
+							<ol>
+								@foreach (var q in roles)
+								{
+									<li>@q.GetQuestion()</li>
+								}
+							</ol>
+						</td>
+					</tr>
+				}@if (values.Any())
+				{
+					<tr class="noBreak">
+						<td class="alignRight" style="vertical-align: top;">
+							<a id="questions" class="shiftByTitle"></a>
+							<b>Company Values:</b>
+						</td>
+						<td class="">
+							<ol>
+								@foreach (var q in values)
+								{
+									<li>@q.GetQuestion()</li>
+								}
+							</ol>
+						</td>
+					</tr>
+				}
 				@*Questions here*@
-				@if (Model.ActiveQuestions.Any()) {
+				@if (questions.Any()) {
 					<tr class="noBreak">
 						<td class="alignRight" style="vertical-align: top;">
 							<a id="questions" class="shiftByTitle"></a>
@@ -284,7 +341,7 @@
 						</td>
 						<td class="">
 							<ol>
-								@foreach (var q in Model.ActiveQuestions) {
+								@foreach (var q in questions) {
 									<li>@q.GetQuestion()</li>
 								}
 							</ol>
@@ -425,7 +482,19 @@
 				</div>
 			</div>
 		}
+		@if (Model.Review.ClientReview.IncludeEvaluation)
+		{
+			<a id="evaluation" class="shiftByTitle"></a>
+			<div class="noBreak">
+				<div class="row-title">Evaluation</div>
+				<div class="row">
+					<div class="col-sm-12">
+						@Html.Partial("~/Views/Review/Details/EosClient.cshtml", Model)
+					</div>
+				</div>
+			</div>
 
+		}
 		@if (Model.Review.ClientReview.IncludeQuestionTable) {
 			<a id="questionTable" class="shiftByTitle"></a>
 			<div class="noBreak">

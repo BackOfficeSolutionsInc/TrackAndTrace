@@ -7,6 +7,7 @@ using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Charts;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Responsibilities;
@@ -511,6 +512,234 @@ namespace RadialReview.Controllers {
 			public List<Askable> ActiveQuestions { get; set; }
 			public List<ChartType> ChartTypes { get; set; }
 
+			public Table EvaluationTable
+			{
+				get { return CompanyValuesTable; }
+			}
+
+			/*public Table RolesTable
+			{
+				get
+				{
+					var answers = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.GWC).Cast<GetWantCapacityAnswer>();
+					var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[]{0,0});
+					var table = new TableData();
+					foreach (var x in answers){
+						var clz = String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason";
+						
+						if (x.GetIt != Tristate.Indeterminate){
+							dictionary[x.Askable.GetQuestion() + " (Get It)"][0] += (x.GetIt == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Get It)"][1] += 1;
+						}
+						if (x.WantIt != Tristate.Indeterminate){
+							dictionary[x.Askable.GetQuestion() + " (Want It)"][0] += (x.WantIt == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Want It)"][1] += 1;
+						}
+						if (x.HasCapacity != Tristate.Indeterminate){
+							dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][0] += (x.HasCapacity == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][1] += 1;
+						}
+
+						table.Set(x.ByUser.GetName(),x.Askable.GetQuestion()+" (Get It)",new HtmlString("<span class='fill roles " + clz + " " + x.GetIt + "' title='" + x.Reason + "'></span>"));
+						table.Set(x.ByUser.GetName(),x.Askable.GetQuestion()+" (Want It)",new HtmlString("<span class='fill roles " + clz + " " + x.WantIt+ "' title='" + x.Reason + "'></span>"));
+						table.Set(x.ByUser.GetName(),x.Askable.GetQuestion()+" (Capacity To Do It)",new HtmlString("<span class='fill roles " + clz + " " + x.HasCapacity + "' title='" + x.Reason + "'></span>"));
+					}
+					
+					foreach (var kv in dictionary)
+					{
+						var ex = Tristate.True;
+						var v = kv.Value;
+						var reason = "";
+						if (v[0] == 0){
+							ex = Tristate.Indeterminate;
+						}else if (v[0] != v[1]){
+							reason = "Aiming for 0 No answers.";
+							ex = Tristate.False;
+						}
+
+						var clz = String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
+						table.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
+					}
+					table.Rows.Add("Score");
+
+					return new Table(table);
+				}
+			}*/
+			/*
+			public Table RolesTable
+			{
+				get
+				{
+					var answers = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.GWC).Cast<GetWantCapacityAnswer>();
+
+
+
+
+					var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[] { 0, 0 });
+					var table = new TableData();
+					foreach (var x in answers)
+					{
+						table.Update(x.Askable.GetQuestion(),"Get It",()=>);
+
+
+
+						var clz = String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason";
+
+						if (x.GetIt != Tristate.Indeterminate)
+						{
+							dictionary[x.Askable.GetQuestion() + " (Get It)"][0] += (x.GetIt == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Get It)"][1] += 1;
+						}
+						if (x.WantIt != Tristate.Indeterminate)
+						{
+							dictionary[x.Askable.GetQuestion() + " (Want It)"][0] += (x.WantIt == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Want It)"][1] += 1;
+						}
+						if (x.HasCapacity != Tristate.Indeterminate)
+						{
+							dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][0] += (x.HasCapacity == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][1] += 1;
+						}
+
+						table.Set(x.ByUser.GetName(), x.Askable.GetQuestion() + " (Get It)", new HtmlString("<span class='fill roles " + clz + " " + x.GetIt + "' title='" + x.Reason + "'></span>"));
+						table.Set(x.ByUser.GetName(), x.Askable.GetQuestion() + " (Want It)", new HtmlString("<span class='fill roles " + clz + " " + x.WantIt + "' title='" + x.Reason + "'></span>"));
+						table.Set(x.ByUser.GetName(), x.Askable.GetQuestion() + " (Capacity To Do It)", new HtmlString("<span class='fill roles " + clz + " " + x.HasCapacity + "' title='" + x.Reason + "'></span>"));
+					}
+
+					foreach (var kv in dictionary)
+					{
+						var ex = Tristate.True;
+						var v = kv.Value;
+						var reason = "";
+						if (v[0] == 0)
+						{
+							ex = Tristate.Indeterminate;
+						}
+						else if (v[0] != v[1])
+						{
+							reason = "Aiming for 0 No answers.";
+							ex = Tristate.False;
+						}
+
+						var clz = String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
+						table.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
+					}
+					table.Rows.Add("Score");
+
+					return new Table(table);
+				}
+			}*/
+
+			public static int NEUTRAL_CUTOFF = 2;
+
+			public Table RockTable
+			{
+				get
+				{
+					return Table.Create(
+						AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>(),
+						x => x.Askable.GetQuestion(),
+						x => x.ByUser.GetName(),
+						x =>{
+							return new SpanCell{
+								Class = "fill rocks " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + " " + x.Finished,
+								Title = x.Reason,
+							}.ToHtmlString();
+						},
+						"rocks");
+				}
+			}
+
+			public Table CompanyValuesScore
+			{
+				get
+				{
+					var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[] { 0, 0, 0 });
+					var values =AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue).Cast<CompanyValueAnswer>().GroupBy(x => x.Askable.Id);
+					var table = Table.Create(
+						values,
+						x => "Score",
+						x => x.First().Askable.GetQuestion(),
+						x =>
+						{
+							var pos = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Positive);
+							var neg = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Negative);
+							var neut = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Neutral);
+							var tot = x.Count(y => y.Exhibits != PositiveNegativeNeutral.Indeterminate);
+
+							PositiveNegativeNeutral ex;
+
+							if (neg>0 || neut>=NEUTRAL_CUTOFF)
+								ex=PositiveNegativeNeutral.Negative;
+							else if (pos == tot)
+								ex = PositiveNegativeNeutral.Positive;
+							else if (tot>0)
+								ex = PositiveNegativeNeutral.Neutral;
+							else
+								ex = PositiveNegativeNeutral.Indeterminate;
+
+							return new SpanCell(){
+								Class = "fill companyValues companyValues-score "+ ex,
+								Contents = new HtmlString(pos+"/"+tot)
+							}.ToHtmlString();
+						},
+						"companyValues");
+					return table;
+				}
+			}
+
+			public Table CompanyValuesTable
+			{
+				get
+				{
+					var dictionary = new DefaultDictionary<String, decimal[]>(x=>new decimal[]{0,0,0});
+					var table = Table.Create(
+						AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue).Cast<CompanyValueAnswer>(),
+						x => x.ByUser.GetName(),
+						x => x.Askable.GetQuestion(),
+						x =>{
+							var d = dictionary[x.Askable.GetQuestion()];
+							d[0] += x.Exhibits.Score();
+							if (x.Complete)
+								d[1] += 1;
+							if (x.Exhibits == PositiveNegativeNeutral.Negative)
+								d[2] += 1;
+
+							return new SpanCell{
+								Class = "fill companyValues " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + " " + x.Exhibits,
+								Title = x.Reason,
+							}.ToHtmlString();
+						},
+						"companyValues");
+
+					foreach (var kv in dictionary){
+						PositiveNegativeNeutral ex;
+						var v = kv.Value;
+						var reason = "";
+						if (v[1]==0)
+							ex = PositiveNegativeNeutral.Indeterminate;
+						else if (v[2] > 0){
+							reason = "Aiming for 0 negatives.";
+							ex = PositiveNegativeNeutral.Negative;
+						}else if (v[0]==v[1]) //Num == Denom
+							ex = PositiveNegativeNeutral.Positive;
+						else{
+							if ((v[1] - v[0])*2 >= NEUTRAL_CUTOFF)
+								ex = PositiveNegativeNeutral.Negative;
+							else
+								ex = PositiveNegativeNeutral.Neutral;
+							reason = "";
+						}
+						var clz = String.IsNullOrWhiteSpace(reason)?"":"hasReason";
+						table.Data.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
+					}
+					table.Rows.Add("Score");
+
+					return table;
+				}
+			}
+
+			
 			public class ChartType {
 				public String Title { get; set; }
 				public String ImageUrl { get; set; }
@@ -676,8 +905,16 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Manager)]
-		public JsonResult SetIncludeNotes(long reviewId, bool on) {
+		public JsonResult SetIncludeNotes(long reviewId, bool on)
+		{
 			_ReviewAccessor.SetIncludeNotes(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeEvaluation(long reviewId, bool on)
+		{
+			_ReviewAccessor.SetIncludeEvaluation(GetUser(), reviewId, on);
 			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
 		}
 

@@ -90,6 +90,8 @@
 		var True = true;		
 		setupSection("includeNotes",@client.IncludeNotes, "/Review/SetIncludeNotes");
 		setupSection("includeScatter",@client.IncludeScatterChart,"/Review/SetIncludeScatter");
+		setupSection("includeEvaluation",@client.IncludeEvaluation,"/Review/SetIncludeEvaluation");
+
 		setupSection("includeSelfAnswers",@client.IncludeSelfFeedback,"/Review/SetIncludeSelfAnswers");
 		setupSection("includeManagerAnswers",@client.IncludeManagerFeedback,"/Review/SetIncludeManagerAnswers");
 		setupSection("includeAggregateAnswers",@client.IncludeQuestionTable,"/Review/SetIncludeTable");
@@ -120,5 +122,6 @@
     <link href="~/Content/Chart/Chart.css" rel="stylesheet" />
     <link href="~/Content/toggle.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-switch.css" rel="stylesheet" />
-    <link href="~/Content/ReportBuilder/ReportBuilder.css" rel="stylesheet" />
+	<link href="~/Content/ReportBuilder/ReportBuilder.css" rel="stylesheet" />
+    <link href="~/Content/ReportBuilder/evaluation.css" rel="stylesheet" />
 }

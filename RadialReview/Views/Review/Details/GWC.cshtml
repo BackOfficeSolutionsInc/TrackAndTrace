@@ -1,0 +1,92 @@
+﻿@using RadialReview.Models
+@using RadialReview.Models.Charts
+@using RadialReview.Models.Enums
+@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+
+
+@{
+	var gwcs = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.GWC).Cast<GetWantCapacityAnswer>().GroupBy(x => x.Askable.Id);
+}
+
+@if (gwcs.Any())
+{
+	<div class="subsection subsection-roles">
+		<table class="table-io gwc">
+			<thead class="alignCenter">
+				<tr>
+					<th></th>
+					<th>Get It</th>
+					<th>Want It</th>
+					<th>Capacity To Do It</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					var g = true;
+					var w = true;
+					var c = true;
+				}
+
+				@foreach (var r in gwcs)
+				{
+					<tr>
+						<td class="row-header fixedWidth">@r.First().Askable.GetQuestion()</td>
+						<td>
+							@{
+					var positiveG = r.Count(x => x.GetIt == Tristate.True);
+					var negativeG = r.Count(x => x.GetIt == Tristate.False);
+					var clzG = "Indeterminate";
+					if (negativeG > 0)
+					{
+						clzG = "False";
+					}
+					else if (positiveG > 0)
+					{
+						clzG = "True";
+					}
+							}
+							<span class="fill roles getIt @clzG noSelect">@(positiveG)/@(positiveG + negativeG)</span>
+						</td>
+						<td>
+							@{
+					var positiveW = r.Count(x => x.WantIt == Tristate.True);
+					var negativeW = r.Count(x => x.WantIt == Tristate.False);
+					var clzW = "Indeterminate";
+					if (negativeW > 0)
+					{
+						clzW = "False";
+					}
+					else if (positiveW > 0)
+					{
+						clzW = "True";
+					}
+							}
+							<span class="fill roles wantIt @clzW noSelect">@(positiveW)/@(positiveW + negativeW)</span>
+						</td>
+						<td>
+							@{
+					var positiveC = r.Count(x => x.HasCapacity == Tristate.True);
+					var negativeC = r.Count(x => x.HasCapacity == Tristate.False);
+					var clzC = "Indeterminate";
+					if (negativeC > 0)
+					{
+						clzC = "False";
+					}
+					else if (positiveC > 0)
+					{
+						clzC = "True";
+					}
+							}
+							<span class="fill roles wantIt @clzC noSelect">
+								@(positiveC)/@(positiveC + negativeC)
+							</span>
+						</td>
+						<td class="fixedWidth"></td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<div class="evaluation-heading">Roles</div>
+	</div>
+}

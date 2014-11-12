@@ -27,10 +27,27 @@ namespace RadialReview.Controllers
 							count++;
 						}
 					}
-
+					
 					foreach (var r in s.QueryOver<RoleModel>().List()){
 						if (r.OrganizationId == 0){
 							r.OrganizationId = s.Get<UserOrganizationModel>(r.ForUserId).Organization.Id;
+							s.Update(r);
+							count++;
+						}
+					}
+
+
+					foreach (var r in s.QueryOver<UserOrganizationModel>().List())
+					{
+						if (r.NumRocks == 0)
+						{
+							r.NumRocks = s.QueryOver<RockModel>().Where(x => x.ForUserId == r.Id && x.DeleteTime==null).List().Count;
+							s.Update(r);
+							count++;
+						}
+						if (r.NumRoles == 0)
+						{
+							r.NumRoles = s.QueryOver<RoleModel>().Where(x => x.ForUserId == r.Id && x.DeleteTime == null).List().Count;
 							s.Update(r);
 							count++;
 						}

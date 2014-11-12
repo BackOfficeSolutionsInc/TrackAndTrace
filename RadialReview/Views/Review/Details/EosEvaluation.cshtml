@@ -1,0 +1,32 @@
+﻿@using RadialReview.Models
+@using RadialReview.Models.Charts
+@using RadialReview.Models.Enums
+@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+
+
+@{
+	var gwcs = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.GWC).Cast<GetWantCapacityAnswer>().GroupBy(x => x.Askable.Id);
+	var rocks = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>().GroupBy(x => x.Askable.Id);
+
+}
+<div class="flex-wrap">
+	
+	@Html.Partial("/Details/GWC",Model)
+
+	@if (Model.CompanyValuesTable.Rows.Any())
+	{
+		<div class="subsection subsection-values">
+			@Html.Partial("Table", Model.CompanyValuesTable)
+			<div class="evaluation-heading">Company Values</div>
+		</div>
+	}
+
+	@if (Model.RockTable.Rows.Any())
+	{
+		<div class="subsection subsection-rocks">
+			@Html.Partial("Table", Model.RockTable)
+
+			<div class="evaluation-heading">Rocks</div>
+		</div>
+	}
+</div>

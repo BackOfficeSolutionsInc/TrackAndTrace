@@ -38,7 +38,13 @@ namespace RadialReview.Models
 
 	    public virtual long[] UserIds
 	    {
-		    get { return User.UserOrganization.Select(x => x.Id).ToArray(); }
+		    get
+		    {
+			    if (User == null)
+				    return new long[]{Id};
+			    
+				return User.UserOrganization.Select(x => x.Id).ToArray();
+		    }
 	    }
 
 	    public virtual IList<ManagerDuration> ManagingUsers { get; set; }
@@ -56,6 +62,9 @@ namespace RadialReview.Models
         public virtual DateTime CreateTime { get; set; }
         public virtual int CountPerPage { get; set; }
         public virtual String JobDescription { get; set; }
+
+		public virtual int NumRocks { get; set; }
+		public virtual int NumRoles { get; set; }
 
         public virtual OriginType GetOriginType()
         {
@@ -208,7 +217,9 @@ namespace RadialReview.Models
             Map(x => x.CreateTime);
             Map(x => x.DetachTime);
             Map(x => x.DeleteTime);
-            Map(x => x.EmailAtOrganization);
+	        Map(x => x.EmailAtOrganization);
+            Map(x => x.NumRocks);
+            Map(x => x.NumRoles);
 
             Map(x => x.JobDescription).Length(65000);
 

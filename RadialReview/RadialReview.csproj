@@ -314,6 +314,7 @@
     <Compile Include="Models\Askables\RockModel.cs" />
     <Compile Include="Models\Askables\CompanyValueModel.cs" />
     <Compile Include="Models\Charts\LineChart.cs" />
+    <Compile Include="Models\Charts\Table.cs" />
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
@@ -556,6 +557,7 @@
     <Content Include="Content\Chart\Chart.css" />
     <Content Include="Content\Chart\PieChart.css" />
     <Content Include="Content\components\posneg.css" />
+    <Content Include="Content\components\table.css" />
     <Content Include="Content\components\tristate.css" />
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\favicon-old.ico" />
@@ -615,6 +617,7 @@
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />
     <Content Include="Content\print.css" />
+    <Content Include="Content\ReportBuilder\evaluation.css" />
     <Content Include="Content\ReportBuilder\ReportBuilder.css" />
     <Content Include="Content\Review.css" />
     <Content Include="Content\select2-bootstrap.css" />
@@ -931,6 +934,10 @@
     <Content Include="Views\Rocks\_RockRow.cshtml" />
     <Content Include="Views\Rocks\Modal.cshtml" />
     <Content Include="Views\Review\Take\Rocks.cshtml" />
+    <Content Include="Views\Review\Details\EosEvaluation.cshtml" />
+    <Content Include="Views\Shared\Table.cshtml" />
+    <Content Include="Views\Review\Details\EosClient.cshtml" />
+    <Content Include="Views\Review\Details\GWC.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -942,6 +949,7 @@
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
     <Folder Include="Views\Scheduler\" />
+    <Folder Include="Views\Shared\DisplayTemplates\" />
     <Folder Include="Views\Url\" />
   </ItemGroup>
   <ItemGroup>

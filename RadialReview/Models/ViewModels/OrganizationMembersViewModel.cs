@@ -61,8 +61,14 @@ namespace RadialReview.Models.ViewModels
                 userOrg.Positions.ToListAlive().Sum(x => x.Position.Responsibilities.Count()) +
                 userOrg.Teams.ToListAlive().Sum(x => x.Team.Responsibilities.Count());
 
+			NumRocks = userOrg.NumRocks;
+			NumRoles = userOrg.NumRoles;
         }
 
 
-    }
+
+		public int NumRocks { get; set; }
+
+		public int NumRoles { get; set; }
+	}
 }

@@ -1,4 +1,5 @@
-﻿using RadialReview.Accessors;
+﻿using NHibernate.Linq;
+using RadialReview.Accessors;
 using RadialReview.Models;
 using RadialReview.Models.Charts;
 using RadialReview.Models.Enums;
@@ -14,339 +15,458 @@ using System.Web;
 
 namespace RadialReview.Engines
 {
-    public class ChartsEngine
-    {
-        protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
-        protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
-        protected static TeamAccessor _TeamAccessor = new TeamAccessor();
+	public class ChartsEngine
+	{
+		protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
+		protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
+		protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
+		protected static TeamAccessor _TeamAccessor = new TeamAccessor();
 
-        public String GetChartTitle(UserOrganizationModel caller, long chartTupleId)
-        {
+		public String GetChartTitle(UserOrganizationModel caller, long chartTupleId)
+		{
 
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    //Tuple
-                    var tuple= s.Get<LongTuple>(chartTupleId);
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Tuple
+					var tuple = s.Get<LongTuple>(chartTupleId);
 
-                    if (tuple.Title != null)
-                        return tuple.Title;
+					if (tuple.Title != null)
+						return tuple.Title;
 
-                    //Filters
-                    var filters = ChartClassMatcher.CreateMatchers(tuple.Filters);
-                    var filterStrs=new List<String>();
-                    foreach(var f in filters)
-                    {
-                        foreach(var r in f.Requirements)
-                        {
-                            var split=r.Split('-');
-                            switch(split[0].ToLower()){
-                                case "team":{
-                                    if(split[1]=="*")
-                                        filterStrs.Add("Teams");
-                                    else
-                                        filterStrs.Add("?"+r+"?");
-                                    break;
-                                }
-                                case "reviews":
-                                    {
-                                        try{
-                                            filterStrs.Add(s.Get<ReviewsModel>(split[1].ToLong()).ReviewName);
-                                        }catch{                                            
-                                            filterStrs.Add("?"+r+"?");
-                                        }
-                                    }break;
-                                default:{
-                                    filterStrs.Add("?"+r+"?");
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    var groupsStrs = new List<String>();
+					//Filters
+					var filters = ChartClassMatcher.CreateMatchers(tuple.Filters);
+					var filterStrs = new List<String>();
+					foreach (var f in filters)
+					{
+						foreach (var r in f.Requirements)
+						{
+							var split = r.Split('-');
+							switch (split[0].ToLower())
+							{
+								case "team":
+									{
+										if (split[1] == "*")
+											filterStrs.Add("Teams");
+										else
+											filterStrs.Add("?" + r + "?");
+										break;
+									}
+								case "reviews":
+									{
+										try
+										{
+											filterStrs.Add(s.Get<ReviewsModel>(split[1].ToLong()).ReviewName);
+										}
+										catch
+										{
+											filterStrs.Add("?" + r + "?");
+										}
+									} break;
+								default:
+									{
+										filterStrs.Add("?" + r + "?");
+										break;
+									}
+							}
+						}
+					}
+					var groupsStrs = new List<String>();
 
-                    //Groups
-                    var groups = ChartClassMatcher.CreateMatchers(tuple.Groups);
-                    if (!groups.Any()){
-                        groupsStrs.Add("Review");
-                    }
+					//Groups
+					var groups = ChartClassMatcher.CreateMatchers(tuple.Groups);
+					if (!groups.Any())
+					{
+						groupsStrs.Add("Review");
+					}
 
-                    foreach(var g in groups)
-                    {
-                        foreach(var r in g.Requirements)
-                        {
-                            var split=r.Split('-');
-                            switch(split[0].ToLower()){
-                                case "about":{
-                                    if(split[1]=="*")
-                                        groupsStrs.Add("Relationship");
-                                    else
-                                        groupsStrs.Add("?" + r + "?");
-                                    break;
-                                }
-                                case "user":
-                                    {
-                                        groupsStrs.Add("User");
-                                        break;
-                                    }
-                                default:{
-                                    filterStrs.Add("?"+r+"?");
-                                    break;
-                                }
-                            }
-                        }
-                    }
+					foreach (var g in groups)
+					{
+						foreach (var r in g.Requirements)
+						{
+							var split = r.Split('-');
+							switch (split[0].ToLower())
+							{
+								case "about":
+									{
+										if (split[1] == "*")
+											groupsStrs.Add("Relationship");
+										else
+											groupsStrs.Add("?" + r + "?");
+										break;
+									}
+								case "user":
+									{
+										groupsStrs.Add("User");
+										break;
+									}
+								default:
+									{
+										filterStrs.Add("?" + r + "?");
+										break;
+									}
+							}
+						}
+					}
 
-                    var cat1=s.Get<QuestionCategoryModel>(tuple.Item1);
-                    var cat2=s.Get<QuestionCategoryModel>(tuple.Item2);
+					var cat1 = s.Get<QuestionCategoryModel>(tuple.Item1);
+					var cat2 = s.Get<QuestionCategoryModel>(tuple.Item2);
 
-                    var description="";
+					var description = "";
 
-                    if(filterStrs.Count>0)
-                    {
-                        description+= " (" + String.Join(",", filterStrs) + ")";
-                    }
-                    if (groupsStrs.Count > 0)
-                    {
-                        description += " By " + String.Join(",", groupsStrs);
-                    }
+					if (filterStrs.Count > 0)
+					{
+						description += " (" + String.Join(",", filterStrs) + ")";
+					}
+					if (groupsStrs.Count > 0)
+					{
+						description += " By " + String.Join(",", groupsStrs);
+					}
 
 
-                    return String.Format("{0} vs {1}{2}", cat2.NotNull(x=>x.Category.Translate())??"?", cat1.NotNull(x=>x.Category.Translate())??"?", description);
-                }
-            }
-        }
+					return String.Format("{0} vs {1}{2}", cat2.NotNull(x => x.Category.Translate()) ?? "?", cat1.NotNull(x => x.Category.Translate()) ?? "?", description);
+				}
+			}
+		}
 
-        public ScatterPlot ScatterFromOptions(UserOrganizationModel caller, ChartOptions options, bool sensitive)
-        {
-            switch (options.Source)
-            {
-                case ChartDataSource.Review: return ReviewScatterFromOptions(caller, options, sensitive);
-                default: throw new ArgumentException("Unknown ChartDataSource");
-            }
-        }
-	
-        protected ScatterPlot ReviewScatterFromOptions(UserOrganizationModel caller, ChartOptions options,bool sensitive)
-        {
-            var reviewsId = long.Parse(options.Options.Split(',')[0]);
-            var unfilteredPlot = ReviewScatter(caller, options.ForUserId, reviewsId,sensitive);
+		public ScatterPlot ScatterFromOptions(UserOrganizationModel caller, ChartOptions options, bool sensitive)
+		{
+			switch (options.Source)
+			{
+				case ChartDataSource.Review: return ReviewScatterFromOptions(caller, options, sensitive);
+				default: throw new ArgumentException("Unknown ChartDataSource");
+			}
+		}
 
-            var filterPack = (options.Filters??"").Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+		protected ScatterPlot ReviewScatterFromOptions(UserOrganizationModel caller, ChartOptions options, bool sensitive)
+		{
+			var reviewsId = long.Parse(options.Options.Split(',')[0]);
+			var unfilteredPlot = ReviewScatter(caller, options.ForUserId, reviewsId, sensitive);
 
-            var allowableDimensions = options.DimensionIds.Split(',').Select(x => x.Trim().ToLower()).ToList();
-            var filteredDimensions = unfilteredPlot.Dimensions.Where(x => allowableDimensions.Any(y => y.Equals(x.Key.Trim().ToLower()))).ToDictionary(x => x.Key, x => x.Value);
+			var filterPack = (options.Filters ?? "").Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
-            String initialXDim = null;
-            if (filteredDimensions.Any(x => x.Key.ToLower().Trim().Equals(unfilteredPlot.InitialXDimension.ToLower().Trim())))
-                initialXDim = unfilteredPlot.InitialXDimension;
-            String initialYDim = null;
-            if (filteredDimensions.Any(x => x.Key.ToLower().Trim().Equals(unfilteredPlot.InitialYDimension.ToLower().Trim())))
-                initialYDim = unfilteredPlot.InitialYDimension;
+			var allowableDimensions = options.DimensionIds.Split(',').Select(x => x.Trim().ToLower()).ToList();
+			var filteredDimensions = unfilteredPlot.Dimensions.Where(x => allowableDimensions.Any(y => y.Equals(x.Key.Trim().ToLower()))).ToDictionary(x => x.Key, x => x.Value);
 
-            if (initialXDim == null)
-                initialXDim = filteredDimensions.Keys.FirstOrDefault();
-            if (initialYDim == null)
-                initialYDim = filteredDimensions.Keys.Skip(1).FirstOrDefault() ?? filteredDimensions.Keys.FirstOrDefault();
+			String initialXDim = null;
+			if (filteredDimensions.Any(x => x.Key.ToLower().Trim().Equals(unfilteredPlot.InitialXDimension.ToLower().Trim())))
+				initialXDim = unfilteredPlot.InitialXDimension;
+			String initialYDim = null;
+			if (filteredDimensions.Any(x => x.Key.ToLower().Trim().Equals(unfilteredPlot.InitialYDimension.ToLower().Trim())))
+				initialYDim = unfilteredPlot.InitialYDimension;
 
-            var groupMatchers = ChartClassMatcher.CreateMatchers(options.GroupBy);
-            var filterMatchers = ChartClassMatcher.CreateMatchers(options.Filters);
-            var dimensionFilters=ChartDimensionFilter.Create(options.DimensionIds);
+			if (initialXDim == null)
+				initialXDim = filteredDimensions.Keys.FirstOrDefault();
+			if (initialYDim == null)
+				initialYDim = filteredDimensions.Keys.Skip(1).FirstOrDefault() ?? filteredDimensions.Keys.FirstOrDefault();
 
-            var filteredPoints = ChartUtility.Filter(unfilteredPlot.Points, filterMatchers, dimensionFilters);
+			var groupMatchers = ChartClassMatcher.CreateMatchers(options.GroupBy);
+			var filterMatchers = ChartClassMatcher.CreateMatchers(options.Filters);
+			var dimensionFilters = ChartDimensionFilter.Create(options.DimensionIds);
 
-            var minDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1));
-            var maxDate = DateTime.UtcNow.Add(TimeSpan.FromDays(1));
+			var filteredPoints = ChartUtility.Filter(unfilteredPlot.Points, filterMatchers, dimensionFilters);
 
-            var groupedPoints = ChartUtility.Group(filteredPoints, groupMatchers);
+			var minDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1));
+			var maxDate = DateTime.UtcNow.Add(TimeSpan.FromDays(1));
 
-            //about-* not matching correctly aka fix for *
+			var groupedPoints = ChartUtility.Group(filteredPoints, groupMatchers);
 
-            if (groupedPoints.Count > 0)
-            {
-                minDate = groupedPoints.Min(x => x.Date);
-                maxDate = groupedPoints.Max(x => x.Date);
-            }
-			
-            var title = GetChartTitle(caller, options.Id);
+			//about-* not matching correctly aka fix for *
 
-	        var legendType = "";
-	        if (options.GroupBy == ""){
-		        legendType = "Review";
-	        }
-	        else{
-		        legendType = "All";
-	        }
+			if (groupedPoints.Count > 0)
+			{
+				minDate = groupedPoints.Min(x => x.Date);
+				maxDate = groupedPoints.Max(x => x.Date);
+			}
 
-	        var filteredPlot = new ScatterPlot()
-            {
-                Class = unfilteredPlot.Class,
-                Dimensions = filteredDimensions,
-                InitialXDimension = initialXDim,
-                InitialYDimension = initialYDim,
-                Points = groupedPoints,
-                Groups = new List<ScatterGroup>(),//groupMatchers.Select(x=>x.Requirements.ToArray()).ToArray(),
-                Filters = new List<ScatterFilter>(),
-                MinDate = minDate,
-                MaxDate = maxDate,
-                OtherData = new { Title= title },
-                Legend = unfilteredPlot.Legend,
+			var title = GetChartTitle(caller, options.Id);
+
+			var legendType = "";
+			if (options.GroupBy == "")
+			{
+				legendType = "Review";
+			}
+			else
+			{
+				legendType = "All";
+			}
+
+			var filteredPlot = new ScatterPlot()
+			{
+				Class = unfilteredPlot.Class,
+				Dimensions = filteredDimensions,
+				InitialXDimension = initialXDim,
+				InitialYDimension = initialYDim,
+				Points = groupedPoints,
+				Groups = new List<ScatterGroup>(),//groupMatchers.Select(x=>x.Requirements.ToArray()).ToArray(),
+				Filters = new List<ScatterFilter>(),
+				MinDate = minDate,
+				MaxDate = maxDate,
+				OtherData = new { Title = title },
+				Legend = unfilteredPlot.Legend,
 				LegendType = legendType
-            };
+			};
 
-            return filteredPlot;
-        }
+			return filteredPlot;
+		}
 
-        public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId,bool sensitive)
-        {
-            if (sensitive)
-            {
-                new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, true));
-            }
+		public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId, bool sensitive)
+		{
+			if (sensitive)
+			{
+				new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, true));
+			}
 
-            var categories = _OrganizationAccessor.GetOrganizationCategories(caller, caller.Organization.Id);
-            var review = _ReviewAccessor.GetAnswersForUserReview(caller, forUserId, reviewsId);
-            var history = new List<AnswerModel>();
-            if (true)//includeHistory)
-            {
-                history = _ReviewAccessor.GetAnswersAboutUser(caller, forUserId);
-            }
+			var categories = _OrganizationAccessor.GetOrganizationCategories(caller, caller.Organization.Id);
+			var review = _ReviewAccessor.GetAnswersForUserReview(caller, forUserId, reviewsId);
+			var history = new List<AnswerModel>();
+			if (true)//includeHistory)
+			{
+				history = _ReviewAccessor.GetAnswersAboutUser(caller, forUserId);
+			}
 
-            var completeSliders = review.UnionBy(x => x.Id, history).Where(x => x.Askable.GetQuestionType() == QuestionType.Slider && x.Complete).Cast<SliderAnswer>().ToListAlive();
+			var completeSliders = review.UnionBy(x => x.Id, history).Where(x => /*x.Askable.GetQuestionType() == QuestionType.Slider &&*/ x.Complete)/*.Cast<SliderAnswer>()*/.ToListAlive();
+			var groupedByUsers = completeSliders.GroupBy(x => x.ByUserId);
+			
+			/*var dimensions = completeSliders.Distinct(x => x.Askable.Category.Id).Select(x => new ScatterDimension()
+			{
+				Max = 100,
+				Min = -100,
+				Id = "category-" + x.Askable.Category.Id,
+				Name = x.Askable.Category.Category.Translate()
+			}).ToList();*/
 
-            var groupedByUsers = completeSliders.GroupBy(x => x.ByUserId);
+			QuestionCategoryModel companyValuesCategory;
+			QuestionCategoryModel rolesCategory;
 
-            var dimensions = completeSliders.Distinct(x => x.Askable.Category.Id).Select(x => new ScatterDimension()
-            {
-                Max = 100,
-                Min = -100,
-                Id = "category-" + x.Askable.Category.Id,
-                Name = x.Askable.Category.Category.Translate()
-            }).ToList();
-
-            var teamMembers = _TeamAccessor.GetAllTeammembersAssociatedWithUser(caller, forUserId);
-            //var teamLookup = teamMembers.Distinct(x => x.TeamId).ToDictionary(x => x.TeamId, x => x.Team);
-
-            var scatterDataPoints = new List<ScatterData>();
-            var filters = new HashSet<ScatterFilter>(new EqualityComparer<ScatterFilter>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
-            var groups = new HashSet<ScatterGroup>(new EqualityComparer<ScatterGroup>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
-
-            var legend = new HashSet<ScatterLegendItem>(new EqualityComparer<ScatterLegendItem>((x,y)=>x.Class.Equals(y.Class),x=>x.Class.GetHashCode()));
-
-            var remapper = RandomUtility.CreateRemapper();
-            var remapperUser = RandomUtility.CreateRemapper();
-
-            foreach (var userAnswers in groupedByUsers) //<UserId>
-            {
-                var byReviewOrdered = userAnswers.GroupBy(x => x.ForReviewContainerId).OrderBy(x => x.Max(y => y.CompleteTime)).ToList();
-                long? prevId = null;
-                var safeUserIdMap = remapperUser.Remap(userAnswers.Min(x => x.Id)); //We'll use the Min-Answer Id because its unique and not traceable
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					companyValuesCategory = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.COMPANY_VALUES);
+					rolesCategory		  = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.ROLES);
+				}
+			}
 
 
-                foreach (var userReviewAnswers in byReviewOrdered)
-                {
-                    //Each review container
-                    var userId = userReviewAnswers.First().ByUserId;
-                    var reviewContainerId = userReviewAnswers.First().ForReviewContainerId;
-                    var reviewContainer = _ReviewAccessor.GetReviewContainer(caller, reviewContainerId, false, false, false);
 
-                    // userReviewAnswers.First().ForReviewContainer;
-                    var datums = new Dictionary<String,ScatterDatum>();
-                    
-                    foreach (var answer in userReviewAnswers)
-                    {
-                        var catClass = "category-" + answer.Askable.Category.Id;
-                        if (!datums.ContainsKey(catClass))
-                        {
-                            datums[catClass]=new ScatterDatum(){
-                                DimensionId = "category-" + answer.Askable.Category.Id,
-                                Class = String.Join(" ", catClass),
-                            };
-                        }
 
-                        datums[catClass].Denominator += (double)answer.Askable.Weight;
-                        datums[catClass].Value += ((double)(answer.Percentage.Value ) * 200 - 100)* (double)answer.Askable.Weight;
-                        //filters.Add(new ScatterFilter(answer.Askable.Category.Category.Translate(), catClass));
-                        groups.Add(new ScatterGroup(answer.Askable.Category.Category.Translate(), catClass));
-                    }
+			var teamMembers = _TeamAccessor.GetAllTeammembersAssociatedWithUser(caller, forUserId);
+			//var teamLookup = teamMembers.Distinct(x => x.TeamId).ToDictionary(x => x.TeamId, x => x.Team);
 
-                    filters.Add(new ScatterFilter(reviewContainer.ReviewName, "reviews-" + reviewContainerId, on: reviewsId==reviewContainerId));
+			var scatterDataPoints = new List<ScatterData>();
+			var filters = new HashSet<ScatterFilter>(new EqualityComparer<ScatterFilter>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
+			var groups = new HashSet<ScatterGroup>(new EqualityComparer<ScatterGroup>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
 
-                    var teams = teamMembers.Where(x => x.UserId == userId).Distinct(x => x.TeamId);
-                    var teamClasses = new List<String>();
+			var legend = new HashSet<ScatterLegendItem>(new EqualityComparer<ScatterLegendItem>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
 
-                    foreach (var team in teams)
-                    {
-                        var teamClass = "team-" + team.TeamId;
+			var remapper = RandomUtility.CreateRemapper();
+			var remapperUser = RandomUtility.CreateRemapper();
 
-                        filters.Add(new ScatterFilter(team.Team.Name, teamClass));
-                        groups.Add(new ScatterGroup(team.Team.Name, teamClass));
+			foreach (var userAnswers in groupedByUsers) //<UserId>
+			{
+				var byReviewOrdered = userAnswers.GroupBy(x => x.ForReviewContainerId).OrderBy(x => x.Max(y => y.CompleteTime)).ToList();
+				long? prevId = null;
+				var safeUserIdMap = remapperUser.Remap(userAnswers.Min(x => x.Id)); //We'll use the Min-Answer Id because its unique and not traceable
 
-                        teamClasses.Add(teamClass);
-                    }
 
-                    var aboutType=userReviewAnswers.First().AboutType.Invert();
-                    var aboutClass = "about-" + aboutType;
-                                        
-                    legend.Add(new ScatterLegendItem(aboutType.ToString(),aboutClass));
-                    
-                    var reviewsClass = "reviews-" + reviewContainerId;
-                    var teamClassesStr = String.Join(" ", teamClasses);
-                    var userClassStr = "user-" + safeUserIdMap;
+				foreach (var userReviewAnswers in byReviewOrdered)
+				{
+					//Each review container
+					var userId = userReviewAnswers.First().ByUserId;
+					var reviewContainerId = userReviewAnswers.First().ForReviewContainerId;
+					var reviewContainer = _ReviewAccessor.GetReviewContainer(caller, reviewContainerId, false, false, false);
 
-                    //The first answer id should be unique for all this stuff, so lets just use it for convenience
-                    var uniqueId = remapper.Remap(userReviewAnswers.First().Id);
+					// userReviewAnswers.First().ForReviewContainer;
+					var datums = new Dictionary<String, ScatterDatum>();
+					var scorer = new ScatterScorer(datums, groups,companyValuesCategory,rolesCategory);
+					foreach (var answer in userReviewAnswers){
+						//Heavy lifting
+						scorer.Add(answer);
+					}
 
-                    String title, subtext="";
-                    if (sensitive)
-                    {
-                        var user = userReviewAnswers.First().ByUser;
-                        title = "<span class='nameAndTitle hoverTitle'>" + user.GetNameAndTitle() + "</span> <span class='aboutType hoverTitle'>" + aboutType + "</span> <span class='reviewName hoverTitle'>" + reviewContainer.ReviewName + "</span>";
-                    }
-                    else
-                    {
-                        title = "<span class='aboutType hoverTitle'>" + aboutType.ToString() + "</span> <span class='reviewName hoverTitle'>" + reviewContainer.ReviewName + "</span>";
-                    }
+					filters.Add(new ScatterFilter(reviewContainer.ReviewName, "reviews-" + reviewContainerId, on: reviewsId == reviewContainerId));
 
-                    scatterDataPoints.Add(new ScatterData()
-                    {
-                        Class = String.Join(" ", aboutClass, reviewsClass, teamClassesStr, userClassStr),
-                        Date = userReviewAnswers.Max(x => x.CompleteTime)??new DateTime(2014,1,1),
-                        Dimensions = datums,
-                        SliceId=reviewContainerId,
-                        //PreviousId = prevId,
-                        Title = title,
-                        Subtext = subtext,
-                        Id = uniqueId
-                    });
+					var teams = teamMembers.Where(x => x.UserId == userId).Distinct(x => x.TeamId);
+					var teamClasses = new List<String>();
 
-                    prevId = uniqueId;
-                }
-            }
+					foreach (var team in teams)
+					{
+						var teamClass = "team-" + team.TeamId;
 
-            var xDimId = dimensions.FirstOrDefault().NotNull(x => x.Id);
-            var yDimId = dimensions.Skip(1).FirstOrDefault().NotNull(x => x.Id);
+						filters.Add(new ScatterFilter(team.Team.Name, teamClass));
+						groups.Add(new ScatterGroup(team.Team.Name, teamClass));
 
-            var dates=scatterDataPoints.Select(x=>x.Date).ToList();
-            if (!dates.Any())
-                dates.Add(DateTime.UtcNow);
+						teamClasses.Add(teamClass);
+					}
 
-            var scatter = new ScatterPlot()
-            {
-                Dimensions = dimensions.ToDictionary(x => x.Id, x => x),
-                Filters = filters.OrderByDescending(x=>x.On).ToList(),
-                Groups = groups.ToList(),
-                InitialXDimension = xDimId,
-                InitialYDimension = yDimId ?? xDimId,
-                Points = scatterDataPoints,
-                MinDate = dates.Min(),
-                MaxDate = dates.Max(),
-                Legend=legend.ToList(),
-            };
+					var aboutTypes = userReviewAnswers.First().AboutType.Invert();
+					foreach (AboutType aboutType in aboutTypes.GetFlags())
+					{
+						if (aboutTypes!=AboutType.NoRelationship && aboutType==AboutType.NoRelationship)
+							continue;
 
-            return scatter;
-        }
+						var aboutClass = "about-" + aboutType;
 
-    }
+						legend.Add(new ScatterLegendItem(aboutType.ToString(), aboutClass));
+
+						var reviewsClass = "reviews-" + reviewContainerId;
+						var teamClassesStr = String.Join(" ", teamClasses);
+						var userClassStr = "user-" + safeUserIdMap;
+
+						//The first answer id should be unique for all this stuff, so lets just use it for convenience
+						var uniqueId = remapper.Remap(userReviewAnswers.First().Id);
+
+						String title, subtext = "";
+						if (sensitive){
+							var user = userReviewAnswers.First().ByUser;
+							title = "<span class='nameAndTitle hoverTitle'>" + user.GetNameAndTitle() + "</span> <span class='aboutType hoverTitle'>" + aboutType + "</span> <span class='reviewName hoverTitle'>" + reviewContainer.ReviewName + "</span>";
+						}
+						else{
+							title = "<span class='aboutType hoverTitle'>" + aboutType.ToString() + "</span> <span class='reviewName hoverTitle'>" + reviewContainer.ReviewName + "</span>";
+						}
+
+						scatterDataPoints.Add(new ScatterData(){
+							Class = String.Join(" ", aboutClass, reviewsClass, teamClassesStr, userClassStr),
+							Date = userReviewAnswers.Max(x => x.CompleteTime) ?? new DateTime(2014, 1, 1),
+							Dimensions = datums,
+							SliceId = reviewContainerId,
+							//PreviousId = prevId,
+							Title = title,
+							Subtext = subtext,
+							Id = uniqueId
+						});
+
+						prevId = uniqueId;
+					}
+				}
+			}
+			var dimensions = completeSliders.Distinct(x => x.Askable.Category.Id).Select(x => new ScatterDimension()
+			{
+				Max = 100,
+				Min = -100,
+				Id = "category-" + x.Askable.Category.Id,
+				Name = x.Askable.Category.Category.Translate()
+			}).ToList();
+
+			dimensions.Insert(0,new ScatterDimension() { Max = 100, Min = -100, Id = "category-"+rolesCategory.Id, Name = "Roles" });
+			dimensions.Insert(0, new ScatterDimension() { Max = 100, Min = -100, Id = "category-" + companyValuesCategory.Id, Name = "Values" });
+
+			var xDimId = dimensions.FirstOrDefault().NotNull(x => x.Id);
+			var yDimId = dimensions.Skip(1).FirstOrDefault().NotNull(x => x.Id);
+
+			var dates = scatterDataPoints.Select(x => x.Date).ToList();
+			if (!dates.Any())
+				dates.Add(DateTime.UtcNow);
+
+			var scatter = new ScatterPlot()
+			{
+				Dimensions = dimensions.ToDictionary(x => x.Id, x => x),
+				Filters = filters.OrderByDescending(x => x.On).ToList(),
+				Groups = groups.ToList(),
+				InitialXDimension = xDimId,
+				InitialYDimension = yDimId ?? xDimId,
+				Points = scatterDataPoints,
+				MinDate = dates.Min(),
+				MaxDate = dates.Max(),
+				Legend = legend.ToList(),
+			};
+
+			return scatter;
+		}
+
+		public class ScatterScorer
+		{
+			private Dictionary<string, ScatterDatum> datums;
+			private HashSet<ScatterGroup> groups;
+			private QuestionCategoryModel companyValueCategory;
+			private QuestionCategoryModel rolesCategory;
+
+			public ScatterScorer(Dictionary<string, ScatterDatum> datums, HashSet<ScatterGroup> groups, QuestionCategoryModel companyValueCategory, QuestionCategoryModel rolesCategory)
+			{
+				this.datums = datums;
+				this.groups = groups;
+				this.companyValueCategory = companyValueCategory;
+				this.rolesCategory = rolesCategory;
+			}
+
+			public void Add(AnswerModel answer)
+			{
+				var cat = answer.Askable.Category;
+				switch (answer.Askable.GetQuestionType())
+				{
+					case QuestionType.Thumbs:
+						break;
+					case QuestionType.Feedback:
+						break;
+					case QuestionType.Rock:
+						break;
+					case QuestionType.Slider:
+						AddScatterScore(cat.Id, cat.Category.Translate(), (double)(((SliderAnswer)answer).Percentage ?? .5m), (double)answer.Askable.Weight);
+						break;
+					case QuestionType.GWC:
+						{
+							var a = (GetWantCapacityAnswer)answer;
+							var count = 0.0;
+							count += a.GetIt == Tristate.True ? 1 : 0;
+							count += a.WantIt == Tristate.True ? 1 : 0;
+							count += a.HasCapacity == Tristate.True ? 1 : 0;
+							AddScatterScore(rolesCategory.Id, "Roles", count / 3.0, 1);
+						}
+						break;
+					case QuestionType.CompanyValue:
+						{
+							var a = (CompanyValueAnswer)answer;
+							var count = 0.0;
+							var weight = 1;
+							switch (a.Exhibits)
+							{
+								case PositiveNegativeNeutral.Indeterminate:
+									weight = 0;
+									break;
+								case PositiveNegativeNeutral.Negative:
+									count = 0;
+									break;
+								case PositiveNegativeNeutral.Neutral:
+									count = 1;
+									break;
+								case PositiveNegativeNeutral.Positive:
+									count = 2;
+									break;
+								default:
+									throw new Exception("Unhandled PositiveNegativeNeutral: "+a.Exhibits);
+							}
+							AddScatterScore(companyValueCategory.Id, "Values", count / 2.0, weight);
+						}
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
+
+
+			private void AddScatterScore(long categoryId, string category, double percent, double weight)
+			{
+				var catClass = "category-" + categoryId;
+				if (!datums.ContainsKey(catClass))
+				{
+					datums[catClass] = new ScatterDatum()
+					{
+						DimensionId = "category-" + categoryId,
+						Class = String.Join(" ", catClass),
+					};
+				}
+				datums[catClass].Denominator += weight;
+				datums[catClass].Value += ((double)(percent) * 200.0 - 100.0) * weight;
+				groups.Add(new ScatterGroup(category, catClass));
+
+				/*datums[catClass].Denominator += (double) answer.Askable.Weight;
+				datums[catClass].Value += ((double) (answer.Percentage.Value)*200 - 100)*(double) answer.Askable.Weight;
+				//filters.Add(new ScatterFilter(answer.Askable.Category.Category.Translate(), catClass));
+				groups.Add(new ScatterGroup(answer.Askable.Category.Category.Translate(), catClass));*/
+			}
+		}
+
+	}
 }

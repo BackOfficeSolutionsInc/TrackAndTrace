@@ -16,12 +16,10 @@ function removeEmpty(array, deleteValue) {
 function collapseAll() {
     $('.panel-collapse').collapse('hide');
 }
+
 function expandAll() {
     $('.panel-collapse').collapse('show');
 }
-
-
-
 
 function Group() {
 }
@@ -354,7 +352,6 @@ function legendReview(legendData, chart) {
 }
 
 var chart = new ScatterChart("chart");
-
 
 function update(reset) {
     var date1 = new Date(+$("#DateSlider").val()[0]);

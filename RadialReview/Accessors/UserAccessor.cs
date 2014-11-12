@@ -820,6 +820,10 @@ namespace RadialReview.Accessors
 						r.OrganizationId = orgId;
 						s.SaveOrUpdate(r);
 					}
+
+					user.NumRocks = rocks.Count(x => x.DeleteTime == null);
+					s.SaveOrUpdate(user);
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -859,6 +863,10 @@ namespace RadialReview.Accessors
 						r.OrganizationId = orgId;
 						s.SaveOrUpdate(r);
 					}
+
+					user.NumRoles = roles.Count(x => x.DeleteTime == null);
+					s.SaveOrUpdate(user);
+
 					tx.Commit();
 					s.Flush();
 				}

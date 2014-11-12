@@ -43,6 +43,7 @@ namespace RadialReview.Accessors {
 			List<ReviewModel> reviews;
 
 			var user = s.Get<UserOrganizationModel>(forUserId);
+
 			var usersIds = user.UserIds;
 
 			reviews = s.QueryOver<ReviewModel>().Where(x => /*x.ForUserId == forUserId &&*/ x.DeleteTime == null && x.DueDate > dueAfter)

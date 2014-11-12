@@ -600,12 +600,12 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
         	return "translate(" + x + "," + y + ")";
         }).each(function (d) {
         	if (d.Class.indexOf("about-Manager") != -1) {
-        		d3.select(this).append("rect").attr("x", -8).attr("y", -8).attr("width", 16).attr("height", 16).classed("point", true);
+        		d3.select(this).append("rect").attr("x", -13).attr("y", -13).attr("width", 16).attr("height", 16).classed("point", true);
         	} else if (d.Class.indexOf("about-Peer") != -1) {
         		d3.select(this).append("polygon").attr("points", chart.triangle);
         	} else if (d.Class.indexOf("about-Self") != -1) {
         		d3.select(this).append("polygon").attr("points", chart.cross).attr("transform", "rotate(45)");
-        	} else if (d.Class.indexOf("about-subordinate")) {
+        	} else if (d.Class.indexOf("about-Subordinate")) {
         		d3.select(this).append("rect").attr("x", -7).attr("y", -7).attr("width", 14).attr("height", 14).attr("transform", "translate(9,9)rotate(45)");
         	} else {
         		d3.select(this).append("circle").attr("cx", 0).attr("cy", 0).attr("r", 10).classed("point", true);

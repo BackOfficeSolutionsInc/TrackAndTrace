@@ -182,14 +182,17 @@ namespace RadialReview.Accessors {
 
 				foreach (var askable in revieweeAskables){
 					//Filter only where OnlyAsk is satisfied
-					if (relationshipToReviewee.IsSubsetOf(askable.OnlyAsk))
-					{
+					if ((relationshipToReviewee.Invert() & askable.OnlyAsk) != AboutType.NoRelationship){
 						var askableAbout = new AskableAbout(){
 							AboutType = relationshipToReviewee,
 							AboutUserId = revieweeId,
 							Askable = askable,
 						};
 						allAskables.Add(askableAbout);
+					}
+					else{
+						int a = 0;
+						a++;
 					}
 				}
 				//allAskables.AddRange(revieweeAskables.Select(x => new AskableAbout() { AboutType = bestRelationship, AboutUserId = revieweeId, Askable = x }));
@@ -234,7 +237,7 @@ namespace RadialReview.Accessors {
 				 .SelectMany(x => x.Responsibilities).ToListAlive();*/
 				foreach (var relationship in reviewer.Value) {
 					foreach (var reviewerAskable in reviewerAskables){
-						if (relationship.Invert().IsSubsetOf(reviewerAskable.OnlyAsk)){
+						if ((relationship.Invert() & reviewerAskable.OnlyAsk)!=AboutType.NoRelationship){
 							askableUtil.AddUnique(reviewerAskable, relationship, reviewerId);
 						}
 					}

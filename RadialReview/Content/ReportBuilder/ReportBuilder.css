@@ -257,6 +257,6 @@ ul.empty:empty {
 	background-image: url("/Content/img/graystripe.png");
 	background-position-x: 5px;
 }
-.panel-includable:not(.isIncluded) span{
+.panel-includable:not(.isIncluded) .panel-heading span{
 	color: #F5F5F5 !important; 
-}*/
+}

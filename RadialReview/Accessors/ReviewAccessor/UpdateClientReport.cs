@@ -199,6 +199,22 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+		public void SetIncludeEvaluation(UserOrganizationModel caller, long reviewId, bool on)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+
+					var review = s.Get<ReviewModel>(reviewId);
+					review.ClientReview.IncludeEvaluation = on;
+					s.Update(review);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 		public void SetIncludeSelfAnswers(UserOrganizationModel caller, long reviewId, bool on)
 		{
 			using (var s = HibernateSession.GetCurrentSession())

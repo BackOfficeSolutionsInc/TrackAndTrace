@@ -134,6 +134,8 @@
 					<th class="hidden"></th>
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
+					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
+					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
 					<th style="width:1px">Name</th>
 					<th style="width:100%">Email</th>
 					<th style="min-width:10px" class="NalignCenter">Positions</th>
@@ -187,6 +189,12 @@
 									<span data-sort="1" class="glyphicon glyphicon-exclamation-sign red strokeRed clickable icon" title="Invitation not sent." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
 								}
 							}
+						</td>
+						<td class="alignCenter" title="Individual Quarterly Rocks">
+							<a href="~/Manage/UserDetails/@p.Id">@p.NumRocks</a>
+						</td>
+						<td class="alignCenter" title="Individual Roles">
+							<a href="~/Manage/UserDetails/@p.Id">@p.NumRoles</a>
 						</td>
 						<td class="noOverflow" style="max-width: 160px;" title="@p.Name">
 							<a href="~/Manage/UserDetails/@p.Id">

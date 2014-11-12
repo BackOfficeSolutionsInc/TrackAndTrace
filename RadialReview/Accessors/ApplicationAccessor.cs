@@ -23,7 +23,9 @@ namespace RadialReview.Accessors
 		//public const string GWC = "Get It/Want It/Capacity To Do It";
 		//public const string COMPANY_VALUES = "Company Values";
 		//public const string ROCKS = "Rocks";
-	    public const string EVALUATION = "Evaluation";
+		public const string EVALUATION = "Evaluation";
+		public const string ROLES = "Roles"; 
+		public const string COMPANY_VALUES = "Company Values";
 
         private static string[] ApplicationCategories = new string[]{ 
                 "Performance",
@@ -33,7 +35,9 @@ namespace RadialReview.Accessors
 				//GWC,
 				//COMPANY_VALUES,
 				//ROCKS,
-				EVALUATION
+				EVALUATION,
+				ROLES,
+				COMPANY_VALUES
         };
 
         private class Q

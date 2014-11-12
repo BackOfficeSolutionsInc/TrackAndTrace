@@ -1,4 +1,5 @@
 ﻿using System.Web.Security;
+using FluentNHibernate.Conventions.Inspections;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 using System;
@@ -21,8 +22,9 @@ namespace RadialReview.Models.Reviews
         public virtual LongTuple ScatterChart { get; set; }
 
         public virtual Boolean IncludeManagerFeedback { get; set; }
-        public virtual Boolean IncludeQuestionTable { get; set; }
-        public virtual bool IncludeSelfFeedback { get; set; }
+		public virtual Boolean IncludeQuestionTable { get; set; }
+		public virtual bool IncludeSelfFeedback { get; set; }
+		public virtual bool IncludeEvaluation { get; set; }
 		public virtual bool IncludeScatterChart { get; set; }
 		public virtual bool IncludeTimelineChart { get; set; }
 		public virtual bool IncludeNotes { get; set; }
@@ -32,7 +34,17 @@ namespace RadialReview.Models.Reviews
 
         public virtual bool Started()
         {
-            return (Charts.Any() || FeedbackIds.Any() || IncludeManagerFeedback || IncludeQuestionTable || IncludeSelfFeedback || !String.IsNullOrEmpty(ManagerNotes) || Visible);
+            return (
+				Charts.Any() ||
+				FeedbackIds.Any() ||
+				IncludeManagerFeedback ||
+				IncludeQuestionTable ||
+				IncludeSelfFeedback ||
+				IncludeEvaluation ||
+				IncludeScatterChart ||
+				IncludeTimelineChart ||
+				!String.IsNullOrEmpty(ManagerNotes) ||
+				Visible);
         }
 
         public ClientReviewModel()
@@ -55,8 +67,9 @@ namespace RadialReview.Models.Reviews
 			Map(x => x.ManagerNotes);
 			Map(x => x.IncludeNotes);
             Map(x => x.IncludeManagerFeedback);
-            Map(x => x.IncludeQuestionTable);
-            Map(x => x.IncludeSelfFeedback);
+			Map(x => x.IncludeQuestionTable);
+			Map(x => x.IncludeSelfFeedback);
+			Map(x => x.IncludeEvaluation);
 
             Map(x => x.IncludeScatterChart);
             Map(x => x.IncludeTimelineChart);

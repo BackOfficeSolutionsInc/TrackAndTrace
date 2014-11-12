@@ -35,10 +35,11 @@ namespace RadialReview.Models.Askables
         public AskableMap()
         {
             Id(x => x.Id);
-            Map(x => x.Weight).CustomType(typeof(WeightType));
-            Map(x => x.DeleteTime);
-            Map(x => x.Required);
+			Map(x => x.Required);
+			Map(x => x.DeleteTime);
             References(x => x.Category).Not.LazyLoad();
+            Map(x => x.Weight).CustomType(typeof(WeightType));
+			Map(x => x.OnlyAsk).CustomType(typeof(AboutType));
         }
     }
 }
