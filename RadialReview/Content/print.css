@@ -146,3 +146,53 @@
 	border-top: 2px dotted #cacaca;
 	border-bottom: 0px solid #cacaca;
 }
+
+.table-io.companyValues .fill:after {
+	color: black !important;
+	padding-top: 8px;
+}
+
+.table-io.companyValues .fill:not(.hasReason):not(.score):not(.Indeterminate):after {
+	background-color: transparent;
+}
+.fill.companyValues {
+	border-width: 4px !important;
+	border-style: solid !important;
+}
+
+.table-io .fill {
+	margin: 2px;
+	border-width:4px !important;
+}
+
+.table-io .fill.True,
+.table-io .fill.Indeterminate,
+.table-io .fill.Positive:after,
+.table-io .fill.Indeterminate:after
+ {
+	color: #aeaeae !important;
+}
+
+.table-io.rocks .fill {
+	padding-top: 8px;	
+}
+
+.table-io.companyValues .fill.companyValues-score {
+	padding-top: 8px;
+}
+
+.chart {
+	height: 400px;
+}
+
+svg .legend {
+	display: none;
+}
+
+.axisTitle {
+	font-size: 24px;
+}
+
+.zoom8 {
+	zoom: 80%;
+}

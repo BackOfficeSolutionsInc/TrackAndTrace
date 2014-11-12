@@ -36,17 +36,17 @@
 			@Html.CollapseSection("Evaluation", "Details/EosEvaluation", Model, "includeEvaluation")
 
 
-	        @Html.CollapseSection(Model.Review.ForUser.GetName() + "'s Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout),"includeSelfAnswers")
+	        @*@Html.CollapseSection(Model.Review.ForUser.GetName() + "'s Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout),"includeSelfAnswers")
             @Html.CollapseSection("Manager Answers", "~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Supervisers, Model.AnswersAbout), "includeManagerAnswers")
-			@Html.CollapseSection("Aggregate Answers", "Details/AggregateAnswers", Model, "includeAggregateAnswers")
+			@Html.CollapseSection("Aggregate Answers", "Details/AggregateAnswers", Model, "includeAggregateAnswers")*@
 			@Html.CollapseSection("Feedback", "Details/Feedback", Model)
-			@Html.CollapseSection("Yes/No", "Details/YesNo", Model)
+			@*@Html.CollapseSection("Yes/No", "Details/YesNo", Model)*@
 
 
 
 
             @*All other answers*@
-            <a id="OtherAnswers" class="shiftByTitle"></a>
+            @*<a id="OtherAnswers" class="shiftByTitle"></a>
             <div class="panel panel-primary">
                 <div class="panel-heading panel-square">
                     <div class="collapseIcon"></div>
@@ -64,7 +64,7 @@
                     }
                     @Html.Partial("~/Views/Partial/_AnswerTable.cshtml", Tuple.Create(allOtherUsers, Model.AnswersAbout.Where(x => x is SliderAnswer).Cast<SliderAnswer>().ToList()))
                 </div>
-            </div>
+            </div>*@
         </div>
     </div>
 </div>

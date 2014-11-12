@@ -190,7 +190,7 @@
 					@if (Model.Responsibilities.Any()) {
 						<li><a href="#responsibilities">Responsibilities</a></li>
 					}
-					<li><a href="#questions">Questions</a></li>
+					<li><a href="#questions">Rocks/Roles/Values</a></li>
 					@if (Model.Review.ClientReview.IncludeScatterChart) {
 						<li>
 							<a href="#scatter">
@@ -207,6 +207,9 @@
 					@foreach (var chart in charts) {
 						<li><a href="#ql_chart_@chart.Id">@chart.Title</a></li>
 					}
+					@if (Model.Review.ClientReview.IncludeEvaluation){
+						<li><a href="#evaluation">Evaluation</a></li>
+					}
 					@if (Model.Review.ClientReview.IncludeQuestionTable) {
 						<li><a href="#questionTable">Answer Distribution</a></li>
 					}
@@ -221,7 +224,7 @@
 						<li><a href="#feedback">Feedback</a></li>
 					}
 					@if (!String.IsNullOrWhiteSpace(notes) && Model.Review.ClientReview.IncludeNotes) {
-						<li><a href="#notes">Supervisor's Notes</a></li>
+						<li><a href="#notes">Notes</a></li>
 					}
 				</ol>
 			</div>
@@ -484,10 +487,10 @@
 		}
 		@if (Model.Review.ClientReview.IncludeEvaluation)
 		{
-			<a id="evaluation" class="shiftByTitle"></a>
 			<div class="noBreak">
+				<a id="evaluation" class="shiftByTitle"></a>
 				<div class="row-title">Evaluation</div>
-				<div class="row">
+				<div class="row zoom8">
 					<div class="col-sm-12">
 						@Html.Partial("~/Views/Review/Details/EosClient.cshtml", Model)
 					</div>

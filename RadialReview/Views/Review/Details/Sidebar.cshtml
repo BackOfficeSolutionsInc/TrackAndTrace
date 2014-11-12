@@ -33,7 +33,7 @@
 
 		
 		@*Answers*@
-	    <h4 class="alignCenter">Answers</h4>
+	    @*<h4 class="alignCenter">Answers</h4>
 		<div>
 			<span>Include @Model.Review.ForUser.GetFirstName().Possessive() Answers:</span>
 			<input class="pull-right includeSelfAnswers" type="checkbox" />
@@ -46,7 +46,7 @@
 			<span>Include Aggregate Answers:</span>
 			<input class="pull-right includeAggregateAnswers" type="checkbox" />
 		</div>
-		<hr />
+		<hr />*@
 		@*Feedback*@
 		@{
 			var feedbacks = Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>();

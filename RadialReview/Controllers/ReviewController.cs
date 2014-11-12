@@ -650,41 +650,64 @@ namespace RadialReview.Controllers {
 				}
 			}
 
+			private void AddCompanyValueRow(string row,TableData table,IEnumerable<IGrouping<long, CompanyValueAnswer>> values,Func<decimal,decimal,decimal,HtmlString> content,String clazz)
+			{
+				foreach (var x in values){
+					var pos = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Positive);
+					var neg = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Negative);
+					var neut = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Neutral);
+					var tot = x.Count(y => y.Exhibits != PositiveNegativeNeutral.Indeterminate);
+
+					PositiveNegativeNeutral ex;
+
+					if (neg > 0 || neut >= NEUTRAL_CUTOFF)
+						ex = PositiveNegativeNeutral.Negative;
+					else if (pos == tot && tot>0)
+						ex = PositiveNegativeNeutral.Positive;
+					else if (tot > 0)
+						ex = PositiveNegativeNeutral.Neutral;
+					else
+						ex = PositiveNegativeNeutral.Indeterminate;
+
+					//var perc = Math.Round((pos + (neut/2m))/tot*100m);
+
+					var html= new SpanCell(){
+						Class = "fill companyValues "+clazz+" " + ex,
+						Contents = content(pos,neg,neut)
+					}.ToHtmlString();
+					table.Set(row, x.First().Askable.GetQuestion(), html);
+				}
+
+			}
+
+
 			public Table CompanyValuesScore
 			{
 				get
 				{
-					var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[] { 0, 0, 0 });
-					var values =AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue).Cast<CompanyValueAnswer>().GroupBy(x => x.Askable.Id);
-					var table = Table.Create(
-						values,
-						x => "Score",
-						x => x.First().Askable.GetQuestion(),
-						x =>
-						{
-							var pos = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Positive);
-							var neg = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Negative);
-							var neut = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Neutral);
-							var tot = x.Count(y => y.Exhibits != PositiveNegativeNeutral.Indeterminate);
+					var values = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue).Cast<CompanyValueAnswer>().ToList();
+					
+					var data=new TableData();
 
-							PositiveNegativeNeutral ex;
-
-							if (neg>0 || neut>=NEUTRAL_CUTOFF)
-								ex=PositiveNegativeNeutral.Negative;
-							else if (pos == tot)
-								ex = PositiveNegativeNeutral.Positive;
-							else if (tot>0)
-								ex = PositiveNegativeNeutral.Neutral;
-							else
-								ex = PositiveNegativeNeutral.Indeterminate;
-
-							return new SpanCell(){
-								Class = "fill companyValues companyValues-score "+ ex,
-								Contents = new HtmlString(pos+"/"+tot)
-							}.ToHtmlString();
-						},
-						"companyValues");
-					return table;
+					//Pull self
+					var selfAns = values.Where(x => x.AboutType.HasFlag(AboutType.Self)).GroupBy(x => x.Askable.Id);
+					AddCompanyValueRow(Review.ForUser.GetName(), data, selfAns,(x,y,z)=>new HtmlString(""),"" );
+					//Pull manager
+					var managers = values.Where(x => x.AboutType.HasFlag(AboutType.Subordinate)).GroupBy(x => x.ByUser.GetName());
+					foreach (var m in managers){
+						var mAnswers = m.GroupBy(x => x.Askable.Id);
+						AddCompanyValueRow(m.First().ByUser.GetName(), data, mAnswers, (x, y, z) => new HtmlString(""), "");
+					}
+					//Pull peer answers
+					var otherAns = values.Where(x => !x.AboutType.HasFlag(AboutType.Self) && !x.AboutType.HasFlag(AboutType.Subordinate)).GroupBy(x => x.Askable.Id);
+					AddCompanyValueRow("Others", data, otherAns, (pos, neg, neut) =>{
+						var tot = pos + neg + neut;
+						if (tot==0)
+							return new HtmlString("");
+						return new HtmlString("" + Math.Round((pos + (neut/2m))/(tot)*100m) + "%"); 
+					}, "companyValues-score");
+					
+					return new Table(data){TableClass = "companyValues companyValues-client"};
 				}
 			}
 

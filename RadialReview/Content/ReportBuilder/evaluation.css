@@ -34,13 +34,18 @@
 		padding-top: 10px;
 		color: white;
 		margin-right: 2px;
+		font-size: 12px;
+		padding-right: 1px;
 	}
 
+	.table-io.companyValues .fill.companyValues-score.Indeterminate:after {
+		margin-top: -8px;
+	}
 
 
 	.table-io.companyValues .fill:after {
 		position: relative;
-		padding-top:11px;
+		padding-top:10px;
 		color: #FFFFFF;
 		width: 100%;
 		height: 100%;
@@ -64,24 +69,28 @@
 
 	.table-io.companyValues .fill:not(.hasReason):not(.score):not(.Indeterminate):after {
 		background-color: rgba(51, 51, 51, 0.2);
+		-ms-border-radius: 20px;
 		border-radius: 20px;
 	}
-	.table-io.companyValues .fill:not(.hasReason):after {
+
+.table-io.companyValues .fill:not(.hasReason):after {
 		color: rgba(255, 255, 255, 0.35);
 	}
 
 	.table-io.companyValues tbody tr:last-child > * {
-		padding-top:10px;
-		font-weight: bold;
+		/*padding-top:10px;
+		font-weight: bold;*/
 	}
 
 	.table-io.companyValues .fill.score {
-		height: 18px;
+		height: 20px;
 		width: 40px;
+		-ms-border-radius: 0;
 		border-radius: 0;
 		border-left: 1px solid white;
 	}
-		.table-io.companyValues .fill.score:after {
+
+.table-io.companyValues .fill.score:after {
 			padding-top: 0px;
 		}
 	/*
@@ -104,21 +113,21 @@
 	}
 
 	.table-io.companyValues .fill.Indeterminate {background-color: transparent;}
-	.table-io.companyValues .fill.Positive {background-color: #449D44;}
-	.table-io.companyValues .fill.Neutral {background-color: #EC971F;}
-	.table-io.companyValues .fill.Negative {background-color: #D9534F;}
+	.table-io.companyValues .fill.Positive {background-color: #449D44;border: 1px solid #449D44;}
+	.table-io.companyValues .fill.Neutral {background-color: #EC971F;border: 1px solid #EC971F;}
+	.table-io.companyValues .fill.Negative {background-color: #D9534F;border: 1px solid #D9534F;}
 	
-	.table-io.companyValues .fill.Indeterminate:after {content: "n/a";color: #d9d9d9;}
+	.table-io.companyValues .fill.Indeterminate:after {content: "n/a";color: #c3c3c3;}
 	.table-io.companyValues .fill:not(.companyValues-score).Positive:after {content: "+";}
 	.table-io.companyValues .fill:not(.companyValues-score).Neutral:after {content: "+/-";}
 	.table-io.companyValues .fill:not(.companyValues-score).Negative:after {content: "-";}
 
 	
-	.table-io .fill.True {background-color: #449D44;}
-	.table-io .fill.False {background-color: #D9534F;}
+	.table-io .fill.True {background-color: #449D44;border: 1px solid #449D44;}
+	.table-io .fill.False {background-color: #D9534F;border: 1px solid #D9534F;}
 			  
-	.table-io.rocks .fill.True:after {content: "YES";}
-	.table-io.rocks .fill.False:after {content: "NO";}
+	.table-io.rocks .fill.True:after  {content: "YES";}
+	.table-io.rocks .fill.False:after {content: "NO"; }
 	
 
 	.gwc .header1 {
@@ -150,7 +159,7 @@
 	.table-io.gwc .fill {
 		height: 80px;
 		text-align: center;
-		padding-top: 30px;
+		padding-top: 28px;
 		font-weight: bold;
 		color: white;
 		font-size: 16px;
@@ -170,7 +179,7 @@
 	.table-io.rocks .fill {
 		height: 40px;
 		text-align: center;
-		padding-top: 10px;
+		padding-top: 9px;
 		font-weight: bold;
 		color: white;
 		font-size: 16px;

@@ -3,12 +3,11 @@
 @using RadialReview.Models.Enums
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
-
 @Html.Partial("~/Views/Review/Details/GWC.cshtml", Model)
 
 @if (Model.CompanyValuesTable.Rows.Any())
 {
-	<div class="subsection subsection-values">
+	<div class="subsection subsection-values noBreak client">
 		@Html.Partial("Table", Model.CompanyValuesScore)
 		<div class="evaluation-heading">Company Values</div>
 	</div>
@@ -16,7 +15,7 @@
 
 @if (Model.RockTable.Rows.Any())
 {
-	<div class="subsection subsection-rocks">
+	<div class="subsection subsection-rocks noBreak">
 		@Html.Partial("Table", Model.RockTable)
 
 		<div class="evaluation-heading">Rocks</div>
