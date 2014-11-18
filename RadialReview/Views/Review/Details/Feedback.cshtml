@@ -2,36 +2,35 @@
 @using RadialReview.Models;
 
 @{
-    var feedbacks = Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>();
+    var feedbackGroups = Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>().GroupBy(x=>x.Askable.Id);
 }
 
-@if (feedbacks.Count() > 0)
+@if (feedbackGroups.Any())
 {
-    <table class="fullWidth">
-        <tr>
-            <th></th>
-            <th style="width:120px">By</th>
-            <th>Feedback</th>
-            <th class="rightButton alignCenter">Included</th>
-        </tr>
-        @foreach (var feedback in feedbacks)
-        {
-            <tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
-                <td></td>
-                <td>@feedback.ByUser.GetName()</td>
-                <td class="text">@feedback.Feedback</td>
-                <td class="alignCenter clickable">
-                    @{
-            var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
-                    }
-                    <input @(on ? "checked" : "") class="feedback_input_@feedback.Id" type="checkbox" onchange="OnclickFeedback(this,@feedback.Id)" />
+	foreach (var feedbacks in feedbackGroups){
+		<table class="fullWidth">
+			<tr>
+				<th colspan="3">@feedbacks.First().Askable.GetQuestion():</th>
+				<th class="rightButton alignCenter">Included</th>
+			</tr>
+			@foreach (var feedback in feedbacks){
+				<tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
+					<td></td>
+					<td style ="width: 120px">@feedback.ByUser.GetName():</td>
+					<td class="text" style="font-style: italic;">"@feedback.Feedback"</td>
+					<td class="alignCenter clickable">
+						@{
+							var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
+						}
+						<input @(on ? "checked" : "") class="feedback_input_@feedback.Id" type="checkbox" onchange=" OnclickFeedback(this, @feedback.Id) " />
 
 
-                    @*<div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">    </div>*@
-                </td>
-            </tr>
-        }
-    </table>
+						@*<div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">    </div>*@
+					</td>
+				</tr>
+			}
+		</table>
+	}
 }
 else
 {

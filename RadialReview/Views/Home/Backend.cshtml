@@ -71,7 +71,7 @@
                 {
                     <h3>Instructions for employees:</h3>
                     <p>
-                        Welcome to Radial Review, your 360 review provider.
+                        Welcome to Radial Review,
 
                         To begin taking your review, click on the 'Task' button above or click <a href="@Url.Action("Index","Tasks")">here</a>.
                         After your coworkers have completed their reviews, Radial Review will aggregate the results for you and your manager to discuss.
@@ -80,7 +80,7 @@
                         Your name and profile image are an important way for you to ensure you are accurately reviewed. You can edit your profile image by clicking 
                         <a href="@Url.Action("Manage","Account")">here.</a>
                     </p>
-                    if (ViewBag.IsManager)
+                    if (ViewBag.IsManager && false)
                     {
                         <h3>Instructions for management:</h3>
                         <p>

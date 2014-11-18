@@ -61,11 +61,10 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		private static void AddToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewId, long aboutUserId, AboutType aboutType) {
-			perms.ViewUserOrganization(byUserId, false).ViewReview(reviewId);
+		private static void AddToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId, AboutType aboutType) {
+			perms.ViewUserOrganization(byUserId, false).ViewReviews(reviewContainerId);
 
-			var review = s.Where<ReviewModel>(x=>x.ForReviewsId == reviewId && x.ForUserId==byUserId).Single();
-
+			var review = s.Where<ReviewModel>(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).Single();
 
 			perms.ViewUserOrganization(review.ForUserId, false);
 

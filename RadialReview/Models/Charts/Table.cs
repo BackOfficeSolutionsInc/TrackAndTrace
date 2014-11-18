@@ -67,9 +67,15 @@ namespace RadialReview.Models.Charts
 		public String Class;
 		public String Title;
 		public HtmlString Contents;
+		public Dictionary<string, string> Data; 
 
-		public HtmlString ToHtmlString(){
-			return new HtmlString("<span class='" + (Class??"") + "' title='" +(Title??"")+ "'>"+(Contents.NotNull(x=>x.ToHtmlString())??"")+"</span>");
+		public HtmlString ToHtmlString()
+		{
+			var data = "";
+			if (Data!=null && Data.Any())
+				data = String.Join(" ",Data.Select(x => "data-" + x.Key + "=\"" + x.Value + "\""));
+
+			return new HtmlString("<span class='" + (Class??"") +"' "+data +" title='" +(Title??"")+ "'>"+(Contents.NotNull(x=>x.ToHtmlString())??"")+"</span>");
 		}
 	}
 

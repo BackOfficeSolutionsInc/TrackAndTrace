@@ -64,7 +64,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public Boolean UpdateGWCReasonAnswer(UserOrganizationModel caller, long questionId, string reason, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
+		public Boolean UpdateGWCReasonAnswer(UserOrganizationModel caller, long questionId,string gwcType, string newReason, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -75,10 +75,30 @@ namespace RadialReview.Accessors
 
 					edited = false;
 
-					if (reason.Trim() != answer.Reason)
+					switch (gwcType)
 					{
-						edited = true;
-						answer.Reason = reason.Trim();
+						case "GetItReason":
+							if (newReason.Trim() != answer.GetItReason){
+								edited = true;
+								answer.GetItReason = newReason.Trim();
+							}
+							break;
+						case "WantItReason":
+							if (newReason.Trim() != answer.WantItReason){
+								edited = true;
+								answer.WantItReason = newReason.Trim();
+							}
+							break;
+						case "HasCapacityReason":
+							if (newReason.Trim() != answer.HasCapacityReason){
+								edited = true;
+								answer.HasCapacityReason = newReason.Trim();
+							}
+							break;
+						default:
+							throw new Exception("GWC Reason type unknown. (" + gwcType + ")");
+					}
+					if(edited){
 						//DO NOT CALL.. only for required answers
 						//UpdateCompletion(answer, now, ref questionsAnsweredDelta, ref optionalAnsweredDelta);
 						s.Update(answer);

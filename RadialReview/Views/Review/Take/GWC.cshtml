@@ -23,19 +23,31 @@
 				}
 				@for (var i = 0; i < questions.Count(); i++)
 				{
+					var id = QuestionType.GWC+"_"+questions[i].Identifier;
 					<tr>
 						<td style="width:50%"><h4 class="question alignRight" style="padding-right:15px;">@questions[i].Askable.GetQuestion()</h4></td>
 						<td>
 							@Html.EditorFor(x => questions[i].GetIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt" })
+							<span class="reasonButton glyphicon glyphicon-pencil @(String.IsNullOrWhiteSpace(questions[i].GetItReason)?"":"on")" onclick="showReason(this)"></span>
+							<div id="reason_@(id)_GetItReason" class="hidden reasonPopup">
+								<textarea name="question_@(id)_GetItReason" class="full-width changeable reason" placeholder="Add Reason">@questions[i].GetItReason</textarea>
+							</div>
 						</td>
 						<td>
-								@Html.EditorFor(x => questions[i].WantIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt" })
+							@Html.EditorFor(x => questions[i].WantIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt" })
+							<span class="reasonButton glyphicon glyphicon-pencil  @(String.IsNullOrWhiteSpace(questions[i].WantItReason) ? "" : "on")" onclick="showReason(this)"></span>
+							<div id="reason_@(id)_WantItReason" class="hidden reasonPopup">
+								<textarea name="question_@(id)_WantItReason" class="full-width changeable reason" placeholder="Add Reason">@questions[i].WantItReason</textarea>
+							</div>
 						</td>
 						<td>
 							@Html.EditorFor(x => questions[i].HasCapacity, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_HasCapacity" })
+							<span class="reasonButton glyphicon glyphicon-pencil  @(String.IsNullOrWhiteSpace(questions[i].HasCapacityReason) ? "" : "on")" onclick="showReason(this)"></span>
+							<div id="reason_@(id)_HasCapacityReason" class="hidden reasonPopup">
+								<textarea name="question_@(id)_HasCapacityReason" class="full-width changeable reason" placeholder="Add Reason">@questions[i].HasCapacityReason</textarea>
+							</div>
 						</td>
 						<td style="vertical-align:top;width:50%">
-							<textarea name="question_@(QuestionType.GWC)_@(questions[i].Identifier)_Reason" class="full-width changeable reason" placeholder="Add Reason">@questions[i].Reason</textarea>
 						</td>
 					</tr>
 				}

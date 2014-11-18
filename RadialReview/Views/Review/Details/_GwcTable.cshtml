@@ -1,0 +1,72 @@
+﻿@using RadialReview.Models
+@using RadialReview.Models.Enums
+@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+
+<div class="pull-right header">
+	<input id="roleTableFilter" type="text" class="form-control" placeholder="Filter"/>
+</div>
+
+<table class="tablesorter roleTable">
+	<thead>
+		<tr>
+			<th>Name:</th>
+			<th>GWC:</th>
+			<th>Role:</th>
+			<th></th>
+			<th>Reason:</th>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+			var gwcs = new[]{
+				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>>("Gets It",x=>x.GetIt,x=>x.GetItReason),
+				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>>("Wants It",x=>x.WantIt,x=>x.WantItReason),
+				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>>("Capacity To Do It",x=>x.HasCapacity,x=>x.HasCapacityReason),
+				
+			};
+
+			var sorter = new Dictionary<Tristate, string> { { Tristate.True, "1" }, { Tristate.Indeterminate, "0" }, { Tristate.False, "-1" } };
+			var text = new Dictionary<Tristate, string> { { Tristate.True, "yes" }, { Tristate.Indeterminate, "n/a" }, { Tristate.False, "no" } };
+		}
+
+
+		@foreach (var r in Model.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>())
+		{
+			foreach (var gwc in gwcs)
+			{
+				<tr>
+					<td>@r.ByUser.GetName()</td>
+					<td class="alignLeft italic">@gwc.Item1</td>
+					<td class="bold">@r.Askable.GetQuestion()</td>
+					<td class="block"><div class="fill @gwc.Item2(r)" data-sort=""></div><span style="display:none">@(sorter[gwc.Item2(r)]) @text[gwc.Item2(r)]</span></td>
+					<td class="remainingWidth" style="padding-left: 10px;">
+						@{
+							var reason = gwc.Item3(r);
+						} 
+						@if (!String.IsNullOrWhiteSpace(reason)){
+							<span class="italic">"@reason"</span>
+						}
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
+</table>
+
+@using (Html.BeginScripts()){
+	<script>
+
+		$(function() {
+			$(".roleTable").filterTable({ inputSelector: '#roleTableFilter' });
+
+			$(".roleTable").tablesorter({
+				headers: {
+					3: { sorter: 'attr' }
+				},
+				/*sortForce: [[0, 1]],*/
+				sortStable: true,
+				
+			});
+		});
+	</script>
+}

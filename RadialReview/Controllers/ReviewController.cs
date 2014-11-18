@@ -293,8 +293,8 @@ namespace RadialReview.Controllers {
 									currentComplete = _ReviewAccessor.UpdateRelativeComparisonAnswer(user, questionId, collection[k].Parse<RelativeComparisonType>(), now, out edited, ref qA, ref oA);
 									break;
 								case QuestionType.GWC:
-										if (args[5]=="Reason")
-											currentComplete = _ReviewAccessor.UpdateGWCReasonAnswer(user, questionId, collection[k], now, out edited, ref qA, ref oA);
+										if (args[5].EndsWith("Reason"))
+											currentComplete = _ReviewAccessor.UpdateGWCReasonAnswer(user, questionId, args[5], collection[k], now, out edited, ref qA, ref oA);
 										else
 											currentComplete = _ReviewAccessor.UpdateGWCAnswer(user, questionId, args[5], collection[k].Parse<Tristate>(), now, out edited, ref qA, ref oA);
 										break;
@@ -444,61 +444,112 @@ namespace RadialReview.Controllers {
 				PotentialTeams = teams
 			});
 		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
+		public ActionResult ClientDetails(long id, bool print = false, bool reviewing = false) {
+			var review = _ReviewAccessor.GetReview(GetUser(), id);
+			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false));
+			if (managesUser)
+				ViewBag.Reviewing = true;
+			ViewBag.ReviewId = id;
+
+			if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization) {
+				var model = GetReviewDetails(review);
+				ViewBag.Reviewing = reviewing;
+				ViewBag.ReviewId = id;
+				if (print)
+					return View("ClientDetailsPrint", model);
+				return View(model);
+			}
+			else {
+				throw new PermissionsException("This review is not visible at this time. If you feel this is in error, please contact your reviewing manager.");
+			}
+		}
+
+
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeScatter(long reviewId, bool on) {
+			_ReviewAccessor.SetIncludeScatter(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeTimeline(long id, bool on) {
+			var reviewId = id;
+			_ReviewAccessor.SetIncludeTimeline(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
+
+
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetFeedback(long feedbackId, long reviewId, bool on) {
+			if (on)
+				_ReviewAccessor.AddAnswerToReview(GetUser(), reviewId, feedbackId);
+			else
+				_ReviewAccessor.RemoveAnswerFromReview(GetUser(), reviewId, feedbackId);
+			return Json(ResultObject.Create(new { FeedbackId = feedbackId, On = on }), JsonRequestBehavior.AllowGet);
+		}
 		
-		//[HttpPost]
-		//[Access(AccessLevel.Manager)]
-		//public async Task<JsonResult> Create(IssueReviewViewModel model) {
-		//	var userId = GetUserModel().UserName;
-		//	try {
-		//		var dueDate = DateTime.Parse(model.Date);
-		//		//var caller = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
+		[Access(AccessLevel.Manager)]
+		public JsonResult UpdateScatterChart(
+				long reviewId,
+				string aggregateBy = null,
+				string filterBy = null,
+				string title = null,
+				long? xAxis = null,
+				long? yAxis = null,
+				long? startTime = null,
+				long? endTime = null,
+				bool? include = null
+			) {
 
-		//		/*if (!caller.ManagingOrganization)
-		//			throw new PermissionsException();*/
+			_ReviewAccessor.UpdateScatterChart(GetUser(), reviewId, aggregateBy, filterBy, title, xAxis, yAxis, startTime.NotNull(x => x.Value.ToDateTime()), endTime.NotNull(x => x.Value.ToDateTime()), include);
+			return Json(ResultObject.Create(new { ReviewId = reviewId }), JsonRequestBehavior.AllowGet);
+		}
 
-		//		var user = GetUser();
 
-		//		// try
-		//		// {
-		//		//throw new Exception("Todo");
-		//		var result = await Task.Run(() => {
-		//			return _ReviewAccessor.CreateCompleteReview(user, model.ForTeamId, dueDate,
-		//				model.Name, model.Emails, model.ReviewSelf, model.ReviewManagers, model.ReviewSubordinates,
-		//				model.ReviewTeammates, model.ReviewPeers);
-		//		});
-		//		new Thread(() => {
-		//			Thread.Sleep(4000);
-		//			var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-		//			var hubUsers =  hub.Clients.User(userId);
-		//			//var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-		//			hubUsers.jsonAlert(ResultObject.Create(false, "Finished creating review \"" + model.Name + "\"."), true);
-		//			hubUsers.unhide("#ManageNotification");
-		//		}).Start();
-		//		//return true;
-		//		/* }
-		//			catch (Exception e)
-		//			{
-		//				//var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-		//				// hub.Clients.User(userId).jsonAlert(new ResultObject(e));
-		//				//hub.Clients.User(userId).unhide("#ManageNotification");
-		//				log.Error(e);
-		//				throw e;
-		//				// return false;
-		//			}*/
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeTable(long reviewId, bool on) {
+			_ReviewAccessor.SetIncludeQuestionTable(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
 
-		//	}
-		//	catch (Exception e) {
-		//		log.Error(e);
-		//		new Thread(() => {
-		//			var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-		//			hub.Clients.User(userId).jsonAlert(new ResultObject(e));
-		//			hub.Clients.User(userId).unhide("#ManageNotification");
-		//		}).Start();
-		//	}
-		//	return Json(ResultObject.SilentSuccess());
-		//}
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeManagerAnswers(long reviewId, bool on) {
+			_ReviewAccessor.SetIncludeManagerAnswers(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
 
-		public class ReviewDetailsViewModel {
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeSelfAnswers(long reviewId, bool on) {
+			_ReviewAccessor.SetIncludeSelfAnswers(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeNotes(long reviewId, bool on)
+		{
+			_ReviewAccessor.SetIncludeNotes(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeEvaluation(long reviewId, bool on)
+		{
+			_ReviewAccessor.SetIncludeEvaluation(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+		}
+		
+		[Access(AccessLevel.Manager)]
+		public JsonResult Authorize(bool authorized, long reviewId) {
+			var result=_ReviewAccessor.Authorize(GetUser(), reviewId, authorized);
+			result.Object = new { Authorized = authorized };
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+
+		public class ReviewDetailsViewModel
+		{
 			public ReviewModel Review { get; set; }
 			public long xAxis { get; set; }
 			public long yAxis { get; set; }
@@ -511,13 +562,13 @@ namespace RadialReview.Controllers {
 			public List<UserOrganizationModel> Supervisers { get; set; }
 			public List<Askable> ActiveQuestions { get; set; }
 			public List<ChartType> ChartTypes { get; set; }
-
+			/*
 			public Table EvaluationTable
 			{
 				get { return CompanyValuesTable; }
 			}
-
-			/*public Table RolesTable
+			*
+			*public Table RolesTable
 			{
 				get
 				{
@@ -564,8 +615,7 @@ namespace RadialReview.Controllers {
 
 					return new Table(table);
 				}
-			}*/
-			/*
+			}**
 			public Table RolesTable
 			{
 				get
@@ -632,27 +682,28 @@ namespace RadialReview.Controllers {
 
 			public static int NEUTRAL_CUTOFF = 2;
 
-			public Table RockTable
+			public Table RockTable(long reviewId)
 			{
-				get
-				{
-					return Table.Create(
-						AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>(),
-						x => x.Askable.GetQuestion(),
-						x => x.ByUser.GetName(),
-						x =>{
-							return new SpanCell{
-								Class = "fill rocks " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + " " + x.Finished,
-								Title = x.Reason,
-							}.ToHtmlString();
-						},
-						"rocks");
-				}
+				return Table.Create(
+					AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>(),
+					x => x.Askable.GetQuestion(),
+					x => x.ByUser.GetName(),
+					x =>
+					{
+						return new SpanCell
+						{
+							Class = "fill rocks " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + " " + x.Finished,
+							Title = x.Reason,
+							Data = new Dictionary<string, string>() {{"reviewId",""+reviewId}, { "rockId", "" + x.Askable.Id }, { "byuserid", "" + x.ByUserId } },
+						}.ToHtmlString();
+					},
+					"rocks");
 			}
 
-			private void AddCompanyValueRow(string row,TableData table,IEnumerable<IGrouping<long, CompanyValueAnswer>> values,Func<decimal,decimal,decimal,HtmlString> content,String clazz)
+			private void AddCompanyValueRow(string row, TableData table, IEnumerable<IGrouping<long, CompanyValueAnswer>> values, Func<decimal, decimal, decimal, HtmlString> content, String clazz)
 			{
-				foreach (var x in values){
+				foreach (var x in values)
+				{
 					var pos = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Positive);
 					var neg = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Negative);
 					var neut = x.Count(y => y.Exhibits == PositiveNegativeNeutral.Neutral);
@@ -662,7 +713,7 @@ namespace RadialReview.Controllers {
 
 					if (neg > 0 || neut >= NEUTRAL_CUTOFF)
 						ex = PositiveNegativeNeutral.Negative;
-					else if (pos == tot && tot>0)
+					else if (pos == tot && tot > 0)
 						ex = PositiveNegativeNeutral.Positive;
 					else if (tot > 0)
 						ex = PositiveNegativeNeutral.Neutral;
@@ -671,9 +722,10 @@ namespace RadialReview.Controllers {
 
 					//var perc = Math.Round((pos + (neut/2m))/tot*100m);
 
-					var html= new SpanCell(){
-						Class = "fill companyValues "+clazz+" " + ex,
-						Contents = content(pos,neg,neut)
+					var html = new SpanCell()
+					{
+						Class = "fill companyValues " + clazz + " " + ex,
+						Contents = content(pos, neg, neut)
 					}.ToHtmlString();
 					table.Set(row, x.First().Askable.GetQuestion(), html);
 				}
@@ -686,41 +738,42 @@ namespace RadialReview.Controllers {
 				get
 				{
 					var values = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue).Cast<CompanyValueAnswer>().ToList();
-					
-					var data=new TableData();
+
+					var data = new TableData();
 
 					//Pull self
 					var selfAns = values.Where(x => x.AboutType.HasFlag(AboutType.Self)).GroupBy(x => x.Askable.Id);
-					AddCompanyValueRow(Review.ForUser.GetName(), data, selfAns,(x,y,z)=>new HtmlString(""),"" );
+					AddCompanyValueRow(Review.ForUser.GetName(), data, selfAns, (x, y, z) => new HtmlString(""), "");
 					//Pull manager
 					var managers = values.Where(x => x.AboutType.HasFlag(AboutType.Subordinate)).GroupBy(x => x.ByUser.GetName());
-					foreach (var m in managers){
+					foreach (var m in managers)
+					{
 						var mAnswers = m.GroupBy(x => x.Askable.Id);
 						AddCompanyValueRow(m.First().ByUser.GetName(), data, mAnswers, (x, y, z) => new HtmlString(""), "");
 					}
 					//Pull peer answers
 					var otherAns = values.Where(x => !x.AboutType.HasFlag(AboutType.Self) && !x.AboutType.HasFlag(AboutType.Subordinate)).GroupBy(x => x.Askable.Id);
-					AddCompanyValueRow("Others", data, otherAns, (pos, neg, neut) =>{
+					AddCompanyValueRow("Others", data, otherAns, (pos, neg, neut) =>
+					{
 						var tot = pos + neg + neut;
-						if (tot==0)
+						if (tot == 0)
 							return new HtmlString("");
-						return new HtmlString("" + Math.Round((pos + (neut/2m))/(tot)*100m) + "%"); 
+						return new HtmlString("" + Math.Round((pos + (neut / 2m)) / (tot) * 100m) + "%");
 					}, "companyValues-score");
-					
-					return new Table(data){TableClass = "companyValues companyValues-client"};
+
+					return new Table(data) { TableClass = "companyValues companyValues-client" };
 				}
 			}
 
-			public Table CompanyValuesTable
+			public Table CompanyValuesTable(long reviewId)
 			{
-				get
-				{
-					var dictionary = new DefaultDictionary<String, decimal[]>(x=>new decimal[]{0,0,0});
+					var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[] { 0, 0, 0 });
 					var table = Table.Create(
 						AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue).Cast<CompanyValueAnswer>(),
 						x => x.ByUser.GetName(),
 						x => x.Askable.GetQuestion(),
-						x =>{
+						x =>
+						{
 							var d = dictionary[x.Askable.GetQuestion()];
 							d[0] += x.Exhibits.Score();
 							if (x.Complete)
@@ -728,49 +781,55 @@ namespace RadialReview.Controllers {
 							if (x.Exhibits == PositiveNegativeNeutral.Negative)
 								d[2] += 1;
 
-							return new SpanCell{
+							return new SpanCell
+							{
 								Class = "fill companyValues " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + " " + x.Exhibits,
 								Title = x.Reason,
+								Data = new Dictionary<string, string>() { { "reviewId", "" + reviewId }, { "valueId", "" + x.Askable.Id }, { "byuserid", "" + x.ByUserId } },
 							}.ToHtmlString();
 						},
 						"companyValues");
 
-					foreach (var kv in dictionary){
+					foreach (var kv in dictionary)
+					{
 						PositiveNegativeNeutral ex;
 						var v = kv.Value;
 						var reason = "";
-						if (v[1]==0)
+						if (v[1] == 0)
 							ex = PositiveNegativeNeutral.Indeterminate;
-						else if (v[2] > 0){
+						else if (v[2] > 0)
+						{
 							reason = "Aiming for 0 negatives.";
 							ex = PositiveNegativeNeutral.Negative;
-						}else if (v[0]==v[1]) //Num == Denom
+						}
+						else if (v[0] == v[1]) //Num == Denom
 							ex = PositiveNegativeNeutral.Positive;
-						else{
-							if ((v[1] - v[0])*2 >= NEUTRAL_CUTOFF)
+						else
+						{
+							if ((v[1] - v[0]) * 2 >= NEUTRAL_CUTOFF)
 								ex = PositiveNegativeNeutral.Negative;
 							else
 								ex = PositiveNegativeNeutral.Neutral;
 							reason = "";
 						}
-						var clz = String.IsNullOrWhiteSpace(reason)?"":"hasReason";
+						var clz = String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
 						table.Data.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
 					}
 					table.Rows.Add("Score");
 
 					return table;
-				}
 			}
-
 			
-			public class ChartType {
+			public class ChartType
+			{
 				public String Title { get; set; }
 				public String ImageUrl { get; set; }
 				public bool Checked { get; set; }
 
 			}
 
-			public ReviewDetailsViewModel() {
+			public ReviewDetailsViewModel()
+			{
 				Axis = new List<SelectListItem>();
 				AnswersAbout = new List<AnswerModel>();
 				Categories = new Dictionary<long, string>();
@@ -781,15 +840,17 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-		private ReviewDetailsViewModel GetReviewDetails(ReviewModel review) {
+		private ReviewDetailsViewModel GetReviewDetails(ReviewModel review)
+		{
 			var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.Id);
 			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId).Alive().ToList();
 			var managers = _UserAccessor.GetManagers(GetUser(), review.ForUserId);
 
-			var user =_UserAccessor.GetUserOrganization(GetUser(), review.ForUserId, false, false);
+			var user = _UserAccessor.GetUserOrganization(GetUser(), review.ForUserId, false, false);
 
 
-			foreach (var c in review.ClientReview.Charts.ToListAlive()) {
+			foreach (var c in review.ClientReview.Charts.ToListAlive())
+			{
 				c.Title = _ChartsEngine.GetChartTitle(GetUser(), c.Id);
 			}
 
@@ -803,7 +864,8 @@ namespace RadialReview.Controllers {
 			chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Show All", ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/All.png" });
 			chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Show All (Uncolored)", ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/AllGray.png" });
 
-			var model = new ReviewDetailsViewModel() {
+			var model = new ReviewDetailsViewModel()
+			{
 				Review = review,
 				Axis = categories.ToSelectList(x => x.Category.Translate(), x => x.Id),
 				xAxis = ((long?)Session["lastXAxis"]) ?? categories.FirstOrDefault().NotNull(x => x.Id),
@@ -822,16 +884,19 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-		public ActionResult Details(long id) {
+		public ActionResult Details(long id)
+		{
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
-
+			ViewBag.ReviewId = id;
 			//Clients View
-			if (GetUser().Id == review.ForUserId && !GetUser().ManagingOrganization) {
+			if (GetUser().Id == review.ForUserId && !GetUser().ManagingOrganization)
+			{
 				return RedirectToAction("ClientDetails", new { id = id });
 
 			}
 			//Managers View
-			else {
+			else{
+				ViewBag.RoleDetails = true;
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false));
 				var model = GetReviewDetails(review);
 				//model.Supervisors = model.AnswersAbout.Where(x => x.ByUserId == GetUser().Id).ToList();
@@ -839,109 +904,100 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult GWCDetails(long reviewId, long roleId, string gwc)
+		{
+			var review = _ReviewAccessor.GetReview(GetUser(), reviewId);
+			var model = GetReviewDetails(review);
+			ViewBag.RoleId = roleId;
+			ViewBag.GWC = gwc;
 
 
-		[Access(AccessLevel.UserOrganization)]
-		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-		public ActionResult ClientDetails(long id, bool print = false, bool reviewing = false) {
-			var review = _ReviewAccessor.GetReview(GetUser(), id);
-			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false));
-			if (managesUser)
-				ViewBag.Reviewing = true;
-
-			if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization) {
-				var model = GetReviewDetails(review);
-				ViewBag.Reviewing = reviewing;
-				ViewBag.ReviewId = id;
-				if (print)
-					return View("ClientDetailsPrint", model);
-				return View(model);
-			}
-			else {
-				throw new PermissionsException("This review is not visible at this time. If you feel this is in error, please contact your reviewing manager.");
-			}
+			return PartialView(model);
 		}
-
 
 		[Access(AccessLevel.Manager)]
-		public JsonResult SetIncludeScatter(long reviewId, bool on) {
-			_ReviewAccessor.SetIncludeScatter(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
-		}
-		[Access(AccessLevel.Manager)]
-		public JsonResult SetIncludeTimeline(long id, bool on) {
-			var reviewId = id;
-			_ReviewAccessor.SetIncludeTimeline(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
-		}
+		public PartialViewResult ValueDetails(long reviewId, long valueId, long userId)
+		{
+			var review = _ReviewAccessor.GetReview(GetUser(), reviewId);
+			var model = GetReviewDetails(review);
+			ViewBag.ValueId = valueId;
+			ViewBag.ByUserId = userId;
 
 
-		[Access(AccessLevel.Manager)]
-		public JsonResult SetFeedback(long feedbackId, long reviewId, bool on) {
-			if (on)
-				_ReviewAccessor.AddAnswerToReview(GetUser(), reviewId, feedbackId);
-			else
-				_ReviewAccessor.RemoveAnswerFromReview(GetUser(), reviewId, feedbackId);
-			return Json(ResultObject.Create(new { FeedbackId = feedbackId, On = on }), JsonRequestBehavior.AllowGet);
+			return PartialView(model);
 		}
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult RockDetails(long reviewId, long rockId, long userId)
+		{
+			var review = _ReviewAccessor.GetReview(GetUser(), reviewId);
+			var model = GetReviewDetails(review);
+			ViewBag.RockId = rockId;
+			ViewBag.ByUserId = userId;
+
+
+			return PartialView(model);
+		}
+
+		//[HttpPost]
+		//[Access(AccessLevel.Manager)]
+		//public async Task<JsonResult> Create(IssueReviewViewModel model) {
+		//	var userId = GetUserModel().UserName;
+		//	try {
+		//		var dueDate = DateTime.Parse(model.Date);
+		//		//var caller = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
+
+		//		/*if (!caller.ManagingOrganization)
+		//			throw new PermissionsException();*/
+
+		//		var user = GetUser();
+
+		//		// try
+		//		// {
+		//		//throw new Exception("Todo");
+		//		var result = await Task.Run(() => {
+		//			return _ReviewAccessor.CreateCompleteReview(user, model.ForTeamId, dueDate,
+		//				model.Name, model.Emails, model.ReviewSelf, model.ReviewManagers, model.ReviewSubordinates,
+		//				model.ReviewTeammates, model.ReviewPeers);
+		//		});
+		//		new Thread(() => {
+		//			Thread.Sleep(4000);
+		//			var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+		//			var hubUsers =  hub.Clients.User(userId);
+		//			//var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+		//			hubUsers.jsonAlert(ResultObject.Create(false, "Finished creating review \"" + model.Name + "\"."), true);
+		//			hubUsers.unhide("#ManageNotification");
+		//		}).Start();
+		//		//return true;
+		//		/* }
+		//			catch (Exception e)
+		//			{
+		//				//var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+		//				// hub.Clients.User(userId).jsonAlert(new ResultObject(e));
+		//				//hub.Clients.User(userId).unhide("#ManageNotification");
+		//				log.Error(e);
+		//				throw e;
+		//				// return false;
+		//			}*/
+
+		//	}
+		//	catch (Exception e) {
+		//		log.Error(e);
+		//		new Thread(() => {
+		//			var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+		//			hub.Clients.User(userId).jsonAlert(new ResultObject(e));
+		//			hub.Clients.User(userId).unhide("#ManageNotification");
+		//		}).Start();
+		//	}
+		//	return Json(ResultObject.SilentSuccess());
+		//}
 		/*[Access(AccessLevel.Manager)]
 		public JsonResult SetScatterChart(long reviewId, string on) {
 			var aggregateBy = on;
 			_ReviewAccessor.SetAggregateBy(GetUser(), reviewId, aggregateBy);
 			return Json(ResultObject.Create(new { ReviewId = reviewId, On = aggregateBy }), JsonRequestBehavior.AllowGet);
-		}*/
-
-		[Access(AccessLevel.Manager)]
-		public JsonResult UpdateScatterChart(
-				long reviewId,
-				string aggregateBy = null,
-				string filterBy = null,
-				string title = null,
-				long? xAxis = null,
-				long? yAxis = null,
-				long? startTime = null,
-				long? endTime = null,
-				bool? include = null
-			) {
-
-			_ReviewAccessor.UpdateScatterChart(GetUser(), reviewId, aggregateBy, filterBy, title, xAxis, yAxis, startTime.NotNull(x => x.Value.ToDateTime()), endTime.NotNull(x => x.Value.ToDateTime()), include);
-			return Json(ResultObject.Create(new { ReviewId = reviewId }), JsonRequestBehavior.AllowGet);
-		}
-
-
-		[Access(AccessLevel.Manager)]
-		public JsonResult SetIncludeTable(long reviewId, bool on) {
-			_ReviewAccessor.SetIncludeQuestionTable(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
-		}
-
-		[Access(AccessLevel.Manager)]
-		public JsonResult SetIncludeManagerAnswers(long reviewId, bool on) {
-			_ReviewAccessor.SetIncludeManagerAnswers(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
-		}
-
-		[Access(AccessLevel.Manager)]
-		public JsonResult SetIncludeSelfAnswers(long reviewId, bool on) {
-			_ReviewAccessor.SetIncludeSelfAnswers(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
-		}
-
-		[Access(AccessLevel.Manager)]
-		public JsonResult SetIncludeNotes(long reviewId, bool on)
-		{
-			_ReviewAccessor.SetIncludeNotes(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
-		}
-
-		[Access(AccessLevel.Manager)]
-		public JsonResult SetIncludeEvaluation(long reviewId, bool on)
-		{
-			_ReviewAccessor.SetIncludeEvaluation(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
-		}
-
-		/*[Access(AccessLevel.Manager)]
+		}*
+		 *[Access(AccessLevel.Manager)]
 		public JsonResult AddChart(long x, long y, long reviewId, String groups, String filters, long start, long end) {
 			var chartId = _ReviewAccessor.AddChartToReview(GetUser(), reviewId, x, y, groups, filters, start.ToDateTime(), end.ToDateTime());
 
@@ -959,20 +1015,13 @@ namespace RadialReview.Controllers {
 				Start = start,
 				End = end,
 			}), JsonRequestBehavior.AllowGet);
-		}*/
-
-		/*[Access(AccessLevel.Manager)]
+		}*
+		 *[Access(AccessLevel.Manager)]
 		public JsonResult RemoveChart(long chartId, long reviewId) {
 			_ReviewAccessor.RemoveChartFromReview(GetUser(), reviewId, chartId);
 			return Json(ResultObject.Create(new { ChartId = chartId }), JsonRequestBehavior.AllowGet);
 		}
 		*/
-		[Access(AccessLevel.Manager)]
-		public JsonResult Authorize(bool authorized, long reviewId) {
-			var result=_ReviewAccessor.Authorize(GetUser(), reviewId, authorized);
-			result.Object = new { Authorized = authorized };
-			return Json(result, JsonRequestBehavior.AllowGet);
-		}
 
 	}
 }

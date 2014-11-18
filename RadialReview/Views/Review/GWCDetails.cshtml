@@ -1,0 +1,50 @@
+﻿@using RadialReview.Models
+@using RadialReview.Models.Enums
+@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+<div class="gwc-details details">
+	@{
+		var found = Model.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().Where(x => x.Askable.Id == ViewBag.RoleId);
+		var titleGWC = new Dictionary<string, string> { { "get", "Gets It" }, { "want", "Wants It" }, { "capacity", "Capacity To Do It" } };
+		var lookup = new Dictionary<string, Func<GetWantCapacityAnswer, Tristate>> { { "get", x => x.GetIt }, { "want", x => x.WantIt }, { "capacity", x => x.HasCapacity } };
+		var lookupReason = new Dictionary<string, Func<GetWantCapacityAnswer, string>> { { "get", x => x.GetItReason }, { "want", x => x.WantItReason }, { "capacity", x => x.HasCapacityReason } };
+
+	}
+
+	@if (found.Any())
+	{
+		<div class="header">@found.First().Askable.GetQuestion(): <span class="extra">@titleGWC[ViewBag.GWC]</span></div>
+		<table>
+			<thead>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var i in found)
+				{
+					<tr class="gwc-row @lookup[ViewBag.GWC](i)">
+						<td class="gwc-min">@i.ByUser.GetName():</td>
+						<td class="gwc-details-square gwc-min">
+							<div class="fill @lookup[ViewBag.GWC](i)"></div>
+						</td>
+						<td class="reason">
+							@if (!String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](i))){
+								<span style="font-style: italic">
+									"@lookupReason[ViewBag.GWC](i)"
+								</span>
+							}
+						</td>
+
+					</tr>
+				}
+			</tbody>
+		</table>
+
+	}
+	else
+	{
+		<div class="gray">No data.</div>
+	}
+</div>

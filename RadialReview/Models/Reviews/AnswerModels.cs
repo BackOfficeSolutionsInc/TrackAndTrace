@@ -113,13 +113,17 @@ namespace RadialReview.Models
 		public virtual Tristate GetIt { get; set; }
 		public virtual Tristate WantIt { get; set; }
 		public virtual Tristate HasCapacity { get; set; }
-		public virtual String Reason { get; set; }
+		public virtual String GetItReason { get; set; }
+		public virtual String WantItReason { get; set; }
+		public virtual String HasCapacityReason { get; set; }
 		public class GetWantCapacityAnswerMap : SubclassMap<GetWantCapacityAnswer> {
 			public GetWantCapacityAnswerMap() {
 				Map(x => x.GetIt);
 				Map(x => x.WantIt);
 				Map(x => x.HasCapacity);
-				Map(x => x.Reason);
+				Map(x => x.GetItReason);
+				Map(x => x.WantItReason);
+				Map(x => x.HasCapacityReason);
 			}
 		}
 	}

@@ -5,6 +5,10 @@
 	<table class="table-header-rotated table-io @Model.TableClass">
 		<thead>
 			<tr>
+				<th></th>
+				<th colspan="@(Model.Columns.Count+2)"><div style="min-width:240px"></div></th>
+			</tr>
+			<tr>
 				<!-- First column header is not rotated -->
 				<th></th>
 				<!-- Following headers are rotated -->
@@ -12,10 +16,15 @@
 				{
 					<th class="rotate-45"><div><span>@c</span></div></th>
 				}
+				<th class="table-padding"></th>
+				<th></th>
 				<th></th>
 			</tr>
 		</thead>
 		<tbody>
+			@{
+				var first = true;
+			}
 			@foreach (var r in Model.Rows)
 			{
 				<tr>
@@ -24,7 +33,14 @@
 					{
 						<td class="cell">@Model.Data.Get(r, c)</td>
 					}
-					<td class="fixedWidth"></td>
+					<td></td>
+					<td></td>
+					@if (first){
+						first = false;
+						<td class="remainingWidth alignTop" rowspan="@Model.Rows.Count">
+							<div id ="@Model.TableClass-details"></div>
+						</td>
+					}
 				</tr>
 			}
 		</tbody>

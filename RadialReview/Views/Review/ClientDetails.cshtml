@@ -1,4 +1,5 @@
 ﻿@using RadialReview.Models.Enums
+@using RadialReview.Models
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 @{
@@ -234,7 +235,7 @@
 		<div class="smallBreak2"></div>
 
 	</div>
-	<div class="col-lg-9 review" style="min-width:660px;">
+	<div class="col-lg-9 review clientDetailsContainer" style="min-width:660px;">
 		<div class="noBreak">
 			<a id="name" class="shiftByTitle"></a>
 			<div class="row-title first" style="">
@@ -542,10 +543,18 @@
 				<div class="row-title">Feedback</div>
 				<div class="row">
 					<div class="col-sm-12">
-						@foreach (var f in feedbacks) {
-							<div style="white-space: pre-line;padding-top: 20px;padding-left: 20px;" id="feedback_@f.Value" class="feedback">@(((RadialReview.Models.FeedbackAnswer)Model.AnswersAbout.FirstOrDefault(x => x.Id == f.Value)).Feedback)</div>
-							<div class="smallBreak"></div>
-							<div class="smallBreak"></div>
+						@{
+							var feedbackGroups = Model.AnswersAbout.Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>().GroupBy(x => x.Askable.Id);
+						}
+						@foreach (var fg in  feedbackGroups)
+						{
+							<div class="feedback-heading">@fg.First().Askable.GetQuestion()</div>
+							foreach (var f in fg.Where(x=>feedbacks.Any(y=>y.Value==x.Id)))
+							{
+								 <div style="white-space: pre-line; padding-bottom: 15px; padding-left: 20px;" id="feedback_@(f.Id)" class="feedback">- <span class="italic">"@(f.Feedback)"</span></div>
+								 <div class="smallBreak"></div>
+								 <div class="smallBreak"></div>
+							 }
 						}
 					</div>
 				</div>

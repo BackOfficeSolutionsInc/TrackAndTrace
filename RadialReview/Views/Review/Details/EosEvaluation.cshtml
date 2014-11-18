@@ -13,20 +13,72 @@
 	
 	@Html.Partial("~/Views/Review/Details/GWC.cshtml",Model)
 
-	@if (Model.CompanyValuesTable.Rows.Any())
+	@if (Model.CompanyValuesTable((long)ViewBag.ReviewId).Rows.Any())
 	{
 		<div class="subsection subsection-values">
-			@Html.Partial("Table", Model.CompanyValuesTable)
+			@Html.Partial("Table", Model.CompanyValuesTable((long)ViewBag.ReviewId))
 			<div class="evaluation-heading">Company Values</div>
 		</div>
 	}
 
-	@if (Model.RockTable.Rows.Any())
+	@if (Model.RockTable((long)ViewBag.ReviewId).Rows.Any())
 	{
 		<div class="subsection subsection-rocks">
-			@Html.Partial("Table", Model.RockTable)
+			@Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))
 
 			<div class="evaluation-heading">Rocks</div>
 		</div>
 	}
 </div>
+
+@using (Html.BeginScripts())
+{
+
+	<script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
+	<script src="~/Scripts/jquery/jquery.filtertable.min.js"></script>
+	<script>
+		var request;
+		$(function() {
+			$(document).on("click", ".table-io.companyValues > tbody > tr > td > .fill", function() {
+				$(".table-io.companyValues .fill.selected").removeClass("selected");
+				$("#companyValues-details").html("<div style='text-align:center;'><img src='/Content/img/ajax-loader.gif' alt='Loading...' /></div>");
+				var that = $(this);
+				if (request)
+					request.abort();
+
+				request = $.ajax({
+					url: "/Review/ValueDetails?reviewId=" + $(this).data("reviewid") + "&userId=" + $(this).data("byuserid") + "&valueId=" + $(this).data("valueid"),
+					success: function(data) {
+						$(".table-io.companyValues .fill.selected").removeClass("selected");
+						$(that).addClass("selected");
+						$("#companyValues-details").html(data);
+					},
+					error: function (a, b, c) {
+						$("#companyValues-details").html("<div style='text-align:center;' class='gray'>An error has occurred.</div>");
+
+					}
+				});
+			});
+			$(document).on("click", ".table-io.rocks > tbody > tr > td > .fill", function() {
+				$(".table-io.rocks .fill.selected").removeClass("selected");
+				$("#rocks-details").html("<div style='text-align:center;'><img src='/Content/img/ajax-loader.gif' alt='Loading...' /></div>");
+				var that = $(this);
+				if (request)
+					request.abort();
+
+				request = $.ajax({
+					url: "/Review/RockDetails?reviewId=" + $(this).data("reviewid") + "&userId=" + $(this).data("byuserid") + "&rockId=" + $(this).data("rockid"),
+					success: function(data) {
+						$(".table-io.rocks .fill.selected").removeClass("selected");
+						$(that).addClass("selected");
+						$("#rocks-details").html(data);
+					},
+					error: function(a, b, c) {
+						$("#rocks-details").html("<div style='text-align:center;' class='gray'>An error has occurred.</div>");
+
+					}
+				});
+			});
+		});
+	</script>
+}

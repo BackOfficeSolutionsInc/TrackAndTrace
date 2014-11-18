@@ -1106,7 +1106,8 @@ a:hover .viewEdit {
 }
 
 tr.grayRow {
-	background-color: #DCD8FF;/*#F1F1F1;*/
+	/*background-color: #DCD8FF;/*#F1F1F1;*/
+	background-image: url("/Content/img/graystripe.png");
 }
 
 .flashing:not(:hover) {
@@ -1238,4 +1239,8 @@ color: #559DC5;
 
 .verticalOnly {
 	resize: vertical;
+}
+
+.alignTop {
+	vertical-align: top !important;
 }

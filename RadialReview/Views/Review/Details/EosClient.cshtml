@@ -1,11 +1,13 @@
-﻿@using RadialReview.Models
+﻿@using FluentNHibernate.Conventions
+@using RadialReview.Models
 @using RadialReview.Models.Charts
 @using RadialReview.Models.Enums
+@using System.Linq;
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 @Html.Partial("~/Views/Review/Details/GWC.cshtml", Model)
 
-@if (Model.CompanyValuesTable.Rows.Any())
+@if (Model.CompanyValuesTable((long)ViewBag.ReviewId).Rows.Any())
 {
 	<div class="subsection subsection-values noBreak client">
 		@Html.Partial("Table", Model.CompanyValuesScore)
@@ -13,10 +15,10 @@
 	</div>
 }
 
-@if (Model.RockTable.Rows.Any())
+@if (Model.RockTable((long)ViewBag.ReviewId).Rows.Any())
 {
 	<div class="subsection subsection-rocks noBreak">
-		@Html.Partial("Table", Model.RockTable)
+		@Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))
 
 		<div class="evaluation-heading">Rocks</div>
 	</div>

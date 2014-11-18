@@ -938,6 +938,10 @@
     <Content Include="Views\Shared\Table.cshtml" />
     <Content Include="Views\Review\Details\EosClient.cshtml" />
     <Content Include="Views\Review\Details\GWC.cshtml" />
+    <Content Include="Views\Review\GWCDetails.cshtml" />
+    <Content Include="Views\Review\ValueDetails.cshtml" />
+    <Content Include="Views\Review\RockDetails.cshtml" />
+    <Content Include="Views\Review\Details\_GwcTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

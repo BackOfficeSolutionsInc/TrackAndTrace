@@ -11,82 +11,119 @@
 @if (gwcs.Any())
 {
 	<div class="subsection subsection-roles noBreak">
-		<table class="table-io gwc">
-			<thead class="alignCenter">
-				<tr>
-					<th></th>
-					<th>Get It</th>
-					<th>Want It</th>
-					<th>Capacity To Do It</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				@{
-	var g = true;
-	var w = true;
-	var c = true;
-				}
-
-				@foreach (var r in gwcs)
-				{
+		<div class="table-responsive">
+			<table class="table-io gwc">
+				<thead class="alignCenter">
 					<tr>
-						<td class="row-header fixedWidth">@r.First().Askable.GetQuestion()</td>
-						<td>
-							@{
-					var positiveG = r.Count(x => x.GetIt == Tristate.True);
-					var negativeG = r.Count(x => x.GetIt == Tristate.False);
-					var clzG = "Indeterminate";
-					if (negativeG > 0)
-					{
-						clzG = "False";
-					}
-					else if (positiveG > 0)
-					{
-						clzG = "True";
-					}
-							}
-							<span class="fill roles getIt @clzG noSelect">@(positiveG)/@(positiveG + negativeG)</span>
-						</td>
-						<td>
-							@{
-					var positiveW = r.Count(x => x.WantIt == Tristate.True);
-					var negativeW = r.Count(x => x.WantIt == Tristate.False);
-					var clzW = "Indeterminate";
-					if (negativeW > 0)
-					{
-						clzW = "False";
-					}
-					else if (positiveW > 0)
-					{
-						clzW = "True";
-					}
-							}
-							<span class="fill roles wantIt @clzW noSelect">@(positiveW)/@(positiveW + negativeW)</span>
-						</td>
-						<td>
-							@{
-					var positiveC = r.Count(x => x.HasCapacity == Tristate.True);
-					var negativeC = r.Count(x => x.HasCapacity == Tristate.False);
-					var clzC = "Indeterminate";
-					if (negativeC > 0)
-					{
-						clzC = "False";
-					}
-					else if (positiveC > 0)
-					{
-						clzC = "True";
-					}
-							}
-							<span class="fill roles wantIt @clzC noSelect">
-								@(positiveC)/@(positiveC + negativeC)
-							</span>
-						</td>
-						<td class="fixedWidth"></td>
+						<th></th>
+						<th>Gets It</th>
+						<th>Wants It</th>
+						<th>Capacity To Do It</th>
+						<th class="remainingWidth"></th>
 					</tr>
-				}
-			</tbody>
-		</table>
-		<div class="evaluation-heading">Roles</div>
+				</thead>
+				<tbody>
+					@{
+						var g = true;
+						var w = true;
+						var c = true;
+						var first = true;
+						var qs = new[]{
+							new Tuple<string, string, Func<GetWantCapacityAnswer, Tristate>, Func<GetWantCapacityAnswer, string>>("get", "getIt", x => x.GetIt, x => x.GetItReason),
+							new Tuple<string, string, Func<GetWantCapacityAnswer, Tristate>, Func<GetWantCapacityAnswer, string>>("want", "wantIt", x => x.WantIt, x => x.WantItReason),
+							new Tuple<string, string, Func<GetWantCapacityAnswer, Tristate>, Func<GetWantCapacityAnswer, string>>("capacity", "hasCapacity", x => x.HasCapacity, x => x.HasCapacityReason),
+						};
+
+					}
+
+					@foreach (var r in gwcs)
+					{
+						<tr>
+							<td class="row-header fixedWidth">@r.First().Askable.GetQuestion()</td>
+
+							@foreach (var q in qs)
+							{
+								<td>
+									@{
+										var positiveG = r.Count(x => q.Item3(x) == Tristate.True);
+										var negativeG = r.Count(x => q.Item3(x) == Tristate.False);
+										var clzG = "Indeterminate";
+										if (negativeG > 0)
+										{
+											clzG = "False";
+										}
+										else if (positiveG > 0)
+										{
+											clzG = "True";
+										}
+										var hasReason = r.Any(x => !String.IsNullOrWhiteSpace(q.Item4(x))) ? "hasReason" : "";
+
+									}
+									<span data-roleid="@r.First().Askable.Id" data-gwc="@q.Item1" data-reviewid="@Model.Review.Id" class="fill roles @hasReason @q.Item2 @clzG noSelect">@(positiveG)/@(positiveG + negativeG)</span>
+								</td>
+							}
+							@if (first)
+							{
+								first = false;
+								<td class="remainingWidth" rowspan="@gwcs.Count()" style="vertical-align: top">
+									<div id="roleDetails" class="roleFlip"></div>
+
+								</td>
+							}
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		@if (ViewBag.RoleDetails ?? false){
+			<div class="btn btn-link roleTableBtn" onclick=" toggleRoleTable() ">Details</div>
+			<div id="roleTable" class="roleFlip hidden clearfix">
+				@Html.Partial("~/Views/Review/Details/_GwcTable.cshtml", Model)
+			</div>
+			<div class="evaluation-heading">Roles</div>
+		}
 	</div>
+	
+}
+
+@if (ViewBag.RoleDetails ?? false){
+	using (Html.BeginScripts()){
+		 <script>
+
+ 			var request;
+
+ 			function toggleRoleTable() {
+ 				$("#roleTable").toggleClass("hidden");
+ 				$(".roleTableBtn").toggleClass("on");
+ 			}
+
+ 			$("#roleDetails").css("height", 100);
+
+ 			$(document).on("click", ".table-io.gwc > tbody > tr > td > .fill", function() {
+ 				$("#roleDetails").removeClass("hidden");
+
+ 				$(".table-io.gwc .fill.selected").removeClass("selected");
+ 				var roleId = $(this).data("roleid");
+ 				var gwc = $(this).data("gwc");
+ 				var reviewId = $(this).data("reviewid");
+ 				$("#roleDetails").html("<div style='text-align:center;'><img src='/Content/img/ajax-loader.gif' alt='Loading...' /></div>");
+ 				var that = $(this);
+ 				if (request)
+ 					request.abort();
+
+ 				request = $.ajax({
+ 					url: "/Review/GWCDetails?reviewId=" + reviewId + "&gwc=" + gwc + "&roleId=" + roleId,
+ 					success: function(data) {
+ 						$(".table-io.gwc .fill.selected").removeClass("selected");
+ 						$(that).addClass("selected");
+ 						$("#roleDetails").html(data);
+ 					},
+ 					error: function(a, b, c) {
+ 						$("#roleDetails").html("<div style='text-align:center;' class='gray'>An error has occurred.</div>");
+
+ 					}
+ 				});
+ 			});
+ 		</script>
+	 }
 }

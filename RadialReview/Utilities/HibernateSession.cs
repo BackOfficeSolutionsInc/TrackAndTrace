@@ -147,7 +147,13 @@ namespace RadialReview.Utilities
         }
         private static void BuildMySqlSchema(Configuration config)
         {
-            // delete the existing db on each run
+            //UPDATE DATABASE:
+            //new SchemaUpdate(config).Execute(true, true);
+           
+
+            //KILL/CREATE DATABASE:
+            //new SchemaExport(config).Execute(true, true, false);
+			// DELETE THE EXISTING DB ON EACH RUN
             /*if (!File.Exists(DbFile))
             {
                 new SchemaExport(config).Create(false, true);
@@ -156,12 +162,6 @@ namespace RadialReview.Utilities
             {
                 new SchemaUpdate(config).Execute(false, true);
             }*/
-
-            //Update Database:
-            //new SchemaUpdate(config).Execute(true, true);
-
-            //Kill/Create Database:
-            //new SchemaExport(config).Execute(true, true, false);
 
         }
 
