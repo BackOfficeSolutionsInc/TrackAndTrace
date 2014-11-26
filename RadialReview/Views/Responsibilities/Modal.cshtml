@@ -58,14 +58,23 @@
 	<div class="smallBreak"></div>
 	<div class="smallBreak"></div>
 
-    <div class="row">
-        <div class="col-sm-3">
-            <label>Enabled:</label>
-        </div>
-        <div class="col-sm-1">
-            @Html.CheckBoxFor(x => x.Active, new { @class = "checkbox" })
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Enabled:</label>
+		</div>
+		<div class="col-sm-1">
+			@Html.CheckBoxFor(x => x.Active, new { @class = "checkbox" })
+		</div>
+	</div><div class="smallBreak"></div>
+	<div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Anonymous:</label>
+		</div>
+		<div class="col-sm-1">
+			@Html.CheckBoxFor(x => x.Anonymous, new { @class = "checkbox" })
+		</div>
+	</div>
 </div>
 <script>
     function Update() {

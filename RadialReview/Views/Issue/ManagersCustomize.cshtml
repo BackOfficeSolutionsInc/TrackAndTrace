@@ -48,15 +48,23 @@
                 </div>
             </div>
         </div>
-        <div class="row smallBreak2" >
-            
-            <div class="col-md-6" title="Any reviews resulting from managers that do not customize their pre-review will automatically be populated with a default review group consisting of themselves and thier peers, managers, and teammates.">
-                <label class="control-label">Ensure default:</label>
-            </div>
-            <div class="col-md-4">
-                @Html.CheckBox("EnsureDefault",true)
-            </div>
-        </div>
+		<div class="row smallBreak2">
+
+			<div class="col-md-6" title="Any reviews resulting from managers that do not customize their pre-review will automatically be populated with a default review group consisting of themselves and thier peers, managers, and teammates.">
+				<label class="control-label">Ensure default:</label>
+			</div>
+			<div class="col-md-4">
+				@Html.CheckBox("EnsureDefault", true)
+			</div>
+		</div>
+		<div class="row smallBreak2">
+			<div class="col-md-6" title="Any feedback given will be anonymous. Only managers will be able to see it.">
+				<label class="control-label">Anonymous Feedback:</label>
+			</div>
+			<div class="col-md-4">
+				@Html.CheckBox("Anonymous", true)
+			</div>
+		</div>
         @*<div class="row smallBreak2">
                 <div class="col-md-6">
                     <label class="control-label">Email employees:</label>

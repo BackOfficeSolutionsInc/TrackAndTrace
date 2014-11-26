@@ -17,7 +17,7 @@
 				<tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
 					<td></td>
 					<td style ="width: 120px">@feedback.ByUser.GetName():</td>
-					<td class="text" style="font-style: italic;">"@feedback.Feedback"</td>
+					<td class="text" style="font-style: italic;white-space: pre-line;">"@feedback.Feedback"</td>
 					<td class="alignCenter clickable">
 						@{
 							var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;

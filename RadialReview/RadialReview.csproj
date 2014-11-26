@@ -314,6 +314,7 @@
     <Compile Include="Models\Askables\RockModel.cs" />
     <Compile Include="Models\Askables\CompanyValueModel.cs" />
     <Compile Include="Models\Charts\LineChart.cs" />
+    <Compile Include="Models\Charts\Scatter.cs" />
     <Compile Include="Models\Charts\Table.cs" />
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
@@ -681,6 +682,7 @@
     <Content Include="Scripts\d3\d3.js" />
     <Content Include="Scripts\d3\d3.v3.js" />
     <Content Include="Scripts\d3\d3.v3.min.js" />
+    <Content Include="Scripts\d3\Scatter.v2.js" />
     <Content Include="Scripts\d3\line.js" />
     <Content Include="Scripts\d3\orgchartBU.js" />
     <Content Include="Scripts\d3\orgchart.js" />
@@ -732,6 +734,8 @@
     <Content Include="Views\Organization\Fields.cshtml" />
     <Content Include="Views\CompanyValues\_ValueRow.cshtml" />
     <Content Include="Views\CompanyValues\Modal.cshtml" />
+    <Content Include="Views\Email\Remind.cshtml" />
+    <Content Include="Content\Chart\Scatter.v2.css" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -942,6 +946,7 @@
     <Content Include="Views\Review\ValueDetails.cshtml" />
     <Content Include="Views\Review\RockDetails.cshtml" />
     <Content Include="Views\Review\Details\_GwcTable.cshtml" />
+    <Content Include="Views\Shared\_ReviewStats2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

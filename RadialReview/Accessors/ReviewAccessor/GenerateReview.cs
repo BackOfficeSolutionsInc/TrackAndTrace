@@ -24,9 +24,12 @@ namespace RadialReview.Accessors {
 		
 		#region Generate Review
 		#region Generate Answers
-		private static void GenerateSliderAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review) {
+		private static void GenerateSliderAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		{
 
-			var slider = new SliderAnswer() {
+			var slider = new SliderAnswer()
+			{
+				Anonymous = anonymous,
 				Complete = false,
 				Percentage = null,
 				Askable = askable.Askable,
@@ -42,8 +45,11 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static void GenerateGWCAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review) {
-			var gwc = new GetWantCapacityAnswer() {
+		private static void GenerateGWCAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		{
+			var gwc = new GetWantCapacityAnswer()
+			{
+				Anonymous = anonymous,
 				Complete = false,
 				GetIt		= Tristate.Indeterminate,
 				WantIt		= Tristate.Indeterminate,
@@ -62,8 +68,11 @@ namespace RadialReview.Accessors {
 			session.Save(gwc);
 		}
 
-		private static void GenerateRockAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review) {
-			var rock = new RockAnswer() {
+		private static void GenerateRockAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		{
+			var rock = new RockAnswer()
+			{
+				Anonymous = anonymous,
 				Complete = false,
 				Finished = Tristate.Indeterminate,
 				Reason = null,
@@ -78,10 +87,11 @@ namespace RadialReview.Accessors {
 			session.Save(rock);
 		}
 
-		private static void GenerateCompanyValuesAnswer(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review)
+		private static void GenerateCompanyValuesAnswer(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var gwc = new CompanyValueAnswer()
 			{
+				Anonymous = anonymous,
 				Complete = false,
 				Exhibits = PositiveNegativeNeutral.Indeterminate,
 				Reason = null,
@@ -96,8 +106,9 @@ namespace RadialReview.Accessors {
 			session.Save(gwc);
 		}
 
-		private static void GenerateFeedbackAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review) {
+		private static void GenerateFeedbackAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous) {
 			var feedback = new FeedbackAnswer() {
+				Anonymous = anonymous,
 				Complete = false,
 				Feedback = null,
 				Askable = askable.Askable,
@@ -112,8 +123,10 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static void GenerateThumbsAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review) {
+		private static void GenerateThumbsAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		{
 			var thumbs = new ThumbsAnswer() {
+				Anonymous = anonymous,
 				Complete = false,
 				Thumbs = ThumbsType.None,
 				Askable = askable.Askable,
@@ -128,7 +141,8 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static void GenerateRelativeComparisonAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review) {
+		private static void GenerateRelativeComparisonAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		{
 			var peers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager).SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate));
 			var managers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager);
 			var managing = forUser.ManagingUsers.ToListAlive().Select(x => x.Subordinate);
@@ -141,7 +155,9 @@ namespace RadialReview.Accessors {
 			List<Tuple<UserOrganizationModel, UserOrganizationModel>> items = new List<Tuple<UserOrganizationModel, UserOrganizationModel>>();
 			for (int i = 0; i < len - 1; i++) {
 				for (int j = i + 1; j < len; j++) {
-					var relComp = new RelativeComparisonAnswer() {
+					var relComp = new RelativeComparisonAnswer()
+					{
+						Anonymous = anonymous,
 						Required = askable.Askable.Required,
 						Askable = askable.Askable,
 						Complete = false,

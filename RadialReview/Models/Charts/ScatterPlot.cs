@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Web;
 
@@ -131,6 +132,11 @@ namespace RadialReview.Models.Charts
                 OtherData=this.OtherData
             };
         }
+
+	    public ScatterData()
+	    {
+		    OtherData = new ExpandoObject();
+	    }
     }
 
     public class ScatterDimension

@@ -83,7 +83,8 @@ namespace RadialReview.Accessors {
         }
 
 
-        public async Task<ResultObject> CreateReviewFromCustom(UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, List<Tuple<long, long>> whoReviewsWho) {
+		public async Task<ResultObject> CreateReviewFromCustom(UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, bool anonFeedback, List<Tuple<long, long>> whoReviewsWho)
+		{
             var unsentEmails = new List<MailModel>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 ReviewsModel reviewContainer;
@@ -101,7 +102,9 @@ namespace RadialReview.Accessors {
                          reviewSubordinates = true,
                          reviewTeammates = true;
 
-                    reviewContainer = new ReviewsModel() {
+					reviewContainer = new ReviewsModel()
+					{
+						AnonymousByDefault = anonFeedback,
                         DateCreated = DateTime.UtcNow,
                         DueDate = dueDate,
                         ReviewName = reviewName,

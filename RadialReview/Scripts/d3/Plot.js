@@ -202,6 +202,8 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 	//setup x
 	var xValue = function (scatterDataPoint) {
 		try {
+			if (scatterDataPoint.Dimensions[options.xDimensionId]===undefined || scatterDataPoint.Dimensions[options.xDimensionId].Denominator == 0)
+				return 0;
 			return scatterDataPoint.Dimensions[options.xDimensionId].Value / scatterDataPoint.Dimensions[options.xDimensionId].Denominator;
 		} catch (e) {
 			console.log(e);
@@ -217,6 +219,8 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 	//setup y
 	var yValue = function (scatterDataPoint) {
 		try {
+			if (scatterDataPoint.Dimensions[options.yDimensionId] === undefined || scatterDataPoint.Dimensions[options.yDimensionId].Denominator == 0)
+				return 0;
 			return scatterDataPoint.Dimensions[options.yDimensionId].Value / scatterDataPoint.Dimensions[options.yDimensionId].Denominator;
 		} catch (e) {
 			console.log(e);
@@ -224,6 +228,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 		}
 	}, // data -> value
         yMap = function (scatterDataPoint) {
+
         	return that.yScale(yValue(scatterDataPoint)) + topLeft.y + that.pointRadius / 2;
         }, // data -> display
         yAxis = d3.svg.axis().scale(this.yScale).orient("left").tickSize(this.tickSize).tickSubdivide(true);
@@ -356,7 +361,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 		for (var r = 0; r < required.length; r++) {
 			var found = false;
 			var regexStr = "^" + required[r].replace("*", "[a-zA-Z0-9_\\-]+") + "$";
-			var re = new RegExp(regexStr, "g")
+			var re = new RegExp(regexStr, "g");
 			for (var i = 0; i < list.length; i++) {
 				if (re.test(list[i])) {
 					found = true;
@@ -621,9 +626,18 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 
 	dataset.attr("class", function (d) {
 		try {
-			return "scatter-point " + d.Class + " " + d.Dimensions[options.xDimensionId].Class + " " + d.Dimensions[options.yDimensionId].Class;
+			var clzz = ["scatter-point"];
+			if (d !== undefined) {
+				clzz.push(d.Class);
+				if (d.Dimensions[options.xDimensionId] !== undefined)
+					clzz.push(d.Dimensions[options.xDimensionId].Class);
+				if (d.Dimensions[options.yDimensionId] !== undefined)
+					clzz.push(d.Dimensions[options.yDimensionId].Class);
+			}
+
+			return clzz.join(" ");
 		} catch (e) {
-			console.log(e);
+			//console.log(e);
 			return "scatter-point";
 		}
 	});/*.on("mouseover", function () {

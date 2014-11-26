@@ -53,6 +53,20 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
+
+		public List<UserModel> GetUsersByIds(IEnumerable<String> userIds)
+		{
+			if (userIds == null)
+				throw new LoginException();
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					return s.QueryOver<UserModel>().WhereRestrictionOn(x => x.Id).IsIn(userIds.ToArray()).List().ToList();
+				}
+			}
+		}
+
         [Obsolete("Dont use this elsewhere", false)]
         public UserModel GetUserByEmail(String email)
         {

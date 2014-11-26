@@ -1,78 +1,118 @@
 ﻿@model RadialReview.Models.ReviewsModel
 @{
-    ViewBag.Title = "Review";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Stats";
-    ViewBag.ExtraTabs = ExtraTab.Create("Stats", "/Statistics/Review/" + Model.Id);
-    ViewBag.Subheading = "Statistics for '" + Model.ReviewName + "'";
+	ViewBag.Title = "Review";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Page = "Stats";
+	ViewBag.ExtraTabs = ExtraTab.Create("Stats", "/Statistics/Review/" + Model.Id);
+	ViewBag.Subheading = "Statistics for '" + Model.ReviewName + "'";
 
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>Reports</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>Reports</h1>
+	</div>
 }
 
 @section header{
-    @*@Html.Partial("_ReviewsHeader")*@
+	@*@Html.Partial("_ReviewsHeader")*@
 }
 
-
 <div class="panel panel-primary startHiddenGroup">
-    <div class="panel-heading">
-        <h3 class="panel-title">Review progress</h3>
-    </div>
-
-    <div class="panel-body">
-        @Html.Partial("_ReviewStats",Model.Id)
-    </div>
-    @if (ViewBag.IsManager ?? false)
-    {
-        <div class="panel-heading">
-            <h3 class="panel-title">Individual progress</h3>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-condensed table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th class="alignCenter" style="width:10px;">Reviewed by</th>
-                        <th class="alignCenter" style="width:10px;"># Reviewed</th>
-                        <th class="alignCenter" style="width:150px;">Completion</th>
-                        @*<th style="width:10px;">Report</th>*@
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var review in Model.Reviews.OrderByDescending(x =>
-                    {
-                        double complete = Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
-                        double total = Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
-                        return complete / total;
-                    }))
-                    {
-                        <tr>
-                            <td class="table-hover-underline">@review.ForUser.GetNameAndTitle()</td>
-                            <td class="alignCenter">
-                                @Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete))/
-                                @Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count())
-                            </td>
-                            <td class="alignCenter">
-                                @Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete))/
-                                @Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count())
-                            </td>
-                            <td>@Html.Partial("_Completion", review.GetCompletion())</td>
-                            @*<td>
-                                    @if (review.ForUser.GetPersonallyManaging())
-                                    {
-                                        <a href="/Review/Details/@review.ClientReview.Id">Report</a>
-                                    }
-                                </td>*@
-                        </tr>
-                    }
-                </tbody>
-
-            </table>
-        </div>
-    }
+	<div class="panel-heading">
+		<h3 class="panel-title">Review Statistics</h3>
+	</div>
+	<div class="panel-body">
+		
+		<div class="row">
+			<div class="col-lg-6">
+				@Html.Partial("_ReviewStats", Model.Id)
+			</div>
+			<div class="col-lg-6">				
+				@Html.Partial("_ReviewStats2", Model.Id)
+			</div>
+		</div>
+	</div>
 </div>
+@*<div class="panel panel-primary startHiddenGroup">
+	<div class="panel-heading">
+		<h3 class="panel-title">Review progress</h3>
+	</div>
+
+	<div class="panel-body">
+	</div>
+</div>*@
+@if (ViewBag.IsManager ?? false)
+{
+	<div class="smallBreak2 alignRight">
+		<div class="btn btn-default" onclick="sendReminders()">Send Reminder</div>
+		<div class="btn btn-link" onclick="$('.userCheck').prop('checked',true)">Select All</div>
+		<div class="btn btn-link" onclick="$('.userCheck').removeAttr('checked')">Select None</div>
+	</div>
+	<div class="panel panel-primary startHiddenGroup">
+		<div class="panel-heading ">
+			<h3 class="panel-title">Individual progress</h3>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-condensed table-hover">
+				<thead>
+					<tr>
+						<th style="width:10px;"></th>
+						<th>Name</th>
+						<th class="alignCenter" style="width:10px;">Reviewed by</th>
+						<th class="alignCenter" style="width:10px;"># Reviewed</th>
+						<th class="alignCenter" style="width:150px;">Completion</th>
+						@*<th style="width:10px;">Report</th>*@
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var review in Model.Reviews.OrderByDescending(x =>
+					{
+						double complete = Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
+						double total = Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
+						return complete / total;
+					}))
+					{
+						<tr class="checkRow" onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))">
+							<td><input type="checkbox" class="userCheck clickThrough" name="user_@review.ForUserId" data-id="@review.ForUserId" /></td>
+							<td class="table-hover-underline">@review.ForUser.GetNameAndTitle()</td>
+							<td class="alignCenter">
+								@Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete))/
+								@Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count())
+							</td>
+							<td class="alignCenter">
+								@Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete))/
+								@Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count())
+							</td>
+							<td>@Html.Partial("_Completion", review.GetCompletion())</td>
+							@*<td>
+									@if (review.ForUser.GetPersonallyManaging())
+									{
+										<a href="/Review/Details/@review.ClientReview.Id">Report</a>
+									}
+								</td>*@
+						</tr>
+					}
+				</tbody>
+
+			</table>
+		</div>
+		@using (Html.BeginScripts())
+		{
+			<script>
+
+				function sendReminders() {
+					var ids = [];
+					$('.userCheck:checked').each(function () {
+						ids.push($(this).data("id"));
+					});
+					if (ids && ids.length != 0) {
+						showModal('Send Reminder', '/Email/Remind?reviewId=@(Model.Id)&userIds=' + ids.join(","), '/Email/Remind');
+					} else {
+						showAlert("You must select at least one user");
+					}
+				}
+			</script>
+		}
+	</div>
+}

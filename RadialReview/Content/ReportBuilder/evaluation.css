@@ -12,7 +12,8 @@
 		padding: 0px;
 	}
 
-	.table-io .cell {
+	.table-io.rocks .cell {
+		padding: 2px;
 	}
 
 	.table-io .fill {
@@ -33,7 +34,7 @@
 		position: relative;
 	}
 
-.table-io.companyValues .fill:before {
+		.table-io.companyValues .fill:before {
 			top: 6px;
 			right: 8px;
 			font-size: 9px;
@@ -43,7 +44,7 @@
 		}
 
 
-.table-io.companyValues .fill.companyValues-score {
+		.table-io.companyValues .fill.companyValues-score {
 			padding-top: 15px;
 			color: white;
 			margin-right: 2px;
@@ -170,35 +171,35 @@
 	}
 
 
-	.fill.True {
-		background-color: #449D44;
-		border: 1px solid #449D44;
-	}
+.fill.True {
+	background-color: #449D44;
+	border: 1px solid #449D44;
+}
 
-	.fill.False {
-		background-color: #D9534F;
-		border: 1px solid #D9534F;
-	}
+.fill.False {
+	background-color: #D9534F;
+	border: 1px solid #D9534F;
+}
 
-	.table-io.rocks .fill.True:after, .gwc-details-square .True:after, .roleTable  .True:after {
-		content: "YES";
-	}
+.table-io.rocks .fill.True:after, .gwc-details-square .True:after, .roleTable .True:after {
+	content: "YES";
+}
 
-	.table-io.rocks .fill.False:after, .gwc-details-square .False:after, .roleTable  .False:after {
-		content: "NO";
-	}
-	
-	.gwc-details-square .Indeterminate:after {
-		content: "n/a";
-		color: #CCCCCC;
-	}
+.table-io.rocks .fill.False:after, .gwc-details-square .False:after, .roleTable .False:after {
+	content: "NO";
+}
 
-	.gwc-details-square, .roleTable .fill {
-		font-size: 9px;
-		text-align: center;
-		line-height: 18px;
-		color: white;
-	}
+.gwc-details-square .Indeterminate:after {
+	content: "n/a";
+	color: #CCCCCC;
+}
+
+.gwc-details-square, .roleTable .fill {
+	font-size: 9px;
+	text-align: center;
+	line-height: 18px;
+	color: white;
+}
 
 
 .gwc .header1 {
@@ -222,11 +223,13 @@
 	content: "";
 	display: block;
 }
+
 .remainingWidth:after {
 	width: 100%;
 	content: "";
 	display: block;
 }
+
 .remainingWidth {
 	width: 100% !important;
 }
@@ -238,20 +241,20 @@
 	position: relative;
 }
 
-.table-io.gwc > tbody > tr > td > .fill {
-	height: 80px;
-	width: 80px;
-	text-align: center;
-	padding-top: 28px;
-	font-weight: bold;
-	color: white;
-	font-size: 16px;
-	cursor: pointer;
-}
+	.table-io.gwc > tbody > tr > td > .fill {
+		height: 80px;
+		width: 80px;
+		text-align: center;
+		padding-top: 28px;
+		font-weight: bold;
+		color: white;
+		font-size: 16px;
+		cursor: pointer;
+	}
 
-.table-io.gwc > tbody > tr > td > .fill.Indeterminate {
-	color: #C3C3C3;
-}
+		.table-io.gwc > tbody > tr > td > .fill.Indeterminate {
+			color: #C3C3C3;
+		}
 
 .table-io.gwc .perc {
 	position: absolute;
@@ -268,30 +271,31 @@
 }
 
 	.table-io .details .header {
-
 		background-color: #767F99;
 		color: #FFF;
 		padding: 2px 6px;
 		font-weight: bold;
 		text-align: left;
 	}
-	.table-io .details .header .extra {
-		color: #CCCCCC;
-		font-weight: normal;
-		white-space: nowrap;
-		display:inline-block;
-	}
 
-	.table-io.companyValues .details .reason {
-		padding-left: 3px;
-	}
+		.table-io .details .header .extra {
+			color: #CCCCCC;
+			font-weight: normal;
+			white-space: nowrap;
+			display: inline-block;
+		}
 
-	
-	.table-io.companyValues .details .fill {
-		height: 19px !important;
-		width: 19px !important;
-		/*margin-left: 4px;*/
-	}
+.table-io.companyValues .details .reason {
+	padding-left: 3px;
+}
+
+
+.table-io.companyValues .details .fill {
+	height: 19px !important;
+	width: 19px !important;
+	/*margin-left: 4px;*/
+}
+
 	.table-io.companyValues .details .fill:after {
 		padding-top: 0px;
 		margin-left: 0px;
@@ -300,13 +304,13 @@
 		text-align: center;
 	}
 
-	.table-io.gwc #roleDetails td:first-child {
-		padding-left: 10px;
-	}
+.table-io.gwc #roleDetails td:first-child {
+	padding-left: 10px;
+}
 
-	.values-details .reason {
-		padding-left: 7px;
-	}
+.values-details .reason {
+	padding-left: 7px;
+}
 
 .gwc-details .fill,
 .roleTable .fill {
@@ -319,6 +323,7 @@
 .gwc-details table {
 	width: 100%;
 }
+
 .gwc-details .reason {
 	padding-left: 3px;
 }
@@ -363,12 +368,13 @@
 	position: relative;
 }
 
-.table-io.rocks .fill.Indeterminate {
-	color: #C3C3C3;
-}
-.table-io.rocks .fill.Indeterminate:after {
-	content: "n/a";
-}
+	.table-io.rocks .fill.Indeterminate {
+		color: #C3C3C3;
+	}
+
+		.table-io.rocks .fill.Indeterminate:after {
+			content: "n/a";
+		}
 
 .table-io.gwc .selected {
 	color: gold;
@@ -470,7 +476,6 @@
 	margin-left: 8px;
 	margin-top: 8px;
 	padding: 2px 12px;
-
 	overflow-y: auto !important;
 	position: relative;
 	display: block;
@@ -483,8 +488,8 @@
 }
 
 #roleTable .header {
-	max-width: 50%; 
-	width:300px;
+	max-width: 50%;
+	width: 300px;
 	margin-bottom: 10px;
 	margin-top: 8px;
 }
@@ -500,9 +505,9 @@
 	padding-right: 10px;
 }
 
-.roleTable td.block {
-	padding-right: 0px;
-}
+	.roleTable td.block {
+		padding-right: 0px;
+	}
 
 .roleTable thead {
 	border-bottom: 1px solid #BBBBBB;
@@ -524,26 +529,31 @@
 	top: 65px;*/
 	padding: 0px 10px;
 }
-.roleTableBtn.on {
-	/*position: absolute;
+
+	.roleTableBtn.on {
+		/*position: absolute;
 	right: 10px;
 	top: 65px;*/
-	padding: 0px 10px;
-	float: left;
-}
+		padding: 0px 10px;
+		float: left;
+	}
 
-.roleTableBtn:before {
-	content: "Show ";
-}
-.roleTableBtn.on:before {
-	content: "Hide ";
-}
+	.roleTableBtn:before {
+		content: "Show ";
+	}
+
+	.roleTableBtn.on:before {
+		content: "Hide ";
+	}
 
 .italic {
 	font-style: italic;
 }
 
-td.alt { background-color: #ffc; background-color: rgba(255, 255, 0, 0.2); }
+td.alt {
+	background-color: #ffc;
+	background-color: rgba(255, 255, 0, 0.2);
+}
 
 .feedback-heading {
 	margin-top: 10px;

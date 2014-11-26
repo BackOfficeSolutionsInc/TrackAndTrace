@@ -70,7 +70,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Take(long id, int? page) {
 			var now=DateTime.UtcNow;
 			var user = GetUser();
-			//var review = _ReviewAccessor.GetReview(user, id);
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id,false,false);
 
 			var reviews =_ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, id);
 
@@ -94,9 +94,10 @@ namespace RadialReview.Controllers {
 				//_ReviewAccessor.UpdateStarted(GetUser(),p,now);
 
 				var forUser = p.FirstOrDefault().NotNull(x => x.AboutUser);
-				ViewBag.Subheading = "Only " + forUser.GetFirstName().Possessive() + " manager will see your answers.";
+				//ViewBag.Subheading = "Only " + forUser.GetFirstName().Possessive() + " manager will see your answers.";
 
 				var model = new TakeViewModel(p) {
+					Anonymous = reviewContainer.AnonymousByDefault,
 					Id = id,
 					StartTime = now,
 					Page = pageConcrete,
@@ -369,6 +370,8 @@ namespace RadialReview.Controllers {
 			public List<AnswerVM> Answers { get; set; }
 			public UserOrganizationModel ForUser { get; set; }
 			public List<Tuple<String, bool>> OrderedPeople { get; set; }
+
+			public bool Anonymous { get; set; }
 
 			public TakeViewModel(List<AnswerModel> answers) {
 				Answers = answers.GroupBy(x => Tuple.Create(x.Askable.Id, x.AboutUserId)).Select(x => new AnswerVM() {
@@ -806,13 +809,16 @@ namespace RadialReview.Controllers {
 							ex = PositiveNegativeNeutral.Positive;
 						else
 						{
-							if ((v[1] - v[0]) * 2 >= NEUTRAL_CUTOFF)
+							if ((v[1] - v[0])*2 >= NEUTRAL_CUTOFF){
 								ex = PositiveNegativeNeutral.Negative;
-							else
+								reason = "Several ratings of +/- may indicate an area of improvement.";
+							}
+							else{
 								ex = PositiveNegativeNeutral.Neutral;
-							reason = "";
+								reason = "One +/- may indicate an area of improvement.";
+							}
 						}
-						var clz = String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
+						var clz = "";//String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
 						table.Data.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
 					}
 					table.Rows.Add("Score");

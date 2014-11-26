@@ -5,21 +5,25 @@
 @using System.Linq;
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
-@Html.Partial("~/Views/Review/Details/GWC.cshtml", Model)
 
-@if (Model.CompanyValuesTable((long)ViewBag.ReviewId).Rows.Any())
-{
-	<div class="subsection subsection-values noBreak client">
-		@Html.Partial("Table", Model.CompanyValuesScore)
-		<div class="evaluation-heading">Company Values</div>
+<div class="row">
+	<div class="print-col-xs-6 zoom8">@Html.Partial("~/Views/Review/Details/GWC.cshtml", Model)</div>
+	@if (Model.CompanyValuesTable((long)ViewBag.ReviewId).Rows.Any())
+	{<div class="print-col-xs-6 zoom8">
+		<div class="subsection subsection-values noBreak client">
+			@Html.Partial("Table", Model.CompanyValuesScore)
+			<div class="evaluation-heading">Company Values</div>
+		</div>
 	</div>
-}
+	}
+	@if (Model.RockTable((long)ViewBag.ReviewId).Rows.Any())
+	{
+		<div class="print-col-xs-6 zoom8">
+			<div class="subsection subsection-rocks noBreak">
+				@Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))
 
-@if (Model.RockTable((long)ViewBag.ReviewId).Rows.Any())
-{
-	<div class="subsection subsection-rocks noBreak">
-		@Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))
-
-		<div class="evaluation-heading">Rocks</div>
-	</div>
-}
+				<div class="evaluation-heading">Rocks</div>
+			</div>
+		</div>
+	}
+</div>

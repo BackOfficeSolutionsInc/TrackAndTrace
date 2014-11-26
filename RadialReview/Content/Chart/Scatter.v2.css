@@ -1,0 +1,91 @@
+﻿.scatter .point {
+  stroke: #222;
+  fill:white;
+}
+
+.scatter line{
+  stroke: black;
+}
+
+.scatter .axis{
+  stroke: grey;
+}
+
+.scatter .title{
+	fill:#6D6D6D;
+	font-size: 21px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: 500;
+	line-height: 1.1;
+}
+
+.scatter .axisTitle{
+	fill:white;
+}
+
+.scatter .axisRect-x {
+	fill: #D4EE9F;
+}
+.scatter .axisTitle-x {
+	fill:#597622;
+}
+.scatter .axisRect-y {
+	fill: #A3D5D5;
+}
+.scatter .axisTitle-y {
+	fill:#266;
+}
+
+svg.scatter{
+	overflow:visible !important;
+}
+
+svg.scatter * {
+	pointer-events: none;
+}
+
+svg.scatter .hoverable {
+	pointer-events: all;
+}
+
+.scatter .card {
+	font-weight: bold;
+	font-family: sans-serif;
+	overflow: visible !important;
+}
+
+.scatter .card .background{
+	fill : white;
+}
+.scatter .card .border{
+	fill: white;
+	stroke: rgba(0, 0, 0, 0.5);
+}
+.scatter .card .title{
+	clip-path: url(#cardClip);
+}
+
+.scatter .card .title div{
+	font-size: 20px;
+	color:#415EB3;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.scatter .card .subtitle{
+	font-size: 14px;
+	fill:#646464;
+}
+
+.scatter .card .axisTitle{
+	font-weight: normal;
+	font-size: 13px;
+	fill:#999999;
+	
+}
+.scatter .card .axisValue{
+	font-weight: bold;
+	font-size: 16px;
+	fill:#44A035;
+}

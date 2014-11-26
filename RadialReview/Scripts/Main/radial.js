@@ -16,6 +16,28 @@ function clearUnsaved() {
     $(".unsaved").removeClass("unsaved");
 }
 
+(function ($) {
+	$.fn.valList = function () {
+		return $.map(this, function (elem) {
+			return elem.value || "";
+		}).join(",");
+	};
+	$.fn.nameList = function () {
+		return $.map(this, function (elem) {
+			return elem.name || "";
+		}).join(",");
+	};
+	$.fn.asString = function () {
+		if (Object.prototype.toString.call(this) === '[object Array]') {
+			return $.map(this, function (elem) {
+				return elem || "";
+			}).join(",");
+		}
+		return this
+	}
+
+})(jQuery);
+
 function qtip() {
     $('[title]').qtip({
         position: {
@@ -140,7 +162,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
                             $("#modal").modal("hide");
                             showAlert("Something went wrong. If the problem persists, please contact us.");
                         } else {
-                            StoreJsonAlert(data)
+                        	StoreJsonAlert(data);
                             if (onSuccess) {
                                 if (typeof onSuccess === "string") {
                                     eval(onSuccess + "(data)");

@@ -1,0 +1,55 @@
+﻿@model long
+@{
+	var id = Guid.NewGuid();
+}
+
+<div class="row">
+	<div class="col-sm-12">
+		<div id="chart_@id"></div>
+	</div>
+</div>
+@using (Html.BeginStyles()){
+	<link href="~/Content/Chart/Scatter.v2.css" rel="stylesheet" />
+}
+@using (Html.BeginScripts())
+{
+	<script src="~/Scripts/d3/d3.v3.min.js"></script>
+	<script src="~/Scripts/d3/Scatter.v2.js"></script>
+	<script>
+		var chart = new ScatterImage("chart_@id");
+
+		var dataUrl = "/Data/AggregateReviewScatter/@Model";
+		chart.PullPlot(dataUrl, null, function (data) {
+			/*var x, y;
+			var i = 0;
+			for (var d in data.Dimensions) {
+				if (i == 0)
+					x = d;
+				if (i == 1)
+					y = d;
+				i++;
+			}
+
+			chart.Plot(data, {
+				animate: true,
+				reset: false,
+				xAxis: data.Dimensions[x].Name,
+				yAxis: data.Dimensions[y].Name,
+				xDimensionId: data.Dimensions[x].Id,
+				yDimensionId: data.Dimensions[y].Id,
+				defaultFilter: "all",
+				//$("#xAxis option:selected").text(),
+				//yAxis: $("#yAxis option:selected").text(),
+				//xDimensionId: $("#xAxis").val(),
+				//yDimensionId: $("#yAxis").val(),
+				//startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
+				//endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
+				//time: date3,//new Date(parseInt($("#date").val()))
+				groups: [["user-*"]],
+				filters: null,
+				//legendFunc: legendFunc,
+				//extraClasses: extraClasses,
+			});*/
+		});
+	</script>
+}

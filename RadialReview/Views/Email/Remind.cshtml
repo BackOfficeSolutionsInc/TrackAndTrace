@@ -1,0 +1,7 @@
+﻿@model RadialReview.Controllers.EmailController.ReminderVM
+		   
+<h4>Send a reminder email to @Model.Count users?</h4>
+
+@Html.HiddenFor(x => x.ReviewId)
+@Html.HiddenFor(x => x.UserIds)
+@Html.HiddenFor(x => x.Count)

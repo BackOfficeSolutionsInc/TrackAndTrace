@@ -17,6 +17,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Radial)]
         public int M11_8_2014()
 		{
+			throw new Exception("Old");
 			var count = 0;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx=s.BeginTransaction()){
@@ -59,5 +60,19 @@ namespace RadialReview.Controllers
 			}
 			return count;
         }
+
+		[Access(AccessLevel.Radial)]
+		public int M11_19_2014()
+		{
+			var count = 0;
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					foreach (var a in s.QueryOver<ResponsibilityModel>().List()){
+
+					}
+				}
+			}
+			return count;
+		}
     }
 }

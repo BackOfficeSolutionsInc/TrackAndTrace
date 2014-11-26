@@ -19,29 +19,29 @@ using System.Threading.Tasks;
 namespace RadialReview.Accessors {
 	public partial class ReviewAccessor : BaseAccessor {
 		#region Edit Review
-		public static void AddAskablesToReview(AbstractUpdate s, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewModel reviewModel, List<AskableAbout> askables) {
+		public static void AddAskablesToReview(AbstractUpdate s, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewModel reviewModel,bool anonymous, List<AskableAbout> askables) {
 			foreach (var q in askables) {
 				switch (q.Askable.GetQuestionType()) {
 					case QuestionType.RelativeComparison:
-						GenerateRelativeComparisonAnswers(s, caller, forUser, q, reviewModel);
+						GenerateRelativeComparisonAnswers(s, caller, forUser, q, reviewModel, anonymous);
 						break;
 					case QuestionType.Slider:
-						GenerateSliderAnswers(s, caller, forUser, q, reviewModel);
+						GenerateSliderAnswers(s, caller, forUser, q, reviewModel, anonymous);
 						break;
 					case QuestionType.Thumbs:
-						GenerateThumbsAnswers(s, caller, forUser, q, reviewModel);
+						GenerateThumbsAnswers(s, caller, forUser, q, reviewModel, anonymous);
 						break;
 					case QuestionType.Feedback:
-						GenerateFeedbackAnswers(s, caller, forUser, q, reviewModel);
+						GenerateFeedbackAnswers(s, caller, forUser, q, reviewModel, anonymous);
 						break;
 					case QuestionType.GWC:
-						GenerateGWCAnswers(s, caller, forUser, q, reviewModel);
+						GenerateGWCAnswers(s, caller, forUser, q, reviewModel, anonymous);
 						break;
 					case QuestionType.Rock:
-						GenerateRockAnswers(s, caller, forUser, q, reviewModel);
+						GenerateRockAnswers(s, caller, forUser, q, reviewModel, anonymous);
 						break;
 					case QuestionType.CompanyValue:
-						GenerateCompanyValuesAnswer(s, caller, forUser, q, reviewModel);
+						GenerateCompanyValuesAnswer(s, caller, forUser, q, reviewModel, anonymous);
 						break;
 					default:
 						throw new ArgumentException("Unrecognized questionType(" + q.Askable.GetQuestionType() + ")");
@@ -66,6 +66,8 @@ namespace RadialReview.Accessors {
 
 			var review = s.Where<ReviewModel>(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).Single();
 
+			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+
 			perms.ViewUserOrganization(review.ForUserId, false);
 
 			var askable = new AskableUtility();
@@ -82,7 +84,7 @@ namespace RadialReview.Accessors {
 			var forUser = s.Get<UserOrganizationModel>(review.ForUserId);
 			//var review=s.QueryOver<ReviewModel>().Where(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).SingleOrDefault();
 
-			AddAskablesToReview(s.GetUpdateProvider(), perms, caller, forUser, review, askable.Askables);
+			AddAskablesToReview(s.GetUpdateProvider(), perms, caller, forUser, review,reviewContainer.AnonymousByDefault, askable.Askables);
 		}
 
 		public void RemoveQuestionFromReviewForUser(UserOrganizationModel caller, long reviewContainerId, long userId, long askableId) {
@@ -128,7 +130,7 @@ namespace RadialReview.Accessors {
 						foreach (var about in r.Value) {
 							askableUtil.AddUnique(askable, about.Invert(), userId);
 						}
-						AddAskablesToReview(dataInteration.GetUpdateProvider(), perms, caller, r.Key, existingReview, askableUtil.Askables);
+						AddAskablesToReview(dataInteration.GetUpdateProvider(), perms, caller, r.Key, existingReview, reviewContainer.AnonymousByDefault, askableUtil.Askables);
 					}
 
 					tx.Commit();

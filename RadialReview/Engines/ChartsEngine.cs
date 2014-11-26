@@ -211,6 +211,128 @@ namespace RadialReview.Engines
 			return filteredPlot;
 		}
 
+		public Scatter AggregateReviewScatter(UserOrganizationModel caller, long reviewsId)
+		{
+			var allAnswers = _ReviewAccessor.GetReviewContainerAnswers(caller, reviewsId);
+			QuestionCategoryModel companyValuesCategory;
+			QuestionCategoryModel rolesCategory;
+
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					companyValuesCategory = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.COMPANY_VALUES);
+					rolesCategory = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.ROLES);
+				}
+			}
+			var scatterDataPoints = new List<ScatterData>();
+			var groups = new HashSet<ScatterGroup>(new EqualityComparer<ScatterGroup>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
+			var remapper = RandomUtility.CreateRemapper();
+			var remapperUser = RandomUtility.CreateRemapper();
+			foreach (var revieweeAnswers in allAnswers.GroupBy(x => x.AboutUserId)){
+				var datums = new Dictionary<string, ScatterDatum>();
+				var scorer = new ScatterScorer(datums, groups, companyValuesCategory, rolesCategory);
+				foreach(var answer in revieweeAnswers)
+					scorer.Add(answer);
+
+				var title = "<span class='aboutType hoverTitle'></span> <span class='reviewName hoverTitle'>" + revieweeAnswers.First().AboutUser.GetName()+ "</span>";
+
+				var uniqueId = remapper.Remap(revieweeAnswers.First().Id);
+
+				var safeUserIdMap = remapperUser.Remap(revieweeAnswers.Min(x => x.Id)); //We'll use the Min-Answer Id because its unique and not traceable
+				var userClassStr = "user-" + safeUserIdMap;
+				var point = new ScatterData(){
+					Class = "userDataPoint " + userClassStr,
+					Date = revieweeAnswers.Max(x => x.CompleteTime) ?? new DateTime(2014, 1, 1),
+					Dimensions = datums,
+					SliceId = reviewsId,
+					//PreviousId = prevId,
+					Title = title,
+					Subtext = "",
+					Id = uniqueId,
+				};
+				point.OtherData.AboutUser = revieweeAnswers.First().AboutUser;
+				scatterDataPoints.Add(point);
+			}
+			var dimensions = new List<ScatterDimension>();
+
+			dimensions.Insert(0, new ScatterDimension() { Max = 100, Min = -100, Id = "category-" + rolesCategory.Id, Name = "Roles" });
+			dimensions.Insert(0, new ScatterDimension() { Max = 100, Min = -100, Id = "category-" + companyValuesCategory.Id, Name = "Company Values" });
+
+			var xDimId = dimensions.FirstOrDefault().NotNull(x => x.Id);
+			var yDimId = dimensions.Skip(1).FirstOrDefault().NotNull(x => x.Id);
+
+			/*var dates = scatterDataPoints.Select(x => x.Date).ToList();
+			if (!dates.Any())
+				dates.Add(DateTime.UtcNow);
+
+			var scatter = new ScatterPlot()
+			{
+				Dimensions = dimensions.ToDictionary(x => x.Id, x => x),
+				Filters = new List<ScatterFilter>(),
+				Groups = groups.ToList(),
+				InitialXDimension = xDimId,
+				InitialYDimension = yDimId ?? xDimId,
+				Points = scatterDataPoints,
+				MinDate = dates.Min(),
+				MaxDate = dates.Max(),
+				Legend = new List<ScatterLegendItem>(),
+			};*/
+
+			var data = new List<Scatter.ScatterPoint>();
+
+			
+			var xAxis = dimensions.FirstOrDefault(x => x.Id == xDimId).NotNull(x => x.Name);
+			var yAxis = dimensions.FirstOrDefault(x => x.Id == yDimId).NotNull(x => x.Name);
+
+
+			foreach (var pt in scatterDataPoints){
+
+				var xVal = 0m;
+				var yVal = 0m;
+
+				var zeroDen = 0;
+
+				if (pt.Dimensions.ContainsKey(xDimId)){
+					var dx = pt.Dimensions[xDimId];
+					xVal = dx.Denominator == 0.0 ? 0m : (decimal) (dx.Value/dx.Denominator);
+					if (dx.Denominator == 0)
+						zeroDen++;
+				}else{
+					zeroDen++;
+				}
+				if (pt.Dimensions.ContainsKey(yDimId)){
+					var dy = pt.Dimensions[yDimId];
+					yVal = dy.Denominator == 0.0 ? 0m : (decimal)(dy.Value / dy.Denominator);
+					if (dy.Denominator == 0)
+						zeroDen++;
+				}else{
+					zeroDen++;
+				}
+
+				if (zeroDen != 2){
+					data.Add(new Scatter.ScatterPoint(){
+						cx = xVal,
+						cy = yVal,
+						date = pt.Date,
+						imageUrl = ((UserOrganizationModel) pt.OtherData.AboutUser).ImageUrl(),
+						subtitle = pt.Date.ToShortDateString(),
+						title = ((UserOrganizationModel) pt.OtherData.AboutUser).GetName(),
+						xAxis = xAxis,
+						yAxis = yAxis
+					});
+				}
+			}
+			return new Scatter(){
+				Points = data,
+				xAxis = xAxis,
+				yAxis = yAxis,
+				title = "Aggregate Results",
+			};
+
+			//return scatter;
+		}
+
 		public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId, bool sensitive)
 		{
 			if (sensitive)
@@ -248,9 +370,7 @@ namespace RadialReview.Engines
 					rolesCategory		  = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.ROLES);
 				}
 			}
-
-
-
+			
 
 			var teamMembers = _TeamAccessor.GetAllTeammembersAssociatedWithUser(caller, forUserId);
 			//var teamLookup = teamMembers.Distinct(x => x.TeamId).ToDictionary(x => x.TeamId, x => x.Team);
@@ -263,6 +383,9 @@ namespace RadialReview.Engines
 
 			var remapper = RandomUtility.CreateRemapper();
 			var remapperUser = RandomUtility.CreateRemapper();
+
+			
+
 
 			foreach (var userAnswers in groupedByUsers) //<UserId>
 			{

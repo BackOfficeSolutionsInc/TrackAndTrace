@@ -148,7 +148,7 @@ namespace RadialReview.Utilities
         private static void BuildMySqlSchema(Configuration config)
         {
             //UPDATE DATABASE:
-            //new SchemaUpdate(config).Execute(true, true);
+            new SchemaUpdate(config).Execute(true, true);
            
 
             //KILL/CREATE DATABASE:

@@ -8,6 +8,7 @@ namespace RadialReview.Models.Askables {
 		public virtual long ForOrganizationId { get; set; }
 		public virtual long ForResponsibilityGroup { get; set; }
 		public virtual String Responsibility { get; set; }
+		public virtual bool Anonymous { get; set; }
 
 		protected virtual QuestionType? QuestionType { get; set; }
 
@@ -34,7 +35,8 @@ namespace RadialReview.Models.Askables {
 				Map(x => x.Responsibility).Length(65000);
 				Map(x => x.ForOrganizationId);
 				Map(x => x.ForResponsibilityGroup);
-				Map(x => x.QuestionType).CustomType<QuestionType>().Default(""+(int)Enums.QuestionType.Slider);
+				Map(x => x.Anonymous);
+				Map(x => x.QuestionType).CustomType<QuestionType>().Default("" + (int)Enums.QuestionType.Slider);
 				References(x => x.Category).Not.LazyLoad();
 			}
 		}

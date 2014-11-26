@@ -38,14 +38,22 @@
             </div>
 
         </div>
-        <div class="row smallBreak2">
-            <div class="col-md-6">
-                <label class="control-label">Email employees:</label>
-            </div>
-            <div class="col-md-4">
-                @Html.CheckBox("SendEmails")
-            </div>
-        </div>
+	    <div class="row smallBreak2">
+		    <div class="col-md-6">
+			    <label class="control-label">Email employees:</label>
+		    </div>
+		    <div class="col-md-4">
+			    @Html.CheckBox("SendEmails")
+		    </div>
+	    </div>
+		<div class="row smallBreak2">
+			<div class="col-md-6" title="Any feedback given will be anonymous. Only managers will be able to see it.">
+				<label class="control-label">Anonymous Feedback:</label>
+			</div>
+			<div class="col-md-4">
+				@Html.CheckBox("Anonymous", true)
+			</div>
+		</div>
     </div>
 
 </div>

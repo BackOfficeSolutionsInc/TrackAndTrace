@@ -122,7 +122,7 @@ namespace RadialReview.Accessors
             reviewModel.ClientReview.ReviewId = reviewModel.Id;
             dataInteraction.Update(reviewModel);
 
-            ReviewAccessor.AddAskablesToReview(dataInteraction.GetUpdateProvider(), perms, caller, forUser, reviewModel, askables);
+			ReviewAccessor.AddAskablesToReview(dataInteraction.GetUpdateProvider(), perms, caller, forUser, reviewModel, reviewContainer.AnonymousByDefault ,askables);
             return reviewModel;
         }
 

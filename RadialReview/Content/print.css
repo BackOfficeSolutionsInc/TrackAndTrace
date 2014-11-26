@@ -136,14 +136,16 @@
 }
 
 .row-title.first {
+	-ms-border-radius: 10px;
 	border-radius: 10px;
-	border: 7px solid #cacaca;
+	/*border: 7px solid #cacaca;*/
+	-ms-opacity: .5;
 	opacity: .5;
 }
 
 .row-title {
 	font-weight: bold;
-	border-top: 2px dotted #cacaca;
+	border-top: 2px none #cacaca;
 	border-bottom: 0px solid #cacaca;
 }
 
@@ -195,4 +197,17 @@ svg .legend {
 
 .zoom8 {
 	zoom: 80%;
+}
+
+.subsection {
+	margin-bottom: 10px;
+}
+
+.print-col-xs-6 {
+	position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    float: left;
+    width: 50%;
 }

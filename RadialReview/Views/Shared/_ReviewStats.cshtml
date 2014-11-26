@@ -264,6 +264,7 @@
                                 .attr("height", "100%")
                                 .attr("width", "100%")
                                 .attr("class", "piechart")
+								.style("overflow","visible")
                             .append("g");
 
                 svg.append("g").attr("class", "slices");
@@ -273,7 +274,7 @@
                 svg.attr("transform", "translate(" + ref / 2 + "," + ref / 2 / 2 + ")");
                 var center = svg.append("g").attr("class", "centerNumber").attr("transform", "translate(0,10)").style("text-anchor", "middle").append("text")
                     .text(sumPieSlices(pieData));
-                var centerText = svg.append("g").attr("class", "centerText").attr("transform", "translate(0,30)").style("text-anchor", "middle").append("text")
+                var centerText = svg.append("g").attr("class", "centerText").attr("transform", "translate(0,45)").style("text-anchor", "middle").append("text")
                     .text("Total");
 
                 updatePie(selector, pieData,0);
@@ -360,7 +361,7 @@
                         });
                     entering.append("text")
                         .attr("dy", "1.45em")
-                        .attr("font-size","21px")
+                        .attr("font-size","35px")
                         .text(function (d) {
                             return d.data.value;
                         });

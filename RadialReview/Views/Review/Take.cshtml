@@ -18,7 +18,16 @@
     </div>
 }
 
-
+@if (Model.Anonymous){
+	<div class="hover pull-right" style="bottom: 16px; position: relative;">
+		<span class="glyphicon glyphicon-lock"></span> Your feedback will be anonymous to @Model.ForUser.GetFirstName().
+	</div>
+}
+else{
+	<div class="hover pull-right" style="bottom: 16px; position: relative;">
+		<span class="glyphicon glyphicon-eye-open"></span> <span class="gray">Your name will be included on your feedback to @Model.ForUser.GetFirstName().</span>
+	</div>
+}
 
 @Html.HiddenFor(x => x.StartTime.Ticks)
 <div class="row">
