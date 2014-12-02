@@ -13,9 +13,9 @@ namespace RadialReview.Controllers
         //
         // GET: /Reports/
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Index(int page=0)
+        public ActionResult Index(long id/*,int page=0*/)
         {
-            Session["Report"] = "View";
+            /*Session["Report"] = "View";
             var user = GetUser();
             var reviewCount = _ReviewAccessor.GetNumberOfReviewsWithVisibleReportsForUser(user, user.Id);
             var reviews = _ReviewAccessor.GetReviewsWithVisibleReports(user, user.Id, page, user.CountPerPage);
@@ -26,7 +26,40 @@ namespace RadialReview.Controllers
                 Page = page,
                 NumPages = reviewCount / (double)user.CountPerPage
             };
-            return View(output);
+            return View(output);*/
+			var reviewContainerId = id;
+			//var reviewContainerAnswers = _ReviewAccessor.GetReviewContainerAnswers(GetUser(), id);
+			//var reviewContainerPeople = reviewContainerAnswers.GroupBy(x => x.AboutUserId);
+			var user = GetUser().Hydrate().ManagingUsers(true).Execute();
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true, true);
+			//reviewContainer.Reviews = _ReviewAccessor.GetReviewsForReviewContainer(GetUser(), id);
+			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
+
+			var acceptedReviews = new List<ReviewModel>();
+			foreach (var r in reviewContainer.Reviews)
+			{
+				var add = false;
+				r.ForUser.PopulateDirectlyManaging(user, directSubs);
+				if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id)
+				{
+					r.ForUser.SetPersonallyManaging(true);
+					add = true;
+				}
+				else
+				{
+					add = r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+				}
+				if (add)
+				{
+					acceptedReviews.Add(r);
+				}
+			}
+			reviewContainer.Reviews = acceptedReviews;
+			
+			var model = new ReviewsViewModel(reviewContainer);
+			return View(model);
+
+
         }
 
         [Access(AccessLevel.Manager)]

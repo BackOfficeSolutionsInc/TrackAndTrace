@@ -4023,7 +4023,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
             .nav > li > a:hover,
             .nav > li > a:focus {
                 text-decoration: none;
-                background-color: #eeeeee;
+	            background-color: #E0E0E0;/* #eeeeee;*/
             }
 
         .nav > li.disabled > a {
@@ -4057,12 +4057,12 @@ textarea.input-group-sm > .input-group-btn > .btn {
     }
 
 .nav-tabs {
-    /*border-bottom: 1px solid #dddddd;*/
+    border-bottom: 1px solid #dddddd;
 }
 
     .nav-tabs > li {
         float: left;
-        margin-bottom: 0px;
+        margin-bottom: -1px;
     }
 
         .nav-tabs > li > a {
@@ -5126,6 +5126,15 @@ textarea.input-group-sm > .input-group-btn > .btn {
     .label-danger[href]:focus {
         background-color: #c9302c;
     }
+	
+.label-overdue {
+    color: #d9534f;
+	border: 1px solid #c9302c;
+}
+.label-complete {
+    color: #5cb85c;
+	border: 1px solid #449d44;
+}
 
 .badge {
     display: inline-block;
@@ -5194,7 +5203,8 @@ a.list-group-item.active > .badge,
 @media screen and (min-width: 768px) {
     .jumbotron {
         padding-top: 48px;
-        padding-bottom: 48px;
+        /*padding-bottom: 48px;*/
+        padding-bottom: 36px;
     }
 
     .container .jumbotron {

@@ -58,15 +58,20 @@ namespace RadialReview.Accessors
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
-                using (var tx = s.BeginTransaction())
-                {
-                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-                    var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId).List().ToListAlive();
-                    //teams.ForEach(x => Populate(s, x));
-                    return teams;
+                using (var tx = s.BeginTransaction()){
+					var permissions=PermissionsUtility.Create(s, caller);
+	                return GetOrganizationTeams(s, permissions, organizationId);
                 }
             }
         }
+
+		public static List<OrganizationTeamModel> GetOrganizationTeams(ISession s, PermissionsUtility permissions, long organizationId)
+	    {
+		    permissions.ViewOrganization(organizationId);
+            var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId).List().ToListAlive();
+            //teams.ForEach(x => Populate(s, x));
+            return teams;
+	    }
 
         public OrganizationTeamModel GetTeam(UserOrganizationModel caller, long teamId)
         {
@@ -90,6 +95,19 @@ namespace RadialReview.Accessors
             return team;
         }
 
+	    public List<TeamDurationModel> GetTeamMembersAtOrganization(UserOrganizationModel caller, long orgId)
+	    {
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var perm = PermissionsUtility.Create(s, caller);
+					var teams = GetOrganizationTeams(s, perm, orgId);
+
+					return teams.SelectMany(x => GetTeamMembers(s.ToQueryProvider(true), perm, x.Id)).ToList();
+				}
+			}
+	    }
+
         public List<TeamDurationModel> GetTeamMembers(UserOrganizationModel caller, long teamId)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -97,7 +115,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetTeamMembers(s.ToQueryProvider(true), perms, caller, teamId);
+                    return GetTeamMembers(s.ToQueryProvider(true), perms, teamId);
                 }
             }
         }
@@ -113,7 +131,7 @@ namespace RadialReview.Accessors
         /// <param name="caller"></param>
         /// <param name="teamId"></param>
         /// <returns></returns>
-        public static List<TeamDurationModel> GetTeamMembers(AbstractQuery s, PermissionsUtility permissions, UserOrganizationModel caller, long teamId)
+        public static List<TeamDurationModel> GetTeamMembers(AbstractQuery s, PermissionsUtility permissions, long teamId)
         {
             permissions.ViewTeam(teamId);
             OrganizationTeamModel team;

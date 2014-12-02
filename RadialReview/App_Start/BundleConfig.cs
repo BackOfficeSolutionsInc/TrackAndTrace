@@ -29,6 +29,7 @@ namespace RadialReview
 			bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
 					  "~/Scripts/components/posneg.js",
 					  "~/Scripts/components/tristate.js",
+					  "~/Scripts/components/checktree.js",
 					  "~/Scripts/select2.min.js",
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js",
@@ -39,6 +40,7 @@ namespace RadialReview
 					  "~/Content/components/posneg.css",
 					  "~/Content/components/tristate.css",
 					  "~/Content/components/table.css",
+					  "~/Content/components/checktree.css",
 					  "~/Content/select2-bootstrap.css",
 					  "~/Content/select2.css",
 					  "~/Content/datepicker.css",

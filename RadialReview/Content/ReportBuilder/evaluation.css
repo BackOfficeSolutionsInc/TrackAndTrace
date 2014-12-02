@@ -84,7 +84,7 @@
 			/*margin-top: -2px;*/
 		}
 
-		.table-io.companyValues .fill:not(.hasReason):not(.score):not(.Indeterminate):after {
+		.table-io.companyValues .fill:not(.hasReason):not(.score):not(.Indeterminate):after, .valueTable .fill{
 			/*background-color: rgba(51, 51, 51, 0.2);*/
 			-ms-border-radius: 20px;
 			-moz-border-radius: 20px;
@@ -134,39 +134,39 @@
 		margin-top: -4px;
 	}*/
 
-	.table-io.companyValues .fill.Indeterminate {
+	.table-io.companyValues .fill.Indeterminate,.valueTable .fill.Indeterminate {
 		background-color: transparent;
 	}
 
-	.table-io.companyValues .fill.Positive {
+	.table-io.companyValues .fill.Positive,.valueTable .fill.Positive  {
 		background-color: #449D44;
 		border: 1px solid #449D44;
 	}
 
-	.table-io.companyValues .fill.Neutral {
+	.table-io.companyValues .fill.Neutral,.valueTable .fill.Neutral  {
 		background-color: #EC971F;
 		border: 1px solid #EC971F;
 	}
 
-	.table-io.companyValues .fill.Negative {
+	.table-io.companyValues .fill.Negative,.valueTable .fill.Negative  {
 		background-color: #D9534F;
 		border: 1px solid #D9534F;
 	}
 
-	.table-io.companyValues .fill.Indeterminate:after {
+	.table-io.companyValues .fill.Indeterminate:after,.valueTable .fill.Indeterminate:after {
 		content: "n/a";
 		color: #c3c3c3;
 	}
 
-	.table-io.companyValues .fill:not(.companyValues-score).Positive:after {
+	.table-io.companyValues .fill.Positive:not(.companyValues-score):after,.valueTable .fill.Positive:after {
 		content: "+";
 	}
 
-	.table-io.companyValues .fill:not(.companyValues-score).Neutral:after {
+	.table-io.companyValues .fill.Neutral:not(.companyValues-score):after,.valueTable .fill.Neutral:after {
 		content: "+/-";
 	}
 
-	.table-io.companyValues .fill:not(.companyValues-score).Negative:after {
+	.table-io.companyValues .fill.Negative:not(.companyValues-score):after,.valueTable .fill.Negative:after {
 		content: "-";
 	}
 
@@ -189,7 +189,7 @@
 	content: "NO";
 }
 
-.gwc-details-square .Indeterminate:after {
+.gwc-details-square .Indeterminate:after, .roleTable .Indeterminate:after {
 	content: "n/a";
 	color: #CCCCCC;
 }
@@ -468,7 +468,7 @@
 	/*white-space: nowrap;*/
 }
 
-#roleTable .roleTable {
+#roleTable .roleTable, #valueTable .valueTable {
 	clear: both;
 	min-height: 200px !important;
 	height: 200px;
@@ -487,17 +487,14 @@
 	border-bottom: 1px solid #DDDDDD;
 }
 
-#roleTable .header {
+#roleTable .header,#valueTable .header {
 	max-width: 50%;
 	width: 300px;
 	margin-bottom: 10px;
 	margin-top: 8px;
 }
 
-#roleTable {
-}
-
-.roleTable td {
+.roleTable td,.valueTable td {
 	white-space: nowrap;
 	border: 0px;
 	margin: 0px;
@@ -505,11 +502,11 @@
 	padding-right: 10px;
 }
 
-	.roleTable td.block {
+	.roleTable td.block,.valueTable td.block {
 		padding-right: 0px;
 	}
 
-.roleTable thead {
+.roleTable thead,.valueTable thead {
 	border-bottom: 1px solid #BBBBBB;
 }
 /*
@@ -523,14 +520,14 @@
 	background-color: #bbbbbb;*
 }*/
 
-.roleTableBtn {
+.roleTableBtn,.valueTableBtn {
 	/*position: absolute;
 	right: 10px;
 	top: 65px;*/
 	padding: 0px 10px;
 }
 
-	.roleTableBtn.on {
+	.roleTableBtn.on,.valueTableBtn.on {
 		/*position: absolute;
 	right: 10px;
 	top: 65px;*/
@@ -538,11 +535,11 @@
 		float: left;
 	}
 
-	.roleTableBtn:before {
+	.roleTableBtn:before,.valueTableBtn:before {
 		content: "Show ";
 	}
 
-	.roleTableBtn.on:before {
+	.roleTableBtn.on:before,.valueTableBtn.on:before {
 		content: "Hide ";
 	}
 
@@ -558,4 +555,10 @@ td.alt {
 .feedback-heading {
 	margin-top: 10px;
 	font-weight: bold;
+}
+
+
+.valueTable .fill {
+	text-align: center;
+	color: #FFF;
 }

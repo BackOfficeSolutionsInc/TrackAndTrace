@@ -313,6 +313,7 @@
     <Compile Include="Models\Application\MailModel.cs" />
     <Compile Include="Models\Askables\RockModel.cs" />
     <Compile Include="Models\Askables\CompanyValueModel.cs" />
+    <Compile Include="Models\Charts\Checktree.cs" />
     <Compile Include="Models\Charts\LineChart.cs" />
     <Compile Include="Models\Charts\Scatter.cs" />
     <Compile Include="Models\Charts\Table.cs" />
@@ -557,6 +558,7 @@
     <Content Include="Content\chart.css" />
     <Content Include="Content\Chart\Chart.css" />
     <Content Include="Content\Chart\PieChart.css" />
+    <Content Include="Content\components\checktree.css" />
     <Content Include="Content\components\posneg.css" />
     <Content Include="Content\components\table.css" />
     <Content Include="Content\components\tristate.css" />
@@ -676,6 +678,7 @@
     <Content Include="Scripts\bootstrap-switch.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\components\checktree.js" />
     <Content Include="Scripts\components\posneg.js" />
     <Content Include="Scripts\components\tristate.js" />
     <Content Include="Scripts\d3\d3.csv.js" />
@@ -736,6 +739,7 @@
     <Content Include="Views\CompanyValues\Modal.cshtml" />
     <Content Include="Views\Email\Remind.cshtml" />
     <Content Include="Content\Chart\Scatter.v2.css" />
+    <Content Include="Views\Reports\Index.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -901,7 +905,7 @@
     <Content Include="Views\Shared\_Customization.cshtml" />
     <Content Include="Views\Tasks\Index.cshtml" />
     <Content Include="Views\Shared\_ReportsHeader.cshtml" />
-    <Content Include="Views\Reports\Index.cshtml" />
+    <Content Include="Views\Reports\Index1.cshtml" />
     <Content Include="Views\Shared\_ReviewsHeader.cshtml" />
     <Content Include="Views\Reviews\Details.cshtml" />
     <Content Include="Views\Shared\_ExtraTab.cshtml" />
@@ -947,6 +951,7 @@
     <Content Include="Views\Review\RockDetails.cshtml" />
     <Content Include="Views\Review\Details\_GwcTable.cshtml" />
     <Content Include="Views\Shared\_ReviewStats2.cshtml" />
+    <Content Include="Views\Review\Details\_ValueTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

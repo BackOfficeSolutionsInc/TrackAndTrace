@@ -13,7 +13,7 @@
 
 #main {
     padding: 0px;
-    margin: 10px;
+    margin: 0px;
 }
 
 #footer{
@@ -141,6 +141,7 @@
 	/*border: 7px solid #cacaca;*/
 	-ms-opacity: .5;
 	opacity: .5;
+	margin-top: 0px;
 }
 
 .row-title {
@@ -184,11 +185,18 @@
 }
 
 .chart {
-	height: 400px;
+	height: 360px;
 }
 
 svg .legend {
 	display: none;
+}
+
+.legend {
+	font-size: 12px;
+}
+.legend .title {
+font-size: 14px;
 }
 
 .axisTitle {
@@ -210,4 +218,9 @@ svg .legend {
     padding-left: 15px;
     float: left;
     width: 50%;
+}
+
+
+.reviewName {
+	right: 40px;
 }

@@ -118,6 +118,12 @@ namespace RadialReview.Models
 		public virtual String GetItReason { get; set; }
 		public virtual String WantItReason { get; set; }
 		public virtual String HasCapacityReason { get; set; }
+
+
+
+		public virtual bool IncludeHasCapacityReason { get; set; }
+		public virtual bool IncludeGetItReason { get; set; }
+		public virtual bool IncludeWantItReason { get; set; }
 		public class GetWantCapacityAnswerMap : SubclassMap<GetWantCapacityAnswer> {
 			public GetWantCapacityAnswerMap() {
 				Map(x => x.GetIt);
@@ -126,6 +132,10 @@ namespace RadialReview.Models
 				Map(x => x.GetItReason);
 				Map(x => x.WantItReason);
 				Map(x => x.HasCapacityReason);
+
+				Map(x => x.IncludeHasCapacityReason);
+				Map(x => x.IncludeGetItReason);
+				Map(x => x.IncludeWantItReason);
 			}
 		}
 	}
@@ -143,14 +153,17 @@ namespace RadialReview.Models
 	{
 		public virtual PositiveNegativeNeutral Exhibits { get; set; }
 		public virtual String Reason { get; set; }
+		public virtual bool IncludeReason { get; set; }
 		public class CompanyValueAnswerMap : SubclassMap<CompanyValueAnswer>
 		{
 			public CompanyValueAnswerMap()
 			{
 				Map(x => x.Exhibits);
 				Map(x => x.Reason);
+				Map(x => x.IncludeReason);
 			}
 		}
+
 	}
 
     #endregion

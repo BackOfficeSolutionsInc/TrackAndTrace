@@ -113,7 +113,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var dataInteraction = ReviewAccessor.GetReviewDataInteraction(s, caller.Organization.Id);
-                    var teammembers = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, caller, forTeamId);
+                    var teammembers = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, forTeamId);
 
                     var team = dataInteraction.GetQueryProvider().Get<OrganizationTeamModel>(forTeamId);
                     var managerIds = teammembers.Where(x => x.User.ManagerAtOrganization || team.ManagedBy == x.UserId).Select(x => x.UserId).ToList();

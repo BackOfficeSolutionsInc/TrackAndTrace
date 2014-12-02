@@ -17,6 +17,10 @@
 	{
 		<div class="subsection subsection-values">
 			@Html.Partial("Table", Model.CompanyValuesTable((long)ViewBag.ReviewId))
+			<div class="btn btn-link valueTableBtn" onclick=" toggleValueTable() ">Details</div>
+			<div id="valueTable" class="valueFlip hidden clearfix">
+				@Html.Partial("~/Views/Review/Details/_ValueTable.cshtml", Model)
+			</div>
 			<div class="evaluation-heading">Company Values</div>
 		</div>
 	}

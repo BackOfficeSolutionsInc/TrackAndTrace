@@ -154,8 +154,9 @@
                             @foreach (var r in panel.Item3.OrderBy(x => x.ForUser.GetNameAndTitle()))
                             {
                                 <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
-                                    @if (r.ForUser.GetPersonallyManaging()) { @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }>
+	                                @if (r.ForUser.GetPersonallyManaging()) { 
+										@: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
+									}>
                                     <td class="table-hover-underline">@r.ForUser.GetNameAndTitle()</td>
                                     <td class="alignCenter">
                                         <a data-sort="@(r.ClientReview.Visible? "1" : "2")">@r.ClientReview.Visible.GetIcon()</a>

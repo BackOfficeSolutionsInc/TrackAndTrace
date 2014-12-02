@@ -12,7 +12,9 @@ namespace RadialReview.Models.Askables
         public virtual long Id { get; set; }
         public abstract String GetName();
         public abstract String GetGroupType();
+
         public virtual OrganizationModel Organization { get; set; }
+		//public virtual long OrganizationId { get; set; }
         public virtual IList<ResponsibilityModel> Responsibilities { get; set; }
         protected virtual Boolean? _Editable { get; set; }
 
@@ -143,7 +145,8 @@ namespace RadialReview.Models.Askables
         {
 			Id(x => x.Id);
 			Map(x => x.DeleteTime);
-			References(x => x.Organization).Not.LazyLoad();
+			References(x => x.Organization).Not.LazyLoad().Column("Organization_id");
+			//Map(x => x.OrganizationId).Column("Organization_id");
             HasMany(x => x.Responsibilities)
                 .Cascade.SaveUpdate()
                 .Not.LazyLoad();

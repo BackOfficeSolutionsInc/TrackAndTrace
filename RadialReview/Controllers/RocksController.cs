@@ -41,5 +41,7 @@ namespace RadialReview.Controllers
 			_UserAccessor.EditRocks(GetUser(), model.UserId, model.Rocks);
 			return Json(ResultObject.SilentSuccess());
 		}
+
+		//public ActionResult Assessment()
     }
 }

@@ -8,22 +8,39 @@
 
 $(function () {
 
-    $.tablesorter.addParser({
-        // set a unique id 
-        id: 'attr',
-        is: function (s) {
-            // return false so this parser is not auto detected 
-            return false;
-        },
-        format: function (s, table, cell, cellIndex) {
-            // get data attributes from $(cell).attr('data-something');
-        	// check specific column using cellIndex
-	        debugger;
-            return $(cell).find("[data-sort]").attr('data-sort');
-        },
-        // set type, either numeric or text 
-        type: 'numeric'
-    });
+	$.tablesorter.addParser({
+		// set a unique id 
+		id: 'attr',
+		is: function (s) {
+			// return false so this parser is not auto detected 
+			return false;
+		},
+		format: function (s, table, cell, cellIndex) {
+			// get data attributes from $(cell).attr('data-something');
+			// check specific column using cellIndex
+			debugger;
+			return $(cell).find("[data-sort]").attr('data-sort');
+		},
+		// set type, either numeric or text 
+		type: 'numeric'
+	});
+	/*
+	$.tablesorter.addParser({
+		// set a unique id 
+		id: 'cbox',
+		is: function (s) {
+			// return false so this parser is not auto detected 
+			return false;
+		},
+		format: function (s, table, cell, cellIndex) {
+			// get data attributes from $(cell).attr('data-something');
+			// check specific column using cellIndex
+			debugger;
+			return $(cell).find("input[type=checkbox]").prop('checked');
+		},
+		// set type, either numeric or text 
+		type: 'numeric'
+	});*/
 
 
 });

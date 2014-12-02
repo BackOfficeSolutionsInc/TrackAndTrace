@@ -1,5 +1,5 @@
 ﻿.jumbotron.authorized {
-    background-color: rgba(255, 60, 60, 0.14);
+	background-color: rgba(217, 83, 79, 0.3);/*rgba(255, 60, 60, 0.14);*/
     -moz-transition: background-color .2s ease-in-out;
     -o-transition: background-color .2s ease-in-out;
     -webkit-transition: background-color .2s ease-in-out;
@@ -7,7 +7,7 @@
 }
 
     .jumbotron.authorized.on {
-        background-color: rgba(60, 255, 99, 0.14);
+	    background-color: rgba(92, 184, 92, 0.51);/*rgba(60, 255, 99, 0.14);*/
     }
 
 

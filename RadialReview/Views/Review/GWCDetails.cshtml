@@ -19,6 +19,7 @@
 					<th></th>
 					<th></th>
 					<th></th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -36,7 +37,20 @@
 								</span>
 							}
 						</td>
-
+						<td>
+							@{
+								var check = "";
+								switch((string)ViewBag.GWC){
+									case "get":check = i.IncludeGetItReason ? "checked" : "";break;
+									case "want":check = i.IncludeWantItReason ? "checked" : "";break;
+									case "capacity":check = i.IncludeHasCapacityReason ? "checked" : "";break;
+									default: throw new Exception((string) ViewBag.GWC);
+								}
+							}
+							@if (!String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](i))){
+								@:<input class="gwc_@(i.Id)_@(ViewBag.GWC)" type="checkbox" onclick="toggleGWC(this, @(i.Id))" @(check)/>
+							}
+						</td>
 					</tr>
 				}
 			</tbody>
@@ -48,3 +62,20 @@
 		<div class="gray">No data.</div>
 	}
 </div>
+
+<script>
+	function toggleGWC(s, id) {
+		var found = $(s).prop("checked");
+		var clzz = "input.gwc_" + id + "_@(ViewBag.GWC)";
+		$(clzz).prop("disabled", true);
+		$.ajax({
+			url: "/Review/SetIncludeGWCFeedback?reviewId=@(Model.Review.ForReviewsId)&answerId=" + id + "&on=" + found + "&gwc=@(ViewBag.GWC)",
+			success: function (d) {
+				$(clzz).prop("checked", d.Object.On);
+			},
+			complete: function () {
+				$(clzz).prop("disabled", false);
+			}
+		});
+	}
+</script>

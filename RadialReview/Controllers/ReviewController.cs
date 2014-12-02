@@ -512,6 +512,21 @@ namespace RadialReview.Controllers {
 		}
 
 
+
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeGWCFeedback(long answerId, bool on, string gwc)
+		{
+			_ReviewAccessor.SetIncludeGWCFeedback(GetUser(), on, answerId, gwc);
+			return Json(ResultObject.Create(new { On = on }), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeValueFeedback(long answerId, bool on)
+		{
+			_ReviewAccessor.SetIncludeValueFeedback(GetUser(), on, answerId);
+			return Json(ResultObject.Create(new { On = on }), JsonRequestBehavior.AllowGet);
+		}
+
 		[Access(AccessLevel.Manager)]
 		public JsonResult SetIncludeTable(long reviewId, bool on) {
 			_ReviewAccessor.SetIncludeQuestionTable(GetUser(), reviewId, on);
@@ -553,6 +568,7 @@ namespace RadialReview.Controllers {
 
 		public class ReviewDetailsViewModel
 		{
+			public ReviewsModel ReviewContainer { get; set; }
 			public ReviewModel Review { get; set; }
 			public long xAxis { get; set; }
 			public long yAxis { get; set; }
@@ -860,6 +876,7 @@ namespace RadialReview.Controllers {
 				c.Title = _ChartsEngine.GetChartTitle(GetUser(), c.Id);
 			}
 
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(GetUser(), review.ForReviewsId, false, false, false);
 
 			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), review.ForUserId);
 			var activeQuestions = questions.Where(x => answers.Any(y => y.Askable.Id == x.Id)).ToList();
@@ -872,6 +889,7 @@ namespace RadialReview.Controllers {
 
 			var model = new ReviewDetailsViewModel()
 			{
+				ReviewContainer = reviewContainer,
 				Review = review,
 				Axis = categories.ToSelectList(x => x.Category.Translate(), x => x.Id),
 				xAxis = ((long?)Session["lastXAxis"]) ?? categories.FirstOrDefault().NotNull(x => x.Id),

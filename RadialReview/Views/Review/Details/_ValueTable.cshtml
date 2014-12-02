@@ -3,14 +3,14 @@
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 <div class="pull-right header">
-	<input id="roleTableFilter" type="text" class="form-control" placeholder="Filter" />
+	<input id="valueTableFilter" type="text" class="form-control" placeholder="Filter" />
 </div>
-<table class="tablesorter roleTable">
+
+<table class="tablesorter valueTable">
 	<thead>
 		<tr>
 			<th>Name:</th>
-			<th></th>
-			<th>Role:</th>
+			<th>Value:</th>
 			<th></th>
 			<th>Reason:</th>
 			<th></th>
@@ -18,72 +18,65 @@
 	</thead>
 	<tbody>
 		@{
-			var gwcs = new[]{
+			/*var gwcs = new[]{
 				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Gets It",x=>x.GetIt,x=>x.GetItReason,x=>x.IncludeGetItReason,"get"),
 				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Wants It",x=>x.WantIt,x=>x.WantItReason,x=>x.IncludeWantItReason,"want"),
 				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Capacity To Do It",x=>x.HasCapacity,x=>x.HasCapacityReason,x=>x.IncludeHasCapacityReason,"capacity")
-
-			};
+						};*/
 
 			var sorter = new Dictionary<Tristate, string> { { Tristate.True, "1" }, { Tristate.Indeterminate, "0" }, { Tristate.False, "-1" } };
 			var text = new Dictionary<Tristate, string> { { Tristate.True, "yes" }, { Tristate.Indeterminate, "n/a" }, { Tristate.False, "no" } };
 		}
+		
 
-
-		@foreach (var r in Model.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>())
+		@foreach (var r in Model.AnswersAbout.Where(x => x is CompanyValueAnswer).Cast<CompanyValueAnswer>())
 		{
-			foreach (var gwc in gwcs)
-			{
-				<tr>
-					<td>@r.ByUser.GetName()</td>
-					<td class="alignLeft italic">@gwc.Item1</td>
-					<td class="bold">@r.Askable.GetQuestion()</td>
-					<td class="block"><div class="fill @gwc.Item2(r)" data-sort=""></div><span style="display:none">@(sorter[gwc.Item2(r)]) @text[gwc.Item2(r)]</span></td>
-					<td class="remainingWidth" style="padding-left: 10px;">
-						@{
-				var reason = gwc.Item3(r);
-						}
-						@if (!String.IsNullOrWhiteSpace(reason))
-						{
-							<span class="italic">"@reason"</span>
-						}
-					</td>
-					<td>
-						@if (!String.IsNullOrWhiteSpace(reason))
-						{
-							@:<input class="gwc_@(r.Id)_@(gwc.Item5)" type="checkbox" onclick="toggleGWC2(this, @(r.Id), '@(gwc.Item5)')" @(gwc.Item4(r) ? "checked" : "") />
-							<span class="hidden">@(gwc.Item4(r) ? "b" : "c")</span>
-						}
-						else
-						{
-							<span class="hidden"></span>
-						}
-					</td>
-				</tr>
-			}
+			<tr>
+				<td>@r.ByUser.GetName()</td>
+				<td class="alignLeft bold">@r.Askable.GetQuestion()</td>
+				<td class="block"><div class="fill @r.Exhibits" data-sort=""></div><span style="display:none">@((int)r.Exhibits)</span></td>
+				<td class="remainingWidth" style="padding-left: 10px;">
+					@if (!String.IsNullOrWhiteSpace(r.Reason))
+					{
+						<span class="italic">"@r.Reason"</span>
+					}
+				</td>
+				<td>
+					@if (!String.IsNullOrWhiteSpace(r.Reason))
+					{
+						@:<input class="value_@(r.Id)" type="checkbox" onclick="toggleValue2(this, @(r.Id))" @(r.IncludeReason? "checked" : "") />
+						<span class="hidden">@(r.IncludeReason ? "b" : "c")</span>
+					}
+					else
+					{
+						<span class="hidden"></span>
+					}
+				</td>
+			</tr>
 		}
 	</tbody>
 </table>
+
 @using (Html.BeginScripts())
 {
 	<script>
-		$(function () {
-			$(".roleTable").filterTable({ inputSelector: '#roleTableFilter' });
-			$(".roleTable").tablesorter({
+		$(function() {
+			$(".valueTable").filterTable({ inputSelector: '#valueTableFilter' });
+			$(".valueTable").tablesorter({
 				headers: {
 					3: { sorter: 'attr' }
 				},
 				/*sortForce: [[0, 1]],*/
+				sortList: [[4,0]],
 				sortStable: true,
-				sortList: [[5, 0]],
 			});
 		});
-		function toggleGWC2(s, id, gwc) {
+		function toggleValue2(s, id) {
 			var found = $(s).prop("checked");
-			var clzz = "input.gwc_" + id + "_" + gwc;
+			var clzz = "input.values_" + id;
 			$(clzz).prop("disabled", true);
 			$.ajax({
-				url: "/Review/SetIncludeGWCFeedback?answerId=" + id + "&on=" + found + "&gwc=" + gwc,
+				url: "/Review/SetIncludeValueFeedback?answerId=" + id + "&on=" + found,
 				success: function (d) {
 					$(clzz).prop("checked", d.Object.On);
 					var c = "c";

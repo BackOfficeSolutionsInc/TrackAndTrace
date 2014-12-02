@@ -137,7 +137,7 @@ namespace RadialReview.Accessors {
 
                     team = dataInteraction.GetQueryProvider().All<OrganizationTeamModel>().First(x => x.Id == forTeamId);
 
-                    var usersToReview = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, caller, forTeamId).ToListAlive();
+                    var usersToReview = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, forTeamId).ToListAlive();
 
                     List<Exception> exceptions = new List<Exception>();
 

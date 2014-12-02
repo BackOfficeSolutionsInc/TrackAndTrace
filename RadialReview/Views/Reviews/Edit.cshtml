@@ -164,7 +164,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan=""></td>
+					<td colspan="2" class="alignCenter"><b>Review Created:</b>&nbsp; @Model.Review.DateCreated.ToString("MM-dd-yyyy") </td>
                     <td colspan="2" class="alignCenter"><b>Reviews due:</b>&nbsp; @Model.Review.DueDate.Subtract(TimeSpan.FromDays(1)).ToString("MM-dd-yyyy") </td>
                     <td colspan="2" class="alignCenter"><b>Reports due:</b>&nbsp;
                         @if (Model.Review.ReportsDueDate != null)

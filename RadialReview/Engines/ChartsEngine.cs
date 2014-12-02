@@ -1,10 +1,14 @@
-﻿using NHibernate.Linq;
+﻿using Amazon.IdentityManagement.Model;
+using NHibernate.Criterion;
+using NHibernate.Linq;
 using RadialReview.Accessors;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Charts;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Reviews;
+using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Chart;
 using System;
@@ -12,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Engines
 {
@@ -214,8 +219,15 @@ namespace RadialReview.Engines
 		public Scatter AggregateReviewScatter(UserOrganizationModel caller, long reviewsId)
 		{
 			var allAnswers = _ReviewAccessor.GetReviewContainerAnswers(caller, reviewsId);
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(caller, reviewsId, false, false, false);
+
 			QuestionCategoryModel companyValuesCategory;
 			QuestionCategoryModel rolesCategory;
+
+			
+			var teammemberLookup = new Multimap<long, OrganizationTeamModel>();
+			Dictionary<long, OrganizationTeamModel> teamLookup=null;
+			var teamMembers = _TeamAccessor.GetTeamMembersAtOrganization(caller, reviewContainer.ForOrganizationId);
 
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -223,8 +235,21 @@ namespace RadialReview.Engines
 				{
 					companyValuesCategory = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.COMPANY_VALUES);
 					rolesCategory = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.ROLES);
+					
+					var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.DeleteTime == null && x.Organization.Id == reviewContainer.ForOrganizationId).List().ToList();
+					teamLookup = teams.ToDictionary(x => x.Id, x => x);
+					
+					foreach (var t in teamMembers){
+						var teamId = t.TeamId;
+						var userId = t.UserId;
+						if (teamLookup.ContainsKey(teamId)){
+							var team = teamLookup[teamId];
+							teammemberLookup.Add(userId, team);
+						}
+					}
 				}
 			}
+			
 			var scatterDataPoints = new List<ScatterData>();
 			var groups = new HashSet<ScatterGroup>(new EqualityComparer<ScatterGroup>((x, y) => x.Class.Equals(y.Class), x => x.Class.GetHashCode()));
 			var remapper = RandomUtility.CreateRemapper();
@@ -246,7 +271,6 @@ namespace RadialReview.Engines
 					Date = revieweeAnswers.Max(x => x.CompleteTime) ?? new DateTime(2014, 1, 1),
 					Dimensions = datums,
 					SliceId = reviewsId,
-					//PreviousId = prevId,
 					Title = title,
 					Subtext = "",
 					Id = uniqueId,
@@ -256,28 +280,11 @@ namespace RadialReview.Engines
 			}
 			var dimensions = new List<ScatterDimension>();
 
-			dimensions.Insert(0, new ScatterDimension() { Max = 100, Min = -100, Id = "category-" + rolesCategory.Id, Name = "Roles" });
 			dimensions.Insert(0, new ScatterDimension() { Max = 100, Min = -100, Id = "category-" + companyValuesCategory.Id, Name = "Company Values" });
+			dimensions.Insert(1, new ScatterDimension() { Max = 100, Min = -100, Id = "category-" + rolesCategory.Id, Name = "Roles" });
 
 			var xDimId = dimensions.FirstOrDefault().NotNull(x => x.Id);
 			var yDimId = dimensions.Skip(1).FirstOrDefault().NotNull(x => x.Id);
-
-			/*var dates = scatterDataPoints.Select(x => x.Date).ToList();
-			if (!dates.Any())
-				dates.Add(DateTime.UtcNow);
-
-			var scatter = new ScatterPlot()
-			{
-				Dimensions = dimensions.ToDictionary(x => x.Id, x => x),
-				Filters = new List<ScatterFilter>(),
-				Groups = groups.ToList(),
-				InitialXDimension = xDimId,
-				InitialYDimension = yDimId ?? xDimId,
-				Points = scatterDataPoints,
-				MinDate = dates.Min(),
-				MaxDate = dates.Max(),
-				Legend = new List<ScatterLegendItem>(),
-			};*/
 
 			var data = new List<Scatter.ScatterPoint>();
 
@@ -285,6 +292,10 @@ namespace RadialReview.Engines
 			var xAxis = dimensions.FirstOrDefault(x => x.Id == xDimId).NotNull(x => x.Name);
 			var yAxis = dimensions.FirstOrDefault(x => x.Id == yDimId).NotNull(x => x.Name);
 
+			var subgroupLookup = new DefaultDictionary<long,Checktree.Subtree>(teamId=>new Checktree.Subtree(){
+				id = "team_"+teamId,
+				title = teamLookup[teamId].GetName()
+			});
 
 			foreach (var pt in scatterDataPoints){
 
@@ -311,26 +322,55 @@ namespace RadialReview.Engines
 				}
 
 				if (zeroDen != 2){
+					var user = ((UserOrganizationModel) pt.OtherData.AboutUser);
 					data.Add(new Scatter.ScatterPoint(){
 						cx = xVal,
 						cy = yVal,
 						date = pt.Date,
-						imageUrl = ((UserOrganizationModel) pt.OtherData.AboutUser).ImageUrl(),
+						imageUrl = user.ImageUrl(),
 						subtitle = pt.Date.ToShortDateString(),
-						title = ((UserOrganizationModel) pt.OtherData.AboutUser).GetName(),
+						title = user.GetName(),
 						xAxis = xAxis,
-						yAxis = yAxis
+						yAxis = yAxis,
+						@class = "user_"+user.Id,
+						id = "user_" + user.Id,
 					});
+					var teams = teammemberLookup.Get(user.Id);
+					foreach (var team in teams){
+						subgroupLookup[team.Id].subgroups.Add(new Checktree.Subtree(){
+							id = "user_" + user.Id,
+							title = user.GetName()
+						});
+					}
 				}
 			}
+
+			var checktree = new Checktree();
+			checktree.Data.title = reviewContainer.ReviewName;
+
+			foreach (var s in subgroupLookup){
+				checktree.Data.subgroups.Add(s.Value);
+			}
+
+			var valueCoef = 1;
+			var roleCoef  = 5;
+
+			var ordered = data.OrderByDescending(x =>{
+				var xx = (x.cx + 100);
+				var yy = (x.cy + 100);
+				return valueCoef*xx*xx + roleCoef*yy*yy;
+			}).ToList();
+
+
 			return new Scatter(){
 				Points = data,
 				xAxis = xAxis,
 				yAxis = yAxis,
 				title = "Aggregate Results",
+				FilterTree = checktree,
+				OrderedPoints = ordered,
 			};
 
-			//return scatter;
 		}
 
 		public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId, bool sensitive)
@@ -532,10 +572,17 @@ namespace RadialReview.Engines
 						{
 							var a = (GetWantCapacityAnswer)answer;
 							var count = 0.0;
+							var weight = 0.0;
 							count += a.GetIt == Tristate.True ? 1 : 0;
 							count += a.WantIt == Tristate.True ? 1 : 0;
 							count += a.HasCapacity == Tristate.True ? 1 : 0;
-							AddScatterScore(rolesCategory.Id, "Roles", count / 3.0, 1);
+
+							weight += a.GetIt != Tristate.Indeterminate ? 1 : 0;
+							weight += a.WantIt != Tristate.Indeterminate ? 1 : 0;
+							weight += a.HasCapacity != Tristate.Indeterminate ? 1 : 0;
+
+
+							AddScatterScore(rolesCategory.Id, "Roles", count / 3.0, weight/3.0);
 						}
 						break;
 					case QuestionType.CompanyValue:

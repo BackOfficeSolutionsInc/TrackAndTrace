@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Page = Model.Review.ForUser.GetName();
     ViewBag.ExtraTabs = ExtraTab.Create(
-        "Review: " + Model.Review.Name, "/Reports/List/" + Model.Review.ForReviewsId,
+        "Reports: " + Model.Review.Name, "/Reports/Index/" + Model.Review.ForReviewsId,
         ViewBag.Page, "/Review/Details/" + Model.Review.Id
         );
 
@@ -23,7 +23,7 @@
 }
 
 @section top{
-    <div class="aboveJumbotron"><h2>@heading</h2></div>
+    @*<div class="aboveJumbotron"><h2>@heading</h2></div>*@
     <div class="jumbotron authorized @(Model.Review.ClientReview.Visible?"on":"")">
         <h1>Report</h1>
     </div>

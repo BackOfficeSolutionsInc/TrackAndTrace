@@ -38,6 +38,8 @@
 
 svg.scatter{
 	overflow:visible !important;
+	position: relative;
+	z-index: 100;
 }
 
 svg.scatter * {
@@ -88,4 +90,26 @@ svg.scatter .hoverable {
 	font-weight: bold;
 	font-size: 16px;
 	fill:#44A035;
+}
+
+.scatter .select {
+	stroke: #597622 !important;
+	fill: #D4EE9F !important;
+	stroke-width: 1px;
+}
+.scatter .hidden {
+	-ms-opacity: 0;
+	opacity: 0;
+	-webkit-transition: opacity .2s;
+	-moz-transition: opacity .2s;
+	-ms-transition: opacity .2s;
+	-o-transition: opacity .2s;
+	transition: opacity .2s;
+}
+
+.scatter .hidden.overrideShow {
+	display: inherit !important;
+	visibility: inherit !important;
+	-ms-opacity: .5;
+	opacity: .5;
 }

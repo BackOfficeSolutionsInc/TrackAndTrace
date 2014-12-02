@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Json;
 using RadialReview.Models.Reviews;
@@ -242,6 +243,49 @@ namespace RadialReview.Accessors
 
 					review.ClientReview.ManagerNotes = notes;
 					s.Update(review);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public void SetIncludeGWCFeedback(UserOrganizationModel caller, bool on,long answerId, string gwc)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var answer = s.Get<GetWantCapacityAnswer>(answerId);
+					PermissionsUtility.Create(s, caller).ManageReview(answer.ForReviewId);
+
+
+
+					switch (gwc.ToLower())
+					{
+						case "get": answer.IncludeGetItReason = on;break;
+						case "want": answer.IncludeWantItReason = on;break;
+						case "capacity": answer.IncludeHasCapacityReason = on;break;
+						default: throw new Exception(gwc.ToLower());
+					}
+
+					s.Update(answer);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public void SetIncludeValueFeedback(UserOrganizationModel caller, bool on, long answerId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var answer = s.Get<CompanyValueAnswer>(answerId);
+					PermissionsUtility.Create(s, caller).ManageReview(answer.ForReviewId);
+					
+					answer.IncludeReason = on;
+					s.Update(answer);
 					tx.Commit();
 					s.Flush();
 				}

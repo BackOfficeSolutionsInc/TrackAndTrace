@@ -16,7 +16,9 @@ function ScatterImage(id) {
 	var nodeSize = this.nodeSize;
 
 	this.imagePoints = function (points) {
-		var g = points.append("g").classed("card", true).attr("transform", "translate(-" + (nodeSize / 2) + ",-" + (nodeSize / 2) + ")");
+		var g = points.append("g").attr("class",function(d) {
+			return d.class;
+		}).classed("card", true).attr("transform", "translate(-" + (nodeSize / 2) + ",-" + (nodeSize / 2) + ")");
 		g.append("rect").classed("border", true).attr("width", nodeSize).attr("height", nodeSize);
 		var extra = g.append("g").classed("extra", true).attr("opacity", "0");
 		extra.append("rect").classed("background", true).attr("transform", "translate(2,2)").attr("width", 100).attr("height", 100);
@@ -47,10 +49,21 @@ function ScatterImage(id) {
 					d3.select(this.parentNode).selectAll(".extra").transition().duration(100).attr("opacity", "0");
 				});
 	};
+};
 
-
-
-
+jQuery.fn.d3MouseOver = function () {
+	this.each(function (i, e) {
+		var evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("mouseover", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		e.dispatchEvent(evt);
+	});
+};
+jQuery.fn.d3MouseLeave = function () {
+	this.each(function (i, e) {
+		var evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("mouseleave", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		e.dispatchEvent(evt);
+	});
 };
 
 ScatterImage.prototype.Pull = function Pull(url, data, callback) {
@@ -142,6 +155,8 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 			d3.selectAll(".beginHidden").classed("beginHidden", false);
 		}).start();
 
+	this.force = force;
+
 	var svg = d3.select("#" + this.id).append("svg")
 		.attr("viewBox", "0 0 " + options.width + " " + options.height)
 		.attr("width", "100%")
@@ -197,7 +212,9 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 	var enter = svg.selectAll("g.points").data(scatterData).enter();
 
 	var lines = enter.append("line")
-					.classed("beginHidden", true)
+					.attr("class", function(d) {
+						return d.class;
+					}).classed("beginHidden", true)
 					.attr("x1", function (d) { return d.x;  })
 					.attr("x2", function (d) { return d.cx; })
 					.attr("y1", function (d) { return d.y;  })
@@ -251,29 +268,33 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 				ny2 = d.y + r;
 			quadtree.visit(function (quad, x1, y1, x2, y2) {
 				if (quad.point && (quad.point !== d)) {
-					var x = d.x - quad.point.x,
-						y = d.y - quad.point.y,
-						l = Math.sqrt(x * x + y * y),
-						r = options.nodeSize*1.35 + options.padding;
-					if (l < r) {
-						l = (l - r) / l * alpha;
-						d.x -= x *= l;
-						d.y -= y *= l;
-						quad.point.x += x;
-						quad.point.y += y;
+					if (!d3.select(quad.point)[0][0].hidden && !d.hidden) {
+						var x = d.x - quad.point.x,
+							y = d.y - quad.point.y,
+							l = Math.sqrt(x * x + y * y),
+							r = options.nodeSize * 1.35 + options.padding;
+						if (l < r) {
+							l = (l - r) / l * alpha;
+							d.x -= x *= l;
+							d.y -= y *= l;
+							quad.point.x += x;
+							quad.point.y += y;
+						}
 					}
 				}
 				if (quad.point && (quad.point !== d)) {
-					var x = d.x - quad.point.cx,
-						y = d.y - quad.point.cy,
-						l = Math.sqrt(x * x + y * y),
-						r = options.nodeSize*2 + /*(d.color !== quad.point.color) */ options.padding;
-					if (l < r) {
-						l = (l - r) / l * alpha;
-						d.x -= x *= l;
-						d.y -= y *= l;
-						//quad.point.x += x;
-						//quad.point.y += y;
+					if (!d3.select(quad.point)[0][0].hidden) {
+						var x = d.x - quad.point.cx,
+							y = d.y - quad.point.cy,
+							l = Math.sqrt(x * x + y * y),
+							r = options.nodeSize * 2 + /*(d.color !== quad.point.color) */ options.padding;
+						if (l < r) {
+							l = (l - r) / l * alpha;
+							d.x -= x *= l;
+							d.y -= y *= l;
+							//quad.point.x += x;
+							//quad.point.y += y;
+						}
 					}
 				}
 
@@ -299,6 +320,11 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 			if (d.x < m) {
 				d.x -= (d.x - m) * alpha / 2;
 			}
+			/*
+			if (d.hidden) {
+				d.x = d.cx;
+				d.y = d.cy;
+			}*/
 		};
 	}
 

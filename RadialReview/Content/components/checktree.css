@@ -1,0 +1,74 @@
+﻿.checktree{
+	padding:12px;
+	position: relative;
+}
+
+.checktree .subtree{
+	margin-left:6px;
+	padding-left:12px;
+	position: relative;
+}
+
+	.checktree .subtree:before {
+		position: absolute;
+		border-left: 1px solid #DDD;
+		content: "";
+		left: 0px;
+		top: -6px;
+		bottom: 13px;
+	}
+
+	.checktree > .branch:last-of-type > .subtree:before  {
+		bottom: 33px;
+	}
+
+.checktree .horizontal{
+	width: 12px;
+	border-bottom: 1px solid #ddd;
+	position: relative;
+	top: 10px;
+	left: -12px;
+}
+
+.checktree label {
+	padding-left: 4px;
+	margin-bottom: -1px;
+	font-weight: normal;
+}
+
+.checktree label.leaf {
+	font-weight: normal;
+	color: #6C6C6C;
+	font-style: italic;
+}
+
+.checktree .expander {
+	padding: 8px;
+	position: absolute;
+	margin-left: -20px;
+	margin-top: 0px;
+	cursor: pointer;
+}
+
+.checktree .expander:before {
+	display: inline-block;
+	position: absolute;
+	margin-top: -2px;
+	width: 0; 
+	height: 0; 
+	border-right: 0px solid transparent;
+	border-top: 4px solid transparent;
+	border-bottom: 4px solid transparent;
+	border-left: 4px solid black;
+	content: "";
+}
+
+	.checktree .expander.expanded:before {
+		
+		margin-left: -4px;
+		margin-top: 1px;
+		border-top: 4px solid black;
+		border-bottom: 0px solid transparent;
+		border-left: 4px solid transparent;
+		border-right: 4px solid transparent;
+	}

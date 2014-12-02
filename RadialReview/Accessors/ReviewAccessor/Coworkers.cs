@@ -53,7 +53,7 @@ namespace RadialReview.Accessors {
 					teams = forTeam.AsList();
 
 				foreach (var team in teams) {
-					var teamMembers = TeamAccessor.GetTeamMembers(s.GetQueryProvider(), perms, caller, team.Id).Where(x => x.User.Id != reviewee.Id && accessableUsers.Any(id => id == x.UserId)).ToListAlive();
+					var teamMembers = TeamAccessor.GetTeamMembers(s.GetQueryProvider(), perms, team.Id).Where(x => x.User.Id != reviewee.Id && accessableUsers.Any(id => id == x.UserId)).ToListAlive();
 					foreach (var teammember in teamMembers)
 						coworkerRelationship.Add(teammember.User, AboutType.Teammate);
 				}
@@ -129,7 +129,7 @@ namespace RadialReview.Accessors {
 
 					var d = new DataInteraction(queryProvider, s.ToUpdateProvider());
 
-					var teamMemberIds = TeamAccessor.GetTeamMembers(queryProvider, perms, caller, forTeam).Select(x => x.User.Id).ToList();
+					var teamMemberIds = TeamAccessor.GetTeamMembers(queryProvider, perms, forTeam).Select(x => x.User.Id).ToList();
 
 					var team = allOrgTeams.First(x => x.Id == forTeam);
 

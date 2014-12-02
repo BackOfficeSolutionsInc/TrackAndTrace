@@ -18,7 +18,7 @@ polyline {
 }
 
 .labels{
-    font-size:40px;
+    font-size:36px;
 }
 
 .centerNumber{
@@ -38,4 +38,12 @@ div .piechart{
 .resize{
     width:100%;
     height:77px;
+}
+
+.piechart text{
+	fill: #6D6D6D;
+}
+
+.piechart text.amt {
+	fill: #c1c1c1;
 }
