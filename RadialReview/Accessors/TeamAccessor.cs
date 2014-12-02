@@ -1,4 +1,5 @@
 ﻿using NHibernate;
+using NHibernate.Mapping;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
@@ -103,7 +104,14 @@ namespace RadialReview.Accessors
 					var perm = PermissionsUtility.Create(s, caller);
 					var teams = GetOrganizationTeams(s, perm, orgId);
 
-					return teams.SelectMany(x => GetTeamMembers(s.ToQueryProvider(true), perm, x.Id)).ToList();
+					return teams.SelectMany(x =>{
+						try{
+							return GetTeamMembers(s.ToQueryProvider(true), perm, x.Id);
+						}
+						catch (PermissionsException){
+							return new List<TeamDurationModel>();
+						}
+					}).ToList();
 				}
 			}
 	    }

@@ -1,4 +1,5 @@
-﻿using NHibernate.Hql.Ast.ANTLR;
+﻿using FluentNHibernate.Utils;
+using NHibernate.Hql.Ast.ANTLR;
 using RadialReview.Accessors;
 using RadialReview.Models;
 using System;
@@ -18,6 +19,7 @@ using RadialReview.Models.Application;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Query;
 using RadialReview.Models.UserModels;
+using WebGrease.Css.Extensions;
 
 namespace RadialReview.Controllers
 {
@@ -70,6 +72,214 @@ namespace RadialReview.Controllers
 		    return count;
 
 	    }
+
+	    [Access(AccessLevel.Radial)]
+	    public string UndoRandomReview(long id)
+	    {
+		    var count = 0;
+		    using (var s = HibernateSession.GetCurrentSession()){
+			    using (var tx = s.BeginTransaction()){
+					var values = s.QueryOver<CompanyValueAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime==DateTime.MinValue).List().ToList();
+					var roles = s.QueryOver<GetWantCapacityAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
+					var rocks = s.QueryOver<RockAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
+					var feedbacks = s.QueryOver<FeedbackAnswer>().Where(x => x.ForReviewContainerId == id && x.Complete && x.CompleteTime == DateTime.MinValue).List().ToList();
+
+					foreach (var v in values){
+						v.Exhibits = PositiveNegativeNeutral.Indeterminate;
+						v.Complete = false;
+						v.CompleteTime = null;
+						s.Update(v);
+						count++;
+					}
+					foreach (var v in roles){
+						v.GetIt = Tristate.Indeterminate;
+						v.WantIt = Tristate.Indeterminate;
+						v.HasCapacity = Tristate.Indeterminate;
+						v.Complete = false;
+						v.CompleteTime = null;
+						s.Update(v); 
+						count+=3;
+					}
+					foreach (var v in rocks)
+					{
+						v.Finished = Tristate.Indeterminate;
+						v.Complete = false;
+						v.CompleteTime = null;
+						s.Update(v);
+						count++;
+					}
+					foreach (var v in feedbacks)
+					{
+						v.Feedback = null;
+						v.Complete = false;
+						v.CompleteTime = null;
+						s.Update(v);
+						count++;
+					}
+					tx.Commit();
+					s.Flush();
+
+			    }
+		    }
+		    return "Undo Random Review. Update: " + count;
+
+	    }
+
+
+	    [Access(AccessLevel.Radial)]
+		public string RandomReview(long id)
+	    {
+		    var count = 0;
+		    using (var s = HibernateSession.GetCurrentSession()){
+			    using (var tx = s.BeginTransaction()){
+
+				    var desenterPercent = .1;
+				    var standardPercent = .8;
+				    var standardPercentDeviation = .2;
+					
+				    var unstartedPercent = .05;
+				    var incompletePercent = .1;
+
+				    var rockPercent = .88;
+
+					var values = s.QueryOver<CompanyValueAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
+					var roles = s.QueryOver<GetWantCapacityAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
+					var rocks = s.QueryOver<RockAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
+					var feebacks = s.QueryOver<FeedbackAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
+
+					var about2 = new HashSet<long>(values.Select(x => x.AboutUserId));
+					roles.Select(x => x.AboutUserId).ForEach(x=>about2.Add(x));
+					rocks.Select(x => x.AboutUserId).ForEach(x=>about2.Add(x));
+
+				    var reviewIds = new HashSet<long>();
+
+				    var about = about2.ToList();
+
+				    var r =new Random();
+				    var unstartedList = new List<long>();
+				    var incompleteList = new List<long>();
+					
+				    for (var i = 0; i <= unstartedPercent*about.Count; i++)
+					    unstartedList.Add(about[r.Next(about.Count)]);
+				    for (var i = 0; i <= incompletePercent*about.Count; i++)
+					    incompleteList.Add(about[r.Next(about.Count)]);
+
+
+					var lookup = about.ToDictionary(x => x, x =>
+					{
+						//BadEgg
+						var luckA = 0.3;
+						var luckB = 0.3;
+
+					    if (r.NextDouble() > desenterPercent){//Standard
+						    luckA = Math.Max(Math.Min((r.NextDouble() - .5)*standardPercentDeviation + standardPercent, 1), 0);
+					    }
+						if (r.NextDouble() > desenterPercent){//Standard
+							luckB = Math.Max(Math.Min((r.NextDouble() - .5) * standardPercentDeviation + standardPercent, 1), 0);
+					    }
+
+					    return new {luckA,luckB};
+				    });
+					
+				    foreach (var v in values){
+					    var a = lookup[v.AboutUserId];
+					    if (!v.Complete){
+							if (unstartedList.Contains(v.ByUserId))
+							    continue;
+							if (incompleteList.Contains(v.ByUserId) && r.NextDouble() > .5)
+								continue;
+						    count++;
+							v.CompleteTime = DateTime.MinValue;
+						    v.Complete = true;
+						    if (r.NextDouble() < a.luckA){
+								v.Exhibits = PositiveNegativeNeutral.Positive;
+						    }else{
+							    if (r.NextDouble() < a.luckA/2){
+								    v.Exhibits = PositiveNegativeNeutral.Negative;
+							    }else{
+									v.Exhibits = PositiveNegativeNeutral.Neutral;
+							    }
+						    }
+							s.Update(v);
+					    }
+				    }
+
+					foreach (var v in roles)
+					{
+						var a = lookup[v.AboutUserId];
+						if (!v.Complete)
+						{
+							if (unstartedList.Contains(v.ByUserId))
+								continue;
+							if (incompleteList.Contains(v.ByUserId) && r.NextDouble() > .5)
+								continue;
+
+							count += 3;
+							v.CompleteTime = DateTime.MinValue;
+							v.Complete = true;
+							if (r.NextDouble() < a.luckB)
+							{
+								v.GetIt = Tristate.True;
+								v.WantIt = Tristate.True;
+								v.HasCapacity = Tristate.True;
+							}
+							else
+							{
+								v.GetIt = (r.NextDouble() > .666) ? Tristate.False : Tristate.True;
+								v.WantIt = (r.NextDouble() > .666) ? Tristate.False : Tristate.True;
+								v.HasCapacity = (r.NextDouble() > .666) ? Tristate.False : Tristate.True;
+							}
+							s.Update(v);
+						}
+					}
+
+					foreach (var v in rocks){
+						var a = lookup[v.AboutUserId];
+						if (!v.Complete)
+						{
+							if (unstartedList.Contains(v.ByUserId))
+								continue;
+							if (incompleteList.Contains(v.ByUserId) && r.NextDouble() > .5)
+								continue;
+
+							count++;
+							v.CompleteTime = DateTime.MinValue;
+							v.Complete = true;
+							v.Finished = (r.NextDouble() < rockPercent) ? Tristate.True : Tristate.False;
+							s.Update(v);
+						}
+					}
+
+				    var allFeedbacks = new[]{"No comment.", "Good progress.", "Could use some work","Excellent","A pleasure to work with"};
+
+					foreach (var v in feebacks)
+					{
+						var a = lookup[v.AboutUserId];
+						if (!v.Complete)
+						{
+							if (unstartedList.Contains(v.ByUserId))
+								continue;
+							if (incompleteList.Contains(v.ByUserId) && r.NextDouble() > .5)
+								continue;
+							if (!v.Required)
+								continue;
+							count++;
+							v.CompleteTime = DateTime.MinValue;
+							v.Complete = true;
+							
+							v.Feedback = (r.NextDouble() < .05) ? allFeedbacks[r.Next(allFeedbacks.Length)] : "";
+							s.Update(v);
+						}
+					}
+
+					tx.Commit();
+					s.Flush();
+			    }
+		    }
+		    return "Completed Randomize. Updated:"+count;
+	    }
+
+
 
 
 	    [Access(AccessLevel.Radial)]
