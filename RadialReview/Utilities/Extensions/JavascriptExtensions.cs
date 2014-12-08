@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Microsoft.Ajax.Utilities;
 
 namespace RadialReview
 {
@@ -10,7 +11,12 @@ namespace RadialReview
 
         public static DateTime ToDateTime(this long timeSinceEpoch)
         {
-            return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(timeSinceEpoch);
+	        try{
+		        return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(timeSinceEpoch);
+	        }
+	        catch (Exception){
+		        return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+	        }
         }
 
         public static long ToJavascriptMilliseconds(this DateTime time)

@@ -2,6 +2,7 @@
 using NHibernate.Criterion;
 using NHibernate.Linq;
 using RadialReview.Accessors;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Charts;
@@ -26,6 +27,7 @@ namespace RadialReview.Engines
 		protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
 		protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
 		protected static TeamAccessor _TeamAccessor = new TeamAccessor();
+		protected static UserAccessor _UserAccessor = new UserAccessor();
 
 		public String GetChartTitle(UserOrganizationModel caller, long chartTupleId)
 		{
@@ -216,7 +218,7 @@ namespace RadialReview.Engines
 			return filteredPlot;
 		}
 
-		public Scatter AggregateReviewScatter(UserOrganizationModel caller, long reviewsId)
+		public Scatter AggregateReviewScatter(UserOrganizationModel caller, long reviewsId,bool admin)
 		{
 			var allAnswers = _ReviewAccessor.GetReviewContainerAnswers(caller, reviewsId);
 			var reviewContainer = _ReviewAccessor.GetReviewContainer(caller, reviewsId, false, false, false);
@@ -227,7 +229,17 @@ namespace RadialReview.Engines
 			
 			var teammemberLookup = new Multimap<long, OrganizationTeamModel>();
 			Dictionary<long, OrganizationTeamModel> teamLookup=null;
-			var teamMembers = _TeamAccessor.GetTeamMembersAtOrganization(caller, reviewContainer.ForOrganizationId);
+			List<TeamDurationModel> teamMembers;
+			if (admin){
+				try{
+					_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization());
+				}catch (PermissionsException){
+					_PermissionsAccessor.Permitted(caller, x => x.EditReviewContainer(reviewsId));
+				}
+				teamMembers = _TeamAccessor.GetTeamMembersAtOrganization(caller, reviewContainer.ForOrganizationId);
+			}else{
+				teamMembers = _TeamAccessor.GetSubordinateTeamMembers(caller, caller.Id);
+			}
 
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -352,14 +364,35 @@ namespace RadialReview.Engines
 				checktree.Data.subgroups.Add(s.Value);
 			}
 
-			var valueCoef = 1;
-			var roleCoef  = 5;
+			var valueCoef = 3;
+			var roleCoef  = 1;
 
 			var ordered = data.OrderByDescending(x =>{
 				var xx = (x.cx + 100);
 				var yy = (x.cy + 100);
 				return valueCoef*xx*xx + roleCoef*yy*yy;
 			}).ToList();
+
+			checktree.Data.subgroups.Insert(0,new Checktree.Subtree()
+			{
+				id = "team-top",
+				title = "Top 10",
+				subgroups = ordered.Take(10).Select(x => new Checktree.Subtree()
+				{
+					id = x.id,
+					title = x.title
+				}).ToList()
+			});
+
+			checktree.Data.subgroups.Insert(1,new Checktree.Subtree()
+			{
+				id = "team-bottom",
+				title = "At Risk",
+				subgroups = Enumerable.Reverse(ordered).Take(10).Select(x => new Checktree.Subtree(){
+					id = x.id,
+					title = x.title
+				}).ToList()
+			});
 
 
 			return new Scatter(){

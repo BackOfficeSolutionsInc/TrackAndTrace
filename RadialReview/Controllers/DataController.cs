@@ -85,10 +85,10 @@ namespace RadialReview.Controllers
 	    }
 
 	    [Access(AccessLevel.Manager)]
-	    public JsonResult AggregateReviewScatter(long id)
+	    public JsonResult AggregateReviewScatter(long id,bool admin=false)
 	    {
 		    var reviewContainerId = id;
-			var newScatter = _ChartsEngine.AggregateReviewScatter(GetUser(), id);
+			var newScatter = _ChartsEngine.AggregateReviewScatter(GetUser(), id, admin);
 			return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
 	    }
 

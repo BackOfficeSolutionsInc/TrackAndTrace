@@ -30,7 +30,7 @@
 .scatter-point {
     stroke:black;
     stroke-width:1px;
-    opacity: .28;
+    /*opacity: .28;*/
     -moz-transition: all 250ms ease;
     -o-transition: all 250ms ease;
     -webkit-transition: all 250ms ease;

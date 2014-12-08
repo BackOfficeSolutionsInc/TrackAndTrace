@@ -54,6 +54,7 @@ namespace RadialReview
                       "~/Scripts/Main/radial.js",
                       "~/Scripts/jquery.signalR-{version}.js",
                       "~/Scripts/jquery/jquery.qtip.js",
+					  "~/Scripts/jquery/jquery.tablesorter.js",
                       "~/Scripts/Main/finally.js"
                       ));
 

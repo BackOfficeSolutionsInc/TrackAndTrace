@@ -20,13 +20,21 @@
 		</div>
 		<div class="ordered" style="" id="ordered_@id">
 			<div class="row">
-				<div class="col-sm-6">
-					<h3>Top 10</h3>
-					<ul class="top10"></ul>
-				</div>
-				<div class="col-sm-6">
-					<h3>At Risk</h3>
-					<ul class="bottom10"></ul>
+				<div class="col-sm-12">
+					<div class="alignLeft title">Ranking</div>
+					<div class="rankingContainer">
+						<table id="ranking" class="tablesorter fullWidth">
+							<thead>
+								<tr>
+									<th style="width:1px;padding-right: 10px;"></th>
+									<th>Name</th>
+									<th style="width:1px;padding-right: 10px;">Values</th>
+									<th style="width:1px;padding-right: 10px;">Roles</th>
+								</tr>
+							</thead>
+							<tbody class="ranking"></tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -46,9 +54,10 @@
 			right: 0;
 			bottom: 0;
 		}
-		.filter-header .title {
+		.aggregate .title {
 			color: #767676;
 			font-size: 18px;
+			padding:6px 12px;
 		}
 		.filter {
 			height: 300px;
@@ -64,6 +73,17 @@
 
 		.ordered li {
 		}
+
+		.rankingContainer {
+			height: 160px;
+			overflow: auto;
+			border: 1px solid #ddd;
+			-moz-resize: vertical;
+			-ms-resize: vertical;
+			-o-resize: vertical;
+			resize: vertical;
+			margin-bottom: 10px;
+		}
 	</style>
 
 }
@@ -72,76 +92,63 @@
 	<script src="~/Scripts/d3/d3.v3.min.js"></script>
 	<script src="~/Scripts/d3/Scatter.v2.js"></script>
 	<script>
-	var chart = new ScatterImage("chart_@id");
-
-	var dataUrl = "/Data/AggregateReviewScatter/@Model";
-	chart.PullPlot(dataUrl, null, function (data) {
-
-		var chart = this;
-		var builder = "";
-		var lx = -1000;
-		var ly = -1000;
-		var lc = 0;
-		//Top 10
-		for (var i = 0; i < Math.min(data.OrderedPoints.length, 10) ; i++) {
-			var d = data.OrderedPoints[i];
-			var count = i;
-			if ((lx == d.cx && ly == d.cy))
-				count = lc;
-			lx = d.cx;
-			ly = d.cy;
-			lc = i;
-			builder += "<li><span class='selectable' data-checktree-id='" + d.id + "'>" + (count + 1) + ". " + d.title + "</span></li>";
-		}
-		$("#ordered_@id .top10").html(builder);
-
-		builder = "";
-		lx = -1000;
-		ly = -1000;
-		lc = 0;
-		//Top 10
-		for (var i = 0; i < 10 ; i++) {
-			if (data.OrderedPoints.length - i - 1 < 0)
-				break;
-			var d = data.OrderedPoints[data.OrderedPoints.length - i - 1];
-			var count = i;
-			if ((lx == d.cx && ly == d.cy))
-				count = lc;
-			lx = d.cx;
-			ly = d.cy;
-			lc = i;
-			builder += "<li><span class='selectable' data-checktree-id='" + d.id + "'>" + (count + 1) + ". " + d.title + "</span></li>";
-		}
-		$("#ordered_@id .bottom10").html(builder);
 
 
+		var chart = new ScatterImage("chart_@id");
 
-		checktree("#filters_@id", [data.FilterTree.Data], function (d) {
-			var clzz = $(this).data("checktree-id");
-			var val = $(this).is(":checked");
-			d3.selectAll(".scatter ." + clzz).classed("hidden", !val);
-			d3.selectAll(".scatter ." + clzz).datum(function () {
-				var d = d3.select(this).datum();
-				d.hidden = !val;
-				return d;
+		var dataUrl = "/Data/AggregateReviewScatter/@Model";
+		chart.PullPlot(dataUrl, null, function (data) {
+
+			var chart = this;
+			var builder = "";
+			var lx = -1000;
+			var ly = -1000;
+			var lc = 0;
+			//Top 10
+			for (var i = 0; i < data.OrderedPoints.length; i++) {
+				var d = data.OrderedPoints[i];
+				var count = i;
+				if ((lx == d.cx && ly == d.cy))
+					count = lc;
+				lx = d.cx;
+				ly = d.cy;
+				lc = i;
+				builder += "<tr class='selectable' data-checktree-id='" + d.id + "'><td>" + (count + 1) + "</td><td>" + d.title + "</td><td>" + Math.round(d.cx) + "</td><td>" + Math.round(d.cy) + "</td></tr>";
+				//builder += "<li><span class='selectable' data-checktree-id='" + d.id + "'>" + (count + 1) + ". " + d.title + "</span></li>";
+			}
+			$("#ordered_@id .ranking").html(builder);
+
+
+			$("#ranking.tablesorter").tablesorter({
+				sortStable: true,
 			});
-			//$(".scatter ." + clzz).toggleClass("hidden", val);
 
-			chart.force.alpha(.05);
-			chart.force.start();
-			return false;
-		});
+			checktree("#filters_@id", [data.FilterTree.Data], function (d) {
+				var clzz = $(this).data("checktree-id");
+				var val = $(this).is(":checked");
+				d3.selectAll(".scatter ." + clzz).classed("hidden", !val);
+				d3.selectAll(".scatter ." + clzz).datum(function () {
+					var d = d3.select(this).datum();
+					d.hidden = !val;
+					return d;
+				});
+				//$(".scatter ." + clzz).toggleClass("hidden", val);
 
-		$(".aggregate .selectable,.aggregate .leaf").hover(function () {
-			var id = $(this).data("checktree-id");
-			d3.select("#chart_@id g." + id + " .border").classed("select", true);//.d3MouseOver();
-			d3.selectAll("#chart_@id ." + id).classed("overrideShow", true);//.d3MouseOver();
-		}, function () {
-			var id = $(this).data("checktree-id");
-			d3.select("#chart_@id g." + id + " .border").classed("select", false);//$("#chart_@id g." + id + " .hoverable").d3MouseLeave();
-			d3.selectAll("#chart_@id ." + id).classed("overrideShow", false);//.d3MouseOver();
-		});
-		/*var x, y;
+				chart.force.alpha(.005);
+				chart.force.start();
+				return false;
+			});
+
+			$(".aggregate .selectable,.aggregate .leaf").hover(function () {
+				var id = $(this).data("checktree-id");
+				d3.select("#chart_@id g." + id + " .border").classed("select", true);//.d3MouseOver();
+				d3.selectAll("#chart_@id ." + id).classed("overrideShow", true);//.d3MouseOver();
+			}, function () {
+				var id = $(this).data("checktree-id");
+				d3.select("#chart_@id g." + id + " .border").classed("select", false);//$("#chart_@id g." + id + " .hoverable").d3MouseLeave();
+				d3.selectAll("#chart_@id ." + id).classed("overrideShow", false);//.d3MouseOver();
+			});
+			/*var x, y;
 		var i = 0;
 		for (var d in data.Dimensions) {
 			if (i == 0)
@@ -171,6 +178,6 @@
 			//legendFunc: legendFunc,
 			//extraClasses: extraClasses,
 		});*/
-	});
-</script>
+		});
+	</script>
 }
