@@ -76,7 +76,7 @@ namespace RadialReview.Models
         public virtual String Feedback { get; set; }
 		public class FeedbackAnswerMap : SubclassMap<FeedbackAnswer> {
 			public FeedbackAnswerMap() {
-				Map(x => x.Feedback);
+				Map(x => x.Feedback).Length(5000); 
 			}
 		}
     }
@@ -133,19 +133,27 @@ namespace RadialReview.Models
 				Map(x => x.WantItReason);
 				Map(x => x.HasCapacityReason);
 
-				Map(x => x.IncludeHasCapacityReason);
-				Map(x => x.IncludeGetItReason);
-				Map(x => x.IncludeWantItReason);
+				Map(x => x.IncludeHasCapacityReason).Length(5000); ;
+				Map(x => x.IncludeGetItReason).Length(5000); ;
+				Map(x => x.IncludeWantItReason).Length(5000); ;
 			}
 		}
 	}
-	public class RockAnswer : AnswerModel {
+	public class RockAnswer : AnswerModel
+	{
 		public virtual Tristate Finished { get; set; }
+		public virtual RockState Completion { get; set; }
+		public virtual RockState ManagerOverride { get; set; }
+
 		public virtual String Reason { get; set; }
+		public virtual String OverrideReason { get; set; }
 		public class RockAnswerMap : SubclassMap<RockAnswer> {
 			public RockAnswerMap() {
 				Map(x => x.Finished);
-				Map(x => x.Reason);
+				Map(x => x.Completion);
+				Map(x => x.ManagerOverride);
+				Map(x => x.Reason).Length(5000);
+				Map(x => x.OverrideReason).Length(5000);
 			}
 		}
 	}
@@ -159,7 +167,7 @@ namespace RadialReview.Models
 			public CompanyValueAnswerMap()
 			{
 				Map(x => x.Exhibits);
-				Map(x => x.Reason);
+				Map(x => x.Reason).Length(5000);
 				Map(x => x.IncludeReason);
 			}
 		}

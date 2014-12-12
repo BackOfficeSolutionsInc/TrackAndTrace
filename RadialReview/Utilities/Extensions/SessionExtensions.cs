@@ -8,7 +8,7 @@ using System.Web;
 
 namespace RadialReview
 {
-    public static class SessionExtensions
+    public static class _SessionExtensions
     {
         public static IList<TEntity> GetByMultipleIds<TEntity>(this ISession Session, IEnumerable<long> ids)
         {

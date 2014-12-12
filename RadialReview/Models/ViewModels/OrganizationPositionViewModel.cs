@@ -27,7 +27,7 @@ namespace RadialReview.Models.ViewModels
         {
             Id = model.Id;
             Name = model.CustomName;
-            SimilarTo = model.Position.Name.Translate();
+            /*SimilarTo = model.Position.Name.Translate();*/
             NumAccountabilities = model.Responsibilities.Count();
             NumPeople = numPeople;
         }

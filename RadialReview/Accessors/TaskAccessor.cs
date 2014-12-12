@@ -1,6 +1,7 @@
 ﻿using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Prereview;
+using RadialReview.Models.Scorecard;
 using RadialReview.Models.Tasks;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Query;
@@ -123,11 +124,17 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).RowCount();
-                    var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started && x.DeleteTime == null).RowCount();
-                    return reviewCount + prereviewCount;
+					var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started && x.DeleteTime == null).RowCount();
+	                var nowPlus = now.Add(TimeSpan.FromDays(1));
+
+					var scorecardCount = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == forUserId && x.DateDue < nowPlus && x.DateEntered == null).RowCount();
+					return reviewCount + prereviewCount + scorecardCount;
                 }
             }
         }
+
+		
+		//public List<ScoreModel> GetScoreTasks
 
         public List<TaskModel> GetTasksForUser(UserOrganizationModel caller, long forUserId,DateTime now)
         {
@@ -174,10 +181,70 @@ namespace RadialReview.Accessors
                     });
                     tasks.AddRange(prereviewTasks);
 
+					//Scorecard
+					var scores = s.QueryOver<ScoreModel>()
+						.Where(x => x.AccountableUserId == forUserId && x.DateDue < now.AddDays(1) && x.DateEntered == null)
+						.List().ToList();
+
+	                var scoreTasks=scores.GroupBy(x=>x.DateDue.Date).Select(x=>new TaskModel(){
+		                Count = x.Count(),
+						DueDate = x.First().DateDue,
+						Name = "Enter Scorecard Metrics",
+						Type = TaskType.Scorecard
+	                });
+					tasks.AddRange(scoreTasks);
+
+					/*
+
+					  .Where(x => x.Executed == null).ToListAlive();
+
+					foreach (var p in prereviews)
+					{
+						reviewContainers[p.ReviewContainerId] = ReviewAccessor.GetReviewContainer(s.ToQueryProvider(true), perms, p.ReviewContainerId).ReviewName;
+						prereviewCount[p.Id] = s.QueryOver<PrereviewMatchModel>()
+							.Where(x => x.PrereviewId == p.Id && x.DeleteTime == null)
+							.RowCount();
+					}
+					var prereviewTasks = prereviews.Select(x => new TaskModel()
+					{
+						Id = x.Id,
+						Type = TaskType.Prereview,
+						Count = prereviewCount[x.Id],
+						DueDate = x.PrereviewDue,
+						Name = reviewContainers[x.ReviewContainerId]
+					});*/
+
                 }
             }
             return tasks;
         }
 
-    }
+
+		public void UpdateScorecard(DateTime now)
+		{
+			using(var s = HibernateSession.GetCurrentSession())
+			{
+				using(var tx=s.BeginTransaction()){
+					var measurables = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && x.NextGeneration <= now).List().ToList();
+
+					//Next Thursday
+					foreach (var m in measurables){
+						var nextDue =m.NextGeneration.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int) m.DueDate).Add(m.DueTime);
+
+						var score = new ScoreModel(){
+							AccountableUserId = m.AccountableUserId,
+							DateDue = nextDue,
+							MeasurableId = m.Id,
+							OrganizationId = m.OrganizationId,
+						};
+						s.Save(score);
+						m.NextGeneration = nextDue;
+						s.Update(m);
+					}
+					tx.Commit();
+					s.Flush(); 
+				}
+			}
+		}
+	}
 }

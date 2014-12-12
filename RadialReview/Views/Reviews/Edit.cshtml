@@ -137,6 +137,11 @@
                             Change Due Date
                         </div>
                     </td>
+					<td>
+						<div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Edit Review Name", "/Reviews/EditNameModal/" + Model.Review.Id, "/Reviews/EditNameModal/")">
+							Edit Review Name
+						</div>
+					</td>
                     <td>
                         <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Add Question", "/Reviews/AddQuestion/" + Model.Review.Id, "/Reviews/AddQuestion/")">
                             Add Question
@@ -157,11 +162,11 @@
                             Remove User
                         </div>
                     </td>
-                    <td>
-                        <div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Delete Review", "/Reviews/Delete/" + Model.Review.Id, "/Reviews/Delete/")">
-                            Delete Review
-                        </div>
-                    </td>
+					<td>
+						<div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Delete Review", "/Reviews/Delete/" + Model.Review.Id, "/Reviews/Delete/")">
+							Delete Review
+						</div>
+					</td>
                 </tr>
                 <tr>
 					<td colspan="2" class="alignCenter"><b>Review Created:</b>&nbsp; @Model.Review.DateCreated.ToString("MM-dd-yyyy") </td>

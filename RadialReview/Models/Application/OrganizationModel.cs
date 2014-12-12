@@ -16,6 +16,24 @@ namespace RadialReview.Models
 {
     public class OrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable
     {
+	    public class OrganizationSettings
+	    {
+			public virtual bool EmployeesCanViewScorecard { get; set; }
+			public virtual bool ManagersCanViewScorecard { get; set; }
+			public virtual int TimeZoneOffsetMinutes { get; set; }
+
+		    public class OrgSettingsVM : ComponentMap<OrganizationSettings>
+		    {
+			    public OrgSettingsVM()
+				{
+					Map(x => x.EmployeesCanViewScorecard);
+					Map(x => x.ManagersCanViewScorecard);
+					Map(x => x.TimeZoneOffsetMinutes);
+			    }
+		    }
+		}
+
+
         [Display(Name = "organizationName", ResourceType = typeof(DisplayNameStrings))]
         public virtual LocalizedStringModel Name { get; set; }
 
@@ -26,6 +44,10 @@ namespace RadialReview.Models
         public virtual Boolean ManagersCanEdit { get; set; }
         public virtual Boolean ManagersCanRemoveUsers { get; set; }
         public virtual bool StrictHierarchy { get; set; }
+
+		public virtual OrganizationSettings Settings { get; set; }
+
+
         public virtual IList<UserOrganizationModel> Members { get; set; }
         public virtual IList<PaymentModel> Payments { get; set; }
         public virtual IList<InvoiceModel> Invoices { get; set; }
@@ -65,7 +87,10 @@ namespace RadialReview.Models
             Reviews = new List<ReviewsModel>();
             ManagersCanEditPositions = true;
             ManagersCanEdit = false;
-
+	        Settings = new OrganizationSettings(){
+		        ManagersCanViewScorecard = true,
+		        TimeZoneOffsetMinutes = -360,
+	        };
 
         }
 
@@ -98,7 +123,9 @@ namespace RadialReview.Models
         }
 
 
-    }
+
+
+	}
 
     public class OrganizationModelMap : SubclassMap<OrganizationModel>
     {
@@ -110,8 +137,9 @@ namespace RadialReview.Models
             Map(x => x.StrictHierarchy);
             Map(x => x.ManagersCanEditPositions);
             Map(x => x.ManagersCanRemoveUsers);
-            //Map(x => x.ImageUrl);
-            Map(x => x.SendEmailImmediately);
+			//Map(x => x.ImageUrl);
+			Map(x => x.SendEmailImmediately);
+			Component(x => x.Settings).ColumnPrefix("Settings_");
 
             References(x => x.Image).Not.LazyLoad().Cascade.SaveUpdate();
             References(x => x.Name).Not.LazyLoad().Cascade.SaveUpdate();

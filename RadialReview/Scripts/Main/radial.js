@@ -33,7 +33,7 @@ function clearUnsaved() {
 				return elem || "";
 			}).join(",");
 		}
-		return this
+		return this;
 	}
 
 })(jQuery);
@@ -205,6 +205,23 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
             }, 550);
         }
     });
+}
+
+function UnstoreJsonAlert() {
+	clearAlerts();
+	var data = localStorage.getItem("Alert");
+	localStorage.setItem("Alert", null);
+
+	var alert = JSON.parse(data);
+	if (alert !== undefined && alert != null && alert != "null") {
+		var type = alert.type;
+		var title = alert.title;
+		var message = alert.message;
+		if (type === undefined) type = "alert-success";
+		if (title === undefined) title = "Success!";
+		if (message === undefined) message = "";
+		showAlert(message, type, title);
+	}
 }
 
 function StoreJsonAlert(json) {

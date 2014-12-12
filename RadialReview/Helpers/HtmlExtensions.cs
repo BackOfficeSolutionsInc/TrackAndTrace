@@ -122,12 +122,19 @@ namespace System.Web
             return new HtmlString("");
         }
 
-        public static HtmlString ShowModal(this HtmlHelper html, String title, String pullUrl, String pushUrl, String callbackFunction = null, String preSubmitCheck = null, String onComplete = null)
+		public static HtmlString ShowModal(this HtmlHelper html, String title, String pullUrl, String pushUrl, String callbackFunction = null, String preSubmitCheck = null, String onComplete = null, String onCompleteFunction = null)
         {
             title = title.Replace("'", "\\'");
-            if (onComplete != null)
-                return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction + "','" + preSubmitCheck + "','" + onComplete + "')");
-            if (preSubmitCheck != null)
+			if (onComplete != null || onCompleteFunction!=null){
+				var c = "";
+				if (onComplete != null)
+					c = "'" + onComplete + "'";
+				else
+					c = onCompleteFunction;
+				
+				return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction + "','" + preSubmitCheck + "'," + c + ")");
+			}
+			if (preSubmitCheck != null)
                 return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction + "','" + preSubmitCheck + "')");
             else if (callbackFunction != null)
                 return new HtmlString(@"showModal('" + title + @"','" + pullUrl + @"','" + pushUrl + "','" + callbackFunction + "')");

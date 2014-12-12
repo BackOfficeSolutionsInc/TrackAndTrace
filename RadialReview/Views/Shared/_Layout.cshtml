@@ -138,21 +138,9 @@
                                         }
                     @if(ViewBag.Success!=null){
                         @:showAlert("@ViewBag.Success", "alert-success", "Success!");
-                                        }
-
-                    var data = localStorage.getItem("Alert");
-                    localStorage.setItem("Alert", null);
-
-                    var alert = JSON.parse(data);
-                    if (alert !== undefined && alert != null && alert != "null") {
-                        var type = alert.type;
-                        var title = alert.title;
-                        var message = alert.message;
-                        if (type === undefined) type = "alert-success";
-                        if (title === undefined) title = "Success!";
-                        if (message === undefined) message = "";
-                        showAlert(message, type, title);
                     }
+	                UnstoreJsonAlert();
+
                 });
 
                 var statusTimeout;

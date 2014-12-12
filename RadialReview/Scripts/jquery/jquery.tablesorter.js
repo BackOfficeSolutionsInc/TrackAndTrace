@@ -18,7 +18,6 @@ $(function () {
 		format: function (s, table, cell, cellIndex) {
 			// get data attributes from $(cell).attr('data-something');
 			// check specific column using cellIndex
-			debugger;
 			return $(cell).find("[data-sort]").attr('data-sort');
 		},
 		// set type, either numeric or text 

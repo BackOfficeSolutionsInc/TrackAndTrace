@@ -1,4 +1,5 @@
-﻿using RadialReview.Models.Interfaces;
+﻿using RadialReview.Exceptions;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,33 @@ namespace RadialReview
 
     public static class EnumerableExtensions
     {
-        
+
+	    public static bool AllSame<T, TProp>(this IEnumerable<T> self, Func<T, TProp> selector,out TProp property)
+	    {
+		    var hash = new HashSet<TProp>(self.Select(selector));
+		    var output=hash.Count <= 1;
+		    if (output)
+			    property = hash.First();
+		    else
+			    property = default(TProp);
+		    return output;
+	    }
+
+	    public static TProp EnsureAllSame<T, TProp>(this IEnumerable<T> self, Func<T, TProp> selector)
+	    {
+		    TProp o;
+		    if (AllSame(self, selector, out o)){
+			    return o;
+		    }
+			throw new PermissionsException("All entries must be the same.");
+	    }
+
+
+	    public static bool AllSame<T, TProp>(this IEnumerable<T> self, Func<T, TProp> selector)
+	    {
+		    TProp dud;
+		    return AllSame(self, selector,out dud);
+	    }
 
         public static List<SelectListItem> ToSelectList<T, TText, TId>(this IEnumerable<T> self, Func<T, TText> textSelector, Func<T, TId> idSelector, TId selected = default(TId))
         {

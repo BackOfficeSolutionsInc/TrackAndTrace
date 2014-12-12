@@ -110,7 +110,7 @@ namespace RadialReview.Controllers
                 //var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
                 //members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Managers().Execute();
             }
-            var model = new OrgMembersViewModel(members,user.Organization);
+            var model = new OrgMembersViewModel(GetUser(),members,user.Organization);
             return View(model);
         }
 
@@ -184,6 +184,11 @@ namespace RadialReview.Controllers
                 model.SendEmailImmediately,
                 model.ManagersCanRemoveUsers);
             ViewBag.Success = "Successfully Saved.";
+
+			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
+				.Select(x => x.CompanyValue)
+				.ToList();
+
             return View(model);
         }
         /*

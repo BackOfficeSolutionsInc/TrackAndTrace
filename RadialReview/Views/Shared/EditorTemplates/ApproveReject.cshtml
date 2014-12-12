@@ -1,0 +1,9 @@
+﻿@model RadialReview.Models.Enums.Tristate
+
+<div class="approvereject">
+	<div class="approvereject-container">
+		<input name="@ViewData["name"]" class="changeable" type="hidden" value="@Model" />
+		<div data-value="False" class="approvereject-val reject"></div>
+		<div data-value="True"  class="approvereject-val approve"></div>
+	</div>
+</div>

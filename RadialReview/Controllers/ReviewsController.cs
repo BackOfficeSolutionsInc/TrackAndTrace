@@ -148,9 +148,27 @@ namespace RadialReview.Controllers
 		    return Json(ResultObject.Success("Updated due date."));
 	    }
 
+		[Access(AccessLevel.Manager)]
+		public ActionResult EditNameModal(long id)
+		{
+			var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false, false);
+
+			return PartialView(review);
+		}
+		[Access(AccessLevel.Manager)]
+		[HttpPost]
+		public ActionResult EditNameModal(ReviewsModel model)
+		{
+			_ReviewAccessor.EditReviewName(GetUser(),long.Parse(Request.Form["IID"]), model.ReviewName);
+			return Json(ResultObject.Success("Updated review name."));
+
+		}
+
 
 	    public ActionResult Issue()
         {
+			throw new PermissionsException("Deprecated");
+			/*
             var today = DateTime.UtcNow.ToLocalTime();
             var user = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
             var teams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), user.Id).ToSelectList(x => x.Name, x => x.Id).ToList();
@@ -161,7 +179,7 @@ namespace RadialReview.Controllers
                 ForUsers = user.AllSubordinates,
                 PotentialTeams = teams
             };
-            return View(model);
+            return View(model);*/
         }
 
         public class IssueDetailsViewModel

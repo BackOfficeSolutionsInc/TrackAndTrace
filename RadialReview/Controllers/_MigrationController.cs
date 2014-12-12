@@ -67,12 +67,70 @@ namespace RadialReview.Controllers
 			var count = 0;
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
-					foreach (var a in s.QueryOver<ResponsibilityModel>().List()){
+					foreach (var a in s.QueryOver<OrganizationModel>().Where(x=>x.Settings == null || x.Settings.TimeZoneOffsetMinutes==0).List()){
+						if (a.Settings==null)
+							a.Settings=new OrganizationModel.OrganizationSettings();
+						
 
+						a.Settings.TimeZoneOffsetMinutes = -360;
+						a.Settings.ManagersCanViewScorecard = true;
+						s.Update(a);
+						count++;
 					}
+					tx.Commit();
+					s.Flush();
 				}
 			}
 			return count;
 		}
-    }
+
+
+		[Access(AccessLevel.Radial)]
+		public string M12_09_2014(int orgId)
+		{
+			var count = 0;
+			var now = DateTime.UtcNow;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					foreach (var a in s.QueryOver<ResponsibilityModel>().Where(x => x.ForOrganizationId == orgId).List())
+					{
+						if (a.GetQuestionType() == QuestionType.Slider)
+						{
+							a.DeleteTime = now;
+							s.Update(a);
+							count++;
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return count + " " + now.Ticks;
+		}
+
+		[Access(AccessLevel.Radial)]
+		public string M12_10_2014()
+		{
+			var count = 0;
+			var now = DateTime.UtcNow;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					foreach (var a in s.QueryOver<RockModel>().Where(x => x.OnlyAsk == (AboutType.Self | AboutType.Manager)).List())
+					{
+						a.OnlyAsk = AboutType.Self;
+						s.Update(a);
+						count++;
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return count +"";
+		}
+
+	}
 }

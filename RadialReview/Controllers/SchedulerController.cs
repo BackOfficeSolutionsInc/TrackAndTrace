@@ -21,7 +21,6 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public async Task<bool> Reschedule()
         {
-
             var now = DateTime.UtcNow;
             var tasks =_TaskAccessor.GetTasksToExecute(now);
             try
@@ -56,6 +55,9 @@ namespace RadialReview.Controllers
                     s.Flush();
                 }
             }
+
+
+			_TaskAccessor.UpdateScorecard(now);
 
             return ServerUtility.RegisterCacheEntry();
         }

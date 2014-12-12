@@ -75,6 +75,8 @@ namespace RadialReview.Accessors {
 				Anonymous = anonymous,
 				Complete = false,
 				Finished = Tristate.Indeterminate,
+				ManagerOverride = RockState.Indeterminate,
+				Completion = RockState.Indeterminate,
 				Reason = null,
 				Askable = askable.Askable,
 				Required = askable.Askable.Required,

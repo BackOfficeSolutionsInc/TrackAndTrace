@@ -244,6 +244,7 @@
     <Compile Include="Accessors\ReviewAccessor\UpdateStandardAnswers.cs" />
     <Compile Include="Accessors\RoleAccessor.cs" />
     <Compile Include="Accessors\S3Response.cs" />
+    <Compile Include="Accessors\ScorecardAccessor.cs" />
     <Compile Include="Accessors\SettingsAccessor.cs" />
     <Compile Include="Accessors\TaskAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
@@ -259,7 +260,9 @@
     <Compile Include="Controllers\FaqController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\JobDescriptionController.cs" />
+    <Compile Include="Controllers\MeasurableController.cs" />
     <Compile Include="Controllers\RocksController.cs" />
+    <Compile Include="Controllers\ScorecardController.cs" />
     <Compile Include="Controllers\_MigrationController.cs" />
     <Compile Include="Controllers\PrereviewController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
@@ -322,6 +325,7 @@
     <Compile Include="Models\Enums\ChartDataSource.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
+    <Compile Include="Models\Enums\RockState.cs" />
     <Compile Include="Models\Enums\TaskType.cs" />
     <Compile Include="Models\Enums\Tristate.cs" />
     <Compile Include="Models\ExtraTab.cs" />
@@ -344,6 +348,8 @@
     <Compile Include="Models\Reviews\ReviewParameters.cs" />
     <Compile Include="Models\Reviews\ReviewWhoModel.cs" />
     <Compile Include="Models\Rockstars\RockstarModel.cs" />
+    <Compile Include="Models\Scorecard\MeasurableModel.cs" />
+    <Compile Include="Models\Scorecard\ScoreModel.cs" />
     <Compile Include="Models\Tasks\ScheduledTask.cs" />
     <Compile Include="Models\Tasks\TaskModel.cs" />
     <Compile Include="Models\Template\TemplateItem.cs" />
@@ -558,8 +564,10 @@
     <Content Include="Content\chart.css" />
     <Content Include="Content\Chart\Chart.css" />
     <Content Include="Content\Chart\PieChart.css" />
+    <Content Include="Content\components\ApproveReject.css" />
     <Content Include="Content\components\checktree.css" />
     <Content Include="Content\components\posneg.css" />
+    <Content Include="Content\components\rockstate.css" />
     <Content Include="Content\components\table.css" />
     <Content Include="Content\components\tristate.css" />
     <Content Include="Content\datepicker.css" />
@@ -679,7 +687,9 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\components\checktree.js" />
+    <Content Include="Scripts\components\rockstate.js" />
     <Content Include="Scripts\components\posneg.js" />
+    <Content Include="Scripts\components\approvereject.js" />
     <Content Include="Scripts\components\tristate.js" />
     <Content Include="Scripts\d3\d3.csv.js" />
     <Content Include="Scripts\d3\d3.js" />
@@ -740,6 +750,9 @@
     <Content Include="Views\Email\Remind.cshtml" />
     <Content Include="Content\Chart\Scatter.v2.css" />
     <Content Include="Views\Reports\Index.cshtml" />
+    <Content Include="Views\Measurable\Modal.cshtml" />
+    <Content Include="Views\Measurable\_MeasurableRow.cshtml" />
+    <Content Include="Views\Reviews\EditNameModal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -952,6 +965,12 @@
     <Content Include="Views\Review\Details\_GwcTable.cshtml" />
     <Content Include="Views\Shared\_ReviewStats2.cshtml" />
     <Content Include="Views\Review\Details\_ValueTable.cshtml" />
+    <Content Include="Views\Scorecard\Index.cshtml" />
+    <Content Include="Views\Scorecard\Edit.cshtml" />
+    <Content Include="Views\Review\Details\_RockTable.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\RockState.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\RockState.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\ApproveReject.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -963,7 +982,6 @@
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
     <Folder Include="Views\Scheduler\" />
-    <Folder Include="Views\Shared\DisplayTemplates\" />
     <Folder Include="Views\Url\" />
   </ItemGroup>
   <ItemGroup>

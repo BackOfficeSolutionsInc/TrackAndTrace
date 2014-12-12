@@ -41,7 +41,7 @@ namespace RadialReview.Engines
 
 			var roles = _UserAccessor.GetRoles(caller, id);
 			var rocks = _UserAccessor.GetRocks(caller, id);
-
+	        var measurables = ScorecardAccessor.GetUserMeasurables(caller, id);
 
             var model = new UserOrganizationDetails()
             {
@@ -49,6 +49,8 @@ namespace RadialReview.Engines
                 Responsibilities = responsibilities,
 				Roles = roles,
 				Rocks = rocks,
+				Measurables = measurables,
+				ManagingOrganization = caller.ManagingOrganization
             };
 
             return model;

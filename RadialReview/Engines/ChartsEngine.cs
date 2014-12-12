@@ -229,16 +229,23 @@ namespace RadialReview.Engines
 			
 			var teammemberLookup = new Multimap<long, OrganizationTeamModel>();
 			Dictionary<long, OrganizationTeamModel> teamLookup=null;
-			List<TeamDurationModel> teamMembers;
-			if (admin){
-				try{
-					_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization());
-				}catch (PermissionsException){
-					_PermissionsAccessor.Permitted(caller, x => x.EditReviewContainer(reviewsId));
+			List<TeamDurationModel> teamMembers=new List<TeamDurationModel>();
+			try{
+				if (admin){
+					try{
+						_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization());
+					}
+					catch (PermissionsException){
+						_PermissionsAccessor.Permitted(caller, x => x.EditReviewContainer(reviewsId));
+					}
+					teamMembers = _TeamAccessor.GetTeamMembersAtOrganization(caller, reviewContainer.ForOrganizationId);
 				}
-				teamMembers = _TeamAccessor.GetTeamMembersAtOrganization(caller, reviewContainer.ForOrganizationId);
-			}else{
-				teamMembers = _TeamAccessor.GetSubordinateTeamMembers(caller, caller.Id);
+				else{
+					teamMembers = _TeamAccessor.GetSubordinateTeamMembers(caller, caller.Id);
+				}
+			}
+			catch (PermissionsException){
+				
 			}
 
 			using (var s = HibernateSession.GetCurrentSession())

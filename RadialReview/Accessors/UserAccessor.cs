@@ -829,7 +829,7 @@ namespace RadialReview.Accessors
 					
 					foreach (var r in rocks)
 					{
-						r.OnlyAsk = AboutType.Manager | AboutType.Self; 
+						r.OnlyAsk = AboutType.Self; //|| AboutType.Manager; 
 						r.Category = category;
 						r.OrganizationId = orgId;
 						s.SaveOrUpdate(r);
@@ -899,7 +899,7 @@ namespace RadialReview.Accessors
 				throw new PermissionsException();
 
 			if (model.Position.CustomPosition != null) {
-				var newPosition = _OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, model.Position.CustomPositionId, model.Position.CustomPosition);
+				var newPosition = _OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, /*model.Position.CustomPositionId,*/ model.Position.CustomPosition);
 				model.Position.PositionId = newPosition.Id;
 			}
 

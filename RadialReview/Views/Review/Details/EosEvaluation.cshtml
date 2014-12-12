@@ -10,8 +10,8 @@
 
 }
 <div class="flex-wrap">
-	
-	@Html.Partial("~/Views/Review/Details/GWC.cshtml",Model)
+
+	@Html.Partial("~/Views/Review/Details/GWC.cshtml", Model)
 
 	@if (Model.CompanyValuesTable((long)ViewBag.ReviewId).Rows.Any())
 	{
@@ -28,12 +28,133 @@
 	@if (Model.RockTable((long)ViewBag.ReviewId).Rows.Any())
 	{
 		<div class="subsection subsection-rocks">
-			@Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))
+			@*Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))
+
+				<table class="table-io">
+					<thead>
+						<tr class="alignCenter">
+							<th></th>
+							<th class="alignCenter" colspan="2">@Model.Review.ForUser.GetName()</th>
+							<th class="alignCenter" colspan="2">Supervisor Override</th>
+							<th class="remainingWidth"></th>
+						</tr>
+						<tr class="alignCenter">
+							<td class="alignCenter"></td>
+							<td class="alignCenter">Completion</td>
+							<td class="alignCenter">Comments</td>
+							<td class="alignCenter">Completion</td>
+							<td class="alignCenter">Comment</td>
+							<th class="remainingWidth"></th>
+						</tr>
+					</thead>
+					<tbody>
+						@{
+							var rrs = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>();
+						}
+						@foreach (var r in rrs){
+							<tr>
+								<td class="row-header fixedWidth">@r.Askable.GetQuestion()</td>
+								<td>@Html.DisplayFor(x=>r.Completion)</td>
+								<td>@r.Reason</td>
+								<td>
+									<select class="form-control">
+										<option value="Complete">Complete</option>
+										<option value="Incomplete">Incomplete</option>
+									</select>
+								</td>
+								<td>@Html.EditorFor(x=>r.OverrideReason)</td>
+								<td class="remainingWidth"></td>
+							</tr>
+						}
+					</tbody>
+				</table>*@
+			@{
+		var rrs = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>();
+		var first = true;
+			}
+			@foreach (var r in rrs)
+			{
+				<div class="row smallBreak2">
+					<div class="col-xs-3 alignRight noPadLeft">
+						@if (first)
+						{
+							<div style="height: 25px;"></div>
+						}
+						<div style="height: 8px;"></div>
+						<div class="bold alignRight">@r.Askable.GetQuestion()</div>
+					</div>
+					<div class="col-xs-9">
+						<div class="col-sm-7">
+							@if (first)
+							{
+								<div class="alignCenter bold" style="background-color: #BBB;color: #FFF;">@Model.Review.ForUser.GetName()</div>
+								<div class="fullWidth" style="height: 10px;"></div>
+							}
+
+
+							<div class="row">
+									<div class="col-xs-4 alignCenter">
+										@Html.DisplayFor(x => r.Completion)
+									</div>
+									<div class="col-xs-8 noPadRight">
+										@if (!String.IsNullOrWhiteSpace(r.Reason)){
+											<i>"@r.Reason"</i>
+										}
+										else{
+											<span class="gray italic">No comment given.</span>
+										}
+									</div>
+							</div>
+						</div>
+						<div class="col-sm-5">
+							@if (first)
+							{
+								<div class="alignCenter bold" style="background-color: #BBB;color: #FFF;">Supervisor</div>
+								<div class="fullWidth" style="height: 10px;"></div>
+								{
+									first = false;
+								}
+							}
+							<div>
+								<!--select class="form-control smallBreak2 ">
+									<option value="na"></option>
+									<option value="Complete">Complete</option>
+									<option value="Incomplete">Incomplete</option>
+								</select-->
+								@{
+									var state=Tristate.Indeterminate;
+									if (r.ManagerOverride == r.Completion){
+										state = Tristate.True;
+									}
+									else if (r.ManagerOverride != RockState.Indeterminate){
+										state = Tristate.False;
+									}
+								}
+								@Html.EditorFor(x=>state,"ApproveReject",new {name="ar_"+r.Id})
+							</div>
+							<div>@Html.TextAreaFor(x => r.OverrideReason, new { @class = "fullWidth verticalOnly reason", placeholder = "Add Comment", style = "height:37px;", name="arr_"+r.Id })</div>
+
+						</div>
+					</div>
+				</div>
+				<hr class="visible-xs" />
+			}
 
 			<div class="evaluation-heading">Rocks</div>
 		</div>
 	}
 </div>
+@using (Html.BeginScripts()){
+	<style>
+		.approvereject .reject:after {
+			content:"Incomplete"
+		}
+		.approvereject .approve:after {
+			content:"Complete"
+		}
+	</style>
+}
+
 
 @using (Html.BeginScripts())
 {
@@ -42,8 +163,18 @@
 	<script src="~/Scripts/jquery/jquery.filtertable.min.js"></script>
 	<script>
 		var request;
-		$(function() {
-			$(document).on("click", ".table-io.companyValues > tbody > tr > td > .fill", function() {
+		$(function () {
+			$(document).on("change", ".approvereject input", function() {
+				var id = $(this).attr("name").split("_")[1];
+				$.ajax({
+					url: "/Review/EditRockCompletion/" + id + "?val=" + $(this).val(),
+					success: function() {
+								
+					}
+				});
+			});
+
+			$(document).on("click", ".table-io.companyValues > tbody > tr > td > .fill", function () {
 				$(".table-io.companyValues .fill.selected").removeClass("selected");
 				$("#companyValues-details").html("<div style='text-align:center;'><img src='/Content/img/ajax-loader.gif' alt='Loading...' /></div>");
 				var that = $(this);
@@ -52,7 +183,7 @@
 
 				request = $.ajax({
 					url: "/Review/ValueDetails?reviewId=" + $(this).data("reviewid") + "&userId=" + $(this).data("byuserid") + "&valueId=" + $(this).data("valueid"),
-					success: function(data) {
+					success: function (data) {
 						$(".table-io.companyValues .fill.selected").removeClass("selected");
 						$(that).addClass("selected");
 						$("#companyValues-details").html(data);
@@ -63,7 +194,7 @@
 					}
 				});
 			});
-			$(document).on("click", ".table-io.rocks > tbody > tr > td > .fill", function() {
+			$(document).on("click", ".table-io.rocks > tbody > tr > td > .fill", function () {
 				$(".table-io.rocks .fill.selected").removeClass("selected");
 				$("#rocks-details").html("<div style='text-align:center;'><img src='/Content/img/ajax-loader.gif' alt='Loading...' /></div>");
 				var that = $(this);
@@ -72,12 +203,12 @@
 
 				request = $.ajax({
 					url: "/Review/RockDetails?reviewId=" + $(this).data("reviewid") + "&userId=" + $(this).data("byuserid") + "&rockId=" + $(this).data("rockid"),
-					success: function(data) {
+					success: function (data) {
 						$(".table-io.rocks .fill.selected").removeClass("selected");
 						$(that).addClass("selected");
 						$("#rocks-details").html(data);
 					},
-					error: function(a, b, c) {
+					error: function (a, b, c) {
 						$("#rocks-details").html("<div style='text-align:center;' class='gray'>An error has occurred.</div>");
 
 					}

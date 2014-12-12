@@ -17,6 +17,6 @@ function InitTristate() {
 		var oldIndex = $.inArray(oldValue, states);
 		var newIndex = (oldIndex + 1) % states.length;
 		var newValue = states[newIndex];
-		$(this).find("input").val(newValue).trigger('change');;
+		$(this).find("input").val(newValue).trigger('change');
 	});
 }

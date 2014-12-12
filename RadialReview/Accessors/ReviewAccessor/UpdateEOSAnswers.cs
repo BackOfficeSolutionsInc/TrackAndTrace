@@ -163,7 +163,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public bool UpdateRockAnswer(UserOrganizationModel caller, long questionId, Tristate finished, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
+		public bool UpdateRockAnswer(UserOrganizationModel caller, long questionId, RockState finished, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -174,11 +174,11 @@ namespace RadialReview.Accessors
 
 					edited = false;
 
-					if (finished != answer.Finished)
+					if (finished != answer.Completion)
 					{
 						edited = true;
-						answer.Complete = (finished != Tristate.Indeterminate);
-						answer.Finished = finished;
+						answer.Complete = (finished != RockState.Indeterminate);
+						answer.Completion = finished;
 						UpdateCompletion(answer, now, ref questionsAnsweredDelta, ref optionalAnsweredDelta);
 						s.Update(answer);
 						tx.Commit();

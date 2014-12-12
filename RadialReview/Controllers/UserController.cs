@@ -167,7 +167,7 @@ namespace RadialReview.Controllers
             var e4 = sw.ElapsedMilliseconds;
             if (caller.ManagingOrganization)
             {
-                managers.Add(new SelectListItem() { Selected = false, Text = "[Manage Organization]", Value = "-3" });
+                managers.Insert(0,new SelectListItem() { Selected = false, Text = "[Manage Organization]", Value = "-3" });
             }
 
             var model = new CreateUserOrganizationViewModel()
@@ -292,7 +292,7 @@ namespace RadialReview.Controllers
         {
             if (model.CustomPosition != null)
             {
-                var orgPos = _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, model.CustomPositionId, model.CustomPosition);
+                var orgPos = _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*model.CustomPositionId,*/ model.CustomPosition);
                 model.PositionId = orgPos.Id;
             }
 

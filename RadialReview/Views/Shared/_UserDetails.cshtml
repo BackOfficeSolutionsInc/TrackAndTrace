@@ -9,7 +9,7 @@
 	</style>
 }
 @{
-	var edit = Model.User.GetPersonallyManaging();
+	var edit = Model.User.GetPersonallyManaging() || Model.ManagingOrganization;
 }
 
 <div class="revieww">
@@ -33,7 +33,8 @@
 					{
 						<span class="gray">
 							None entered.
-							@if (edit){
+							@if (edit)
+							{
 								@:Click 'Edit' to add a job description.
 							}
 						</span>
@@ -69,7 +70,8 @@
 					}
 					else
 					{
-						<div class="gray">No rocks.
+						<div class="gray">
+							No rocks.
 							@if (edit)
 							{
 								@:Click 'Edit' to add an individual rock.
@@ -114,25 +116,76 @@
 				</div>
 			</div>
 
-			@*<div class="panel panel-default">
+			<div class="panel panel-default">
 				@if (edit)
 				{
-					<a class="headerButton" href="~/Responsibilities/Edit/@Model.User.Id">Edit</a>
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Measurables", "/Measurable/Modal/" + Model.User.Id, "/Measurable/Modal/", onComplete: "location.reload()")">Edit</a>
 				}
 				<div class="panel-heading">
-					<h3 class="panel-title">Questions</h3>
+					<h3 class="panel-title">Scorecard Meaursables</h3>
 				</div>
 				<div class="panel-body numbers">
-					<ul>
-						@foreach (var r in Model.Responsibilities)
-						{
-							<li class="font-size:19px;">
-								@r
-							</li>
-						}
-					</ul>
+					@if (Model.Measurables.Any())
+					{
+						<table class="fullWidth">
+							<thead>
+								<tr>
+									<th style="width: 40px;"></th>
+									<th>Measurable</th>
+									<th style="width: 100px;">Weekly Goal</th>
+								</tr>
+							</thead>
+
+							<tbody>
+								@{ var i = 1; }
+								@foreach (var r in Model.Measurables)
+								{
+									<tr class="font-size:19px;">
+										<td class="alignRight" style="padding-right: 8px;">@i.</td>
+										<td>@r.Title</td>
+										<td>@r.Goal</td>
+									</tr>
+									{
+										i++;
+									}
+								}
+							</tbody>
+						</table>
+					}
+					else
+					{
+						<div class="gray">
+							No measurables.
+							@if (edit)
+							{
+								@:Click 'Edit' to add a measurable.
+							}
+						</div>
+					}
 				</div>
-			</div>*@
+			</div>
+
+
+
+			@*<div class="panel panel-default">
+					@if (edit)
+					{
+						<a class="headerButton" href="~/Responsibilities/Edit/@Model.User.Id">Edit</a>
+					}
+					<div class="panel-heading">
+						<h3 class="panel-title">Questions</h3>
+					</div>
+					<div class="panel-body numbers">
+						<ul>
+							@foreach (var r in Model.Responsibilities)
+							{
+								<li class="font-size:19px;">
+									@r
+								</li>
+							}
+						</ul>
+					</div>
+				</div>*@
 
 		</div>
 	</div>

@@ -292,7 +292,7 @@ namespace RadialReview.Controllers {
 
 					if (positionFound == null)
 					{
-						var newPosition = _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, pos.Id, position);
+						var newPosition = _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*pos.Id,*/ position);
 						existingPositions.Add(newPosition);
 						positionFound = newPosition;
 					}

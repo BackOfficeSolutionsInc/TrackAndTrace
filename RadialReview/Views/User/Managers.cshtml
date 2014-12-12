@@ -21,7 +21,7 @@
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title">
-            @Html.ViewOrEdit(Model.GetPersonallyManaging(),false) managers for <i>@Model.GetNameAndTitle()</i>
+            @Html.ViewOrEdit(Model.GetPersonallyManaging(),false) supervisors for <i>@Model.GetNameAndTitle()</i>
         </h3>
     </div>
     <table class="table table-condensed">
@@ -34,7 +34,7 @@
                 <th style="width:100px;">
                     <a class="btn btn-default fullWidth"
                        onclick="@Html.ShowModal(
-                            "Add Manager",
+							"Add Supervisor",
                             Url.Action("ManagerModal", "User", new {id=Model.Id}),
                             Url.Action("AddManager", "User")
                         )">+</a>

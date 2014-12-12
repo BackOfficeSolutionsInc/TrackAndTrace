@@ -170,7 +170,7 @@
 		content: "-";
 	}
 
-
+	
 .fill.True {
 	background-color: #449D44;
 	border: 1px solid #449D44;
@@ -181,18 +181,44 @@
 	border: 1px solid #D9534F;
 }
 
-.table-io.rocks .fill.True:after, .gwc-details-square .True:after, .roleTable .True:after {
-	content: "YES";
+
+.fill.Complete {
+	background-color: #449D44;
+	border: 1px solid #449D44;
 }
 
-.table-io.rocks .fill.False:after, .gwc-details-square .False:after, .roleTable .False:after {
-	content: "NO";
+.fill.OnTrack {
+	background-color: #1F68EC;
+	border: 1px solid #1F68EC;
+}
+.fill.AtRisk {
+	background-color: #D9534F;
+	border: 1px solid #D9534F;
 }
 
 .gwc-details-square .Indeterminate:after, .roleTable .Indeterminate:after {
 	content: "n/a";
 	color: #CCCCCC;
 }
+.table-io.rocks .fill.AtRisk:after, .gwc-details-square .AtRisk:after, .roleTable .AtRisk:after {
+	content: "AT RISK";
+}
+.table-io.rocks .fill.OnTrack:after, .gwc-details-square .OnTrack:after, .roleTable .OnTrack:after {
+	content: "ON TRACK";
+}
+.table-io.rocks .fill.Complete:after, .gwc-details-square .Complete:after, .roleTable .Complete:after {
+	content: "COMPLETE";
+}
+
+/*
+.table-io.rocks .fill.True:after, .gwc-details-square .True:after, .roleTable .True:after {
+	content: "YES";
+}
+
+.table-io.rocks .fill.False:after, .gwc-details-square .False:after, .roleTable .False:after {
+	content: "NO";
+}*/
+
 
 .gwc-details-square, .roleTable .fill {
 	font-size: 9px;

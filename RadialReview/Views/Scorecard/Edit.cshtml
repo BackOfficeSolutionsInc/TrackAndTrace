@@ -1,0 +1,38 @@
+﻿@model RadialReview.Controllers.ScorecardController.ScoreVM
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section top{
+	<div class="jumbotron">
+		<h1>Scorecard</h1>
+	</div>
+}
+<hgroup>
+	<h2>Edit Scorecard</h2>
+	<h4>(Week of @Model.Start.Date.ToShortDateString())</h4>
+</hgroup>
+<div class="review scorecard">
+	<div class="row">
+		<div class="col-md-6">
+			@using (Html.BeginForm()){
+				for (var i = 0; i < Model.ScoreModels.Count; i++){
+					var s = Model.ScoreModels[i];
+					<div class="row">
+						 <div class="col-md-6">
+							 <div class="title">@s.Measurable.Title</div>
+							 <div class="goal">
+								 (Goal: @s.Measurable.Goal)
+							 </div>
+						 </div>
+						 <div class="col-md-6">
+							 @Html.TextBoxFor(x => Model.ScoreModels[i].Measured, new { type = "number", @class="form-control" })
+						 </div>
+					 </div>
+				 }
+				<input type="submit" class="btn btn-primary pull-right" name="Submit"/>
+			}
+		</div>
+	</div>
+</div>

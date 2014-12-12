@@ -10,8 +10,11 @@ namespace RadialReview.Models.ViewModels
         public OrganizationModel Organization { get; set; }
         public List<OrgMemberViewModel> Users { get; set; }
 
-        public OrgMembersViewModel(IEnumerable<UserOrganizationModel> members,OrganizationModel organization)
+		public bool ManagingOrganization { get; set; }
+
+        public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserOrganizationModel> members,OrganizationModel organization)
         {
+	        ManagingOrganization = caller.ManagingOrganization;
             Organization = organization;
             Users = members.ToListAlive().Select(x => new OrgMemberViewModel(x)).ToList();
         }
@@ -61,8 +64,9 @@ namespace RadialReview.Models.ViewModels
                 userOrg.Positions.ToListAlive().Sum(x => x.Position.Responsibilities.Count()) +
                 userOrg.Teams.ToListAlive().Sum(x => x.Team.Responsibilities.Count());
 
-			NumRocks = userOrg.NumRocks;
-			NumRoles = userOrg.NumRoles;
+			NumRocks	   = userOrg.NumRocks;
+			NumRoles	   = userOrg.NumRoles;
+			NumMeasurables = userOrg.NumMeasurables;
         }
 
 
@@ -70,5 +74,6 @@ namespace RadialReview.Models.ViewModels
 		public int NumRocks { get; set; }
 
 		public int NumRoles { get; set; }
+		public int NumMeasurables { get; set; }
 	}
 }

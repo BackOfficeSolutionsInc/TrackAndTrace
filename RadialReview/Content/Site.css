@@ -173,6 +173,10 @@ html, body {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#57569c', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
 }
 
+#alerts {
+	margin-top: 8px;
+}
+
 #alerts, #alerts * {
     -webkit-transition: all 1s ease;
     -moz-transition: all 1s ease;
@@ -196,8 +200,13 @@ html, body {
 .jumbotron hgroup h1,hgroup h2,hgroup h3,hgroup h4,hgroup h5,hgroup h6{
     float:left;
 }*/
-hgroup h1, hgroup h2, hgroup h3, hgroup h4, hgroup h5, hgroup h6 {
-    display:inline-block;
+hgroup h1:not(:first-child), hgroup h2:not(:first-child), hgroup h3:not(:first-child), hgroup h4:not(:first-child), hgroup h5:not(:first-child), hgroup h6:not(:first-child) {
+    /*display:inline-block;*/
+	margin-top: 0px;
+}
+hgroup h1:not(:last-child), hgroup h2:not(:last-child), hgroup h3:not(:last-child), hgroup h4:not(:last-child), hgroup h5:not(:last-child), hgroup h6:not(:last-child) {
+    /*display:inline-block;*/
+	margin-bottom: 0px;
 }
 
 ul a{
@@ -841,6 +850,7 @@ tr.danger .strikable {
     cursor: pointer;
 }
 
+/*
 .team {
     background-color: rgba(235, 235, 235, 0.42);
     color: #393939;
@@ -857,7 +867,7 @@ tr.danger .strikable {
     .team.Subordinates {
         background-color: rgba(196, 255, 161, 0.42);
     }
-
+*/
 .plus {
     font-weight: bold;
     color: #6e7074;
@@ -1270,3 +1280,68 @@ color: #559DC5;
 	border-top-right-radius: 0px;
 	padding: 10px 20px 0px;
 }
+
+.scorecard .row {
+	margin-bottom: 8px;
+}
+
+.scorecard .title {
+	font-weight: bold;
+	font-size: 18px;
+}
+@media (min-width: 992px) {
+	.scorecard .title {
+		text-align: right;
+	}
+	.scorecard .goal {
+		text-align: right;
+	}
+
+}
+
+.scorecard .goal {
+	font-size: 10px;
+	line-height: 1;
+}
+
+.centerVertical {
+	display: flex;
+	align-items: center;
+}
+
+textarea.reason {
+	height: 78px;
+	width: 100%;
+	-moz-resize: none;
+	-ms-resize: none;
+	-o-resize: none;
+	resize: none;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	margin-left: 4px;
+	padding-top: 5px;
+	color: #472E77;
+	outline-color: transparent;
+}
+
+	textarea.reason::-webkit-input-placeholder, .reason:-moz-placeholder {
+		color: #D5CCFF;
+		text-decoration: underline;
+	}
+
+	textarea.reason:focus::-webkit-input-placeholder, .reason:focus:-moz-placeholder {
+		color: transparent;
+		text-decoration: none;
+	}
+
+		textarea.reason:focus::-webkit-input-placeholder:before, .reason:focus::-moz-placeholder:before {
+			color: #e5e5e5;
+			text-decoration: none;
+			content: "Optional";
+		}
+
+	textarea.reason:focus {
+		color: #7659B2;
+		/*border: 1px solid #A9A9A9;*/
+	}

@@ -1,0 +1,23 @@
+﻿@model RadialReview.Models.Scorecard.MeasurableModel
+<div class="roleRow">
+	@using (Html.BeginCollectionItem("Measurables"))
+	{
+		<div class="roww">
+			<div style="width:calc( 100% - 25px );display:inline-block">
+				@Html.HiddenFor(x => x.Id)
+				<div class="row">
+					<div class="col-sm-8">@Html.TextBoxFor(x => x.Title, new { @class = "form-control roleItem" })</div>
+					<div class="col-sm-4">@Html.TextBoxFor(x => x.Goal, new { @class = "form-control roleItem", @type = "number" })</div>
+				</div>																
+				@Html.HiddenFor(x => x.DeleteTime)
+				@Html.HiddenFor(x => x.CreateTime)
+				@Html.HiddenFor(x => x.NextGeneration)
+				@Html.HiddenFor(x => x.DueDate)
+				@Html.HiddenFor(x => x.DueTime)
+			</div>
+			<span style="padding-left:8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+		</div>
+	}
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
+</div>

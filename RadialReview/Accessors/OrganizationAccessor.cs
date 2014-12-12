@@ -224,7 +224,7 @@ namespace RadialReview.Accessors
         }
 
         public OrganizationPositionModel EditOrganizationPosition(UserOrganizationModel caller, long orgPositionId, long organizationId,
-            long? positionId = null, String customName = null)
+            /*long? positionId = null,*/ String customName = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -243,7 +243,7 @@ namespace RadialReview.Accessors
                     if (orgPositionId == 0)
                     {
                         var org = s.Get<OrganizationModel>(organizationId);
-                        if (positionId == null || String.IsNullOrWhiteSpace(customName))
+                        if (/*positionId == null ||*/ String.IsNullOrWhiteSpace(customName))
                             throw new PermissionsException();
 
                         orgPos = new OrganizationPositionModel() { Organization = org, CreatedBy = caller.Id };
@@ -253,12 +253,13 @@ namespace RadialReview.Accessors
                         orgPos = s.Get<OrganizationPositionModel>(orgPositionId);
                     }
 
-
+					/*
                     if (positionId != null)
                     {
                         var position = s.Get<PositionModel>(positionId);
                         orgPos.Position = position;
                     }
+					*/
 
                     if (customName != null)
                     {
@@ -357,9 +358,13 @@ namespace RadialReview.Accessors
                 {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
                     var managers = s.QueryOver<UserOrganizationModel>()
-                                            .Where(x => x.Organization.Id == organizationId && (x.ManagerAtOrganization || x.ManagingOrganization))
-                                            .List()
-                                            .ToList();
+                                            .Where(x => 
+												x.Organization.Id == organizationId &&
+												(x.ManagerAtOrganization || x.ManagingOrganization) &&
+												x.DeleteTime==null
+											).List()
+											.OrderBy(x=>x.GetName())
+											.ToList();
                     return managers;
                 }
             }

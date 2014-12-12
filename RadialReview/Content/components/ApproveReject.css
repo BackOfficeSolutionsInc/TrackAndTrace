@@ -1,0 +1,61 @@
+﻿
+
+.approvereject .approvereject-val {
+	width: 70px;
+	border: 1px solid #ddd;
+	margin: 1px;
+	display: inline-block;
+	text-align: center;
+	-ms-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	color: #ccc;
+	cursor: pointer;
+
+	font-weight: bold;
+	font-size: 11px;
+	padding: 2px 2px;
+	
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.approvereject .approvereject-container {
+	text-align: center;
+}
+
+.approvereject-val {
+		-webkit-transition: all .2s;
+		-moz-transition: all .2s;
+		-ms-transition: all .2s;
+		-o-transition: all .2s;
+		transition: all .2s;
+	}
+
+
+.approvereject input[value='True'] ~ .approve {
+		background-color: #449D44;
+		color: white;
+		border: 1px solid #449D44;
+	}
+
+	.approvereject input[value='False'] ~ .reject {
+		background-color: #D9534F;
+		color: white;
+		border: 1px solid #D9534F;
+	}
+
+	
+.approvereject .reject:after {
+	content:"Reject"
+}
+.approvereject .approve:after {
+	content:"Approve"
+}
+

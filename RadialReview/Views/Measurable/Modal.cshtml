@@ -1,0 +1,47 @@
+﻿@model RadialReview.Controllers.MeasurableController.MeasurableVM
+
+
+<div class="form">
+	@Html.HiddenFor(x => x.UserId)
+	<div class="">
+		<div class="row">
+			<div class="col-sm-10" id="allRows">
+				<div style="width:calc( 100% - 25px );display:inline-block">
+					<div class="row">
+						<div class="col-sm-8"><u>Measurable</u></div>
+						<div class="col-sm-4"><u>Weekly Goal</u></div>
+					</div>
+				</div>
+				@foreach (var item in Model.Measurables)
+				{
+					Html.RenderPartial("_MeasurableRow", item);
+				}
+			</div>
+			<div class="col-sm-2">
+				<div class="btn btn-default clickable" onclick="addRow();">Add</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	function addRow() {
+		$.ajax({
+			url: "/Measurable/BlankEditorRow",
+			cache: false,
+			success: function (html) {
+				$("#allRows").append(html);
+			}
+		});
+		return false;
+	}
+
+	$(function () {
+		$(document).on("click", "span.deleteRow", function () {
+			$(this).parents("div.roleRow:first").hide();
+			$(this).parents("div.roleRow:first").find("[name*='DeleteTime']").val("@Model.CurrentTime.ToString()");
+			return false;
+		});
+	});
+
+
+</script>

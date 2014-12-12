@@ -58,8 +58,8 @@ namespace RadialReview.Controllers {
 		private List<IGrouping<long, AnswerModel>> GetPages(ReviewModel review) {
 			return review.Answers.GroupBy(x => x.AboutUserId).ToList();
 		}
-		private List<IGrouping<long, AnswerModel>> GetPages(IEnumerable<ReviewModel> reviews) {
-			return reviews.SelectMany(x => x.Answers).GroupBy(x => x.AboutUserId).ToList();
+		private List<IGrouping<long, AnswerModel>> GetPages(long callerId,IEnumerable<ReviewModel> reviews) {
+			return reviews.SelectMany(x => x.Answers).GroupBy(x => x.AboutUserId).OrderByDescending(x=>x.Key == callerId).ToList();
 		}
 
 
@@ -84,7 +84,7 @@ namespace RadialReview.Controllers {
 			ViewBag.OrganizationId = user.Organization.Id;
 			ViewBag.Page = page;
 
-			var pages = GetPages(reviews);
+			var pages = GetPages(GetUser().Id,reviews);
 
 
 			try {
@@ -320,7 +320,7 @@ namespace RadialReview.Controllers {
 										}
 										else
 										{
-											currentComplete = _ReviewAccessor.UpdateRockAnswer(user, questionId, collection[k].Parse<Tristate>(), now, out edited, ref qA, ref oA);
+											currentComplete = _ReviewAccessor.UpdateRockAnswer(user, questionId, collection[k].Parse<RockState>(), now, out edited, ref qA, ref oA);
 										}
 										break;
 								default:
@@ -422,7 +422,7 @@ namespace RadialReview.Controllers {
 			}
 
 			var reviews = _ReviewAccessor.GetReviewForUser(GetUser(),GetUser().Id,model.Id);
-			var pages = GetPages(reviews);
+			var pages = GetPages(GetUser().Id,reviews);
 			var found = pages.Select((x,i) => Tuple.Create(x.Key,i)).FirstOrDefault(x=>x.Item1==model.Users.FirstOrDefault());
 			var pageNum = (pages.Count - 1);
 			if (found != null)
@@ -433,6 +433,8 @@ namespace RadialReview.Controllers {
 		[HttpGet]
 		[Access(AccessLevel.Manager)]
 		public ActionResult Create() {
+			throw new PermissionsException("depricated");
+			/*
 			//TODO correct the time zone.
 			var today = DateTime.UtcNow.ToLocalTime();
 			var user = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
@@ -445,7 +447,7 @@ namespace RadialReview.Controllers {
 				Today = today,
 				ForUsers = user.AllSubordinates,
 				PotentialTeams = teams
-			});
+			});*/
 		}
 
 
@@ -703,18 +705,32 @@ namespace RadialReview.Controllers {
 
 			public Table RockTable(long reviewId)
 			{
+				var rocks = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>();
+				var o = rocks.Select(x => Tuple.Create(x, 1)).Union(rocks.Select(x => Tuple.Create(x, 2)));
+
+
 				return Table.Create(
-					AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>(),
-					x => x.Askable.GetQuestion(),
-					x => x.ByUser.GetName(),
-					x =>
-					{
-						return new SpanCell
-						{
-							Class = "fill rocks " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + " " + x.Finished,
-							Title = x.Reason,
-							Data = new Dictionary<string, string>() {{"reviewId",""+reviewId}, { "rockId", "" + x.Askable.Id }, { "byuserid", "" + x.ByUserId } },
-						}.ToHtmlString();
+					o,
+					x => x.Item1.Askable.GetQuestion(),
+					x => x.Item2==1?x.Item1.ByUser.GetName():"Override",
+					xx =>{
+						var x = xx.Item1;
+						if (xx.Item2 == 1){
+							return new SpanCell{
+								Class = "fill rocks " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") +/* " " + x.Finished +*/ " " + x.Completion,
+								Title = x.Reason,
+								Data = new Dictionary<string, string>(){{"reviewId", "" + reviewId}, {"rockId", "" + x.Askable.Id}, {"byuserid", "" + x.ByUserId}},
+							}.ToHtmlString();
+						}else{
+							return new SpanCell
+							{
+								Class = "fill rocks override " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + /*" " + x.Finished +*/ " " + x.Completion,
+								Title = x.Reason,
+								Data = new Dictionary<string, string>() { { "reviewId", "" + reviewId }, { "rockId", "" + x.Askable.Id }, { "byuserid", "" + x.ByUserId } },
+							}.ToHtmlString();
+							
+						}
+
 					},
 					"rocks");
 			}

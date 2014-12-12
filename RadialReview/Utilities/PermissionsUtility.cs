@@ -143,12 +143,18 @@ namespace RadialReview.Utilities
                 return this;
             throw new PermissionsException();
         }
-        private bool IsManagingOrganization(long organizationId)
-        {
-            if (caller.Organization.Id == organizationId)
-                return caller.ManagingOrganization || (caller.ManagerAtOrganization && caller.Organization.ManagersCanEdit);
-            return false;
-        }
+		private bool IsManagingOrganization(long organizationId)
+		{
+			if (caller.Organization.Id == organizationId)
+				return caller.ManagingOrganization || (caller.ManagerAtOrganization && caller.Organization.ManagersCanEdit);
+			return false;
+		}
+		private bool IsManager(long organizationId)
+		{
+			if (caller.Organization.Id == organizationId)
+				return caller.ManagingOrganization || caller.ManagerAtOrganization;
+			return false;
+		}
         public PermissionsUtility ViewOrganization(long organizationId)
         {
             if (IsRadialAdmin(caller))
@@ -616,7 +622,35 @@ namespace RadialReview.Utilities
 
         #endregion
 
-        public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)
+		#region Scorecard
+
+	    public PermissionsUtility EditUserScorecard(long userId)
+	    {
+		    return EditUserOrganization(userId);
+	    }
+
+		public PermissionsUtility ViewOrganizationScorecard(long organizationId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			if (IsManagingOrganization(caller.Organization.Id))
+				return this;
+
+			var organization = session.Get<OrganizationModel>(organizationId);
+			if (organization.Settings.EmployeesCanViewScorecard && caller.Organization.Id == organizationId)
+				return this;
+			if (organization.Settings.ManagersCanViewScorecard && IsManager(organizationId))
+				return this;
+
+
+			throw new PermissionsException();
+
+		}
+
+		#endregion
+
+		public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)
         {
             if (IsOwnedBelowOrEqual(caller, visiblility))
                 return this;
@@ -695,5 +729,6 @@ namespace RadialReview.Utilities
         {
             return IsRadialAdmin(caller);
         }
-    }
+
+	}
 }

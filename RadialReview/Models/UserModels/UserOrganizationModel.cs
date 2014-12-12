@@ -65,6 +65,7 @@ namespace RadialReview.Models
 
 		public virtual int NumRocks { get; set; }
 		public virtual int NumRoles { get; set; }
+		public virtual int NumMeasurables { get; set; }
 
         public virtual OriginType GetOriginType()
         {
@@ -201,7 +202,8 @@ namespace RadialReview.Models
         {
             return User.NotNull(x => x.UserName) ?? TempUser.Email;
         }
-    }
+
+	}
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
     {
@@ -218,8 +220,9 @@ namespace RadialReview.Models
             Map(x => x.DetachTime);
             Map(x => x.DeleteTime);
 	        Map(x => x.EmailAtOrganization);
-            Map(x => x.NumRocks);
-            Map(x => x.NumRoles);
+			Map(x => x.NumRocks);
+			Map(x => x.NumRoles);
+			Map(x => x.NumMeasurables);
 
             Map(x => x.JobDescription).Length(65000);
 

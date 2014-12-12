@@ -19,7 +19,7 @@
 	}
 
 	.checktree > .branch:last-of-type > .subtree:before  {
-		bottom: 33px;
+		/*bottom: 33px;*/
 	}
 
 .checktree .horizontal{

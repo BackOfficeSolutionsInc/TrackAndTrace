@@ -46,30 +46,30 @@
         <table class="table table-condensed">
             <tr>
                 <th>Job Title</th>
-                <th style="">Job Class</th>
-                <th style="width:100px" class="">Questions</th>
-                <th style="width:100px" class="">People</th>
-                <th style="width:10px"></th>
+                @*<th style="">Job Class</th>
+				<th style="width:1px" class="">Questions</th>*@
+                <th style="width:1px" class="">People</th>
             </tr>
             @foreach (var p in Model.Positions.OrderBy(x => x.Name))
             {
                 <tr>
-                    <td>@p.Name</td>
-                    <td>@p.SimilarTo</td>
-                    <td class="">
-                        <a href="@Url.Action("Edit", "Responsibilities", new { id=p.Id})" class="fullWidth">
-                            <span>
-                                @Html.ViewOrEdit(Model.CanEdit) @p.NumAccountabilities
-                            </span>
-                        </a>
-                    </td>
-                    <td class="">@p.NumPeople</td>
-                    @if (Model.CanEdit)
-                    {
-                        <td class="">
-                            <div onclick="@Html.ShowModal("Edit Position", "/Position/Modal/"+p.Id, "/Position/Modal")" class="fullWidth editButton clickable glyphicon glyphicon-pencil alignCenter"></div>
-                        </td>
-                    }
+	                <td>
+		                @p.Name
+		                @if (Model.CanEdit){
+			                <span onclick="@Html.ShowModal("Edit Position", "/Position/Modal/" + p.Id, "/Position/Modal")" class="editButton clickable glyphicon glyphicon-pencil alignCenter"></span>
+		                }
+	                </td>
+	                <td>
+		                @p.NumPeople
+	                </td>
+                    @*<td>@p.SimilarTo</td>
+					<td class="">
+						<a href="@Url.Action("Edit", "Responsibilities", new { id=p.Id})" class="fullWidth">
+							<span>
+								@Html.ViewOrEdit(Model.CanEdit) @p.NumAccountabilities
+							</span>
+						</a>
+					</td>*@
                 </tr>
             }
 

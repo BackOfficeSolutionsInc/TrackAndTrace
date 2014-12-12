@@ -459,6 +459,32 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		public void EditReviewName(UserOrganizationModel caller, long reviewContainerId,String reviewName)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					PermissionsUtility.Create(s, caller).EditReviewContainer(reviewContainerId);
+					var review = s.Get<ReviewsModel>(reviewContainerId);
+					if (review == null)
+						throw new PermissionsException("Review does not exist. (" + reviewContainerId + ")");
+
+					review.ReviewName = reviewName;
+					s.Update(review);
+
+					var reviews =s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).List().ToList();
+					foreach (var r in reviews){
+						r.Name = reviewName;
+						s.Update(r);
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
 		#endregion
 	}
 }

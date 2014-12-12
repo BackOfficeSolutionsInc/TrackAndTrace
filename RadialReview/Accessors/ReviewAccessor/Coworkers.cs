@@ -364,6 +364,11 @@ namespace RadialReview.Accessors {
 
 
 
+
+		internal void EditReviewName(UserOrganizationModel userOrganizationModel, long p)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 }

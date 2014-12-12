@@ -48,10 +48,11 @@ namespace RadialReview.Controllers
         protected static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
         protected static CategoryAccessor _CategoryAccessor = new CategoryAccessor();
         protected static PrereviewAccessor _PrereviewAccessor = new PrereviewAccessor();
+		protected static ScorecardAccessor _ScorecardAccessor = new ScorecardAccessor();
         protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
         protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        protected static DeepSubordianteAccessor _DeepSubordianteAccessor = new DeepSubordianteAccessor();
-        protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
+		protected static DeepSubordianteAccessor _DeepSubordianteAccessor = new DeepSubordianteAccessor();
+		protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
 
         protected void ManagerAndCanEditOrException(UserOrganizationModel user)
         {

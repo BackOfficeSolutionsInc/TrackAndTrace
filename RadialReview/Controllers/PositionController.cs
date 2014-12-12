@@ -42,7 +42,7 @@ namespace RadialReview.Controllers
             {
                 var found= _OrganizationAccessor.GetOrganizationPosition(GetUser(), id);
                 model.PositionName = found.CustomName;
-                model.Position = found.Position.Id;
+               /* model.Position = found.Position.Id;*/
             }
 
             return PartialView(model);
@@ -53,7 +53,7 @@ namespace RadialReview.Controllers
         public JsonResult Modal(PositionViewModel model)
         {
             var caller=GetUser();
-            _OrganizationAccessor.EditOrganizationPosition(caller,model.Id, caller.Organization.Id, model.Position.Value,model.PositionName);
+            _OrganizationAccessor.EditOrganizationPosition(caller,model.Id, caller.Organization.Id, /*model.Position.Value,*/model.PositionName);
             return Json(ResultObject.Success("Updated position."));
         }
 

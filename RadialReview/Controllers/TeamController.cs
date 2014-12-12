@@ -107,7 +107,7 @@ namespace RadialReview.Controllers
             var members = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id,false,false);
             var alreadyMember=_TeamAccessor.GetTeamMembers(GetUser(), teamId).ToListAlive();
 
-            var notMembers=members.Where(x=>!alreadyMember.Any(y=>y.User.Id==x.Id));
+            var notMembers=members.Where(x=>alreadyMember.All(y => y.User.Id != x.Id)).OrderBy(x=>x.GetName());
 
             var model = new AddModalViewModel(){
                 TeamId = id,

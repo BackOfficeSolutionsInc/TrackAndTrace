@@ -12,7 +12,7 @@
 	@if (found.Any())
 	{
 		<div class="header">
-			<span class="fill @found.First().Finished pull-right"></span>
+			<span class="fill @found.First().Completion pull-right"></span>
 			<span>@found.First().Askable.GetQuestion():</span>
 			<span class="extra">@found.First().ByUser.GetName()</span>
 		</div>

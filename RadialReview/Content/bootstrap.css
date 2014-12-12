@@ -4097,7 +4097,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
             border: 1px solid #dddddd;
             border-bottom: none;
             border-bottom-color: transparent;
-            background-color: #F1F1F1;
+            background-color: #F7F7F7;
             /*background: -moz-linear-gradient(top, rgba(245,245,245,1) 0%, rgba(245,245,245,1) 39%, rgba(245,245,245,0) 100%);*/ /* FF3.6+ */
             /*background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(245,245,245,1)), color-stop(39%,rgba(245,245,245,1)), color-stop(100%,rgba(245,245,245,0)));*/ /* Chrome,Safari4+ */
             /*background: -webkit-linear-gradient(top, rgba(245,245,245,1) 0%,rgba(245,245,245,1) 39%,rgba(245,245,245,0) 100%); /* Chrome10+,Safari5.1+ */
@@ -5130,10 +5130,12 @@ textarea.input-group-sm > .input-group-btn > .btn {
 .label-overdue {
     color: #d9534f;
 	border: 1px solid #c9302c;
+	padding: .1em .5em .2em;
 }
 .label-complete {
     color: #5cb85c;
 	border: 1px solid #449d44;
+	padding: .1em .5em .2em;
 }
 
 .badge {

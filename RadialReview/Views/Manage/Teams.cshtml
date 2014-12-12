@@ -1,4 +1,6 @@
-﻿@model RadialReview.Models.ViewModels.OrganizationTeamsViewModel
+﻿
+@using RadialReview.Models.Enums
+@model RadialReview.Models.ViewModels.OrganizationTeamsViewModel
 
 @{
     ViewBag.Title = "Teams";
@@ -31,7 +33,7 @@
                 <th>Name</th>
                 <th style="width:10px" class=""></th>
                 <th style="width:10px" class="">Members</th>
-                <th style="width:10px" class="">Questions</th>
+                @*<th style="width:10px" class="">Questions</th>*@
             </tr>
             @foreach (var p in Model.Teams.Alive().OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
             {
@@ -42,11 +44,11 @@
 
                     </td>
                     <td>
-                        @if (p.Team.GetEditable())
-                        {
-                            <div onclick="@Html.ShowModal("Edit Team", "/Team/Modal/" + p.Team.Id, "/Team/Modal")" class="editButton"></div>
-                        }
                         @p.Team.Name
+						@if (p.Team.GetEditable())
+						{
+							<div onclick="@Html.ShowModal("Edit Team", "/Team/Modal/" + p.Team.Id, "/Team/Modal")" class="editButton"></div>
+						}
                     </td>
                     <td style="width:10px" class="alignCenter"></td>
                     <td class=" ">
@@ -60,11 +62,11 @@
 		                    }
 	                    </a>
                     </td>
-                    <td class=" ">
-                    <a href="@Url.Action("Edit", "Responsibilities", new { id = p.Team.Id })" class="fullWidth">
-                        @Html.ViewOrEdit(p.Team.GetEditable()) @p.Team.Responsibilities.Count()
-                        </a> 
-                    </td>
+                    @*<td class=" ">
+						<a href="@Url.Action("Edit", "Responsibilities", new { id = p.Team.Id })" class="fullWidth">
+						@Html.ViewOrEdit(p.Team.GetEditable()) @p.Team.Responsibilities.Count()
+						</a>
+					</td>*@
                 </tr>
             }
         </table>

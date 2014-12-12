@@ -15,5 +15,22 @@ namespace RadialReview
         {
             return self < other;
         }
+
+		public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
+		{
+			var diff = dt.DayOfWeek - startOfWeek;
+			if (diff < 0)
+			{
+				diff += 7;
+			}
+
+			return dt.AddDays(-1 * diff).Date;
+		}
+
+	    public static DateTime EndOfWeek(this DateTime dt, DayOfWeek startOfWeek)
+	    {
+		    return dt.StartOfWeek(startOfWeek).AddDays(6).Date;
+	    }
+
     }
 }

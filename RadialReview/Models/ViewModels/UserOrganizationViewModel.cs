@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Models.Scorecard;
 using RadialReview.Models.UserModels;
 
 namespace RadialReview.Models.ViewModels
@@ -59,5 +60,7 @@ namespace RadialReview.Models.ViewModels
 		public List<String> Responsibilities { get; set; }
 		public List<RoleModel> Roles { get; set; }
 		public List<RockModel> Rocks { get; set; }
+		public List<MeasurableModel> Measurables { get; set; }
+		public bool ManagingOrganization { get; set; }
     }
 }

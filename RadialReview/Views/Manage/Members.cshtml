@@ -20,7 +20,7 @@
 	@Html.AlertBoxDismissable(@"From this page you can add employees to your organization.
             Employees are assigned questions that evaluate how they are doing in the organization.
             These can be questions unique to the individual or shared with their teams, positions, or the company as a whole.
-            During the review process, peers, teammates, managers and subordinates answer questions of the employee to gauge how well they are fulfilling their responsibilities.
+            During the review process, peers, teammates, supervisors and subordinates answer questions of the employee to gauge how well they are fulfilling their responsibilities.
             To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
 }
 
@@ -136,6 +136,7 @@
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
+					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
 					<th style="width:1px">Name</th>
 					<th style="width:100%">Email</th>
 					<th style="min-width:10px" class="NalignCenter">Positions</th>
@@ -151,7 +152,7 @@
 			<tbody>
 				@foreach (var p in Model.Users.OrderByDescending(x => x.Managing)/*.ThenBy(x=>-1*(x.Admin.ToInt()+x.Manager.ToInt()))*/.ThenBy(x => x.Name)) {
 
-					<tr class="@(p.Managing?"managing":"grayRow")">
+					<tr class="@(p.Managing?"managing":"grayRow") row_@(p.Id)">
 						<td class="hidden">@(p.Managing ? 1 : 0)</td>
 						<td class="alignCenter noselect  noPadLeft">
 							@*@((p.Managing).GetIcon("glyphicon-eye-open strokeLightGreen", "glyphicon-eye-close gray", "You are managing", "You are not managing"))*@
@@ -163,8 +164,8 @@
 								}*@
 
 							<span @if (p.Manager) { if (p.Admin) {  @: class="glyphicon glyphicon-tower gold strokeGold" title="An admin" data-sort="1"
-								                                                                                    } else { @: class="glyphicon glyphicon-tower darkblue strokeDarkBlue" title="A manager" data-sort="2"
-								                                                                                        } } else {  @: class="glyphicon glyphicon-user blue strokeBlue" title="Not a manager" data-sort="3"
+								                                                                                    } else { @: class="glyphicon glyphicon-tower darkblue strokeDarkBlue" title="A supervisor" data-sort="2"
+								                                                                                        } } else {  @: class="glyphicon glyphicon-user blue strokeBlue" title="Not a supervisor" data-sort="3"
 								                                                                                                                                                                }
 								  @if (p.Managing) { @: style="cursor:pointer;" onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id = p.Id }), Url.Action("EditModal", "User"))"
 								                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }>
@@ -195,6 +196,9 @@
 						</td>
 						<td class="alignCenter" title="Individual Roles">
 							<a href="~/Manage/UserDetails/@p.Id">@p.NumRoles</a>
+						</td>
+						<td class="alignCenter" title="Scorecard Measurables">
+							<a href="~/Manage/UserDetails/@p.Id">@p.NumMeasurables</a>
 						</td>
 						<td class="noOverflow" style="max-width: 160px;" title="@p.Name">
 							<a href="~/Manage/UserDetails/@p.Id">
@@ -234,10 +238,10 @@
 
 								</a>
 							</td>*@
-						@if (Model.Organization.ManagersCanRemoveUsers) {
+						@if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization) {
 							<td>
-								@if (p.Managing) {
-									<span data-sort="1" onclick="@(Html.ShowModal("Remove "+p.Name+" from the organization?","/User/Remove/"+p.Id,"/User/Remove"))"
+								@if (p.Managing || Model.ManagingOrganization) {
+									<span data-sort="1" onclick="@(Html.ShowModal("Remove " + p.Name + " from the organization?", "/User/Remove/" + p.Id, "/User/Remove", onCompleteFunction: "function(){debugger;$('.row_" + p.Id + "').remove();UnstoreJsonAlert();}"))"
 										  class="glyphicon glyphicon-trash clickable">
 									</span>
 								}
