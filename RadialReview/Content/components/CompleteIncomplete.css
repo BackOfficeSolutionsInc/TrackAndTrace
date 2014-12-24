@@ -1,14 +1,14 @@
 ﻿
-.rockstate.display {
+.completeincomplete.display {
 	width: 80px;
 	cursor: default;
 }
 
-.rockstate.editor {
+.completeincomplete.editor {
 	cursor: pointer;
 }
 
-.rockstate {
+.completeincomplete {
 	height: 80px;
 	width: 240px;
 	position: relative;
@@ -30,7 +30,7 @@
 	border-radius: 6px;
 }
 
-	.rockstate-contents{
+	.completeincomplete-contents{
 		height:100%;
 		width:100%;
 		position:relative;
@@ -38,7 +38,7 @@
 		overflow:hidden;
 	}
 
-.rockstate .fill {
+.completeincomplete .fill {
 	width: 76px;
 	height: 76px;
 	margin: 2px;
@@ -57,13 +57,13 @@
 }
 	
 	
-.rockstate.editor .fill.hover{
+.completeincomplete.editor .fill.hover{
 		background-color: rgba(0, 0, 0, 0.15);
 		left:-80px;
 		
 	}
 	
-	.rockstate .fill.cursor {
+	.completeincomplete .fill.cursor {
 		-webkit-transition:all .5s;
 		-moz-transition:all .5s;
 		-ms-transition:all .5s;
@@ -74,7 +74,7 @@
 		z-index: 1;
 	}
 
-	.rockstate .rockstate-val{
+	.completeincomplete .completeincomplete-val{
 		width: 80px;
 		height: 80px;
 		display: inline-flex;
@@ -86,28 +86,27 @@
 		color: #FFF;
 		padding: 0;
 		margin: 0;
+		top: 7px;
+		position: relative;
 	}
 	
-	.rockstate .rockstate-val .center{
+	.completeincomplete .completeincomplete-val .center{
 		z-index:2;
 	}
 	
-	.rockstate .rockstate-AtRisk:hover   ~ .fill.hover{left:0px;}
-	.rockstate .rockstate-OnTrack:hover  ~ .fill.hover{left:80px;}
-	.rockstate .rockstate-Complete:hover ~ .fill.hover{left:160px;}
+	.completeincomplete .completeincomplete-True:hover   ~ .fill.hover{left:0px;}
+	.completeincomplete .completeincomplete-False:hover  ~ .fill.hover{left:80px;}
 	
-	.rockstate.display .fill.cursor {
+	.completeincomplete.display .fill.cursor {
 		left: 0px !important;
-		-webkit-filter: contrast(50%);
 	}
-	.rockstate.display:hover  .fill.cursor{
+	.completeincomplete.display:hover  .fill.cursor{
 		-webkit-filter: contrast(100%);
 	}
 
 
 
-	.rockstate.display .fill.cursor:before {
-		content: "Marked as:";
+	.completeincomplete.display .fill.cursor:before {
 		font-size: 10px;
 		-webkit-filter: brightness(100%);
 		color: rgba(255,255,255,.9);
@@ -115,45 +114,37 @@
 		top: 14px;
 	}
 
-	.rockstate input[value='Complete'] ~ .fill.cursor{
+	.completeincomplete input[value='True'] ~ .fill.cursor{
 		background-color:#449D44;
 		left:160px;
 	}	
-	.rockstate input[value='OnTrack']  ~ .fill.cursor{
-		background-color:#1F68EC;
+	.completeincomplete input[value='False']  ~ .fill.cursor{
+		background-color:#D9534F;
 		left:80px;
 	}
-	.rockstate input[value='AtRisk'] ~ .fill.cursor{
-		background-color:#D9534F;
-		left:0px;
-	}	
-	.rockstate input[value='Indeterminate'] ~ .fill.cursor {
+	.completeincomplete input[value='Indeterminate'] ~ .fill.cursor {
 		left:80px;
 		-ms-opacity:0;
 		opacity:0;
 	}
 	
-	.rockstate.display input[value='Complete'] ~ .rockstate-AtRisk,.rockstate.display input[value='Complete'] ~ .rockstate-OnTrack {
+	.completeincomplete.display input[value='True'] ~ .completeincomplete-False{
 		display: none;
 	}
-	.rockstate.display input[value='AtRisk'] ~ .rockstate-Complete,.rockstate.display input[value='AtRisk'] ~ .rockstate-OnTrack {
-		display: none;
-	}
-	.rockstate.display input[value='OnTrack'] ~ .rockstate-Complete,.rockstate.display input[value='OnTrack'] ~ .rockstate-AtRisk {
+	.completeincomplete.display input[value='False'] ~ .completeincomplete-True {
 		display: none;
 	}
 
+	.completeincomplete .ico {
+		/*position: absolute;
+		top: 43px;
+		left: calc(50% - 12px);*/
+		font-size: 34px;
+		z-index: 2;
+	}
 
-.toText.Complete:after {
-	content: "Complete";
-}
-.toText.AtRisk:after {
-	content: "At Risk";
-}
-.toText.OnTrack:after {
-	content: "On Track";
-}
-.toText.Indeterminate:after {
-	content: "Unspecified";
-	font-style: italic;
-}
+	.completeincomplete .txt {
+		color: white;
+		-ms-opacity: .8;
+		opacity: .8;
+	}

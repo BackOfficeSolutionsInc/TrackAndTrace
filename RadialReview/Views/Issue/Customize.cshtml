@@ -25,23 +25,30 @@
                 <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
             </div>
         </div>
-        <div class="row smallBreak2">
-            <div class="col-md-6">
-                <label class="control-label">Reviews are due:</label>
-            </div>
-            <div class="col-md-4">
-                <div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
-                    @Html.TextBox("DueDate", null, new { @class = "form-control datePicker", id = "DueDate" })
-                    <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
-                    <span class="add-on"><i class="icon-th"></i></span>
-                </div>
-            </div>
-
-        </div>
 	    <div class="row smallBreak2">
 		    <div class="col-md-6">
-			    <label class="control-label">Email employees:</label>
+			    <label class="control-label">Reviews are due:</label>
 		    </div>
+		    <div class="col-md-4">
+			    <div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
+				    @Html.TextBox("DueDate", null, new { @class = "form-control datePicker", id = "DueDate" })
+				    <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+				    <span class="add-on"><i class="icon-th"></i></span>
+			    </div>
+		    </div>
+	    </div>
+	    <div class="row smallBreak2">
+		    <div class="col-md-6" title="Which session is this for?">
+			    <label class="control-label">Session:</label>
+		    </div>
+		    <div class="col-md-4">
+			    @Html.DropDownList("SessionId", Model.Periods, new { @class = "form-control", id = "SessionId" })
+		    </div>
+	    </div>
+	    <div class="row smallBreak2">
+			<div class="col-md-6" title="Send an email notifying employees of the review.">
+				<label class="control-label">Email employees:</label>
+			</div>
 		    <div class="col-md-4">
 			    @Html.CheckBox("SendEmails")
 		    </div>

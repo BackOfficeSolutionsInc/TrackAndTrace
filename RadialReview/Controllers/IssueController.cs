@@ -2,6 +2,7 @@
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Periods;
 using RadialReview.Models.Reviews;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,9 @@ namespace RadialReview.Controllers
                     form["ReviewName"],
                     form["SendEmails"].ToBooleanJS(),//.ToBoolean(),
 					form["Anonymous"].ToBooleanJS(),
-                    customized.ToList()
+                    customized.ToList(),
+					form["SessionId"].ToLong()
+
                     );
             }
             else if (form["review"] == "issuePrereview")
@@ -78,7 +81,8 @@ namespace RadialReview.Controllers
                     form["DueDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
                     form["PrereviewDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
                     form["EnsureDefault"].ToBooleanJS(),
-					form["Anonymous"].ToBooleanJS()
+					form["Anonymous"].ToBooleanJS(),
+					form["SessionId"].ToLong()
                     );
 
             }
@@ -97,12 +101,24 @@ namespace RadialReview.Controllers
             var teamId = id;
 
             var model = _ReviewEngine.GetCustomizeModel(GetUser(), teamId);
+
+			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.EndTime > DateTime.UtcNow).ToList();
+			var plist = periods.ToSelectList(x => x.Name, x => x.Id);
+			plist.Add(new SelectListItem() { Text = "<Create New>", Value = "-3" });
+
+	        model.Periods = plist;
+
             var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
             model.AllUsers = allUsers;
 
             return PartialView(model);
             
         }
+
+		public class IssueOptions
+		{
+			public List<SelectListItem> Periods { get; set; } 
+		}
 
 
         [Access(AccessLevel.Manager)]
@@ -125,7 +141,13 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult ManagersCustomize()
         {
-            return PartialView();
+	        var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x=>x.EndTime>DateTime.UtcNow).ToList();
+	        var plist = periods.ToSelectList(x => x.Name, x => x.Id);
+			plist.Add(new SelectListItem(){Text="<Create New>",Value = "-3"});
+			var options = new IssueOptions(){
+				Periods = plist,
+	        };
+            return PartialView(options);
         }
 
         [Access(AccessLevel.Manager)]

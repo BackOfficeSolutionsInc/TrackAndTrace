@@ -152,7 +152,7 @@
 
 .table-io.companyValues .fill:after {
 	color: black !important;
-	padding-top: 8px;
+	padding-top: 13px;
 }
 
 .table-io.companyValues .fill:not(.hasReason):not(.score):not(.Indeterminate):after {
@@ -219,8 +219,74 @@ font-size: 14px;
     float: left;
     width: 50%;
 }
-
+.print-col-xs-5 {
+	position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    float: left;
+    width: 41.666666666%;
+}
+.print-col-xs-7 {
+	position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    float: left;
+    width: 58.33333333%;
+}
 
 .reviewName {
 	right: 40px;
+}
+
+.completeincomplete input[value='True'] ~ .fill.cursor {
+	border: 4px solid #449D44 !important;
+}
+.completeincomplete input[value='False'] ~ .fill.cursor {
+	border: 4px solid #D9534F !important;
+}
+
+.gray {
+	color: #BBBBBB !important;
+}
+
+.rockstate input[value='Complete'] ~ .fill.cursor {
+	border: 4px solid #449D44 !important;
+}
+
+.rockstate input[value='AtRisk'] ~ .fill.cursor {
+	border: 4px solid #D9534F !important;
+}
+.rockstate input[value='OnTrack'] ~ .fill.cursor {
+	border: 4px solid #1F68EC !important;
+	color:#1F68EC !important;
+}
+
+
+.fill.cursor {
+	-webkit-transition: none !important;
+	-moz-transition: none !important;
+	-ms-transition: none !important;
+	-o-transition: none !important;
+	transition: none !important;
+}
+
+.completeincomplete .ico {
+	color: #515151 !important;
+}
+
+.completeincomplete .txt {
+	color: gray !important;
+}
+
+#alerts {
+	margin: 0px;
+	padding: 0px;
+	
+	-webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+	-ms-transition: none;
+	transition: none;
 }

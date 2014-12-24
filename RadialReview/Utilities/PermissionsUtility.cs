@@ -335,7 +335,7 @@ namespace RadialReview.Utilities
 
             throw new PermissionsException();
         }
-        public PermissionsUtility ManageReview(long reviewId)
+        public PermissionsUtility ManageUserReview(long reviewId)
         {
             ViewReview(reviewId);
             var review = session.Get<ReviewModel>(reviewId);

@@ -1,6 +1,7 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.Periods;
 using RadialReview.Models.Reviews;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,9 @@ namespace RadialReview.Models
         public virtual DateTime DueDate { get; set; }
         public virtual ClientReviewModel ClientReview { get; set; }
         public virtual List<AnswerModel> Answers { get; set; }
+
+		public virtual long PeriodId { get; set; }
+		public virtual PeriodModel Period { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual bool Complete { get; set; }
         public virtual decimal? DurationMinutes { get; set; }
@@ -148,6 +152,11 @@ namespace RadialReview.Models
             Map(x => x.DueDate);
             Map(x => x.Started);
             Map(x => x.DeleteTime);
+
+
+			Map(x => x.PeriodId).Column("PeriodId");
+			References(x => x.Period).Column("PeriodId").LazyLoad().ReadOnly();
+
             References(x => x.ClientReview)
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();

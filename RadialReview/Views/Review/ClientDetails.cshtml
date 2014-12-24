@@ -267,14 +267,16 @@
 				</div>
 			</div>
 		</div>
-		<div class="row smallBreak2 zoom8">
-			<div class="col-xs-3 alignRight">
-				<b>Position:</b>
+		@if (!String.IsNullOrWhiteSpace(Model.Review.ForUser.GetTitles())){
+			<div class="row smallBreak2 zoom8">
+				<div class="col-xs-3 alignRight">
+					<b>Position:</b>
+				</div>
+				<div class="col-xs-9 jobDescription">
+					@Model.Review.ForUser.GetTitles()
+				</div>
 			</div>
-			<div class="col-xs-9 jobDescription">
-				@Model.Review.ForUser.GetTitles()
-			</div>
-		</div>
+		}
 
 		@* JOB DESCRIPTION HERE*@
 		@if (!String.IsNullOrWhiteSpace(Model.JobDescription))

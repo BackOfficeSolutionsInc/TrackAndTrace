@@ -51,7 +51,14 @@
 		border: 1px solid #D9534F;
 	}
 
-	
+	.approvereject input[value='True'].disabled ~ .approvereject-val {
+		/*background-color: transparent;
+		color: #ccc;
+		border: 1px solid #ddd;*/
+		-ms-opacity: .8;
+		opacity: .8;
+	}
+
 .approvereject .reject:after {
 	content:"Reject"
 }

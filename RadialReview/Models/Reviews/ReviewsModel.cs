@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.Periods;
 
 namespace RadialReview.Models
 {
@@ -24,6 +25,10 @@ namespace RadialReview.Models
         public virtual bool ReviewSubordinates { get; set; }
         public virtual bool ReviewTeammates { get; set; }
         public virtual bool ReviewPeers { get; set; }
+
+	    public virtual long PeriodId { get; set; }
+	    public virtual PeriodModel Period { get; set; }
+
         public virtual List<ReviewModel> Reviews { get; set; }
         public virtual long ForOrganizationId { get; set; }
         public virtual OrganizationModel ForOrganization { get; set; }
@@ -79,6 +84,9 @@ namespace RadialReview.Models
 			Map(x => x.HasPrereview);
 			Map(x => x.PrereviewDueDate);
 			Map(x => x.AnonymousByDefault);
+
+			Map(x => x.PeriodId).Column("PeriodId");
+			References(x => x.Period).Column("PeriodId").LazyLoad().ReadOnly();
 
             Map(x => x.ForTeamId);
 

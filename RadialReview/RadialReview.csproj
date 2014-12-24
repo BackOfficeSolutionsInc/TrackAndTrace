@@ -225,6 +225,7 @@
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
     <Compile Include="Accessors\PaymentAccessor.cs" />
+    <Compile Include="Accessors\PeriodAccessor.cs" />
     <Compile Include="Accessors\PermissionsAccessor.cs" />
     <Compile Include="Accessors\PositionAccessor.cs" />
     <Compile Include="Accessors\PrereviewAccessor.cs" />
@@ -261,12 +262,12 @@
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\JobDescriptionController.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
+    <Compile Include="Controllers\PeriodController.cs" />
     <Compile Include="Controllers\RocksController.cs" />
     <Compile Include="Controllers\ScorecardController.cs" />
     <Compile Include="Controllers\_MigrationController.cs" />
     <Compile Include="Controllers\PrereviewController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
-    <Compile Include="Controllers\ResultsController.cs" />
     <Compile Include="Controllers\RockstarController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
@@ -309,6 +310,7 @@
     <Compile Include="Engines\ReviewEngine.cs" />
     <Compile Include="Engines\UserEngine.cs" />
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
+    <Compile Include="Exceptions\SchedulerException.cs" />
     <Compile Include="Helpers\HtmlPrefixScopeExtensions.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
@@ -325,6 +327,7 @@
     <Compile Include="Models\Enums\ChartDataSource.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
+    <Compile Include="Models\Enums\RepeatsType.cs" />
     <Compile Include="Models\Enums\RockState.cs" />
     <Compile Include="Models\Enums\TaskType.cs" />
     <Compile Include="Models\Enums\Tristate.cs" />
@@ -337,6 +340,7 @@
     <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
     <Compile Include="Models\Charts\ChartOptions.cs" />
     <Compile Include="Models\Charts\ScatterPlot.cs" />
+    <Compile Include="Models\Periods\PeriodModel.cs" />
     <Compile Include="Models\Prereview\PrereviewMatchModel.cs" />
     <Compile Include="Models\Prereview\PrereviewModel.cs" />
     <Compile Include="Models\RatioModel.cs" />
@@ -348,6 +352,8 @@
     <Compile Include="Models\Reviews\ReviewParameters.cs" />
     <Compile Include="Models\Reviews\ReviewWhoModel.cs" />
     <Compile Include="Models\Rockstars\RockstarModel.cs" />
+    <Compile Include="Models\Scheduler\EventModel.cs" />
+    <Compile Include="Models\Scheduler\RecurrenceModel.cs" />
     <Compile Include="Models\Scorecard\MeasurableModel.cs" />
     <Compile Include="Models\Scorecard\ScoreModel.cs" />
     <Compile Include="Models\Tasks\ScheduledTask.cs" />
@@ -513,6 +519,7 @@
     <Compile Include="Utilities\Extensions\PaginationExtensions.cs" />
     <Compile Include="Utilities\Extensions\StreamExtension.cs" />
     <Compile Include="Utilities\Pop3Utility.cs" />
+    <Compile Include="Utilities\Schedule.cs" />
     <Compile Include="Utilities\ServerUtility.cs" />
     <Compile Include="Utilities\Chart\ChartUtility.cs" />
     <Compile Include="Utilities\CsvUtility.cs" />
@@ -566,6 +573,7 @@
     <Content Include="Content\Chart\PieChart.css" />
     <Content Include="Content\components\ApproveReject.css" />
     <Content Include="Content\components\checktree.css" />
+    <Content Include="Content\components\CompleteIncomplete.css" />
     <Content Include="Content\components\posneg.css" />
     <Content Include="Content\components\rockstate.css" />
     <Content Include="Content\components\table.css" />
@@ -687,6 +695,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\components\checktree.js" />
+    <Content Include="Scripts\components\completeincomplete.js" />
     <Content Include="Scripts\components\rockstate.js" />
     <Content Include="Scripts\components\posneg.js" />
     <Content Include="Scripts\components\approvereject.js" />
@@ -753,6 +762,7 @@
     <Content Include="Views\Measurable\Modal.cshtml" />
     <Content Include="Views\Measurable\_MeasurableRow.cshtml" />
     <Content Include="Views\Reviews\EditNameModal.cshtml" />
+    <Content Include="Views\Period\Index.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -971,6 +981,8 @@
     <Content Include="Views\Shared\EditorTemplates\RockState.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\RockState.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ApproveReject.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\CompleteIncomplete.cshtml" />
+    <Content Include="Views\Rocks\Table.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -982,6 +994,7 @@
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
     <Folder Include="Views\Scheduler\" />
+    <Folder Include="Views\Session\" />
     <Folder Include="Views\Url\" />
   </ItemGroup>
   <ItemGroup>

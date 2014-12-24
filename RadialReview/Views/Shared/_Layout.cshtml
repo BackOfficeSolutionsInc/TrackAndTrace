@@ -145,30 +145,30 @@
 
                 var statusTimeout;
 
-                alertHub = $.connection.alertHub;
+                //alertHub = $.connection.alertHub;
 
-                alertHub.error = function (error) {
-                    console.log(error);
-                };
+                //alertHub.error = function (error) {
+                //    console.log(error);
+                //};
 
 
-                alertHub.client.jsonAlert = function (data, showSuccess) { showJsonAlert(data, showSuccess); };
-                alertHub.client.unhide = function (selector) { $(selector).show(); };
-                alertHub.client.status = function (text) {
-                    $(".statusContainer").css("bottom", "0px");
-                    $(".statusContainer").css("display", "block");
-                    $(".statusContainer").css("opacity", "1");
-                    $("#status").html(text);
-                    clearTimeout(statusTimeout);
-                    statusTimeout = setTimeout(function () {
-                        $(".statusContainer").animate({
-                            opacity: 0,
-                            bottom: "-20px"
-                        }, 500, function () {
-                            $(".statusContainer").css("display", "none");
-                        })
-                    }, 2000);
-                };
+                //alertHub.client.jsonAlert = function (data, showSuccess) { showJsonAlert(data, showSuccess); };
+                //alertHub.client.unhide = function (selector) { $(selector).show(); };
+                //alertHub.client.status = function (text) {
+                //    $(".statusContainer").css("bottom", "0px");
+                //    $(".statusContainer").css("display", "block");
+                //    $(".statusContainer").css("opacity", "1");
+                //    $("#status").html(text);
+                //    clearTimeout(statusTimeout);
+                //    statusTimeout = setTimeout(function () {
+                //        $(".statusContainer").animate({
+                //            opacity: 0,
+                //            bottom: "-20px"
+                //        }, 500, function () {
+                //            $(".statusContainer").css("display", "none");
+                //        })
+                //    }, 2000);
+                //};
             </script>
         }
     </div>
@@ -178,25 +178,25 @@
     </div>
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
-    <!--script src="~/Scripts/jquery/jquery.qtip.js"></!--script>
-    <script src="~/Scripts/jquery.signalR-2.0.1.min.js"></script-->
+    <script src="~/Scripts/jquery/jquery.qtip.js"></script>
+    <!--script src="~/Scripts/jquery.signalR-2.0.1.min.js"></script-->
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
     @RenderSection("modals", required: false)
     @Scripts.Render("~/bundles/main")
-    <script src="~/signalr/hubs"></script>
+    @*<script src="~/signalr/hubs"></script>*@
     @Html.PageScripts()
     <script type="text/javascript" src="http://assets.freshdesk.com/widget/freshwidget.js"></script>
     <script type="text/javascript">
-        $(function() {
-            FreshWidget.init("", { "queryString": "&widgetType=popup", "widgetType": "popup", "buttonType": "text", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#767F99", "alignment": "4", "offset": "235px", "formHeight": "500px", "url": "http://radialreview.freshdesk.com" });
-        });
+	$(function() {
+		FreshWidget.init("", { "queryString": "&widgetType=popup", "widgetType": "popup", "buttonType": "text", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#767F99", "alignment": "4", "offset": "235px", "formHeight": "500px", "url": "http://radialreview.freshdesk.com" });
+	});
     </script>
-    <script>
+    @*<script>
         $(function () {
-            $.connection.hub.start().done(function () { });
+            //$.connection.hub.start().done(function () { });
         });
-    </script>
+    </script>*@
 
 </body>
 </html>

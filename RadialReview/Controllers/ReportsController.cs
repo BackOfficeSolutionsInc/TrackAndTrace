@@ -15,24 +15,11 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Index(long id/*,int page=0*/)
         {
-            /*Session["Report"] = "View";
-            var user = GetUser();
-            var reviewCount = _ReviewAccessor.GetNumberOfReviewsWithVisibleReportsForUser(user, user.Id);
-            var reviews = _ReviewAccessor.GetReviewsWithVisibleReports(user, user.Id, page, user.CountPerPage);
-            var output = new ReviewsListViewModel()
-            {
-                ForUser = user,
-                Reviews = reviews,
-                Page = page,
-                NumPages = reviewCount / (double)user.CountPerPage
-            };
-            return View(output);*/
+       
 			var reviewContainerId = id;
-			//var reviewContainerAnswers = _ReviewAccessor.GetReviewContainerAnswers(GetUser(), id);
-			//var reviewContainerPeople = reviewContainerAnswers.GroupBy(x => x.AboutUserId);
 			var user = GetUser().Hydrate().ManagingUsers(true).Execute();
 			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true, true);
-			//reviewContainer.Reviews = _ReviewAccessor.GetReviewsForReviewContainer(GetUser(), id);
+		
 			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
 			var acceptedReviews = new List<ReviewModel>();
@@ -58,8 +45,6 @@ namespace RadialReview.Controllers
 			
 			var model = new ReviewsViewModel(reviewContainer);
 			return View(model);
-
-
         }
 
         [Access(AccessLevel.Manager)]
@@ -82,11 +67,8 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult List(long id){
             var reviewContainerId = id; 
-            //var reviewContainerAnswers = _ReviewAccessor.GetReviewContainerAnswers(GetUser(), id);
-            //var reviewContainerPeople = reviewContainerAnswers.GroupBy(x => x.AboutUserId);
             var user = GetUser().Hydrate().ManagingUsers(true).Execute();
             var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false, true);
-            //reviewContainer.Reviews = _ReviewAccessor.GetReviewsForReviewContainer(GetUser(), id);
             var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
             var acceptedReviews = new List<ReviewModel>();

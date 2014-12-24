@@ -191,24 +191,5 @@ namespace RadialReview.Controllers
 
             return View(model);
         }
-        /*
-        [Access(AccessLevel.Manager)]
-        public ActionResult Reviews(int page=0)
-        {
-            Session["Reports"] = "Create";
-            double pageSize=10;
-
-            var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false,(int)pageSize,page);
-            var model = new OrgReviewsViewModel()
-            {
-                Reviews = reviews.Select(x => new ReviewsViewModel(x)).ToList(),
-                NumPages = (int)Math.Ceiling(_ReviewAccessor.GetNumberOfReviewsForOrganization(GetUser(), GetUser().Organization.Id) / pageSize),
-                Page=page
-            };
-            ViewBag.Page = "Create";
-            ViewBag.Subheading = "Generate reports for subordinates";
-
-            return View(model);
-        }*/
     }
 }

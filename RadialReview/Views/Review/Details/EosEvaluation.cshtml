@@ -24,8 +24,11 @@
 			<div class="evaluation-heading">Company Values</div>
 		</div>
 	}
-
-	@if (Model.RockTable((long)ViewBag.ReviewId).Rows.Any())
+	@{
+		var rrs = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>();
+		var first = true;
+	}
+	@if (rrs.Any())
 	{
 		<div class="subsection subsection-rocks">
 			@*Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))
@@ -68,89 +71,101 @@
 						}
 					</tbody>
 				</table>*@
-			@{
-		var rrs = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>();
-		var first = true;
-			}
+
 			@foreach (var r in rrs)
 			{
-				<div class="row smallBreak2">
+				<div class="row">
 					<div class="col-xs-3 alignRight noPadLeft">
 						@if (first)
 						{
 							<div style="height: 25px;"></div>
 						}
 						<div style="height: 8px;"></div>
-						<div class="bold alignRight">@r.Askable.GetQuestion()</div>
+						<div class="bold alignRight">
+							@r.Askable.GetQuestion()
+
+
+						</div>
 					</div>
 					<div class="col-xs-9">
-						<div class="col-sm-7">
-							@if (first)
-							{
-								<div class="alignCenter bold" style="background-color: #BBB;color: #FFF;">@Model.Review.ForUser.GetName()</div>
-								<div class="fullWidth" style="height: 10px;"></div>
-							}
+						<div class="row">
+							<div class="col-sm-6">
+								@if (first)
+								{
+									<div class="hidden-sm hidden-xs alignCenter bold" style="border-bottom: 2px solid #494949;color: #494949;">Supervisor</div>
+									<div class="hidden-sm hidden-xs fullWidth" style="height: 10px;"></div>
+								}
+								<div class="row">
+									<div class="col-xs-4 alignCenter">
+										@{
+								var state = Tristate.Indeterminate;
+								if (r.ManagerOverride == RockState.AtRisk)
+								{
+									state = Tristate.False;
+								}
+								else if (r.ManagerOverride == RockState.Complete)
+								{
+									state = Tristate.True;
+								}
+										}
+										<div style="padding-top:5px;"></div>
+										@Html.EditorFor(x => state, "ApproveReject", new { name = "ar_" + r.Id })
+									</div>
+									<div class="col-xs-8 noPadRight">
+										<textarea style="height: 80px;" name="arr_@r.Id" class="fullWidth verticalOnly reason" placeholder="Add Comment">@r.OverrideReason</textarea>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								@if (first)
+								{
+									<div class="hidden-sm hidden-xs alignCenter bold" style="border-bottom: 2px solid #494949;color: #494949;">@Model.Review.ForUser.GetName()</div>
+									<div class="hidden-sm hidden-xs fullWidth" style="height: 10px;"></div>
+								}
+								@{
+				first = false;
+								}
 
-
-							<div class="row">
+								<div class="row">
 									<div class="col-xs-4 alignCenter">
 										@Html.DisplayFor(x => r.Completion)
 									</div>
-									<div class="col-xs-8 noPadRight">
-										@if (!String.IsNullOrWhiteSpace(r.Reason)){
+									<div class="col-xs-8 noPadRight" style="padding-left: 7px;">
+										@if (!String.IsNullOrWhiteSpace(r.Reason))
+										{
 											<i>"@r.Reason"</i>
 										}
-										else{
-											<span class="gray italic">No comment given.</span>
+										else
+										{
+											<span class="gray italic">No comment provided.</span>
 										}
 									</div>
+								</div>
 							</div>
-						</div>
-						<div class="col-sm-5">
-							@if (first)
-							{
-								<div class="alignCenter bold" style="background-color: #BBB;color: #FFF;">Supervisor</div>
-								<div class="fullWidth" style="height: 10px;"></div>
-								{
-									first = false;
-								}
-							}
-							<div>
-								<!--select class="form-control smallBreak2 ">
-									<option value="na"></option>
-									<option value="Complete">Complete</option>
-									<option value="Incomplete">Incomplete</option>
-								</select-->
-								@{
-									var state=Tristate.Indeterminate;
-									if (r.ManagerOverride == r.Completion){
-										state = Tristate.True;
-									}
-									else if (r.ManagerOverride != RockState.Indeterminate){
-										state = Tristate.False;
-									}
-								}
-								@Html.EditorFor(x=>state,"ApproveReject",new {name="ar_"+r.Id})
-							</div>
-							<div>@Html.TextAreaFor(x => r.OverrideReason, new { @class = "fullWidth verticalOnly reason", placeholder = "Add Comment", style = "height:37px;", name="arr_"+r.Id })</div>
-
 						</div>
 					</div>
 				</div>
-				<hr class="visible-xs" />
+				<hr style="margin:4px;" class="visible-xs1" />
 			}
+
+			<h3>Next Quarters Rocks:</h3>
+
+
+
 
 			<div class="evaluation-heading">Rocks</div>
 		</div>
 	}
 </div>
-@using (Html.BeginScripts()){
+@using (Html.BeginScripts())
+{
 	<style>
 		.approvereject .reject:after {
-			content:"Incomplete"
+			content: "Incomplete";
 		}
+
 		.approvereject .approve:after {
-			content:"Complete"
+			content: "Complete";
 		}
 	</style>
 }
@@ -164,16 +179,6 @@
 	<script>
 		var request;
 		$(function () {
-			$(document).on("change", ".approvereject input", function() {
-				var id = $(this).attr("name").split("_")[1];
-				$.ajax({
-					url: "/Review/EditRockCompletion/" + id + "?val=" + $(this).val(),
-					success: function() {
-								
-					}
-				});
-			});
-
 			$(document).on("click", ".table-io.companyValues > tbody > tr > td > .fill", function () {
 				$(".table-io.companyValues .fill.selected").removeClass("selected");
 				$("#companyValues-details").html("<div style='text-align:center;'><img src='/Content/img/ajax-loader.gif' alt='Loading...' /></div>");
@@ -190,7 +195,6 @@
 					},
 					error: function (a, b, c) {
 						$("#companyValues-details").html("<div style='text-align:center;' class='gray'>An error has occurred.</div>");
-
 					}
 				});
 			});
@@ -210,7 +214,6 @@
 					},
 					error: function (a, b, c) {
 						$("#rocks-details").html("<div style='text-align:center;' class='gray'>An error has occurred.</div>");
-
 					}
 				});
 			});

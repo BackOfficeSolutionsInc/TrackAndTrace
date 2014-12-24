@@ -111,16 +111,12 @@ namespace RadialReview.Controllers
             return View(model);
         }
 
-
-       
-
         public class UpdateReviewsViewModel
         {
             public long ReviewId { get; set; }
             public List<SelectListItem> AdditionalUsers { get; set; }
             public long SelectedUserId { get; set; }
         }
-
 
 	    public class DueDateVM
 	    {
@@ -394,107 +390,6 @@ namespace RadialReview.Controllers
             var result = _ReviewAccessor.RemoveUserFromReview(GetUser(), model.ReviewContainerId, model.SelectedUser);
             return Json(result);
         }
-/*
-        [Access(AccessLevel.Manager)]
-        public ActionResult Details(long id)
-        {
-            //var reviewContainerAnswers = _ReviewAccessor.GetReviewContainerAnswers(GetUser(), id);
-
-            //var reviewContainerPeople = reviewContainerAnswers.GroupBy(x => x.AboutUserId);
-            var user = GetUser().Hydrate().ManagingUsers(true).Execute();
-
-            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true);
-            //reviewContainer.Reviews = _ReviewAccessor.GetReviewsForReviewContainer(GetUser(), id);
-
-
-            foreach (var r in reviewContainer.Reviews)
-            {
-                if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id)
-                    r.ForUser.SetPersonallyManaging(true);
-                else
-                    r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
-            }
-
-            var model = new ReviewsViewModel(reviewContainer);
-
-            return View(model);
-        }*/
-
-        /*[HttpPost]
-        public ActionResult IssueDetails(IssueReviewViewModel model)
-        {
-            var reviewParams = new ReviewParameters()
-                    {
-                        ReviewManagers = model.ReviewManagers,
-                        ReviewSelf = model.ReviewSelf,
-                        ReviewSubordinates = model.ReviewSubordinates,
-                        ReviewPeers = model.ReviewPeers,
-                        ReviewTeammates = model.ReviewTeammates,
-                    };
-
-            var members=_OrganizationAccessor.GetOrganizationMembers(GetUser(),GetUser().Organization.Id,false,false);
-                       
-            var output = new IssueDetailsViewModel()
-            {
-                ReviewWho=_ReviewAccessor.GetUsersWhoReviewUsers(GetUser(), reviewParams, model.ForTeamId),
-                AvailableUsers = members.ToDictionary(x=>x.Id,x=>x)
-            };
-
-            return View(output);
-        }*/
-        /*
-        [HttpPost]
-        [Access(AccessLevel.Manager)]
-        public async Task<JsonResult> AddToReview(long id, long userId)
-        {
-            var reservedId=_KeyValueAccessor.Put("AddToReviewReserved_" + id,""+ userId);
-            var userName = GetUserModel().UserName;
-
-            var user=GetUser();
-            try
-            {
-                //TODO HERE
-                var result = await Task.Run<ResultObject>(() =>
-                {
-                    ResultObject output;
-                    try
-                    {
-                        output = _ReviewAccessor.AddUserToReviewContainer(user, id, userId);
-                    }
-                    catch (Exception e)
-                    {
-                        log.Error(e);
-                        output = new ResultObject(e);
-                    }
-                    finally
-                    {
-                        _KeyValueAccessor.Remove(reservedId);
-                    }
-                    return output;
-                });
-
-                new Thread(() =>
-                {
-                    Thread.Sleep(4000);
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-                    hub.Clients.User(userName).jsonAlert(result, true);
-                    hub.Clients.User(userName).unhide("#ManageNotification");
-                }).Start();
-
-            }
-            catch (Exception e)
-            {
-                log.Error(e);
-                new Thread(() =>
-                {
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-                    hub.Clients.User(userName).jsonAlert(new ResultObject(e));
-                    hub.Clients.User(userName).unhide("#ManageNotification");
-                }).Start();
-            }
-            return Json(ResultObject.SilentSuccess());
-
-        }*/
 
         #region Individual Question
         public class RemoveQuestionVM
@@ -644,11 +539,7 @@ namespace RadialReview.Controllers
             _ReviewAccessor.UpdateDueDates(GetUser(), model.ReviewContainerId, prereview, review, report);
             return Json(ResultObject.Success("Due date changed."), JsonRequestBehavior.AllowGet);
         }
-
-
-
         #endregion
-
     }
 
 

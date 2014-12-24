@@ -588,3 +588,13 @@ td.alt {
 	text-align: center;
 	color: #FFF;
 }
+
+
+.markedAs {
+	font-size: 11px;
+}
+
+.completion {
+	line-height: 1;
+	font-size: 12px;
+}

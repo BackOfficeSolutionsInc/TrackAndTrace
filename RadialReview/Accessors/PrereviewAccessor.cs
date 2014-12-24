@@ -74,7 +74,7 @@ namespace RadialReview.Accessors
             }
         }
 
-		public async Task CreatePrereview(UserOrganizationModel caller, long forTeamId, String reviewName, bool sendEmails, DateTime dueDate, DateTime preReviewDue, bool ensureDefault, bool anonFeedback)
+		public async Task CreatePrereview(UserOrganizationModel caller, long forTeamId, String reviewName, bool sendEmails, DateTime dueDate, DateTime preReviewDue, bool ensureDefault, bool anonFeedback,long periodId)
         {
             if (preReviewDue >= dueDate)
                 throw new PermissionsException("The pre-review due date must be before the review due date.");
@@ -92,6 +92,7 @@ namespace RadialReview.Accessors
 
                 var reviewContainer = new ReviewsModel()
 				{
+					PeriodId = periodId,
 					AnonymousByDefault = anonFeedback,
                     DateCreated = DateTime.UtcNow,
                     DueDate = dueDate,
@@ -161,7 +162,7 @@ namespace RadialReview.Accessors
                                 unsentEmails.Add(
                                     MailModel.To(manager.GetEmail())
                                     .Subject(EmailStrings.Prereview_Subject,caller.Organization.GetName())
-                                    .Body(EmailStrings.Prereview_Body, manager.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName)
+									.Body(EmailStrings.Prereview_Body, manager.GetName(), preReviewDue.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName)
                                     );
                             }
                             catch (Exception e)

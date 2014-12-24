@@ -1,7 +1,50 @@
 ﻿$(function () {
 	collapseAll();
+	InitUpdateRock();
 });
 var last = null;
+
+function InitUpdateRock() {
+	$(document).on("change", ".approvereject input", function () {
+		var id = $(this).attr("name").split("_")[1];
+		var that = $(this);
+		$(this).addClass("disabled");
+		$.ajax({
+			url: "/Review/EditRockCompletion/" + id + "?val=" + $(this).val(),
+			complete: function (data) {
+				$(that).removeClass("disabled");
+			}
+		});
+	});
+
+
+	$("textarea[name^='arr_']").keyup($.debounce(500, updateRockComment));
+}
+
+function updateRockComment() {
+
+	$(this).val($(this).val().trim());
+	var notes = $(this).val();
+	var dat = new Object();
+	var id = $(this).attr("name").split("_")[1];
+	dat.id = id;// "@Model.Review.Id";
+	dat.val = notes;
+	var that = $(this);
+	if (notes != $(that).data("last")) {
+		$(that).data("last",notes);
+		//$(that).addClass("saving");
+		$.ajax({
+			url: "/Review/SetRockCompletionComment",
+			data: dat,
+			method: "POST",
+			complete: function () {
+				/*setTimeout(function () {
+					$(that).removeClass("saving");
+				}, 1000);*/
+			}
+		});
+	}
+}
 
 function removeEmpty(array, deleteValue) {
     for (var i = 0; i < array.length; i++) {
@@ -132,7 +175,6 @@ function UpdateChart() {
     });
 
 }
-
 
 function UpdateInclude(url, on, inputClass) {
 	var inputs = $("." + inputClass);

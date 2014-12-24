@@ -1,4 +1,5 @@
-﻿using RadialReview.Accessors;
+﻿using NHibernate.Engine;
+using RadialReview.Accessors;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
@@ -118,7 +119,7 @@ namespace RadialReview.Engines
                 Subordinates = teamMembers.Select(x => x.User).ToList(),
                 AllUsers = new List<UserOrganizationModel>(),
                 Selectors = combine,
-                Selected=new List<Tuple<long,long>>()
+                Selected=new List<Tuple<long,long>>(),
             };
 
             return model;

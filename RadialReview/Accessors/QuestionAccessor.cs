@@ -116,6 +116,7 @@ namespace RadialReview.Accessors
                 ForReviewsId = reviewContainer.Id,
                 DueDate = reviewContainer.DueDate,
                 Name = reviewContainer.ReviewName,
+				PeriodId = reviewContainer.PeriodId,
             };
 
             dataInteraction.Save(reviewModel);
@@ -125,52 +126,7 @@ namespace RadialReview.Accessors
 			ReviewAccessor.AddAskablesToReview(dataInteraction.GetUpdateProvider(), perms, caller, forUser, reviewModel, reviewContainer.AnonymousByDefault ,askables);
             return reviewModel;
         }
-
-
-
-
-        /*
-        public ReviewModel GenerateResponsibilitiesReview(UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer,List<ResponsibilityGroupModel> responsibilityGroup)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    forUser = s.Get<UserOrganizationModel>(forUser.Id);
-
-                    var reviewModel = new ReviewModel()
-                    {
-                        ForUserId = forUser.Id,
-                        ForReviewsId = reviewContainer.Id,
-                        DueDate = reviewContainer.DueDate,
-                        Name = reviewContainer.ReviewName,
-                    };
-
-                    s.Save(reviewModel);
-                    foreach (var rg in responsibilityGroup)
-                    {
-                        foreach (var r in rg.Responsibilities)
-                        {
-                            GenerateSliderAnswers(s, caller, forUser, r, reviewModel);
-                            /*switch (q.QuestionType)
-                            {
-                                case QuestionType.RelativeComparison: GenerateRelativeComparisonAnswers(s, caller, forUser, q, reviewModel); break;
-                                case QuestionType.Slider: GenerateSliderAnswers(s, caller, forUser, q, reviewModel); break;
-                                case QuestionType.Thumbs: GenerateThumbsAnswers(s, caller, forUser, q, reviewModel); break;
-                                case QuestionType.Feedback: GenerateFeedbackAnswers(s, caller, forUser, q, reviewModel); break;
-                                default: throw new ArgumentException("Unrecognized questionType(" + q.QuestionType + ")");
-                            }
-                        }
-                    }
-                    s.SaveOrUpdate(reviewModel);
-                    tx.Commit();
-                    s.Flush();
-
-                    return reviewModel;
-                }
-            }
-        }*/
-
+		
 		[Obsolete("Use AskableAccessor.GetAskablesForUser",false)]
         public static List<QuestionModel> GetQuestionsForUser(AbstractQuery s, PermissionsUtility perms, long forUserId)
         {

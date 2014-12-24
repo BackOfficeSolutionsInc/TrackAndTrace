@@ -360,15 +360,6 @@ namespace RadialReview.Accessors {
 			#endregion
 			return askableUtil;
 		}
-
-
-
-
-
-		internal void EditReviewName(UserOrganizationModel userOrganizationModel, long p)
-		{
-			throw new NotImplementedException();
-		}
 	}
 
 }

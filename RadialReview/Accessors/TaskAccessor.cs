@@ -101,11 +101,12 @@ namespace RadialReview.Accessors
         {
             if (task != null)
             {
-                try
-                {
-                    var webClient = new WebClient();
-                    var str = await webClient.DownloadStringTaskAsync(new Uri((server.TrimEnd('/') + "/" + task.Url.TrimStart('/')), UriKind.Absolute));
-                    log.Debug("Scheduled task was executed. " + task.Id);
+	            try{
+		            if (task.Url != null){
+			            var webClient = new WebClient();
+			            var str = await webClient.DownloadStringTaskAsync(new Uri((server.TrimEnd('/') + "/" + task.Url.TrimStart('/')), UriKind.Absolute));
+		            }
+		            log.Debug("Scheduled task was executed. " + task.Id);
                     task.Executed = DateTime.UtcNow;
                 }
                 catch (Exception e)

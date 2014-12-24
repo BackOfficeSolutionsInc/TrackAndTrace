@@ -488,6 +488,22 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.Manager)]
+		public JsonResult EditRockCompletion(long id, Tristate val)
+		{
+			_ReviewAccessor.UpdateRockCompletionOverride(GetUser(), id, val);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetRockCompletionComment(long id, String val)
+		{
+			_ReviewAccessor.UpdateRockCompletionNotes(GetUser(), id, val);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+
+
+
+		[Access(AccessLevel.Manager)]
 		public JsonResult SetFeedback(long feedbackId, long reviewId, bool on) {
 			if (on)
 				_ReviewAccessor.AddAnswerToReview(GetUser(), reviewId, feedbackId);
@@ -583,6 +599,8 @@ namespace RadialReview.Controllers {
 			public List<UserOrganizationModel> Supervisers { get; set; }
 			public List<Askable> ActiveQuestions { get; set; }
 			public List<ChartType> ChartTypes { get; set; }
+
+
 			/*
 			public Table EvaluationTable
 			{
@@ -794,7 +812,7 @@ namespace RadialReview.Controllers {
 						if (tot == 0)
 							return new HtmlString("");
 						return new HtmlString("" + Math.Round((pos + (neut / 2m)) / (tot) * 100m) + "%");
-					}, "companyValues-score");
+					}, "companyValues");
 
 					return new Table(data) { TableClass = "companyValues companyValues-client" };
 				}
@@ -876,6 +894,7 @@ namespace RadialReview.Controllers {
 				Supervisers = new List<UserOrganizationModel>();
 				ActiveQuestions = new List<Askable>();
 			}
+
 		}
 
 		private ReviewDetailsViewModel GetReviewDetails(ReviewModel review)

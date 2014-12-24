@@ -1,0 +1,25 @@
+﻿@model RadialReview.Controllers.RocksController.RockTable
+	
+@if (Model.Editable){
+	<div>Add</div>
+}
+
+<table>
+	<tr>
+		<th></th>
+		<th></th>
+		@if (Model.Editables.Any()){
+			<th></th>
+		}
+	</tr>
+	@foreach (var r in Model.Rocks)
+	{
+		<tr>
+			<td>@r.Rock</td>
+			@if (Model.Editables.Any())
+			{
+				<th></th>
+			}
+		</tr>
+	}
+</table>

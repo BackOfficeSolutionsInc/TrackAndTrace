@@ -155,7 +155,6 @@ namespace RadialReview.Accessors {
 			}
 		}
 		public ReviewModel GetReview(UserOrganizationModel caller, long reviewId) {
-			var output = new ReviewModel();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var reviewPopulated = s.Get<ReviewModel>(reviewId);

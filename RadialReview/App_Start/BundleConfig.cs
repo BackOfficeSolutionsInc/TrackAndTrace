@@ -32,6 +32,7 @@ namespace RadialReview
 					  "~/Scripts/components/checktree.js",
 					  "~/Scripts/components/rockstate.js",
 					  "~/Scripts/components/approvereject.js",
+					  "~/Scripts/components/completeincomplete.js",
 					  "~/Scripts/select2.min.js",
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js",
@@ -45,6 +46,7 @@ namespace RadialReview
 					  "~/Content/components/checktree.css",
 					  "~/Content/components/rockstate.css",
 					  "~/Content/components/approvereject.css",
+					  "~/Content/components/CompleteIncomplete.css",
 					  "~/Content/select2-bootstrap.css",
 					  "~/Content/select2.css",
 					  "~/Content/datepicker.css",
@@ -56,7 +58,7 @@ namespace RadialReview
 
             bundles.Add(new ScriptBundle("~/bundles/main").Include(
                       "~/Scripts/Main/radial.js",
-                      "~/Scripts/jquery.signalR-{version}.js",
+                      //"~/Scripts/jquery.signalR-{version}.js",
                       "~/Scripts/jquery/jquery.qtip.js",
 					  "~/Scripts/jquery/jquery.tablesorter.js",
                       "~/Scripts/Main/finally.js"

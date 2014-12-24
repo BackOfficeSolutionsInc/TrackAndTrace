@@ -364,7 +364,7 @@ namespace RadialReview.Accessors {
 		public void AddAnswerToReview(UserOrganizationModel caller, long reviewId, long answerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
 					var feedback = s.Get<AnswerModel>(answerId);
 					var review = s.Get<ReviewModel>(reviewId);
 					if (review.ForUserId != feedback.AboutUserId)
@@ -380,7 +380,7 @@ namespace RadialReview.Accessors {
 		public void RemoveAnswerFromReview(UserOrganizationModel caller, long reviewId, long answerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ManageReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
 					var answer = s.Get<AnswerModel>(answerId);
 					var review = s.Get<ReviewModel>(reviewId);
 
