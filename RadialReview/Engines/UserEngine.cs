@@ -12,8 +12,10 @@ namespace RadialReview.Engines
     public class UserEngine
     {
         protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-        private static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
-        private static PositionAccessor _PositionAccessor = new PositionAccessor();
+		private static QuestionAccessor _QuestionAccessor = new QuestionAccessor();
+		private static PositionAccessor _PositionAccessor = new PositionAccessor();
+		private static RockAccessor _RockAccessor = new RockAccessor();
+		private static RoleAccessor _RoleAccessor = new RoleAccessor();
         private static TeamAccessor _TeamAccessor = new TeamAccessor();
         private static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
         protected static UserAccessor _UserAccessor = new UserAccessor();
@@ -39,8 +41,8 @@ namespace RadialReview.Engines
                 responsibilities.AddRange(teamResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
             }
 
-			var roles = _UserAccessor.GetRoles(caller, id);
-			var rocks = _UserAccessor.GetRocks(caller, id);
+			var roles = _RoleAccessor.GetRoles(caller, id);
+			var rocks = _RockAccessor.GetAllRocks(caller, id);
 	        var measurables = ScorecardAccessor.GetUserMeasurables(caller, id);
 
             var model = new UserOrganizationDetails()

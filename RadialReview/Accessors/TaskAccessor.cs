@@ -122,14 +122,21 @@ namespace RadialReview.Accessors
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
-                using (var tx = s.BeginTransaction())
-                {
-                    var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).RowCount();
+                using (var tx = s.BeginTransaction()){
+	                var profileImage = 0;
+	                try{
+		                profileImage = String.IsNullOrEmpty(s.Get<UserOrganizationModel>(forUserId).User.ImageGuid) ? 1 : 0;
+	                }catch{
+		                
+	                }
+
+
+	                var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).RowCount();
 					var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started && x.DeleteTime == null).RowCount();
 	                var nowPlus = now.Add(TimeSpan.FromDays(1));
 
 					var scorecardCount = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == forUserId && x.DateDue < nowPlus && x.DateEntered == null).RowCount();
-					return reviewCount + prereviewCount + scorecardCount;
+					return reviewCount + prereviewCount + scorecardCount + profileImage;
                 }
             }
         }
@@ -140,7 +147,7 @@ namespace RadialReview.Accessors
         public List<TaskModel> GetTasksForUser(UserOrganizationModel caller, long forUserId,DateTime now)
         {
             var tasks = new List<TaskModel>();
-            using (var s = HibernateSession.GetCurrentSession())
+            using (var s = HibernateSession.GetCurrentSession()) 
             {
                 using (var tx = s.BeginTransaction())
                 {
@@ -195,7 +202,21 @@ namespace RadialReview.Accessors
 	                });
 					tasks.AddRange(scoreTasks);
 
-					/*
+	                try{
+		                if (String.IsNullOrEmpty(s.Get<UserOrganizationModel>(forUserId).User.ImageGuid)){
+			                tasks.Add(new TaskModel(){
+				                Type = TaskType.Profile,
+				                Name = "Update Profile (Picture)",
+				                DueDate = DateTime.MaxValue,
+			                });
+		                }
+	                }
+	                catch{
+		                
+	                }
+
+
+	                /*
 
 					  .Where(x => x.Executed == null).ToListAlive();
 

@@ -1,0 +1,81 @@
+﻿@model RadialReview.Controllers.PeriodController.PeriodVM
+
+<div class="form">
+	@Html.HiddenFor(x => x.PeriodId)
+	@Html.HiddenFor(x => x.OrgId)
+	<div class="">
+		<div class="row">
+			<div class="col-sm-4">
+				<label>Name:</label>
+			</div>
+			<div class="col-md-6">
+				@Html.TextBoxFor(x=>x.Name,new {@class="form-control"})
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-4">
+				<label>Start Time:</label>
+			</div>
+			<div class="col-md-6">
+				<div class="date" data-date="@(Model.StartTime.ToShortDateString())" data-date-format="mm-dd-yyyy">
+					@*@Html.TextBoxFor(x => x.StartTime, null, new { @class = "form-control datePicker", id = "StartDate" })*@
+					
+					<input value="@(Model.StartTime.ToShortDateString())" name="@Html.NameFor(x=>x.StartTime)" id="StartDate" class="form-control datePicker" />
+					<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+					<span class="add-on"><i class="icon-th"></i></span>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-4">
+				<label>End Time:</label>
+			</div>
+			<div class="col-md-6">
+				<div class="date" data-date="@(Model.EndTime.ToShortDateString())" data-date-format="mm-dd-yyyy">
+					@*@Html.TextBoxFor(x => x.EndTime, null, new { @class = "form-control datePicker", id = "EndDate" })*@
+					<input value="@(Model.EndTime.ToShortDateString())" name="@Html.NameFor(x => x.EndTime)" id="EndDate" class="form-control datePicker" />
+
+					<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+					<span class="add-on"><i class="icon-th"></i></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@Html.HiddenFor(x => x.Offset, new { id = "TimeZoneOffset" })
+
+<script>
+	function startDueDateModal() {
+		var offset = new Date().getTimezoneOffset();
+		$("#TimeZoneOffset").val(offset / 60);
+
+
+		var nowTemp = new Date();
+		var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+
+		var checkin = $('#StartDate').datepicker({
+			format: 'mm-dd-yyyy',
+			//onRender: function (date) { return date.valueOf() < now.valueOf() ? 'disabled' : ''; }
+		}).on('changeDate', function (ev) {
+			if (ev.date.valueOf() > checkout.date.valueOf()) {
+				debugger;
+				var newDate = new Date(ev.date);
+				newDate = new Date(newDate.getTime() +(88*24*60*60*1000));
+				checkout.setValue(newDate);
+			}
+			checkin.hide();
+			$('#EndDate')[0].focus();
+		}).data('datepicker');
+
+		var checkout = $('#EndDate').datepicker({
+			format: 'mm-dd-yyyy',
+			//onRender: function (date) {return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';}
+		}).on('changeDate', function (ev) {
+			checkout.hide();
+		}).data('datepicker');
+	}
+
+	$(function() {
+		startDueDateModal();
+	});
+</script>

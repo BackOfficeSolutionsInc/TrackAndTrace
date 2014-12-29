@@ -1,0 +1,82 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+
+
+<div >
+	<div class="row">
+		<div class="col-sm-10" id="allRows">
+			<div class="nextRock_flip1" style="padding: 7px;">
+				<table style="width: 100%;">
+					<thead>
+						<tr>
+							<th>@Model.ReviewContainer.NextPeriod.Name Rocks:</th>
+							@*<th style="width:20%">Session:</th>*@
+							<th style="width:1px"></th>
+						</tr>
+					</thead>
+					<tbody id="nextRocks"></tbody>
+				</table>
+			</div>
+			<div class="nextRock_flip2 hidden" style="padding: 7px;">
+				<div class="gray">No rocks for next session. Make sure you click 'Add Rock' to create some.</div>
+			</div>
+		</div>
+		<div class="col-sm-2 alignCenter">
+			<div class="btn btn-default clickable" onclick="addRow();">Add Rock</div>
+		</div>
+	</div>
+</div>
+
+
+@using (Html.BeginScripts())
+{
+	<script>
+		function appendRow(id, rock, session) {
+			$("#nextRocks").append("<tr class='roleRow' id='nextRock_" + id + "'><td>" + rock + "</td>" +
+				/*"<td>" + session + "</td>" +*/
+				"<td><span style='padding-left:8px;' class='glyphicon glyphicon-trash deleteRow clickable' title='Delete'></span></td></tr>");
+		}
+
+
+		function addRow() {
+			showModal("Add Rock", "/Rocks/ModalSingle/0?userId=@Model.Review.ForUserId&periodId=@Model.ReviewContainer.NextPeriodId", "/Rocks/Modal/", null, null, function (data) {
+				for (var i = 0; i < data.Object.length; i++) {
+					var o = data.Object[i];
+					appendRow(o.Id,o.Rock,o.Session);
+				}
+				CheckEmpty();
+			});
+		}
+
+		function CheckEmpty() {
+			if ($("#nextRocks tr").length == 0) {
+				$(".nextRock_flip1").addClass("hidden");
+				$(".nextRock_flip2").removeClass("hidden");
+			} else {
+				$(".nextRock_flip1").removeClass("hidden");
+				$(".nextRock_flip2").addClass("hidden");
+			}
+		}
+
+		$(function () {
+			@foreach (var r in Model.NextRocks){
+				@:appendRow("@r.Id","@r.GetQuestion()","@r.Period.Name");
+			}
+			CheckEmpty();
+
+			$(document).on("click", "span.deleteRow", function () {
+				var parent = $(this).parents(".roleRow:first");
+
+				var id =$(parent).attr("id").split("_")[1];
+				$.ajax({
+					url: "/Rocks/Delete/" + id,
+					success: function (data) {
+						$(parent).remove();
+						CheckEmpty();
+					}
+				});
+				return false;
+			});
+		});
+</script>
+
+}

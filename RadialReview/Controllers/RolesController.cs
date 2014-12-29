@@ -20,7 +20,7 @@ namespace RadialReview.Controllers
 
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult Modal(long id) {
-			var roles = _UserAccessor.GetRoles(GetUser(), id);
+			var roles = _RoleAccessor.GetRoles(GetUser(), id);
 			return PartialView(new RoleVM { Roles = roles, UserId = id });
 		}
 
@@ -37,7 +37,7 @@ namespace RadialReview.Controllers
 			foreach (var r in model.Roles){
 				r.ForUserId = model.UserId;
 			}
-			_UserAccessor.EditRoles(GetUser(), model.UserId, model.Roles);
+			_RoleAccessor.EditRoles(GetUser(), model.UserId, model.Roles);
 			return Json(ResultObject.SilentSuccess());
 		}
     }

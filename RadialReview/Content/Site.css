@@ -1253,7 +1253,7 @@ color: #559DC5;
 }
 
 .info:after {
-    font-size: 85%;
+    font-size: 60%;
     color: #767F99;
     content: "[?]";
     width: 4px;

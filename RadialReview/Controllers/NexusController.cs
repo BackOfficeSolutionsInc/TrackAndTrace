@@ -67,7 +67,7 @@ namespace RadialReview.Controllers
                             return MatchingNexus(nexus, () =>
                             {
                                 NexusAccessor.Execute(nexus);
-                                return RedirectToAction("Outstanding", "Reviews");
+                                return RedirectToAction("Index", "Tasks");
                             });
                         };
                     case NexusActions.ResetPassword:

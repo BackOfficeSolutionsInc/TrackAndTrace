@@ -243,6 +243,7 @@
     <Compile Include="Accessors\ReviewAccessor\UpdateEOSAnswers.cs" />
     <Compile Include="Accessors\ReviewAccessor\UpdateReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\UpdateStandardAnswers.cs" />
+    <Compile Include="Accessors\RockAccessor.cs" />
     <Compile Include="Accessors\RoleAccessor.cs" />
     <Compile Include="Accessors\S3Response.cs" />
     <Compile Include="Accessors\ScorecardAccessor.cs" />
@@ -763,6 +764,7 @@
     <Content Include="Views\Measurable\_MeasurableRow.cshtml" />
     <Content Include="Views\Reviews\EditNameModal.cshtml" />
     <Content Include="Views\Period\Index.cshtml" />
+    <Content Include="Views\Period\Modal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -983,6 +985,8 @@
     <Content Include="Views\Shared\EditorTemplates\ApproveReject.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CompleteIncomplete.cshtml" />
     <Content Include="Views\Rocks\Table.cshtml" />
+    <Content Include="Views\Review\Details\NextSession.cshtml" />
+    <Content Include="Views\Rocks\ModalSingle.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

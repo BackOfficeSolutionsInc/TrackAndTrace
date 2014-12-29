@@ -3,16 +3,25 @@
 	@using (Html.BeginCollectionItem("Rocks"))
 	{
 		<div class="roww">
-				<div style="width:calc( 100% - 25px );display:inline-block">
-					@Html.HiddenFor(x => x.Id)
-					@Html.TextBoxFor(x => x.Rock, new { @class = "form-control roleItem" })
-					@Html.HiddenFor(x => x.DeleteTime)
-					@Html.HiddenFor(x => x.CreateTime)
-					@Html.HiddenFor(x => x.CompleteTime)
-				</div>
-			<span style="padding-left:8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+			<div style="width:calc( 100% - 25px );display:inline-block">
+				@Html.HiddenFor(x => x.Id)
+				@Html.TextBoxFor(x => x.Rock, new { @class = "form-control roleItem" })
+				@Html.HiddenFor(x => x.DeleteTime)
+				@Html.HiddenFor(x => x.CreateTime)
+				@Html.HiddenFor(x => x.CompleteTime)
+			</div>
+			@if (ViewBag.HideDelete==null || ViewBag.HideDelete == false){
+				<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+			}
+		</div>
+
+		<div class="lineAfter @(ViewBag.HidePeriod ?? false ? "hidden" : "")" style="width:calc( 100% - 25px );display:inline-block">
+				@Html.DropDownListFor(x => x.PeriodId, (IEnumerable<SelectListItem>)ViewBag.Periods, new { @class = "form-control" })
 		</div>
 	}
 	<div class="smallBreak"></div>
 	<div class="smallBreak"></div>
+	@if (!(ViewBag.HidePeriod ?? false)){
+		<hr/>
+	}
 </div>

@@ -9,14 +9,22 @@
 			<thead>
 				<tr>
 					<th></th>
-					<th></th>
+					<th>
+						<table>
+							<tr class="alignCenter">
+								<td style="width:80px;padding: 10px;">Hardly Ever</td>
+								<td style="width:80px;padding: 10px;">Sometimes</td>
+								<td style="width:80px;padding: 10px;">Almost Always</td>
+							</tr>
+						</table>
+					</th>
 					<th></th>
 
 				</tr>
 			</thead>
 			<tbody>
 				@{
-	var questions = Model.Item1.OrderBy(x => x.Askable.GetQuestion()).ToList();
+				var questions = Model.Item1.OrderBy(x => x.Askable.GetQuestion()).ToList();
 				}
 				@for (var i = 0; i < questions.Count(); i++)
 				{

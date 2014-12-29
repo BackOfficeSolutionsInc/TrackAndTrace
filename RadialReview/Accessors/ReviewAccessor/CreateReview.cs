@@ -7,6 +7,7 @@ using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
+using RadialReview.Models.Periods;
 using RadialReview.Models.Reviews;
 using RadialReview.Models.UserModels;
 using RadialReview.Properties;
@@ -34,7 +35,7 @@ namespace RadialReview.Accessors {
 				var revieweeIds = whoReviewsWho.Where(x => x.Item1 == reviewerId).Distinct().Select(x => x.Item2);
                 var user = dataInteraction.Get<UserOrganizationModel>(reviewerId);
 
-	            var allAskables=GetAskables(caller, perms, dataInteraction, revieweeIds, reviewerId);
+	            var allAskables=GetAskables(caller, perms, dataInteraction, revieweeIds, reviewerId,reviewContainer.PeriodId);
 				
 				if (allAskables.Any()) {
                     QuestionAccessor.GenerateReviewForUser(dataInteraction, perms, caller, user, reviewContainer, allAskables);
@@ -63,7 +64,9 @@ namespace RadialReview.Accessors {
         }
 
 
-		public async Task<ResultObject> CreateReviewFromCustom(UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, bool anonFeedback, List<Tuple<long, long>> whoReviewsWho,long periodId)
+		public async Task<ResultObject> CreateReviewFromCustom(
+			UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, bool anonFeedback,
+			List<Tuple<long, long>> whoReviewsWho, long periodId, long nextPeriodId)
 		{
             var unsentEmails = new List<MailModel>();
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -98,6 +101,7 @@ namespace RadialReview.Accessors {
                         ReviewTeammates = reviewTeammates,
 
 						PeriodId = periodId,
+						NextPeriodId = nextPeriodId,
 
                         ForTeamId = forTeamId
                     };
@@ -185,7 +189,15 @@ namespace RadialReview.Accessors {
         public static void CreateReviewContainer(ISession s, PermissionsUtility perms, UserOrganizationModel caller, ReviewsModel reviewContainer) {
             using (var tx = s.BeginTransaction()) {
                 perms.ManagerAtOrganization(caller.Id, caller.Organization.Id);
-                reviewContainer.CreatedById = caller.Id;
+				foreach(var pid in new[] {reviewContainer.NextPeriodId,reviewContainer.PeriodId})
+	            {
+		            var p = s.Get<PeriodModel>(pid);
+					if (p.OrganizationId != caller.Organization.Id){
+						throw new PermissionsException("You do not have access to this session.");
+					}
+	            }
+
+	            reviewContainer.CreatedById = caller.Id;
                 reviewContainer.ForOrganizationId = caller.Organization.Id;
                 s.SaveOrUpdate(reviewContainer);
                 tx.Commit();
@@ -201,7 +213,9 @@ namespace RadialReview.Accessors {
             List<UserOrganizationModel> accessibleUsers) {
             var unsentEmails = new List<MailModel>();
             try {
-				var askables = GetAskablesBidirectional(dataInteraction, perms, caller, beingReviewedUser/*, aboutSelf*/, team, parameters, accessibleUsers.Select(x=>x.Id).ToList());
+				var askables = GetAskablesBidirectional(
+					dataInteraction, perms, caller, beingReviewedUser,
+					team, parameters, accessibleUsers.Select(x=>x.Id).ToList(),reviewContainer.PeriodId);
 
                 //Create the Review
                 if (askables.Askables.Any()) {

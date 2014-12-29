@@ -74,7 +74,8 @@ namespace RadialReview.Accessors
             }
         }
 
-		public async Task CreatePrereview(UserOrganizationModel caller, long forTeamId, String reviewName, bool sendEmails, DateTime dueDate, DateTime preReviewDue, bool ensureDefault, bool anonFeedback,long periodId)
+		public async Task CreatePrereview(UserOrganizationModel caller, long forTeamId, String reviewName, bool sendEmails,
+			DateTime dueDate, DateTime preReviewDue, bool ensureDefault, bool anonFeedback, long periodId, long nextPeriodId)
         {
             if (preReviewDue >= dueDate)
                 throw new PermissionsException("The pre-review due date must be before the review due date.");
@@ -93,6 +94,7 @@ namespace RadialReview.Accessors
                 var reviewContainer = new ReviewsModel()
 				{
 					PeriodId = periodId,
+					NextPeriodId = nextPeriodId,
 					AnonymousByDefault = anonFeedback,
                     DateCreated = DateTime.UtcNow,
                     DueDate = dueDate,
@@ -215,7 +217,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var perms=PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId);
+					var perms = PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId, false);
                     var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
                     
                     var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId && x.DeleteTime==null).List().ToList();

@@ -493,18 +493,18 @@ namespace RadialReview.Utilities
             throw new PermissionsException();
         }
         
-        public PermissionsUtility ViewReviews(long reviewContainerId)
+        public PermissionsUtility ViewReviews(long reviewContainerId, bool sensitive)
         {
             if (IsRadialAdmin(caller))
                 return this;
             var review = session.Get<ReviewsModel>(reviewContainerId);
             var orgId = review.ForOrganization.Id;
-
-
-            ManagerAtOrganization(caller.Id, orgId);
-
+			if (sensitive)
+				ManagerAtOrganization(caller.Id, orgId);
             if (orgId == caller.Organization.Id)
                 return this;
+
+
 
             /*
             if(IsOwnedBelowOrEqual(caller,x=>x.Id==review.CreatedById))

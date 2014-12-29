@@ -26,8 +26,10 @@ namespace RadialReview.Models
         public virtual bool ReviewTeammates { get; set; }
         public virtual bool ReviewPeers { get; set; }
 
-	    public virtual long PeriodId { get; set; }
-	    public virtual PeriodModel Period { get; set; }
+		public virtual long PeriodId { get; set; }
+		public virtual PeriodModel Period { get; set; }
+		public virtual long NextPeriodId { get; set; }
+		public virtual PeriodModel NextPeriod { get; set; }
 
         public virtual List<ReviewModel> Reviews { get; set; }
         public virtual long ForOrganizationId { get; set; }
@@ -72,6 +74,7 @@ namespace RadialReview.Models
             Map(x => x.CreatedById);
 
             Map(x => x.TaskId);
+            Map(x => x.ForTeamId);
             
             Map(x => x.ReviewManagers);
             Map(x => x.ReviewSelf);
@@ -88,7 +91,9 @@ namespace RadialReview.Models
 			Map(x => x.PeriodId).Column("PeriodId");
 			References(x => x.Period).Column("PeriodId").LazyLoad().ReadOnly();
 
-            Map(x => x.ForTeamId);
+			Map(x => x.NextPeriodId).Column("NextPeriodId");
+			References(x => x.NextPeriod).Column("NextPeriodId").LazyLoad().ReadOnly();
+
 
             Map(x => x.ForOrganizationId).Column("ForOrganization_Id");
             References(x => x.ForOrganization).Column("ForOrganization_Id").LazyLoad().ReadOnly();

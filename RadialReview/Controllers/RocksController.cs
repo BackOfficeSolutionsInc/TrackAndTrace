@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Accessors;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Json;
 
@@ -14,21 +15,53 @@ namespace RadialReview.Controllers
 		{
 			public long UserId { get; set; }
 			public List<RockModel> Rocks { get; set; }
-			public DateTime CurrentTime = DateTime.UtcNow;
+			public DateTime CurrentTime { get; set; }
+
+			public RockVM()
+			{
+				CurrentTime= DateTime.UtcNow;
+			}
 		}
 
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult Modal(long id)
 		{
-			var rocks = _UserAccessor.GetRocks(GetUser(), id);
+			var userId = id;
+			var rocks = _RockAccessor.GetAllRocks(GetUser(), userId);
 			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
 		}
 
 		[Access(AccessLevel.Manager)]
+		public PartialViewResult ModalSingle(long id,long userId,long periodId)
+		{
+			RockModel rock;
+			if (id == 0)
+				rock = new RockModel(){CreateTime = DateTime.UtcNow};
+			else{
+				rock = _RockAccessor.GetRock(GetUser(), id);
+			}
+
+			ViewBag.Periods = PeriodAccessor.GetPeriod(GetUser(), periodId).AsList().ToSelectList(x => x.Name, x => x.Id);//PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
+
+			return PartialView(new RocksController.RockVM { Rocks = rock.AsList(), UserId = userId });
+		}
+
+	    [Access(AccessLevel.Manager)]
+	    public JsonResult Delete(long id)
+	    {
+		    RockAccessor.DeleteRock(GetUser(), id);
+		    return Json(ResultObject.SilentSuccess());
+	    }
+
+		[Access(AccessLevel.Manager)]
 		public PartialViewResult BlankEditorRow()
 		{
+
+			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
 			return PartialView("_RockRow", new RockModel(){CreateTime = DateTime.UtcNow});
 		}
+
+
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
@@ -38,8 +71,8 @@ namespace RadialReview.Controllers
 			{
 				r.ForUserId = model.UserId;
 			}
-			_UserAccessor.EditRocks(GetUser(), model.UserId, model.Rocks);
-			return Json(ResultObject.SilentSuccess());
+			_RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks);
+			return Json(ResultObject.Create(model.Rocks.Select(x=>new { Session = x.Period.Name, Rock = x.Rock, Id =x.Id }),status:StatusType.SilentSuccess));
 		}
 
 	    public class RockTable
@@ -53,7 +86,7 @@ namespace RadialReview.Controllers
 	    public ActionResult Table(long id,bool editor=false, bool current=true)
 	    {
 		    var forUserId = id;
-			var rocks = _UserAccessor.GetRocks(GetUser(), forUserId);
+			var rocks = _RockAccessor.GetAllRocks(GetUser(), forUserId);
 		    var editables = new List<long>();
 
 		    if (current)

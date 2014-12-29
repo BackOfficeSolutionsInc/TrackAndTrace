@@ -1,58 +1,69 @@
-﻿@model IEnumerable<RadialReview.Models.Periods.PeriodModel>
+﻿@model IEnumerable<RadialReview.Controllers.PeriodController.PeriodVM>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Periods";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.StartTime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.EndTime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.OrganizationId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DeleteTime)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.StartTime)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.EndTime)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.OrganizationId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DeleteTime)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
+@section top{
+	<div class="jumbotron">
+		<h1>Periods</h1>
+	</div>
 }
+<div class="panel panel-primary">
+	<div class="panel-heading-button">
+		<button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Period", "/Period/Modal/0", "/Period/Modal")">Add</button>
+	</div>
+	<div class="panel-heading">
+		<h3 class="panel-title">Review Periods</h3>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-condensed">
+			<tr>
+				<th>Name</th>
+				<th class="alignCenter" style="width:1px">Starts</th>
+				<th class="alignCenter" style="width:1px">Ends</th>
+				<th class="alignCenter" style="width:1px"></th>
+			</tr>
+			@foreach (var p in Model)
+			{
+				<tr class="pRow" data-id="@p.PeriodId">
+					<td>
+						@p.Name
+						@if (p.CanEdit)
+						{
+							<span onclick="@Html.ShowModal("Edit Period", "/Period/Modal/" + p.PeriodId, "/Period/Modal")" class="editButton clickable glyphicon glyphicon-pencil alignCenter"></span>
+						}
+					</td>
+					<td class="alignCenter">
+						@p.StartTime.ToShortDateString()
+					</td>
+					<td class="alignCenter">
+						@p.EndTime.ToShortDateString()
+					</td>
+					<td>
+						<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+					</td>
+				</tr>
+			}
 
-</table>
+		</table>
+	</div>
+</div>
+
+@using (Html.BeginScripts()){
+	<script>
+		$(document).on("click", "span.deleteRow", function () {
+			var parent = $(this).parents(".pRow:first");
+
+			var id = $(parent).data("id");
+			$.ajax({
+				url: "/Period/Delete/" + id,
+				success: function (data) {
+					$(parent).hide();
+				}
+			});
+			return false;
+		});
+	</script>
+}

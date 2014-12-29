@@ -62,7 +62,7 @@ namespace RadialReview.Accessors {
 		}
 
 		private static void AddToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId, AboutType aboutType) {
-			perms.ViewUserOrganization(byUserId, false).ViewReviews(reviewContainerId);
+			perms.ViewUserOrganization(byUserId, false).ViewReviews(reviewContainerId,false);
 
 			var review = s.Where<ReviewModel>(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).Single();
 
@@ -73,10 +73,12 @@ namespace RadialReview.Accessors {
 			var askable = new AskableUtility();
 
 			var appQuestions = ApplicationAccessor.GetApplicationQuestions(s.GetQueryProvider()).ToList();//, ApplicationAccessor.FEEDBACK);
-			var userResponsibilities = ResponsibilitiesAccessor
+			var userResponsibilities = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, aboutUserId, reviewContainer.PeriodId).ToListAlive();
+											/*ResponsibilitiesAccessor
 												  .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, aboutUserId)
 												  .SelectMany(x => x.Responsibilities)
-												  .ToListAlive();
+												  .ToListAlive();*/
+
 			askable.AddUnique(userResponsibilities, aboutType, aboutUserId);
 			foreach (var aq in appQuestions)
 				askable.AddUnique(aq, aboutType, aboutUserId);
@@ -176,7 +178,7 @@ namespace RadialReview.Accessors {
 					using (var tx = s.BeginTransaction()) {
 						var perms = PermissionsUtility.Create(s, caller)
 							.ManagesUserOrganization(userOrganizationId, false)
-							.ViewReviews(reviewContainerId);
+							.ViewReviews(reviewContainerId, false);
 						var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 						var dueDate = reviewContainer.DueDate;
 						//var sendEmails = false;

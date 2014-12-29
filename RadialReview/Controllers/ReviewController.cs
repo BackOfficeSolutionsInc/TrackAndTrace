@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Web.UI;
 using Microsoft.AspNet.SignalR;
+using NHibernate.Util;
 using RadialReview.Accessors;
 using RadialReview.Engines;
 using RadialReview.Exceptions;
@@ -10,6 +11,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Charts;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
+using RadialReview.Models.Periods;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.ViewModels;
 using RadialReview.Properties;
@@ -600,6 +602,13 @@ namespace RadialReview.Controllers {
 			public List<Askable> ActiveQuestions { get; set; }
 			public List<ChartType> ChartTypes { get; set; }
 
+			public PeriodModel Period { get; set; }
+			public PeriodModel NextPeriod { get; set; }
+
+			public List<RockModel> NextRocks { get; set; }
+
+
+			public DateTime CurrentTime { get; set; }
 
 			/*
 			public Table EvaluationTable
@@ -893,6 +902,7 @@ namespace RadialReview.Controllers {
 				Questions = new List<Askable>();
 				Supervisers = new List<UserOrganizationModel>();
 				ActiveQuestions = new List<Askable>();
+				CurrentTime = DateTime.UtcNow;
 			}
 
 		}
@@ -913,7 +923,7 @@ namespace RadialReview.Controllers {
 
 			var reviewContainer = _ReviewAccessor.GetReviewContainer(GetUser(), review.ForReviewsId, false, false, false);
 
-			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), review.ForUserId);
+			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), review.ForUserId, review.PeriodId);
 			var activeQuestions = questions.Where(x => answers.Any(y => y.Askable.Id == x.Id)).ToList();
 
 			var chartTypes = new List<ReviewDetailsViewModel.ChartType>();
@@ -921,6 +931,9 @@ namespace RadialReview.Controllers {
 			chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Aggregate By Relationship", ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/AggByRelation.png" });
 			chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Show All", ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/All.png" });
 			chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Show All (Uncolored)", ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/AllGray.png" });
+
+			var now = DateTime.UtcNow;
+			var nextRocks = _RockAccessor.GetRocks(GetUser(), review.ForUserId, reviewContainer.NextPeriodId).ToList();
 
 			var model = new ReviewDetailsViewModel()
 			{
@@ -936,6 +949,9 @@ namespace RadialReview.Controllers {
 				ActiveQuestions = activeQuestions,
 				JobDescription = user.JobDescription,
 				ChartTypes = chartTypes,
+				NextRocks = nextRocks,
+				Period = reviewContainer.Period,
+				NextPeriod = reviewContainer.NextPeriod,
 			};
 			return model;
 		}

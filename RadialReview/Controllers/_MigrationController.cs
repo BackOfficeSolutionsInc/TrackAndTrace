@@ -132,5 +132,50 @@ namespace RadialReview.Controllers
 			return count +"";
 		}
 
+
+		[Access(AccessLevel.Radial)]
+		public string M12_29_2014(long orgId,long periodId,long nextPeriodId)
+		{
+			var count = 0;
+			var count2 = 0;
+			var now = DateTime.UtcNow;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					foreach (var a in s.QueryOver<ReviewsModel>().Where(x =>x.ForOrganizationId==orgId).List()){
+						var update = false;
+						if (a.PeriodId == 0){
+							a.PeriodId = periodId;
+							update = true;
+						}
+						if (a.NextPeriodId == 0){
+
+							a.NextPeriodId = nextPeriodId;
+							update = true;
+						}
+
+						if (update){
+							s.Update(a);
+							count++;
+						}
+						var rId = a.Id;
+
+						foreach (var b in s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == rId).List())
+						{
+							if (b.PeriodId == 0) { 
+								b.PeriodId = periodId;
+								s.Update(b);
+								count2++;
+							}
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return count + "  "+count2;
+		}
+
 	}
 }

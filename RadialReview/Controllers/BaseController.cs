@@ -33,12 +33,14 @@ namespace RadialReview.Controllers
         protected static ChartsEngine _ChartsEngine = new ChartsEngine();
         protected static ReviewEngine _ReviewEngine = new ReviewEngine();
 
+		protected static RockAccessor _RockAccessor = new RockAccessor();
+		protected static RoleAccessor _RoleAccessor = new RoleAccessor();
         protected static UserAccessor _UserAccessor = new UserAccessor();
         protected static TaskAccessor _TaskAccessor = new TaskAccessor();
         protected static TeamAccessor _TeamAccessor = new TeamAccessor();
         protected static NexusAccessor _NexusAccessor = new NexusAccessor();
         protected static ImageAccessor _ImageAccessor = new ImageAccessor();
-        protected static GroupAccessor _GroupAccessor = new GroupAccessor();
+		protected static GroupAccessor _GroupAccessor = new GroupAccessor();
 		protected static OriginAccessor _OriginAccessor = new OriginAccessor();
 		protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
 		protected static AskableAccessor _AskableAccessor = new AskableAccessor();

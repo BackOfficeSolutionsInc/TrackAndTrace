@@ -38,7 +38,7 @@ namespace RadialReview.Models.Askables {
 				Map(x => x.CreateTime);
 				Map(x => x.CompleteTime);
 				Map(x => x.PeriodId).Column("PeriodId");
-				References(x => x.Period).Column("PeriodId").LazyLoad().ReadOnly();
+				References(x => x.Period).Column("PeriodId").Not.LazyLoad().ReadOnly();
 			}
 		}
 	}

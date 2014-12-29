@@ -4,6 +4,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
+using RadialReview.Models.Periods;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Reviews;
 using RadialReview.Models.UserModels;
@@ -145,7 +146,7 @@ namespace RadialReview.Accessors {
 		public List<ReviewModel> GetReviewsForReviewContainer(UserOrganizationModel caller, long reviewContainerId,bool includeUser) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, caller.Organization.Id).ViewReviews(reviewContainerId);
+					PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, caller.Organization.Id).ViewReviews(reviewContainerId, false);
 					var query = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.DeleteTime == null);
 					if (includeUser){
 						query = query.Fetch(x => x.ForUser.User).Eager;
@@ -465,7 +466,7 @@ namespace RadialReview.Accessors {
 					var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 					PermissionsUtility.Create(s, caller)
 						.ManagerAtOrganization(caller.Id, reviewContainer.ForOrganization.Id)
-						.ViewReviews(reviewContainerId);
+						.ViewReviews(reviewContainerId, false);
 
 					var reviewUsers = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null && x.ForReviewsId == reviewContainerId).Fetch(x => x.ForUser).Default.List().ToList().Select(x => x.ForUser).ToList();
 					return reviewUsers;
@@ -479,7 +480,7 @@ namespace RadialReview.Accessors {
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId);
+					var perms = PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId, false);
 
 					try {
 						//var multiCriteria = MultiCriteria.Create(s);
@@ -680,9 +681,12 @@ namespace RadialReview.Accessors {
 					var perms = PermissionsUtility.Create(s, caller);
 
 					var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+					reviewContainer.Period = s.Get<PeriodModel>(reviewContainer.PeriodId);
+					reviewContainer.NextPeriod = s.Get<PeriodModel>(reviewContainer.NextPeriodId);
+
 
 					if (sensitive)
-						perms.ViewReviews(reviewContainerId);
+						perms.ViewReviews(reviewContainerId, false);
 					else
 						perms.ViewOrganization(reviewContainer.ForOrganizationId);
 
@@ -736,7 +740,7 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var clientReview = s.Get<ReviewModel>(clientReviewId);
 					var reviewsId = clientReview.ForReviewsId;
-					PermissionsUtility.Create(s, caller).ViewReviews(reviewsId);
+					PermissionsUtility.Create(s, caller).ViewReviews(reviewsId, false);
 					var review = s.Get<ReviewsModel>(reviewsId);
 
 					return review;
@@ -745,7 +749,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public static ReviewsModel GetReviewContainer(AbstractQuery abstractQuery, PermissionsUtility perms, long reviewContainerId) {
-			perms.ViewReviews(reviewContainerId);
+			perms.ViewReviews(reviewContainerId, false);
 			return abstractQuery.Get<ReviewsModel>(reviewContainerId);
 		}
 
