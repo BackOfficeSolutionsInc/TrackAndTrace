@@ -5,6 +5,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
+using RadialReview.Properties;
 using RadialReview.Utilities.DataTypes;
 using System;
 using System.Collections.Generic;
@@ -142,10 +143,13 @@ namespace RadialReview
                 return self.EmailAtOrganization;
         }
 
-        public static String ImageUrl(this UserOrganizationModel self)
+        public static String ImageUrl(this UserOrganizationModel self,bool aws=false)
         {
             if (self.User == null || self.User.ImageGuid == null)
                 return "/i/userplaceholder";
+	        if (aws)
+		        return ConstantStrings.AmazonS3Location +"img/"+ self.User.ImageGuid+".png";
+
             return "/i/" + self.User.ImageGuid;
         }
         public static String ImageUrl(this UserModel self)

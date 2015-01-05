@@ -111,9 +111,9 @@ function clickAuthorize() {
 }
 
 function UpdateChart() {
-    var date1 = new Date(+$("#DateSlider").val()[0]);
-    var date2 = new Date(+$("#DateSlider").val()[1]);
-    var date3 = new Date();
+   // var date1 = new Date(+$("#DateSlider").val()[0]);
+    //var date2 = new Date(+$("#DateSlider").val()[1]);
+   // var date3 = new Date();
     var groups = [];
     var filters = [];
     var extraClasses = [];
@@ -130,22 +130,22 @@ function UpdateChart() {
     	}
     });
 
-    $(".filters:checked").each(function (x) {
+    /*$(".filters:checked").each(function (x) {
     	var split = $(this).data("class");//.split(" ");
     	extraClasses.push($(this).data("addclass"));
     	filters.push(split);
-    });
+    });*/
     var dat = {
         reviewId: ReviewId,
         aggregateBy: groups.join(" "),
-        filterBy: filters.join(","),
-        title: $(".title").val(),
-        xAxis: parseInt($("#xAxis").val().split("category-")[1]),
-    	yAxis: parseInt($("#yAxis").val().split("category-")[1]),
+       // filterBy: filters.join(","),
+        //title: $(".title").val(),
+        //xAxis: parseInt($("#xAxis").val().split("category-")[1]),
+    	//yAxis: parseInt($("#yAxis").val().split("category-")[1]),
 	
-        startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
-        endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
-        time: date3,//new Date(parseInt($("#date").val()))
+        //startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
+       // endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
+        //time: date3,//new Date(parseInt($("#date").val()))
     };
 
     $.ajax({
@@ -393,63 +393,65 @@ function legendReview(legendData, chart) {
     }
 }
 
-var chart = new ScatterChart("chart");
+//var chart = new ScatterChart("chart");
 
-function update(reset) {
-    var date1 = new Date(+$("#DateSlider").val()[0]);
-    var date2 = new Date(+$("#DateSlider").val()[1]);
-    var date3 = new Date();
+//function update(reset) {
+//    var date1 = new Date(+$("#DateSlider").val()[0]);
+//    var date2 = new Date(+$("#DateSlider").val()[1]);
+//    var date3 = new Date();
 
-    var groups = [];
-    var filters = [];
-    var extraClasses = [];
-    var legendFunc = legend;
+//    var groups = [];
+//    var filters = [];
+//    var extraClasses = [];
+//    var legendFunc = legend;
     
-    $(".group:checked").each(function (x) {
-        var split = $(this).data("class").split(" ");
-        if (split[0] == "")
-            legendFunc = legendReview;
+//    $(".group:checked").each(function (x) {
+//        var split = $(this).data("class").split(" ");
+//        if (split[0] == "")
+//            legendFunc = legendReview;
 
-        extraClasses.push($(this).data("addclass"));
-        for (var i in split) {
-            groups.push(split[i]);
-        }
-    });
+//        extraClasses.push($(this).data("addclass"));
+//        for (var i in split) {
+//            groups.push(split[i]);
+//        }
+//    });
 
-    $(".filters:checked").each(function (x) {
-        var split = $(this).data("class");//.split(" ");
-        extraClasses.push($(this).data("addclass"));
-        filters.push(split);/*
-                    for (var i in split) {
-                        filters.push(split[i]);
-                    }*/
-    });
-    //var groups = [$(".group:checked").map(function () { return  })];
+//    $(".filters:checked").each(function (x) {
+//        var split = $(this).data("class");//.split(" ");
+//        extraClasses.push($(this).data("addclass"));
+//        filters.push(split);/*
+//                    for (var i in split) {
+//                        filters.push(split[i]);
+//                    }*/
+//    });
+//    //var groups = [$(".group:checked").map(function () { return  })];
 
 
 
-    UpdateChart();
-    chart.Plot(AllScatterData, {
-        //mouseout: mouseout,
-        //mouseover: mouseover,
-        animate: true,
-        reset: reset,
-        xAxis: $("#xAxis option:selected").text(),
-        yAxis: $("#yAxis option:selected").text(),
-        xDimensionId: $("#xAxis").val(),
-        yDimensionId: $("#yAxis").val(),
-        startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
-        endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
-        time: date3,//new Date(parseInt($("#date").val()))
-        groups: [groups],
-        filters: filters,
-        legendFunc: legendFunc,
-        extraClasses : extraClasses,
-    });
-}
+//    UpdateChart();
+//    chart.Plot(AllScatterData, {
+//        //mouseout: mouseout,
+//        //mouseover: mouseover,
+//        animate: true,
+//        reset: reset,
+//        xAxis: $("#xAxis option:selected").text(),
+//        yAxis: $("#yAxis option:selected").text(),
+//        xDimensionId: $("#xAxis").val(),
+//        yDimensionId: $("#yAxis").val(),
+//        startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
+//        endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
+//        time: date3,//new Date(parseInt($("#date").val()))
+//        groups: [groups],
+//        filters: filters,
+//        legendFunc: legendFunc,
+//        extraClasses : extraClasses,
+//    });
+//}
 
 var slider;
 $(function () {
+
+	updateChart();
     $('.switch').bootstrapSwitch();
     $('#Authorize').on('switchChange', function (e, data) {
         setAuthorize(data.value);
@@ -475,59 +477,95 @@ $(function () {
         }
     });
 });
-var dataUrl = "/Data/ReviewScatter/" + ForUserId + "?reviewsId=" + ForReviewsId;//"@Model.Review.ForReviewsId";
-chart.Pull(dataUrl, null, function (dat) {
-    AllScatterData = dat;
-    for (var key in dat.Dimensions) {
-        var item = dat.Dimensions[key];
-        $("#xAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>");
-        $("#yAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>");
-    }
 
-    $("#xAxis").val(dat.InitialXDimension);
-    $("#yAxis").val(dat.InitialYDimension);
+var chart = new ScatterImage("chart2");
 
-    for (var i = 0; i < dat.Filters.length; i++) {
-        var filter = dat.Filters[i];
-        var checked = "";
-        if (filter.On)
-            checked = "checked";
-        $("#filterSet").append("<li><input class='filters update' type='checkbox' " + checked + " data-class='" + filter.Class + "'/><label>" + filter.Name + "</label></li>");
-    }
+var dataUrl = "/Data/ReviewScatter2/" + ForUserId + "?reviewsId=" + ForReviewsId;//"@Model.Review.ForReviewsId";
 
-    if (dat.Filters.length > 0) {
-        $("#filtersContainer").removeClass("hidden");
-    }
+function updateChart() {
 
+	$("#chart2").fadeOut();
+	$(".chartPlaceholder").removeClass("hidden");
 
+	var groupBy = $("input.group:checked").val();
+	var opts = {};
+	if (groupBy === "user-*") {
+		opts.drawPoints = chart.imagePoints;
+		opts.useForce = true;
+	} else if (groupBy==="about-*" ||groupBy==="review-*") {
+		opts.drawPoints = chart.shapePoints;
+		opts.useForce = false;
+	}
+	chart.PullPlot(dataUrl+"&groupBy="+groupBy, null, function(data) {
 
-    $(".update").change(false, function (d) {
-        update(d.data);
-    });
+		$(".chartPlaceholder").addClass("hidden");
+		$("#chart2").fadeIn();
+	},opts);
+}
 
-    //$(".date").attr("min",);
-    //$(".date").attr("max", );
-
-    /*$("#date1").change(function () { update(false); });
-    $("#date2").change(function () { update(false); });
-    $("#date3").change(function () { update(false); });*/
-    $("#xAxis").change(function () { update(false); });
-    $("#yAxis").change(function () { update(false); });
-    slider.noUiSlider({
-        range: [this.GetDate(AllScatterData.MinDate).getTime() - 86400000, this.GetDate(AllScatterData.MaxDate).getTime() + 86400000],
-        start: [this.GetDate(AllScatterData.MinDate).getTime() - 86400000, this.GetDate(AllScatterData.MaxDate).getTime() + 86400000],
-        slide: function () { update(false); }
-    }, true);
-    slider.change(function () { update(false); });
-
-    update(true);
+$(".update").change(function () {
+	UpdateChart();
+	updateChart();
 });
 
 
-document.getElementById("controls").addEventListener("click", chart.update, false);
-document.getElementById("controls").addEventListener("keyup", chart.update, false);
-document.getElementById("xAxis").addEventListener("change", chart.update, false);
-document.getElementById("yAxis").addEventListener("change", chart.update, false);
+
+//var dataUrl = "/Data/ReviewScatter/" + ForUserId + "?reviewsId=" + ForReviewsId;//"@Model.Review.ForReviewsId";
+//chart.Pull(dataUrl, null, function (dat) {
+//    AllScatterData = dat;
+//    for (var key in dat.Dimensions) {
+//        var item = dat.Dimensions[key];
+//        $("#xAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>");
+//        $("#yAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>");
+//    }
+
+//    $("#xAxis").val(dat.InitialXDimension);
+//    $("#yAxis").val(dat.InitialYDimension);
+
+//    for (var i = 0; i < dat.Filters.length; i++) {
+//        var filter = dat.Filters[i];
+//        var checked = "";
+//        if (filter.On)
+//            checked = "checked";
+//        $("#filterSet").append("<li><input class='filters update' type='checkbox' " + checked + " data-class='" + filter.Class + "'/><label>" + filter.Name + "</label></li>");
+//    }
+
+//    if (dat.Filters.length > 0) {
+//        $("#filtersContainer").removeClass("hidden");
+//    }
+
+
+
+//    $(".update").change(false, function (d) {
+//        update(d.data);
+//    });
+
+//    //$(".date").attr("min",);
+//    //$(".date").attr("max", );
+
+//    /*$("#date1").change(function () { update(false); });
+//    $("#date2").change(function () { update(false); });
+//    $("#date3").change(function () { update(false); });*/
+//    $("#xAxis").change(function () { update(false); });
+//    $("#yAxis").change(function () { update(false); });
+//    slider.noUiSlider({
+//        range: [this.GetDate(AllScatterData.MinDate).getTime() - 86400000, this.GetDate(AllScatterData.MaxDate).getTime() + 86400000],
+//        start: [this.GetDate(AllScatterData.MinDate).getTime() - 86400000, this.GetDate(AllScatterData.MaxDate).getTime() + 86400000],
+//        slide: function () { update(false); }
+//    }, true);
+//    slider.change(function () { update(false); });
+
+//    update(true);
+//});
+
+
+//document.getElementById("controls").addEventListener("click", chart.update, false);
+//document.getElementById("controls").addEventListener("keyup", chart.update, false);
+//document.getElementById("xAxis").addEventListener("change", chart.update, false);
+//document.getElementById("yAxis").addEventListener("change", chart.update, false);
+
+
+////////////////////////////////END
 
 //function SetManagerAnswers() {
 //    var on = !$(".ManagerAnswers").hasClass("on");

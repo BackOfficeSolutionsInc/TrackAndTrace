@@ -14,9 +14,9 @@
             @Html.HiddenFor(x => x.Id)
             @Html.HiddenFor(x => x.Page)
             <p>
-                @Html.ListBoxFor(x => x.Users, Model.Possible.OrderBy(x => x.Text), new { @class = "select2", style = "max-width:600px;width:100%;", multiple =""})
+                @Html.ListBoxFor(x => x.Users, Model.Possible.OrderBy(x => x.Text), new { @class = "select2", style = "max-width:600px;width:100%;", multiple ="",placeholder="Begin typing a name..."})
             </p>
-            <button class="btn btn-primary">Review</button>
+            <button class="btn btn-primary">Add to Review</button>
             <a href="/" class="btn btn-default">Exit</a>
         }
     }
@@ -30,6 +30,11 @@
 @using (Html.BeginScripts())
 {
 	<script>
+		$(function() {
+			$(".select2").focus();
+		});
+
+
 		$(".select2").select2({
 			matcher: function (term, text) {
 				var split = text.split("(")[0].split(" ");

@@ -335,15 +335,16 @@ namespace RadialReview.Utilities
 
             throw new PermissionsException();
         }
-        public PermissionsUtility ManageUserReview(long reviewId)
+        public PermissionsUtility ManageUserReview(long reviewId, bool userCanManageOwnReview)
         {
             ViewReview(reviewId);
             var review = session.Get<ReviewModel>(reviewId);
             var userId = review.ForUserId;
 
-            ManagesUserOrganization(userId,false);
-
-            return this;
+			if (userCanManageOwnReview && review.ForUserId == caller.Id)
+				return this;
+			
+			return ManagesUserOrganization(userId,false);
         }
         public PermissionsUtility ManagingOrganization()
         {
@@ -709,6 +710,18 @@ namespace RadialReview.Utilities
             }
             throw new PermissionsException();
         }*/
+
+
+	    public PermissionsUtility Or(params Func<PermissionsUtility, PermissionsUtility>[] or)
+	    {
+		    foreach (var o in or){
+			    try{
+				    return o(this);
+			    }catch (PermissionsException){
+			    }
+		    }
+			throw new PermissionsException();
+	    }
 
 
 

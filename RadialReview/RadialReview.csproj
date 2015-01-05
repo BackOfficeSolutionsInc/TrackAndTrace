@@ -509,6 +509,8 @@
     </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="Models\Enums\AccessLevel.cs" />
+    <Compile Include="Utilities\DataTypes\Ratio.cs" />
+    <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
     <Compile Include="Utilities\Attributes\AccessAttribute.cs" />
@@ -765,6 +767,8 @@
     <Content Include="Views\Reviews\EditNameModal.cshtml" />
     <Content Include="Views\Period\Index.cshtml" />
     <Content Include="Views\Period\Modal.cshtml" />
+    <Content Include="Views\Prereview\Update.cshtml" />
+    <Content Include="Views\Review\Details\ChartBuilder3.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

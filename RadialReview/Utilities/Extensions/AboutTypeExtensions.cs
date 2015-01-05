@@ -8,9 +8,45 @@ namespace RadialReview
 {
     public static class AboutTypeExtensions
 	{
+	    public static string GetBestShape(this AboutType self)
+	    {
+		    switch(self.GetBestAboutType()){
+			    case AboutType.NoRelationship:
+				    return "shape-circle";
+			    case AboutType.Self:
+				    return "shape-x";
+			    case AboutType.Subordinate:
+				    return "shape-diamond";
+			    case AboutType.Teammate:
+				    return "shape-plus";
+				case AboutType.Peer:
+					return "shape-triangle";
+				case AboutType.Manager:
+					return "shape-square";
+			    default:
+				    throw new ArgumentOutOfRangeException();
+		    }
+	    }
+	    public static AboutType GetBestAboutType(this AboutType self)
+	    {
+			if (self.HasFlag(AboutType.Self))
+				return AboutType.Self; 
+			if (self.HasFlag(AboutType.Manager))
+				return AboutType.Manager; 
+			if (self.HasFlag(AboutType.Subordinate))
+				return AboutType.Subordinate; 
+			if (self.HasFlag(AboutType.Peer))
+				return AboutType.Peer; 
+			if (self.HasFlag(AboutType.Teammate))
+				return AboutType.Teammate; 
+			if (self.HasFlag(AboutType.NoRelationship))
+				return AboutType.NoRelationship; 
+			throw new ArgumentException("Unknown about type (" + self + ")");
+	    }
+
 		public static AboutType Invert(this AboutType self)
 		{
-			AboutType build = AboutType.NoRelationship;
+			var build = AboutType.NoRelationship;
 			foreach (AboutType flag in self.GetFlags())
 			{
 				switch (flag)
@@ -29,7 +65,8 @@ namespace RadialReview
 		}
 		public static decimal Score(this PositiveNegativeNeutral self)
 		{
-			switch(self){
+			switch (self)
+			{
 				case PositiveNegativeNeutral.Indeterminate:
 					return 0;
 					break;
@@ -41,6 +78,26 @@ namespace RadialReview
 					break;
 				case PositiveNegativeNeutral.Positive:
 					return 1;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException("self");
+			}
+		}
+		public static decimal Score2(this PositiveNegativeNeutral self)
+		{
+			switch (self)
+			{
+				case PositiveNegativeNeutral.Indeterminate:
+					return 0;
+					break;
+				case PositiveNegativeNeutral.Negative:
+					return 1;
+					break;
+				case PositiveNegativeNeutral.Neutral:
+					return 2;
+					break;
+				case PositiveNegativeNeutral.Positive:
+					return 3;
 					break;
 				default:
 					throw new ArgumentOutOfRangeException("self");

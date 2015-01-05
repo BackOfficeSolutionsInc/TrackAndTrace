@@ -25,7 +25,7 @@
 
 			};
 
-			var sorter = new Dictionary<Tristate, string> { { Tristate.True, "1" }, { Tristate.Indeterminate, "0" }, { Tristate.False, "-1" } };
+			var sorter = new Dictionary<Tristate, string> { { Tristate.True, "1" }, { Tristate.Indeterminate, "" }, { Tristate.False, "-1" } };
 			var text = new Dictionary<Tristate, string> { { Tristate.True, "yes" }, { Tristate.Indeterminate, "n/a" }, { Tristate.False, "no" } };
 		}
 
@@ -38,7 +38,7 @@
 					<td>@r.ByUser.GetName()</td>
 					<td class="alignLeft italic">@gwc.Item1</td>
 					<td class="bold">@r.Askable.GetQuestion()</td>
-					<td class="block"><div class="fill @gwc.Item2(r)" data-sort=""></div><span style="display:none">@(sorter[gwc.Item2(r)]) @text[gwc.Item2(r)]</span></td>
+					<td class="block"><div class="fill @gwc.Item2(r)" data-sort="@(sorter[gwc.Item2(r)])"></div><span style="display:none">@(sorter[gwc.Item2(r)]) @text[gwc.Item2(r)]</span></td>
 					<td class="remainingWidth" style="padding-left: 10px;">
 						@{
 				var reason = gwc.Item3(r);

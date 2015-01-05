@@ -1,0 +1,57 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+@using RadialReview.Models;
+
+<div class="noselect">
+	<form id="controls">
+		<div class="row " style="padding-top:5px">
+			<div class="col-xs-4">
+				<b style="margin-left:10px;">Aggregate by:</b>
+				<div style="overflow-y: auto; overflow-x: hidden; height: 90px; border: 1px solid #CACACA; padding-left: 5px;margin-left:10px;background-color: rgba(255, 255, 255, 0.5);">
+					@{
+						var agg = Model.Review.ClientReview.ScatterChart.Groups;
+					}
+
+					<ul class="noBullet separation" id="groupSet">
+						<li>
+							<input name="separate" id="separateUsers" class="update group" @(agg == "user-*" ? "checked" : "") type="radio" data-class="user-*" data-addclass="separateUser user-*" value="user-*" />
+							<label for="separateUsers">Users</label>
+							<span class="info" title="Each user will show up as a dot on the chart."></span>
+						</li>
+						<li>
+							<input name="separate" id="separateRelationship" class="update group" @(agg == "about-*" ? "checked" : "") type="radio" data-class="about-*" data-addclass="separateAbout about-*" value="about-*" />
+							<label for="separateRelationship">Relationship</label>
+							<span class="info" title="Each dot represents the average of each relationship group."></span>
+						</li>
+						<li>
+							<input name="separate" id="separateReview" class="update group" @(agg == "" ? "checked" : "") type="radio" data-addclass="separateReview" data-class="" value="review-*" />
+							<label for="separateReview">Review</label>
+							<span class="info" title="The dot represents the aggregate average for this individual."></span>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<div class="row noselect">
+	<div class="col-md-12">
+		<div class="alignCenter">
+			<div class="" style="width: calc( 100% - 145px ); float: left; padding-left: 13px;">
+				<div id="chart2" class="inline ">
+					<!--Chart Goes Here-->
+				</div>
+				<div class="chartPlaceholder hidden" style="position:relative">
+					<img src="/Content/img/ajax-loader.gif" style="margin-top:50%;margin-left:auto;margin-right:auto;position:absolute" />
+					<svg viewBox="0 0 500 500" height="100%" width="100%">
+
+					</svg>
+				</div>
+			</div>
+			<div style="width: 136px; float: right;">
+				<div id="legend" class="legend inline">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -336,3 +336,9 @@ function setVal(selector, val) {
     });
 
 })(jQuery);
+/*
+Array.prototype.select = function (expr) {
+	var arr = this;
+	//do custom stuff
+	return arr.map(expr); //or $.map(expr);
+};*/

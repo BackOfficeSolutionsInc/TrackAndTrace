@@ -19,7 +19,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId,false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					review.ClientReview.ScatterChart.Groups = aggregateBy;
@@ -45,7 +45,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					if (aggregateBy != null)
@@ -78,7 +78,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId).ViewCategory(xCategoryId).ViewCategory(yCategoryId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false).ViewCategory(xCategoryId).ViewCategory(yCategoryId);
 					var xAxis = s.Get<QuestionCategoryModel>(xCategoryId);
 					var yAxis = s.Get<QuestionCategoryModel>(yCategoryId);
 
@@ -107,7 +107,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					foreach (var id in review.ClientReview.Charts)
@@ -127,7 +127,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					review.ClientReview.IncludeScatterChart = on;
@@ -143,7 +143,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					review.ClientReview.IncludeTimelineChart = on;
@@ -159,7 +159,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					review.ClientReview.IncludeQuestionTable = on;
@@ -175,7 +175,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId,false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					review.ClientReview.IncludeManagerFeedback = on;
@@ -191,7 +191,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					review.ClientReview.IncludeNotes = on;
@@ -207,7 +207,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					review.ClientReview.IncludeEvaluation = on;
@@ -223,7 +223,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 
 					var review = s.Get<ReviewModel>(reviewId);
 					review.ClientReview.IncludeSelfFeedback = on;
@@ -239,7 +239,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(id);
+					PermissionsUtility.Create(s, caller).ManageUserReview(id, false);
 					var review = s.Get<ReviewModel>(id);
 
 					review.ClientReview.ManagerNotes = notes;
@@ -256,7 +256,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var rockAnswer = s.Get<RockAnswer>(rockAnswerId);
-					PermissionsUtility.Create(s, caller).ManageUserReview(rockAnswer.ForReviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(rockAnswer.ForReviewId, false);
 					switch (val)
 					{
 						case Tristate.False: rockAnswer.ManagerOverride = RockState.AtRisk; break;
@@ -276,7 +276,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var rockAnswer = s.Get<RockAnswer>(rockAnswerId);
-					PermissionsUtility.Create(s, caller).ManageUserReview(rockAnswer.ForReviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(rockAnswer.ForReviewId, false);
 					rockAnswer.OverrideReason = notes;
 					s.Update(rockAnswer);
 					tx.Commit();
@@ -292,7 +292,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var answer = s.Get<GetWantCapacityAnswer>(answerId);
-					PermissionsUtility.Create(s, caller).ManageUserReview(answer.ForReviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(answer.ForReviewId, false);
 
 
 
@@ -318,7 +318,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var answer = s.Get<CompanyValueAnswer>(answerId);
-					PermissionsUtility.Create(s, caller).ManageUserReview(answer.ForReviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(answer.ForReviewId, false);
 					
 					answer.IncludeReason = on;
 					s.Update(answer);
@@ -333,7 +333,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 					var review = s.Get<ReviewModel>(reviewId);
 					review.ClientReview.Visible = authorized;
 					s.Update(review);

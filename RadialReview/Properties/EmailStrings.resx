@@ -143,7 +143,7 @@
     <comment>[htmlBody,footer]</comment>
   </data>
   <data name="Footer" xml:space="preserve">
-    <value>This message was generated automatically by {0} 1201 Infinity Ct, Lincoln, NE 68512</value>
+    <value>This message was generated automatically by {0} 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email.</value>
     <comment>[productName]</comment>
   </data>
   <data name="JoinOrganizationUnderManager_Body" xml:space="preserve">
@@ -181,18 +181,6 @@ The {4} Team</value>
   <data name="JoinOrganizationUnderManager_Subject" xml:space="preserve">
     <value>{0}, join {1} on {2}</value>
     <comment>[username,organizationName,productName]</comment>
-  </data>
-  <data name="NewReview_Body" xml:space="preserve">
-    <value>&lt;p&gt;{0},&lt;/p&gt;
-&lt;p&gt;{1} has scheduled a new review due on {2}. You can take your review by clicking the following link:&lt;/p&gt;
-&lt;br&gt; 
-    &lt;a href="{3}"&gt;{4}&lt;/a&gt;
-&lt;br /&gt;&lt;br /&gt;If you believe you have received this message in error, you may simply ignore this email. If you have any questions, feedback, or concerns, you can reply to this e-mail address.
-&lt;br /&gt;
-&lt;br /&gt;
-Sincerely,&lt;br/&gt;
-The {5} Team</value>
-    <comment>[receiversName,manager,dueDate,linkUrl,LinkDisplay,ProductName]</comment>
   </data>
   <data name="NewReview_Subject" xml:space="preserve">
     <value>You have a new review task from {0}</value>
@@ -245,5 +233,17 @@ The {4} Team</value>
 Sincerely,&lt;br/&gt;
 The {4} Team</value>
     <comment>[receiversName,dueDate,linkUrl,LinkDisplay,ProductName]</comment>
+  </data>
+  <data name="NewReview_Body" xml:space="preserve">
+    <value>&lt;p&gt;{0},&lt;/p&gt;
+&lt;p&gt;{6} is now open. This review is due on {2}. You can take your review by clicking the following link:&lt;/p&gt;
+&lt;br&gt; 
+    &lt;a href="{3}"&gt;{4}&lt;/a&gt;
+&lt;br /&gt;&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+&lt;br /&gt;
+&lt;br /&gt;
+Sincerely,&lt;br/&gt;
+The {5} Team</value>
+    <comment>[receiversName,manager,dueDate,linkUrl,LinkDisplay,ProductName,reviewName]</comment>
   </data>
 </root>

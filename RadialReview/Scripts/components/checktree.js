@@ -1,5 +1,5 @@
 ﻿function checktree(selector, data, onchange) {
-	_checktree(selector, data, onchange, false);
+	var allUncheck = _checktree(selector, data, onchange, false);
 	onchange = onchange || function() {};
 	$(selector).find("input").on("change", onchange);
 	$(selector).find(".expander").on("click", function() {
@@ -11,6 +11,22 @@
 			$(this).trigger("expand");
 		}
 	});
+
+	var allIds = $(selector).find("input[type='checkbox']").select(function(c) {
+		return $(c).data("checktree-id");
+	});
+	debugger;
+
+
+	for (var i = 0; i < allIds.length; i++) {
+
+		if (allUncheck.indexOf(allIds[i]) != -1) {
+			$("input[data-checktree-id='" + allUncheck[i] + "']").prop("checked", false);
+		} else {
+			$("input[data-checktree-id='" + allUncheck[i] + "']").prop("checked", true);
+		}
+		$("input[data-checktree-id='" + allUncheck[i] + "']").trigger("change");
+	}
 
 	$(selector).find(".expander").on("collapse", function() {
 		$(this).siblings(".subtree").addClass("hidden");
@@ -26,6 +42,7 @@
 
 function _checktree(selector, data, init) {
 	init = init || false;
+	var output = [];
 	if (data) {
 		for (var i = 0; i < data.length; i++) {
 			var d = data[i];
@@ -47,9 +64,13 @@ function _checktree(selector, data, init) {
 			$(branch).append("<label data-checktree-id='" + d.id + "' for='checkbox_" + d.id + "' class='" + leaf + "'>" + d.title + "</label>");
 			var subtree = $("<div class='subtree'></div>");
 			$(branch).append(subtree);
-			_checktree(subtree, d.subgroups, true);
+			if (d.hidden) {
+				output.push(d.id);
+			}
+			output = output.concat(_checktree(subtree, d.subgroups, true));
 		}
 	}
+	return output;
 }
 
 function updateChecktree() {

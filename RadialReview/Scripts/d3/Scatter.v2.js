@@ -5,6 +5,28 @@ function ScatterImage(id) {
 	this.height = 500;//Dont change
 	this.width = 500;//Dont change
 	
+//Start Shapes
+	var a = 12, b = 4;
+	var builder = "";
+	builder += (-b / 2) + "," + (-b / 2) + " ";
+	builder += (-b / 2) + "," + (-a / 2) + " ";
+	builder += (b / 2) + "," + (-a / 2) + " ";
+	builder += (b / 2) + "," + (-b / 2) + " ";
+	builder += (a / 2) + "," + (-b / 2) + " ";
+	builder += (a / 2) + "," + (b / 2) + " ";
+	builder += (b / 2) + "," + (b / 2) + " ";
+	builder += (b / 2) + "," + (a / 2) + " ";
+	builder += (-b / 2) + "," + (a / 2) + " ";
+	builder += (-b / 2) + "," + (b / 2) + " ";
+	builder += (-a / 2) + "," + (b / 2) + " ";
+	builder += (-a / 2) + "," + (-b / 2);
+	this.cross = builder;
+
+	a = 9;
+	var t = -0.433012702;
+	this.triangle = "0," + (a * t) + " " + (a * .5) + "," + (-a * t) + " " + (a * -0.5) + "," + (-a * t);
+////End Shapes
+
 	this.defaultPoints = function (points) {
 		points.append("circle")
 		.attr("r", function (d) { return d.radius; })
@@ -12,9 +34,7 @@ function ScatterImage(id) {
 	};
 
 	this.nodeSize = 22;
-
 	var nodeSize = this.nodeSize;
-
 	this.imagePoints = function (points) {
 		var g = points.append("g").attr("class",function(d) {
 			return d.class;
@@ -23,7 +43,13 @@ function ScatterImage(id) {
 		var extra = g.append("g").classed("extra", true).attr("opacity", "0");
 		extra.append("rect").classed("background", true).attr("transform", "translate(2,2)").attr("width", 100).attr("height", 100);
 		extra.append("foreignObject").classed("title", true).attr("width", "160px").attr("height", "26px").attr("x", "110").attr("y", "3")
-			.html(function (d) { return "<div title='" + d.title + "'>" + d.title + "</div>"; });
+			.html(function(d) {
+				var loc = "";
+				if (d.link) {
+					loc="onclick = 'location.href=\'"+d.link+"\''";
+				}
+				return "<div title='" + d.title + "' "+loc+">" + d.title + "</a>";
+		});
 		extra.append("text").classed("subtitle", true).attr("x", "115").attr("y", "41").text(function (d) { return d.subtitle; });
 		extra.append("text").classed("axisTitle", true).attr("x", "115").attr("y", "68").text(function(d) { return d.xAxis; });
 		extra.append("text").classed("axisTitle", true).attr("x", "115").attr("y", "91").text(function (d) { return d.yAxis; });
@@ -49,6 +75,27 @@ function ScatterImage(id) {
 					d3.select(this.parentNode).selectAll(".extra").transition().duration(100).attr("opacity", "0");
 				});
 	};
+
+	this.shapePoints = function (points) {
+		var g = points.append("g").attr("class", function(d) {
+			return d.class + " hoverable";
+		}).each(function(d) {
+			if (d.class.indexOf("shape-square") != -1) {
+				d3.select(this).append("rect").attr("x", -4).attr("y", -4).attr("width", 8).attr("height", 8).classed("hoverable", true);
+			} else if (d.class.indexOf("shape-triangle") != -1) {
+				d3.select(this).append("polygon").attr("points", chart.triangle).classed("hoverable", true);
+			} else if (d.class.indexOf("shape-x") != -1) {
+				d3.select(this).append("polygon").attr("points", chart.cross).attr("transform", "rotate(45)").classed("hoverable", true);
+			} else if (d.class.indexOf("shape-diamond") != -1) {
+				d3.select(this).append("rect").attr("x", -3).attr("y", -3).attr("width", 7).attr("height", 7).attr("transform", "rotate(45)").classed("hoverable", true);
+			} else if (d.class.indexOf("shape-plus") != -1) {
+				d3.select(this).append("polygon").attr("points", chart.cross).classed("hoverable", true);
+			} else {
+				d3.select(this).append("circle").attr("cx", 0).attr("cy", 0).attr("r", 5).classed("hoverable", true);
+			}
+
+		});
+	}
 };
 
 jQuery.fn.d3MouseOver = function () {
@@ -83,9 +130,16 @@ ScatterImage.prototype.Pull = function Pull(url, data, callback) {
 	});
 };
 
-ScatterImage.prototype.PullPlot = function PullPlot(url, args, callback) {
+ScatterImage.prototype.PullPlot = function PullPlot(url, args, callback, options) {
 	var that = this;
+	var opts = options;
+
 	function callback2(data) {
+		if (opts !== undefined) {
+			for (var attrname in opts) {
+				data[attrname] = opts[attrname];
+			}
+		}
 		this.Plot(data.Points, data);
 		if (callback)
 			callback.call(that, data);
@@ -125,6 +179,9 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 	options.height = options.height || this.height;
 	options.width = options.width || this.width;
 
+	if (options.useForce === undefined)
+		options.useForce = true;
+
 
 	options.xMin = options.xMin || -100;
 	options.yMin = options.yMin || -100;
@@ -157,6 +214,7 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 
 	this.force = force;
 
+	d3.select("#" + this.id).html("");
 	var svg = d3.select("#" + this.id).append("svg")
 		.attr("viewBox", "0 0 " + options.width + " " + options.height)
 		.attr("width", "100%")
@@ -188,6 +246,10 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 	svg.append("line").classed("axis axis-y", true).attr("x1", chartCenterX).attr("x2", chartCenterX).attr("y1", options.chartPadding).attr("y2", options.height - options.chartPadding);
 	svg.append("line").classed("axis axis-x", true).attr("y1", chartCenterY).attr("y2", chartCenterY).attr("x1", options.chartPadding).attr("x2", options.width - options.chartPadding);
 
+	svg.append("rect").classed("border", true).attr("x", options.chartPadding).attr("y", options.chartPadding)
+		.attr("width", options.width - 2 * options.chartPadding).attr("height", options.height - 2 * options.chartPadding);
+	
+
 	svg.append("text").classed("title", true).attr("x", chartCenterX).attr("y", options.chartPadding / 2 + options.axisRectSize / 3).attr("text-anchor", "middle").text(options.title);
 
 
@@ -211,16 +273,18 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 
 	var enter = svg.selectAll("g.points").data(scatterData).enter();
 
-	var lines = enter.append("line")
-					.attr("class", function(d) {
-						return d.class;
-					}).classed("beginHidden", true)
-					.attr("x1", function (d) { return d.x;  })
-					.attr("x2", function (d) { return d.cx; })
-					.attr("y1", function (d) { return d.y;  })
-					.attr("y2", function (d) { return d.cy; })
-					//.style("stroke",function(d){return d.color;})
-					.call(force.drag);
+	if (options.useForce) {
+		var lines = enter.append("line")
+			.attr("class", function(d) {
+				return d.class;
+			}).classed("beginHidden", true)
+			.attr("x1", function(d) { return d.x; })
+			.attr("x2", function(d) { return d.cx; })
+			.attr("y1", function(d) { return d.y; })
+			.attr("y2", function(d) { return d.cy; })
+			//.style("stroke",function(d){return d.color;})
+			.call(force.drag);
+	}
 	var gs = enter.append("g")
 					.classed("beginHidden", true)
 					.attr("x", function (d) { return d.x; })
@@ -232,21 +296,27 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 
 
 	function tick(e) {
-		gs.each(gravity(.2 * e.alpha))
-			.each(collide(.5))
-			.attr("transform", function (d) {
-				return "translate(" + d.x + "," + d.y + ")";
-			});
-		//.attr("cx", function(d) { return d.x; })
-		//.attr("cy", function(d) { return d.y; });
+		if (options.useForce) {
+			gs.each(gravity(.2 * e.alpha))
+				.each(collide(.5))
+				.attr("transform", function(d) {
+					return "translate(" + d.x + "," + d.y + ")";
+				});
+			//.attr("cx", function(d) { return d.x; })
+			//.attr("cy", function(d) { return d.y; });
 
-		lines.each(gravity(.2 * e.alpha))
-			  .each(collide(.5))
-			  .attr("x1", function (d) { return d.x; })
-			  .attr("x2", function (d) { return d.cx; })
-			  .attr("y1", function (d) { return d.y; })
-			  .attr("y2", function (d) { return d.cy; })
-			  .attr("marker-end", "url(#arrowId)");
+			lines.each(gravity(.2 * e.alpha))
+				.each(collide(.5))
+				.attr("x1", function(d) { return d.x; })
+				.attr("x2", function(d) { return d.cx; })
+				.attr("y1", function(d) { return d.y; })
+				.attr("y2", function(d) { return d.cy; })
+				.attr("marker-end", "url(#arrowId)");
+		} else {
+			gs.attr("transform", function (d) {
+				return "translate(" + d.cx + "," + d.cy + ")";
+			});
+		}
 	}
 
 	// Move nodes toward cluster focus.

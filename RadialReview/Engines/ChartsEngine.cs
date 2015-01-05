@@ -1,6 +1,7 @@
 ﻿using Amazon.IdentityManagement.Model;
 using NHibernate.Criterion;
 using NHibernate.Linq;
+using NHibernate.Mapping;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
@@ -346,7 +347,7 @@ namespace RadialReview.Engines
 						cx = xVal,
 						cy = yVal,
 						date = pt.Date,
-						imageUrl = user.ImageUrl(),
+						imageUrl = user.ImageUrl(true),
 						subtitle = pt.Date.ToShortDateString(),
 						title = user.GetName(),
 						xAxis = xAxis,
@@ -384,6 +385,7 @@ namespace RadialReview.Engines
 			{
 				id = "team-top",
 				title = "Top 10",
+				hidden = false,
 				subgroups = ordered.Take(10).Select(x => new Checktree.Subtree()
 				{
 					id = x.id,
@@ -395,7 +397,17 @@ namespace RadialReview.Engines
 			{
 				id = "team-bottom",
 				title = "At Risk",
-				subgroups = Enumerable.Reverse(ordered).Take(10).Select(x => new Checktree.Subtree(){
+				hidden = false,
+				subgroups = Enumerable.Reverse(ordered.Skip(10)).Take(10).Select(x => new Checktree.Subtree(){
+					id = x.id,
+					title = x.title
+				}).ToList()
+			});
+
+			checktree.Data.subgroups.Add(new Checktree.Subtree(){
+				id = "team-all",
+				title = "Everyone",
+				subgroups = ordered.Select(x => new Checktree.Subtree(){
 					id = x.id,
 					title = x.title
 				}).ToList()
@@ -410,8 +422,143 @@ namespace RadialReview.Engines
 				FilterTree = checktree,
 				OrderedPoints = ordered,
 			};
-
 		}
+		public Scatter ReviewScatter2(UserOrganizationModel caller, long forUserId, long reviewsId,string groupBy, bool sensitive)
+		{
+			if (sensitive)
+			{
+				new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, true));
+			}
+
+			var reviewAnswers = _ReviewAccessor.GetAnswersForUserReview(caller, forUserId, reviewsId);
+
+			List<Scatter.ScatterPoint> points;
+			String title=null;
+
+			switch (groupBy)
+			{
+				case "about-*":
+					{
+						//lookup[AboutType][Category]=score
+						var lookup = new DefaultDictionary<String, DefaultDictionary<string, Ratio>>(x => new DefaultDictionary<string, Ratio>(y => new Ratio()));
+						var bestType = new DefaultDictionary<string, string>(x => "");
+						
+						foreach (var flag in Enum.GetNames(typeof(AboutType))){
+							var aboutType = ((AboutType) Enum.Parse(typeof (AboutType), flag));
+							foreach (var a in reviewAnswers){
+								var aboutTypes = a.AboutType.Invert();
+								if (aboutTypes != AboutType.NoRelationship && aboutType == AboutType.NoRelationship)
+									continue;
+
+								if(!aboutTypes.HasFlag(aboutType))
+									continue;
+
+								Ratio ratio;
+								String category;
+								if (ScatterScorer.ScoreFunction(a, out ratio, out category))
+									lookup[flag][category].Merge(ratio);
+							}
+							bestType[flag] = aboutType.GetBestShape();
+						}
+						points = lookup.SelectMany(x =>{
+							var cx = x.Value["Roles"];
+							var cy = x.Value["Values"];
+							if (!cx.IsValid() && !cy.IsValid())
+								return new List<Scatter.ScatterPoint>();
+							
+							return new Scatter.ScatterPoint(){
+								@class = "about-" + x.Key + " " + ((AboutType) Enum.Parse(typeof (AboutType), x.Key)).GetBestShape(),
+								cx = ScatterScorer.ShiftRatio(cx),
+								cy = ScatterScorer.ShiftRatio(cy),
+								xAxis = "Roles",
+								yAxis = "Values"
+							}.AsList();
+						}).ToList();
+						title = "Evaluations Grouped by Relationship";
+					} break;
+				case "user-*":
+					{
+						points = reviewAnswers.GroupBy(x => x.ByUserId).Select(answers =>
+						{
+							//lookup[user][Category]=score
+							var lookup = new DefaultDictionary<string, Ratio>(x => new Ratio());
+							var aboutType = AboutType.NoRelationship;
+
+							foreach (var a in answers)
+							{
+								Ratio ratio;
+								String category;
+								if (ScatterScorer.ScoreFunction(a, out ratio, out category))
+									lookup[category].Merge(ratio);
+								aboutType = aboutType | a.AboutType;
+							}
+							aboutType = aboutType.GetBestAboutType();
+
+							var remapperUser = RandomUtility.CreateRemapper();
+
+							var o = new Scatter.ScatterPoint()
+							{
+								@class = "user-" + remapperUser.Remap(answers.First().ByUserId) + " about-" + aboutType + " " + aboutType.GetBestShape(),
+								cx = ScatterScorer.ShiftRatio(lookup["Roles"]),
+								cy = ScatterScorer.ShiftRatio(lookup["Values"]),
+								xAxis = "Roles",
+								yAxis = "Values"
+							};
+							if (sensitive)
+							{
+								var u = answers.First().ByUser;
+								o.imageUrl = u.ImageUrl(true);
+								o.title = u.GetName();
+								o.subtitle = u.GetTitles();
+							}
+
+							return o;
+
+						}).ToList();
+						title = "Evaluations Grouped by User";
+
+					} break;
+				case "review-*":
+					{
+						var lookup = new DefaultDictionary<string, Ratio>(x => new Ratio());
+						foreach (var a in reviewAnswers)
+						{
+							Ratio ratio;
+							String category;
+							if (ScatterScorer.ScoreFunction(a, out ratio, out category))
+								lookup[category].Merge(ratio);
+						}
+						
+						var o = new Scatter.ScatterPoint()
+						{
+							@class = "review-" + reviewsId,
+							cx = ScatterScorer.ShiftRatio(lookup["Roles"]),
+							cy = ScatterScorer.ShiftRatio(lookup["Values"]),
+							xAxis = "Roles",
+							yAxis = "Values"
+						};
+						points = o.AsList();
+						
+						title = "Aggregate Evaluation";
+					} break;
+				default:throw new PermissionsException("Unrecognized group");
+			}
+
+
+			var scatter = new Scatter(){
+				Points = points,
+				title = title,
+				xAxis = "Roles",
+				yAxis = "Values",
+				xMin = -100, xMax = 100,
+				yMin = -100, yMax = 100,
+				
+			};
+
+			return scatter;
+		}
+
+
 
 		public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId, bool sensitive)
 		{
@@ -524,10 +671,10 @@ namespace RadialReview.Engines
 						String title, subtext = "";
 						if (sensitive){
 							var user = userReviewAnswers.First().ByUser;
-							title = "<span class='nameAndTitle hoverTitle'>" + user.GetNameAndTitle() + "</span> <span class='aboutType hoverTitle'>" + aboutType + "</span> <span class='reviewName hoverTitle'>" + reviewContainer.ReviewName + "</span>";
+							title = "<span class='nameAndTitle hoverTitle title'>" + user.GetNameAndTitle() + "</span> <span class='aboutType hoverTitle title'>" + aboutType + "</span> <span class='reviewName hoverTitle title'>" + reviewContainer.ReviewName + "</span>";
 						}
 						else{
-							title = "<span class='aboutType hoverTitle'>" + aboutType.ToString() + "</span> <span class='reviewName hoverTitle'>" + reviewContainer.ReviewName + "</span>";
+							title = "<span class='aboutType hoverTitle title'>" + aboutType.ToString() + "</span> <span class='reviewName hoverTitle title'>" + reviewContainer.ReviewName + "</span>";
 						}
 
 						scatterDataPoints.Add(new ScatterData(){
@@ -579,6 +726,8 @@ namespace RadialReview.Engines
 			return scatter;
 		}
 
+
+
 		public class ScatterScorer
 		{
 			private Dictionary<string, ScatterDatum> datums;
@@ -594,25 +743,42 @@ namespace RadialReview.Engines
 				this.rolesCategory = rolesCategory;
 			}
 
-			public void Add(AnswerModel answer)
+			public static decimal ShiftRatio(Ratio ratio)
+			{
+				return ratio.GetValue(.5m)*200 - 100;
+			}
+
+			public static bool ScoreFunction(AnswerModel answer, out Ratio score,out string category)
 			{
 				var cat = answer.Askable.Category;
 				switch (answer.Askable.GetQuestionType())
 				{
-					case QuestionType.Thumbs:
-						break;
+					case QuestionType.Thumbs:{
+							score = new Ratio();
+							category = null;
+							return false;
+					}
 					case QuestionType.Feedback:
-						break;
-					case QuestionType.Rock:
-						break;
+						{
+							score = new Ratio();
+							category = null;
+							return false;
+						}
+					case QuestionType.Rock:{
+						score = new Ratio();
+						category = null;
+						return false;
+					}
 					case QuestionType.Slider:
-						AddScatterScore(cat.Id, cat.Category.Translate(), (double)(((SliderAnswer)answer).Percentage ?? .5m), (double)answer.Askable.Weight);
-						break;
+						score = new Ratio((decimal)(((SliderAnswer)answer).Percentage ?? .5m) * (decimal)answer.Askable.Weight, (decimal)answer.Askable.Weight);
+						category = cat.Category.Translate();
+						//AddScatterScore(cat.Id, cat.Category.Translate(), );
+						return true;
 					case QuestionType.GWC:
 						{
 							var a = (GetWantCapacityAnswer)answer;
-							var count = 0.0;
-							var weight = 0.0;
+							var count = 0.0m;
+							var weight = 0.0m;
 							count += a.GetIt == Tristate.True ? 1 : 0;
 							count += a.WantIt == Tristate.True ? 1 : 0;
 							count += a.HasCapacity == Tristate.True ? 1 : 0;
@@ -621,15 +787,17 @@ namespace RadialReview.Engines
 							weight += a.WantIt != Tristate.Indeterminate ? 1 : 0;
 							weight += a.HasCapacity != Tristate.Indeterminate ? 1 : 0;
 
-
-							AddScatterScore(rolesCategory.Id, "Roles", count / 3.0, weight/3.0);
+							score = new Ratio(count / 3.0m, weight / 3.0m);
+							category = "Roles";
+							return true;
+							//AddScatterScore(rolesCategory.Id, "Roles", count / 3.0, weight / 3.0);
 						}
 						break;
 					case QuestionType.CompanyValue:
 						{
 							var a = (CompanyValueAnswer)answer;
-							var count = 0.0;
-							var weight = 1;
+							var count = 0.0m;
+							var weight = 1m;
 							switch (a.Exhibits)
 							{
 								case PositiveNegativeNeutral.Indeterminate:
@@ -639,20 +807,32 @@ namespace RadialReview.Engines
 									count = 0;
 									break;
 								case PositiveNegativeNeutral.Neutral:
-									count = 1;
+									count = .25m;
 									break;
 								case PositiveNegativeNeutral.Positive:
-									count = 2;
+									count = 1;
 									break;
 								default:
-									throw new Exception("Unhandled PositiveNegativeNeutral: "+a.Exhibits);
+									throw new Exception("Unhandled PositiveNegativeNeutral: " + a.Exhibits);
 							}
-							AddScatterScore(companyValueCategory.Id, "Values", count / 2.0, weight);
+
+							score = new Ratio(count, weight);
+							category = "Values";
+							return true;
+							//AddScatterScore(companyValueCategory.Id, "Values", count / 2.0, weight);
 						}
 						break;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
+			}
+
+			public void Add(AnswerModel answer)
+			{
+				Ratio score;
+				String cat;
+				if(ScoreFunction(answer, out score, out cat))
+					AddScatterScore(answer.Askable.Category.Id, cat, (double)score.Numerator, (double)score.Denominator);
 			}
 
 

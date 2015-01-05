@@ -540,7 +540,6 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 			for (var key in points) {
 				points[key].GroupId = points[key].OtherData.GroupId;
 			}
-
 			return points;
 		}
 

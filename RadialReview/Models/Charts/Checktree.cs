@@ -12,10 +12,12 @@ namespace RadialReview.Models.Charts
 			public List<Subtree> subgroups { get; set; }
 			public string title { get; set; }
 			public string id { get; set; }
+			public bool hidden { get; set; }
 
 			public Subtree()
 			{
 				subgroups=new List<Subtree>();
+				hidden = true;
 			}
 		}
 

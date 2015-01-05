@@ -21,10 +21,21 @@
 @{
 	var direct = Model.Review.Reviews.Where(x => x.ForUser.GetDirectlyManaging()).ToList();
 	var indirect = Model.Review.Reviews.Where(x => true || !x.ForUser.GetDirectlyManaging()).ToList();
-	var panels = new List<Tuple<int, String, List<RadialReview.Models.ReviewModel>>>(){
-		Tuple.Create(1, "Subordinates", direct),
-		Tuple.Create(2, "Everyone", indirect)
-	};
+
+
+	var panels = new List<Tuple<int, String, List<RadialReview.Models.ReviewModel>>>();
+
+	if (direct.Any())
+	{
+		panels.Add(Tuple.Create(1, "Subordinates", direct));
+	}
+	if (indirect.Any())
+	{
+		panels.Add(Tuple.Create(2, "Everyone", indirect));
+	}
+
+	var first = true;
+
 }
 
 @using (Html.BeginStyles())
@@ -63,7 +74,7 @@
 		<div class="panel-body">
 		</div>
 	</div>*@
-@if (ViewBag.IsManager ?? false)
+@if (ViewBag.IsManager ?? false && panels.Any())
 {
 	<div class="smallBreak2 alignRight" style="padding-bottom: 5px;">
 		<div class="btn btn-default" onclick="sendReminders()">Send Reminder</div>
@@ -76,7 +87,11 @@
 			<ul class="nav nav-tabs" role="tablist">
 				@foreach (var panel in panels)
 				{
-					<li role="presentation" class="@(panel.Item1==1?"active":"")"><a href="#panel_@(panel.Item1)" aria-controls="home" role="tab" data-toggle="tab">@panel.Item2</a></li>
+					<li role="presentation" class="@(first ? "active" : "")"><a href="#panel_@(panel.Item1)" aria-controls="home" role="tab" data-toggle="tab">@panel.Item2</a></li>
+					first = false;
+				}
+				@{
+	first = true;
 				}
 			</ul>
 		</div>
@@ -88,7 +103,10 @@
 				@*<div class="panel-heading ">
 						<h3 class="panel-title">Individual progress: @panel.Item2</h3>
 					</div>*@
-				<div role="tabpanel" class="tab-pane in @(panel.Item1==1?"active":"")" id="panel_@(panel.Item1)">
+				<div role="tabpanel" class="tab-pane in @(first?"active":"")" id="panel_@(panel.Item1)">
+					@{
+				first = false;
+					}
 					<div class="table-responsive">
 						<table class="table table-condensed table-hover">
 							<thead>
@@ -103,23 +121,31 @@
 							</thead>
 							<tbody>
 								@foreach (var review in panel.Item3.OrderByDescending(x =>
-							{
-								double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
-								double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
-								return complete / total;
-							}))
+								{
+									double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
+									double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
+									return complete / total;
+								}))
 								{
 									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
 									<tr class="checkRow @(review.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")">
 										<td style="cursor:pointer" onclick="$(this).find('>input').prop('checked', function (i, v) { return !v;})"><input type="checkbox" class="userCheck clickThrough" name="user_@review.ForUserId" data-id="@review.ForUserId" /></td>
 										<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new { id = review.Id })">@review.ForUser.GetNameAndTitle()</a></td>
 										<td class="alignCenter">
-											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete))/
+											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete)) /
 											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count())
 										</td>
 										<td class="alignCenter">
-											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete))/
+											@if (review.ForUser.GetDirectlyManaging())
+											{
+												@:<a style="border-bottom: 1px dotted " href="/Prereview/Update/@review.Id">
+											}
+											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete)) /
 											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count())
+											@if (review.ForUser.GetDirectlyManaging())
+											{
+												@:</a>
+											}
 										</td>
 										<td>@Html.Partial("_Completion", review.GetCompletion())</td>
 										@*<td>

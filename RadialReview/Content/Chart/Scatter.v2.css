@@ -36,13 +36,18 @@
 	fill:#266;
 }
 
+.scatter .border {
+	stroke: #ccc;
+	fill: none;
+}
+
 svg.scatter{
 	overflow:visible !important;
 	position: relative;
 	z-index: 100;
 }
 
-svg.scatter * {
+svg.scatter *:not(.hoverable) {
 	pointer-events: none;
 }
 

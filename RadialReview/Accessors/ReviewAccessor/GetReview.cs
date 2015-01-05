@@ -155,7 +155,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public ReviewModel GetReview(UserOrganizationModel caller, long reviewId) {
+		public ReviewModel GetReview(UserOrganizationModel caller, long reviewId,bool includeReviewContainer=false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var reviewPopulated = s.Get<ReviewModel>(reviewId);
@@ -165,12 +165,13 @@ namespace RadialReview.Accessors {
 					var allAnswers = s.QueryOver<AnswerModel>()
 										.Where(x => x.ForReviewId == reviewId && x.DeleteTime == null)
 										.List().ToListAlive();
-
 					var allAlive = UserAccessor.WasAliveAt(s, allAnswers.Select(x => x.AboutUserId).Distinct().ToList(), reviewPopulated.DueDate);
 					allAnswers = allAnswers.Where(x => allAlive.Contains(x.AboutUserId)).ToList();
-
-
 					PopulateAnswers(/*s,*/ reviewPopulated, allAnswers);
+					if (includeReviewContainer){
+						reviewPopulated.ForReviewContainer = s.Get<ReviewsModel>(reviewPopulated.ForReviewsId);
+					}
+
 					return reviewPopulated;
 				}
 			}

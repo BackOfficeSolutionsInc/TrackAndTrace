@@ -1,0 +1,28 @@
+﻿@model RadialReview.Models.Reviews.CustomizeModel
+@{
+	ViewBag.Title = "Update";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section top{
+	<div class="jumbotron">
+		<h1>Update Reviewees</h1>
+	</div>
+}
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		Update:
+	</div>
+	<div class="panel-body alignCenter">
+		<form method="post">
+			<input type="hidden" name="reviewContainerId" value="@ViewBag.ReviewContainerId" />
+			<input type="hidden" name="reviewId" value="@ViewBag.ReviewId" />
+			@Html.Partial("_Customization", Model)
+			<br />
+			<button type="reset" name="review" class="btn btn-default" value="issuePrereview">Undo</button>
+			<button type="submit" name="review" class="btn btn-primary" value="issuePrereview">Save</button>
+
+		</form>
+	</div>
+</div>

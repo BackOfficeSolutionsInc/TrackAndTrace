@@ -1,4 +1,6 @@
 using Microsoft.AspNet.SignalR;
+using NHibernate;
+using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
@@ -50,25 +52,57 @@ namespace RadialReview.Accessors {
 			s.SaveOrUpdate(reviewModel);
 		}
 
-		public void AddToReview(UserOrganizationModel caller, long byUserId, long reviewId, long aboutUserId) {
+		public void AddToReview(UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					AddToReview(s.ToDataInteraction(true), perms, caller, byUserId, reviewId, aboutUserId, AboutType.NoRelationship);
+					AddToReview(s.ToDataInteraction(true), perms, caller, byUserId, reviewContainerId, aboutUserId, AboutType.NoRelationship);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
 
+		public void RemoveFromReview(UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var perms = PermissionsUtility.Create(s, caller);
+					RemoveFromReview(s, perms, caller, byUserId, reviewContainerId, aboutUserId);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		private static void RemoveFromReview(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId)
+		{
+			//TODO Fix permissions. Should make sure we can edit the review
+			perms.ViewUserOrganization(byUserId, false).ViewReviews(reviewContainerId, false);
+			var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == byUserId).SingleOrDefault();
+			perms.ViewUserOrganization(review.ForUserId, false);
+			perms.ManageUserReview(review.Id,false);
+
+
+			var ans=s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.ByUserId == byUserId && x.AboutUserId == aboutUserId).List();
+			var now = DateTime.UtcNow;
+			foreach (var a in ans){
+				a.DeleteTime = now;
+				s.Update(a);
+			}
+		}
+
 		private static void AddToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId, AboutType aboutType) {
+			//TODO Fix permissions. Should make sure we can edit the review
 			perms.ViewUserOrganization(byUserId, false).ViewReviews(reviewContainerId,false);
 
 			var review = s.Where<ReviewModel>(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).Single();
 
 			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 
-			perms.ViewUserOrganization(review.ForUserId, false);
+			perms.ViewUserOrganization(review.ForUserId, false).ManageUserReview(review.Id, true);
 
 			var askable = new AskableUtility();
 
@@ -366,7 +400,7 @@ namespace RadialReview.Accessors {
 		public void AddAnswerToReview(UserOrganizationModel caller, long reviewId, long answerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 					var feedback = s.Get<AnswerModel>(answerId);
 					var review = s.Get<ReviewModel>(reviewId);
 					if (review.ForUserId != feedback.AboutUserId)
@@ -382,7 +416,7 @@ namespace RadialReview.Accessors {
 		public void RemoveAnswerFromReview(UserOrganizationModel caller, long reviewId, long answerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId);
+					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId,false);
 					var answer = s.Get<AnswerModel>(answerId);
 					var review = s.Get<ReviewModel>(reviewId);
 

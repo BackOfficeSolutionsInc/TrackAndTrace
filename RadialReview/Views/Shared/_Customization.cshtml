@@ -114,22 +114,26 @@
                 {
                     <div id="second_@firstUser.Id" class="col-xs-6 noPad alignLeft customize hideable @(first ? "selected" : "hide")">
                         @foreach (var secondUser in Model.AllUsers.OrderBy(x => x.GetNameAndTitle()))
-                        {
-                            var classes = new HashSet<String>();
-                            foreach (var s in Model.Selectors)
-                            {
-                                if (s.Pairs.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
-                                {
-                                    classes.Add("is" + s.UniqueId);
-                                }
-                            }
-                            <div class="selected isAll @String.Join(" ",classes)">
-                                <label class="noMargin" style="padding-left:15px;">
-                                    <input @(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")
-                                           class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.Id)" data-parent="first_@(firstUser.Id)" type="checkbox" name="customize_@(firstUser.Id)_@secondUser.Id" />
-                                    @secondUser.GetNameAndTitle()
-                                </label>
-                            </div>
+						{
+							var classes = new HashSet<String>();
+							foreach (var s in Model.Selectors)
+							{
+								if (s.Pairs.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
+								{
+									classes.Add("is" + s.UniqueId);
+								}
+							}
+							if(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
+							{
+								 <input type="hidden" name="originalCustomize_@(firstUser.Id)_@secondUser.Id" value="True" />
+							}
+	                        <div class="selected isAll @String.Join(" ",classes)">
+								<label class="noMargin" style="padding-left:15px;">
+			                        <input data-original="@(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")" @(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")
+			                               class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.Id)" data-parent="first_@(firstUser.Id)" type="checkbox" name="customize_@(firstUser.Id)_@secondUser.Id" />
+			                        @secondUser.GetNameAndTitle()
+		                        </label>
+	                        </div>
                         }
                     </div>
                         first = false;

@@ -54,7 +54,7 @@ namespace RadialReview.Accessors {
                     unsentEmails.Add(
                             MailModel.To(user.GetEmail())
                             .Subject(EmailStrings.NewReview_Subject, organizationName)
-                            .Body(EmailStrings.NewReview_Body, user.GetName(), caller.GetName(), reviewContainer.DueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName)
+							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName, reviewContainer.ReviewName)
                         );
                 }
                 else {
@@ -230,7 +230,7 @@ namespace RadialReview.Accessors {
                     unsentEmails.Add(MailModel
                         .To(beingReviewedUser.GetEmail())
                         .Subject(EmailStrings.NewReview_Subject, organization.Name.Translate())
-                        .Body(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), dueDate.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName)
+                        .Body(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), (dueDate.AddDays(-1)).ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName,reviewContainer.ReviewName)
                     );
                 }
 

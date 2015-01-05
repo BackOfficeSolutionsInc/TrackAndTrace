@@ -158,6 +158,8 @@
 		color: #c3c3c3;
 	}
 
+	/*padding-top: 14px;*/
+
 	.table-io.companyValues .fill.Positive:not(.companyValues-score):after,.valueTable .fill.Positive:after {
 		content: "+";
 	}
@@ -210,14 +212,14 @@
 	content: "COMPLETE";
 }
 
-/*
+
 .table-io.rocks .fill.True:after, .gwc-details-square .True:after, .roleTable .True:after {
 	content: "YES";
 }
 
 .table-io.rocks .fill.False:after, .gwc-details-square .False:after, .roleTable .False:after {
 	content: "NO";
-}*/
+}
 
 
 .gwc-details-square, .roleTable .fill {

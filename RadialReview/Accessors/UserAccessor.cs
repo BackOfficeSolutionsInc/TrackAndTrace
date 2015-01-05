@@ -133,7 +133,7 @@ namespace RadialReview.Accessors
                         throw new LoginException(redirectUrl);
                     var userOrgs = new List<UserOrganizationModel>();
 
-                    foreach (var userOrg in user.UserOrganization)
+                    foreach (var userOrg in user.UserOrganization.ToListAlive())
                     {
                         userOrgs.Add(GetUserOrganizationModel(s, userOrg.Id, full));
                     }
@@ -305,13 +305,12 @@ namespace RadialReview.Accessors
                     //                    var user = db.UserModels.Include(x => x.UserOrganization.Select(y => y.Organization)).FirstOrDefault(x => x.IdMapping == userId);
                     long matchId = -1;
 
-                    if (!user.IsRadialAdmin)
+                    if (user == null || !user.IsRadialAdmin)
                     {
                         if (user == null)
                             throw new LoginException();
-                        var match = user.UserOrganization.SingleOrDefault(x => x.Id == userOrganizationId && x.DetachTime == null);
-                        if (match == null)
-                        {
+                        var match = user.UserOrganization.SingleOrDefault(x => x.Id == userOrganizationId && x.DetachTime == null && x.DeleteTime==null);
+                        if (match == null){
                             throw new OrganizationIdException(redirectUrl);
                         }
                         matchId = match.Id;

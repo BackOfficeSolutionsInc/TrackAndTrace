@@ -75,7 +75,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This message was generated automatically by {0} 1201 Infinity Ct, Lincoln, NE 68512.
+        ///   Looks up a localized string similar to This message was generated automatically by {0} 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email..
         /// </summary>
         public static string Footer {
             get {
@@ -117,10 +117,10 @@ namespace RadialReview.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
-        ///&lt;p&gt;{1} has scheduled a new review due on {2}. You can take your review by clicking the following link:&lt;/p&gt;
+        ///&lt;p&gt;{6} is now open. This review is due on {2}. You can take your review by clicking the following link:&lt;/p&gt;
         ///&lt;br&gt; 
         ///    &lt;a href=&quot;{3}&quot;&gt;{4}&lt;/a&gt;
-        ///&lt;br /&gt;&lt;br /&gt;If you believe you have received this message in error, you may simply ignore this email. If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+        ///&lt;br /&gt;&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
         ///&lt;br /&gt;
         ///&lt;br /&gt;
         ///Sincerely,&lt;br/&gt;

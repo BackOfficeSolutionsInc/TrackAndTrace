@@ -51,8 +51,9 @@ namespace RadialReview.Models.Json
         }
 
         public object Object { get; set; }
-        public String Message { get; set; }
-        public String Trace { get; set; }
+		public String Message { get; set; }
+		public String Trace { get; set; }
+		public String TraceMessage { get; set; }
         public bool Error { get; set; }
 
         public static ResultObject Success(String message)
@@ -121,6 +122,7 @@ namespace RadialReview.Models.Json
             else
                 Message = Capitalize(ExceptionStrings.AnErrorOccuredContactUs);
 #if(DEBUG)
+			TraceMessage = Capitalize(e.Message);
             Trace = e.StackTrace;
 #endif
         }

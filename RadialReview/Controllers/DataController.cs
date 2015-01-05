@@ -92,12 +92,19 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
 	    }
 
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult ReviewScatter(long id, long reviewsId)
-        {
-            var newScatter = _ChartsEngine.ReviewScatter(GetUser(), id, reviewsId,true);
-            return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
-        }
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult ReviewScatter(long id, long reviewsId)
+		{
+			var newScatter = _ChartsEngine.ReviewScatter(GetUser(), id, reviewsId, true);
+			return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult ReviewScatter2(long id, long reviewsId,string groupBy)
+		{
+			var newScatter = _ChartsEngine.ReviewScatter2(GetUser(), id, reviewsId,groupBy, true);
+			return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
+		}
 
 	    [Access(AccessLevel.UserOrganization)]
 		public JsonResult OrganizationAccountability(long id)

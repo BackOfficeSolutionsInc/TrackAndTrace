@@ -24,7 +24,7 @@
 				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Capacity To Do It",x=>x.HasCapacity,x=>x.HasCapacityReason,x=>x.IncludeHasCapacityReason,"capacity")
 						};*/
 
-			var sorter = new Dictionary<Tristate, string> { { Tristate.True, "1" }, { Tristate.Indeterminate, "0" }, { Tristate.False, "-1" } };
+			var sorter = new Dictionary<PositiveNegativeNeutral, string> { { PositiveNegativeNeutral.Positive, "2" }, { PositiveNegativeNeutral.Neutral, "1" }, { PositiveNegativeNeutral.Negative, "-1" }, { PositiveNegativeNeutral.Indeterminate, "" } };
 			var text = new Dictionary<Tristate, string> { { Tristate.True, "yes" }, { Tristate.Indeterminate, "n/a" }, { Tristate.False, "no" } };
 		}
 		
@@ -34,7 +34,7 @@
 			<tr>
 				<td>@r.ByUser.GetName()</td>
 				<td class="alignLeft bold">@r.Askable.GetQuestion()</td>
-				<td class="block"><div class="fill @r.Exhibits" data-sort=""></div><span style="display:none">@((int)r.Exhibits)</span></td>
+				<td class="block"><div class="fill @r.Exhibits" data-sort="@(sorter[r.Exhibits])"></div><span style="display:none">@((int)r.Exhibits)</span></td>
 				<td class="remainingWidth" style="padding-left: 10px;">
 					@if (!String.IsNullOrWhiteSpace(r.Reason))
 					{
@@ -64,7 +64,7 @@
 			$(".valueTable").filterTable({ inputSelector: '#valueTableFilter' });
 			$(".valueTable").tablesorter({
 				headers: {
-					3: { sorter: 'attr' }
+					2: { sorter: 'attr' }
 				},
 				/*sortForce: [[0, 1]],*/
 				sortList: [[4,0]],
