@@ -67,13 +67,13 @@
 						@*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
 						<tr class="startHiddenn @(review.Review.DueDate > DateTime.UtcNow ? "" : "grayRoww")">
 							<td>
-								@if (review.UserReview.ClientReview.Visible)
-								{
-									<span class="icon icon new-icon-clipboard-notes clickable" onclick="location.href = '/Review/ClientDetails/@review.UserReview.ClientReview.Id';"></span>
-								}
-								else
-								{
-									<span class="icon icon new-icon-clipboard-notes gray hover" title="Your supervisor has not shared this report with you yet."></span>
+								@if (review.UserReview != null){
+									 if(review.UserReview.ClientReview.Visible){
+										 <span class="icon icon new-icon-clipboard-notes clickable" onclick=" location.href = '/Review/ClientDetails/@review.UserReview.ClientReview.Id'; "></span>
+									 }
+									 else{
+										 <span class="icon icon new-icon-clipboard-notes gray hover" title="Your supervisor has not shared this report with you yet."></span>
+									 }
 								}
 							</td>
 							<td class="@(review.TakableId != null ? "table-hover-underline" : "")">
@@ -107,35 +107,47 @@
 									var txt = "";
 								}
 
-								
-								@if (review.Review.DueDate > DateTime.UtcNow){
-									if (review.UserReview.Complete){
-										clzz += "success";
-										txt = "complete";
-									}
-									else if (review.UserReview.Started){
-										clzz += "warning";
-										txt = "started";
-									}
-									else{
-										clzz += "default";
-										txt = "unstarted";
-									}
-								}
-								else{
-									if (review.UserReview.Complete)
+								@if (review.UserReview != null)
+								{
+									if (review.Review.DueDate > DateTime.UtcNow)
 									{
-										clzz += "complete";
-										txt = "complete";
+										if (review.UserReview.Complete)
+										{
+											clzz += "success";
+											txt = "complete";
+										}
+										else if (review.UserReview.Started)
+										{
+											clzz += "warning";
+											txt = "started";
+										}
+										else
+										{
+											clzz += "default";
+											txt = "unstarted";
+										}
 									}
 									else
 									{
-										clzz += "overdue";
-										txt = "overdue";
+										if (review.UserReview.Complete)
+										{
+											clzz += "complete";
+											txt = "complete";
+										}
+										else
+										{
+											clzz += "overdue";
+											txt = "overdue";
+										}
 									}
+									<span class="@clzz" style="display: block;">@txt</span>
+								}
+								else
+								{
+									clzz += "default";
+									txt = "no action required";
 								}
 
-								<span class="@clzz" style="display: block;">@txt</span>
 							</td>
 							
 

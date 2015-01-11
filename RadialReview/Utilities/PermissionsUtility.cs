@@ -387,8 +387,9 @@ namespace RadialReview.Utilities
             if (team.Secret && members.Any())
                 return this;
 
+			//if (team.Secret && IsOwnedBelowOrEqual(caller, x => (team.CreatedBy == x.Id || team.ManagedBy == x.Id)))
+		    //   return this;
 
-            //return this;
 
             throw new PermissionsException();
         }

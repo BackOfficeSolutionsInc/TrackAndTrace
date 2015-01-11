@@ -1,10 +1,12 @@
-﻿using RadialReview.Models;
+﻿using RadialReview.Exceptions;
+using RadialReview.Models;
 using RadialReview.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -47,7 +49,32 @@ namespace RadialReview.Controllers
 			return View(model);
         }
 
-        [Access(AccessLevel.Manager)]
+	    [Access(AccessLevel.Manager)]
+	    public ActionResult Details(int id,int userId)
+	    {
+		    var reviewContainerId = id;
+		    long reviewId = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var found = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == id && x.ForUserId == userId).SingleOrDefault();
+					if (found==null)
+						throw new PermissionsException("Report does not exist");
+					reviewId = found.Id;
+				}
+			}
+		    return RedirectToAction("Details", "Review",new{id=reviewId});
+	    }
+
+	    [Access(AccessLevel.Manager)]
+	    public ActionResult Affinity(int id)
+	    {
+
+
+	    }
+
+
+	    [Access(AccessLevel.Manager)]
         public ActionResult Generate(int page = 0)
         {
             Session["Reports"] = "Create";

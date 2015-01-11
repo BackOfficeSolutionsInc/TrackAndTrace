@@ -27,8 +27,9 @@ namespace RadialReview.Controllers
         public static OrgReviewsViewModel GenerateReviewVM(UserOrganizationModel caller, DateTime date,int page)
         {
             var selfId = caller.Id;
-            var usefulReviews = _ReviewAccessor.GetUsefulReview(caller, selfId, date);
-            var reviewContainers = usefulReviews.Select(x => x.ForReviewContainer).Distinct(x => x.Id);
+			var pullData = _ReviewAccessor.GetUsefulReviewFaster(caller, selfId, date);
+	        var usefulReviews = pullData.Item2;
+	        var reviewContainers = pullData.Item1;//usefulReviews.Select(x => x.ForReviewContainer).Distinct(x => x.Id).ToList();
 
             var subordinates = _DeepSubordianteAccessor.GetSubordinatesAndSelf(caller, caller.Id);
 
@@ -40,7 +41,7 @@ namespace RadialReview.Controllers
                 Editable = editable.Any(y => y == x.Id),
                 Viewable = true,
                 TakableId = takabled.GetOrDefault(x.Id, null),
-                UserReview = usefulReviews.First(y=>y.ForReviewsId==x.Id)
+                UserReview = usefulReviews.FirstOrDefault(y=>y.ForReviewsId==x.Id)
 
             }).OrderByDescending(x => x.Review.DateCreated).ToList();
 

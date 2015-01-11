@@ -3,17 +3,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Engines;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Controllers
 {
 	public class MigrationController : BaseController {
+
+		
         // GET: Migration
+		[Access(AccessLevel.Radial)]
+		public string M1_7_2015()
+		{
+			var teams = new Ratio();
+
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					//Make subordinate teams not secret
+					foreach (var a in s.QueryOver<OrganizationTeamModel>().List()){
+						if (a.Secret){
+							teams.Denominator++;
+							if (a.Type == TeamType.Subordinates){
+								teams.Numerator++;
+								a.Secret = false;
+								s.Update(a);
+							}
+						}
+					}
+					
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return teams.ToString();
+		}
+
+
+
+
+
+		// GET: Migration
 		[Access(AccessLevel.Radial)]
         public int M11_8_2014()
 		{

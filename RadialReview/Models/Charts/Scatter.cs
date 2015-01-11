@@ -19,11 +19,14 @@ namespace RadialReview.Models.Charts
 			public string imageUrl { get; set; }
 			public string @class { get; set; }
 			public string id { get; set; }
+			public string link { get; set; }
 		}
 
 		public Checktree FilterTree { get; set; }
 		public List<ScatterPoint> OrderedPoints { get; set; }
 		public List<ScatterPoint> Points { get; set; }
+
+		public List<ScatterPoint> Legend { get; set; }
 
 		public string xAxis { get; set; }
 		public string yAxis { get; set; }

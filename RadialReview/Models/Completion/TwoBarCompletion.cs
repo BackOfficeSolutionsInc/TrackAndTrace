@@ -135,5 +135,11 @@ namespace RadialReview.Models
         {
             return this;
         }
-    }
+
+
+		public decimal GetPercentage()
+		{
+			return RequiredCompleted / (decimal)TotalRequired;
+		}
+	}
 }

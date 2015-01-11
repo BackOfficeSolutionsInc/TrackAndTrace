@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.Enums;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -22,7 +23,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Radial)]
         public String DbType()
         {
-            return System.Configuration.ConfigurationManager.AppSettings["DBType"];
+	        return ""+Config.GetEnv();
         }
 
         [Access(AccessLevel.Radial)]

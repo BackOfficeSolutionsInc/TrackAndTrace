@@ -90,7 +90,7 @@ namespace RadialReview.Models.Askables
                 OnlyManagersEdit=true,
                 Organization = manager.Organization,
                 Responsibilities = new List<ResponsibilityModel>(),
-                Secret = true,
+                Secret = false,
                 Type = TeamType.Subordinates,
                 _Editable= false,
             };

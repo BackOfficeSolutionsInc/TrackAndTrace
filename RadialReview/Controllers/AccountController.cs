@@ -19,6 +19,7 @@ using System.Security.Cryptography;
 using RadialReview.Models.Enums;
 using RadialReview.Exceptions;
 using RadialReview.Models.Application;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -68,7 +69,7 @@ namespace RadialReview.Controllers
                 await Emailer.SendEmail(
                         MailModel.To(user.Email)
                         .Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
-                        .Body(EmailStrings.PasswordReset_Body, user.Name(), ProductStrings.BaseUrl + "n/" + token, ProductStrings.BaseUrl + "n/" + token, ProductStrings.ProductName)
+						.Body(EmailStrings.PasswordReset_Body, user.Name(), Config.BaseUrl() + "n/" + token, Config.BaseUrl() + "n/" + token, ProductStrings.ProductName)
                     );
 
             }

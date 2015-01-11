@@ -9,14 +9,14 @@
 }
 
 <div class="row">
-	<div class="print-col-xs-5 zoom8">
+	<div class="print-col-xs-6 zoom8">
 		@Html.Partial("~/Views/Review/Details/GWC.cshtml", Model)
 	</div>
 
 
 	@if (Model.CompanyValuesTable((long)ViewBag.ReviewId).Rows.Any())
 	{
-		<div class="print-col-xs-7 zoom8">
+		<div class="print-col-xs-6 zoom8">
 			@{
 		var valueAnswers = Model.AnswersAbout.Where(x => x is CompanyValueAnswer).Cast<CompanyValueAnswer>().Where(x => x.IncludeReason);
 
@@ -37,26 +37,26 @@
 				<table class="valueTable" style="width:100%;margin-left: 10px;">
 					<thead>
 						<tr>
-							<th style="width: 1px">Value:</th>
-							<th style="width: 21px;"></th>
-							<th></th>
-
+							<th colspan="2">Value:</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody style="vertical-align: top;">
 						@foreach (var r in valueAnswers)
 						{
-						<tr>
-							<td class="bold alignRight">@r.Askable.GetQuestion()</td>
-							<td class="block"><div class="fill @r.Exhibits"></div></td>
-							<td style="padding-left:6px;">
-								<span class="italic">"@r.Reason"</span>
-								@if (!Model.ReviewContainer.AnonymousByDefault)
+							<tr style="border-top:1px solid #ddd;">
+								<td class="block" rowspan="2"><div class="fill @r.Exhibits"></div></td>
+								<td class="bold alignLeft valueTableQuestion">@r.Askable.GetQuestion()</td>
+							
+							</tr>
+							<tr>
+								<td class="valueTableReason" style="white-space: normal;">
+									<span class="italic">"@r.Reason"</span>
+									@if (!Model.ReviewContainer.AnonymousByDefault)
 									{
-									@:- @r.ByUser.GetName()
+										@:- @r.ByUser.GetName()
 									}
-							</td>
-						</tr>
+								</td>
+							</tr>
 						}
 					</tbody>
 				</table>
@@ -101,15 +101,15 @@
 									<div class="row">
 										<div class="col-xs-5 alignCenter">
 											@{
-									var state = Tristate.Indeterminate;
-									if (r.ManagerOverride == RockState.AtRisk)
-									{
-										state = Tristate.False;
-									}
-									else if (r.ManagerOverride == RockState.Complete)
-									{
-										state = Tristate.True;
-									}
+												var state = Tristate.Indeterminate;
+												if (r.ManagerOverride == RockState.AtRisk)
+												{
+													state = Tristate.False;
+												}
+												else if (r.ManagerOverride == RockState.Complete)
+												{
+													state = Tristate.True;
+												}
 											}
 											@*<div style="padding-top:5px;"></div>*@
 

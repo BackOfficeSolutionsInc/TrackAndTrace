@@ -4,6 +4,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
 using System;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models
 {
@@ -119,6 +120,25 @@ namespace RadialReview.Models
 		public virtual String WantItReason { get; set; }
 		public virtual String HasCapacityReason { get; set; }
 
+		public virtual Ratio GetItRatio
+		{
+			get
+			{
+				return new Ratio(GetIt == Tristate.True ? 1 : 0, GetIt != Tristate.Indeterminate ? 1 : 0);
+			}
+		}
+		public virtual Ratio WantItRatio
+		{
+			get
+			{
+				return new Ratio(WantIt == Tristate.True ? 1 : 0, WantIt != Tristate.Indeterminate ? 1 : 0);
+			}
+		}
+		public virtual Ratio HasCapacityRatio{
+			get{
+				return new Ratio(HasCapacity == Tristate.True ? 1 : 0, HasCapacity != Tristate.Indeterminate ? 1 : 0);
+			}
+		}
 
 
 		public virtual bool IncludeHasCapacityReason { get; set; }

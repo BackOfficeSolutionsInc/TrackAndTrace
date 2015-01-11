@@ -21,7 +21,7 @@ namespace RadialReview.Accessors
 {
     public class NexusAccessor : BaseAccessor
     {
-        public static UrlAccessor _UrlAccessor = new UrlAccessor();
+        //public static UrlAccessor _UrlAccessor = new UrlAccessor();
 
         public TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName,out UserOrganizationModel createdUser)
         {
@@ -218,8 +218,7 @@ namespace RadialReview.Accessors
             //Send Email
             //[OrganizationName,LinkUrl,LinkDisplay,ProductName]            
             var url = "Account/Register?message=Please%20login%20to%20join%20" + caller.Organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
-            url = ProductStrings.BaseUrl + url;
-            //var shorenedUrl = ProductStrings.BaseUrl + _UrlAccessor.RecordUrl(url, email);
+            url = Config.BaseUrl() + url;
             //var body = String.Format(;
             //subject = ;
 

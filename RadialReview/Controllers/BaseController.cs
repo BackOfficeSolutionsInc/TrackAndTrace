@@ -260,7 +260,7 @@ namespace RadialReview.Controllers
                 Thread.CurrentThread.CurrentUICulture = culture;
             }
             
-            filterContext.Controller.ViewBag.IsLocal = ServerUtility.GetConfigValue("BaseUrl").Contains("localhost");
+            filterContext.Controller.ViewBag.IsLocal = Config.IsLocal();
             
             filterContext.Controller.ViewBag.HasBaseController = true;
             if (IsLoggedIn())

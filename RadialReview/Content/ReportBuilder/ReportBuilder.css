@@ -16,10 +16,10 @@
 }
 
 .collapseHeading {
-    color: white;
+    color: white !important;
 }
 
-    .collapseHeading:hover {
+    .collapseHeading:hover, .collapseHeading:active, .collapseHeading:focus {
         color: white;
     }
 
@@ -82,11 +82,15 @@
     .includable.on .text:before {
         content: "Included";
     }
-
-.legend {
-    position: absolute;
+/*.legend {
+   position: absolute;
     right: 0px;
     padding-right: 25px;
+}*/
+
+#legend {
+	top: 28px;
+	position: relative;
 }
 
     .legend .container {
@@ -99,7 +103,7 @@
     }
 
     .legend .title {
-        font-size: 16px;
+        font-size: 10px;
     }
 
     .legend .circle {
@@ -259,4 +263,31 @@ ul.empty:empty {
 }
 .panel-includable:not(.isIncluded) .panel-heading span{
 	color: #F5F5F5 !important; 
+}
+
+.collapseIcon {
+	-webkit-transform-origin: 46% 62%;
+	-moz-transform-origin: 46% 62%;
+	-ms-transform-origin: 46% 62%;
+	-o-transform-origin: 46% 62%;
+	transform-origin: 46% 62%;
+	-webkit-transform: rotate(0deg);
+	-moz-transform: rotate(0deg);
+	-ms-transform: rotate(0deg);
+	-o-transform: rotate(0deg);
+	transform: rotate(0deg);
+	-webkit-transition: transform .2s ease;
+	-moz-transition: transform .2s ease;
+	-ms-transition: transform .2s ease;
+	-o-transition: transform .2s ease;
+	transition: transform .2s ease;
+}
+
+
+.collapsed .collapseIcon {
+	transform: rotate(-90deg);
+}
+
+.body-content {
+	max-width: 1400px;
 }

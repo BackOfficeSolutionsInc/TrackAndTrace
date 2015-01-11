@@ -482,28 +482,48 @@ var chart = new ScatterImage("chart2");
 
 var dataUrl = "/Data/ReviewScatter2/" + ForUserId + "?reviewsId=" + ForReviewsId;//"@Model.Review.ForReviewsId";
 
+var first = true;
+
+
 function updateChart() {
 
-	$("#chart2").fadeOut();
-	$(".chartPlaceholder").removeClass("hidden");
-
 	var groupBy = $("input.group:checked").val();
+	if (groupBy === "" || groupBy===undefined)
+		groupBy = "review-*";
+
 	var opts = {};
+	opts.legendId = "legend";
+	opts.legendFunc = null;
 	if (groupBy === "user-*") {
 		opts.drawPoints = chart.imagePoints;
 		opts.useForce = true;
 	} else if (groupBy==="about-*" ||groupBy==="review-*") {
 		opts.drawPoints = chart.shapePoints;
-		opts.useForce = false;
+		opts.useForce = true;
 	}
-	chart.PullPlot(dataUrl+"&groupBy="+groupBy, null, function(data) {
+	if (groupBy === "about-*") {
+		opts.legendFunc = chart.shapeLegend;
+	}
 
+	if (groupBy === "review-*") {
+		opts.legendFunc = function(lid, pts) {
+			var pts = [{ title: "Aggregate Score", class: "scatterPoint" }];
+
+			return chart.shapeLegend(lid, pts);
+		};
+	}
+
+	chart.PullPlot(dataUrl+"&groupBy="+groupBy, null, function(data) {
 		$(".chartPlaceholder").addClass("hidden");
-		$("#chart2").fadeIn();
+		$("#chart2,#legend").fadeIn();
 	},opts);
 }
 
 $(".update").change(function () {
+
+	$("#chart2,#legend").fadeOut(function () {
+		$(".chartPlaceholder").removeClass("hidden");
+	});
 	UpdateChart();
 	updateChart();
 });

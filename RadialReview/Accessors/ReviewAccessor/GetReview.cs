@@ -274,6 +274,38 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+
+		public System.Tuple<List<ReviewsModel>, List<ReviewModel>> GetUsefulReviewFaster(UserOrganizationModel caller, long userId, DateTime afterTime)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).EditUserOrganization(userId);
+
+					var user = s.Get<UserOrganizationModel>(userId);
+					var orgId = user.Organization.Id;
+
+					//ReviewModel reviewAlias = null;
+					//ReviewsModel reviewsAlias = null;
+
+					var reviews			  = s.QueryOver<ReviewModel>().Where(reviewAlias => reviewAlias.DueDate > afterTime && reviewAlias.DeleteTime == null && reviewAlias.ForUserId==userId).List().ToList();
+					var reviewContainers  = s.QueryOver<ReviewsModel>().Where(x => x.DueDate > afterTime && x.DeleteTime == null && x.ForOrganizationId==orgId).List().ToList();
+
+
+					var outputContainers = new List<ReviewsModel>();
+
+					foreach (var r in reviews){
+						r.ForReviewContainer = reviewContainers.FirstOrDefault(x => x.Id == r.ForReviewsId);
+						//if (r.ForReviewContainer!=null)
+						//	outputContainers.Add(r.ForReviewContainer);
+					}
+
+
+					return Tuple.Create(reviewContainers, reviews);
+				}
+			}
+
+		}
+
 		public List<ReviewModel> GetUsefulReview(UserOrganizationModel caller, long userId, DateTime afterTime) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

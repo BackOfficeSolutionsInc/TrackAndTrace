@@ -40,7 +40,7 @@ namespace RadialReview.Accessors
 
             if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller))
             {
-                var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.DeleteTime == null && x.ManagerId == userId && x.SubordinateId == userId).SingleOrDefault();
+				var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.DeleteTime == null && x.ManagerId == caller.Id && x.SubordinateId == userId).SingleOrDefault();
                 if (found == null)
                     throw new PermissionsException("You don't have access to this user");
             }
@@ -66,7 +66,7 @@ namespace RadialReview.Accessors
         {
             if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller))
             {
-                var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.DeleteTime == null && x.ManagerId == userId && x.SubordinateId == userId).SingleOrDefault();
+                var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.DeleteTime == null && x.ManagerId == caller.Id && x.SubordinateId == userId).SingleOrDefault();
                 if (found == null)
                     throw new PermissionsException("You don't have access to this user");
             }
@@ -99,9 +99,9 @@ namespace RadialReview.Accessors
         public static void Remove(ISession s, UserOrganizationModel manager, UserOrganizationModel subordinate, DateTime now)
         {
             //Grab all subordinates' deep subordinates
-            var allSuperiors = SubordinateUtility.GetSuperiors(manager, false);
+            var allSuperiors = SubordinateUtility.GetSuperiors(s,manager, false);
             allSuperiors.Add(manager);
-            var allSubordinates = SubordinateUtility.GetSubordinates(subordinate, false);
+            var allSubordinates = SubordinateUtility.GetSubordinates(s,subordinate, false);
             allSubordinates.Add(subordinate);
 
             foreach (var SUP in allSuperiors)
@@ -131,9 +131,9 @@ namespace RadialReview.Accessors
         public static void Add(ISession s, UserOrganizationModel manager, UserOrganizationModel subordinate, long organizationId, DateTime now)
         {
             //Get **users** subordinates, make them deep subordinates of manager
-            var allSubordinates = SubordinateUtility.GetSubordinates(subordinate, false);
+            var allSubordinates = SubordinateUtility.GetSubordinates(s,subordinate, false);
             allSubordinates.Add(subordinate);
-            var allSuperiors = SubordinateUtility.GetSuperiors(manager, false);
+            var allSuperiors = SubordinateUtility.GetSuperiors(s,manager, false);
             allSuperiors.Add(manager);
 
             //for manager and each of his superiors

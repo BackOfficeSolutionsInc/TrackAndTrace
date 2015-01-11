@@ -28,8 +28,12 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Radial)]
         public String TempDeep(long id)
         {
-            _UserAccessor.CreateDeepSubordinateTree(GetUser(), id, DateTime.UtcNow);
-            return "done";
+	        var now = DateTime.UtcNow;
+            var count = _UserAccessor.CreateDeepSubordinateTree(GetUser(), id,now);
+
+	        var o = "TempDeep - " + now.Ticks + " - " + count;
+			log.Info(o);
+			return o;
         }
 
         /*[Access(AccessLevel.Radial)]

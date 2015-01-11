@@ -256,7 +256,7 @@ namespace RadialReview.Accessors {
 						queryProvider.AddData(reviews);
 
 
-						var accessibleUsers = TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perms, reviewContainer.ForTeamId)
+						var accessibleUsers = TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perms, reviewContainer.ForTeamId, false)
 														.ToListAlive()
 														.Select(x => x.User).ToListAlive();
 

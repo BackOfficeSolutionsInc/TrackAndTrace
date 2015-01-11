@@ -17,38 +17,41 @@
 			<span class="extra">@found.First().ByUser.GetName()</span>
 		</div>
 		@*<table>
-			<thead>
-				<tr>
-					<th></th>
-					<th></th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var i in found)
-				{
-					<tr class="value-row">
-						<td class="value-min">:</td>
-						<td class="value-details-square value-min">
-						</td>
-						<td class="reason">
-
-						</td>
-
+				<thead>
+					<tr>
+						<th></th>
+						<th></th>
+						<th></th>
 					</tr>
-				}
-			</tbody>
-		</table>*@
+				</thead>
+				<tbody>
+					@foreach (var i in found)
+					{
+						<tr class="value-row">
+							<td class="value-min">:</td>
+							<td class="value-details-square value-min">
+							</td>
+							<td class="reason">
+
+							</td>
+
+						</tr>
+					}
+				</tbody>
+			</table>*@
 		<div class="alignLeft">
 			@if (!String.IsNullOrWhiteSpace(found.First().Reason))
 			{
 				<div class="reason" style="font-style: italic">
 					"@found.First().Reason"
 				</div>
+				<div class="pull-right">
+					<span style="font-size:80%;bottom: 4px;position: relative;">Include:</span> <input class="value_@(found.First().Id)" type="checkbox" onclick="toggleValue2(this, @(found.First().Id))" @(found.First().IncludeReason?"checked":"") />
+				</div>
 			}
 			else
 			{
-				<div class="gray">No reason given.</div>
+				<div class="gray">No comment provided.</div>
 			}
 		</div>
 

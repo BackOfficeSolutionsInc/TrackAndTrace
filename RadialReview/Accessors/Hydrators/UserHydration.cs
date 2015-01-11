@@ -116,7 +116,7 @@ namespace RadialReview
                 using (var tx = Session.BeginTransaction())
                 {
                     var user=GetUnderlying();
-                    var children = SubordinateUtility.GetSubordinates(user, true, levels);
+                    var children = SubordinateUtility.GetSubordinates(Session, user, true, levels);
                     User.AllSubordinates = children;
                 }
             }

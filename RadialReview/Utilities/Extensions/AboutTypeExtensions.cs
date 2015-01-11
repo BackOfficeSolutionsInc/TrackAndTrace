@@ -8,6 +8,28 @@ namespace RadialReview
 {
     public static class AboutTypeExtensions
 	{
+
+	    public static string GetBestTitle(this AboutType self)
+	    {
+			switch (self.GetBestAboutType())
+			{
+				case AboutType.NoRelationship:
+					return "No Relationship";
+				case AboutType.Self:
+					return "Self";
+				case AboutType.Subordinate:
+					return "Subordinate";
+				case AboutType.Teammate:
+					return "Teammate";
+				case AboutType.Peer:
+					return "Peers";
+				case AboutType.Manager:
+					return "Manager";
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+	    }
+
 	    public static string GetBestShape(this AboutType self)
 	    {
 		    switch(self.GetBestAboutType()){

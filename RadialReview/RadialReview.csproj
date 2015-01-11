@@ -235,6 +235,7 @@
     <Compile Include="Accessors\ReviewAccessor\Coworkers.cs" />
     <Compile Include="Accessors\ReviewAccessor\CreateReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\DeleteReview.cs" />
+    <Compile Include="Accessors\ReviewAccessor\FastReviewQueries.cs" />
     <Compile Include="Accessors\ReviewAccessor\GenerateReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\GetReview.cs" />
     <Compile Include="Accessors\ReviewAccessor\PopulateReview.cs" />
@@ -250,7 +251,6 @@
     <Compile Include="Accessors\SettingsAccessor.cs" />
     <Compile Include="Accessors\TaskAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
-    <Compile Include="Accessors\UrlAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -304,7 +304,6 @@
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
-    <Compile Include="Controllers\UrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="Engines\BaseEngine.cs" />
@@ -326,6 +325,7 @@
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
+    <Compile Include="Models\Enums\Env.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
     <Compile Include="Models\Enums\RepeatsType.cs" />
@@ -510,6 +510,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Models\Enums\AccessLevel.cs" />
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
+    <Compile Include="Utilities\Config.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
@@ -736,6 +737,7 @@
     <Content Include="Scripts\jquery\jquery.nouislider.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
     <Content Include="Scripts\jquery\jquery.tablesorter.js" />
+    <Content Include="Scripts\jquery\jquery.unveil.js" />
     <Content Include="Scripts\Main\finally.js" />
     <Content Include="Scripts\Main\radial.js" />
     <Content Include="Scripts\Main\realtime.js" />

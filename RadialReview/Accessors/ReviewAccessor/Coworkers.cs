@@ -53,7 +53,7 @@ namespace RadialReview.Accessors {
 					teams = forTeam.AsList();
 
 				foreach (var team in teams) {
-					var teamMembers = TeamAccessor.GetTeamMembers(s.GetQueryProvider(), perms, team.Id).Where(x => x.User.Id != reviewee.Id && accessableUsers.Any(id => id == x.UserId)).ToListAlive();
+					var teamMembers = TeamAccessor.GetTeamMembers(s.GetQueryProvider(), perms, team.Id,false).Where(x => x.User.Id != reviewee.Id && accessableUsers.Any(id => id == x.UserId)).ToListAlive();
 					foreach (var teammember in teamMembers)
 						coworkerRelationship.Add(teammember.User, AboutType.Teammate);
 				}
@@ -82,7 +82,7 @@ namespace RadialReview.Accessors {
 			// Subordinates
 			if (parameters.ReviewSubordinates) {
 				if (forTeam.Type != TeamType.Standard) {
-					var subordinates = UserAccessor.GetDirectSubordinates(s.GetQueryProvider(), perms, caller, reviewee.Id)
+					var subordinates = UserAccessor.GetDirectSubordinates(s.GetQueryProvider(), perms, reviewee.Id)
 															  .Where(x => accessableUsers.Any(id => id == x.Id))
 															  .Where(x => x.Id != reviewee.Id)
 															  .ToListAlive();
@@ -129,7 +129,7 @@ namespace RadialReview.Accessors {
 
 					var d = new DataInteraction(queryProvider, s.ToUpdateProvider());
 
-					var teamMemberIds = TeamAccessor.GetTeamMembers(queryProvider, perms, forTeam).Select(x => x.User.Id).ToList();
+					var teamMemberIds = TeamAccessor.GetTeamMembers(queryProvider, perms, forTeam, false).Select(x => x.User.Id).ToList();
 
 					var team = allOrgTeams.First(x => x.Id == forTeam);
 
@@ -182,7 +182,8 @@ namespace RadialReview.Accessors {
 
 				foreach (var askable in revieweeAskables){
 					//Filter only where OnlyAsk is satisfied
-					if ((relationshipToReviewee.Invert() & askable.OnlyAsk) != AboutType.NoRelationship){
+					if ((long)askable.OnlyAsk == long.MaxValue || (relationshipToReviewee.Invert() & askable.OnlyAsk) != AboutType.NoRelationship)
+					{
 						var askableAbout = new AskableAbout(){
 							AboutType = relationshipToReviewee,
 							AboutUserId = revieweeId,
@@ -237,7 +238,8 @@ namespace RadialReview.Accessors {
 				 .SelectMany(x => x.Responsibilities).ToListAlive();*/
 				foreach (var relationship in reviewer.Value) {
 					foreach (var reviewerAskable in reviewerAskables){
-						if ((relationship.Invert() & reviewerAskable.OnlyAsk)!=AboutType.NoRelationship){
+						if ((long)reviewerAskable.OnlyAsk == long.MaxValue || (relationship.Invert() & reviewerAskable.OnlyAsk) != AboutType.NoRelationship)
+						{
 							askableUtil.AddUnique(reviewerAskable, relationship, reviewerId);
 						}
 					}

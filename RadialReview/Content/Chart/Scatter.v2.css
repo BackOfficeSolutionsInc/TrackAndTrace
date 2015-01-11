@@ -21,6 +21,7 @@
 
 .scatter .axisTitle{
 	fill:white;
+	font-size: 14px;
 }
 
 .scatter .axisRect-x {
@@ -47,12 +48,12 @@ svg.scatter{
 	z-index: 100;
 }
 
-svg.scatter *:not(.hoverable) {
+svg.scatter *:not(.pointerEvents) {
 	pointer-events: none;
 }
 
-svg.scatter .hoverable {
-	pointer-events: all;
+svg.scatter .pointerEvents{
+	pointer-events: all !important;
 }
 
 .scatter .card {
@@ -72,18 +73,27 @@ svg.scatter .hoverable {
 	clip-path: url(#cardClip);
 }
 
-.scatter .card .title div{
-	font-size: 20px;
-	color:#415EB3;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
-}
+	.scatter .card .title div {
+		font-size: 20px;
+		color: #415EB3;
+		-ms-text-overflow: ellipsis;
+		-o-text-overflow: ellipsis;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		text-align: left;
+	}
 
-.scatter .card .subtitle{
-	font-size: 14px;
-	fill:#646464;
-}
+	.scatter .card .subtitle div {
+		font-size: 14px;
+		fill: #646464;
+		-ms-text-overflow: ellipsis;
+		-o-text-overflow: ellipsis;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		text-align: left;
+	}
 
 .scatter .card .axisTitle{
 	font-weight: normal;
@@ -117,4 +127,8 @@ svg.scatter .hoverable {
 	visibility: inherit !important;
 	-ms-opacity: .5;
 	opacity: .5;
+}
+
+.scatter .hoverable {
+	cursor: pointer;
 }

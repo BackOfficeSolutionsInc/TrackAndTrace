@@ -116,7 +116,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var dataInteraction = ReviewAccessor.GetReviewDataInteraction(s, caller.Organization.Id);
-                    var teammembers = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, forTeamId);
+                    var teammembers = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, forTeamId,false);
 
                     var team = dataInteraction.GetQueryProvider().Get<OrganizationTeamModel>(forTeamId);
                     var managerIds = teammembers.Where(x => x.User.ManagerAtOrganization || team.ManagedBy == x.UserId).Select(x => x.UserId).ToList();
@@ -159,12 +159,12 @@ namespace RadialReview.Accessors
 
                         if (sendEmails)
                         {
-                            try
-                            {
+                            try{
+	                            var url = Config.BaseUrl() + "n/" + guid;
                                 unsentEmails.Add(
                                     MailModel.To(manager.GetEmail())
                                     .Subject(EmailStrings.Prereview_Subject,caller.Organization.GetName())
-									.Body(EmailStrings.Prereview_Body, manager.GetName(), preReviewDue.ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName)
+									.Body(EmailStrings.Prereview_Body, manager.GetName(), preReviewDue.ToShortDateString(),url, url, ProductStrings.ProductName)
                                     );
                             }
                             catch (Exception e)
@@ -234,7 +234,7 @@ namespace RadialReview.Accessors
                         {
                             if (reviewContainer.EnsureDefault)
                             {
-                                var subordinates = UserAccessor.GetDirectSubordinates(s.ToQueryProvider(true),perms,caller,prereview.ManagerId).Select(x=>x.Id).Union(prereview.ManagerId.AsList());
+                                var subordinates = UserAccessor.GetDirectSubordinates(s.ToQueryProvider(true),perms,prereview.ManagerId).Select(x=>x.Id).Union(prereview.ManagerId.AsList());
                                 var managerCustomizeDefault=subordinates.SelectMany(sub => defaultModel.Where(x=>x.Item1==sub)).ToList();
                                 all.AddRange(managerCustomizeDefault);
                             }

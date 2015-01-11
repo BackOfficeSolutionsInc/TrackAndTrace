@@ -1,4 +1,5 @@
-﻿using Amazon.IdentityManagement.Model;
+﻿using System.Collections;
+using Amazon.IdentityManagement.Model;
 using NHibernate;
 using NHibernate.Mapping;
 using RadialReview.Exceptions;
@@ -127,8 +128,141 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var perm = PermissionsUtility.Create(s, caller);
-					var teams = GetOrganizationTeams(s, perm, orgId);
+					var allTeams = GetOrganizationTeams(s, perm, orgId);
 
+
+					//var queryAllTeams = "SELECT r.id,t.Type FROM OrganizationTeamModel t Inner Join ResponsibilityGroupModel r on t.ResponsibilityGroupModel_id = r.Id where Organization_id = (:orgId)";
+					//var allTeams = s.CreateSQLQuery(queryAllTeams).List<object[]>();
+
+					//var teams = allTeams.Select(x => new{id = (long) x[0], type = (string) x[1]});
+					var acceptedTeams = allTeams.Where(x => false).ToList();
+
+					foreach (var team in allTeams)
+					{
+						try
+						{
+							perm.ViewTeam(team.Id);
+							acceptedTeams.Add(team);
+						}
+						catch (PermissionsException)
+						{
+						}
+					}
+
+					var members = new List<TeamDurationModel>();
+
+					foreach (var teams in acceptedTeams.GroupBy(x => x.Type))
+					{
+						TeamType type = teams.Key;
+						switch (type)
+						{
+							case TeamType.Standard:
+								{
+									var teamIds = teams.Select(x => x.Id).ToList();
+									var teamMembers = s.QueryOver<TeamDurationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.TeamId).IsIn(teamIds).List();
+									members.AddRange(teamMembers);
+									break;
+								}
+							case TeamType.AllMembers:
+								{
+									var users = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null && x.Organization.Id == orgId).List();
+									foreach (var t in teams)
+									{
+										var additional = users.Select(x => new TeamDurationModel()
+										{
+											Id = -2,
+											Start = x.AttachTime,
+											Team = t,
+											User = x,
+											DeleteTime = x.DeleteTime ?? x.DetachTime,
+											UserId = x.Id,
+											TeamId = t.Id
+										}).ToList();
+										members.AddRange(additional);
+									}
+									break;
+
+								}
+							case TeamType.Managers:
+								{
+									var managers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId && (x.ManagerAtOrganization || x.ManagingOrganization) && x.DeleteTime == null).List();
+									foreach (var tt in teams){
+										var t = tt;
+										var additional = managers.Select(x => new TeamDurationModel()
+										{
+											Id = -2,
+											Start = x.AttachTime,
+											Team = t,
+											User = x,
+											DeleteTime = x.DeleteTime ?? x.DetachTime,
+											UserId = x.Id,
+											TeamId = t.Id
+										});
+										members.AddRange(additional);
+									}
+									break;
+								}
+							case TeamType.Subordinates:
+								{
+									var managerIds = teams.Select(x => x.ManagedBy).ToList();
+									var managerDurations = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.ManagerId).IsIn(managerIds).List();
+									var lookup = teams.ToDictionary(x => x.ManagedBy, x => x);
+
+									var additional = managerDurations.Select(x => new TeamDurationModel()
+									{
+										Id = -2,
+										Start = x.Start,
+										TeamId = lookup[x.ManagerId].Id,
+										Team = lookup[x.ManagerId],
+										DeleteTime = x.DeleteTime,
+										UserId = x.Subordinate.Id,
+										User = x.Subordinate,
+									});
+									members.AddRange(additional);
+
+									var additionalManagers = managerDurations.Distinct(x=>x.ManagerId).Select(x => new TeamDurationModel()
+									{
+										Id = -2,
+										Start = x.Start,
+										TeamId = lookup[x.ManagerId].Id,
+										Team = lookup[x.ManagerId],
+										UserId = x.Manager.Id,
+										User = x.Manager,
+										DeleteTime = x.DeleteTime,
+									});
+									members.AddRange(additionalManagers);
+
+
+									break;
+
+									////var subordinates = caller.Hydrate(s).ManagingUsers(true).Execute().AllSubordinates;
+									////permissions.OwnedBelowOrEqual(x => x.Id == team.ManagedBy);
+									//var callerUnderlying = s.Get<UserOrganizationModel>(teams.ManagedBy);
+									//var subs = UserAccessor.GetDirectSubordinates(s, permissions, teams.ManagedBy);
+									////var subs = SubordinateUtility.GetSubordinates(callerUnderlying, false);
+									//var subordinates = subs.Union(callerUnderlying.AsList(), new EqualityComparer<UserOrganizationModel>((x, y) => x.Id == y.Id, x => x.Id.GetHashCode()));
+									//return subordinates.Select(x => new TeamDurationModel()
+									//{
+									//	Id = -2,
+									//	Start = x.AttachTime,
+									//	Team = teams,
+									//	User = x,
+									//	DeleteTime = x.DeleteTime ?? x.DetachTime,
+									//	UserId = x.Id,
+									//	TeamId = teams.Id
+									//}).ToList();
+								}
+							default: throw new NotImplementedException("Team Type unknown2");
+						}
+
+
+
+					}
+
+					return members;
+
+
+					/*
 					return teams.SelectMany(x =>
 					{
 						try
@@ -139,39 +273,68 @@ namespace RadialReview.Accessors
 						{
 							return new List<TeamDurationModel>();
 						}
-					}).ToList();
+					}).ToList();*/
 				}
 			}
 		}
 
-		public List<TeamDurationModel> GetSubordinateTeamMembers(UserOrganizationModel caller, long userOrganizationId)
+		public List<TeamDurationModel> GetSubordinateTeamMembers(UserOrganizationModel caller, long userOrganizationId, bool includeManager)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perm = PermissionsUtility.Create(s, caller);
-					return GetSubordinateTeamMembers(s, perm, userOrganizationId);
+					return GetSubordinateTeamMembers(s, perm, userOrganizationId, includeManager);
 				}
 			}
 		}
-		public List<TeamDurationModel> GetSubordinateTeamMembers(ISession s, PermissionsUtility permissions, long userOrganizationId)
+		public List<TeamDurationModel> GetSubordinateTeamMembers(ISession s, PermissionsUtility permissions, long userOrganizationId, bool includeManager)
 		{
 			var team = GetSubordinateTeam(s, permissions, userOrganizationId);
-			return GetTeamMembers(s.ToQueryProvider(true), permissions, team.Id);
+			return GetTeamMembers(s.ToQueryProvider(true), permissions, team.Id, includeManager);
 		}
 
-		public List<TeamDurationModel> GetTeamMembers(UserOrganizationModel caller, long teamId)
+		public List<TeamDurationModel> GetTeamMembers(UserOrganizationModel caller, long teamId, bool includeManager)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetTeamMembers(s.ToQueryProvider(true), perms, teamId);
+					return GetTeamMembers(s.ToQueryProvider(true), perms, teamId, includeManager);
 				}
 			}
 		}
+
+		public static List<TeamDurationModel> GetTeamMembers(AbstractQuery s, PermissionsUtility permissions, long teamId, bool includeTeamManagers)
+		{
+			var members = GetTeamMembers(s, permissions, teamId);
+			if (includeTeamManagers)
+			{
+				try
+				{
+					var team = s.Get<OrganizationTeamModel>(teamId);
+					var managerId = team.ManagedBy;
+					if (members.All(x => x.UserId != managerId))
+					{
+						var manager = s.Get<UserOrganizationModel>(managerId);
+						members.Add(new TeamDurationModel(manager, team, -1)
+						{
+							Id = -2,
+							User = manager,
+							Team = team,
+						});
+					}
+				}
+				catch (Exception e)
+				{
+					log.Error("Error adding manager", e);
+				}
+			}
+			return members;
+		}
+
 
 		/// <summary>
 		/// Requires:
@@ -184,7 +347,7 @@ namespace RadialReview.Accessors
 		/// <param name="caller"></param>
 		/// <param name="teamId"></param>
 		/// <returns></returns>
-		public static List<TeamDurationModel> GetTeamMembers(AbstractQuery s, PermissionsUtility permissions, long teamId)
+		private static List<TeamDurationModel> GetTeamMembers(AbstractQuery s, PermissionsUtility permissions, long teamId)
 		{
 			permissions.ViewTeam(teamId);
 			OrganizationTeamModel team;
@@ -231,9 +394,11 @@ namespace RadialReview.Accessors
 				case TeamType.Subordinates:
 					{
 						//var subordinates = caller.Hydrate(s).ManagingUsers(true).Execute().AllSubordinates;
-						permissions.OwnedBelowOrEqual(x => x.Id == team.ManagedBy);
+						//permissions.OwnedBelowOrEqual(x => x.Id == team.ManagedBy);
 						var callerUnderlying = s.Get<UserOrganizationModel>(team.ManagedBy);
-						var subordinates = SubordinateUtility.GetSubordinates(callerUnderlying, false).Union(callerUnderlying.AsList(), new EqualityComparer<UserOrganizationModel>((x, y) => x.Id == y.Id, x => x.Id.GetHashCode()));
+						var subs = UserAccessor.GetDirectSubordinates(s, permissions, team.ManagedBy);
+						//var subs = SubordinateUtility.GetSubordinates(callerUnderlying, false);
+						var subordinates = subs.Union(callerUnderlying.AsList(), new EqualityComparer<UserOrganizationModel>((x, y) => x.Id == y.Id, x => x.Id.GetHashCode()));
 						return subordinates.Select(x => new TeamDurationModel()
 						{
 							Id = -2,

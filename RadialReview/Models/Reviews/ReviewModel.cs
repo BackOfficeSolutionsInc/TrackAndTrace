@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models
 {
@@ -30,6 +31,9 @@ namespace RadialReview.Models
         public virtual bool Complete { get; set; }
         public virtual decimal? DurationMinutes { get; set; }
         public virtual bool Started { get; set; }
+
+		//public virtual Ratio Roles { get; set; }
+		//public virtual Ratio Values{ get; set; } 
         
 
         /*public virtual decimal Completion { get; set; }
@@ -152,6 +156,9 @@ namespace RadialReview.Models
             Map(x => x.DueDate);
             Map(x => x.Started);
             Map(x => x.DeleteTime);
+
+			//Component(x => x.Roles).ColumnPrefix("Roles_");
+			//Component(x => x.Values).ColumnPrefix("Values_");
 
 
 			Map(x => x.PeriodId).Column("PeriodId");

@@ -3,7 +3,6 @@
 	onchange = onchange || function() {};
 	$(selector).find("input").on("change", onchange);
 	$(selector).find(".expander").on("click", function() {
-
 		var on = $(this).hasClass("expanded");
 		if (on) {
 			$(this).trigger("collapse");
@@ -15,18 +14,23 @@
 	var allIds = $(selector).find("input[type='checkbox']").select(function(c) {
 		return $(c).data("checktree-id");
 	});
-	debugger;
 
 
-	for (var i = 0; i < allIds.length; i++) {
+	setTimeout(function () {
 
-		if (allUncheck.indexOf(allIds[i]) != -1) {
-			$("input[data-checktree-id='" + allUncheck[i] + "']").prop("checked", false);
-		} else {
-			$("input[data-checktree-id='" + allUncheck[i] + "']").prop("checked", true);
+		for (var i = 0; i < allIds.length; i++) {
+			$(allIds[i]).prop("checked", false);
+			//updateChecktree.call($(allIds[i]));
+			$(allIds[i]).trigger("change");
 		}
-		$("input[data-checktree-id='" + allUncheck[i] + "']").trigger("change");
-	}
+
+		for (var i = 0; i < allIds.length; i++) {
+			if (allUncheck.indexOf($(allIds[i]).data("checktree-id")) != -1) {
+				$(allIds[i]).prop("checked", true);
+				updateChecktree.call($(allIds[i]));
+			}
+		}
+	}, 1);
 
 	$(selector).find(".expander").on("collapse", function() {
 		$(this).siblings(".subtree").addClass("hidden");
@@ -38,6 +42,8 @@
 		$(this).addClass("expanded");
 		return true;
 	});
+	$(".expander").trigger("collapse");
+	$(".expander").first().trigger("expand");
 }
 
 function _checktree(selector, data, init) {
@@ -64,7 +70,7 @@ function _checktree(selector, data, init) {
 			$(branch).append("<label data-checktree-id='" + d.id + "' for='checkbox_" + d.id + "' class='" + leaf + "'>" + d.title + "</label>");
 			var subtree = $("<div class='subtree'></div>");
 			$(branch).append(subtree);
-			if (d.hidden) {
+			if (!d.hidden) {
 				output.push(d.id);
 			}
 			output = output.concat(_checktree(subtree, d.subgroups, true));
@@ -118,15 +124,17 @@ function _checkChecktree(checktreeId, value) {
 	for (var i = 0; i < elems.length; i++) {
 		var e = $(elems[i]);
 		if (!$(e).hasClass("updated")) {
+			$(e).addClass("updated");
 			$(e).trigger("change");
+			
 
 			var children = $(e).siblings(".subtree").find("input");
 			for (var c = 0; c < children.length; c++) {
 				var childId = $(children[c]).data("checktree-id");
 				_checkChecktree(childId, value);
 			}
-			$(e).addClass("updated");
-			
+			//$(e).addClass("updated");
+
 		}
 	}
 }

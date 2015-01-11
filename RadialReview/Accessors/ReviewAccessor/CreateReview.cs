@@ -54,7 +54,7 @@ namespace RadialReview.Accessors {
                     unsentEmails.Add(
                             MailModel.To(user.GetEmail())
                             .Subject(EmailStrings.NewReview_Subject, organizationName)
-							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName, reviewContainer.ReviewName)
+							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToShortDateString(), Config.BaseUrl() + "n/" + guid, Config.BaseUrl() + "n/" + guid, ProductStrings.ProductName, reviewContainer.ReviewName)
                         );
                 }
                 else {
@@ -123,7 +123,7 @@ namespace RadialReview.Accessors {
 
                     team = dataInteraction.GetQueryProvider().All<OrganizationTeamModel>().First(x => x.Id == forTeamId);
 
-                    var usersToReview = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, forTeamId).ToListAlive();
+					var usersToReview = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, forTeamId, false).ToListAlive();
 
                     List<Exception> exceptions = new List<Exception>();
 
@@ -227,10 +227,11 @@ namespace RadialReview.Accessors {
                         ActionCode = NexusActions.TakeReview
                     };
                     NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
+	                var url = Config.BaseUrl() + "n/" + guid;
                     unsentEmails.Add(MailModel
                         .To(beingReviewedUser.GetEmail())
                         .Subject(EmailStrings.NewReview_Subject, organization.Name.Translate())
-                        .Body(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), (dueDate.AddDays(-1)).ToShortDateString(), ProductStrings.BaseUrl + "n/" + guid, ProductStrings.BaseUrl + "n/" + guid, ProductStrings.ProductName,reviewContainer.ReviewName)
+                        .Body(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), (dueDate.AddDays(-1)).ToShortDateString(),url,url, ProductStrings.ProductName,reviewContainer.ReviewName)
                     );
                 }
 

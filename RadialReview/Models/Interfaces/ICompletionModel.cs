@@ -11,7 +11,7 @@ namespace RadialReview.Models.Interfaces
         bool Started { get; }
         bool FullyComplete { get; }
         List<CompletionModel> GetCompletions();
-
+	    decimal GetPercentage();
         bool Illegal { get; }
     }
 }

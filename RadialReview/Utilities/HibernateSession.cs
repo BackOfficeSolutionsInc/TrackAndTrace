@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Utilities
 {
@@ -47,12 +48,11 @@ namespace RadialReview.Utilities
                 {
                     var config = System.Configuration.ConfigurationManager.AppSettings;
                     var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
-                    var dbType = config["DbType"];
-                    switch (dbType.ToLower())
+                    switch (Config.GetEnv())
                     {
-                        case "sqlite":
+                        case Env.local_sqlite:
                             {
-                                var connectionString = connectionStrings["DefaultConnection"].ConnectionString;
+								var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
                                 var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
                                 DbFile = file;
                                 try
@@ -76,17 +76,31 @@ namespace RadialReview.Utilities
                                 }
                                 break;
                             }
-                        case "mysql":
+						case Env.local_mysql:
+							{
+								factory = Fluently.Configure().Database(
+											MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
+								   .Mappings(m =>
+								   {
+									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
+									   //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+									   //m.AutoMappings.Add(CreateAutomappings);
+									   //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+								   }).ExposeConfiguration(BuildProductionMySqlSchema)
+								   .BuildSessionFactory();
+								break;
+							}
+                        case Env.production:
                             {
                                 factory = Fluently.Configure().Database(
-                                            MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnection"].ConnectionString).ShowSql())
+											MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
                                    .Mappings(m =>
                                    {
                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
                                        //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                        //m.AutoMappings.Add(CreateAutomappings);
                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-                                   }).ExposeConfiguration(BuildMySqlSchema)
+                                   }).ExposeConfiguration(BuildProductionMySqlSchema)
                                    .BuildSessionFactory();
                                 break;
                             }
@@ -145,7 +159,10 @@ namespace RadialReview.Utilities
             // this NHibernate tool takes a configuration (with mapping info in)
             // and exports a database schema from it
         }
-        private static void BuildMySqlSchema(Configuration config)
+
+
+
+        private static void BuildProductionMySqlSchema(Configuration config)
         {
             //UPDATE DATABASE:
             new SchemaUpdate(config).Execute(true, true);

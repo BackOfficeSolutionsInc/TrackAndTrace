@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using FluentNHibernate.Mapping;
 
 namespace RadialReview.Utilities.DataTypes
 {
@@ -30,7 +31,12 @@ namespace RadialReview.Utilities.DataTypes
 		public Ratio(decimal numerator, decimal denominator)
 		{
 			Numerator = numerator;
-			Denominator=denominator;
+			Denominator = denominator;
+		}
+		public Ratio(decimal numerator, decimal denominator,decimal weight)
+		{
+			Numerator = numerator * weight;
+			Denominator = denominator * weight;
 		}
 
 		public bool IsValid()
@@ -44,5 +50,18 @@ namespace RadialReview.Utilities.DataTypes
 			return invalid.Value;
 		}
 
+		public override string ToString()
+		{
+			return String.Format("{0:0.00}/{1:0.00}", Numerator, Denominator);
+		}
+
+		public class RatioComponent : ComponentMap<Ratio> 
+		{
+			public RatioComponent()
+			{
+				Map(x => x.Numerator).Column("Num");
+				Map(x => x.Denominator).Column("Den");
+			}
+		} 
 	}
 }

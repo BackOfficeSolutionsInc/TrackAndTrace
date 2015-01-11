@@ -9,7 +9,7 @@
 
 <div class="panel panel-primary @checkboxClass.NotNull(x => "panel-includable panel-class-" + x)" style="position: relative;">
 	<div class="panel-heading panel-square">
-		<a class="collapseHeading " data-toggle="collapse" data-parent="#accordion" href="#collapse@(sectionId)">
+		<a class="collapseHeading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse@(sectionId)">
 			<div class="collapseIcon glyphicon glyphicon-collapse-down"></div>
 			<h3 class="panel-title" style="padding-left: 12px; display:inline-block">@sectionTitle</h3>
 		</a>
@@ -20,8 +20,10 @@
 			</div>
 		}
 	</div>
-	<div id="collapse@(sectionId)" class="panel-collapse collapse in remember" style="padding: 8px;">
-		@Html.Partial(partialViewName, Model, ViewData)
+	<div id="collapse@(sectionId)" class="panel-collapse collapse in remember">
+		<div style="padding: 8px;">
+			@Html.Partial(partialViewName, Model, ViewData)
+		</div>
 	</div>
 	<div class="excludeOverlay flex-center">
 		<div>EXCLUDED</div>

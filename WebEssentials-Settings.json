@@ -2,7 +2,7 @@
   "BrowserLink": {
     "CssIgnorePatterns": "bootstrap*; reset.css; normalize.css; jquery*",
     "EnableMenu": false,
-    "EnablePixelPushing": true,
+    "EnablePixelPushing": false,
     "ShowMenu": false
   },
   "CodeGen": {

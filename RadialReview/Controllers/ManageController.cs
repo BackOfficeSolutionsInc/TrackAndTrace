@@ -82,7 +82,7 @@ namespace RadialReview.Controllers
                 try
                 {
                     teams[i].Team = teams[i].Team.HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
-                    teams[i].Members = _TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id).ToListAlive().Count();
+					teams[i].Members = _TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id, false).ToListAlive().Count();
                 }
                 catch (Exception e)
                 {

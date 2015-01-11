@@ -148,6 +148,7 @@
 		border: 1px solid #EC971F;
 	}
 
+
 	.table-io.companyValues .fill.Negative,.valueTable .fill.Negative  {
 		background-color: #D9534F;
 		border: 1px solid #D9534F;
@@ -169,7 +170,7 @@
 	}
 
 	.table-io.companyValues .fill.Negative:not(.companyValues-score):after,.valueTable .fill.Negative:after {
-		content: "-";
+		content: "–";
 	}
 
 	
@@ -497,6 +498,7 @@
 }
 
 #roleTable .roleTable, #valueTable .valueTable {
+	vertical-align: top;
 	clear: both;
 	min-height: 200px !important;
 	height: 200px;
@@ -514,6 +516,11 @@
 	border-top: 1px solid #DDDDDD;
 	border-bottom: 1px solid #DDDDDD;
 }
+
+	.roleTable tr, .valueTable tr {
+		vertical-align: top;
+		/*border-bottom: 1px solid #ddd;*/
+	}
 
 #roleTable .header,#valueTable .header {
 	max-width: 50%;
@@ -599,4 +606,23 @@ td.alt {
 .completion {
 	line-height: 1;
 	font-size: 12px;
+}
+
+.valueTableQuestion {
+	padding-top: 4px !important;
+	padding-left: 4px !important;
+}
+
+
+.valueTableReason {
+	padding-bottom: 4px !important;
+}
+.roleTableReason {
+	padding-bottom: 4px !important;
+}
+
+.roleTableQuestion {
+	padding-top: 3px !important;
+	padding-left: 4px !important;
+	font-weight: bold;
 }

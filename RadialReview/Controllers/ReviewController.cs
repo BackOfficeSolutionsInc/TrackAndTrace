@@ -882,7 +882,7 @@ namespace RadialReview.Controllers
 						var tot = pos + neg + neut;
 						if (tot == 0)
 							return new HtmlString("");
-						return new HtmlString("" + Math.Round((pos + (neut / 2m)) / (tot) * 100m) + "%");
+						return new HtmlString("" + Math.Round((pos + (neut / 2m)) / (tot) * 100m) + "<span class='percent'>%</span>");
 					}, "companyValues companyValues-score");
 
 					return new Table(data) { TableClass = "companyValues companyValues-client" };
@@ -952,7 +952,7 @@ namespace RadialReview.Controllers
 						}
 					}
 					var clz = "";//String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
-					table.Data.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
+					table.Data.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason.Replace("'", "&#39;").Replace("\"", "&quot;") + "'></span>"));
 				}
 				table.Rows = table.Rows.OrderByDescending(x =>dictionaryPerson[x]).ToList();
 				table.Rows.Add("Score");

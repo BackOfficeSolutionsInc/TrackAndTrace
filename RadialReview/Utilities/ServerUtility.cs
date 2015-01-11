@@ -39,7 +39,7 @@ namespace RadialReview.Utilities
                 try
                 {
                     WebClient client = new WebClient();
-                    var output = await client.DownloadDataTaskAsync(GetConfigValue("BaseUrl") + "/Scheduler/Reschedule");
+					var output = await client.DownloadDataTaskAsync(Config.BaseUrl() + "/Scheduler/Reschedule");
                     break;
                 }
                 catch (Exception e)
@@ -67,9 +67,9 @@ namespace RadialReview.Utilities
             });
         }*/
 
-        public static String GetConfigValue(string key)
+       /* public static String GetConfigValue(string key)
         {
             return WebConfigurationManager.AppSettings[key].ToString();
-        }
+        }*/
     }
 }

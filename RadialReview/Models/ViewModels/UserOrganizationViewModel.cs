@@ -29,7 +29,7 @@ namespace RadialReview.Models.ViewModels
         public long UserId { get; set; }
         public bool IsManager { get; set; }
         //public long ManagerId { get; set; }
-        public Boolean ManagingOrganization { get; set; }
+        public Boolean? ManagingOrganization { get; set; }
         public Boolean CanSetManagingOrganization { get; set; }
 
         //public bool StrictlyHierarchical { get; set; }

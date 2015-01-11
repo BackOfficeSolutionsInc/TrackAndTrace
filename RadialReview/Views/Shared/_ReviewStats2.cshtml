@@ -2,38 +2,41 @@
 @{
 	var id = Guid.NewGuid();
 }
-
-<div class="row aggregate">
-	<div class="col-md-6">
-		<div id="chart_@id"></div>
-	</div>
-	<div class="col-md-6">
-		<div class="filter-header">
-			<span class="alignLeft title">Filter
-			</span>
-			<span class="filter-header-button">
-				<span class="btn btn-link" onclick="$('.checktree.filter .expander').trigger('collapse')">collapse all</span>|<span class="btn btn-link" onclick="$('.checktree.filter .expander').trigger('expand')">expand all</span>
-			</span>
+<div style="position:relative;">
+	<div class="reviewDataLoader2" style="position:absolute;opacity:1;width:100%;height:100%;"><img src="/Content/img/ajax-loader.gif" style="top:calc(50% - 6px);left:calc(50% - 7px);position:absolute;"></div>
+	<div class="row aggregate" style="opacity: 0">
+		<div class="col-md-6">
+			<div id="chart_@id"></div>
 		</div>
-		<div class="checktree filter" style="" id="filters_@id">
+		<div class="col-md-6">
+			<div class="filter-header">
+				<span class="alignLeft title">
+					Filter
+				</span>
+				<span class="filter-header-button">
+					<span class="btn btn-link" onclick="$('.checktree.filter .expander').trigger('collapse')">collapse all</span>|<span class="btn btn-link" onclick="$('.checktree.filter .expander').trigger('expand')">expand all</span>
+				</span>
+			</div>
+			<div class="checktree filter" style="" id="filters_@id">
 
-		</div>
-		<div class="ordered" style="" id="ordered_@id">
-			<div class="row">
-				<div class="col-sm-12">
-					<div class="alignLeft title">Ranking</div>
-					<div class="rankingContainer">
-						<table id="ranking" class="tablesorter fullWidth">
-							<thead>
-								<tr>
-									<th style="width:1px;padding-right: 10px;"></th>
-									<th>Name</th>
-									<th style="width:1px;padding-right: 10px;">Values</th>
-									<th style="width:1px;padding-right: 10px;">Roles</th>
-								</tr>
-							</thead>
-							<tbody class="ranking"></tbody>
-						</table>
+			</div>
+			<div class="ordered" style="" id="ordered_@id">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="alignLeft title">Ranking</div>
+						<div class="rankingContainer">
+							<table id="ranking" class="tablesorter fullWidth">
+								<thead>
+									<tr>
+										<th style="width:1px;padding-right: 10px;"></th>
+										<th>Name</th>
+										<th style="width:1px;padding-right: 10px;">Values</th>
+										<th style="width:1px;padding-right: 10px;">Roles</th>
+									</tr>
+								</thead>
+								<tbody class="ranking"></tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -44,20 +47,21 @@
 {
 	<link href="~/Content/Chart/Scatter.v2.css" rel="stylesheet" />
 	<style>
-
-		 .filter-header {
-			 position: relative;
-			 height: 30px;
-		 }
-		.filter-header .filter-header-button {
-			position: absolute;
-			right: 0;
-			bottom: 0;
+		.filter-header {
+			position: relative;
+			height: 30px;
 		}
+
+			.filter-header .filter-header-button {
+				position: absolute;
+				right: 0;
+				bottom: 0;
+			}
+
 		.aggregate .title {
 			color: #767676;
 			font-size: 18px;
-			padding:6px 12px;
+			padding: 6px 12px;
 		}
 
 		svg .title {
@@ -100,89 +104,101 @@
 
 
 		var chart = new ScatterImage("chart_@id");
+		$(function () {
+			var dataUrl = "/Data/AggregateReviewScatter/@Model";
+			chart.PullPlot(dataUrl, null, function (data) {
+				//data.useForce = false;
+				var chart = this;
+				var builder = "";
+				var lx = -1000;
+				var ly = -1000;
+				var lc = 0;
+				//Top 10
+				for (var i = 0; i < data.OrderedPoints.length; i++) {
+					var d = data.OrderedPoints[i];
+					var cxx = Math.round(d.cx);
+					var cyy = Math.round(d.cy);
+					var count = i;
+					if ((lx == cxx && ly == cyy))
+						count = lc;
+					lx = cxx;
+					ly = cyy;
+					lc = i;
+					var title = d.title;
 
-		var dataUrl = "/Data/AggregateReviewScatter/@Model";
-		chart.PullPlot(dataUrl, null, function (data) {
+					if (d.link) {
+						title = "<a href='" + d.link + "'>" + title + "</a>";
+					}
 
-			var chart = this;
-			var builder = "";
-			var lx = -1000;
-			var ly = -1000;
-			var lc = 0;
-			//Top 10
-			for (var i = 0; i < data.OrderedPoints.length; i++) {
-				var d = data.OrderedPoints[i];
-				var count = i;
-				if ((lx == d.cx && ly == d.cy))
-					count = lc;
-				lx = d.cx;
-				ly = d.cy;
-				lc = i;
-				builder += "<tr class='selectable' data-checktree-id='" + d.id + "'><td>" + (count + 1) + "</td><td>" + d.title + "</td><td>" + Math.round(d.cx) + "</td><td>" + Math.round(d.cy) + "</td></tr>";
-				//builder += "<li><span class='selectable' data-checktree-id='" + d.id + "'>" + (count + 1) + ". " + d.title + "</span></li>";
-			}
-			$("#ordered_@id .ranking").html(builder);
+					builder += "<tr class='selectable' data-checktree-id='" + d.id + "'><td>" + (count + 1) + ".</td><td>" + title + "</td><td>" + cxx + "</td><td>" + cyy + "</td></tr>";
+					//builder += "<li><span class='selectable' data-checktree-id='" + d.id + "'>" + (count + 1) + ". " + d.title + "</span></li>";
+				}
+				$("#ordered_@id .ranking").html(builder);
 
 
-			$("#ranking.tablesorter").tablesorter({
-				sortStable: true,
-			});
-
-			checktree("#filters_@id", [data.FilterTree.Data], function (d) {
-				var clzz = $(this).data("checktree-id");
-				var val = $(this).is(":checked");
-				d3.selectAll(".scatter ." + clzz).classed("hidden", !val);
-				d3.selectAll(".scatter ." + clzz).datum(function () {
-					var d = d3.select(this).datum();
-					d.hidden = !val;
-					return d;
+				$("#ranking.tablesorter").tablesorter({
+					sortStable: true,
 				});
-				//$(".scatter ." + clzz).toggleClass("hidden", val);
 
-				chart.force.alpha(.005);
-				chart.force.start();
-				return false;
+				checktree("#filters_@id", [data.FilterTree.Data], function (d) {
+					var clzz = $(this).data("checktree-id");
+					var val = $(this).is(":checked");
+					d3.selectAll(".scatter ." + clzz).classed("hidden", !val);
+					d3.selectAll(".scatter ." + clzz).datum(function () {
+						var d = d3.select(this).datum();
+						d.hidden = !val;
+						return d;
+					});
+					//$(".scatter ." + clzz).toggleClass("hidden", val);
+
+					chart.force.alpha(.005);
+					chart.force.start();
+					return false;
+				});
+
+				$(".aggregate .selectable,.aggregate .leaf").hover(function () {
+					var id = $(this).data("checktree-id");
+					d3.select("#chart_@id g." + id + " .border").classed("select", true);//.d3MouseOver();
+					d3.selectAll("#chart_@id ." + id).classed("overrideShow", true);//.d3MouseOver();
+				}, function () {
+					var id = $(this).data("checktree-id");
+					d3.select("#chart_@id g." + id + " .border").classed("select", false);//$("#chart_@id g." + id + " .hoverable").d3MouseLeave();
+					d3.selectAll("#chart_@id ." + id).classed("overrideShow", false);//.d3MouseOver();
+				});
+
+				$(".aggregate").animate({ opacity: 1 });
+				$(".reviewDataLoader2").animate({ opacity: 0 });
+				/*var x, y;
+			var i = 0;
+			for (var d in data.Dimensions) {
+				if (i == 0)
+					x = d;
+				if (i == 1)
+					y = d;
+				i++;
+			}
+
+			chart.Plot(data, {
+				animate: true,
+				reset: false,
+				xAxis: data.Dimensions[x].Name,
+				yAxis: data.Dimensions[y].Name,
+				xDimensionId: data.Dimensions[x].Id,
+				yDimensionId: data.Dimensions[y].Id,
+				defaultFilter: "all",
+				//$("#xAxis option:selected").text(),
+				//yAxis: $("#yAxis option:selected").text(),
+				//xDimensionId: $("#xAxis").val(),
+				//yDimensionId: $("#yAxis").val(),
+				//startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
+				//endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
+				//time: date3,//new Date(parseInt($("#date").val()))
+				groups: [["user-*"]],
+				filters: null,
+				//legendFunc: legendFunc,
+				//extraClasses: extraClasses,
+			});*/
 			});
-
-			$(".aggregate .selectable,.aggregate .leaf").hover(function () {
-				var id = $(this).data("checktree-id");
-				d3.select("#chart_@id g." + id + " .border").classed("select", true);//.d3MouseOver();
-				d3.selectAll("#chart_@id ." + id).classed("overrideShow", true);//.d3MouseOver();
-			}, function () {
-				var id = $(this).data("checktree-id");
-				d3.select("#chart_@id g." + id + " .border").classed("select", false);//$("#chart_@id g." + id + " .hoverable").d3MouseLeave();
-				d3.selectAll("#chart_@id ." + id).classed("overrideShow", false);//.d3MouseOver();
-			});
-			/*var x, y;
-		var i = 0;
-		for (var d in data.Dimensions) {
-			if (i == 0)
-				x = d;
-			if (i == 1)
-				y = d;
-			i++;
-		}
-
-		chart.Plot(data, {
-			animate: true,
-			reset: false,
-			xAxis: data.Dimensions[x].Name,
-			yAxis: data.Dimensions[y].Name,
-			xDimensionId: data.Dimensions[x].Id,
-			yDimensionId: data.Dimensions[y].Id,
-			defaultFilter: "all",
-			//$("#xAxis option:selected").text(),
-			//yAxis: $("#yAxis option:selected").text(),
-			//xDimensionId: $("#xAxis").val(),
-			//yDimensionId: $("#yAxis").val(),
-			//startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
-			//endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
-			//time: date3,//new Date(parseInt($("#date").val()))
-			groups: [["user-*"]],
-			filters: null,
-			//legendFunc: legendFunc,
-			//extraClasses: extraClasses,
-		});*/
 		});
 	</script>
 }

@@ -57,7 +57,13 @@ namespace RadialReview.Models
                 return anyIllegal;
             }
         }
-    }
+
+
+	    public decimal GetPercentage()
+	    {
+		    return Completions.Sum(x => x.RequiredCompleted)/(decimal)Completions.Sum(x => x.TotalRequired);
+	    }
+	}
     /*
     public class CompletionItem{
         public decimal Count {get;set;}

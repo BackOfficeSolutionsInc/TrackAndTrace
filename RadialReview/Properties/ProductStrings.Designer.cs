@@ -63,9 +63,9 @@ namespace RadialReview.Properties {
         /// <summary>
         ///   Looks up a localized string similar to http://review.radialreview.com/.
         /// </summary>
-        public static string BaseUrl {
+        public static string BaseUrl2 {
             get {
-                return ResourceManager.GetString("BaseUrl", resourceCulture);
+                return ResourceManager.GetString("BaseUrl2", resourceCulture);
             }
         }
         

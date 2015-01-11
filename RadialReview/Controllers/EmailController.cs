@@ -21,7 +21,8 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public async Task<JsonResult> RemindAboutReview(long id)
         {
-            var reviewContainterId = id;
+	        throw new PermissionsException("todo");
+           /* var reviewContainterId = id;
             var allReviews= _ReviewAccessor.GetReviewsForReviewContainer(GetUser(), id,true);
             var incompleteReviews = allReviews.Where(x=>!x.Complete).Select(x=>x.ForUser).ToList();
 
@@ -30,10 +31,14 @@ namespace RadialReview.Controllers
             var result= await Emailer.SendEmails(incompleteReviews.Select(x =>
                 MailModel.To(x.GetEmail())
                 .Subject(EmailStrings.ReminderReview_Subject, organization)
-                .Body(EmailStrings.RemindReview_Body, x.GetFirstName())
+				.Body(EmailStrings.RemindReview_Body, x.GetFirstName(),
+				x.DueDate.AddDays(-1).ToShortDateString(),
+					url,
+					url,
+					ProductStrings.ProductName)
                ));
 
-            return Json(ResultObject.Create(result), JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Create(result), JsonRequestBehavior.AllowGet);*/
         }
 
 	    public class ReminderVM
@@ -75,7 +80,7 @@ namespace RadialReview.Controllers
 				.Where(x => ids.Contains(x.ForUserId))
 				.OrderByDescending(x=>x.DueDate);
 
-		    var url = ServerUtility.GetConfigValue("BaseUrl") + "Tasks";
+		    var url = Config.BaseUrl() + "Tasks";
 
 		    //var users = _UserAccessor.GetUsersByIds(model.UserIds);
 			var organization = GetUser().Organization.GetName();
@@ -85,7 +90,7 @@ namespace RadialReview.Controllers
 				.Subject(EmailStrings.ReminderReview_Subject, organization)
 				.Body(EmailStrings.RemindReview_Body,
 					x.ForUser.GetFirstName(),
-					review.DueDate.ToShortDateString(),
+					review.DueDate.AddDays(-1).ToShortDateString(),
 					url,
 					url,
 					ProductStrings.ProductName)

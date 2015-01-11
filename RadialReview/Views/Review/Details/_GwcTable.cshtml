@@ -27,6 +27,7 @@
 
 			var sorter = new Dictionary<Tristate, string> { { Tristate.True, "1" }, { Tristate.Indeterminate, "" }, { Tristate.False, "-1" } };
 			var text = new Dictionary<Tristate, string> { { Tristate.True, "yes" }, { Tristate.Indeterminate, "n/a" }, { Tristate.False, "no" } };
+			
 		}
 
 
@@ -39,13 +40,15 @@
 					<td class="alignLeft italic">@gwc.Item1</td>
 					<td class="bold">@r.Askable.GetQuestion()</td>
 					<td class="block"><div class="fill @gwc.Item2(r)" data-sort="@(sorter[gwc.Item2(r)])"></div><span style="display:none">@(sorter[gwc.Item2(r)]) @text[gwc.Item2(r)]</span></td>
-					<td class="remainingWidth" style="padding-left: 10px;">
+					<td class="remainingWidth" style="padding-left: 10px; white-space: normal;">
 						@{
-				var reason = gwc.Item3(r);
+							var reason = gwc.Item3(r);
 						}
-						@if (!String.IsNullOrWhiteSpace(reason))
-						{
-							<span class="italic">"@reason"</span>
+						@if (!String.IsNullOrWhiteSpace(reason)){
+							<span data-sort="0" class="italic">"@reason"</span>
+						}
+						else{
+							<span data-sort="1"></span>
 						}
 					</td>
 					<td>
@@ -71,11 +74,12 @@
 			$(".roleTable").filterTable({ inputSelector: '#roleTableFilter' });
 			$(".roleTable").tablesorter({
 				headers: {
-					3: { sorter: 'attr' }
+					3: { sorter: 'attr' },
+					4: { sorter: 'attr' }
 				},
 				/*sortForce: [[0, 1]],*/
 				sortStable: true,
-				sortList: [[5, 0]],
+				sortList: [[4, 0],[3, 0]],
 			});
 		});
 		function toggleGWC2(s, id, gwc) {

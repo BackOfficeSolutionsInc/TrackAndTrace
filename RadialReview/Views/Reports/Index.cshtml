@@ -80,6 +80,7 @@
 		<div class="btn btn-default" onclick="sendReminders()">Send Reminder</div>
 		<div class="btn btn-link" onclick="$('.active .userCheck').prop('checked',true)">Select All</div>
 		<div class="btn btn-link" onclick="$('.active .userCheck').removeAttr('checked')">Select None</div>
+		<div class="btn btn-link" onclick="$('.active .userCheck.incomplete').prop('checked', true)">Select Incomplete</div>
 	</div>
 
 	<div class="panel panel-primary startHiddenGroup">
@@ -108,7 +109,7 @@
 				first = false;
 					}
 					<div class="table-responsive">
-						<table class="table table-condensed table-hover">
+						<table id="table_@(panel.Item2)" class="table table-condensed table-hover tablesorter">
 							<thead>
 								<tr>
 									<th style="width:10px;"></th>
@@ -129,7 +130,7 @@
 								{
 									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
 									<tr class="checkRow @(review.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")">
-										<td style="cursor:pointer" onclick="$(this).find('>input').prop('checked', function (i, v) { return !v;})"><input type="checkbox" class="userCheck clickThrough" name="user_@review.ForUserId" data-id="@review.ForUserId" /></td>
+										<td style="cursor:pointer" onclick="$(this).find('>input').prop('checked', function (i, v) { return !v;})"><input type="checkbox" class="userCheck clickThrough @(review.GetCompletion().GetPercentage()<1?"incomplete":"")" name="user_@review.ForUserId" data-id="@review.ForUserId" /></td>
 										<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new { id = review.Id })">@review.ForUser.GetNameAndTitle()</a></td>
 										<td class="alignCenter">
 											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete)) /
@@ -147,7 +148,7 @@
 												@:</a>
 											}
 										</td>
-										<td>@Html.Partial("_Completion", review.GetCompletion())</td>
+										<td><span data-sort="@review.GetCompletion().GetPercentage()">@Html.Partial("_Completion", review.GetCompletion())</span></td>
 										@*<td>
 												@if (review.ForUser.GetPersonallyManaging())
 												{
@@ -169,6 +170,12 @@
 		@using (Html.BeginScripts())
 		{
 			<script>
+
+				$(function() { 
+					@foreach (var p in panels){
+						@:$("#table_@p.Item2").tablesorter({sortList:[[4,1]]} );
+					}
+				});
 
 				function sendReminders() {
 					var ids = [];

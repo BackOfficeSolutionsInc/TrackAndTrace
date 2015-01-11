@@ -75,7 +75,7 @@ namespace RadialReview.Models.Charts
 			if (Data!=null && Data.Any())
 				data = String.Join(" ",Data.Select(x => "data-" + x.Key + "=\"" + x.Value + "\""));
 
-			return new HtmlString("<span class='" + (Class??"") +"' "+data +" title='" +(Title??"")+ "'>"+(Contents.NotNull(x=>x.ToHtmlString())??"")+"</span>");
+			return new HtmlString("<span class='" + (Class ?? "") + "' " + data + " title='" + (Title ?? "").Replace("'", "&#39;").Replace("\"", "&quot;") + "'>" + (Contents.NotNull(x => x.ToHtmlString()) ?? "") + "</span>");
 		}
 	}
 

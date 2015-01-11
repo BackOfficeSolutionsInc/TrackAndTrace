@@ -23,7 +23,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				@foreach (var i in found)
+				@foreach (var i in found.OrderBy(x => String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](x))).ThenByDescending(x => (int)lookup[ViewBag.GWC](x)))
 				{
 					<tr class="gwc-row @lookup[ViewBag.GWC](i)">
 						<td class="gwc-min">@i.ByUser.GetName():</td>
