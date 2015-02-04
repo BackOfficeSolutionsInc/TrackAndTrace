@@ -149,13 +149,14 @@ namespace RadialReview.Models
 				Map(x => x.GetIt);
 				Map(x => x.WantIt);
 				Map(x => x.HasCapacity);
-				Map(x => x.GetItReason);
-				Map(x => x.WantItReason);
-				Map(x => x.HasCapacityReason);
 
-				Map(x => x.IncludeHasCapacityReason).Length(5000); ;
-				Map(x => x.IncludeGetItReason).Length(5000); ;
-				Map(x => x.IncludeWantItReason).Length(5000); ;
+				Map(x => x.GetItReason).Length(5000); 
+				Map(x => x.WantItReason).Length(5000); 
+				Map(x => x.HasCapacityReason).Length(5000);
+
+				Map(x => x.IncludeHasCapacityReason);
+				Map(x => x.IncludeGetItReason); 
+				Map(x => x.IncludeWantItReason); 
 			}
 		}
 	}

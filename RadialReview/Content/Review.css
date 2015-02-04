@@ -142,18 +142,18 @@ input[type="range"] {
 
 .table-gwc .reasonPopup {
 	position: absolute;
-	top: -75px;
-	left: -80px;
+	top: -150px;
+	left: -217px;
 	z-index: 3;
 	-webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5),8px 8px 10px rgba(0, 0, 0, 0.2);
 	-ms-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5),8px 8px 10px rgba(0, 0, 0, 0.2);
 	box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5),8px 8px 10px rgba(0, 0, 0, 0.2);
 }
 
-.table-gwc .reasonPopup textarea {
+.table-gwc .reasonPopup .popup {
 		border: 1px solid #333333;
 		padding: 3px 6px;
-		width: 165px;
+		width: 300px;
 		margin: 0px;
 	}
 
@@ -301,6 +301,26 @@ input[type="range"] {
 .table-values .posneg {
 	margin-top: 6px;
 }
+
+.reason.popup {
+	height: 150px;
+	background-color: white;
+	color: #888;
+}
+.reason.popup:empty:after {
+	content: "No comment provided.";
+	font-style: italic;
+}
+
+
+.reason.popup:not(:empty):after {
+	content: "\"";
+}
+
+.reason.popup:not(:empty):before {
+	content: "\"";
+}
+
 /*
 .flexcontainer {
    display: -webkit-flex;
@@ -332,3 +352,140 @@ input[type="range"] {
 .flexB {
 	width: 240px;
 }*/
+
+
+.userContainer {
+	/*width: 200px;
+	height: 260px;
+	position: relative;*/
+	-moz-perspective: 800px;
+	-ms-perspective: 800px;
+	-webkit-perspective: 800px;
+	-o-perspective: 800px;
+	perspective: 800px;
+}
+
+.flipCard {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	-webkit-transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+	-ms-transform-style: preserve-3d;
+	-o-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+	-moz-transition: transform 1s;
+	-o-transition: transform 1s;
+	-webkit-transition: transform 1s;
+	transition: transform 1s;
+	-ms-transform: rotateY( 0deg );
+	-o-transform: rotateY( 0deg );
+	-webkit-transform: rotateY( 0deg );
+	-moz-transform: rotateY( 0deg );
+	transform: rotateY( 0deg );
+}
+
+.flipCard figure {
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	-webkit-backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+	-ms-backface-visibility: hidden;
+	-o-backface-visibility: hidden;
+	backface-visibility: hidden;
+	-webkit-transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+	-ms-transform-style: preserve-3d;
+	-o-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+}
+
+.flipCar figure * {
+	-webkit-backface-visibility: hidden !important;
+	-moz-backface-visibility: hidden !important;
+	-ms-backface-visibility: hidden !important;
+	-o-backface-visibility: hidden !important;
+	backface-visibility: hidden !important;
+}
+
+.flipCard  .front {
+  /*background: red;*/
+}
+	.flipCard .back {
+		/*background: blue;*/
+		-moz-transform: rotateY( 180deg );
+		-ms-transform: rotateY( 180deg );
+		-o-transform: rotateY( 180deg );
+		-webkit-transform: rotateY( 180deg );
+		transform: rotateY( 180deg );
+	}
+	
+.flipCard.flipped {
+	-moz-transform: rotateY( 180deg );
+	-ms-transform: rotateY( 180deg );
+	-o-transform: rotateY( 180deg );
+	-webkit-transform: rotateY( 180deg );
+	transform: rotateY( 180deg );
+}
+
+.flipButton {
+	position: absolute;
+	right: 19px;
+	top: -17px;
+	color: #BDBDBD;
+	cursor: pointer;
+	-webkit-transition: opacity .25s;
+	-moz-transition: opacity .25s;
+	-ms-transition: opacity .25s;
+	-o-transition: opacity .25s;
+	transition: opacity .25s;
+}
+
+.nameFade {
+	-webkit-transition: opacity 1s;
+	-moz-transition: opacity 1s;
+	-ms-transition: opacity 1s;
+	-o-transition: opacity 1s;
+	transition: opacity 1s;
+}
+
+.nameFade.flipped {
+	-ms-opacity: 0;
+	opacity: 0;
+}
+
+.flipButton:not(.flipped) {
+	-ms-opacity: .5;
+	opacity: .5;
+}
+
+.arrowIndicator {
+	position: relative;
+	left: -43px;
+	top: 3px;
+	width: 0px;
+	color: #BBBBBB;
+	float: left;
+}
+
+.indicator {
+	position: relative;
+	left: -46px;
+	top: 5px;
+	width: 0px;
+	height: 10px;
+	color: #BBB;
+	float: left;
+}
+.progressIndicator {
+	position: absolute;
+	width: 20px;
+	height: 10px;
+	color: #BBBBBB;
+	float: left;
+}
+.currentPage {
+	font-weight: bold;
+}

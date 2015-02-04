@@ -18,7 +18,7 @@ namespace RadialReview.Models.Askables {
 			return QuestionType.Rock;
 		}
 
-		public virtual long PeriodId { get; set; }
+		public virtual long? PeriodId { get; set; }
 		public virtual PeriodModel Period { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? CompleteTime { get; set; }

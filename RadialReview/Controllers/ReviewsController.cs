@@ -355,12 +355,11 @@ namespace RadialReview.Controllers
 
         [Access(AccessLevel.Manager)]
         [HttpPost]
-        public ActionResult Delete(DeleteReview model)
+        public JsonResult Delete(DeleteReview model)
         {
             _ReviewAccessor.DeleteReviewContainer(GetUser(), model.ReviewContainerId);
             ViewBag.Success = "Removed review.";
-            return RedirectToAction("Outstanding","Reviews");
-            //return Json(ResultObject.Success(), JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success("Deleted Review"), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]

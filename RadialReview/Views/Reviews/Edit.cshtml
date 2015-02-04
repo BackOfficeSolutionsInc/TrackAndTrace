@@ -89,10 +89,15 @@
                     url: "/Reviews/Delete/@(Model.Review.Id)",
                     success: function (data) {
                         StoreJsonAlert(data);
-                        location.reload();
+                        document.location.href = "/Reviews/";
                     }
                 });
             }
+        }
+
+		function goToReview() {
+			debugger;
+			document.location.href = "/Reviews/";
         }
 
         $(function () {
@@ -163,7 +168,7 @@
                         </div>
                     </td>
 					<td>
-						<div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Delete Review", "/Reviews/Delete/" + Model.Review.Id, "/Reviews/Delete/")">
+						<div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Delete Review", "/Reviews/Delete/" + Model.Review.Id, "/Reviews/Delete/",onCompleteFunction:"goToReview")">
 							Delete Review
 						</div>
 					</td>

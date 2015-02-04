@@ -1253,7 +1253,7 @@ color: #559DC5;
 }
 
 .info:after {
-    font-size: 60%;
+    font-size: 70%;
     color: #767F99;
     content: "[?]";
     width: 4px;
@@ -1317,11 +1317,12 @@ textarea.reason {
 	-ms-resize: none;
 	-o-resize: none;
 	resize: none;
-	border: none;
-	outline: none;
+	/*border: none;
+	outline: none;*/
 	cursor: pointer;
 	margin-left: 4px;
-	padding-top: 5px;
+	/*padding-top: 5px;*/
+	padding: 3px 4px;
 	color: #472E77;
 	outline-color: transparent;
 }
@@ -1346,3 +1347,13 @@ textarea.reason {
 		color: #7659B2;
 		/*border: 1px solid #A9A9A9;*/
 	}
+
+.alertBar {
+	position: relative;
+	top: 40px;
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;
+	-ms-border-radius: 0px;
+	border-radius: 0px;
+	margin-bottom: 3px;
+}

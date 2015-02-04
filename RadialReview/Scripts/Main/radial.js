@@ -227,6 +227,8 @@ function UnstoreJsonAlert() {
 function StoreJsonAlert(json) {
     var alert = new Object();
     alert.message = json.Message;
+	if (!json.MessageType)
+		json.MessageType = "danger";
     alert.type = "alert-" + json.MessageType.toLowerCase();
     alert.title = json.Heading;
     localStorage.setItem("Alert", JSON.stringify(alert));
@@ -332,8 +334,17 @@ function setVal(selector, val) {
     };
 
     $(".panel-collapse").collapse({
-        toggle: false
+    	toggle: false
     });
+
+    $(".autoheight").each(function (index) {
+	    var maxHeight = 0;
+		$(this).children().each(function() {
+			maxHeight = Math.max(maxHeight, $(this).height());
+		});
+	    $(this).height(maxHeight);
+    });
+
 
 })(jQuery);
 /*

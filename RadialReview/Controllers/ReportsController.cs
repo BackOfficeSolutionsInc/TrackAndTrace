@@ -66,12 +66,12 @@ namespace RadialReview.Controllers
 		    return RedirectToAction("Details", "Review",new{id=reviewId});
 	    }
 
-	    [Access(AccessLevel.Manager)]
+	    /*[Access(AccessLevel.Manager)]
 	    public ActionResult Affinity(int id)
 	    {
 
 
-	    }
+	    }*/
 
 
 	    [Access(AccessLevel.Manager)]

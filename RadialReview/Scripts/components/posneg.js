@@ -11,7 +11,7 @@ function InitPosneg() {
 		}
 	});
 
-	$('.posneg-val').click(function () {
+	$('.editor .posneg-val').click(function () {
 		var oldValue = $(this).parent().find("input").val();
 		var newValue = $(this).data("value");
 

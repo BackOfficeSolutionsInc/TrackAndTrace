@@ -13,13 +13,21 @@
 
 }
 @section top{
+	@if (!Model.Editable)
+	{
+		<div class="alertBar progress">
+			<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+				This review is past due. This screen is read-only, you won't be able to make changes to it.
+			</div>
+		</div>
+	}
 	<div class="jumbotron">
-		<h1>@Model.ForUser.GetName()</h1>
+		<h1 class="nameFade">@Model.ForUser.GetName()</h1>
 	</div>
-	<div class="hover" style="position: relative;bottom: 28px;padding-left: 6px;color: #FFF;">
+	<div class="hover" style="position: relative; bottom: -28px; padding-left: 6px; color: #FFF;">
 		@if (Model.Anonymous)
 		{
-			@:<span class="glyphicon glyphicon-lock"></span> Your feedback will be anonymous to @(Model.ForUser.GetFirstName()).
+			@:<span class="glyphicon glyphicon-lock"></span> Your feedback will be anonymous to @(Model.ForUser.GetFirstName()). &nbsp;Only their manager will see your name.
 		}
 		else
 		{
@@ -28,9 +36,45 @@
 	</div>
 }
 
+@section sidebar{
+	<div class="flipButton" onclick="$('.flipCard,.nameFade').toggleClass('flipped');"><span class="glyphicon glyphicon-share-alt"></span></div>
+	<div class="userContainer noselect">
+		<div class="flipCard">
+			<figure class="front ">
+				<div class="sidebar noselect">
+					<div class="sidebar-contents">
+						@Html.Partial("_User", Model.ForUser)
+					</div>
+				</div>
+			</figure>
+			<figure class="back">
+				<div class="sidebar">
+					<div class="sidebar-contents">
+						<ol id="nameList">
+							@for (int i = 0; i < Model.OrderedPeople.Count; i++)
+							{
+								<li class="@(Model.OrderedPeople[i].Item2?"complete1":"incomplete1")">
+									<span class="indicator">
+										<span class="progress progressIndicator">
+											<span class="progress-bar @(Model.OrderedPeople[i].Item2 ? "progress-bar-success" : "progress-bar-primary progress-bar-striped")" style="width:@(Model.OrderedPeople[i].Item3)%"></span>
+										</span>
+									</span>
+									<a class="@(i == Model.Page ? "currentPage" : "")"href="@Url.Action("take", new{id = Model.Id, page = i} )">@Model.OrderedPeople[i].Item1</a>
+									
+								</li>
+							}
+							<li stlye="list-style: square;"><a href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Review Others</a></li>
+						</ol>
+					</div>
+				</div>
+			</figure>
+		</div>
+	</div>
+}
+
 
 @Html.HiddenFor(x => x.StartTime.Ticks)
-@if (Model.Page == 0)
+@if (Model.Page == 0 && Model.Editable && Model.FirstPageHint)
 {
 	<div class="row">
 		<div class="col-md-12">
@@ -93,20 +137,6 @@
 
 </div>
 
-@section sidebar{
-
-	<div class="">
-		@Html.Partial("_User", Model.ForUser)
-	</div>
-	<hr />
-	<ol id="nameList">
-		@for (int i = 0; i < Model.OrderedPeople.Count; i++)
-		{
-			<li class="@(Model.OrderedPeople[i].Item2?"complete":"incomplete")"><a href="@Url.Action("take", new {id=Model.Id, page = i})">@Model.OrderedPeople[i].Item1</a></li>
-		}
-		<li><a href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Review Others</a></li>
-	</ol>
-}
 
 @using (Html.BeginScripts())
 {
@@ -260,18 +290,23 @@
 			t.position = { at: 'center left', my: 'center right' };
 
 
+			setTimeout(function () {
+				$('.flipCard,.nameFade,.flipButton').addClass("flipped");
+			}, 1500);
+
 
 		});
-	</script>		
-	if(Model.Page == 0)
+	</script>
+
+	if (Model.Page == 0 && Model.Editable && Model.FirstPageHint)
 	{
-		 <script>
-		 	$(function () {
-		 		runTips();
- 			});
- 		</script>
+		<script>
+			$(function () {
+				runTips();
+			});
+		</script>
 	}
-	
+
 }
 
 @using (Html.BeginStyles())

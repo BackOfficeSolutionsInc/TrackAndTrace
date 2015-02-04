@@ -27,24 +27,61 @@
 					<tr>
 						<td style="width:50%"><h4 class="question alignRight" style="padding-right:15px;">@questions[i].Askable.GetQuestion()</h4></td>
 						<td>
-							@Html.EditorFor(x => questions[i].GetIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt" })
+							@if (Model.Item2){
+								@Html.EditorFor(x => questions[i].GetIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt"})
+							}
+							else{
+								@Html.DisplayFor(x => questions[i].GetIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt"})
+							}
 							<span class="reasonButton glyphicon glyphicon-pencil @(String.IsNullOrWhiteSpace(questions[i].GetItReason)?"":"on")" onclick="showReason(this)"></span>
 							<div id="reason_@(id)_GetItReason" class="hidden reasonPopup">
-								<textarea name="question_@(id)_GetItReason" class="full-width changeable reason" placeholder="Add Comment">@questions[i].GetItReason</textarea>
+
+								@if (Model.Item2)
+								{								
+									<textarea name="question_@(id)_GetItReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].GetItReason</textarea>
+								}
+								else
+								{
+									<div class="full-width reason popup">@questions[i].GetItReason</div>
+								}
 							</div>
 						</td>
 						<td>
-							@Html.EditorFor(x => questions[i].WantIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt" })
+							@if (Model.Item2){
+								@Html.EditorFor(x => questions[i].WantIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt"})
+							}
+							else { 
+								@Html.DisplayFor(x => questions[i].WantIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt"})
+							}
 							<span class="reasonButton glyphicon glyphicon-pencil  @(String.IsNullOrWhiteSpace(questions[i].WantItReason) ? "" : "on")" onclick="showReason(this)"></span>
 							<div id="reason_@(id)_WantItReason" class="hidden reasonPopup">
-								<textarea name="question_@(id)_WantItReason" class="full-width changeable reason" placeholder="Add Comment">@questions[i].WantItReason</textarea>
+								@if (Model.Item2)
+								{
+									<textarea name="question_@(id)_WantItReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].WantItReason</textarea>
+								}
+								else
+								{
+									<div class="full-width reason popup">@questions[i].WantItReason</div>
+								}
 							</div>
 						</td>
 						<td>
-							@Html.EditorFor(x => questions[i].HasCapacity, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_HasCapacity" })
+							@if (Model.Item2){
+								@Html.EditorFor(x => questions[i].HasCapacity, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_HasCapacity"})
+							}
+							else{
+								@Html.DisplayFor(x => questions[i].HasCapacity, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_HasCapacity"})
+							}
 							<span class="reasonButton glyphicon glyphicon-pencil  @(String.IsNullOrWhiteSpace(questions[i].HasCapacityReason) ? "" : "on")" onclick="showReason(this)"></span>
 							<div id="reason_@(id)_HasCapacityReason" class="hidden reasonPopup">
-								<textarea name="question_@(id)_HasCapacityReason" class="full-width changeable reason" placeholder="Add Comment">@questions[i].HasCapacityReason</textarea>
+							@if (Model.Item2)
+							{
+								<textarea name="question_@(id)_HasCapacityReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].HasCapacityReason</textarea>
+							}
+							else
+							{
+								<div class="full-width reason popup">@questions[i].HasCapacityReason</div>
+							}
 							</div>
 						</td>
 						<td style="vertical-align:top;width:50%">

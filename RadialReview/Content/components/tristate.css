@@ -7,7 +7,6 @@
 	justify-content: center;
 	font-weight: bold;
 	color: white;
-	cursor: pointer;
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	-webkit-user-select: none;
@@ -16,6 +15,13 @@
 	user-select: none;
 	padding: 0px;
 	margin: -2px;
+}
+
+.editor.tristate {
+	cursor: pointer;
+}
+.display.tristate {
+	cursor: default;
 }
 
 .tristate-container {
@@ -39,7 +45,7 @@
 	transition:background-color .3s;
 }
 
-.fill:hover {
+.editor .fill:hover {
 	-webkit-filter: brightness(95%);
 }
 

@@ -12,7 +12,7 @@ using RadialReview.Utilities.Query;
 namespace RadialReview.Accessors {
 	public class AskableAccessor : BaseAccessor{
 
-		public List<Askable> GetAskablesForUser(UserOrganizationModel caller, long forUserId,long periodId)
+		public List<Askable> GetAskablesForUser(UserOrganizationModel caller, long forUserId,long? periodId)
 		{
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (s.BeginTransaction()){
@@ -22,7 +22,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 		[Obsolete("Includes dead askables. Call with ToListAlive()", false)]
-		public static List<Askable> GetAskablesForUser(UserOrganizationModel caller, AbstractQuery queryProvider, PermissionsUtility perms, long forUserId,long periodId)
+		public static List<Askable> GetAskablesForUser(UserOrganizationModel caller, AbstractQuery queryProvider, PermissionsUtility perms, long forUserId,long? periodId)
 		{
 			var allAskables = new List<Askable>();
 

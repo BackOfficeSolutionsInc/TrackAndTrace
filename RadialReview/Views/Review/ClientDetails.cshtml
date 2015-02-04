@@ -732,10 +732,7 @@
 
 
 		function updateChart() {
-			var groupBy = $("input.group:checked").val();
-			if (groupBy === "")
-				groupBy = "review-*";
-
+			var groupBy = "@Model.Review.ClientReview.ScatterChart.Groups";
 			var opts = {};
 			opts.legendId = "legend";
 			opts.legendFunc = null;
@@ -743,6 +740,14 @@
 			opts.useForce = true;
 			opts.legendFunc = chart.shapeLegend;
 			opts.nodeSize = 8;
+
+			if (groupBy === "review-*" || groupBy === "") {
+				opts.legendFunc = function (lid, pts) {
+					var pts = [{ title: "Aggregate Score", class: "scatterPoint" }];
+					return chart.shapeLegend(lid, pts);
+				};
+			}
+
 			/*if (groupBy === "user-*") {
 				opts.drawPoints = chart.shapePoints;
 				opts.useForce = false;
@@ -762,7 +767,7 @@
 				};
 			}*/
 
-			chart.PullPlot(dataUrl, null, function (data) {
+			chart.PullPlot(dataUrl+"&groupBy="+groupBy, null, function (data) {
 				$(".chartPlaceholder").addClass("hidden");
 				$("#chart2,#legend").fadeIn();
 				data.rest = function () {

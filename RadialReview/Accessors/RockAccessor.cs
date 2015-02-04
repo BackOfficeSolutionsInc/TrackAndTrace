@@ -14,7 +14,7 @@ namespace RadialReview.Accessors
 {
 	public class RockAccessor
 	{
-		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId, long periodId)
+		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId, long? periodId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -25,9 +25,11 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId,long periodId)
+		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId,long? periodId)
 		{
 			perms.ViewUserOrganization(forUserId, false);
+			if (periodId == null)
+				return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.DeleteTime == null);
 			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.DeleteTime == null && x.PeriodId==periodId);
 		}
 

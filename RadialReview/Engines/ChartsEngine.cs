@@ -601,6 +601,30 @@ namespace RadialReview.Engines
 			}
 		}*/
 
+		public List<Scatter> ReviewScatterFromTo(UserOrganizationModel caller, long forUserId, DateTime startTime,DateTime endTime, string groupBy, bool sensitive)
+		{
+			List<ReviewsModel> foundReviews;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					foundReviews = s.QueryOver<ReviewsModel>().Where(x => x.DateCreated <= endTime && startTime <= x.DueDate).List().ToList();
+				}
+			}
+
+			var output=new List<Scatter>();
+
+			foreach (var r in foundReviews){
+				try{
+					var scatter=ReviewScatter2(caller, forUserId, r.Id, groupBy, sensitive);
+					output.Add(scatter);
+				}
+				catch (Exception){
+					//Just don't add it..
+				}
+			}
+			return output;
+		}
+
 		public Scatter ReviewScatter2(UserOrganizationModel caller, long forUserId, long reviewsId, string groupBy, bool sensitive)
 		{
 			if (sensitive){
@@ -620,12 +644,14 @@ namespace RadialReview.Engines
 					}
 				}
 			}
-
+			
 			var reviewAnswers = _ReviewAccessor.GetAnswersForUserReview(caller, forUserId, reviewsId);
 
 			List<Scatter.ScatterPoint> points;
 			String title = null;
 			var legend = GenerateLegend();
+
+			string groupByStandard = null;
 
 			switch (groupBy)
 			{
@@ -671,6 +697,7 @@ namespace RadialReview.Engines
 							}.AsList();
 						}).ToList();
 						title = "Evaluations grouped by Relationship";
+						groupByStandard = "about-*";
 					} break;
 				case "user-*":
 					{
@@ -713,13 +740,17 @@ namespace RadialReview.Engines
 
 						}).Where(x=>x!=null).ToList();
 						title = "Evaluations grouped by User";
+						groupByStandard = "user-*";
 
 					} break;
 				case "undefined": goto case "review-*";
+				case "": goto case "review-*";
+				case null: goto case "review-*";
 				case "review-*":
 					{
 						points = Aggregate(reviewAnswers, reviewsId).ToList();
 						title = "Aggregate Evaluation";
+						groupByStandard = "review-*";
 					} break;
 				default: throw new PermissionsException("Unrecognized group");
 			}
@@ -736,6 +767,7 @@ namespace RadialReview.Engines
 				xMax   = 100,
 				yMin   = -100,
 				yMax   = 100,
+				groupBy = groupByStandard
 
 			};
 

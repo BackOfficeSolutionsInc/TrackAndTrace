@@ -11,7 +11,7 @@ function InitTristate() {
 		}
 	});
 
-	$('.tristate').click(function () {
+	$('.editor.tristate').click(function () {
 		var states = ['Indeterminate', 'True', 'False'];
 		var oldValue = $(this).find("input").val();
 		var oldIndex = $.inArray(oldValue, states);

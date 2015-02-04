@@ -1,22 +1,31 @@
-﻿	.posneg{
-		height:80px;
-		width:240px;
-		position:relative;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+﻿.posneg {
+	height: 80px;
+	width: 240px;
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	padding: 0px;
+	margin: 0px;
+	background-color: #CDCDCD;
+	-ms-border-radius: 80px;
+	-moz-border-radius: 80px;
+	-webkit-border-radius: 80px;
+	border-radius: 80px;
+}
+	
+	.editor.posneg {
 		cursor:pointer;
-		-moz-user-select: none;
-		-khtml-user-select: none;
-		-webkit-user-select: none;
-		-o-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-		padding:0px;
-		margin:0px;
-		background-color:#CDCDCD;
-		-ms-border-radius: 80px;
-		border-radius: 80px;
+	}
+	.display.posneg {
+		cursor:default;
+		
 	}
 
 	.posneg-contents{
@@ -26,19 +35,24 @@
 		display:inline-flex;
 		overflow:hidden;
 	}
-	
-	.posneg .fill {
-		width:76px;
-		height:76px;
-		margin: 2px;
-		position:absolute;
-		top:0;bottom:0;left:0;right:0;
-		background-color:#CDCDCD;
-		pointer-events:none;
-		z-index: 0;
-		-ms-border-radius: 80px;
-		border-radius: 80px;
-	}
+
+.posneg .fill {
+	width: 76px;
+	height: 76px;
+	margin: 2px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: #CDCDCD;
+	pointer-events: none;
+	z-index: 0;
+	-ms-border-radius: 80px;
+	-moz-border-radius: 80px;
+	-webkit-border-radius: 80px;
+	border-radius: 80px;
+}
 	
 	
 	.posneg .fill.hover{
@@ -76,9 +90,9 @@
 		z-index:2;
 	}
 	
-	.posneg  .posneg-negative:hover  ~ .fill.hover{left:0px;}
-	.posneg  .posneg-neutral:hover   ~ .fill.hover{left:80px;}
-	.posneg  .posneg-positive:hover  ~ .fill.hover{left:160px;}
+	.editor.posneg  .posneg-negative:hover  ~ .fill.hover{left:0px;}
+	.editor.posneg  .posneg-neutral:hover   ~ .fill.hover{left:80px;}
+	.editor.posneg  .posneg-positive:hover  ~ .fill.hover{left:160px;}
 	
 	.posneg input[value='Positive'] ~ .fill.cursor{
 		background-color:#449D44;

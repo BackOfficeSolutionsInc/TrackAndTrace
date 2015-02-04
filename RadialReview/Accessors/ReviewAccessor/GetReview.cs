@@ -714,8 +714,11 @@ namespace RadialReview.Accessors {
 					var perms = PermissionsUtility.Create(s, caller);
 
 					var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
-					reviewContainer.Period = s.Get<PeriodModel>(reviewContainer.PeriodId);
-					reviewContainer.NextPeriod = s.Get<PeriodModel>(reviewContainer.NextPeriodId);
+
+					if (reviewContainer.PeriodId != null)
+						reviewContainer.Period = s.Get<PeriodModel>(reviewContainer.PeriodId);
+					if (reviewContainer.NextPeriodId != null)
+						reviewContainer.NextPeriod = s.Get<PeriodModel>(reviewContainer.NextPeriodId);
 
 
 					if (sensitive)

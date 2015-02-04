@@ -28,6 +28,8 @@ namespace RadialReview.Models.Charts
 
 		public List<ScatterPoint> Legend { get; set; }
 
+		public string groupBy { get; set; }
+
 		public string xAxis { get; set; }
 		public string yAxis { get; set; }
 

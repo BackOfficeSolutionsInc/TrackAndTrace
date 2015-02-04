@@ -25,12 +25,14 @@ namespace RadialReview.Models
         public virtual ClientReviewModel ClientReview { get; set; }
         public virtual List<AnswerModel> Answers { get; set; }
 
-		public virtual long PeriodId { get; set; }
+		public virtual long? PeriodId { get; set; }
 		public virtual PeriodModel Period { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual bool Complete { get; set; }
         public virtual decimal? DurationMinutes { get; set; }
-        public virtual bool Started { get; set; }
+		public virtual bool Started { get; set; }
+
+		public virtual bool SeenHints { get; set; }
 
 		//public virtual Ratio Roles { get; set; }
 		//public virtual Ratio Values{ get; set; } 
@@ -126,10 +128,7 @@ namespace RadialReview.Models
             ClientReview = new ClientReviewModel();
         }
 
-
-
-
-    }
+	}
 
     public class ReviewModelMap :ClassMap<ReviewModel>
     {
@@ -155,7 +154,8 @@ namespace RadialReview.Models
             Map(x => x.DurationMinutes);
             Map(x => x.DueDate);
             Map(x => x.Started);
-            Map(x => x.DeleteTime);
+			Map(x => x.DeleteTime);
+			Map(x => x.SeenHints);
 
 			//Component(x => x.Roles).ColumnPrefix("Roles_");
 			//Component(x => x.Values).ColumnPrefix("Values_");

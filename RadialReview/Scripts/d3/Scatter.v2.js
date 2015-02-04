@@ -188,7 +188,7 @@ ScatterImage.prototype.Pull = function Pull(url, data, callback) {
 
 ScatterImage.prototype.PullPlot = function PullPlot(url, args, callback, options) {
 	var that = this;
-	var opts = options;
+	var opts = options || {};
 
 	function callback2(data) {
 		if (opts !== undefined) {

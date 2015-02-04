@@ -166,7 +166,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		private static List<AskableAbout> GetAskables(UserOrganizationModel caller,PermissionsUtility perms, DataInteraction dataInteraction,IEnumerable<long> revieweeIds,long reviewerId,long periodId)
+		private static List<AskableAbout> GetAskables(UserOrganizationModel caller,PermissionsUtility perms, DataInteraction dataInteraction,IEnumerable<long> revieweeIds,long reviewerId,long? periodId)
 		{
 			var allAskables = new List<AskableAbout>();
 			var queryProvider = dataInteraction.GetQueryProvider();
@@ -205,7 +205,7 @@ namespace RadialReview.Accessors {
 		private static AskableUtility GetAskablesBidirectional(
 		DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller,
 		UserOrganizationModel reviewee, OrganizationTeamModel team, ReviewParameters parameters,
-		List<long> accessibleUsers, long periodId) {
+		List<long> accessibleUsers, long? periodId) {
 			#region comment
 			/** Old questions way to do things.
             var review = _QuestionAccessor.GenerateReviewForUser(user, s, reviewContainer);

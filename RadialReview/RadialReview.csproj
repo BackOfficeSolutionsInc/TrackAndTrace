@@ -993,6 +993,8 @@
     <Content Include="Views\Rocks\Table.cshtml" />
     <Content Include="Views\Review\Details\NextSession.cshtml" />
     <Content Include="Views\Rocks\ModalSingle.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\PositiveNegativeNeutral.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Tristate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1032,6 +1034,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>DisplayNameStrings.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\MessageStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

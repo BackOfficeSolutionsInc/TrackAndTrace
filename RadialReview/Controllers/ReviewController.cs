@@ -95,8 +95,7 @@ namespace RadialReview.Controllers
 			ViewBag.Page = page;
 
 			var pages = GetPages(GetUser().Id, reviews);
-
-
+			
 			try
 			{
 				var pageConcrete = page ?? 0;
@@ -110,6 +109,7 @@ namespace RadialReview.Controllers
 				var model = new TakeViewModel(p)
 				{
 					Anonymous = reviewContainer.AnonymousByDefault,
+					FirstPageHint = !reviews.Any(x=>x.SeenHints),
 					Id = id,
 					StartTime = now,
 					Page = pageConcrete,
@@ -119,14 +119,30 @@ namespace RadialReview.Controllers
 					OrderedPeople = pages.Select(x =>
 						Tuple.Create(
 							x.First().AboutUser.GetNameAndTitle(),
-							x.All(y => !y.Required || y.Complete))
-						).ToList()
+							x.All(y => !y.Required || y.Complete),
+							x.Count(y => y.Required && y.Complete)/(decimal)x.Count(y=>y.Required)*100
+						)).ToList()
 				};
 
 				if (model.Editable && p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required))
 				{
 					//TempData["Message"] = DisplayNameStrings.remainingQuestions;
 					ViewBag.Incomplete = true;
+				}
+
+				if (model.FirstPageHint && pageConcrete == 0 && model.Editable){
+					using (var s = HibernateSession.GetCurrentSession())
+					{
+						using (var tx = s.BeginTransaction())
+						{
+							foreach (var r in reviews){
+								r.SeenHints = true;
+								s.Update(r);
+							}
+							tx.Commit();
+							s.Flush();
+						}
+					}
 				}
 
 				return View(model);
@@ -219,7 +235,7 @@ namespace RadialReview.Controllers
 			}
 			if (dueDate > DateTime.UtcNow)
 			{
-				TempData["Message"] = DisplayNameStrings.remainingQuestions;
+				//TempData["Message"] = DisplayNameStrings.remainingQuestions;
 				ViewBag.Incomplete = true;
 			}
 			return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
@@ -405,8 +421,8 @@ namespace RadialReview.Controllers
 			public DateTime StartTime { get; set; }
 			public List<AnswerVM> Answers { get; set; }
 			public UserOrganizationModel ForUser { get; set; }
-			public List<Tuple<String, bool>> OrderedPeople { get; set; }
-
+			public List<Tuple<String, bool,decimal>> OrderedPeople { get; set; }
+			public bool FirstPageHint { get; set; }
 			public bool Anonymous { get; set; }
 
 			public TakeViewModel(List<AnswerModel> answers)

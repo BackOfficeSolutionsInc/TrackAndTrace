@@ -24,11 +24,23 @@
 						<td style="width:50%"><h4 class="question alignRight" style="padding-right:15px;">@questions[i].Askable.GetQuestion()</h4></td>
 						<td>
 							<div style="width:240px;text-align: center">
-								@Html.EditorFor(x => questions[i].Completion, new { name = "question_" + RadialReview.Models.Enums.QuestionType.Rock + "_" + questions[i].Identifier })
+								@if (Model.Item2)
+								{
+									@Html.EditorFor(x => questions[i].Completion, new { name = "question_" + RadialReview.Models.Enums.QuestionType.Rock + "_" + questions[i].Identifier })
+								}
+								else
+								{
+									@Html.DisplayFor(x => questions[i].Completion, new { name = "question_" + RadialReview.Models.Enums.QuestionType.Rock + "_" + questions[i].Identifier })
+								}
 							</div>
 						</td>
 						<td style="vertical-align:top;width:50%">
-							<textarea name="question_@(QuestionType.Rock)_@(questions[i].Identifier)_Reason" class="full-width changeable reason" placeholder="Add Comment">@questions[i].Reason</textarea>
+							@if (Model.Item2)
+							{
+								<textarea name="question_@(QuestionType.Rock)_@(questions[i].Identifier)_Reason" class="full-width changeable reason" placeholder="Add Comment">@questions[i].Reason</textarea>
+							}else{
+								<div class="full-width changeable reason">@questions[i].Reason</div>
+							}
 						</td>
 					</tr>
 				}

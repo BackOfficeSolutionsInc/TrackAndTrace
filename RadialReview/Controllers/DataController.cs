@@ -102,6 +102,8 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult ReviewScatter2(long id, long reviewsId,string groupBy,bool client=false)
 		{
+			
+
 			var newScatter = _ChartsEngine.ReviewScatter2(GetUser(), id, reviewsId, groupBy, !client);
 			return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
 		}
