@@ -393,4 +393,10 @@
   <data name="normal" xml:space="preserve">
     <value>Normal</value>
   </data>
+  <data name="greaterThan" xml:space="preserve">
+    <value>Greater than</value>
+  </data>
+  <data name="lessThan" xml:space="preserve">
+    <value>Less than</value>
+  </data>
 </root>

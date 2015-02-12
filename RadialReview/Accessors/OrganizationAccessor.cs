@@ -230,7 +230,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditPositions().ManagingPosition(orgPositionId);
+					PermissionsUtility.Create(s, caller).EditPositions(organizationId).ManagingPosition(orgPositionId);
 
                     /*var existing = s.QueryOver<OrganizationPositionModel>()
                         .Where(x=>x.Organization.Id==organizationId && positionId==x.Position.Id)

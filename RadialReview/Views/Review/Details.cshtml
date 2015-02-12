@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Page = Model.Review.ForUser.GetName();
     ViewBag.ExtraTabs = ExtraTab.Create(
-        "Reports: " + Model.Review.Name, "/Reports/Index/" + Model.Review.ForReviewsId,
+		"<span class='hover'><span class='icon new-icon-page-multiple'></span>Reports: " + Model.Review.Name+"</span>", "/Reports/Index/" + Model.Review.ForReviewsId + "#Reports",
         ViewBag.Page, "/Review/Details/" + Model.Review.Id
         );
 

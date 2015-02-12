@@ -1,0 +1,94 @@
+﻿@model RadialReview.Models.ViewModels.ReviewsViewModel
+@{
+	ViewBag.Title = "Reports";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Page = "Stats";
+	ViewBag.ExtraTabs = ExtraTab.Create("Stats", "/Statistics/Review/" + Model.Review.Id);
+	ViewBag.Subheading = "Statistics for '" + Model.Review.ReviewName + "'";
+
+}
+
+@section top{
+	<div class="jumbotron">
+		<h1>Stats</h1>
+	</div>
+}
+
+@section header{
+	@*@Html.Partial("_ReviewsHeader")*@
+}
+
+@*{
+	var direct = Model.Review.Reviews.Where(x => x.ForUser.GetDirectlyManaging()).ToList();
+	var indirect = Model.Review.Reviews.Where(x => true || !x.ForUser.GetDirectlyManaging()).ToList();
+
+
+	var panels = new List<Tuple<int, String, List<RadialReview.Models.ReviewModel>>>();
+
+	if (direct.Any())
+	{
+		panels.Add(Tuple.Create(1, "Subordinates", direct));
+	}
+	if (indirect.Any())
+	{
+		panels.Add(Tuple.Create(2, "Everyone", indirect));
+	}
+
+	var first = true;
+
+}*@
+
+@using (Html.BeginStyles())
+{
+	<style>
+		.nav-tabs .active a {
+			background-color: #FFF !important;
+		}
+	</style>
+}
+<div style="height: 45px;"></div>
+<div role="tabpanel">
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a href="#statPanel_1" aria-controls="home" role="tab" data-toggle="tab">Stats</a></li>
+		<li role="presentation" class=""><a href="#statPanel_2" aria-controls="home" role="tab" data-toggle="tab">Aggregate</a></li>
+	</ul>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane in active" id="statPanel_1">
+			<div class="panel panel-body">
+				@Html.Partial("_ReviewStats", Model.Review.Id)
+			</div>
+		</div>
+		<div role="tabpanel" class="tab-pane in" id="statPanel_2">
+			<div class="panel panel-body">
+				@Html.Partial("_ReviewStats2", Model.Review.Id)
+			</div>
+		</div>
+	</div>
+</div>
+
+@*<div class="panel panel-primary startHiddenGroup">
+		<div class="panel-heading">
+			<h3 class="panel-title">Review progress</h3>
+		</div>
+
+		<div class="panel-body">
+		</div>
+	</div>*@
+
+
+@using (Html.BeginScripts())
+{
+	<script>
+		function sendReminders() {
+			var ids = [];
+			$('.userCheck:checked').each(function () {
+				ids.push($(this).data("id"));
+			});
+			if (ids && ids.length != 0) {
+				showModal('Send Reminder', '/Email/Remind?reviewId=@(Model.Review.Id)&userIds=' + ids.join(","), '/Email/Remind');
+			} else {
+				showAlert("You must select at least one user");
+			}
+		}
+	</script>
+}

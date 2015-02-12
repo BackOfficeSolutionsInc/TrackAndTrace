@@ -36,8 +36,9 @@ namespace RadialReview
             var fieldInfo = value.GetType().GetField(value.ToString());
             var descriptionAttributes = fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false) as DisplayAttribute[];
             if (descriptionAttributes == null) return string.Empty;
-            if (descriptionAttributes.Length > 0)
-            {
+            if (descriptionAttributes.Length > 0){
+	            if (descriptionAttributes[0].ResourceType == null)
+		            return descriptionAttributes[0].Name;
                 return new ResourceManager(descriptionAttributes[0].ResourceType).GetString(descriptionAttributes[0].Name);
             }
             return value.ToString();

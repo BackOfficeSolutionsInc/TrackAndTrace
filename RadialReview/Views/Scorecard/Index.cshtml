@@ -1,8 +1,70 @@
-﻿
+﻿@model RadialReview.Controllers.ScorecardController.ScoreVM
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Scorecard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@using (Html.BeginStyles())
+{
+	<link href="~/Content/Scorecard/Scorecard.css" rel="stylesheet" />
+	<link href="~/Content/Chart/Line.v1.css" rel="stylesheet" />
+}
+@using (Html.BeginScripts())
+{
+	<script src="~/Scripts/d3/d3.v3.js"></script>
+	<script src="~/Scripts/d3/line.v1.js"></script>
+	
+	<script>
+		$(function () {
+			$(".graphs").each(function() {
+				var id=$(this).data("measurable-id");
+				$.ajax({
+					url: "/data/scorecarddata/" + id,
+					success: function (obj) {
+						var data = obj.Object;
+						//data["displayNames"] = ["2xx", "3xx", "4xx", "5xx"];
+						//data["colors"] = ["green", "orange", "red", "darkred"];
+						//data["scale"] = "pow";
 
-<h2>Scorecard</h2>
+						//// add presentation logic for 'data' object using optional data arguments
+						//data2["displayNames"] = ["2xx", "3xx", "4xx", "5xx"];
+						//data2["colors"] = ["green", "orange", "red", "darkred"];
+						//data2["scale"] = "linear";
+
+						//// add presentation logic for 'data' object using optional data arguments
+						//data3["displayNames"] = ["Data1", "Data2"];
+						//data3["axis"] = ["left", "right"];
+						//data3["colors"] = ["#2863bc", "#c8801c"];
+						//data3["rounding"] = [2, 0];
+
+						// create graph now that we've added presentation config
+						var l1 = new LineGraph({ containerId: 'graph_'+id, data: data });
+					}
+				});
+			});
+		});
+	</script>
+}
+
+<div class="scorecard-container">
+	@foreach (var s in Model.ScoreModels)
+	{
+		<div class="scorecard-item">
+			<div class="scorecard scorecard-value-container">
+				<div class="scorecard-value-flex-container">
+					<div class="scorecard-title">@s.Measurable.Title</div>
+					<div class="scorecard-value">@if (s.Measured != null)
+						{
+							<span class="@(s.Measured.Value>s.Measurable.Goal*(int)s.Measurable.GoalDirection?"positive":"negative")">
+								@s.Measured.Value.ToString("0.#####")
+							</span>
+						}</div>
+					<div class="scorecard-accountable">by @s.AccountableUser.GetName()</div>
+				</div>
+			</div>
+			<div class="scorecard scorecard-chart">
+				<div id="graph_@s.MeasurableId" class="graphs" data-measurable-id="@s.MeasurableId" style="position:relative;width:400px;height:400px"></div>
+			</div>
+		</div>
+	}
+</div>
 

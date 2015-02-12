@@ -1,4 +1,8 @@
-﻿using RadialReview.Accessors;
+﻿using System.Collections.Specialized;
+using System.Linq.Expressions;
+using Microsoft.Ajax.Utilities;
+using RadialReview.Accessors;
+using RadialReview.Helpers;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -21,6 +25,7 @@ using System.Configuration;
 using RadialReview.Utilities;
 using System.Web.Security;
 using System.Security.Principal;
+using RadialReview.Utilities.Extensions;
 
 
 namespace RadialReview.Controllers
@@ -223,8 +228,21 @@ namespace RadialReview.Controllers
             }
         }
 
+		private List<String> ToValidate = new List<string>();
+	    private NameValueCollection ValidationCollection;
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+			//Secure hidden fields
+			ValidationCollection=filterContext.RequestContext.HttpContext.Request.Form;
+			foreach (var f in ValidationCollection.AllKeys)
+			{
+				if (f.EndsWith(SecuredValueFieldNameComputer.NameSuffix)){
+					ToValidate.Add(f.Substring(0, f.Length - SecuredValueFieldNameComputer.NameSuffix.Length));
+		        }
+	        }
+
+
             //Access Level Filtering
             var accessAttributes = filterContext.ActionDescriptor.GetCustomAttributes(typeof(AccessAttribute), false).Cast<AccessAttribute>();
             if (accessAttributes.Count() == 0)
@@ -325,9 +343,26 @@ namespace RadialReview.Controllers
             base.OnActionExecuting(filterContext);
         }
 
+	    protected void ValidateValues<T>(T model,params Expression<Func<T, object>>[] selectors)
+	    {
+		    foreach (var e in selectors){
+			    //var meta = ModelMetadata.FromLambdaExpression(e, new ViewDataDictionary<T>());
+			    var name = e.GetMvcName();//meta.DisplayName;
+				if (!ToValidate.Remove(name))
+					throw new PermissionsException("Validation item does not exist.");
+				SecuredValueValidator.ValidateValue(ValidationCollection, name);
+		    }
+	    }
+
         protected override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            if (TempData["ModelState"] != null && !ModelState.Equals(TempData["ModelState"]))
+	        if (ToValidate.Any()){
+				var err="Didn't validate: " + String.Join(",", ToValidate);
+		        TempData["Message"] = err;
+				throw new PermissionsException(err);
+	        }
+
+	        if (TempData["ModelState"] != null && !ModelState.Equals(TempData["ModelState"]))
                 ModelState.Merge((ModelStateDictionary)TempData["ModelState"]);
             if (TempData["Message"] != null)
                 ViewBag.Message = TempData["Message"];

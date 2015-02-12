@@ -59,14 +59,16 @@
 				<div class="panel-body numbers">
 					@if (Model.Rocks.Any())
 					{
-						<ul>
-							@foreach (var r in Model.Rocks)
-							{
-								<li class="font-size:19px;">
-									@r.Rock
-								</li>
-							}
-						</ul>
+						foreach (var rg in Model.Rocks.GroupBy(x => x.PeriodId)){
+							<b>@rg.First().Period.NotNull(x=>x.Name):</b>
+							<ul>
+								@foreach (var r in rg){
+									<li class="font-size:19px;">
+										@r.Rock
+									</li>
+								}
+							</ul>
+						}
 					}
 					else
 					{
@@ -132,7 +134,7 @@
 								<tr>
 									<th style="width: 40px;"></th>
 									<th>Measurable</th>
-									<th style="width: 100px;">Weekly Goal</th>
+									<th style="width: 160px;" class="alignCenter">Weekly Goal</th>
 								</tr>
 							</thead>
 
@@ -143,7 +145,7 @@
 									<tr class="font-size:19px;">
 										<td class="alignRight" style="padding-right: 8px;">@i.</td>
 										<td>@r.Title</td>
-										<td>@r.Goal</td>
+										<td class="alignCenter">@r.GoalDirection.GetDisplayName() @r.Goal.ToString("0.#####")</td>
 									</tr>
 									{
 										i++;

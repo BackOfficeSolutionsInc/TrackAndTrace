@@ -4,16 +4,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="jumbotron alert">
+<div class="">
     <h2>@RadialReview.Properties.ExceptionStrings.AnErrorOccured</h2>
     <h3>@ViewBag.Message</h3>
 </div>
 
 @if (Context.IsDebuggingEnabled)
 {
-    <br />
-    <br />
-    <br />
     <div class="review">
         @Model.NotNull(x=>x.StackTrace)
     </div>

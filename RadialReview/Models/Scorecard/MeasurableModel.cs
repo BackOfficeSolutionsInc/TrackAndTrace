@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentNHibernate.Mapping;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 
 namespace RadialReview.Models.Scorecard
@@ -10,6 +11,7 @@ namespace RadialReview.Models.Scorecard
 		public virtual string Title { get; set; }
 		public virtual long AccountableUserId { get; set; }
 		public virtual UserOrganizationModel AccountableUser { get; set; }
+		public virtual LessGreater GoalDirection { get; set; }
 		public virtual decimal Goal { get; set; }
 		public virtual long OrganizationId { get; set; }
 		public virtual DateTime NextGeneration { get; set; }
@@ -29,6 +31,7 @@ namespace RadialReview.Models.Scorecard
 				Map(x => x.AccountableUserId).Column("AccountableUserId");
 				References(x => x.AccountableUser).Column("AccountableUserId").LazyLoad().ReadOnly();
 				Map(x => x.Goal);
+				Map(x => x.GoalDirection);
 				Map(x => x.OrganizationId);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);

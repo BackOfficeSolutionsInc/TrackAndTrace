@@ -1,5 +1,8 @@
-﻿using NHibernate;
+﻿using System.Linq.Expressions;
+using NHibernate;
 using NHibernate.Criterion;
+using RadialReview.Utilities;
+using RadialReview.Utilities.Extensions;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
@@ -31,5 +34,48 @@ namespace RadialReview
         {
             return new DataInteraction(session.ToQueryProvider(onlyAlive),session.ToUpdateProvider());
         }
+
+
+	    public class BackRef<T>
+		{
+			public Expression<Func<T, object>> Reference;
+
+			public Expression<Func<object, T>> BackReference;
+
+
+			public static BackRef<T> From<TRef, TList>(Expression<Func<T, TList>> reference, Expression<Func<TRef, T>> backReference) where TList : IList<TRef>
+		    {
+			    return new BackRef<T>(){
+				    Reference = reference.AddBox(),
+				    BackReference = x=>backReference.Compile()((TRef)x),
+			    };
+		    }
+	    }
+
+
+		public static void SaveWithBackReference<T>(this ISession session, T obj, params BackRef<T>[] backRefs)
+	    {
+		    var temps = new List<object>();
+
+		    foreach (var b in backRefs){
+			    temps.Add(obj.Get(b.Reference));
+				obj.Set(b.Reference, null);
+		    }
+		    session.Save(obj);
+
+		    var p = NHibernateHelper.GetPropertyAndColumnNames(session.SessionFactory, obj.GetType());
+
+
+			for (var i = 0; i < backRefs.Length; i++){
+				obj.Set(backRefs[i].Reference, temps[i]);
+			}
+
+
+
+
+			session.Update(obj);
+	    }
     }
+
+
 }

@@ -1,4 +1,8 @@
-﻿using RadialReview.Models.Interfaces;
+﻿using System.Collections;
+using System.Linq.Expressions;
+using System.Reflection;
+using Microsoft.Ajax.Utilities;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -54,6 +58,26 @@ namespace RadialReview
                 return ((IDeletable)obj).DeleteTime == null;
             return true;
         }
+
+		public static TRef Get<T, TRef>(this T obj, Expression<Func<T, TRef>> selector)
+		{
+			return selector.Compile()(obj);
+		}
+		public static void Set<T, TRef>(this T obj, Expression<Func<T, TRef>> selector,TRef value)
+		{
+			var prop = (PropertyInfo)((MemberExpression)selector.Body).Member;
+			prop.SetValue(obj, value, null);
+		}
+
+		public static T Touch<T>(this T self) where T : IEnumerable
+	    {
+			foreach (var o in self){
+				if (o is IEnumerable){
+					((IEnumerable)o).Touch();
+				}
+			}
+			return self;
+	    }
     }
 
 }

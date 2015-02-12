@@ -28,6 +28,8 @@ namespace RadialReview.Controllers
 		{
 			var userId = id;
 			var rocks = _RockAccessor.GetAllRocks(GetUser(), userId);
+			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x=>x.Name,x=>x.Id);
+			ViewBag.Periods = periods;
 			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
 		}
 

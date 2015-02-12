@@ -5,6 +5,7 @@ using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.SqlCommand;
 using NHibernate.Tool.hbm2ddl;
+using RadialReview.App_Start;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -62,8 +63,9 @@ namespace RadialReview.Utilities
                                     factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                                     .Mappings(m =>
                                     {
-                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
-                                        m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+										m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+										   .Conventions.Add<StringColumnLengthConvention>();
+                                        m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
                                         //m.AutoMappings.Add(CreateAutomappings);
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
@@ -82,7 +84,10 @@ namespace RadialReview.Utilities
 											MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
 								   .Mappings(m =>
 								   {
-									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
+									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+										   .Conventions.Add<StringColumnLengthConvention>();
+									   m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+
 									   //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
 									   //m.AutoMappings.Add(CreateAutomappings);
 									   //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
@@ -96,7 +101,8 @@ namespace RadialReview.Utilities
 											MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
                                    .Mappings(m =>
                                    {
-                                       m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>();
+									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+										   .Conventions.Add<StringColumnLengthConvention>();
                                        //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                        //m.AutoMappings.Add(CreateAutomappings);
                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");

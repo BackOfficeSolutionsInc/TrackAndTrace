@@ -146,6 +146,10 @@ namespace RadialReview
             return source.GroupBy(distinction).Select(x => x.First());
         }
 
+	    public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> other){
+		    return source.Any(other.Contains);
+	    }
+
         /*public static Boolean Contains<T>(this IEnumerable<T> enumerable, Func<T, Boolean> contains)
         {
             return enumerable.FirstOrDefault(contains) != null;

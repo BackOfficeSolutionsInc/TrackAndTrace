@@ -47,5 +47,10 @@ namespace RadialReview.Utilities
 			}
 			throw new Exception("Invalid Environment");
 		}
+
+		public static string GetSecret()
+		{
+			return GetAppSetting("sha_secret");
+		}
 	}
 }

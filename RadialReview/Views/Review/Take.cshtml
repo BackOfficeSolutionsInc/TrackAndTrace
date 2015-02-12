@@ -293,10 +293,62 @@
 			setTimeout(function () {
 				$('.flipCard,.nameFade,.flipButton').addClass("flipped");
 			}, 1500);
-
-
+			
 		});
+
+
+
 	</script>
+	if(ViewBag.NoSubmit == null){
+		 <script>
+			 $(function(){
+			 	$(".changeable").change(function () {
+			 		reviewChanges = true;
+			 		console.log("change");
+			 	});
+
+				 $(".changeable").on('input propertychange', function() {
+				 	reviewChanges = true;
+					 console.log("propertychange");
+				 });
+
+			 	var onleaving = function () {
+			 		if (reviewChanges) {
+						 var o;
+						 $.ajax({
+							method:"post",
+			 				data: $("#form").serialize(),
+			 				url: "/Review/Save/",
+			 				async: false,
+							success:function(data) {
+								//nothin.
+							},
+							error: function (a,b,c) {
+								o= 'Are you sure you want to leave this page? Without clicking Back or Next, your changes will be lost.';
+							}
+			 			});
+						 return o;
+					 }
+			 	};
+
+			 	$(document).ready(function () {
+			 		$('.submitButton').on('mousedown', stopNavigate);
+			 		$('.submitButton').on('mouseleave', function () {
+			 			$(window).on('beforeunload', onleaving);
+			 		});
+			 	});
+
+			 	$(window).on('beforeunload', onleaving);
+
+
+			 	function stopNavigate() {
+			 		$(window).off('beforeunload');
+			 	}
+			 });
+
+ 		
+ 		</script>
+	 }
 
 	if (Model.Page == 0 && Model.Editable && Model.FirstPageHint)
 	{

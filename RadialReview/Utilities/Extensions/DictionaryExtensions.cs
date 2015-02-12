@@ -27,6 +27,31 @@ namespace RadialReview
             return dictionary[key];
         }
 
+		public static void AddRange<T, K, V>(this Dictionary<K, V> dictionary, IEnumerable<T> range, Func<T, K> keySelector, Func<T, V> valueSelector)
+		{
+			foreach (var r in range)
+			{
+				dictionary[keySelector(r)] = valueSelector(r);
+			}
+		}
+		public static void AddRangeNoReplace<T, K, V>(this Dictionary<K, V> dictionary, IEnumerable<T> range, Func<T, K> keySelector, Func<T, V> valueSelector)
+		{
+			foreach (var r in range)
+			{
+				var k = keySelector(r);
+				if (!dictionary.ContainsKey(k))
+					dictionary[k] = valueSelector(r);
+			}
+		}
+
+		public static void AddRange<T, K>(this Dictionary<K, T> dictionary, IEnumerable<T> range, Func<T, K> keySelector){
+			AddRange(dictionary,range,keySelector,x=>x);
+		}
+		public static void AddRangeNoReplace<T, K>(this Dictionary<K, T> dictionary, IEnumerable<T> range, Func<T, K> keySelector)
+		{
+			AddRangeNoReplace(dictionary, range, keySelector, x => x);
+		}
+
         public static void Update<K, V>(this Dictionary<K, V> dictionary, K key, V defaultValue, Func<V, V> updateTo)
         {
             var old = GetOrDefault(dictionary, key, defaultValue);

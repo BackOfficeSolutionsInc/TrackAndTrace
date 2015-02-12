@@ -29,6 +29,7 @@ namespace RadialReview.Engines
 		protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
 		protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
 		protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
+		protected static ScorecardAccessor _ScorecardAccessor = new ScorecardAccessor();
 		protected static TeamAccessor _TeamAccessor = new TeamAccessor();
 		protected static UserAccessor _UserAccessor = new UserAccessor();
 
@@ -773,9 +774,7 @@ namespace RadialReview.Engines
 
 			return scatter;
 		}
-
-
-
+		
 		public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId, bool sensitive)
 		{
 			if (sensitive)
@@ -946,6 +945,30 @@ namespace RadialReview.Engines
 			return scatter;
 		}
 
+		public Line ScorecardChart(UserOrganizationModel caller, long measureableId)
+		{
+			var scores = ScorecardAccessor.GetMeasurableScores(caller, measureableId);
+
+			var o = new Line(){
+				marginLeft = 0,
+				marginRight = 0,
+				marginTop = 0,
+				marginBottom = 0,
+			};
+			if (scores.Any()){
+				var values = scores.OrderBy(x => x.DateDue);
+				var chart = new Line.LineChart(){
+					points = values.Select(x => new Line.LinePoint(){time = x.DateDue.ToJavascriptMilliseconds(),value = x.Measured}).ToList(),
+					displayName = scores.First().Measurable.Title,
+					name = scores.First().Measurable.Title,
+				};
+				o.charts.Add(chart);
+				o.start = values.First().DateDue.ToJavascriptMilliseconds();
+				o.end = values.Last().DateDue.ToJavascriptMilliseconds();
+			}
+
+			return o;
+		}
 
 
 		public class ScatterScorer

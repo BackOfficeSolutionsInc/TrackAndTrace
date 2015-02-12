@@ -116,10 +116,12 @@ namespace RadialReview.Controllers
 				return Tuple.Create(long.Parse(split[1]), long.Parse(split[2]));
 			}).ToList();
 			
-		    IEnumerable<Tuple<long, long>> added;
-			IEnumerable<Tuple<long, long>> removed;
+		    //IEnumerable<Tuple<long, long>> added;
+			//IEnumerable<Tuple<long, long>> removed;
 
-			SetUtility.AddRemove(oldVals, newVals, out added,out removed);
+			var ar = SetUtility.AddRemove(oldVals, newVals);
+		    var added = ar.AddedValues;
+		    var removed = ar.RemovedValues;
 
 		    var reviewContainerId = form["reviewContainerId"].ToLong();
 

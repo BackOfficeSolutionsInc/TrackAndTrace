@@ -446,21 +446,21 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 					return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
 				});
 
-				var m = options.height - options.chartPadding - options.nodeSize / 2;
+				var m = options.height - options.chartPadding + options.nodeSize / 2;
 				if (d.y > m) {
 					d.y -= (d.y - m) * alpha / 2;
 				}
-				m = options.chartPadding + options.nodeSize / 2;
+				m = options.chartPadding - options.nodeSize / 2;
 				if (d.y < m) {
 					d.y -= (d.y - m) * alpha / 2;
 				}
 
 
-				m = options.width - options.chartPadding - options.nodeSize / 2;
+				m = options.width - options.chartPadding + options.nodeSize / 2;
 				if (d.x > m) {
 					d.x -= (d.x - m) * alpha / 2;
 				}
-				m = options.chartPadding + options.nodeSize / 2;
+				m = options.chartPadding - options.nodeSize / 2;
 				if (d.x < m) {
 					d.x -= (d.x - m) * alpha / 2;
 				}

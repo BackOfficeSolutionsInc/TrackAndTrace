@@ -58,14 +58,14 @@ namespace System.Web
 
         public static List<SelectListItem> ToSelectList(Type enumType, string selectedItem)
         {
-            List<SelectListItem> items = new List<SelectListItem>();
+            var items = new List<SelectListItem>();
             foreach (var item in Enum.GetValues(enumType))
             {
-                FieldInfo fi = enumType.GetField(item.ToString());
-                DisplayAttribute attribute = fi.GetCustomAttributes(typeof(DisplayAttribute), true).FirstOrDefault() as DisplayAttribute;
-                var title = new ResourceManager(attribute.ResourceType).GetString(attribute.Name);
-
-                if (item.ToString().ToLower() == "invalid")
+                var fi = enumType.GetField(item.ToString());
+                var attribute = fi.GetCustomAttributes(typeof(DisplayAttribute), true).FirstOrDefault() as DisplayAttribute;
+	            string title;
+	            title = attribute.ResourceType == null ? attribute.Name : new ResourceManager(attribute.ResourceType).GetString(attribute.Name);
+	            if (item.ToString().ToLower() == "invalid")
                     continue;
                 
                 var listItem = new SelectListItem

@@ -1,8 +1,11 @@
 ﻿using log4net;
 using NHibernate;
+using NHibernate.Linq;
+using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using RadialReview.Models.L10;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
@@ -143,6 +146,8 @@ namespace RadialReview.Utilities
                 return this;
             throw new PermissionsException();
         }
+
+		[Obsolete("should never be caller.organization.id",false)]
 		private bool IsManagingOrganization(long organizationId)
 		{
 			if (caller.Organization.Id == organizationId)
@@ -590,12 +595,12 @@ namespace RadialReview.Utilities
 
             throw new PermissionsException();
         }
-        public PermissionsUtility EditPositions()
+        public PermissionsUtility EditPositions(long organizationId)
         {
             if (IsRadialAdmin(caller))
                 return this;
 
-            if (IsManagingOrganization(caller.Organization.Id))
+			if (IsManagingOrganization(organizationId))
                 return this;
 
             if (caller.Organization.ManagersCanEditPositions && caller.ManagerAtOrganization)
@@ -612,10 +617,12 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin(caller))
                 return this;
 
-            if (IsManagingOrganization(caller.Organization.Id))
+            var prereview=session.Get<PrereviewModel>(prereviewId);
+	        var prereviewOrgId = session.Get<ReviewsModel>(prereview.ReviewContainerId).ForOrganizationId;
+
+			if (IsManagingOrganization(prereviewOrgId))
                 return this;
 
-            var prereview=session.Get<PrereviewModel>(prereviewId);
             if (IsOwnedBelowOrEqual(caller, x => x.Id == prereview.ManagerId))
                 return this;
 
@@ -636,7 +643,7 @@ namespace RadialReview.Utilities
 			if (IsRadialAdmin(caller))
 				return this;
 
-			if (IsManagingOrganization(caller.Organization.Id))
+			if (IsManagingOrganization(organizationId))
 				return this;
 
 			var organization = session.Get<OrganizationModel>(organizationId);
@@ -645,10 +652,90 @@ namespace RadialReview.Utilities
 			if (organization.Settings.ManagersCanViewScorecard && IsManager(organizationId))
 				return this;
 
+			throw new PermissionsException();
+		}
+
+		#endregion
+
+		#region L10
+		public PermissionsUtility EditL10Meeting(long organizationId,long recurrenceId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			if (IsManagingOrganization(organizationId))
+				return this;
+
+			var organization = session.Get<OrganizationModel>(organizationId);
+			if (recurrenceId == 0){
+				if (organization.Settings.EmployeeCanCreateL10 && caller.Organization.Id == organizationId)
+					return this;
+				if (organization.Settings.ManagersCanCreateL10 && IsManager(organizationId))
+					return this;
+			}
+			else{
+				var availUserIds = new[]{caller.Id};
+				if (caller.Organization.Settings.ManagersCanEditSubordinateL10){
+					availUserIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(session, caller, caller.Id).ToArray();
+				}
+
+				var exists = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+					.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
+					.WhereRestrictionOn(x => x.User.Id).IsIn(availUserIds)
+					.RowCount();
+				if (exists > 0)
+					return this;
+			}
+
 
 			throw new PermissionsException();
-
 		}
+		public PermissionsUtility ViewL10Recurrence(long recurrenceId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var recurrences_OrgId = session.Get<L10Recurrence>(recurrenceId).OrganizationId;
+
+			if (IsManagingOrganization(recurrences_OrgId))
+				return this;
+			
+			var possibleUsers = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+				.Where(x=>x.DeleteTime==null && x.L10Recurrence.Id==recurrenceId)
+				.Select(x=>x.User.Id).List<long>()
+				.ToList();
+
+			if (possibleUsers.Contains(caller.Id))
+				return this;
+
+			if (caller.Organization.Settings.ManagersCanViewSubordinateL10){
+				var subIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(session, caller, caller.Id);
+				if (possibleUsers.ContainsAny(subIds))
+					return this;
+			}
+			throw new PermissionsException();
+		}
+
+	    public PermissionsUtility ViewUsersL10Meetings(long userId)
+	    {
+			if (IsRadialAdmin(caller))
+				return this;
+
+		    if (caller.Id == userId)
+			    return this;
+
+			var users_OrgId = session.Get<UserOrganizationModel>(userId).Organization.Id;
+			if (IsManagingOrganization(users_OrgId))
+				return this;
+
+			if (caller.Organization.Settings.ManagersCanViewSubordinateL10){
+				var subIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(session, caller, caller.Id);
+				if (subIds.Contains(userId))
+					return this;
+			}
+
+			throw new PermissionsException();
+	    }
 
 		#endregion
 
@@ -743,6 +830,10 @@ namespace RadialReview.Utilities
         {
             return IsRadialAdmin(caller);
         }
+
+
+
+
 
 	}
 }

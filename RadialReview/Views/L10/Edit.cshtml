@@ -1,0 +1,75 @@
+﻿@using RadialReview.Helpers
+@model RadialReview.Controllers.L10Controller.L10Edit
+@{
+	ViewBag.Title = "Create L10 Meeting";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section top{
+
+	<div class="jumbotron">
+		<h1 class="nameFade">L10 Meeting</h1>
+	</div>
+}
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Edit L10 Meeting</h3>
+	</div>
+	<div class="panel-body form-horizontal">
+		<form class="" action="/L10/Edit" method="POST">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Meeting Name:</label>
+				<div class="col-sm-9">
+					@Html.TextBoxFor(x => x.Recurrence.Name, new { @class = "form-control", style = "max-width:600px;width:100%;", placeholder="Add a name for the meeting..." })
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Members:</label>
+				<div class="col-sm-9">
+					@Html.ListBoxFor(x => 
+					   x.SelectedMembers,
+						Model.PossibleMembers.ToSelectList(x => x.GetNameAndTitle(), x => x.Id).OrderBy(x => x.Text),
+						new { @class = "select2 form-control", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a name..." })
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Measurables:</label>
+				<div class="col-sm-9">
+					@Html.ListBoxFor(x => 
+						x.SelectedMeasurables, 
+						Model.PossibleMeasurables.ToSelectList(x => x.Title+" (by "+x.AccountableUser.GetName()+")", x => x.Id).OrderBy(x => x.Text),
+						new { @class = "select2 form-control", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a measurable..." })
+				</div>
+			</div>												
+			@Html.SecuredHiddenFor(x => x.Recurrence.Id)
+			@Html.SecuredHiddenFor(x => x.Recurrence.CreateTime)
+
+			<div class="alignCenter">
+				<input class="btn btn-primary" type="submit" value="Submit" />
+			</div>
+		</form>
+	</div>
+</div>
+
+
+@using (Html.BeginScripts())
+{
+	<script>
+		$(".select2").select2({
+			matcher: function (term, text) {
+				var split = text.split("(")[0].split(" ");
+				var t = term.toUpperCase();
+				for (var i = 0; i < split.length; i++) {
+					var s = split[i].toUpperCase();
+					if ($.trim(s) == '')
+						continue;
+					if (s.indexOf(t) == 0)
+						return true;
+				}
+				return false;
+			}
+		});
+	</script>
+}

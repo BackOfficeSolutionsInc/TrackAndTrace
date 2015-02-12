@@ -221,6 +221,7 @@
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
     <Compile Include="Accessors\ImageAccessor.cs" />
     <Compile Include="Accessors\KeyValueAccessor.cs" />
+    <Compile Include="Accessors\L10Accessor.cs" />
     <Compile Include="Accessors\NexusAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
@@ -254,6 +255,7 @@
     <Compile Include="Accessors\UserAccessor.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\FluentConfigs.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountabilityController.cs" />
@@ -262,6 +264,7 @@
     <Compile Include="Controllers\FaqController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\JobDescriptionController.cs" />
+    <Compile Include="Controllers\L10Controller.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
     <Compile Include="Controllers\PeriodController.cs" />
     <Compile Include="Controllers\RocksController.cs" />
@@ -312,6 +315,7 @@
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
     <Compile Include="Exceptions\SchedulerException.cs" />
     <Compile Include="Helpers\HtmlPrefixScopeExtensions.cs" />
+    <Compile Include="Helpers\SecuredValueHtmlHelper.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
@@ -319,7 +323,7 @@
     <Compile Include="Models\Askables\RockModel.cs" />
     <Compile Include="Models\Askables\CompanyValueModel.cs" />
     <Compile Include="Models\Charts\Checktree.cs" />
-    <Compile Include="Models\Charts\LineChart.cs" />
+    <Compile Include="Models\Charts\Line.cs" />
     <Compile Include="Models\Charts\Scatter.cs" />
     <Compile Include="Models\Charts\Table.cs" />
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
@@ -327,6 +331,7 @@
     <Compile Include="Models\Enums\ChartDataSource.cs" />
     <Compile Include="Models\Enums\Env.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
+    <Compile Include="Models\Enums\LessGreater.cs" />
     <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
     <Compile Include="Models\Enums\RepeatsType.cs" />
     <Compile Include="Models\Enums\RockState.cs" />
@@ -337,10 +342,15 @@
     <Compile Include="Models\Enums\AboutType.cs" />
     <Compile Include="Models\Interfaces\ICompletionModel.cs" />
     <Compile Include="Models\Interfaces\IGuidIdentifiable.cs" />
+    <Compile Include="Models\Interfaces\IOneToMany.cs" />
     <Compile Include="Models\Interfaces\IPagination.cs" />
     <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
     <Compile Include="Models\Charts\ChartOptions.cs" />
     <Compile Include="Models\Charts\ScatterPlot.cs" />
+    <Compile Include="Models\L10\L10Meeting.cs" />
+    <Compile Include="Models\L10\L10MeetingAttendee.cs" />
+    <Compile Include="Models\L10\L10Recurrence.cs" />
+    <Compile Include="Models\L10\L10VM.cs" />
     <Compile Include="Models\Periods\PeriodModel.cs" />
     <Compile Include="Models\Prereview\PrereviewMatchModel.cs" />
     <Compile Include="Models\Prereview\PrereviewModel.cs" />
@@ -511,6 +521,9 @@
     <Compile Include="Models\Enums\AccessLevel.cs" />
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
     <Compile Include="Utilities\Config.cs" />
+    <Compile Include="Utilities\DbUtil.cs" />
+    <Compile Include="Utilities\Extensions\ExpressionExtensions.cs" />
+    <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
@@ -574,6 +587,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\chart.css" />
     <Content Include="Content\Chart\Chart.css" />
+    <Content Include="Content\Chart\Line.v1.css" />
     <Content Include="Content\Chart\PieChart.css" />
     <Content Include="Content\components\ApproveReject.css" />
     <Content Include="Content\components\checktree.css" />
@@ -643,6 +657,7 @@
     <Content Include="Content\ReportBuilder\evaluation.css" />
     <Content Include="Content\ReportBuilder\ReportBuilder.css" />
     <Content Include="Content\Review.css" />
+    <Content Include="Content\Scorecard\Scorecard.css" />
     <Content Include="Content\select2-bootstrap.css" />
     <Content Include="Content\select2-spinner.gif" />
     <Content Include="Content\select2.css" />
@@ -708,6 +723,7 @@
     <Content Include="Scripts\d3\d3.js" />
     <Content Include="Scripts\d3\d3.v3.js" />
     <Content Include="Scripts\d3\d3.v3.min.js" />
+    <Content Include="Scripts\d3\line.v1.js" />
     <Content Include="Scripts\d3\Scatter.v2.js" />
     <Content Include="Scripts\d3\line.js" />
     <Content Include="Scripts\d3\orgchartBU.js" />
@@ -771,6 +787,10 @@
     <Content Include="Views\Period\Modal.cshtml" />
     <Content Include="Views\Prereview\Update.cshtml" />
     <Content Include="Views\Review\Details\ChartBuilder3.cshtml" />
+    <Content Include="Views\Reports\Stats.cshtml" />
+    <Content Include="Views\L10\Index.cshtml" />
+    <Content Include="Views\L10\Edit.cshtml" />
+    <Content Include="Views\Shared\_ProfilePicture.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

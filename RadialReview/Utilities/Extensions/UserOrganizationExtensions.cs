@@ -143,11 +143,11 @@ namespace RadialReview
                 return self.EmailAtOrganization;
         }
 
-        public static String ImageUrl(this UserOrganizationModel self,bool aws=false)
+        public static String ImageUrl(this UserOrganizationModel self,bool awsFaster=false)
         {
             if (self.User == null || self.User.ImageGuid == null)
                 return "/i/userplaceholder";
-	        if (aws)
+	        if (awsFaster)
 		        return ConstantStrings.AmazonS3Location +"img/"+ self.User.ImageGuid+".png";
 
             return "/i/" + self.User.ImageGuid;

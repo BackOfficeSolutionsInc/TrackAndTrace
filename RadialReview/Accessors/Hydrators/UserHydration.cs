@@ -305,7 +305,7 @@ namespace RadialReview
                 //Blah blah blah this is bad.. 
                 try
                 {
-                    PermissionsUtility.Create(Session, uOrg).EditPositions();
+					PermissionsUtility.Create(Session, uOrg).EditPositions(uOrg.Organization.Id);
                     editPosition = true;
                 }
                 catch (PermissionsException)

@@ -223,22 +223,50 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Save(FormCollection collection)
+		{
+			long reviewId;
+			int page;
+			bool incomplete;
+			Save(collection, out reviewId, out page, out incomplete);
+
+			ViewBag.Incomplete = incomplete;
+
+			return Json(new{incomplete, reviewId, page}, JsonRequestBehavior.AllowGet);
+		}
+
+		private void Save(FormCollection collection,out long reviewId,out int pageOut,out bool incomplete)
+		{
+			//reviewId = -1;
+			var page = -1;
+			DateTime dueDate;
+			incomplete = false;
+
+			if (ParseAndSave(collection, out reviewId, out page, out dueDate)){
+				pageOut = page + 1;
+				return;
+			}
+
+			if (dueDate > DateTime.UtcNow){
+				//TempData["Message"] = DisplayNameStrings.remainingQuestions;
+				incomplete = true;
+			}
+			pageOut = page + 1;
+			return;
+		} 
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Take(FormCollection collection)
 		{
-			long reviewId = -1;
-			int page = -1;
-			DateTime dueDate;
+			long reviewId;
+			int page;
+			bool incomplete;
+			Save(collection, out reviewId, out page, out incomplete);
 
-			if (ParseAndSave(collection, out reviewId, out page, out dueDate))
-			{
-				return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
-			}
-			if (dueDate > DateTime.UtcNow)
-			{
-				//TempData["Message"] = DisplayNameStrings.remainingQuestions;
-				ViewBag.Incomplete = true;
-			}
-			return RedirectToAction("Take", new { id = reviewId, page = page + 1 });
+			ViewBag.Incomplete = incomplete;
+
+			return RedirectToAction("Take", new { id = reviewId, page });
 		}
 
 		private Boolean ParseAndSave(FormCollection collection, out long reviewId, out int currentPage, out DateTime dueDate)

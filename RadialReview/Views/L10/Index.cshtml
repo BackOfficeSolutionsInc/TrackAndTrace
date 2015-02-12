@@ -1,0 +1,57 @@
+﻿@model RadialReview.Controllers.L10Controller.L10Listing
+
+@{
+	ViewBag.Title = "L10 Meetings";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (ViewBag.IsManager ?? false)
+{
+	<div style="text-align: right;margin-bottom: 3px;">
+		<a class="btn btn-primary" href="/L10/Create">Create New L10 Meeting</a>
+	</div>
+}
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">L10 Meetings</h3>
+	</div>
+	@if (Model.Recurrences.Any())
+	{
+			<table class="table startHiddenGroup table-condensed table-hover">
+				<thead>
+					<tr>
+						<th class="startHidden">Meeting name:</th>
+						@*<th style="width: 100px; text-align: center">@RadialReview.Properties.DisplayNameStrings.due</th>
+						<th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>*@
+						<th class="alignRight" style="width:50%">Attendees</th>
+						<th style="width:10px;"></th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var meeting in Model.Recurrences)
+					{
+						<tr class="startHidden clickable imageRow @(meeting.IsAttendee??false?"":"grayRow")" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id})';">
+							<td class="table-hover-underline"><a>@meeting.Recurrence.Name</a></td>
+							
+							<td class="alignRight">
+								@foreach (var a in meeting.Recurrence._DefaultAttendees){
+									@Html.Partial("_ProfilePicture", a.User)
+								}
+							</td>
+							<td class="">
+								<a href="/L10/Edit/@meeting.Recurrence.Id"><span class="glyphicon glyphicon-cog" title="Edit meeting"></span></a>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+	}
+	else
+	{
+		<div class="panel-body gray">
+			<div>You have no L10 meetings.</div>
+		</div>
+
+	}
+</div>

@@ -56,11 +56,11 @@
     <div class="row startHidden">
         @Html.AlertBoxDismissable((string)ViewBag.Message, (string)ViewBag.AlertType, (string)ViewBag.AlertMessage)
 
-        <div class="col-md-3 sidebar1  col-md-push-9" style=" position: relative;">
-            <div class="sidebar-contents1">
-                @RenderSection("sidebar")
-            </div>
-        </div>
+		<div class="col-md-3 sidebar1  col-md-push-9 noPadLeft noPadRight" style=" position: relative;">
+			<div class="sidebar-contents1">
+				@RenderSection("sidebar")
+			</div>
+		</div>
         <div class="col-md-9 col-md-pull-3">
             <div class="review2">
                 @using (var form = Html.BeginForm("Take", "Review", FormMethod.Post, new { id = "form" }))
@@ -98,7 +98,7 @@
 
 @using (Html.BeginScripts())
 {
-    if (ViewBag.NoSubmit == null)
+    @*if (ViewBag.NoSubmit == null)
     {
         <script>
             //$(function() {
@@ -122,7 +122,8 @@
             });
 
             var onleaving= function () {
-                if (reviewChanges){
+            	if (reviewChanges) {
+
                     return 'Are you sure you want to leave this page? Without clicking Back or Next, your changes will be lost.';
                 }
             };
@@ -142,5 +143,5 @@
             }
 
         </script>
-    }
+    }*@
 }

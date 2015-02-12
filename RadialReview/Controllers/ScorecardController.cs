@@ -16,8 +16,19 @@ namespace RadialReview.Controllers
 			public DateTime End { get; set; }
 		    public List<ScoreModel> ScoreModels { get; set; }
 
-	    }
+		    public ScoreVM()
+		    {
+			    ScoreModels = new List<ScoreModel>();
+		    }
 
+	    }
+		// GET: Scorecard
+	   /* [Access(AccessLevel.UserOrganization)]
+	    public ActionResult List(long? start = null, long? end = null)
+	    {
+		    var model = new ScoreVM();
+		    return View();
+	    }*/
 		// GET: Scorecard
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Edit(long? start = null, long? end = null)
@@ -56,7 +67,7 @@ namespace RadialReview.Controllers
 			var scores = ScorecardAccessor.GetScores(GetUser(), GetUser().Organization.Id, sd, ed,true);
 
 
-            return View(scores);
+            return View(new ScoreVM(){End = ed, Start = sd, ScoreModels = scores});
         }
 
 

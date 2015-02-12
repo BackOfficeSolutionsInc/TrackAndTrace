@@ -52,6 +52,20 @@ namespace RadialReview.Accessors
 			}
 		}
 
+		public static List<ScoreModel> GetMeasurableScores(UserOrganizationModel caller, long measurableId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var measureable = s.Get<MeasurableModel>(measurableId);
+
+					PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(measureable.OrganizationId);
+					return s.QueryOver<ScoreModel>().Where(x => x.MeasurableId == measurableId && x.DeleteTime == null).List().ToList();
+				}
+			}
+			
+		} 
+
 		/*public static List<ScoreModel> GetUnfinishedScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end)
 		{
 			using (var s = HibernateSession.GetCurrentSession())

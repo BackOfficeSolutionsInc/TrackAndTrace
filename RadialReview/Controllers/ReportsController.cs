@@ -12,15 +12,11 @@ namespace RadialReview.Controllers
 {
     public class ReportsController : BaseController
     {
-        //
-        // GET: /Reports/
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult Index(long id/*,int page=0*/)
-        {
+	    private ReviewsViewModel GenModel(long reviewContainerId)
+	    {
        
-			var reviewContainerId = id;
 			var user = GetUser().Hydrate().ManagingUsers(true).Execute();
-			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true, true);
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, reviewContainerId, true, true);
 		
 			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
@@ -46,8 +42,26 @@ namespace RadialReview.Controllers
 			reviewContainer.Reviews = acceptedReviews;
 			
 			var model = new ReviewsViewModel(reviewContainer);
-			return View(model);
-        }
+		    return model;
+	    }
+
+
+        //
+        // GET: /Reports/
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Index(long id/*,int page=0*/)
+		{
+			return View(GenModel(id));
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Stats(long id/*,int page=0*/)
+		{
+			return View(GenModel(id));
+		}
+
+
+
 
 	    [Access(AccessLevel.Manager)]
 	    public ActionResult Details(int id,int userId)

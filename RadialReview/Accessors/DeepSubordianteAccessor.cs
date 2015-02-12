@@ -75,7 +75,8 @@ namespace RadialReview.Accessors
                                     .Select(x=>x.SubordinateId)
                                     .List<long>()
                                     .ToList();
-            return subordinates;
+			subordinates.Add(userId);
+            return subordinates.Distinct().ToList();
         }
 
         public List<DeepSubordinateModel> GetOrganizationMap(UserOrganizationModel caller, long organizationId)

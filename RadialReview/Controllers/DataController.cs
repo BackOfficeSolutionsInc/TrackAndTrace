@@ -79,6 +79,14 @@ namespace RadialReview.Controllers
         }
 
 	    [Access(AccessLevel.UserOrganization)]
+	    public JsonResult ScorecardData(long id)
+	    {
+		    var measurableId = id;
+			var model = _ChartsEngine.ScorecardChart(GetUser(),measurableId);
+			return Json(ResultObject.Create(model), JsonRequestBehavior.AllowGet);
+	    }
+
+	    [Access(AccessLevel.UserOrganization)]
 	    public JsonResult Line(long userId, long reviewId,string categories)
 	    {
 			return null;

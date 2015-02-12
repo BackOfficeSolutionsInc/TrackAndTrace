@@ -100,7 +100,7 @@ namespace RadialReview.Controllers
 		public int M11_19_2014()
 		{
 			var count = 0;
-			using (var s = HibernateSession.GetCurrentSession()){
+			/*using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
 					foreach (var a in s.QueryOver<OrganizationModel>().Where(x=>x.Settings == null || x.Settings.TimeZoneOffsetMinutes==0).List()){
 						if (a.Settings==null)
@@ -115,7 +115,7 @@ namespace RadialReview.Controllers
 					tx.Commit();
 					s.Flush();
 				}
-			}
+			}*/
 			return count;
 		}
 
