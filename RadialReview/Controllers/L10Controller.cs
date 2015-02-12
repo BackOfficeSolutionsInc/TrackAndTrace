@@ -94,6 +94,7 @@ namespace RadialReview.Controllers
 			var model = new L10Edit(){
 				Recurrence = new L10Recurrence(){
 					CreateTime = DateTime.UtcNow,
+					OrganizationId = GetUser().Organization.Id,
 				},
 				PossibleMeasurables = allMeasurables,
 				PossibleMembers = allMembers,
@@ -109,7 +110,7 @@ namespace RadialReview.Controllers
 	    public ActionResult Edit(L10Edit model)
 	    {
 
-			ValidateValues(model,x=>x.Recurrence.Id,x=>x.Recurrence.CreateTime);
+			ValidateValues(model,x=>x.Recurrence.Id,x=>x.Recurrence.CreateTime,x=>x.Recurrence.OrganizationId);
 
 
 			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
