@@ -10,17 +10,23 @@ namespace RadialReview.Utilities
 {
 	public static class DbUtil
 	{
-		public static void UpdateList<T>(this ISession s, IEnumerable<T> oldValues, IEnumerable<T> newValues, DateTime? now=null) where T : IOneToMany
+		public static void UpdateList<T>(this ISession s, IEnumerable<T> oldValues, IEnumerable<T> newValues, DateTime? now = null) where T : IOneToMany
 		{
 			now = now ?? DateTime.UtcNow;
-			var update = SetUtility.AddRemove(oldValues, newValues, x => ((ILongIdentifiable)x).Id);
-			foreach (var u in update.RemovedValues)
-			{
-				((IDeletable)u).DeleteTime = now;
-				s.Update(u);
-			}
-			foreach (var a in update.AddedValues){
-				s.Save(a);
+			if (oldValues == null){
+				foreach (var a in newValues)
+					s.Save(a);
+			}else{
+
+				var update = SetUtility.AddRemove(oldValues, newValues, x => ((ILongIdentifiable)x).Id);
+				foreach (var u in update.RemovedValues)
+				{
+					((IDeletable)u).DeleteTime = now;
+					s.Update(u);
+				}
+				foreach (var a in update.AddedValues)
+					s.Save(a);
+
 			}
 		}
 		/*

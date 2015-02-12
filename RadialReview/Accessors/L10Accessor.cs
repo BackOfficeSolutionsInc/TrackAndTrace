@@ -29,8 +29,8 @@ namespace RadialReview.Accessors
 					LoadRecurrences(s, false, old);
 
 					var now = DateTime.UtcNow;
-					s.UpdateList(old._DefaultAttendees, l10Recurrence._DefaultAttendees, now);
-					s.UpdateList(old._DefaultMeasurables, l10Recurrence._DefaultMeasurables, now);
+					s.UpdateList(old.NotNull(x=>x._DefaultAttendees), l10Recurrence._DefaultAttendees, now);
+					s.UpdateList(old.NotNull(x => x._DefaultMeasurables), l10Recurrence._DefaultMeasurables, now);
 
 					s.Evict(old);
 					
