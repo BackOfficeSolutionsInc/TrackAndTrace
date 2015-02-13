@@ -19,182 +19,188 @@
     throw new Exception("You must extend from the base controller.");
 }
 
-<body>
-    @if (ViewBag.IsLocal ?? false)
-    {
-        <div id="local"></div>
-    }
-    <div class="statusContainer"><div id="status">No status</div></div>
-    <div id="wrap">
-        <div id="main">
-            <div class="navbar navbar-inverse navbar-fixed-top">
-                <div class="container">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-	                    <div id="logo">
-		                    <div class="link">
-			                    <a href="@Url.Action("Index", "Home")" class="navbar-brand">
-				                    <span style="z-index:1000001;position:relative;top: -2px;">
+<body class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width") ">
+	@if (ViewBag.IsLocal ?? false)
+	{
+		<div id="local"></div>
+	}
+	<div class="statusContainer"><div id="status">No status</div></div>
+	<div id="wrap">
+		<div id="main">
+			<div class=" navbar navbar-inverse navbar-fixed-top">
+				<div class="container body-navbar">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<div id="logo">
+							<div class="link">
+								<a href="@Url.Action("Index", "Home")" class="navbar-brand">
+									<span style="z-index:1000001;position:relative;top: -2px;">
 										<img src="/Content/img/logoWhiteTiny.png" height="24" width="24" style="opacity: .95;">
-				                    </span><!-- div class="circles"><div class="circle2 navbar-brand"></div><div class="circle1 navbar-brand"></div></div-->
-			                    </a>
-		                    </div>
-	                    </div>
-                    </div>
-                    <div class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            @if (Request.IsAuthenticated)
-                            {
-                                if (((int?)ViewBag.Organizations ?? 0) == 0)
-                                {
-                                    <li>
-                                        <a href="@Url.Action("Index", "Home")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
-                                            Access Code
-                                            <span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
-                                        </a>
-                                    </li>
-                                }
+									</span><!-- div class="circles"><div class="circle2 navbar-brand"></div><div class="circle1 navbar-brand"></div></div-->
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							@if (Request.IsAuthenticated)
+							{
+								if (((int?)ViewBag.Organizations ?? 0) == 0)
+								{
+									<li>
+										<a href="@Url.Action("Index", "Home")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
+											Access Code
+											<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
+										</a>
+									</li>
+								}
 
 
-                                if (((int?)ViewBag.Organizations ?? 0) > 0)
-                                {
-                                    <li>
-                                        <a href="@Url.Action("Index", "Tasks")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
-                                            Tasks
-                                            @if (ViewBag.TaskCount > 0)
-                                            {
-                                                @:[@ViewBag.TaskCount]
+								if (((int?)ViewBag.Organizations ?? 0) > 0)
+								{
+									<li>
+										<a href="@Url.Action("Index", "Tasks")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
+											Tasks
+											@if (ViewBag.TaskCount > 0)
+											{
+												@:[@ViewBag.TaskCount]
                                             }
-                                            <span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="@Url.Action("Index", "Reviews")">
-                                            Reviews
-                                            <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                        </a>
-                                    </li>
-                                    @*<li>
-                                        <a href="@Url.Action("Index", "Reports")">
-                                            Reports
-                                            <span id="ReviewsNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                        </a>
-                                    </li>*@
-                                }
-                                if (ViewBag.IsManager ?? false)
-                                {
-                                    <li>
-                                        <a href="@Url.Action("Index", "Manage")">
-                                            Manage
-                                            <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
-                                        </a>
-                                    </li>
-                                }
-                            }
-                            else
-                            {
-                                if (!(ViewBag.IsLogin ?? false)) {
-                                    <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "Index", "Home")</li>
-                                }
-                            }
-                        </ul>
-                        @if (!(ViewBag.IsLogin ?? false))
-                        {
-                            @Html.Partial("_LoginPartial", (string) ViewBag.ReturnUrl)
-                        }
-                    </div>
-                </div>
-            </div>
-            @RenderSection("top", false)
-            <div class="container body-content">
-                @RenderSection("header", false)
-                <div class="clearfix subheading">@ViewBag.Subheading</div>
-                <div id="alerts">
-                </div>
-                <div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
-                    @RenderSection("hints", false)
-                </div>
-                @RenderBody()
-                @*<hr/>*@
-            </div>
-            <div id="spinnerContainer"></div>
-        </div>
-        @Html.Partial("Partial/_Modal")
-        @using (var s = Html.BeginScripts())
-        {
+											<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
+										</a>
+									</li>
+									<li>
+										<a href="@Url.Action("Index", "Reviews")">
+											Reviews
+											<span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+										</a>
+									</li>
+									@*<li>
+								<a href="@Url.Action("Index", "Reports")">
+									Reports
+									<span id="ReviewsNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+								</a>
+							</li>*@
+								}
+								if (ViewBag.IsManager ?? false)
+								{
+									<li>
+										<a href="@Url.Action("Index", "Manage")">
+											Manage
+											<span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+										</a>
+									</li>
+								}
+							}
+							else
+							{
+								if (!(ViewBag.IsLogin ?? false))
+								{
+									<li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "Index", "Home")</li>
+								}
+							}
+						</ul>
+						@if (!(ViewBag.IsLogin ?? false))
+						{
+							@Html.Partial("_LoginPartial", (string)ViewBag.ReturnUrl)
+						}
+					</div>
+				</div>
+			</div>
+
+			@RenderSection("top", false)
+			<div class="container body-content">
+				@RenderSection("header", false)
+				<div class="clearfix subheading">@ViewBag.Subheading</div>
+				<div id="alerts">
+				</div>
+				<div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
+					@RenderSection("hints", false)
+				</div>
+				@RenderBody()
+				@*<hr/>*@
+			</div>
+			<div id="spinnerContainer"></div>
+		</div>
+		@Html.Partial("Partial/_Modal")
+		@using (var s = Html.BeginScripts())
+		{
             <!--script src="~/Scripts/Main/radial.js"></script-->
-            <script>
-                $(function () {
-                    qtip();
-                    ForceUnhide();
-                    @if (ViewBag.Alert!=null){
+			<script>
+				$(function () {
+					qtip();
+					ForceUnhide();
+					@if (ViewBag.Alert!=null){
                         @:showAlert("@ViewBag.Alert");
-                                        }
-                    @if(ViewBag.Success!=null){
+					                                        }
+					@if(ViewBag.Success!=null){
                         @:showAlert("@ViewBag.Success", "alert-success", "Success!");
-                    }
-	                UnstoreJsonAlert();
+					                    }
+					UnstoreJsonAlert();
 
-                });
+				});
 
-                var statusTimeout;
+				var statusTimeout;
 
-                //alertHub = $.connection.alertHub;
+				//alertHub = $.connection.alertHub;
 
-                //alertHub.error = function (error) {
-                //    console.log(error);
-                //};
+				//alertHub.error = function (error) {
+				//    console.log(error);
+				//};
 
 
-                //alertHub.client.jsonAlert = function (data, showSuccess) { showJsonAlert(data, showSuccess); };
-                //alertHub.client.unhide = function (selector) { $(selector).show(); };
-                //alertHub.client.status = function (text) {
-                //    $(".statusContainer").css("bottom", "0px");
-                //    $(".statusContainer").css("display", "block");
-                //    $(".statusContainer").css("opacity", "1");
-                //    $("#status").html(text);
-                //    clearTimeout(statusTimeout);
-                //    statusTimeout = setTimeout(function () {
-                //        $(".statusContainer").animate({
-                //            opacity: 0,
-                //            bottom: "-20px"
-                //        }, 500, function () {
-                //            $(".statusContainer").css("display", "none");
-                //        })
-                //    }, 2000);
-                //};
-            </script>
-        }
-    </div>
-    <div id="footer">
-        <p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName</p>
-        @Html.Partial("Partial/Footer")
-    </div>
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    <script src="~/Scripts/jquery/jquery.qtip.js"></script>
-    <!--script src="~/Scripts/jquery.signalR-2.0.1.min.js"></script-->
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
-    @RenderSection("modals", required: false)
-    @Scripts.Render("~/bundles/main")
-    @*<script src="~/signalr/hubs"></script>*@
-    @Html.PageScripts()
-    <script type="text/javascript" src="http://assets.freshdesk.com/widget/freshwidget.js"></script>
-    <script type="text/javascript">
-	$(function() {
-		FreshWidget.init("", { "queryString": "&widgetType=popup", "widgetType": "popup", "buttonType": "text", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#767F99", "alignment": "4", "offset": "235px", "formHeight": "500px", "url": "http://radialreview.freshdesk.com" });
-	});
-    </script>
-    @*<script>
-        $(function () {
-            //$.connection.hub.start().done(function () { });
-        });
-    </script>*@
+				//alertHub.client.jsonAlert = function (data, showSuccess) { showJsonAlert(data, showSuccess); };
+				//alertHub.client.unhide = function (selector) { $(selector).show(); };
+				//alertHub.client.status = function (text) {
+				//    $(".statusContainer").css("bottom", "0px");
+				//    $(".statusContainer").css("display", "block");
+				//    $(".statusContainer").css("opacity", "1");
+				//    $("#status").html(text);
+				//    clearTimeout(statusTimeout);
+				//    statusTimeout = setTimeout(function () {
+				//        $(".statusContainer").animate({
+				//            opacity: 0,
+				//            bottom: "-20px"
+				//        }, 500, function () {
+				//            $(".statusContainer").css("display", "none");
+				//        })
+				//    }, 2000);
+				//};
+			</script>
+		}
+	</div>
+	<div id="footer">
+		<p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName</p>
+		@Html.Partial("Partial/Footer")
+	</div>
+	@Scripts.Render("~/bundles/modernizr")
+	@Scripts.Render("~/bundles/jquery")
+	<script src="~/Scripts/jquery/jquery.qtip.js"></script>
+	<!--script src="~/Scripts/jquery.signalR-2.0.1.min.js"></script-->
+	@Scripts.Render("~/bundles/bootstrap")
+	@RenderSection("scripts", required: false)
+	@RenderSection("modals", required: false)
+	@Scripts.Render("~/bundles/main")
+	@*<script src="~/signalr/hubs"></script>*@
+	@Html.PageScripts()
+	@if (!(ViewBag.FullWidth ?? false))
+	{
+		<script type="text/javascript" src="http://assets.freshdesk.com/widget/freshwidget.js"></script>
+		<script type="text/javascript">
+			$(function () {
+				FreshWidget.init("", { "queryString": "&widgetType=popup", "widgetType": "popup", "buttonType": "text", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#767F99", "alignment": "4", "offset": "235px", "formHeight": "500px", "url": "http://radialreview.freshdesk.com" });
+			});
+		</script>
+	}
+	@*<script>
+			$(function () {
+				//$.connection.hub.start().done(function () { });
+			});
+		</script>*@
 
 </body>
+
 </html>

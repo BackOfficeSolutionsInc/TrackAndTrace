@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NHibernate.Linq;
+using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Models;
 using RadialReview.Models.L10;
+using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 using NHibernate;
 using ListExtensions = WebGrease.Css.Extensions.ListExtensions;
@@ -26,7 +29,7 @@ namespace RadialReview.Accessors
 						//SetUtility.AddRemove(old.DefaultAttendees,l10Recurrence.DefaultAttendees,x=>x.)
 					}*/
 					var old = s.Get<L10Recurrence>(l10Recurrence.Id);
-					LoadRecurrences(s, false, old);
+					LoadRecurrences(s, false,false, old);
 
 					var now = DateTime.UtcNow;
 					s.UpdateList(old.NotNull(x=>x._DefaultAttendees), l10Recurrence._DefaultAttendees, now);
@@ -42,7 +45,7 @@ namespace RadialReview.Accessors
 			
 		}
 
-		private static void LoadRecurrences(ISession s, bool loadUsers, params L10Recurrence[] all)
+		private static void LoadRecurrences(ISession s, bool loadUsers,bool loadMeasurables, params L10Recurrence[] all)
 		{
 			var recurrenceIds = all.Where(x=>x!=null).Select(x => x.Id).Distinct().ToArray();
 
@@ -66,6 +69,14 @@ namespace RadialReview.Accessors
 							u.User.ImageUrl();
 						}
 					}
+					if (loadMeasurables){
+						foreach (var u in a._DefaultMeasurables)
+						{
+							u.Measurable.AccountableUser.GetName();
+							u.Measurable.AccountableUser.ImageUrl();
+						}
+					}
+
 				}
 			}
 
@@ -79,7 +90,7 @@ namespace RadialReview.Accessors
 				{
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
 					var found = s.Get<L10Recurrence>(recurrenceId);
-					LoadRecurrences(s, true, found);
+					LoadRecurrences(s, true,true, found);
 					return found;
 				}
 			}
@@ -118,7 +129,7 @@ namespace RadialReview.Accessors
 
 					//Load extra data
 					allRecurrences = allRecurrences.Distinct(x => x.Id).ToList();
-					LoadRecurrences(s, true, allRecurrences.ToArray());
+					LoadRecurrences(s, true,false, allRecurrences.ToArray());
 
 					//Make a lookup for self attendance
 					var attending = attendee.Where(x => userId == x.User.Id).Select(x => x.L10Recurrence.Id).ToArray();
@@ -129,5 +140,106 @@ namespace RadialReview.Accessors
 			}
 		}
 
+
+		public static L10Meeting GetCurrentL10Meeting(UserOrganizationModel caller, long recurrenceId)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+
+					var found =s.QueryOver<L10Meeting>().Where(x => 
+						x.StartTime != null &&
+						x.CompleteTime == null &&
+						x.DeleteTime == null &&
+						x.L10RecurrenceId==recurrenceId
+					).List().ToList();
+
+					if (!found.Any())
+						throw new MeetingException("Meeting has not been started.", MeetingExceptionType.Unstarted);
+					if (found.Count != 1)
+						throw new MeetingException("Too many open meetings.", MeetingExceptionType.TooMany);
+					var meeting = found.First();
+					PermissionsUtility.Create(s, caller).ViewL10Meeting(meeting.Id);
+					
+					return meeting;
+				}
+			}
+		}
+
+		public static List<ScoreModel> GetScoresForRecurrence(UserOrganizationModel caller, long recurrenceId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+
+					var r = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x=>x.L10Recurrence.Id == recurrenceId && x.DeleteTime==null).List().ToList();
+					var measurables = r.Distinct(x => x.Measurable.Id).Select(x => x.Measurable.Id).ToList();
+
+					var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.MeasurableId).IsIn(measurables).List().ToList();
+					
+					//Touch 
+					foreach (var a in scores){
+						var i = a.Measurable.Goal;
+						var u = a.Measurable.AccountableUser.GetName();
+						var v = a.Measurable.AccountableUser.ImageUrl();
+						var j = a.AccountableUser.GetName();
+						var k = a.AccountableUser.ImageUrl();
+					}
+
+					return scores;
+				}
+
+			} 
+		}
+
+		public static void StartMeeting(UserOrganizationModel caller, long recurrenceId,List<UserOrganizationModel> attendees)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					//Make sure we're unstarted
+					try{
+						GetCurrentL10Meeting(caller, recurrenceId);
+					}catch (MeetingException e){
+						if (e.MeetingExceptionType != MeetingExceptionType.Unstarted)
+							throw;
+					}
+
+					var now = DateTime.UtcNow;
+					var recurrence = s.Get<L10Recurrence>(recurrenceId);
+
+					var meeting = new L10Meeting{
+						CreateTime = now,
+						StartTime = now,
+						L10RecurrenceId = recurrenceId,
+						L10Recurrence = recurrence,
+						OrganizationId = recurrence.OrganizationId,
+					};
+
+					s.Save(meeting);
+
+					LoadRecurrences(s,false,false,recurrence);
+
+					foreach (var m in recurrence._DefaultMeasurables){
+						var mm = new L10Meeting.L10Meeting_Measurable(){
+							L10Meeting = meeting,
+							Measurable = m.Measurable,
+						};
+						s.Save(mm);
+						meeting._MeetingMeasurables.Add(mm);
+					}
+					foreach (var m in attendees){
+						var mm = new L10Meeting.L10Meeting_Attendee(){
+							L10Meeting = meeting,
+							User = m,
+						};
+						s.Save(mm);
+						meeting._MeetingAttendees.Add(mm);
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 	}
 }

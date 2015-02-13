@@ -12,7 +12,6 @@ namespace RadialReview.Models.L10
 	public class L10Recurrence : ILongIdentifiable,IDeletable
 	{
 		public virtual long Id { get; set; }
-		[Required]
 		public virtual String Name { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }

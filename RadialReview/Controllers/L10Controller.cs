@@ -12,7 +12,7 @@ using RadialReview.Models.Scorecard;
 
 namespace RadialReview.Controllers
 {
-    public class L10Controller : BaseController
+    public partial class L10Controller : BaseController
     {
 	    public class L10Listing
 		{
@@ -25,6 +25,28 @@ namespace RadialReview.Controllers
 				Meetings = new List<L10Meeting>();
 		    }
 	    }
+
+	    public class L10MeetingVM
+	    {
+		    public L10Recurrence Recurrence { get; set; }
+			public L10Meeting Meeting { get; set; }
+			public List<ScoreModel> Scores { get; set; }
+			public DateTime StartDate { get; set; }
+			public DateTime EndDate { get; set; }
+			public List<Tuple<DateTime,DateTime>> DateRanges { get; set; }
+
+			public long[] Attendees { get; set; }
+
+
+		    public L10MeetingVM()
+		    {
+			    StartDate = DateTime.UtcNow;
+			    EndDate = DateTime.UtcNow;
+				DateRanges = new List<Tuple<DateTime, DateTime>>();
+		    }
+
+	    }
+
         // GET: L10
 		[Access(AccessLevel.UserOrganization)]
         public ActionResult Index()
@@ -41,7 +63,12 @@ namespace RadialReview.Controllers
 		public ActionResult Meeting(long id)
 		{
 			var recurrenceId = id;
-			return View();
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId);
+			var model = new L10MeetingVM(){
+				Recurrence = recurrence,
+			};
+
+			return View(model);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -111,6 +138,11 @@ namespace RadialReview.Controllers
 	    {
 
 			ValidateValues(model,x=>x.Recurrence.Id,x=>x.Recurrence.CreateTime,x=>x.Recurrence.OrganizationId);
+
+
+			if (String.IsNullOrWhiteSpace(model.Recurrence.Name)){
+				ModelState.AddModelError("Name","Meeting name is required");
+			}
 
 
 			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);

@@ -18,6 +18,7 @@ namespace RadialReview.Models
 	{
 		public class OrganizationSettings
 		{
+			public virtual DayOfWeek WeekStart { get; set; }
 			public virtual int TimeZoneOffsetMinutes { get; set; }
 			public virtual bool EmployeesCanViewScorecard { get; set; }
 			public virtual bool ManagersCanViewScorecard { get; set; }
@@ -29,6 +30,7 @@ namespace RadialReview.Models
 			public OrganizationSettings()
 			{
 				TimeZoneOffsetMinutes = -360;
+				WeekStart= DayOfWeek.Sunday;
 
 				EmployeesCanViewScorecard = false;
 				ManagersCanViewScorecard = true;
@@ -44,7 +46,9 @@ namespace RadialReview.Models
 			{
 				public OrgSettingsVM()
 				{
+					Map(x => x.WeekStart);
 					Map(x => x.TimeZoneOffsetMinutes);
+
 					Map(x => x.EmployeesCanViewScorecard);
 					Map(x => x.ManagersCanViewScorecard);
 
@@ -54,6 +58,7 @@ namespace RadialReview.Models
 
 					Map(x => x.ManagersCanViewSubordinateL10);
 					Map(x => x.ManagersCanEditSubordinateL10);
+
 				}
 			}
 

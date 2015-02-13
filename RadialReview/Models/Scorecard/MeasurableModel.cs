@@ -40,5 +40,21 @@ namespace RadialReview.Models.Scorecard
 				Map(x => x.DueTime);
 			} 
 		}
+
+		public virtual string ToSymbolString()
+		{
+			var sym = "";
+			switch(GoalDirection){
+				case LessGreater.LessThan:
+					sym = "< ";
+					break;
+				case LessGreater.GreaterThan:
+					sym = "> ";
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+			return sym+Goal.ToString("0.#####");
+		}
 	}
 }

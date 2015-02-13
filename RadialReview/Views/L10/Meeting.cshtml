@@ -1,0 +1,55 @@
+﻿@model RadialReview.Controllers.L10Controller.L10MeetingVM
+@{
+    ViewBag.Title = "Meeting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.FullWidth = true;
+}
+@using (Html.BeginStyles()){
+	
+	<link href="~/Content/L10/L10.css" rel="stylesheet" />
+}
+@using (Html.BeginScripts())
+{
+	<script src="~/Scripts/L10/L10.js"></script>
+	<script>
+		var MeetingId = @Model.Recurrence.Id;
+	</script>
+}
+
+<div class="row full">
+	<div class="col-sm-3 col-md-2 full">
+		<div class="current-time">
+			<div class=" component ">
+				<span class="centered">
+					<span class="hour big"></span>
+					<span class="colon big">:</span>
+					<span class="minute big"></span>
+					<span class="second"></span>
+				</span>
+			</div>
+		</div>
+		<div class="agenda">
+			<div class="component">
+				<div class="title">Agenda</div>
+				<ol>
+					<li><a data-location="Segue" href="#Segue">Segue</a></li>
+					<li><a data-location="Scorecard" href="#Scorecard">Scorecard</a></li>
+					<li><a data-location="Rocks" href="#Rocks">Rock Review</a></li>
+					<li><a data-location="Headlines" href="#Headlines">Headlines</a></li>
+					<li><a data-location="Todo" href="#Todo List">Todo List</a></li>
+					<li><a data-location="IDS" href="#IDS">IDS</a></li>
+					<li><a data-location="Conclusion" href="#Conclusion">Conclusion</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</div>
+	<div class="col-sm-9 col-md-10  full">
+		
+		<div class="main-window-container">
+			<div id="main-window"></div>
+			@*<div class="component"></div>*@
+		</div>
+	</div>
+</div>
+

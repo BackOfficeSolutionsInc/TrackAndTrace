@@ -31,7 +31,7 @@
 					@Html.ListBoxFor(x => 
 					   x.SelectedMembers,
 						Model.PossibleMembers.ToSelectList(x => x.GetNameAndTitle(), x => x.Id).OrderBy(x => x.Text),
-						new { @class = "select2 form-control", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a name..." })
+						new { @class = "select2 form-control attendee", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a name..." })
 				</div>
 			</div>
 			<div class="form-group">
@@ -40,7 +40,7 @@
 					@Html.ListBoxFor(x => 
 						x.SelectedMeasurables, 
 						Model.PossibleMeasurables.ToSelectList(x => x.Title+" (by "+x.AccountableUser.GetName()+")", x => x.Id).OrderBy(x => x.Text),
-						new { @class = "select2 form-control", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a measurable..." })
+								 new { @class = "select2 form-control measurables", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a measurable..." })
 				</div>
 			</div>												
 			@Html.SecuredHiddenFor(x => x.Recurrence.Id)
@@ -58,7 +58,10 @@
 @using (Html.BeginScripts())
 {
 	<script>
-		$(".select2").select2({
+
+		//$(".select2").hide();
+
+		$(".select2.attendee").select2({
 			matcher: function (term, text) {
 				var split = text.split("(")[0].split(" ");
 				var t = term.toUpperCase();
@@ -70,7 +73,23 @@
 						return true;
 				}
 				return false;
-			}
+			},
 		});
+		$(".select2.measurables").select2({
+			/*matcher: function (term, text) {
+				var split = text.split("(")[0].split(" ");
+				var t = term.toUpperCase();
+				for (var i = 0; i < split.length; i++) {
+					var s = split[i].toUpperCase();
+					if ($.trim(s) == '')
+						continue;
+					if (s.indexOf(t) == 0)
+						return true;
+				}
+				return false;
+			}*/
+		});
+
+		//$(".measurables, .attendee").fadeIn();
 	</script>
 }

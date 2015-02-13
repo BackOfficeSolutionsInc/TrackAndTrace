@@ -1,0 +1,143 @@
+﻿@model RadialReview.Controllers.L10Controller.L10MeetingVM
+
+@{
+	ViewBag.Title = "Scorecard";
+}
+
+<div class="component">
+	<h3>Scorecard:</h3>
+	<div style="position: relative;">
+		<div class="table-responsive">
+			<table id="ScorecardTable" class="scorecard-table">
+				<thead>
+					<tr>
+						<th class="heading">Who</th>
+						<th class="heading">Measurable</th>
+						<th class="heading">Target</th>
+						@foreach (var r in Model.DateRanges)
+						{
+							<th class="date">
+								@r.Item1.ToString("d")
+							</th>
+						}
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var m in Model.Recurrence._DefaultMeasurables)
+					{
+						<tr>
+							<td class="alignRight first1">
+								@m.Measurable.AccountableUser.GetName()
+							</td>
+							<td class="measurable first1">
+								@m.Measurable.Title
+							</td>
+							<td class="alignCenter first2">
+								@m.Measurable.ToSymbolString()
+							</td>
+							@foreach (var r in Model.DateRanges)
+							{
+								<td class="score">
+									@(Model.Scores.FirstOrDefault(x => r.Item1 <= x.DateDue && x.DateDue < r.Item2 && x.MeasurableId == m.Id).NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "N/A")
+								</td>
+							}
+						</tr>
+					}
+					<tr class="last"></tr>
+				</tbody>
+			</table>
+		</div>
+		<table id="ScorecardTable_Over" class="scorecard-table">
+			<thead>
+				<tr>
+					<th class="heading">Who</th>
+					<th class="heading">Measurable</th>
+					<th class="heading">Target</th>
+
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var m in Model.Recurrence._DefaultMeasurables)
+				{
+					<tr>
+						<td class="alignRight first1">
+							@m.Measurable.AccountableUser.GetName()
+						</td>
+						<td class="measurable first1">
+							@m.Measurable.Title
+						</td>
+						<td class="alignCenter first2">
+							@m.Measurable.ToSymbolString()
+						</td>
+					</tr>
+				}
+			<tr class="last"></tr>
+			</tbody>
+		</table>
+	</div>
+
+
+</div>
+<script>
+	//$("#ScorecardTable").wrap('<div id="table_container"></div>').after('<div id="bottom_anchor"></div>');
+	//$("#ScorecardTable_resp").scroll(moveScroll("#ScorecardTable", "#ScorecardTable_resp"));
+
+	//$('#ScorecardTable').cTable({
+	//	width: 1300,
+	//	height: 500,
+	//	fCols: 3,
+	//	fRows: 2
+	////});
+	//var onColumnSort = function (newIndexOrder, columnIndex, lastColumnIndex) {
+	//	var offset = (this.options.allowSelections && this.options.showSelectionColumn) ? 1 : 0,
+	//		doc = document;
+
+	//	if (columnIndex !== lastColumnIndex) {
+	//		if (lastColumnIndex > -1) {
+	//			doc.getElementById("demoHdr" + (lastColumnIndex - offset)).parentNode.style.backgroundColor = "";
+	//		}
+	//		doc.getElementById("demoHdr" + (columnIndex - offset)).parentNode.style.backgroundColor = "#f7f7f7";
+	//	}
+	//};
+
+	//var onResizeGrid = function (newWidth, newHeight) {
+	//	var demoDivStyle = document.getElementById("ScorecardDiv").style;
+	//	demoDivStyle.width = newWidth + "px";
+	//	demoDivStyle.height = newHeight + "px";
+	//};
+
+	//var myGrid = new Grid("ScorecardGrid", {
+	//	srcType: "dom",
+	//	srcData: "ScorecardTable",
+	//	allowGridResize: true,
+	//	allowColumnResize: true,
+	//	allowClientSideSorting: true,
+	//	allowSelections: true,
+	//	allowMultipleSelections: true,
+	//	showSelectionColumn: true,
+	//	onColumnSort: onColumnSort,
+	//	onResizeGrid: onResizeGrid,
+	//	//colAlign: gridColAlign,
+	//	colBGColors: ["#fafafa"],
+	//	//colSortTypes: gridColSortTypes,
+	//	fixedCols: 1
+	//});
+	/*$('#ScorecardTable').fxdHdrCol({
+		fixedCols: 3,
+		width: "100%",
+		height: 400,
+		colModal: [
+			   { width: 50, align: 'center' },
+			   { width: 110, align: 'center' },
+			   { width: 170, align: 'left' },
+			   { width: 250, align: 'left' },
+			   { width: 100, align: 'left' },
+			   { width: 70, align: 'left' },
+			   { width: 100, align: 'left' },
+			   { width: 100, align: 'center' },
+			   { width: 90, align: 'left' },
+			   { width: 400, align: 'left' }
+		],
+		sort: true
+	});*/
+</script>

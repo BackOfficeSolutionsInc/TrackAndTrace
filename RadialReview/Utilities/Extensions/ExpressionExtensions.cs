@@ -19,6 +19,14 @@ namespace RadialReview.Utilities.Extensions
 
 		public static String GetMvcName<T>(this Expression<Func<T, object>> selector)
 		{
+			/*var s = selector.Body;
+			var name = new List<string>();
+			while (true){
+				if (s is UnaryExpression){
+					name.Add(((UnaryExpression)s).Operand.;
+				}
+			}*/
+
 			var p = ((UnaryExpression) selector.Body).Operand.ToString();
 			return p.Substring(p.IndexOf(".") + 1);
 		}

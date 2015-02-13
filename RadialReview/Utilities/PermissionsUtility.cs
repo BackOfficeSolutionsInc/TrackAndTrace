@@ -737,6 +737,43 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 	    }
 
+	    public PermissionsUtility ViewL10Meeting(long meetingId)
+	    {
+			if (IsRadialAdmin(caller))
+				return this;
+
+		    var meeting = session.Get<L10Meeting>(meetingId);
+			var meeting_OrgId = meeting.Organization.Id;
+			if (IsManagingOrganization(meeting_OrgId))
+				return this;
+
+		    var meetingIds = session.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x => 
+				x.L10Meeting.Id == meetingId &&
+				x.DeleteTime ==null).List().Select(x => x.UserId).ToList();
+			if (caller.UserIds.ContainsAny(meetingIds))
+				    return this;
+		    if (caller.Organization.Settings.ManagersCanViewSubordinateL10){
+				var subIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(session, caller, caller.Id);
+				if (subIds.ContainsAny(meetingIds))
+				    return this;
+		    }
+
+		    var recurId = meeting.L10RecurrenceId;
+		    var defaultIds = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x =>
+				x.L10Recurrence.Id ==  recurId &&
+				x.DeleteTime == null).List().Select(x => x.User.Id).ToList();
+
+			if (caller.UserIds.ContainsAny(defaultIds))
+				return this;
+			if (caller.Organization.Settings.ManagersCanViewSubordinateL10){
+				var subIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(session, caller, caller.Id);
+				if (subIds.ContainsAny(defaultIds))
+					return this;
+			}
+
+			throw new PermissionsException();
+	    }
+
 		#endregion
 
 		public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)

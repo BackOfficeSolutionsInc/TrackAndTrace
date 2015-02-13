@@ -1,0 +1,67 @@
+﻿.cTContainer {
+	overflow: hidden;
+	padding: 2px;
+}
+
+	.cTContainer table {
+		table-layout: fixed;
+		border-width: 0px;
+	}
+
+.relativeContainer {
+	position: relative;
+	overflow: hidden;
+}
+
+.fixedTB {
+	position: absolute;
+	z-index: 11;
+	font-weight: bold;
+}
+
+	.fixedTB table tr td {
+		background-color: #F1F1F1;
+	}
+
+.leftContainer {
+	position: absolute;
+	overflow: hidden;
+}
+
+.rightContainer {
+	position: absolute;
+	overflow: hidden;
+}
+
+.leftSBWrapper {
+	position: relative;
+	z-index: 10;
+}
+
+.topSBWrapper {
+	position: relative;
+	z-index: 10;
+	width: 100%;
+}
+
+	.topSBWrapper table tr td {
+		background-color: #F1F1F1;
+		font-weight: bold;
+	}
+
+.SBWrapper {
+	width: 100%;
+	overflow: auto;
+}
+
+.cTContainer td {
+	overflow: hidden;
+	padding: 2px 2px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: black;
+}
+
+.leftContainer table tr {
+	background-color: #F1F1F1;
+}

@@ -265,6 +265,7 @@
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\JobDescriptionController.cs" />
     <Compile Include="Controllers\L10Controller.cs" />
+    <Compile Include="Controllers\L10SubPageController.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
     <Compile Include="Controllers\PeriodController.cs" />
     <Compile Include="Controllers\RocksController.cs" />
@@ -312,6 +313,7 @@
     <Compile Include="Engines\BaseEngine.cs" />
     <Compile Include="Engines\ReviewEngine.cs" />
     <Compile Include="Engines\UserEngine.cs" />
+    <Compile Include="Exceptions\MeetingExceptions\MeetingException.cs" />
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
     <Compile Include="Exceptions\SchedulerException.cs" />
     <Compile Include="Helpers\HtmlPrefixScopeExtensions.cs" />
@@ -653,6 +655,7 @@
     <Content Include="Content\img\slider.png" />
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />
+    <Content Include="Content\L10\L10.css" />
     <Content Include="Content\print.css" />
     <Content Include="Content\ReportBuilder\evaluation.css" />
     <Content Include="Content\ReportBuilder\ReportBuilder.css" />
@@ -666,6 +669,8 @@
     <Content Include="Content\simple-slider.css" />
     <Content Include="Content\slider.css" />
     <Content Include="Content\audio\tick.mp3" />
+    <Content Include="Content\table\cTable.css" />
+    <Content Include="Content\table\grid.css" />
     <Content Include="Content\toggle.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -754,6 +759,7 @@
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
     <Content Include="Scripts\jquery\jquery.tablesorter.js" />
     <Content Include="Scripts\jquery\jquery.unveil.js" />
+    <Content Include="Scripts\L10\L10.js" />
     <Content Include="Scripts\Main\finally.js" />
     <Content Include="Scripts\Main\radial.js" />
     <Content Include="Scripts\Main\realtime.js" />
@@ -766,6 +772,10 @@
     <Content Include="Scripts\review\review.js" />
     <Content Include="Scripts\review\translateSlider.js" />
     <Content Include="Scripts\select2.min.js" />
+    <Content Include="Scripts\table\cTable.js" />
+    <Content Include="Scripts\table\fixedTabel.js" />
+    <Content Include="Scripts\table\grid.js" />
+    <Content Include="Scripts\table\sortable_table.js" />
     <Content Include="Views\Review\Details\ChartBuilder2.cshtml" />
     <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
     <Content Include="Views\JobDescription\Edit.cshtml" />
@@ -791,6 +801,11 @@
     <Content Include="Views\L10\Index.cshtml" />
     <Content Include="Views\L10\Edit.cshtml" />
     <Content Include="Views\Shared\_ProfilePicture.cshtml" />
+    <Content Include="Views\L10\Meeting.cshtml" />
+    <Content Include="Views\L10\Scorecard.cshtml" />
+    <Content Include="Views\L10\StartMeeting.cshtml" />
+    <Content Include="Views\L10\Segue.cshtml" />
+    <Content Include="Views\L10\Error.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
