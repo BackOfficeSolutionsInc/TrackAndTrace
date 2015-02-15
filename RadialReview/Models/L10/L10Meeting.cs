@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
+using Microsoft.AspNet.SignalR;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
 
@@ -11,6 +12,7 @@ namespace RadialReview.Models.L10
 	public class L10Meeting : ILongIdentifiable,IDeletable
 	{
 		public virtual long Id { get; set; }
+		public virtual Guid HubId { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual DateTime? StartTime { get; set; }
@@ -24,11 +26,13 @@ namespace RadialReview.Models.L10
 		/// Current meetings measurables. Needed in case meeting measurables change throughout time
 		/// </summary>
 		public virtual IList<L10Meeting_Measurable> _MeetingMeasurables { get; set; }
+		public virtual IList<L10Meeting_Measurable> _MeetingConnections { get; set; }
 
 		public L10Meeting()
 		{
 			_MeetingAttendees=new List<L10Meeting_Attendee>();
 			_MeetingMeasurables=new List<L10Meeting_Measurable>();
+			HubId = Guid.NewGuid();
 		}
 
 		public class L10MeetingMap : ClassMap<L10Meeting>
@@ -36,6 +40,7 @@ namespace RadialReview.Models.L10
 			public L10MeetingMap()
 			{
 				Id(x => x.Id);
+				Map(x => x.HubId);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.StartTime);
@@ -67,6 +72,49 @@ namespace RadialReview.Models.L10
 					Id(x => x.Id);
 					Map(x => x.DeleteTime);
 					References(x => x.Measurable).Column("MeasurableId");//.Not.LazyLoad().ReadOnly();
+					References(x => x.L10Meeting).Column("L10MeetingId");//.LazyLoad().ReadOnly();
+					//Map(x => x.UserId).Column("UserId");
+					//Map(x => x.L10MeetingId).Column("L10MeetingId");
+				}
+			}
+		}
+
+		
+
+		public class L10Meeting_Connection : IDeletable, ILongIdentifiable
+		{
+			public virtual long Id { get; set; }
+			//public virtual long UserId { get; set; }
+			//public virtual long L10MeetingId { get; set; }
+			public virtual DateTime CreateTime { get; set; }
+			public virtual DateTime? DeleteTime { get; set; }
+			public virtual L10Meeting L10Meeting { get; set; }
+			public virtual String ConnectionId { get; set; }
+			public virtual UserOrganizationModel User { get; set; }
+
+			public virtual int StartSelection { get; set; }
+			public virtual int EndSelection { get; set; }
+			public virtual string FocusId { get; set; }
+			public virtual FocusType FocusType { get; set; }
+
+			public L10Meeting_Connection()
+			{
+				CreateTime = DateTime.UtcNow;
+			}
+
+			public class L10Meeting_ConnectionMap : ClassMap<L10Meeting_Connection>
+			{
+				public L10Meeting_ConnectionMap()
+				{
+					Id(x => x.Id);
+					Map(x => x.CreateTime);
+					Map(x => x.DeleteTime);
+					Map(x => x.StartSelection);
+					Map(x => x.EndSelection);
+					Map(x => x.FocusId);
+					Map(x => x.FocusType);
+					Map(x => x.ConnectionId);
+					References(x => x.User).Column("UserId");//.Not.LazyLoad().ReadOnly();
 					References(x => x.L10Meeting).Column("L10MeetingId");//.LazyLoad().ReadOnly();
 					//Map(x => x.UserId).Column("UserId");
 					//Map(x => x.L10MeetingId).Column("L10MeetingId");

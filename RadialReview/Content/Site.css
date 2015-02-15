@@ -482,6 +482,20 @@ body {
 	background-color: #413452;
 }
 
+.navbar-right {
+	position: relative;
+}
+
+.navbar .picture-container	{
+	height: 49px;
+	width: 49px;
+	position: absolute;
+	right: -60px;
+	margin: 2px;
+}
+
+
+
 .navbar-inverse-COMMENT {
 	background: url('img/titlebarTiles.png');
 	background: url('img/titlebarTiles.png'),-moz-linear-gradient(top, #36426d 16%, #152042 85%); /* FF3.6+ */
@@ -1391,7 +1405,7 @@ textarea.reason {
 		height: 40px;
 	}
 
-	.imageRow .profile-picture-container {
+	.imageRow .picture-container {
 		display: inline-block;
 		width: 34px;
 		height: 35px;
@@ -1401,14 +1415,14 @@ textarea.reason {
 		margin: 2px 1px 0px 1px;
 	}
 
-.profile-picture-container {
+.picture-container {
 	margin:auto;
 	max-width: 100%;
 	max-height: 100%;
 	display: inline-block;
 }
 
-.profile-picture {
+.picture {
 	-ms-background-size: contain !important;
 	background-size: contain !important;
 	width: 100%;
@@ -1419,6 +1433,12 @@ textarea.reason {
 .body-full-width .navbar	{
 	height:30px;
 	min-height: 30px;
+}
+.body-full-width .navbar .picture-container	{
+	height:26px;
+	width: 26px;
+	left: -30px;
+	margin: 1px;
 }
 
 .body-full-width .navbar-brand {

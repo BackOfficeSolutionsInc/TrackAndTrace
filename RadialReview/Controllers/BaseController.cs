@@ -296,7 +296,8 @@ namespace RadialReview.Controllers
                 {
                 }
 
-                filterContext.Controller.ViewBag.UserName = MessageStrings.User;
+				filterContext.Controller.ViewBag.UserName = MessageStrings.User;
+                filterContext.Controller.ViewBag.UserImage = "/img/placeholder";
                 filterContext.Controller.ViewBag.IsManager = false;
                 filterContext.Controller.ViewBag.Organizations = userOrgs.Count();
                 filterContext.Controller.ViewBag.Hints = GetUserModel().Hints;
@@ -320,6 +321,7 @@ namespace RadialReview.Controllers
                         }
                     }
 
+					filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(false);
                     filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser, oneUser.Id, DateTime.UtcNow);
                     //filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
                     filterContext.Controller.ViewBag.UserName = name;

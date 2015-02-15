@@ -148,10 +148,10 @@ namespace RadialReview.Utilities
         }
 
 		[Obsolete("should never be caller.organization.id",false)]
-		private bool IsManagingOrganization(long organizationId)
+		private bool IsManagingOrganization(long organizationId,bool allowManagers=false)
 		{
 			if (caller.Organization.Id == organizationId)
-				return caller.ManagingOrganization || (caller.ManagerAtOrganization && caller.Organization.ManagersCanEdit);
+				return caller.ManagingOrganization || (allowManagers && caller.ManagerAtOrganization && caller.Organization.ManagersCanEdit);
 			return false;
 		}
 		private bool IsManager(long organizationId)
@@ -356,7 +356,7 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin(caller))
                 return this;
 
-            if (IsManagingOrganization(caller.Organization.Id))
+            if (IsManagingOrganization(caller.Organization.Id,true))
                 return this;
 
             throw new PermissionsException();
@@ -448,7 +448,7 @@ namespace RadialReview.Utilities
 
             var team = session.Get<OrganizationTeamModel>(teamId);
 
-            if (IsManagingOrganization(team.Organization.Id))
+            if (IsManagingOrganization(team.Organization.Id,true))
                 return this;
 
             if (team.OnlyManagersEdit && team.ManagedBy == caller.Id)
@@ -587,7 +587,7 @@ namespace RadialReview.Utilities
 
             var position = session.Get<OrganizationPositionModel>(positionId);
 
-            if (IsManagingOrganization(position.Organization.Id))
+            if (IsManagingOrganization(position.Organization.Id,true))
                 return this;
 
             if (caller.Organization.ManagersCanEditPositions && caller.ManagerAtOrganization && position.Organization.Id == caller.Organization.Id)
@@ -600,7 +600,7 @@ namespace RadialReview.Utilities
             if (IsRadialAdmin(caller))
                 return this;
 
-			if (IsManagingOrganization(organizationId))
+			if (IsManagingOrganization(organizationId,true))
                 return this;
 
             if (caller.Organization.ManagersCanEditPositions && caller.ManagerAtOrganization)

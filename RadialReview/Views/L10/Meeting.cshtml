@@ -1,32 +1,55 @@
 ﻿@model RadialReview.Controllers.L10Controller.L10MeetingVM
 @{
-    ViewBag.Title = "Meeting";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Meeting";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 	ViewBag.FullWidth = true;
 }
-@using (Html.BeginStyles()){
-	
+@using (Html.BeginStyles())
+{
+
 	<link href="~/Content/L10/L10.css" rel="stylesheet" />
 }
 @using (Html.BeginScripts())
 {
-	<script src="~/Scripts/L10/L10.js"></script>
 	<script>
+		@*Initialize some variables for the scripts*@
 		var MeetingId = @Model.Recurrence.Id;
+		@if (Model.MeetingStartLocalized!=null){
+			@:var startTime = new Date(@(Model.MeetingStartLocalized.Value.ToJavascriptMilliseconds()));
+		}
 	</script>
+	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+	<script src="~/signalr/hubs"></script>
+	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
+	<script src="~/Scripts/jquery/jquery.scrollTo.js"></script>
+	<script src="~/Scripts/L10/L10.js"></script>
+	<script src="~/Scripts/L10/rtL10.js"></script>
+	
 }
 
 <div class="row full">
 	<div class="col-sm-3 col-md-2 full">
-		<div class="current-time">
-			<div class=" component ">
-				<span class="centered">
-					<span class="hour big"></span>
-					<span class="colon big">:</span>
-					<span class="minute big"></span>
-					<span class="second"></span>
-				</span>
+		<div class="">
+			<div class="component">
+				<div class="current-time">
+					<span class="centered">
+						<span class=" hour big"></span>
+						<span class="colon big">:</span>
+						<span class="minute big"></span>
+						<span class="second gray"></span>
+					</span>
+				</div>
+				<div class="elapsed-time centered">
+					<span class="">
+						<span class="hour "></span>
+						<span class="gray ">h</span>
+						<span class="minute "></span>
+						<span class="gray ">m</span>
+						<span class="second1"></span>
+					</span>
+				</div>
 			</div>
+
 		</div>
 		<div class="agenda">
 			<div class="component">
@@ -45,7 +68,7 @@
 
 	</div>
 	<div class="col-sm-9 col-md-10  full">
-		
+
 		<div class="main-window-container">
 			<div id="main-window"></div>
 			@*<div class="component"></div>*@

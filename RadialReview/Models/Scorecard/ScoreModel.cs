@@ -12,6 +12,7 @@ namespace RadialReview.Models.Scorecard
 		public virtual long Id { get; set; }
 		public virtual DateTime? DateEntered { get; set; }
 		public virtual DateTime DateDue { get; set; }
+		public virtual DateTime ForWeek { get; set; }
 		public virtual long MeasurableId { get; set; }
 		public virtual MeasurableModel Measurable { get; set; }
 		public virtual long OrganizationId { get; set; }
@@ -21,6 +22,10 @@ namespace RadialReview.Models.Scorecard
 
 		public virtual DateTime? DeleteTime { get; set; }
 
+		public ScoreModel(){
+			
+		}
+
 		public class ScoreMap : ClassMap<ScoreModel>
 		{
 			public ScoreMap()
@@ -28,6 +33,7 @@ namespace RadialReview.Models.Scorecard
 				Id(x => x.Id);
 				Map(x => x.DateEntered);
 				Map(x => x.DateDue);
+				Map(x => x.ForWeek);
 				Map(x => x.Measured);
 				Map(x => x.OrganizationId);
 				Map(x => x.AccountableUserId).Column("AccountableUserId");

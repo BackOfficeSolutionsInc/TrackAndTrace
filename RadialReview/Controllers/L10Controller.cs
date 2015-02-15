@@ -33,7 +33,27 @@ namespace RadialReview.Controllers
 			public List<ScoreModel> Scores { get; set; }
 			public DateTime StartDate { get; set; }
 			public DateTime EndDate { get; set; }
-			public List<Tuple<DateTime,DateTime>> DateRanges { get; set; }
+
+		    public class WeekVM
+		    {
+			    public DateTime DisplayDate { get; set; }
+				public DateTime ForWeek { get; set; }
+			    public bool IsCurrentWeek { get; set; }
+		    }
+
+			public List<WeekVM> Weeks { get; set; }
+
+		    public DateTime? MeetingStartLocalized
+		    {
+			    get
+			    {
+				    if (Meeting != null){
+					    if (Meeting.StartTime != null)
+						    return Meeting.StartTime.Value.AddMinutes(Recurrence.Organization.Settings.TimeZoneOffsetMinutes);
+				    }
+					return null;
+			    }
+		    }
 
 			public long[] Attendees { get; set; }
 
@@ -42,10 +62,11 @@ namespace RadialReview.Controllers
 		    {
 			    StartDate = DateTime.UtcNow;
 			    EndDate = DateTime.UtcNow;
-				DateRanges = new List<Tuple<DateTime, DateTime>>();
+				Weeks = new List<WeekVM>();
 		    }
 
-	    }
+
+		}
 
         // GET: L10
 		[Access(AccessLevel.UserOrganization)]
@@ -66,6 +87,7 @@ namespace RadialReview.Controllers
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId);
 			var model = new L10MeetingVM(){
 				Recurrence = recurrence,
+				Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(),recurrenceId,true)
 			};
 
 			return View(model);

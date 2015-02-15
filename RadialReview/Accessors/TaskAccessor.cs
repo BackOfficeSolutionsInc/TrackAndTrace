@@ -4,6 +4,7 @@ using RadialReview.Models.Prereview;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Tasks;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
@@ -249,15 +250,21 @@ namespace RadialReview.Accessors
 				using(var tx=s.BeginTransaction()){
 					var measurables = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && x.NextGeneration <= now).List().ToList();
 
+					//var weekLookup = new Dictionary<long, DayOfWeek>();
+
 					//Next Thursday
 					foreach (var m in measurables){
-						var nextDue =m.NextGeneration.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int) m.DueDate).Add(m.DueTime);
+
+						//var startOfWeek =weekLookup.GetOrAddDefault(m.OrganizationId, x => m.Organization.Settings.WeekStart);
+
+						var nextDue = m.NextGeneration.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int)m.DueDate).Add(m.DueTime);
 
 						var score = new ScoreModel(){
 							AccountableUserId = m.AccountableUserId,
 							DateDue = nextDue,
 							MeasurableId = m.Id,
 							OrganizationId = m.OrganizationId,
+							ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
 						};
 						s.Save(score);
 						m.NextGeneration = nextDue;

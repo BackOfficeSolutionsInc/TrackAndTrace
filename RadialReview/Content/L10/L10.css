@@ -14,6 +14,29 @@ html {
 	height: calc(100% - 10px);*/
 }
 
+.component.flash {
+	-webkit-animation: flash .5s ease 0 infinite alternate; /* Chrome, Safari, Opera */
+	-moz-animation: flash .5s ease 0 infinite alternate;
+	-ms-animation: flash .5s ease 0 infinite alternate;
+	-o-animation: flash .5s ease 0 infinite alternate;
+	animation: flash .5s ease 0 infinite alternate;
+	border-width: 4px;
+}
+@-webkit-keyframes flash {
+    from { border-color: red;}
+    to { border-color: #A94442;}
+}
+@keyframes flash {
+    from { border-color: red;}
+    to { border-color: #A94442;}
+}
+
+.component.danger {
+	color: #A94442;
+	background-color: #F2DEDE;
+	border-color: #EBCCD1;
+}
+
 	.component .title {
 		font-size: 120%;
 		font-weight: bold;
@@ -28,7 +51,7 @@ html {
 
 .current-time {
 	text-align: center;
-	height: 110px;
+	/*height: 110px;*/
 }
 
 	.current-time .big {
@@ -43,8 +66,12 @@ html {
 		width: 10px;
 		position: relative;
 		/*line-height: 113px;*/
-		color: #454545;
 	}
+.component .gray {
+	-ms-opacity: .90;
+	opacity: .90;
+	color: inherit;
+}
 
 .main-window-container {
 	position: absolute;
@@ -104,7 +131,6 @@ ul {
 }
 
 .centered {
-	margin-top: 6%;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
@@ -130,7 +156,7 @@ table {
 	justify-content: flex-start;
 }
 
-.profile-picture-container {
+.meeting-manager .picture-container {
 	width: 32px;
 	height: 32px;
 }
@@ -146,17 +172,28 @@ table {
 	font-size: 17px;
 }
 
+	.scorecard-table .who {
+		text-align: left;
+	}
+
 	.scorecard-table .measurable {
-		padding-left: 20px;
-		padding-right: 20px;
-		text-align: center;
+		text-align: right;
 		font-weight: bold;
-		text-transform: uppercase;
+	}
+	.scorecard-table .heading.measurable {
+		text-align: right !important;
+		font-weight: bold;
+		padding-left: 20px;
+		padding-right: 0px;
+	}
+
+	.scorecard-table .target {
+		text-align: left;
 	}
 
 	.scorecard-table .date {
-		padding-left: 20px;
-		padding-right: 20px;
+		/*padding-left: 20px;
+		padding-right: 20px;*/
 		text-align: center;
 		font-weight: bold;
 		text-transform: uppercase;
@@ -170,16 +207,60 @@ table {
 		font-weight: bold;
 		text-transform: uppercase;
 	}
-
+	
 	.scorecard-table th {
-		text-decoration: underline;
+		border-bottom: 1px solid #E8E8E8;
 	}
-
+	.scorecard-table td {
+		
+	}
+	
 	.scorecard-table .score {
 		text-align: center;
-		color: #bbb;
+		color: #EFEFEF;
+		padding: 0px;
 	}
 
+	.scorecard-table .score input::-webkit-input-placeholder {
+		color: #EFEFEF;
+	}
+
+	.scorecard-table .score .danger {
+		color: #C7254E;
+		background-color: #F9F2F4;
+	}
+	
+	.scorecard-table .score .success {
+		color: #468847;
+		background-color:#DFF0D8!important
+	}
+	
+	.scorecard-table .score .error {
+		color: #bbbbbb;
+	}
+
+
+	.scorecard-table .score input {
+		border: none;
+		padding: 0;
+		text-align: center;
+		width: 110px;
+		height: 26px;
+	}
+.scorecard-table .score input:focus, .scorecard-table .score input:active {
+	outline: #CCC auto 1px;
+	border: 1px solid #DDD;
+}
+
+
+.scorecard-table .score input:focus::-webkit-input-placeholder {
+	  color: transparent;
+	}
+
+
+#ScorecardTable td, #ScorecardTable th {
+	border-right: 1px solid #E8E8E8;
+}
 
 #ScorecardTable_Over {
 	position: absolute;
@@ -189,9 +270,33 @@ table {
 	border-right: 1px solid #E8E8E8;
 }
 
+	#ScorecardTable_Over td, #ScorecardTable_Over th {
+		border-left: 1px solid #FFFFFF;
+	}
 
 h3 {
 	margin-top: 10px;
 	margin-bottom: 20px;
 	font-weight: bold;
 }
+
+
+.date.current {
+	/*background-color: #def5ff;*/
+	color: #2c77ba;
+}
+
+
+.rt.lock {
+	border: 1px solid purple !important;
+	/*background-color: rgba(102, 102, 102, 0.26);
+	background-image: -webkit-linear-gradient(45deg,rgba(255,255,255,.57) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.57) 50%,rgba(255,255,255,.57) 75%,transparent 75%,transparent);
+	background-image: -o-linear-gradient(45deg,rgba(255,255,255,.57) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.57) 50%,rgba(255,255,255,.57) 75%,transparent 75%,transparent);
+	background-image: linear-gradient(45deg,rgba(255,255,255,.57) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.57) 50%,rgba(255,255,255,.57) 75%,transparent 75%,transparent);
+	-webkit-background-size: 40px 40px;
+	-ms-background-size: 40px 40px;
+	background-size: 40px 40px;
+	pointer-events:none;
+	cursor: not-allowed;*/
+}
+

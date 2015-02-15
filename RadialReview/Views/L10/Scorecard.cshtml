@@ -12,36 +12,61 @@
 				<thead>
 					<tr>
 						<th class="heading">Who</th>
-						<th class="heading">Measurable</th>
+						<th class="heading measurable">Measurable</th>
 						<th class="heading">Target</th>
-						@foreach (var r in Model.DateRanges)
+						@foreach (var r in Model.Weeks)
 						{
-							<th class="date">
-								@r.Item1.ToString("d")
+							<th class="date @(r.IsCurrentWeek?"current":"")">
+								@r.DisplayDate.ToString("d")
 							</th>
 						}
 					</tr>
 				</thead>
 				<tbody>
+					@{
+						var row = 0;
+					}
 					@foreach (var m in Model.Recurrence._DefaultMeasurables)
 					{
 						<tr>
-							<td class="alignRight first1">
+							<td class="who  first1">
 								@m.Measurable.AccountableUser.GetName()
 							</td>
 							<td class="measurable first1">
 								@m.Measurable.Title
 							</td>
-							<td class="alignCenter first2">
+							<td class="target first2">
 								@m.Measurable.ToSymbolString()
 							</td>
-							@foreach (var r in Model.DateRanges)
+							@{
+								var col = 0;
+							}
+							@foreach (var r in Model.Weeks)
 							{
-								<td class="score">
-									@(Model.Scores.FirstOrDefault(x => r.Item1 <= x.DateDue && x.DateDue < r.Item2 && x.MeasurableId == m.Id).NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "N/A")
+								var found =Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == m.Measurable.Id);
+
+								<td class="score @(r.IsCurrentWeek?"current":"")">
+									<input data-goal="@(m.Measurable.Goal)"
+									       data-goal-dir="@(m.Measurable.GoalDirection)"
+									       data-row="@(row)"
+									       data-col="@(col)"
+									       type="text"
+									       placeholder="N/A"
+									       value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+									       class="grid rt"
+										   data-scoreid="@(found.NotNull(x=>x.Id))"
+									       data-measurable="@m.Measurable.Id"
+									       data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
+										@if (found != null) { 
+											@: id="sc_@(found.Id)" />
+										}else{
+											@:id = "sc_@(row)_@(col)"/>
+										}
 								</td>
+								col += 1;
 							}
 						</tr>
+						row += 1; 
 					}
 					<tr class="last"></tr>
 				</tbody>
@@ -51,7 +76,7 @@
 			<thead>
 				<tr>
 					<th class="heading">Who</th>
-					<th class="heading">Measurable</th>
+					<th class="heading measurable">Measurable</th>
 					<th class="heading">Target</th>
 
 				</tr>
@@ -60,7 +85,10 @@
 				@foreach (var m in Model.Recurrence._DefaultMeasurables)
 				{
 					<tr>
-						<td class="alignRight first1">
+						<td class="alignLeft first1">
+							<span style="height:27px;width:27px;">
+								@Html.Partial("_Picture", m.Measurable.AccountableUser.ImageUrl(true))
+							</span>
 							@m.Measurable.AccountableUser.GetName()
 						</td>
 						<td class="measurable first1">
@@ -71,7 +99,7 @@
 						</td>
 					</tr>
 				}
-			<tr class="last"></tr>
+				<tr class="last"></tr>
 			</tbody>
 		</table>
 	</div>
@@ -79,6 +107,8 @@
 
 </div>
 <script>
+	$(".score input").each(function () { updateScore(this); });
+
 	//$("#ScorecardTable").wrap('<div id="table_container"></div>').after('<div id="bottom_anchor"></div>');
 	//$("#ScorecardTable_resp").scroll(moveScroll("#ScorecardTable", "#ScorecardTable_resp"));
 

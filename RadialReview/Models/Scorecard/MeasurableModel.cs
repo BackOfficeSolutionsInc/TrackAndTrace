@@ -14,6 +14,7 @@ namespace RadialReview.Models.Scorecard
 		public virtual LessGreater GoalDirection { get; set; }
 		public virtual decimal Goal { get; set; }
 		public virtual long OrganizationId { get; set; }
+		public virtual OrganizationModel Organization { get; set; }
 		public virtual DateTime NextGeneration { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
@@ -32,7 +33,8 @@ namespace RadialReview.Models.Scorecard
 				References(x => x.AccountableUser).Column("AccountableUserId").LazyLoad().ReadOnly();
 				Map(x => x.Goal);
 				Map(x => x.GoalDirection);
-				Map(x => x.OrganizationId);
+				Map(x => x.OrganizationId).Column("OrganizationId");
+				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 
