@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -20,6 +21,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -170,6 +172,12 @@
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="TypeLite">
+      <HintPath>..\packages\TypeLite.1.1.0.0\lib\net4\TypeLite.dll</HintPath>
+    </Reference>
+    <Reference Include="TypeLite.Net4">
+      <HintPath>..\packages\TypeLite.1.1.0.0\lib\net4\TypeLite.Net4.dll</HintPath>
     </Reference>
     <Reference Include="VortexSoft.Bootstrap">
       <HintPath>..\packages\VortexSoft.Bootstrap.1.0.0\lib\VortexSoft.Bootstrap.dll</HintPath>
@@ -333,6 +341,7 @@
     <Compile Include="Models\Askables\RockModel.cs" />
     <Compile Include="Models\Askables\CompanyValueModel.cs" />
     <Compile Include="Models\Charts\Checktree.cs" />
+    <Compile Include="Models\Charts\Histogram.cs" />
     <Compile Include="Models\Charts\Line.cs" />
     <Compile Include="Models\Charts\Scatter.cs" />
     <Compile Include="Models\Charts\Table.cs" />
@@ -362,7 +371,11 @@
     <Compile Include="Models\L10\L10MeetingAttendee.cs" />
     <Compile Include="Models\L10\old\L10Meeting_Item.cs" />
     <Compile Include="Models\L10\L10Recurrence.cs" />
-    <Compile Include="Models\L10\L10VM.cs" />
+    <Compile Include="Models\L10\VM\L10EditVM.cs" />
+    <Compile Include="Models\L10\VM\L10ListingVM.cs" />
+    <Compile Include="Models\L10\VM\L10MeetingStatsVM.cs" />
+    <Compile Include="Models\L10\VM\L10MeetingVM.cs" />
+    <Compile Include="Models\L10\VM\L10VM.cs" />
     <Compile Include="Models\Periods\PeriodModel.cs" />
     <Compile Include="Models\Prereview\PrereviewMatchModel.cs" />
     <Compile Include="Models\Prereview\PrereviewModel.cs" />
@@ -599,6 +612,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\chart.css" />
     <Content Include="Content\Chart\Chart.css" />
+    <Content Include="Content\Chart\Histogram.css" />
     <Content Include="Content\Chart\Line.v1.css" />
     <Content Include="Content\Chart\PieChart.css" />
     <Content Include="Content\components\ApproveReject.css" />
@@ -736,6 +750,7 @@
     <Content Include="Scripts\components\tristate.js" />
     <Content Include="Scripts\d3\d3.csv.js" />
     <Content Include="Scripts\d3\d3.js" />
+    <Content Include="Scripts\d3\d3.min.js" />
     <Content Include="Scripts\d3\d3.v3.js" />
     <Content Include="Scripts\d3\d3.v3.min.js" />
     <Content Include="Scripts\d3\line.v1.js" />
@@ -819,6 +834,11 @@
     <Content Include="Views\L10\StartMeeting.cshtml" />
     <Content Include="Views\L10\Segue.cshtml" />
     <Content Include="Views\L10\Error.cshtml" />
+    <Content Include="Views\L10\AddMeasurable.cshtml" />
+    <Content Include="Views\L10\Conclusion.cshtml" />
+    <Content Include="Views\L10\MeetingStats.cshtml" />
+    <Content Include="Scripts\d3\LICENSE" />
+    <Content Include="Views\Charts\Histogram.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1125,6 +1145,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\d3\Histogram.ts" />
+    <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
+    <TypeScriptCompile Include="Scripts\typings\d3\d3.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\d3\plugins\d3.superformula.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -1193,6 +1222,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">

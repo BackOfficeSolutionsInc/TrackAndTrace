@@ -17,8 +17,8 @@
 	{
 		<div class="subsection subsection-values">
 			@Html.Partial("Table", Model.CompanyValuesTable((long)ViewBag.ReviewId))
-			<div class="btn btn-link valueTableBtn" onclick=" toggleValueTable() ">Details</div>
-			<div id="valueTable" class="valueFlip hidden clearfix">
+			<div class="btn btn-link valueTableBtn on" onclick=" toggleValueTable() ">Details</div>
+			<div id="valueTable" class="valueFlip clearfix">
 				@Html.Partial("~/Views/Review/Details/_ValueTable.cshtml", Model)
 			</div>
 			<div class="evaluation-heading">Company Values</div>
@@ -148,7 +148,7 @@
 				<hr style="margin:4px;" class="visible-xs1" />
 			}
 
-			<h3>Next Quarters Rocks:</h3>
+			@*<h3>Next Quarters Rocks:</h3>*@
 
 
 

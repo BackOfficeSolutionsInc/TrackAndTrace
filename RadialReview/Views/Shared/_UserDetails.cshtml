@@ -135,6 +135,7 @@
 									<th style="width: 40px;"></th>
 									<th>Measurable</th>
 									<th style="width: 160px;" class="alignCenter">Weekly Goal</th>
+									<th style="width: 160px;" class="alignCenter">Admin</th>
 								</tr>
 							</thead>
 
@@ -146,6 +147,7 @@
 										<td class="alignRight" style="padding-right: 8px;">@i.</td>
 										<td>@r.Title</td>
 										<td class="alignCenter">@r.GoalDirection.GetDisplayName() @r.Goal.ToString("0.#####")</td>
+										<td class="alignCenter">@r.AdminUser.NotNull(x=>x.GetName())</td>
 									</tr>
 									{
 										i++;

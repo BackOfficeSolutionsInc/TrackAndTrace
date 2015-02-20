@@ -11,8 +11,9 @@ namespace RadialReview.Exceptions.MeetingExceptions
 		Invalid = 0,
 		Unstarted = 1,
 		TooMany = 2,
+		AlreadyStarted=3,
 
-		Error=100,
+		Error = 100,
 	}
 
 	public class MeetingException : RedirectException

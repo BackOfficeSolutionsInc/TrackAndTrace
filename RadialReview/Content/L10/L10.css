@@ -14,21 +14,33 @@ html {
 	height: calc(100% - 10px);*/
 }
 
-.component.flash {
-	-webkit-animation: flash .5s ease 0 infinite alternate; /* Chrome, Safari, Opera */
-	-moz-animation: flash .5s ease 0 infinite alternate;
-	-ms-animation: flash .5s ease 0 infinite alternate;
-	-o-animation: flash .5s ease 0 infinite alternate;
-	animation: flash .5s ease 0 infinite alternate;
-	border-width: 4px;
-}
+	.component.flash {
+		-webkit-animation: flash .5s ease 0 infinite alternate; /* Chrome, Safari, Opera */
+		-moz-animation: flash .5s ease 0 infinite alternate;
+		-ms-animation: flash .5s ease 0 infinite alternate;
+		-o-animation: flash .5s ease 0 infinite alternate;
+		animation: flash .5s ease 0 infinite alternate;
+		border-width: 4px;
+	}
+
 @-webkit-keyframes flash {
-    from { border-color: red;}
-    to { border-color: #A94442;}
+	from {
+		border-color: red;
+	}
+
+	to {
+		border-color: #A94442;
+	}
 }
+
 @keyframes flash {
-    from { border-color: red;}
-    to { border-color: #A94442;}
+	from {
+		border-color: red;
+	}
+
+	to {
+		border-color: #A94442;
+	}
 }
 
 .component.danger {
@@ -37,15 +49,15 @@ html {
 	border-color: #EBCCD1;
 }
 
-	.component .title {
-		font-size: 120%;
-		font-weight: bold;
-		text-align: center;
-		border-bottom: 2px solid #F7F7F7;
-		margin-bottom: 6px;
-		padding-bottom: 3px;
-		color: #444;
-	}
+.component .title {
+	font-size: 120%;
+	font-weight: bold;
+	text-align: center;
+	border-bottom: 2px solid #F7F7F7;
+	margin-bottom: 6px;
+	padding-bottom: 3px;
+	color: #444;
+}
 
 
 
@@ -67,9 +79,10 @@ html {
 		position: relative;
 		/*line-height: 113px;*/
 	}
+
 .component .gray {
-	-ms-opacity: .90;
-	opacity: .90;
+	-ms-opacity: .50;
+	opacity: .50;
 	color: inherit;
 }
 
@@ -173,19 +186,37 @@ table {
 }
 
 	.scorecard-table .who {
-		text-align: left;
+	}
+
+	.scorecard-table .heading.who {
+		text-align: center;
 	}
 
 	.scorecard-table .measurable {
-		text-align: right;
+		text-align: right !important;
 		font-weight: bold;
+		padding-left: 20px;
+		padding-right: 10px;
+		max-width: 240px;
+		-ms-text-overflow: ellipsis;
+		-o-text-overflow: ellipsis;
+		-moz-text-overflow: ellipsis;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
+
+	.scorecard-table .target {
+		text-align: left;
+		padding-left: 10px;
+		padding-right: 20px;
+	}
+	/*
 	.scorecard-table .heading.measurable {
 		text-align: right !important;
 		font-weight: bold;
 		padding-left: 20px;
 		padding-right: 0px;
-	}
+	}*/
 
 	.scorecard-table .target {
 		text-align: left;
@@ -197,65 +228,73 @@ table {
 		text-align: center;
 		font-weight: bold;
 		text-transform: uppercase;
+		-moz-min-width: 111px;
+		-ms-min-width: 111px;
+		-o-min-width: 111px;
+		-webkit-min-width: 111px;
+		min-width: 111px;
 	}
+
+		.scorecard-table .date.current {
+			/*background-color: #def5ff;*/
+			color: #2c77ba;
+		}
 
 
 	.scorecard-table .heading {
-		padding-left: 20px;
+		/*padding-left: 20px;
 		padding-right: 20px;
-		text-align: center;
+		text-align: center;*/
 		font-weight: bold;
 		text-transform: uppercase;
 	}
-	
+
 	.scorecard-table th {
 		border-bottom: 1px solid #E8E8E8;
 	}
-	.scorecard-table td {
-		
-	}
-	
+
 	.scorecard-table .score {
 		text-align: center;
 		color: #EFEFEF;
 		padding: 0px;
 	}
 
-	.scorecard-table .score input::-webkit-input-placeholder {
-		color: #EFEFEF;
-	}
+		.scorecard-table .score input::-webkit-input-placeholder {
+			color: #EFEFEF;
+		}
 
-	.scorecard-table .score .danger {
-		color: #C7254E;
-		background-color: #F9F2F4;
-	}
-	
-	.scorecard-table .score .success {
-		color: #468847;
-		background-color:#DFF0D8!important
-	}
-	
-	.scorecard-table .score .error {
-		color: #bbbbbb;
-	}
+		.scorecard-table .score .danger {
+			color: #C7254E;
+			background-color: #F9F2F4;
+		}
 
+		.scorecard-table .score .success {
+			color: #468847;
+			background-color: #DFF0D8 !important;
+		}
 
-	.scorecard-table .score input {
-		border: none;
-		padding: 0;
-		text-align: center;
-		width: 110px;
-		height: 26px;
-	}
-.scorecard-table .score input:focus, .scorecard-table .score input:active {
-	outline: #CCC auto 1px;
-	border: 1px solid #DDD;
-}
+		.scorecard-table .score .error {
+			color: #bbbbbb;
+		}
 
 
-.scorecard-table .score input:focus::-webkit-input-placeholder {
-	  color: transparent;
-	}
+		.scorecard-table .score input {
+			border: none;
+			padding: 0;
+			text-align: center;
+			width: 110px;
+			height: 26px;
+		}
+
+			.scorecard-table .score input:focus, .scorecard-table .score input:active {
+				outline: #CCC auto 1px;
+				border: 1px solid #DDD;
+			}
+
+
+				.scorecard-table .score input:focus::-webkit-input-placeholder {
+					color: transparent;
+				}
 
 
 #ScorecardTable td, #ScorecardTable th {
@@ -280,13 +319,6 @@ h3 {
 	font-weight: bold;
 }
 
-
-.date.current {
-	/*background-color: #def5ff;*/
-	color: #2c77ba;
-}
-
-
 .rt.lock {
 	border: 1px solid purple !important;
 	/*background-color: rgba(102, 102, 102, 0.26);
@@ -299,4 +331,3 @@ h3 {
 	pointer-events:none;
 	cursor: not-allowed;*/
 }
-

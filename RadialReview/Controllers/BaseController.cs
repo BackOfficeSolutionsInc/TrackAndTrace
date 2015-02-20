@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using Microsoft.Ajax.Utilities;
 using RadialReview.Accessors;
+using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Helpers;
 using RadialReview.Models;
 using System;
@@ -212,15 +213,23 @@ namespace RadialReview.Controllers
                 filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
-            }
-            else if (filterContext.Exception is RedirectException)
-            {
-                var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
-                log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
-                filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
-                filterContext.ExceptionHandled = true;
-                filterContext.HttpContext.Response.Clear();
-            }
+			}
+			else if (filterContext.Exception is MeetingException)
+			{
+				var type = ((MeetingException)filterContext.Exception).MeetingExceptionType;
+				log.Info("MeetingException: [" + Request.Url.PathAndQuery + "] --> [" + type + "]");
+				filterContext.Result = RedirectToAction("ErrorMessage", "L10", new { message = filterContext.Exception.Message, type });
+				filterContext.ExceptionHandled = true;
+				filterContext.HttpContext.Response.Clear();
+			}
+			else if (filterContext.Exception is RedirectException)
+			{
+				var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
+				log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
+				filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
+				filterContext.ExceptionHandled = true;
+				filterContext.HttpContext.Response.Clear();
+			}
             else
             {
                 log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);

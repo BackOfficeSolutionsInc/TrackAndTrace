@@ -78,8 +78,8 @@
 		</div>
 		@if (ViewBag.RoleDetails ?? false)
 		{
-			<div class="btn btn-link roleTableBtn" onclick=" toggleRoleTable() ">Details</div>
-			<div id="roleTable" class="roleFlip hidden clearfix">
+			<div class="btn btn-link roleTableBtn on" onclick=" toggleRoleTable() ">Details</div>
+			<div id="roleTable" class="roleFlip clearfix">
 				@Html.Partial("~/Views/Review/Details/_GwcTable.cshtml", Model)
 			</div>
 		}

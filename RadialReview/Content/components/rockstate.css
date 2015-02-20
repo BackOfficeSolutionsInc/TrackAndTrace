@@ -133,16 +133,31 @@
 		opacity:0;
 	}
 	
-	.rockstate.display input[value='Complete'] ~ .rockstate-AtRisk,.rockstate.display input[value='Complete'] ~ .rockstate-OnTrack {
+	.rockstate.display input[value='Complete'] ~ .rockstate-AtRisk,
+	.rockstate.display input[value='Complete'] ~ .rockstate-Indeterminate,
+	.rockstate.display input[value='Complete'] ~ .rockstate-OnTrack {
 		display: none;
 	}
-	.rockstate.display input[value='AtRisk'] ~ .rockstate-Complete,.rockstate.display input[value='AtRisk'] ~ .rockstate-OnTrack {
+	.rockstate.display input[value='AtRisk'] ~ .rockstate-Complete,
+	.rockstate.display input[value='AtRisk'] ~ .rockstate-Indeterminate,
+	.rockstate.display input[value='AtRisk'] ~ .rockstate-OnTrack {
 		display: none;
 	}
-	.rockstate.display input[value='OnTrack'] ~ .rockstate-Complete,.rockstate.display input[value='OnTrack'] ~ .rockstate-AtRisk {
+	.rockstate.display input[value='OnTrack'] ~ .rockstate-Complete,
+	.rockstate.display input[value='OnTrack'] ~ .rockstate-Indeterminate,
+	.rockstate.display input[value='OnTrack'] ~ .rockstate-AtRisk {
+		display: none;
+	}
+	.rockstate.display input[value='Indeterminate'] ~ .rockstate-Complete,
+	.rockstate.display input[value='Indeterminate'] ~ .rockstate-OnTrack,
+	.rockstate.display input[value='Indeterminate'] ~ .rockstate-AtRisk {
 		display: none;
 	}
 
+
+	.rockstate-val.rockstate-Indeterminate {
+		font-size: 80%;
+	}
 
 .toText.Complete:after {
 	content: "Complete";

@@ -63,8 +63,10 @@
 									
 								</li>
 							}
-							<li stlye="list-style: square;"><a href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Review Others</a></li>
 						</ol>
+						<hr />
+						<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Review Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
+
 					</div>
 				</div>
 			</figure>

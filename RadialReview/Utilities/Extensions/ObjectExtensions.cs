@@ -12,7 +12,15 @@ using System.Web;
 namespace RadialReview
 {
     public static class ObjectExtensions
-    {
+	{
+		public static int? TryParse(this string str)
+		{
+			int o;
+			if (int.TryParse(str, out o))
+				return o;
+			return null;
+		}
+
         //NotNull
         public static R NotNull<T, R>(this T obj, Func<T, R> f) 
         {
@@ -48,7 +56,7 @@ namespace RadialReview
 
         public static DateTime ToDateTime(this String s,String format,double offset=0.0)
         {
-            CultureInfo provider = CultureInfo.InvariantCulture;
+            var provider = CultureInfo.InvariantCulture;
             return DateTime.ParseExact(s, format, provider).AddHours(offset);
         }
 

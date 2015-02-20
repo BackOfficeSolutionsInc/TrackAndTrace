@@ -4,76 +4,28 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Helpers;
 using RadialReview.Models;
 using RadialReview.Models.L10;
 using RadialReview.Accessors;
+using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scorecard;
 
 namespace RadialReview.Controllers
 {
     public partial class L10Controller : BaseController
     {
-	    public class L10Listing
-		{
-			public List<L10VM> Recurrences { get; set; }
-			public List<L10Meeting> Meetings { get; set; }
+	    
 
-		    public L10Listing()
-			{
-				Recurrences = new List<L10VM>();
-				Meetings = new List<L10Meeting>();
-		    }
-	    }
-
-	    public class L10MeetingVM
-	    {
-		    public L10Recurrence Recurrence { get; set; }
-			public L10Meeting Meeting { get; set; }
-			public List<ScoreModel> Scores { get; set; }
-			public DateTime StartDate { get; set; }
-			public DateTime EndDate { get; set; }
-
-		    public class WeekVM
-		    {
-			    public DateTime DisplayDate { get; set; }
-				public DateTime ForWeek { get; set; }
-			    public bool IsCurrentWeek { get; set; }
-		    }
-
-			public List<WeekVM> Weeks { get; set; }
-
-		    public DateTime? MeetingStartLocalized
-		    {
-			    get
-			    {
-				    if (Meeting != null){
-					    if (Meeting.StartTime != null)
-						    return Meeting.StartTime.Value.AddMinutes(Recurrence.Organization.Settings.TimeZoneOffsetMinutes);
-				    }
-					return null;
-			    }
-		    }
-
-			public long[] Attendees { get; set; }
-
-
-		    public L10MeetingVM()
-		    {
-			    StartDate = DateTime.UtcNow;
-			    EndDate = DateTime.UtcNow;
-				Weeks = new List<WeekVM>();
-		    }
-
-
-		}
+	   
 
         // GET: L10
 		[Access(AccessLevel.UserOrganization)]
         public ActionResult Index()
 		{
 			var recurrences = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id,true);
-			var model = new L10Listing(){
+			var model = new L10ListingVM(){
 				Recurrences = recurrences,
 			};
 			return View(model);
@@ -84,7 +36,7 @@ namespace RadialReview.Controllers
 		public ActionResult Meeting(long id)
 		{
 			var recurrenceId = id;
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId);
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId,true);
 			var model = new L10MeetingVM(){
 				Recurrence = recurrence,
 				Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(),recurrenceId,true)
@@ -97,12 +49,12 @@ namespace RadialReview.Controllers
 		public ActionResult Edit(long id)
 		{
 			var recurrenceId = id;
-			var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId);
+			var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
 
 			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
-			var model = new L10Edit()
+			var model = new L10EditVM()
 			{
 				Recurrence = r,
 
@@ -115,22 +67,6 @@ namespace RadialReview.Controllers
 			};
 			return View("Edit", model);
 		}
-		
-	    public class L10Edit
-	    {
-		    public L10Recurrence Recurrence { get; set; }
-			public List<UserOrganizationModel> PossibleMembers { get; set; }
-			public List<MeasurableModel> PossibleMeasurables { get; set; }
-			[MinLength(1)]
-			public long[] SelectedMembers { get; set; }
-			public long[] SelectedMeasurables { get; set; }
-
-		    public L10Edit()
-			{
-				SelectedMembers = new long[0] { };
-				SelectedMeasurables = new long[0] { };
-		    }
-		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Create()
@@ -140,7 +76,7 @@ namespace RadialReview.Controllers
 			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
-			var model = new L10Edit(){
+			var model = new L10EditVM(){
 				Recurrence = new L10Recurrence(){
 					CreateTime = DateTime.UtcNow,
 					OrganizationId = GetUser().Organization.Id,
@@ -156,7 +92,7 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 	    [Access(AccessLevel.UserOrganization)]
-	    public ActionResult Edit(L10Edit model)
+	    public ActionResult Edit(L10EditVM model)
 	    {
 
 			ValidateValues(model,x=>x.Recurrence.Id,x=>x.Recurrence.CreateTime,x=>x.Recurrence.OrganizationId);
@@ -194,5 +130,19 @@ namespace RadialReview.Controllers
 
 			return View("Edit",model);
 		}
+
+
+		#region Error
+		[Access(AccessLevel.Any)]
+		public PartialViewResult Error(MeetingException e)
+		{
+			return PartialView("Error", e);
+		}
+		[Access(AccessLevel.Any)]
+		public PartialViewResult ErrorMessage(String message=null,MeetingExceptionType? type=null)
+		{
+			return PartialView("Error", new MeetingException(message ?? "An error has occurred.",type??MeetingExceptionType.Error));
+		}
+		#endregion
     }
 }

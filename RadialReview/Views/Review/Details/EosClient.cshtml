@@ -9,14 +9,14 @@
 }
 
 <div class="row">
-	<div class="print-col-xs-6 zoom8">
+	<div class="print-col-xs-6 zoom8 fixHeight">
 		@Html.Partial("~/Views/Review/Details/GWC.cshtml", Model)
 	</div>
 
 
 	@if (Model.CompanyValuesTable((long)ViewBag.ReviewId).Rows.Any())
 	{
-		<div class="print-col-xs-6 zoom8">
+		<div class="print-col-xs-6 zoom8 fixHeight">
 			@{
 		var valueAnswers = Model.AnswersAbout.Where(x => x is CompanyValueAnswer).Cast<CompanyValueAnswer>().Where(x => x.IncludeReason);
 
@@ -26,40 +26,41 @@
 			<div class="subsection subsection-values noBreak client">
 				@if (Model.ReviewContainer.AnonymousByDefault)
 				{
-				@Html.Partial("Table", Model.CompanyValuesScore)
+					@Html.Partial("Table", Model.CompanyValuesScore)
 				}
 				else
 				{
-				@Html.Partial("Table", Model.CompanyValuesTable(Model.Review.ForReviewsId))
+					@Html.Partial("Table", Model.CompanyValuesTable(Model.Review.ForReviewsId))
 				}
 
-				@if(valueAnswers.Any()){
-				<table class="valueTable" style="width:100%;margin-left: 10px;">
-					<thead>
-						<tr>
-							<th colspan="2">Value:</th>
-						</tr>
-					</thead>
-					<tbody style="vertical-align: top;">
-						@foreach (var r in valueAnswers)
-						{
-							<tr style="border-top:1px solid #ddd;">
-								<td class="block" rowspan="2"><div class="fill @r.Exhibits"></div></td>
-								<td class="bold alignLeft valueTableQuestion">@r.Askable.GetQuestion()</td>
-							
-							</tr>
+				@if (valueAnswers.Any())
+				{
+					<table class="valueTable" style="width:100%;margin-left: 10px;">
+						<thead>
 							<tr>
-								<td class="valueTableReason" style="white-space: normal;">
-									<span class="italic">"@r.Reason"</span>
-									@if (!Model.ReviewContainer.AnonymousByDefault)
-									{
-										@:- @r.ByUser.GetName()
-									}
-								</td>
+								<th colspan="2">Value:</th>
 							</tr>
-						}
-					</tbody>
-				</table>
+						</thead>
+						<tbody style="vertical-align: top;">
+							@foreach (var r in valueAnswers)
+							{
+								<tr style="border-top:1px solid #ddd;">
+									<td class="block" rowspan="2"><div class="fill @r.Exhibits"></div></td>
+									<td class="bold alignLeft valueTableQuestion">@r.Askable.GetQuestion()</td>
+
+								</tr>
+								<tr>
+									<td class="valueTableReason" style="white-space: normal;">
+										<span class="italic">"@r.Reason"</span>
+										@if (!Model.ReviewContainer.AnonymousByDefault)
+										{
+											@:- @r.ByUser.GetName()
+									}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
 
 				}
 				<div class="evaluation-heading">Company Values</div>
@@ -68,7 +69,7 @@
 	}
 	@if (Model.RockTable((long)ViewBag.ReviewId).Rows.Any())
 	{
-		<div class="print-col-xs-7 zoom8">
+		<div class="print-col-xs-6 zoom8 fixHeight">
 			<div class="subsection subsection-rocks noBreak">
 				@*Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))*@
 				@{
@@ -79,7 +80,7 @@
 				@**@
 				@foreach (var r in rrs)
 				{
-					<div class="row">
+					<div class="row smallBreak2">
 						<div class="col-xs-3 print-col-xs-3 alignRight noPadLeft">
 							@if (first)
 							{
@@ -101,26 +102,24 @@
 									<div class="row">
 										<div class="col-xs-5 alignCenter">
 											@{
-												var state = Tristate.Indeterminate;
-												if (r.ManagerOverride == RockState.AtRisk)
-												{
-													state = Tristate.False;
-												}
-												else if (r.ManagerOverride == RockState.Complete)
-												{
-													state = Tristate.True;
-												}
+									var state = Tristate.Indeterminate;
+									if (r.ManagerOverride == RockState.AtRisk)
+									{
+										state = Tristate.False;
+									}
+									else if (r.ManagerOverride == RockState.Complete)
+									{
+										state = Tristate.True;
+									}
 											}
 											@*<div style="padding-top:5px;"></div>*@
 
 
 
 											@Html.DisplayFor(x => state, "CompleteIncomplete")
-											<div class="gray markedAs">Marked as:</div>
-											<div class="completion toText @r.Completion"></div>
 										</div>
 										<div class="col-xs-7 noPadRight">
-											<div style="height: 80px;" class="fullWidth verticalOnly reason">
+											<div style="" class="fullWidth verticalOnly reason rockReason">
 												@if (!String.IsNullOrWhiteSpace(r.OverrideReason))
 												{
 													@:"@r.OverrideReason"
@@ -133,36 +132,43 @@
 										</div>
 									</div>
 								</div>
+
 								<div class="col-xs-5">
+
 									@if (first)
 									{
 										<div class="hidden-sm1 hidden-xs1 alignCenter bold" style="border-bottom: 2px solid #494949;color: #494949;">@Model.Review.ForUser.GetName()</div>
 										<div class="hidden-sm1 hidden-xs1 fullWidth" style="height: 10px;"></div>
 									}
 									@{
-										first = false;
+					first = false;
 									}
+
 
 									@*<div class="row">
 										<div class="col-xs-5 alignCenter">
 											@Html.DisplayFor(x => r.Completion)
 										</div>
 																			<div class="col-xs-12" style="padding-left: 7px;">*@
-									@if (!String.IsNullOrWhiteSpace(r.Reason))
-									{
-										<i>"@r.Reason"</i>
-									}
-									else
-									{
-										<span class="gray italic">No comment provided.</span>
-									}
+									<div class="rockReasonHeight">
+										@if (!String.IsNullOrWhiteSpace(r.Reason))
+										{
+											<i>"@r.Reason"</i>
+										}
+										else
+										{
+											<span class="gray italic">No comment provided.</span>
+										}
+									</div>
+									<div class="gray markedAs">Marked as: <span class="completion toText @r.Completion"></span></div>
+										
 									@*</div>
 										</div>*@
 								</div>
 							</div>
 						</div>
 					</div>
-					<hr style="margin:10px;" class="visible-xs1" />
+					@*<hr style="margin:10px;" class="visible-xs1" />*@
 				}
 
 				@**@

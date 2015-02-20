@@ -37,7 +37,12 @@ function updateServerScore(self) {
 	var dom = $(self).attr("id");
 	$.ajax({
 		url: "/l10/UpdateScore/" + MeetingId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val+"&dom="+dom,
-		success:function(data) {
+		success: function (data) {
+
+			if (data.Error) {
+				showJsonAlert(data);
+			}
+
 			/*console.log(data);
 			if (data.Object != val) {
 				console.log("err:"+data.Object);

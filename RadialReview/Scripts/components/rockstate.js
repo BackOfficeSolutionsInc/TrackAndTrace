@@ -11,7 +11,7 @@ function InitRockstate() {
 		}
 	});
 
-	$('.editor.rockstate-val').click(function () {
+	$('.editor .rockstate-val').click(function () {
 		var oldValue = $(this).parent().find("input").val();
 		var newValue = $(this).data("value");
 

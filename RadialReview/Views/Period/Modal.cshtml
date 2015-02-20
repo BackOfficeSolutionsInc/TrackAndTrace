@@ -57,12 +57,12 @@
 			format: 'mm-dd-yyyy',
 			//onRender: function (date) { return date.valueOf() < now.valueOf() ? 'disabled' : ''; }
 		}).on('changeDate', function (ev) {
-			if (ev.date.valueOf() > checkout.date.valueOf()) {
+			//if (ev.date.valueOf() > checkout.date.valueOf()) {
 				debugger;
 				var newDate = new Date(ev.date);
-				newDate = new Date(newDate.getTime() +(88*24*60*60*1000));
+				newDate = new Date(newDate.getTime() +(89*24*60*60*1000));
 				checkout.setValue(newDate);
-			}
+			//}
 			checkin.hide();
 			$('#EndDate')[0].focus();
 		}).data('datepicker');

@@ -127,14 +127,14 @@
 		function showPeriodModal(that) {
 			showModal("Add Session", "/Period/Modal/0", "/Period/Modal", null, null, function (data) {
 				debugger;
-				$(".SessionForm").append("<option value='" + data.Object.Id + "'>" + data.Object.Name + "</option>");
+				$(".SessionForm").prepend("<option value='" + data.Object.Id + "'>" + data.Object.Name + "</option>");
 				$(that).val(data.Object.Id);
 			});
 		}
 
-		$(".SessionForm").click(function() {
+		$(".SessionForm").blur(function() {
 			var that = $(this);
-			if ($(this).val() == -3 && $(this).find("option").length == 1) {
+			if ($(this).val() == -3 /*&& $(this).find("option").length == 1*/) {
 				showPeriodModal(that);
 			}
 	    });

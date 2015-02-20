@@ -1,4 +1,5 @@
-﻿using RadialReview.Exceptions;
+﻿using Amazon.DynamoDBv2;
+using RadialReview.Exceptions;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace RadialReview
 	    public static bool AllSame<T, TProp>(this IEnumerable<T> self, Func<T, TProp> selector,out TProp property)
 	    {
 		    var hash = new HashSet<TProp>(self.Select(selector));
-		    var output=hash.Count <= 1;
+		    var output=hash.Count == 1;
 		    if (output)
 			    property = hash.First();
 		    else
@@ -103,15 +104,30 @@ namespace RadialReview
             return source.Alive().ToList();
         }
 
-        public static IEnumerable<TSource> UnionBy<TSource, TProp>(this IEnumerable<TSource> first, Func<TSource, TProp> keySelector, params IEnumerable<TSource>[] remaining)
-        {
-            var enumerables = first;
-            foreach (var r in remaining)
-            {
-                first = first.Concat(r);
-            }
-            return first.GroupBy(keySelector).Select(x => x.First());
-        }
+		public static IEnumerable<TSource> UnionBy<TSource, TProp>(this IEnumerable<TSource> first, Func<TSource, TProp> keySelector, params IEnumerable<TSource>[] remaining)
+		{
+			var enumerables = first;
+			foreach (var r in remaining)
+			{
+				first = first.Concat(r);
+			}
+			return first.GroupBy(keySelector).Select(x => x.First());
+		}
+		public static IEnumerable<TSource> Except<TSource, TProp>(this IEnumerable<TSource> first, IEnumerable<TSource> except, Func<TSource, TProp> keySelector)
+		{
+			/*var enumerables = first;
+			foreach (var r in remaining)
+			{
+				first = first.Concat(r);
+			}
+			return first.GroupBy(keySelector).Select(x => x.First());*/
+			var other = except.Select(y => keySelector);
+
+			return first.Where(x =>{
+				var cur = keySelector(x);
+				return other.Any(y => y.Equals(cur));
+			});
+		}
 
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source)
         {
@@ -150,7 +166,30 @@ namespace RadialReview
 		    return source.Any(other.Contains);
 	    }
 
-        /*public static Boolean Contains<T>(this IEnumerable<T> enumerable, Func<T, Boolean> contains)
+	    public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> other)
+	    {
+		    return source.ContainsAll(other, x => x);
+	    }
+
+		public static bool ContainsAll<T, TProp>(this IEnumerable<T> source, IEnumerable<T> other, Func<T, TProp> selector)
+		{
+		    var sourceMod = source.Select(selector).ToList();
+
+		    return other.All(i => sourceMod.Contains(selector(i)));
+	    }
+
+	    public static void EnsureContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> other)
+	    {
+		    source.EnsureContainsAll(other,x=>x);
+	    }
+
+	    public static void EnsureContainsAll<T, TProp>(this IEnumerable<T> source, IEnumerable<T> other,Func<T,TProp> selector)
+	    {
+		    if (!source.ContainsAll(other,selector))
+				throw new PermissionsException("Item is required in source.");
+	    }
+
+	    /*public static Boolean Contains<T>(this IEnumerable<T> enumerable, Func<T, Boolean> contains)
         {
             return enumerable.FirstOrDefault(contains) != null;
         }*/

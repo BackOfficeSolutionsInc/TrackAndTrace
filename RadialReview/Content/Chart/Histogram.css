@@ -1,0 +1,23 @@
+﻿
+.histogram {
+	font: 10px sans-serif;
+}
+
+	.histogram .bar rect {
+		fill: steelblue;
+		shape-rendering: crispEdges;
+	}
+
+	.histogram .bar text {
+		fill: #fff;
+	}
+
+	.histogram .axis path, .axis line {
+		fill: none;
+		stroke: #000;
+		-webkit-shape-rendering: crispEdges;
+		-moz-shape-rendering: crispEdges;
+		-ms-shape-rendering: crispEdges;
+		-o-shape-rendering: crispEdges;
+		shape-rendering: crispEdges;
+	}

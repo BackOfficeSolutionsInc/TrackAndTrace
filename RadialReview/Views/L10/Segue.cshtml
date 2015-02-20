@@ -1,7 +1,14 @@
-﻿@model RadialReview.Controllers.L10Controller.L10MeetingVM
-		   
+﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+
 <div class="component">
 	<h2>Segue!</h2>
+	<textarea class="rt" id="segue"></textarea>
 </div>
 
-<textarea class="rt" id="segue"></textarea>
+
+<script>
+
+@if (Model.MeetingStart!=null){
+	@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
+}
+</script>

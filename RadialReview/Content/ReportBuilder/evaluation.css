@@ -600,7 +600,8 @@ td.alt {
 
 
 .markedAs {
-	font-size: 11px;
+	font-size: 12px;
+	margin-top: 14px;
 }
 
 .completion {

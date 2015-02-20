@@ -104,7 +104,7 @@ namespace RadialReview.Controllers
 
             var model = _ReviewEngine.GetCustomizeModel(GetUser(), teamId);
 
-			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.EndTime > DateTime.UtcNow).ToList();
+			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToList();
 			var plist = periods.ToSelectList(x => x.Name, x => x.Id);
 			plist.Add(new SelectListItem() { Text = "<Create New>", Value = "-3" });
 

@@ -1,17 +1,23 @@
 ﻿@model Exception
 @{
-    ViewBag.Title = RadialReview.Properties.ExceptionStrings.AnErrorOccured;
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = RadialReview.Properties.ExceptionStrings.AnErrorOccured;
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="">
-    <h2>@RadialReview.Properties.ExceptionStrings.AnErrorOccured</h2>
-    <h3>@ViewBag.Message</h3>
+
+
+<div class="centered">
+	<div class="component">
+		<div class="">
+			<h2>@RadialReview.Properties.ExceptionStrings.AnErrorOccured</h2>
+			<h3>@ViewBag.Message</h3>
+		</div>
+
+		@if (Context.IsDebuggingEnabled)
+		{
+			<div class="review">
+				@Model.NotNull(x => x.StackTrace)
+			</div>
+		}
+	</div>
 </div>
-
-@if (Context.IsDebuggingEnabled)
-{
-    <div class="review">
-        @Model.NotNull(x=>x.StackTrace)
-    </div>
-}

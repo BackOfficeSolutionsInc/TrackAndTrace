@@ -14,11 +14,11 @@ namespace RadialReview.Controllers
 	    {
 			public DateTime Start { get; set; }
 			public DateTime End { get; set; }
-		    public List<ScoreModel> ScoreModels { get; set; }
+		    public List<List<ScoreModel>> ScoreModels { get; set; }
 
 		    public ScoreVM()
 		    {
-			    ScoreModels = new List<ScoreModel>();
+				ScoreModels = new List<List<ScoreModel>>();
 		    }
 
 	    }
@@ -36,12 +36,22 @@ namespace RadialReview.Controllers
 			DateTime sd, ed;
 			StartEnd(out sd, out ed, start, end);
 			var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, sd, ed);
+			var incomplete = ScorecardAccessor.GetUserScoresIncomplete(GetUser(), GetUser().Id);
+			var combine = new List<ScoreModel>();
+			combine.AddRange(scores);
+
+			foreach (var s in incomplete){
+				if (combine.Any(x => x.Id != s.Id)){
+					combine.Add(s);
+				}
+			}
+			var groupByDueDate = combine.GroupBy(x => x.DateDue).Select(x=>x.ToList()).ToList();
 
 			return View(new ScoreVM
 			{
 				Start = sd,
 				End = ed,
-				ScoreModels = scores,
+				ScoreModels = groupByDueDate,
 			});
 		}
 
@@ -50,7 +60,7 @@ namespace RadialReview.Controllers
 		[HttpPost]
 		public ActionResult Edit(ScoreVM model)
 		{
-			ScorecardAccessor.EditUserScores(GetUser(), model.ScoreModels);
+			ScorecardAccessor.EditUserScores(GetUser(), model.ScoreModels.SelectMany(x=>x).ToList());
 			return RedirectToAction("Index","Home");
 		}
 
@@ -64,10 +74,23 @@ namespace RadialReview.Controllers
 			//var start = start?? ;
 			//var end = DateTime.UtcNow.EndOfWeek(DayOfWeek.Monday);
 
-			var scores = ScorecardAccessor.GetScores(GetUser(), GetUser().Organization.Id, sd, ed,true);
+			//var scores = ScorecardAccessor.GetScores(GetUser(), GetUser().Organization.Id, sd, ed,true);
 
+			var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, sd, ed);
+			var incomplete = ScorecardAccessor.GetUserScoresIncomplete(GetUser(), GetUser().Id);
+			var combine = new List<ScoreModel>();
+			combine.AddRange(scores);
 
-            return View(new ScoreVM(){End = ed, Start = sd, ScoreModels = scores});
+			foreach (var s in incomplete)
+			{
+				if (combine.Any(x => x.Id != s.Id))
+				{
+					combine.Add(s);
+				}
+			}
+			var groupByDueDate = combine.GroupBy(x => x.DateDue).Select(x => x.ToList()).ToList();
+
+			return View(new ScoreVM() { End = ed, Start = sd, ScoreModels = groupByDueDate });
         }
 
 
@@ -75,8 +98,8 @@ namespace RadialReview.Controllers
 		{
 			if (start == null && end == null)
 			{
-				sd = DateTime.UtcNow.StartOfWeek(DayOfWeek.Monday);
-				ed = sd.EndOfWeek(DayOfWeek.Monday);
+				sd = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday);
+				ed = sd.EndOfWeek(DayOfWeek.Sunday);
 			}
 			else if (end != null && start != null)
 			{

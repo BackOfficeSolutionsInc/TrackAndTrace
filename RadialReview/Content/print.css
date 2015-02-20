@@ -150,6 +150,7 @@
 	font-weight: bold;
 	border-top: 2px none #cacaca;
 	border-bottom: 0px solid #cacaca;
+	padding: 0px;
 }
 
 .table-io.companyValues .fill:after {
@@ -201,7 +202,7 @@ svg .legend {
 }
 
 	.legend .title {
-		font-size: 10px;
+		font-size: 8px;
 	}
 
 .axisTitle {
@@ -237,44 +238,48 @@ svg .legend {
 }
 
 
-.roleTable .fill,.valueTable .fill {
+.roleTable .fill, .valueTable .fill {
 	position: relative;
 }
+
 .gwc .fill:before {
 	content: "";
 	border: 25px solid;
 	font-weight: bold;
 	position: absolute;
 	top: 2px !important;
-	left: 2px!important;
+	left: 2px !important;
 }
+
 .roleTable .fill:before {
 	content: "";
 	border: 11px solid;
 	font-weight: bold;
 	position: absolute;
-	top: 0px!important;
-	left: 0px!important;
+	top: 0px !important;
+	left: 0px !important;
 }
+
 .companyValues .fill:before {
 	content: "";
 	border: 25px solid;
 	font-weight: bold;
 	position: absolute;
-	top: -4px!important;
-	left: -4px!important;
+	top: -4px !important;
+	left: -4px !important;
 	-moz-border-radius: 25px;
 	-webkit-border-radius: 25px;
 	-ms-border-radius: 25px;
 	border-radius: 25px;
 }
+
 .valueTable .fill:before {
 	content: "";
 	border: 8px solid !important;
 	position: absolute;
 	top: -1px;
 	left: -1px;
-	-moz-border-radius: 8px; 
+	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
 	-ms-border-radius: 8px;
 	border-radius: 8px;
@@ -282,18 +287,20 @@ svg .legend {
 
 
 /*.gwc .fill.True:before,.roleTable .fill.True:before,.companyValues .fill.Positive:before,.valueTable .fill.Positive:before {*/
-.gwc .fill.True:before,.roleTable .fill.True:before,.companyValues .fill.Positive:before,.valueTable .fill.Positive:before {
-	border-color: #449D44!important;
+.gwc .fill.True:before, .roleTable .fill.True:before, .companyValues .fill.Positive:before, .valueTable .fill.Positive:before {
+	border-color: #449D44 !important;
 	-ms-opacity: 0.2;
 	opacity: 0.2;
 }
-.gwc .fill.False:before,.roleTable .fill.False:before,.companyValues .fill.Negative:before,.valueTable .fill.Negative:before {
-	border-color: #D9534F!important;
+
+.gwc .fill.False:before, .roleTable .fill.False:before, .companyValues .fill.Negative:before, .valueTable .fill.Negative:before {
+	border-color: #D9534F !important;
 	-ms-opacity: 0.2;
 	opacity: 0.2;
 }
-.companyValues .fill.Neutral:before,.valueTable .fill.Neutral:before {
-	border-color: #EC971F!important;
+
+.companyValues .fill.Neutral:before, .valueTable .fill.Neutral:before {
+	border-color: #EC971F !important;
 	-ms-opacity: 0.25;
 	opacity: 0.25;
 }
@@ -314,13 +321,13 @@ svg .legend {
 }
 
 .fill.Positive .percent {
-	color: #449D44!important;
+	color: #449D44 !important;
 	font-size: 70%;
 }
 
 .fill.True, .fill.Positive, .fill.Positive:after {
 	color: #449D44 !important;
-	border-color: #449D44!important;
+	border-color: #449D44 !important;
 	font-weight: bold;
 }
 
@@ -471,4 +478,74 @@ svg .legend {
 
 .reviewPosition, .reviewName {
 	font-size: 14px;
+}
+
+
+
+.completeincomplete.display {
+	width: 30px;
+}
+
+.completeincomplete {
+	height: 29px;
+}
+
+	.completeincomplete .fill {
+		width: 26px;
+		height: 26px;
+	}
+
+	.completeincomplete .completeincomplete-val {
+		width: 30px;
+		height: 30px;
+	}
+
+	.completeincomplete .ico {
+		font-size: 16px;
+	}
+	.completeincomplete .txt {
+		-ms-opacity: 0;
+		opacity: 0;
+	}
+
+.rockReason {
+	height: 54px;
+}
+.markedAs {
+font-size: 9px;
+}
+.chartItem {
+	width: calc( 100% - 108px );
+}
+
+.scatterLegend {
+	width: 108px;
+	padding-left: 0px;
+}
+
+.print-noPadLeft {
+	padding-right: 0px !important;
+}
+.legendItem {
+	width: 108px;
+}
+
+.fixHeight {
+	min-height: 352px;
+}
+
+
+.rockReasonHeight {
+	min-height: 0px;
+}
+
+.completion {
+font-size: 9px;
+}
+
+.feedback {
+	font-size: 11px;
+}
+.feedback-heading {
+	font-size: 12px;
 }

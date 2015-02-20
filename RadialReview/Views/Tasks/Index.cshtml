@@ -13,6 +13,15 @@
 	</div>
 }
 
+@using (Html.BeginStyles())
+{
+	<style>
+		.pill.todo {
+			color: gray;
+		}
+	</style>
+}
+
 
 @if (Model.Tasks.Any())
 {
@@ -29,7 +38,9 @@
 					{
 						<thead>
 							<tr>
-								<th>Title:</th>
+								<th class="" style="width:75px"></th>
+								<th >Title:</th>
+								
 								@if (type == RadialReview.Models.Enums.TaskType.Review)
 								{
 									<th class="alignCenter">Completion</th>
@@ -42,10 +53,25 @@
 							</tr>
 						</thead>
 					}
-					<tbody>
-						@foreach (var t in Model.Tasks.Where(x => x.DueDate > DateTime.UtcNow && x.Type == type).OrderBy(x => x.DueDate))
+					<tbody class="">
+						@foreach (var t in Model.Tasks.Where(x => x.Type == type).OrderBy(x => x.DueDate))
 						{
-							<tr class="@(t.DueDate>DateTime.UtcNow?"":"grayRow gray") clickable " onclick="location.href='@Model.GetUrl(t)'">
+							<tr class="clickable " onclick="location.href='@Model.GetUrl(t)'">
+								@if (type != TaskType.Profile){
+									<td>
+										@{
+											var clzz = "label label-default";
+											var txt = "TODO";
+										}
+										@if (t.DueDate < DateTime.UtcNow){
+											clzz = "label label-overdue";
+											txt = "OVERDUE";
+										}
+										<span class="@clzz" style="display: block;">@txt</span>
+
+									</td>
+								}
+
 								<td class="table-hover-underline">@t.Name</td>
 								@if (type == RadialReview.Models.Enums.TaskType.Review)
 								{
@@ -59,6 +85,7 @@
 								{
 									<td class="alignCenter" style="width: 120px;">@t.DueDate.Subtract(TimeSpan.FromDays(1)).ToShortDateString()</td>
 								}
+
 							</tr>
 						}
 					</tbody>

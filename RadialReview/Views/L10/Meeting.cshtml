@@ -1,4 +1,4 @@
-﻿@model RadialReview.Controllers.L10Controller.L10MeetingVM
+﻿@model RadialReview.Models.L10.VM.L10MeetingVM
 @{
 	ViewBag.Title = "Meeting";
 	Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,8 +14,9 @@
 	<script>
 		@*Initialize some variables for the scripts*@
 		var MeetingId = @Model.Recurrence.Id;
-		@if (Model.MeetingStartLocalized!=null){
-			@:var startTime = new Date(@(Model.MeetingStartLocalized.Value.ToJavascriptMilliseconds()));
+		@if (Model.MeetingStart != null)
+		{
+			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
 		}
 	</script>
 	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>

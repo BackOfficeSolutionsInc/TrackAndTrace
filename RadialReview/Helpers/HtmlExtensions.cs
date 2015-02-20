@@ -160,25 +160,59 @@ namespace System.Web
         }
 
 
-        public static HtmlString BootstrapValidationSummary(this HtmlHelper html, Boolean excludePropertyErrors)
-        {
-            var errors = html.ViewData.ModelState.Values.SelectMany(x => x.Errors);
-            var output = @"<div class=""validation-summary-" + (errors.Any() ? "errors" : "valid") + @" alert alert-error"" data-valmsg-summary=""true"">";
-            output += @"<button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button><table><tr><td><strong>Error:</strong></td><td><ul>";
-            if (errors.Any())
-            {
-                foreach (var li in errors)
-                {
-                    output += @"<li>" + li.ErrorMessage + "</li>";
-                }
-            }
-            else
-            {
-                output += @"<li style=""display:none""></li>";
-            }
-            output += "</ul></td></tr></table></div>";
-            return new HtmlString(output);
-        }
+		public static HtmlString BootstrapValidationSummary(this HtmlHelper html, Boolean excludePropertyErrors)
+		{
+			var errors = html.ViewData.ModelState.Values.SelectMany(x => x.Errors);
+			var output = @"<div class=""validation-summary-" + (errors.Any() ? "errors" : "valid") + @" alert alert-error"" data-valmsg-summary=""true"">";
+			output += @"<button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button><table><tr><td><strong>Error:</strong></td><td><ul>";
+			if (errors.Any())
+			{
+				foreach (var li in errors)
+				{
+					output += @"<li>" + li.ErrorMessage + "</li>";
+				}
+			}
+			else
+			{
+				output += @"<li style=""display:none""></li>";
+			}
+			output += "</ul></td></tr></table></div>";
+			return new HtmlString(output);
+		}
+		public static HtmlString ValidationSummaryMin(this HtmlHelper html, Boolean excludePropertyErrors=false)
+		{
+
+			/*
+			 *
+			 * <div class="validation-summary-errors" data-valmsg-summary="true">
+			 * <ul><li>Value must be between 1 and 10.</li>
+				<li>Value must be between 1 and 10.</li>
+				<li>Value must be between 1 and 10.</li>
+				<li>Value must be between 1 and 10.</li>
+				<li>Value must be between 1 and 10.</li>
+				</ul></div> 
+			 * 
+			 */
+
+			var errors = html.ViewData.ModelState.Values.SelectMany(x => x.Errors);
+			var output = @"<div class=""validation-summary-" + (errors.Any() ? "errors" : "valid") + @" alert alert-error"" data-valmsg-summary=""true"">";
+			//output += @"<button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button><table><tr><td><strong>Error:</strong></td><td>";
+			output += "<ul>";
+			if (errors.Any())
+			{
+				foreach (var li in errors.GroupBy(x=>x.ErrorMessage))
+				{
+					output += @"<li>" + li.First().ErrorMessage + "</li>";
+				}
+			}
+			else
+			{
+				output += @"<li style=""display:none""></li>";
+			}
+			output += "</ul>"+/*"</td></tr></table>"*/ "</div>";
+			return new HtmlString(output);
+		}
+
 
         #region Blocks
         private class ScriptBlock : IDisposable

@@ -76,6 +76,33 @@
 			position: relative;
 		}
 
+		.rockReason {
+			height: 80px;
+		}
+
+		.chartItem {
+			width: calc( 100% - 145px );
+			padding-left: 13px;
+			display: inline-block;
+			/*float: left;*/
+		}
+
+		.legendItem {
+			width: 136px;
+			display: inline-block;
+			position: absolute;
+			top: 28px;
+			/*float: right;*/
+		}
+
+		.markedAs {
+			margin-top: 9px;
+		}
+
+		.rockReasonHeight {
+			min-height: 40px;
+		}
+
 		.sidebar {
 			/*padding: 10px;
 				font-size: 12px;
@@ -443,122 +470,126 @@
 				</div>
 			}
 
-			<div class="col-xs-12 noBreak">
-				@if (Model.Review.ClientReview.IncludeScatterChart)
-				{
 
-					var chart = Model.Review.ClientReview.ScatterChart;
-					<div class="noselect noBreak ">
-						<a id="scatter" class="shiftByTitle"></a>
-						<div class="row-title noPrint">
-							@if (!string.IsNullOrWhiteSpace(chart.Title))
-							{
-								@chart.Title
-							}
-							else
-							{
-								@:Scatter Chart
-							}
+			@foreach (var chart in charts)
+			{
+				@*<a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
+					<div class="panel panel-primary noBreak">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								@Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
+							</h4>
 						</div>
-						<div class="alignCenter">
-							<div class="" style="width: calc( 100% - 145px ); float: left; padding-left: 13px;">
-								<div id="chart2" class="inline">
-									<!--Chart Goes Here-->
-								</div>
-								<div class="chartPlaceholder hidden" style="position:relative">
-									<img src="/Content/img/ajax-loader.gif" style="margin-top:calc(50% - 6px);margin-left:calc(50% - 7px);position:absolute;" />
-									<svg viewBox="0 0 500 500" height="100%" width="100%">
+						<div class="panel-body noPad">
+							<svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id">
+								<defs>
+									<pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+										<path d="M-1,1 l2,-2
+													M0,4 l4,-4
+													M3,5 l2,-2" stroke-width="2" stroke="black" />
+									</pattern>
+									<pattern id="diagonalHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+										<rect x="0" y="0" width="4" height="4" fill="black"></rect>
+										<path d="M-1,1 l2,-2
+													M0,4 l4,-4
+													M3,5 l2,-2" stroke-width="2" stroke="#65c14e" />
+									</pattern>
+									<pattern id="diagonalRightHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
+										<rect width='8' height='8' fill='white' />
+										<path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='2' stroke='#e99654' />
+									</pattern>
+									<pattern id="crossHatch" patternUnits="userSpaceOnUse" width="8" height="8">
+										<rect width='8' height='8' fill='#cccccc' />
+										<path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='1' stroke='black' />
+									</pattern>
+									<pattern id="verticalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+										<path d="M -1,2 l 6,0" stroke-width="1" stroke="black" />
+									</pattern>
+								</defs>
+							</svg>
+						</div>
+					</div>*@
+				<div class="noselect noBreak">
+					<a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
+					<div class="row-title">@chart.Title</div>
+					<div class="row">
+						@*<div class="col-xs-9">*@
+						<div class="legend pull-right" id="legend_chart_@chart.Id"></div>
+						<div class="chart"
+							 id="chart_@chart.Id"
+							 data-id="@chart.Id"
+							 data-start="@chart.StartDate.ToJavascriptMilliseconds()"
+							 data-end="@chart.EndDate.ToJavascriptMilliseconds()"
+							 data-xaxis="@chart.Item1"
+							 data-yaxis="@chart.Item2"
+							 data-title="@chart.Title">
+							<!--Chart Goes Here-->
+						</div>
 
-									</svg>
-								</div>
-							</div>
-							<div style="width: 136px; float: right;">
-								<div id="legend" class="legend inline">
-								</div>
-							</div>
-						</div>
+						@*</div>
+							<div class="col-xs-3">
+
+								<div class="legend" id="legend_chart_@chart.Id"></div>
+							</div>*@
 					</div>
-				}
-
-				@foreach (var chart in charts)
-				{
-					@*<a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
-						<div class="panel panel-primary noBreak">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									@Model.Categories[chart.Item2] vs @Model.Categories[chart.Item1]
-								</h4>
-							</div>
-							<div class="panel-body noPad">
-								<svg style="height: 500px; width: 600px;margin-left: auto; margin-right: auto; display: block; position: inherit;" id="chart_@chart.Id">
-									<defs>
-										<pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
-											<path d="M-1,1 l2,-2
-														M0,4 l4,-4
-														M3,5 l2,-2" stroke-width="2" stroke="black" />
-										</pattern>
-										<pattern id="diagonalHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
-											<rect x="0" y="0" width="4" height="4" fill="black"></rect>
-											<path d="M-1,1 l2,-2
-														M0,4 l4,-4
-														M3,5 l2,-2" stroke-width="2" stroke="#65c14e" />
-										</pattern>
-										<pattern id="diagonalRightHatch_gray" patternUnits="userSpaceOnUse" width="4" height="4">
-											<rect width='8' height='8' fill='white' />
-											<path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='2' stroke='#e99654' />
-										</pattern>
-										<pattern id="crossHatch" patternUnits="userSpaceOnUse" width="8" height="8">
-											<rect width='8' height='8' fill='#cccccc' />
-											<path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='1' stroke='black' />
-										</pattern>
-										<pattern id="verticalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
-											<path d="M -1,2 l 6,0" stroke-width="1" stroke="black" />
-										</pattern>
-									</defs>
-								</svg>
-							</div>
-						</div>*@
-					<div class="noselect noBreak">
-						<a id="ql_chart_@chart.Id" class="shiftByTitle"></a>
-						<div class="row-title">@chart.Title</div>
-						<div class="row">
-							@*<div class="col-xs-9">*@
-							<div class="legend pull-right" id="legend_chart_@chart.Id"></div>
-							<div class="chart"
-								 id="chart_@chart.Id"
-								 data-id="@chart.Id"
-								 data-start="@chart.StartDate.ToJavascriptMilliseconds()"
-								 data-end="@chart.EndDate.ToJavascriptMilliseconds()"
-								 data-xaxis="@chart.Item1"
-								 data-yaxis="@chart.Item2"
-								 data-title="@chart.Title">
-								<!--Chart Goes Here-->
-							</div>
-
-							@*</div>
-								<div class="col-xs-3">
-
-									<div class="legend" id="legend_chart_@chart.Id"></div>
-								</div>*@
-						</div>
-					</div>
-				}
-			</div>
+				</div>
+			}
 		</div>
 
-		@if (Model.Review.ClientReview.IncludeEvaluation)
-		{
-			<div class="noBreak">
-				<a id="evaluation" class="shiftByTitle"></a>
-				<div class="row-title noPrint">Evaluation</div>
-				<div class="row zoom8">
+		<div class="noBreak">
+			<div class="row zoom8">
+				@if (Model.Review.ClientReview.IncludeScatterChart)
+				{
+					<div class="col-xs-12 print-col-xs-6 print-noPadLeft fixHeight">
+
+						@{ var chart = Model.Review.ClientReview.ScatterChart; }
+						<div class="noselect noBreak ">
+							<a id="scatter" class="shiftByTitle"></a>
+							<div class="row-title noPrint">
+								@if (!string.IsNullOrWhiteSpace(chart.Title))
+								{
+									@chart.Title
+								}
+								else
+								{
+									@:Scatter Chart
+							}
+							</div>
+							<div class="alignCenter1">
+								<div class="chartItem" style="">
+									<div id="chart2" class="inline">
+										<!--Chart Goes Here-->
+									</div>
+									<div class="chartPlaceholder hidden" style="position:relative">
+										<img src="/Content/img/ajax-loader.gif" style="margin-top:calc(50% - 6px);margin-left:calc(50% - 7px);position:absolute;" />
+										<svg viewBox="0 0 500 500" height="100%" width="100%">
+
+										</svg>
+									</div>
+								</div>
+								<div class="legendItem">
+									<div id="legend" class="legend inline">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				}
+
+				@if (Model.Review.ClientReview.IncludeEvaluation)
+				{
+					<a id="evaluation" class="shiftByTitle"></a>
+					@*<div class="row-title noPrint">Evaluation</div>*@
 					<div class="col-sm-12">
 						@Html.Partial("~/Views/Review/Details/EosClient.cshtml", Model)
 					</div>
-				</div>
+				}
 			</div>
 
-		}
+		</div>
+
+
+
 		@if (Model.Review.ClientReview.IncludeQuestionTable)
 		{
 			<a id="questionTable" class="shiftByTitle"></a>
@@ -612,12 +643,16 @@
 						}
 						@foreach (var fg in feedbackGroups)
 						{
-							<div class="feedback-heading">@fg.First().Askable.GetQuestion()</div>
-							foreach (var f in fg.Where(x => feedbacks.Any(y => y.Value == x.Id)))
+							var found = fg.Where(x => feedbacks.Any(y => y.Value == x.Id)).Where(x => !String.IsNullOrWhiteSpace(x.Feedback)).ToList();
+							if (found.Any())
 							{
-								<div style="white-space: pre-line; padding-bottom: 15px; padding-left: 20px;" id="feedback_@(f.Id)" class="feedback"><span class="italic">"@(f.Feedback)"</span></div>
-								<div class="smallBreak"></div>
-								<div class="smallBreak"></div>
+								<div class="feedback-heading">@fg.First().Askable.GetQuestion()</div>
+								foreach (var f in found)
+								{
+									<div style="white-space: pre-line; padding-bottom: 15px; padding-left: 20px;" id="feedback_@(f.Id)" class="feedback"><span class="italic">"@(f.Feedback)"</span></div>
+									<div class="smallBreak"></div>
+									<div class="smallBreak"></div>
+								}
 							}
 						}
 					</div>
@@ -666,7 +701,7 @@
 			@foreach (var kv in Model.Categories)
             {
                     @:"@(kv.Key)": "@(kv.Value)",
-																													                                                                                                                                                                                        }
+																																										                                                                                                                                                                                        }
 		};
 
 		var updates = [];
@@ -767,7 +802,7 @@
 				};
 			}*/
 
-			chart.PullPlot(dataUrl+"&groupBy="+groupBy, null, function (data) {
+			chart.PullPlot(dataUrl + "&groupBy=" + groupBy, null, function (data) {
 				$(".chartPlaceholder").addClass("hidden");
 				$("#chart2,#legend").fadeIn();
 				data.rest = function () {

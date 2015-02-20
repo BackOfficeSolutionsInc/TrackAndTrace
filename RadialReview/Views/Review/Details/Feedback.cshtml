@@ -2,7 +2,7 @@
 @using RadialReview.Models;
 
 @{
-    var feedbackGroups = Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>().GroupBy(x=>x.Askable.Id);
+    var feedbackGroups = Model.AnswersAbout.Where(x => x is FeedbackAnswer && x.Complete).Cast<FeedbackAnswer>().Where(x=>!String.IsNullOrWhiteSpace(x.Feedback)).GroupBy(x=>x.Askable.Id);
 }
 
 @if (feedbackGroups.Any())

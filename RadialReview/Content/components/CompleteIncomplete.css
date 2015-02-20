@@ -128,10 +128,17 @@
 		opacity:0;
 	}
 	
-	.completeincomplete.display input[value='True'] ~ .completeincomplete-False{
+	.completeincomplete.display input[value='True'] ~ .completeincomplete-False,
+	.completeincomplete.display input[value='True'] ~ .completeincomplete-Indeterminate{
 		display: none;
 	}
-	.completeincomplete.display input[value='False'] ~ .completeincomplete-True {
+	.completeincomplete.display input[value='False'] ~ .completeincomplete-True,
+	.completeincomplete.display input[value='False'] ~ .completeincomplete-Indeterminate {
+		display: none;
+	}
+
+	.completeincomplete.display input[value='Indeterminate'] ~ .completeincomplete-True,
+	.completeincomplete.display input[value='Indeterminate'] ~ .completeincomplete-False {
 		display: none;
 	}
 

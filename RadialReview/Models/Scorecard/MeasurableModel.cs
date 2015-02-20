@@ -11,6 +11,8 @@ namespace RadialReview.Models.Scorecard
 		public virtual string Title { get; set; }
 		public virtual long AccountableUserId { get; set; }
 		public virtual UserOrganizationModel AccountableUser { get; set; }
+		public virtual long AdminUserId { get; set; }
+		public virtual UserOrganizationModel AdminUser { get; set; }
 		public virtual LessGreater GoalDirection { get; set; }
 		public virtual decimal Goal { get; set; }
 		public virtual long OrganizationId { get; set; }
@@ -31,6 +33,8 @@ namespace RadialReview.Models.Scorecard
 				Map(x => x.NextGeneration);
 				Map(x => x.AccountableUserId).Column("AccountableUserId");
 				References(x => x.AccountableUser).Column("AccountableUserId").LazyLoad().ReadOnly();
+				Map(x => x.AdminUserId).Column("AdminUserId");
+				References(x => x.AdminUser).Column("AdminUserId").LazyLoad().ReadOnly();
 				Map(x => x.Goal);
 				Map(x => x.GoalDirection);
 				Map(x => x.OrganizationId).Column("OrganizationId");
@@ -51,7 +55,7 @@ namespace RadialReview.Models.Scorecard
 					sym = "< ";
 					break;
 				case LessGreater.GreaterThan:
-					sym = "> ";
+					sym = "≥ ";
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();

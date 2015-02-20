@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.SignalR;
+using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
@@ -113,6 +114,22 @@ namespace RadialReview.Accessors
 			}
 		}
 
+		public static List<ScoreModel> GetUserScoresIncomplete(UserOrganizationModel caller, long userId,DateTime? now=null)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
+					var nowPlus = (now ?? DateTime.UtcNow).Add(TimeSpan.FromDays(1));
+					var scorecards = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == userId && x.DateDue < nowPlus && x.DateEntered == null).List().ToList();
+					return scorecards;
+				}
+			}
+
+
+		}
+
 		public static List<ScoreModel> GetUserScores(UserOrganizationModel caller, long userId, DateTime sd, DateTime ed)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -129,12 +146,26 @@ namespace RadialReview.Accessors
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction())
-				{
+				using (var tx = s.BeginTransaction()){
+
+					var oldScores = scores.ToList();
+					
+					scores =s.QueryOver<ScoreModel>().WhereRestrictionOn(x => x.Id).IsIn(scores.Select(x => x.Id).ToArray()).List().ToList();
+
+					var now = DateTime.UtcNow;
+
 					var uid = scores.EnsureAllSame(x => x.AccountableUserId);
 					PermissionsUtility.Create(s, caller).EditUserScorecard(uid);
-					foreach (var x in scores)
-					{
+					foreach (var x in scores){
+						x.Measured = oldScores.FirstOrDefault(y => y.Id == x.Id).NotNull(y => y.Measured);
+						if (x.Measured == null){
+							x.DateEntered = null;
+							x.DeleteTime = now;
+						}else{
+							x.DeleteTime = null;
+							x.DateEntered = now;
+						}
+
 						s.Update(x);
 					}
 					tx.Commit();
@@ -150,6 +181,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var now = DateTime.UtcNow;
+					DateTime? nowQ = now;
 
 					var meeting = L10Accessor._GetCurrentL10Meeting(s, caller, recurrenceId);
 					var score = s.Get<ScoreModel>(scoreId);
@@ -164,6 +196,9 @@ namespace RadialReview.Accessors
 						if (ms == null)
 							throw new PermissionsException("You do not have permission to edit this score.");
 						score.Measured = value;
+						score.DateEntered = (value == null) ? null : nowQ;
+
+
 						s.Update(score);
 					}
 					else
@@ -192,6 +227,7 @@ namespace RadialReview.Accessors
 						{
 							//Found it with false id
 							score.Measured = value;
+							score.DateEntered = (value == null) ? null : nowQ;
 							s.Update(score);
 						}
 						else
@@ -226,6 +262,7 @@ namespace RadialReview.Accessors
 									m.NextGeneration = nextDue;
 									n = nextDue.StartOfWeek(DayOfWeek.Sunday);
 								}
+								curr.DateEntered = (value == null) ? null : nowQ;
 								curr.Measured = value;
 							}
 							else if (week < minDate)
@@ -246,6 +283,7 @@ namespace RadialReview.Accessors
 									if (first)
 									{
 										curr.Measured = value;
+										curr.DateEntered = (value == null) ? null : nowQ;
 										first = false;
 										s.Save(curr);
 									}
@@ -261,7 +299,8 @@ namespace RadialReview.Accessors
 									MeasurableId = m.Id,
 									OrganizationId = m.OrganizationId,
 									ForWeek = week.StartOfWeek(DayOfWeek.Sunday),
-									Measured = value
+									Measured = value,
+									DateEntered = (value == null) ? null : nowQ
 								};
 								s.Save(curr);
 							}

@@ -6,10 +6,10 @@
         ViewData["I"] = ((int)ViewData["I"]) + 1;
         <div class="startHidden row">
             <div class="col-md-6 alignRight startHidden">
-                @if (f.Required)
+                @*@if (f.Required)
                 {
                     <div class="pull-left star @((ViewBag.Incomplete != null && !f.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
-                }
+                }*@
                 <h4 class="alignCenter question">@f.Askable.GetQuestion()</h4>
             </div>
             <div class="col-md-6 alignRight startHidden">
