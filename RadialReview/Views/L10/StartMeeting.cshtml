@@ -3,6 +3,8 @@
 
 @{
 	ViewBag.Title = "Start Meeting";
+	Layout = "~/Views/L10/BasePage.cshtml";
+
 }
 
 <div class="centered" style="width:50%;">
@@ -17,16 +19,25 @@
 				LoadingElementDuration = 1000,
 			}))
 			{
+				@*if (ViewBag.Message!=null){
+					 <div class="alert alert-danger" role="alert">
+						 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						 <span class="sr-only">Error:</span>
+						 @ViewBag.Message
+					 </div>
+				 }*@
+
 				@Html.ValidationSummary()
 				@Html.SecuredHiddenFor(x => x.Recurrence.Id)
-				<table>
+				<table style="width:100%">
 					@foreach (var a in Model.Recurrence._DefaultAttendees)
 					{
 						<tr>
-							<td style="width: 30px;"></td>
-							<td><input type="checkbox" checked name="Attendees" value="@a.User.Id" /></td>
-							<td>@Html.Partial("_ProfilePicture", a.User)</td>
-							<td>@a.User.GetName()</td>
+							<td ></td>
+							<td style="width: 1px;" class="check"><input type="checkbox" checked name="Attendees" value="@a.User.Id" /></td>
+							<td style="width: 1px;" class="pix">@Html.Partial("_ProfilePicture", a.User)</td>
+							<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;" class="name">@a.User.GetName()</td>
+							<td></td>
 						</tr>
 					}
 				</table>

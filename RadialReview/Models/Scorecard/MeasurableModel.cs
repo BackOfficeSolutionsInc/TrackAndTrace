@@ -46,7 +46,7 @@ namespace RadialReview.Models.Scorecard
 				Map(x => x.DueTime);
 			} 
 		}
-
+		
 		public virtual string ToSymbolString()
 		{
 			var sym = "";

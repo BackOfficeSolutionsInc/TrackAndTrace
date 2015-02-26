@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 
 namespace RadialReview.Models.Scorecard
@@ -23,8 +24,22 @@ namespace RadialReview.Models.Scorecard
 		public virtual DateTime? DeleteTime { get; set; }
 
 		public ScoreModel(){
-			
 		}
+
+
+		public virtual bool MetGoal()
+		{
+			switch(Measurable.GoalDirection){
+				case LessGreater.LessThan:
+					return Measured < Measurable.Goal;
+				case LessGreater.GreaterThan:
+					return Measured >= Measurable.Goal;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		
 
 		public class ScoreMap : ClassMap<ScoreModel>
 		{

@@ -1,2 +1,87 @@
-﻿@model RadialReview.Models.L10.VM.L10MeetingStatsVM
+﻿
+@model RadialReview.Models.L10.VM.L10MeetingStatsVM
+@{
+	//Layout = "~/Views/L10/BasePage.cshtml";
+}
 
+<div class="component meeting-stats">
+	<div class="row">
+		<div class="col-md-6">
+			<div class="chart-title">Meeting Start/End Time</div>
+			<div id="StartTime" style="width:100%;">
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="chart-title">Average Rating</div>
+			<div id="AvgRating" style="width:100%;">
+			</div>
+		</div>
+	</div>
+
+</div>
+<script src="~/Scripts/d3/d3.v3.min.js"></script>
+<script src="~/Scripts/d3/Charts.js"></script>
+<script>
+
+	@{
+		var start = Model.AllMeetings
+			.Select(x => x.StartTime)
+			.Where(x => x.HasValue)
+			.Select(x => new {v=x.Value.Minute/60.0 + x.Value.Hour,se="start"});
+		var end = Model.AllMeetings
+			.Select(x => x.CompleteTime)
+			.Where(x => x.HasValue)
+			.Select(x => new { v = x.Value.Minute / 60.0 + x.Value.Hour, se = "end" });
+		var startEnd = start.ToList();
+		startEnd.AddRange(end);
+		var sa = startEnd.Select(x=>x.v).Median();
+	
+		var rating = Model.AllMeetings.OrderBy(x => x.StartTime).Select(x => new{
+			x = x.StartTime.Value.Date.ToJavascriptMilliseconds(),
+			y = x._MeetingAttendees.Average(y => y.Rating)
+		}).Where(x => x.y != null);
+
+	}
+
+	////////////////////
+	//Start Time
+
+	var startTimeHistogram = new Charts.Histogram("#StartTime")
+		.SetLabelFunction(function(d) {
+			var hour = ((Math.floor(d)+ 11) % 12)+ 1;
+			var min = Math.round((d - Math.floor(d)) * 60);
+			while(min >= 60) {
+				hour += 1;
+				min -= 60;
+			}
+			var amPm = d > 11.99 ? "p" : "a";
+			return hour + ":" + Charts.Util.pad(min, 2)+amPm;
+		}).RotateXTitle().InitializeWidth(
+		@Html.ArrayToString(
+				startEnd.Where(x=>x.v>=sa-3.5 && x.v<=sa+3.5).Select(d=>new{x=d.v,group=d.se})
+			),
+		5/60.
+	);
+	//Rotate axis text 90 deg
+	//d3.select("#StartTime svg .x.axis").selectAll("text")
+	//	.attr("y", 0)
+	//	.attr("x", 9)
+	//	.attr("dy", ".35em")
+	//	.attr("transform", "rotate(90)")
+	//	.style("text-anchor", "start");
+
+	////////////////////
+	//Avg Rating
+
+	var ratingHistogram = new Charts.Line("#AvgRating")
+		.SetLabelFunction(function(d) { 
+			var curr_date = d.getDate();
+			var curr_month = d.getMonth() + 1; //Months are zero based
+			var curr_year = Charts.Util.pad(d.getFullYear() % 100, 2);
+			return (curr_month + "-" +curr_date + "-" +  curr_year);
+			//return d3.time.format("%d-%b-%y").parse(d);
+		}).Initialize(
+			@Html.ArrayToString(rating)
+		).RotateXTitle();
+
+</script>

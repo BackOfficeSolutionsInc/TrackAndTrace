@@ -36,6 +36,9 @@ $(function () {
 
 	meetingHub.client.updateUserFocus = updateUserFocus;
 	meetingHub.client.updateTextContents = updateTextContents;
+	meetingHub.client.setCurrentPage = setCurrentPage;
+	meetingHub.client.setPageTime = setPageTime;
+	meetingHub.client.setupMeeting = setupMeeting;
 
 
 	$.connection.hub.start().done(function () {
@@ -51,13 +54,23 @@ $(function () {
 			$(".rt").prop("disabled", false);
 		});
 
+		$("body").on("kypress", ".rt", function() { typed = typed + String.fromCharCode(event.charCode); });
+		$("body").on("keyup", ".rt", $.throttle(250, sendTextContents));
+		$("body").on("focus", ".rt", $.throttle(250, sendFocus));
+		$("body").on("blur", ".rt", $.throttle(250, sendUnfocus));
+
+		/*
 		$(".rt").keypress(function () { typed = typed + String.fromCharCode(event.charCode); });
 		$(".rt").keyup($.throttle(250, sendTextContents));
 		//$(".rt").change(sendTextContents);
 		//$(".rt").click($.throttle(250, sendFocus));
 		$(".rt").focus($.throttle(250, sendFocus));
-		$(".rt").blur($.throttle(250, sendUnfocus));
+		$(".rt").blur($.throttle(250, sendUnfocus));*/
 	});
+
+	window.onbeforeunload = function (e) {
+		$.connection.hub.stop();
+	};
 });
 
 function sendTextContents() {

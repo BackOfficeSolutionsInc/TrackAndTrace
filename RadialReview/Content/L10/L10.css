@@ -87,16 +87,16 @@ html {
 }
 
 .main-window-container {
-	position: absolute;
+	/*position: absolute;
 	display: table;
 	width: 100%;
 	height: 100%;
-	padding: 5px 10px;
+	padding: 5px 10px;*/
 }
 
 	.main-window-container .component {
 		height: 100%;
-		margin: 5px;
+		margin: 0px;
 		padding: 15px;
 	}
 
@@ -120,17 +120,19 @@ html {
 	}
 
 #main-window {
-	/*position: relative;*/
+	margin: 5px 10px;
+	/*position: relative;
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	left: 0;
-	right: 0;
+	right: 0;*/
 }
 
 .full {
-	height: 100%;
-	padding: 0px;
+	padding: 0;
+	/*height: 100%;
+	padding: 0px;*/
 }
 /*
 @media (min-width: 768px) {
@@ -169,10 +171,18 @@ table {
 	justify-content: flex-start;
 }
 
-.meeting-manager .picture-container {
-	width: 32px;
-	height: 32px;
+.meeting-manager {
+	text-align: left;
 }
+
+	.meeting-manager .name {
+		padding-left: 10px;
+	}
+
+	.meeting-manager .picture-container {
+		width: 32px;
+		height: 32px;
+	}
 
 
 .validation-summary-errors ul {
@@ -183,19 +193,30 @@ table {
 .scorecard-table {
 	white-space: nowrap;
 	font-size: 17px;
+	min-height: 600px;
 }
 
+	.scorecard-table tr.last {
+		height: 100%;
+	}
 	.scorecard-table .who {
 	}
-
+	
 	.scorecard-table .heading.who {
-		text-align: center;
+		text-align: left;
+	}
+
+	.scorecard-table .who .newLine {
+		/*position: relative;
+		top: 20px;
+		font-size: 16px;*/
+		font-size: 70%;
 	}
 
 	.scorecard-table .measurable {
 		text-align: right !important;
 		font-weight: bold;
-		padding-left: 20px;
+		padding-left: 10px;
 		padding-right: 10px;
 		max-width: 240px;
 		-ms-text-overflow: ellipsis;
@@ -207,8 +228,8 @@ table {
 
 	.scorecard-table .target {
 		text-align: left;
-		padding-left: 10px;
-		padding-right: 20px;
+		padding-left: 5px;
+		padding-right:10px;
 	}
 	/*
 	.scorecard-table .heading.measurable {
@@ -226,18 +247,28 @@ table {
 		/*padding-left: 20px;
 		padding-right: 20px;*/
 		text-align: center;
-		font-weight: bold;
-		text-transform: uppercase;
-		-moz-min-width: 111px;
-		-ms-min-width: 111px;
-		-o-min-width: 111px;
-		-webkit-min-width: 111px;
-		min-width: 111px;
+		font-weight: normal;
+		/*text-transform: uppercase;*/
+		min-width: 70px;
 	}
-
+	
 		.scorecard-table .date.current {
 			/*background-color: #def5ff;*/
 			color: #2c77ba;
+			font-weight: bold;
+		}
+		.scorecard-table .score.current input {
+			float: left;
+			width: 100px;
+			font-weight: bold;
+		}
+		.scorecard-table .score.current {
+			border-left: 2px solid #2c77ba;
+			border-right: 2px solid #2c77ba;
+		}
+		.scorecard-table .date.current {
+			border-left: 2px solid #2c77ba;
+			border-right: 2px solid #2c77ba;
 		}
 
 
@@ -282,7 +313,7 @@ table {
 			border: none;
 			padding: 0;
 			text-align: center;
-			width: 110px;
+			width: 70px;
 			height: 26px;
 		}
 
@@ -297,8 +328,8 @@ table {
 				}
 
 
-#ScorecardTable td, #ScorecardTable th {
-	border-right: 1px solid #E8E8E8;
+#ScorecardTable td.date, #ScorecardTable th.date {
+	/*border-right: 1px solid #E8E8E8;*/
 }
 
 #ScorecardTable_Over {
@@ -330,4 +361,157 @@ h3 {
 	background-size: 40px 40px;
 	pointer-events:none;
 	cursor: not-allowed;*/
+}
+.histogram .bar.start rect {
+	fill: rgb(103, 164, 215);
+	stroke: white;
+}
+.histogram .bar.end rect {
+	fill: steelblue;
+	stroke: white;
+}
+.histogram .bar rect {
+	fill: steelblue;
+	stroke: white;
+	-webkit-shape-rendering: optimizeQuality;
+	-moz-shape-rendering: optimizeQuality;
+	-ms-shape-rendering: optimizeQuality;
+	-o-shape-rendering: optimizeQuality;
+	shape-rendering: optimizeQuality;
+}
+
+.histogram .bar text {
+	fill: #6993B6;
+}
+
+.histogram .axis path, .histogram .axis line {
+	fill: none;
+	stroke: #000;
+	-webkit-shape-rendering: optimizeQuality;
+	-moz-shape-rendering: optimizeQuality;
+	-ms-shape-rendering: optimizeQuality;
+	-o-shape-rendering: optimizeQuality;
+	shape-rendering: optimizeQuality;
+}
+
+.line-chart .axis path,
+.line-chart .axis line {
+	fill: none;
+	stroke: #000;
+	-webkit-shape-rendering: optimizeQuality;
+	-moz-shape-rendering: optimizeQuality;
+	-ms-shape-rendering: optimizeQuality;
+	-o-shape-rendering: optimizeQuality;
+	shape-rendering: optimizeQuality;
+}
+
+.line-chart .x.axis path {
+	/*display: none;*/
+}
+
+.line-chart .line {
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+	-webkit-shape-rendering: optimizeQuality;
+	-moz-shape-rendering: optimizeQuality;
+	-ms-shape-rendering: optimizeQuality;
+	-o-shape-rendering: optimizeQuality;
+	shape-rendering: optimizeQuality;
+}
+
+.line-chart .dot {
+  fill: white;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+
+.meeting-stats .histogram {
+	font-size: 23px;
+}
+
+.meeting-stats .charts {
+	font-size: 24px;
+}
+
+.chart-title {
+	font-size: 24px;
+	font-weight: bold;
+	padding-top: 10px;
+	padding-left: 40px;
+}
+
+.page-time {
+	float: right;
+	color: #bbbbbb;
+	position: relative;
+}
+
+.page-item .page-time {
+	color: #444444;
+}
+/*.page-item .page-time.over {
+	color: #ECA4A4;
+}*/
+.page-item .page-time.over {
+	color: #e23737;
+}
+
+.page-item .page-time .second {
+	display: none;
+}
+.page-item .page-time:hover .second {
+	display: none;
+	position: absolute;
+	right: -30px;
+	top: 0;
+	text-align: left;
+
+}
+
+.page-item.current > * {
+	font-weight: bold;
+} 
+
+.agenda ol {
+padding-left: 24px;
+}
+
+.agenda .page-item:not(.current) .page-time {
+	opacity: .35;
+	transition: ease opacity .2s;
+}
+.agenda:hover .page-item .page-time {
+	opacity: 1;
+}
+
+.alert {
+	padding: 5px 9px;
+}
+
+.agenda a:not(.clickable) {
+	cursor: default;
+}
+.agenda a:not(.clickable):hover {
+	color: #767F99;
+}
+
+.issuesButton {
+	color: #666;
+	left: -18px;
+	top: 3px;
+	opacity: .8;
+}
+
+.issuesButton:hover {
+	color: #666;
+	left: -19px;
+	top:4px;
+	opacity: 1;
+	cursor: pointer;
+}
+
+.issuesButton.active {
+	color: rgb(44, 119, 186);
 }

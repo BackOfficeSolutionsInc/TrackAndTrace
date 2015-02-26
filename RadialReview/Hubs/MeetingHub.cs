@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using Amazon.IdentityManagement.Model;
 using Microsoft.AspNet.SignalR;
 using NHibernate;
 using RadialReview.Accessors;
+using RadialReview.Controllers;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Utilities;
@@ -96,8 +98,22 @@ namespace RadialReview.Hubs
 
 		public static string GenerateMeetingGroupId(L10Meeting meeting)
 		{
-			return "L10Meeting_" + meeting.Id;
+			var id = meeting.L10Recurrence.NotNull(x => x.Id);
+			if (id == 0)
+				id = meeting.L10RecurrenceId;
+			if (id==0)
+				throw new Exception();
+
+			return "L10MeetingRecurrence_" + id;
 		}
+
+		public override Task OnDisconnected(bool stopCalled)
+		{
+			//L10Accessor.UpdatePage(GetUser(),GetUser().Id,);
+
+			return base.OnDisconnected(stopCalled);
+		}
+
 		/*
 		public UserMeetingModel Join(String userId, String meetingId)
 		{

@@ -1,7 +1,17 @@
-﻿$(function () {
+﻿
+var mode = "scan";
+var myPage = "";
+var followLeader = true;
+var isLeader = false;
+var meetingStart = false;
+
+$(function () {
 	updateTime();
 	resizing();
-	loadPage(window.location.hash.replace("#", ""));
+
+	if (isLeader || !followLeader) {
+		loadPage(window.location.hash.replace("#", ""));
+	}
 
 	setInterval(updateTime, 100);
 	$(window).resize(resizing);
@@ -13,21 +23,32 @@
 		}
 	});
 	$('.main-window-container').on('keydown', ".grid", changeInput);
-
 	$('.main-window-container').on('click', ".grid", function (e,d) {if (!d)mode = "scan";});
 	$('.main-window-container').on('change', ".grid", function (e,d) { if (!d) mode = "type"; });
 	$('.main-window-container').on('scroll', ".grid", function (e) { if (mode == "type") { e.preventDefault(); } });
 
 
 	$(".agenda a").click(function () {
-		showLoader();
 		var loc = $(this).data("location");
 		loadPage(loc);
 	});
 
+	$("body").on("click", ".issuesButton", function() {
+		showModal("Add to Issues", "/Issues/Modal", "/Issues/Modal");
+	});
+
 });
 
-var mode = "scan";
+function resetClickables() {
+	$(".agenda a").removeClass("clickable");
+	$(".agenda a").prop("href", "#");
+	if (isLeader || !followLeader) {
+		$(".agenda a").addClass("clickable");
+		$(".agenda a").each(function() {
+			$(this).prop("href", "#" + $(this).data("location"));
+		});
+	}
+}
 
 function updateServerScore(self) {
 	var m = $(self).data("measurable");
@@ -171,7 +192,7 @@ function ms2Time(ms) {
 	secs = Math.floor(secs % 60);
 	var hours = minutes / 60;
 	minutes = Math.floor(minutes % 60);
-	hours = Math.floor(hours % 24);
+	hours = Math.floor(hours/* % 24 */);
 	return {
 		hours: hours,
 		minutes: minutes,
@@ -180,10 +201,13 @@ function ms2Time(ms) {
 	};
 }
 
+var lessThan10 = true;
 
 function updateTime() {
 	var now = new Date();
-	$(".current-time .hour").html(now.getHours() % 12 || 12);
+	var h = now.getHours() % 12 || 12;
+	lessThan10 = h < 10;
+	$(".current-time .hour").html(h);
 	$(".current-time .minute").html(pad(now.getMinutes(), 2));
 	$(".current-time .second").html(pad(now.getSeconds(), 2));
 
@@ -196,32 +220,87 @@ function updateTime() {
 	} else {
 		$(".elapsed-time").hide();
 	}
+
+
+	var nowUtc = new Date().getTime();
+	if (typeof currentPage != 'undefined' && currentPage!=null) {
+		var ee = ms2Time(nowUtc - currentPageStartTime);
+		setPageTime(currentPage, (ee.minutes + ee.hours * 60 + currentPageBaseMinutes+ee.seconds/60));
+	}
+
+}
+
+function setPageTime(pageName, minutes) {
+	var over = $(".page-" + pageName + " .page-time").data("over");	
+	var sec =Math.floor(60* (minutes-Math.floor(minutes)));
+
+	$(".page-" + pageName + " .page-time").html(Math.floor(minutes) + "m<span class='second'>"+sec+"s</span>");
+	//$(".page-time.page-" + pageName).prop("title", Math.floor(minutes) + "m" + pad(sec, 2) + "s");
+	if (minutes >= over) {
+		$(".page-"+pageName+" .page-time").addClass("over");
+	} else {
+		$(".page-" + pageName + " .page-time").removeClass("over");
+	}
+
+}
+function setupMeeting() {
+	$(".page-item .page-time").html("");
+}
+function setCurrentPage(pageName, startTime,baseMinutes) {
+	currentPage = pageName;
+	currentPageStartTime = startTime;
+	currentPageBaseMinutes = baseMinutes;
+	$(".page-item.current").removeClass("current");
+	$(".page-item.page-" + pageName).addClass("current");
+	if (followLeader && !isLeader) {
+		loadPageForce(pageName);
+	}
+
 }
 
 function loadPage(location) {
+	if (!followLeader || isLeader || !meetingStart) {
+		loadPageForce(location);
+	}
+	//window.location.hash = location;
+}
+
+function loadPageForce(location) {
+	window.location.hash = location;
+	location = location.toLowerCase();
+	//if (location != myPage) {
+	showLoader();
+	myPage = location;
 	$.ajax({
 		url: "/L10/Load/" + MeetingId + "?page=" + location,
-		success: function (data) {
+		success: function(data) {
 			replaceMainWindow(data);
 		},
-		error: function () {
-			setTimeout(function () {
+		error: function() {
+			setTimeout(function() {
 				$("#alerts").html("");
 				showAlert("Page could not be loaded.");
 				replaceMainWindow("");
 			}, 1000);
 		}
 	});
+	//}
 }
 
 function resizing() {
 	var clock = $(".current-time");
-	if (clock.width() < 221) {
+	var maxSec = 221;
+	var maxResize = 192;
+	if (lessThan10) {
+		maxSec = 166;
+		maxResize = 0;
+	}
+	if (clock.width() < maxSec) {
 		$(".current-time .second").css("display", "none");
 	} else {
 		$(".current-time .second").css("display", "inherit");
 	}
-	if (clock.width() < 192) {
+	if (clock.width() < maxResize) {
 		$(".current-time .big").css({ "font-size": "40px", "line-height": "85px" });
 	} else {
 		$(".current-time .big").css({ "font-size": "60px", "line-height": "" });

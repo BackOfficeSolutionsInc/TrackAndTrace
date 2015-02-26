@@ -1,14 +1,14 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingVM
-
-<div class="component">
-	<h2>Segue!</h2>
-	<textarea class="rt" id="segue"></textarea>
-</div>
-
-
-<script>
-
-@if (Model.MeetingStart!=null){
-	@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
+@{
+	Layout = "~/Views/L10/BasePage.cshtml";
 }
-</script>
+
+
+<div class="centered" style="width:50%;">
+	<div class="component">
+		<h2>Segue:</h2>
+		<h4>Share any good news you might have.</h4>
+		
+		@*<textarea class="rt" id="segue"></textarea>*@
+	</div>
+</div>

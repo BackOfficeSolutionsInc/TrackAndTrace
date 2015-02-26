@@ -544,11 +544,14 @@
     </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="Models\Enums\AccessLevel.cs" />
+    <Compile Include="Utilities\AwsUtil.cs" />
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
     <Compile Include="Utilities\Config.cs" />
     <Compile Include="Utilities\DbUtil.cs" />
     <Compile Include="Utilities\Extensions\ExpressionExtensions.cs" />
+    <Compile Include="Utilities\Extensions\IssuesExtensions.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
+    <Compile Include="Utilities\RandomUtil.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
@@ -600,6 +603,7 @@
     <Compile Include="Utilities\Query\SessionUpdate.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
     <Compile Include="Utilities\ShortenerUtility.cs" />
+    <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\TimingUtility.cs" />
   </ItemGroup>
@@ -742,6 +746,7 @@
     <Content Include="Scripts\bootstrap-switch.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Charts.js" />
     <Content Include="Scripts\components\checktree.js" />
     <Content Include="Scripts\components\completeincomplete.js" />
     <Content Include="Scripts\components\rockstate.js" />
@@ -804,6 +809,7 @@
     <Content Include="Scripts\table\fixedTabel.js" />
     <Content Include="Scripts\table\grid.js" />
     <Content Include="Scripts\table\sortable_table.js" />
+    <Content Include="Scripts\typings\Charts.js" />
     <Content Include="Views\Review\Details\ChartBuilder2.cshtml" />
     <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
     <Content Include="Views\JobDescription\Edit.cshtml" />
@@ -839,6 +845,10 @@
     <Content Include="Views\L10\MeetingStats.cshtml" />
     <Content Include="Scripts\d3\LICENSE" />
     <Content Include="Views\Charts\Histogram.cshtml" />
+    <Content Include="Scripts\Charts.js.map" />
+    <Content Include="Scripts\typings\Charts.js.map" />
+    <Content Include="Views\L10\BasePage.cshtml" />
+    <Content Include="Views\L10\_SetupScript.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1064,6 +1074,7 @@
     <Content Include="Views\Shared\DisplayTemplates\PositiveNegativeNeutral.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Tristate.cshtml" />
     <Content Include="Views\Shared\_Picture.cshtml" />
+    <Content Include="Views\Shared\_L10Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1146,7 +1157,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Scripts\d3\Histogram.ts" />
+    <TypeScriptCompile Include="Scripts\d3\Charts.ts" />
     <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
     <TypeScriptCompile Include="Scripts\typings\d3\d3.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\d3\plugins\d3.superformula.d.ts" />
@@ -1222,6 +1233,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptMapRoot>~\Scripts\</TypeScriptMapRoot>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />

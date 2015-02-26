@@ -1,4 +1,5 @@
-﻿using RadialReview.Properties;
+﻿using System.Web.Helpers;
+using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -212,6 +213,13 @@ namespace System.Web
 			output += "</ul>"+/*"</td></tr></table>"*/ "</div>";
 			return new HtmlString(output);
 		}
+
+	    public static MvcHtmlString ArrayToString<T>(this HtmlHelper html, IEnumerable<T> items)
+	    {
+		    return new MvcHtmlString(Json.Encode(items));
+
+	    }
+
 
 
         #region Blocks

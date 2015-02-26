@@ -1,4 +1,4 @@
 ﻿@model RadialReview.Models.UserOrganizationModel
 <span class="profile-picture">
-	@Html.Partial("_Picture", Model.ImageUrl(true), new ViewDataDictionary() { { "ImageTitle", Model.GetName() } })
+	@Html.Partial("_Picture", Model.ImageUrl(true,ImageSize._32), new ViewDataDictionary() { { "ImageTitle", Model.GetName() } })
 </span>

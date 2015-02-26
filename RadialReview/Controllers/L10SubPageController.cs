@@ -19,22 +19,40 @@ namespace RadialReview.Controllers
 		public ActionResult Load(long id, string page = null)
 		{
 			var recurrenceId = id;
+			page = page.ToLower();
+
+			L10Accessor.UpdatePage(GetUser(), GetUser().Id, recurrenceId, page);
+		
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
 			var model = new L10MeetingVM() { Recurrence = recurrence };
+
+			//Dont need the meeting 
+			switch (page)
+			{
+				case "stats":	return MeetingStats(recurrenceId);
+				case "startmeeting":return StartMeeting(model,true);
+				default:	break; //fall through
+			}
+		
+			//Do need the meeting
 			try{
 				model.Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load:true);
 
-				switch (page.ToLower())
+				switch (page)
 				{
-					case "":			goto case "segue";
-					case "scorecard":	return ScoreCard(model);
-					case "segue":		return Segue(model);
-					case "conclusion":  return Conclusion(model,null,true);
+					case "":				goto case "segue";
+					case "scorecard":		return ScoreCard(model);
+					case "segue":			return Segue(model);
+					case "conclusion":		return Conclusion(model, null, true);
+					case "stats":			throw new Exception("Handled above");
+					case "startmeeting":	throw new Exception("Handled above");
 					default:throw new MeetingException("Page doesn't exist",MeetingExceptionType.Error);
 				}
 			}catch (MeetingException e){
 				if (e.MeetingExceptionType == MeetingExceptionType.Unstarted){
-					ViewBag.Message = "You must start the meeting first.";
+					if (page != "startmeeting"){
+						ViewBag.Message = "You must start the meeting first.";
+					}
 					return StartMeeting(model,false);
 				}
 
@@ -68,7 +86,7 @@ namespace RadialReview.Controllers
 				var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
 				var attendees =allMembers.Where(x => model.Attendees.Contains(x.Id)).ToList();
-				L10Accessor.StartMeeting(GetUser(), model.Recurrence.Id, attendees);
+				L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees);
 				return RedirectToAction("Load", new {id = model.Recurrence.Id, page = "Segue"});
 			}
 			
@@ -78,7 +96,7 @@ namespace RadialReview.Controllers
 			return StartMeeting(model, false);
 		}
 		#endregion
-
+	
 		#region Segue
 		private PartialViewResult Segue(L10MeetingVM model)
 		{
@@ -162,12 +180,13 @@ namespace RadialReview.Controllers
 
 				if (ModelState.IsValid){
 					L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues);
+					return RedirectToAction("Load", new { id = model.Recurrence.Id, page = "stats" });
 
-					return MeetingStats(model);
+					//return MeetingStats(model.Recurrence.Id);
 
 				}
 			}
-
+		
 			var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), model.Recurrence.Id,false, true);
 			model.Meeting = meeting;
 
@@ -181,12 +200,13 @@ namespace RadialReview.Controllers
 
 		#region Meeting Stats
 
-
-		private PartialViewResult MeetingStats(L10MeetingVM model)
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult MeetingStats(long recurrenceId)
 		{
-
-
-
+			var meetings = L10Accessor.GetL10Meetings(GetUser(), recurrenceId, true);
+			var model = new L10MeetingStatsVM(){
+				AllMeetings = meetings
+			};
 			return PartialView("MeetingStats", model);
 		}
 

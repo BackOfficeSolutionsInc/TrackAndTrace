@@ -75,6 +75,37 @@ namespace RadialReview.Accessors
 
 		}
 
+		public static void _LoadMeetingLogs(ISession s, params L10Meeting[] meetings)
+		{
+			var meetingIds = meetings.Where(x => x != null).Select(x => x.Id).Distinct().ToArray();
+			if (meetingIds.Any()){
+				var allLogs = s.QueryOver<L10Meeting.L10Meeting_Log>()
+					.Where(x => x.DeleteTime == null)
+					.WhereRestrictionOn(x => x.L10Meeting.Id).IsIn(meetingIds)
+					.List().ToList();
+				var now = DateTime.UtcNow;
+				foreach (var m in meetings.Where(x => x != null)){
+					m._MeetingLogs = allLogs.Where(x => m.Id == x.L10Meeting.Id).ToList();
+
+					m._MeetingLeaderPageDurations = m._MeetingLogs
+						.Where(x => x.User.Id == m.MeetingLeader.Id && x.EndTime!=null)
+						.GroupBy(x => x.Page)
+						.Select(x =>
+							Tuple.Create(
+								x.First().Page,
+								x.Sum(y => ((y.EndTime ?? now) - y.StartTime).TotalMinutes)
+								)).ToList();
+					var curPage = m._MeetingLogs.SingleOrDefault(x => x.User.Id == m.MeetingLeader.Id && x.EndTime == null);
+					if (curPage != null){
+						m._MeetingLeaderCurrentPage = curPage.Page;
+						m._MeetingLeaderCurrentPageStartTime = curPage.StartTime;
+						m._MeetingLeaderCurrentPageBaseMinutes = m._MeetingLeaderPageDurations.Where(x=>x.Item1==curPage.Page).Sum(x=>x.Item2);
+					}
+				}
+			}
+			
+		}
+
 		public static void _LoadMeetings(ISession s, bool loadUsers, bool loadMeasurables, params L10Meeting[] meetings)
 		{
 			var meetingIds = meetings.Where(x => x != null).Select(x => x.Id).Distinct().ToArray();
@@ -211,7 +242,16 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static L10Meeting _GetCurrentL10Meeting(ISession s, UserOrganizationModel caller, long recurrenceId, bool nullOnUnstarted = false, bool load = false)
+		public static L10Meeting.L10Meeting_Log _GetCurrentLog(ISession s, UserOrganizationModel caller, long meetingId, long userId, bool nullOnUnstarted = false)
+		{
+			var found= s.QueryOver<L10Meeting.L10Meeting_Log>().Where(x => x.DeleteTime == null && x.L10Meeting.Id == meetingId && x.User.Id == userId && x.EndTime == null).List().SingleOrDefault();
+			if (found == null && !nullOnUnstarted)
+				throw new PermissionsException("Meeting log does not exist");
+			return found;
+		}
+
+
+		public static L10Meeting _GetCurrentL10Meeting(ISession s, UserOrganizationModel caller, long recurrenceId, bool nullOnUnstarted = false, bool load = false, bool loadLogs=false)
 		{
 			var found = s.QueryOver<L10Meeting>().Where(x =>
 					x.StartTime != null &&
@@ -220,30 +260,32 @@ namespace RadialReview.Accessors
 					x.L10RecurrenceId == recurrenceId
 				).List().ToList();
 
-			if (!found.Any())
-			{
+			if (!found.Any()){
 				if (nullOnUnstarted)
 					return null;
 				throw new MeetingException("Meeting has not been started.", MeetingExceptionType.Unstarted);
 			}
-			if (found.Count != 1)
-			{
+			if (found.Count != 1){
 				throw new MeetingException("Too many open meetings.", MeetingExceptionType.TooMany);
 			}
 			var meeting = found.First();
 			PermissionsUtility.Create(s, caller).ViewL10Meeting(meeting.Id);
 			if (load)
 				_LoadMeetings(s, true, true, meeting);
+
+			if (loadLogs)
+				_LoadMeetingLogs(s, meeting);
+
 			return meeting;
 		}
 
-		public static L10Meeting GetCurrentL10Meeting(UserOrganizationModel caller, long recurrenceId, bool nullOnUnstarted = false,bool load=false)
+		public static L10Meeting GetCurrentL10Meeting(UserOrganizationModel caller, long recurrenceId, bool nullOnUnstarted = false,bool load=false,bool loadLogs=false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					return _GetCurrentL10Meeting(s, caller, recurrenceId, nullOnUnstarted, load);
+					return _GetCurrentL10Meeting(s, caller, recurrenceId, nullOnUnstarted, load, loadLogs);
 				}
 			}
 		}
@@ -276,13 +318,16 @@ namespace RadialReview.Accessors
 
 			}
 		}
-		public static void StartMeeting(UserOrganizationModel caller, long recurrenceId, List<UserOrganizationModel> attendees)
+		public static void StartMeeting(UserOrganizationModel caller, UserOrganizationModel meetingLeader, long recurrenceId, List<UserOrganizationModel> attendees)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					if (caller.Id != meetingLeader.Id)
+						PermissionsUtility.Create(s, meetingLeader).ViewL10Recurrence(recurrenceId);
+				
 
 					lock ("Recurrence_" + recurrenceId){
 						//Make sure we're unstarted
@@ -305,6 +350,8 @@ namespace RadialReview.Accessors
 							L10RecurrenceId = recurrenceId,
 							L10Recurrence = recurrence,
 							OrganizationId = recurrence.OrganizationId,
+							MeetingLeader = meetingLeader,
+							MeetingLeaderId = meetingLeader.Id
 						};
 
 						s.Save(meeting);
@@ -329,6 +376,8 @@ namespace RadialReview.Accessors
 						}
 						tx.Commit();
 						s.Flush();
+						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+						hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).setupMeeting();
 					}
 				}
 			}
@@ -360,6 +409,15 @@ namespace RadialReview.Accessors
 					foreach (var a in attendees){
 						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
 						s.Update(a);
+					}
+
+
+					var logs = s.QueryOver<L10Meeting.L10Meeting_Log>()
+						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.EndTime==null)
+						.List().ToList();
+					foreach (var l in logs){
+						l.EndTime = now;
+						s.Update(l);
 					}
 
 					tx.Commit();
@@ -428,6 +486,90 @@ namespace RadialReview.Accessors
 			return found;
 		}
 
-	
+
+
+		public static List<L10Meeting> GetL10Meetings(UserOrganizationModel caller, long recurrenceId,bool load=false)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+
+					var o = s.QueryOver<L10Meeting>()
+						.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
+						.List().ToList();
+					if (load)
+						_LoadMeetings(s, true, true, o.ToArray());
+
+					return o;
+
+				}
+			}
+		}
+
+		public static void UpdatePage(UserOrganizationModel caller,long forUserId, long recurrenceId, string pageName)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var meeting = _GetCurrentL10Meeting(s, caller, recurrenceId, true, false,true);
+					if (meeting == null)	return;
+					//if (caller.Id != meeting.MeetingLeader.Id)	return;
+
+
+					var forUser = s.Get<UserOrganizationModel>(forUserId);
+					if (meeting.MeetingLeaderId == 0){
+						meeting.MeetingLeaderId = forUser.Id;
+						meeting.MeetingLeader = forUser;
+					}
+
+					if (caller.Id != forUserId)
+						PermissionsUtility.Create(s, forUser).ViewL10Meeting(meeting.Id);
+
+					var log = _GetCurrentLog(s, caller, meeting.Id, forUserId, true);
+
+					var now = DateTime.UtcNow;
+					var addNew = true;
+					if (log != null){
+						addNew = log.Page != pageName;
+
+						if (addNew){
+							log.EndTime = now;//new DateTime(Math.Min(log.StartTime.AddMinutes(1).Ticks,now.Ticks));
+							s.Update(log);
+						}
+					}
+
+					if (addNew){
+						var newLog = new L10Meeting.L10Meeting_Log(){
+							User = forUser,
+							StartTime = now,
+							L10Meeting = meeting,
+							Page = pageName,
+						};
+
+						s.Save(newLog);
+
+						
+
+						if (meeting.MeetingLeader.NotNull(x=>x.Id) == forUserId){
+							var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+							var meetingHub=hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting));
+							var baseMins = meeting._MeetingLeaderPageDurations.SingleOrDefault(x=>x.Item1==pageName).NotNull(x=>x.Item2);
+							meetingHub.setCurrentPage(pageName, now.ToJavascriptMilliseconds(), baseMins);
+
+							foreach (var a in meeting._MeetingLeaderPageDurations){
+								if (a.Item1 != pageName){
+									meetingHub.setPageTime(a.Item1,a.Item2);
+								}
+							}
+						}
+
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 	}
 }

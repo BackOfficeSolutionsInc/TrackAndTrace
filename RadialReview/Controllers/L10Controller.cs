@@ -18,8 +18,6 @@ namespace RadialReview.Controllers
     {
 	    
 
-	   
-
         // GET: L10
 		[Access(AccessLevel.UserOrganization)]
         public ActionResult Index()
@@ -39,7 +37,7 @@ namespace RadialReview.Controllers
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId,true);
 			var model = new L10MeetingVM(){
 				Recurrence = recurrence,
-				Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(),recurrenceId,true)
+				Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(),recurrenceId,true,loadLogs:true)
 			};
 
 			return View(model);
@@ -67,7 +65,15 @@ namespace RadialReview.Controllers
 			};
 			return View("Edit", model);
 		}
-
+	/*
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Stats(long id)
+		{
+			var recurrenceId = id;
+			var pview = MeetingStats(id);
+			return View("MeetingStats", pview.Model);
+		}
+	*/
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Create()
 		{

@@ -1,6 +1,7 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingVM
 @{
 	ViewBag.Title = "Scorecard";
+	Layout = "~/Views/L10/BasePage.cshtml";
 }
 
 <div class="component">
@@ -15,17 +16,19 @@
 				@:<div class="table-responsive">
 			}
 
-			<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table">
+			<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm hidden-md" : "")">
 				<thead>
 					<tr>
-						<th class="heading who alignRight">Accountable</th>
-						<th class="heading who alignLeft gray">/Admin</th>
+						<th class="heading who alignRight">Accountable<span class="newLine gray">/Admin</span></th>
+						@*<th class="heading who alignLeft "></th>*@
 						<th class="heading measurable">Measurable</th>
 						<th class="heading target">Target</th>
-						@if (i == 0){
-							foreach (var r in Model.Weeks){
+						@if (i == 0)
+						{
+							foreach (var r in Model.Weeks)
+							{
 								<th class="date @(r.IsCurrentWeek ? "current" : "")">
-									@r.DisplayDate.ToString("d")
+									@r.DisplayDate.ToString("MMM dd")
 								</th>
 							}
 						}
@@ -33,17 +36,16 @@
 				</thead>
 				<tbody>
 					@{
-					var row = 0;
+						var row = 0;
 					}
 					@foreach (var m in Model.Meeting._MeetingMeasurables)
 					{
 						<tr>
 							<td class="who first1 alignRight">
-								@m.Measurable.AccountableUser.NotNull(x => x.GetName())
+								@m.Measurable.AccountableUser.NotNull(x => x.GetName())<span class="newLine gray">/@m.Measurable.AdminUser.NotNull(x => x.GetName())</span>
 							</td>
-							<td class="who first1 alignLeft gray" >
-								/ @m.Measurable.AdminUser.NotNull(x => x.GetName())
-							</td>
+							@*<td class="who first1 alignLeft gray">
+							</td>*@
 							<td class="measurable first1" title="@m.Measurable.Title">
 								@m.Measurable.Title
 							</td>
@@ -70,22 +72,28 @@
 											   data-scoreid="@(found.NotNull(x => x.Id))"
 											   data-measurable="@m.Measurable.Id"
 											   data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
-											   @if (found != null) { 
-												   @: id="sc_@(found.Id)" />
-												}else{
-												   @:id = "sc_@(row)_@(col)"/>
+											   @if (found != null) {  @: id="sc_@(found.Id)" />
 												}
+												else
+												{
+													@:id = "sc_@(row)_@(col)"/>
+												}
+										@if (r.IsCurrentWeek)
+										{
+											<span class="glyphicon glyphicon-pushpin issuesButton" data-message="@found.IssueMessage().EscapeHtml()"></span>
+										}
 									</td>
 									col += 1;
 								}
 							}
 						</tr>
-						row += 1;
+							row += 1;
 					}
 					<tr class="last"></tr>
 				</tbody>
 			</table>
-			if (i == 0){
+			if (i == 0)
+			{
 				@:</div>
 			}
 		}

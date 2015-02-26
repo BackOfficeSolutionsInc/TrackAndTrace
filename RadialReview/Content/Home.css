@@ -1,5 +1,4 @@
-﻿<style>
-        .inputBox:focus {
+﻿        .inputBox:focus {
             outline: none;
         }
 
@@ -11,7 +10,7 @@
             .inputBox.name {
                 width: 48%;
             }
-
+		
         .glowSpin {
             position: relative;
             left: 11% !important;
@@ -76,9 +75,8 @@
             bottom: -81px;
             height: auto;
         }
-
+	
         .shiftedLogin {
             text-align: center;
             padding-top: 15px;
         }
-    </style>

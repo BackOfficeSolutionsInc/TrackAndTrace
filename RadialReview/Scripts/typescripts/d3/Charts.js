@@ -26,10 +26,10 @@ var Charts;
     })();
     Charts.Dimension = Dimension;
     var Base = (function () {
-        function Base(_id, _dimension, _margin) {
+        function Base(_selector, _dimension, _margin) {
             if (_dimension === void 0) { _dimension = new Dimension(960, 500); }
             if (_margin === void 0) { _margin = new Margin(); }
-            this._id = _id;
+            this._selector = _selector;
             this._dimension = _dimension;
             this._margin = _margin;
         }
@@ -44,13 +44,20 @@ var Charts;
     Charts.Base = Base;
     var Histogram = (function (_super) {
         __extends(Histogram, _super);
-        function Histogram(id, dimension, margin) {
+        function Histogram(selector, dimension, margin) {
             if (dimension === void 0) { dimension = new Dimension(960, 500); }
             if (margin === void 0) { margin = new Margin(); }
-            _super.call(this, id, dimension, margin);
+            _super.call(this, selector, dimension, margin);
             this.initialized = false;
         }
-        Histogram.prototype.Initialize = function (values, binCount) {
+        Histogram.prototype.InitializeWidth = function (values, binWidth) {
+            if (binWidth === void 0) { binWidth = 10; }
+            var max = Math.max.apply(Math, values);
+            var min = Math.min.apply(Math, values);
+            var count = Math.ceil((max - min) / binWidth);
+            return this.InitializeCount(values, count);
+        };
+        Histogram.prototype.InitializeCount = function (values, binCount) {
             var _this = this;
             if (binCount === void 0) { binCount = 20; }
             this.values = values;
@@ -62,7 +69,7 @@ var Charts;
             var y = d3.scale.linear().domain([0, d3.max(data, function (d) { return d.y; })]).range([this.height(), 0]);
             var xAxis = d3.svg.axis().scale(x).orient("bottom");
             var formatCount = d3.format(",.0f");
-            var svg = d3.select(this._id).append("svg").attr("viewBox", "0 0 100 100").attr("width", "100%").attr("height", "100%").append("g").attr("transform", "translate(" + this._margin.left + "," + this._margin.top + ")");
+            var svg = d3.select(this._selector).append("svg").attr("viewBox", "0 0 100 100").attr("width", "100%").attr("height", "100%").append("g").attr("transform", "translate(" + this._margin.left + "," + this._margin.top + ")");
             var bar = svg.selectAll(".bar").data(data).enter().append("g").attr("class", "bar").attr("transform", function (d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
             bar.append("rect").attr("x", 1).attr("width", x(data[0].dx) - 1).attr("height", function (d) { return _this.height() - y(d.y); });
             bar.append("text").attr("dy", ".75em").attr("y", 6).attr("x", x(data[0].dx) / 2).attr("text-anchor", "middle").text(function (d) { return formatCount(d.y); });
@@ -73,4 +80,5 @@ var Charts;
     })(Base);
     Charts.Histogram = Histogram;
 })(Charts || (Charts = {}));
-//# sourceMappingURL=Histogram.js.map
+//@ sourceMappingURL=pubsub.js.map 
+//# sourceMappingURL=Charts.js.map

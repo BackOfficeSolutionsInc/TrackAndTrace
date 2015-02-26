@@ -34,15 +34,16 @@ namespace RadialReview.Hubs
 				using (var tx = s.BeginTransaction())
 				{
 					var user = s.Get<UserModel>(userId);
-					var avail = user.UserOrganization.ToListAlive();
-
-					_CurrentUser = avail.FirstOrDefault(x => x.Id == user.CurrentRole);
-
-					if (_CurrentUser == null)
-						_CurrentUser =avail.FirstOrDefault();
-					if (_CurrentUser == null)
-						throw new NoUserOrganizationException("No user exists.");
-
+					if (user.IsRadialAdmin)
+						_CurrentUser = s.Get<UserOrganizationModel>(user.CurrentRole);
+					else{
+						var avail = user.UserOrganization.ToListAlive();
+						_CurrentUser = avail.FirstOrDefault(x => x.Id == user.CurrentRole);
+						if (_CurrentUser == null)
+							_CurrentUser = avail.FirstOrDefault();
+						if (_CurrentUser == null)
+							throw new NoUserOrganizationException("No user exists.");
+					}
 					return _CurrentUser;
 				}
 			}

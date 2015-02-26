@@ -1,5 +1,10 @@
 ﻿@using RadialReview.Helpers
 @model RadialReview.Models.L10.VM.L10MeetingVM
+@{
+	Layout = "~/Views/L10/BasePage.cshtml";
+}
+
+
 <div class="centered" style="width:50%;">
 	<div class="component">
 		<div class="meeting-manager">
@@ -9,7 +14,7 @@
 				HttpMethod = "POST",
 				UpdateTargetId = "main-window",
 				LoadingElementDuration = 1000,
-				OnSuccess = "gotoIndex"
+				InsertionMode = InsertionMode.Replace,
 			}))
 			{
 				@Html.ValidationSummaryMin()
@@ -26,7 +31,7 @@
 								@Model.Meeting._MeetingAttendees[i].User.GetName()
 							</td>
 							<td style="width: 1px;">
-								@Html.TextBox("rating_"+(Model.Meeting._MeetingAttendees[i].User.Id),Model.Meeting._MeetingAttendees[i].Rating,new {ariaValuemax="10",ariaValuemin="1",type="number",style="width:60px"})
+								@Html.TextBox("rating_"+(Model.Meeting._MeetingAttendees[i].User.Id),Model.Meeting._MeetingAttendees[i].Rating,new {ariaValuemax="10",ariaValuemin="1",type="number",style="width:60px", @class="rt"})
 							</td>
 							<td></td>
 						</tr>
@@ -42,6 +47,6 @@
 
 <script>
 	function gotoIndex(data) {
-		//window.location.href = "/L10/Index";
+		window.location.href = "/L10/MeetingStats/";
 	}
 </script>
