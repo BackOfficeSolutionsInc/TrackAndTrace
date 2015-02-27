@@ -1,0 +1,16 @@
+﻿@using RadialReview.Helpers
+@model RadialReview.Models.Issues.ScoreCardIssueVM
+
+@Html.SecuredHiddenFor(x => x.ByUserId)
+@Html.SecuredHiddenFor(x => x.MeetingId)
+@Html.SecuredHiddenFor(x => x.MeasurableId)
+@Html.SecuredHiddenFor(x => x.RecurrenceId)
+	
+<div class="form-group">
+	@Html.LabelFor(x => x.Message)
+	@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter the Issue" })
+</div>
+<div class="form-group">
+	@Html.LabelFor(x => x.Details)
+	@Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
+</div>

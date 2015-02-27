@@ -233,6 +233,7 @@
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
     <Compile Include="Accessors\ImageAccessor.cs" />
+    <Compile Include="Accessors\IssuesAccessor.cs" />
     <Compile Include="Accessors\KeyValueAccessor.cs" />
     <Compile Include="Accessors\L10Accessor.cs" />
     <Compile Include="Accessors\NexusAccessor.cs" />
@@ -276,6 +277,7 @@
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\FaqController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
+    <Compile Include="Controllers\IssuesController.cs" />
     <Compile Include="Controllers\JobDescriptionController.cs" />
     <Compile Include="Controllers\L10Controller.cs" />
     <Compile Include="Controllers\L10DataController.cs" />
@@ -361,11 +363,14 @@
     <Compile Include="Models\Enums\AboutType.cs" />
     <Compile Include="Models\Interfaces\ICompletionModel.cs" />
     <Compile Include="Models\Interfaces\IGuidIdentifiable.cs" />
+    <Compile Include="Models\Interfaces\IIssue.cs" />
     <Compile Include="Models\Interfaces\IOneToMany.cs" />
     <Compile Include="Models\Interfaces\IPagination.cs" />
     <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
     <Compile Include="Models\Charts\ChartOptions.cs" />
     <Compile Include="Models\Charts\ScatterPlot.cs" />
+    <Compile Include="Models\Issues\IssueModel.cs" />
+    <Compile Include="Models\Issues\ScoreCardIssueVM.cs" />
     <Compile Include="Models\L10\FocusType.cs" />
     <Compile Include="Models\L10\L10Meeting.cs" />
     <Compile Include="Models\L10\L10MeetingAttendee.cs" />
@@ -550,6 +555,7 @@
     <Compile Include="Utilities\DbUtil.cs" />
     <Compile Include="Utilities\Extensions\ExpressionExtensions.cs" />
     <Compile Include="Utilities\Extensions\IssuesExtensions.cs" />
+    <Compile Include="Utilities\Extensions\Math2.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\RandomUtil.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
@@ -849,6 +855,8 @@
     <Content Include="Scripts\typings\Charts.js.map" />
     <Content Include="Views\L10\BasePage.cshtml" />
     <Content Include="Views\L10\_SetupScript.cshtml" />
+    <Content Include="Views\Issues\ScorecardIssueModal.cshtml" />
+    <Content Include="Views\L10\IDS.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

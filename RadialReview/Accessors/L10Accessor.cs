@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using ImageResizer.Configuration.Issues;
 using Microsoft.AspNet.SignalR;
 using NHibernate.Linq;
+using NHibernate.Transform;
 using RadialReview.Exceptions;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scorecard;
@@ -568,6 +571,44 @@ namespace RadialReview.Accessors
 
 					tx.Commit();
 					s.Flush();
+				}
+			}
+		}
+
+		public static string GetCurrentL10MeetingLeaderPage(UserOrganizationModel caller, long meetingId)
+		{
+			using(var s = HibernateSession.GetCurrentSession())
+			{
+				using(var tx=s.BeginTransaction()){
+					var leaderId = s.Get<L10Meeting>(meetingId).MeetingLeader.Id;
+					var leaderpage = s.QueryOver<L10Meeting.L10Meeting_Log>()
+						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meetingId && x.User.Id==leaderId && x.EndTime == null)
+						.SingleOrDefault();
+					return leaderpage.NotNull(x => x.Page);
+				}
+			}
+		}
+
+		public static List<IssueModel> GetIssuesForRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeResolved)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var issueIds = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+						.Where(x => x.DeleteTime == null && x.Recurrence.Id == recurrenceId)
+						//.JoinAlias(()=>linkAlias.Issue,()=>issueAlias)
+						//.Where(()=>issueAlias.DeleteTime==null && (includeResolved || issueAlias.CloseTime==null))
+						.Select(x => x.Issue.Id)
+						.List<long>().ToList();
+
+					var query = s.QueryOver<IssueModel>();
+					if (includeResolved)
+						query = query.Where(x => x.DeleteTime == null);
+					else
+						query = query.Where(x => x.DeleteTime == null && x.CloseTime == null);
+					
+					return query.WhereRestrictionOn(x => x.Id).IsIn(issueIds).List().ToList();
+
 				}
 			}
 		}

@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using System.Linq.Expressions;
+using log4net;
 using NHibernate;
 using NHibernate.Linq;
 using RadialReview.Accessors;
@@ -868,9 +869,100 @@ namespace RadialReview.Utilities
             return IsRadialAdmin(caller);
         }
 
+	    public delegate PermissionsUtility LongFunc(long id);
 
+	    private PermissionsUtility _ConfirmPermissions<T,M>(T model,bool fixRefs, Expression<Func<T, long?>> idSelector,Expression<Func<T, M>> modelSelector, Func<PermissionsUtility,LongFunc> permissionsSelector) where M : ILongIdentifiable
+	    {
+		    var id =model.Get(idSelector);
+			var m = model.Get(modelSelector);
+		    if (id == null){
+			    if (m == null)
+					return this; //No error.. looks like its optional
+				if (m.Id == 0)
+					throw new PermissionsException("Model uninitialized [1]");
+				if (fixRefs)
+					model.Set(idSelector, m.Id);
+				return permissionsSelector(this)(m.Id);
+		    }else if (m == null)
+			{
+				if (id == 0)
+					throw new PermissionsException();
+				if (fixRefs){
+					var mLoaded = session.Get<M>(id.Value);
+					model.Set(modelSelector, mLoaded);
+				}
 
+				return permissionsSelector(this)(id.Value);
+			}else{
+				if (id == 0){
+					if (m.Id == 0)
+						throw new PermissionsException("Model uninitialized [2]");
+					if (fixRefs)
+						model.Set(idSelector, m.Id);
+					return permissionsSelector(this)(m.Id);
+				}else{
+					if (m.Id == 0)
+						throw new PermissionsException("Model uninitialized [3]");
+					if (id != m.Id)
+						throw new PermissionsException("Model Id != Id");
+					return permissionsSelector(this)(id.Value);
+				}
+			}
+	    }
 
+	    private PermissionsUtility _ConfirmPermissions<T, M>(T model, bool fixRefs, Expression<Func<T, long>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable
+	    {
+			var id = model.Get(idSelector);
+			var m = model.Get(modelSelector);
+			if (m == null)
+			{
+				if (id == 0)
+					throw new PermissionsException();
+
+				if (fixRefs)
+				{
+					var mLoaded = session.Load<M>(id);
+					model.Set(modelSelector, mLoaded);
+				}
+
+				return permissionsSelector(this)(id);
+			}
+			else
+			{
+				if (id == 0)
+				{
+					if (m.Id == 0)
+						throw new PermissionsException("Model uninitialized [2]");
+
+					if (fixRefs)
+						model.Set(idSelector, m.Id);
+					return permissionsSelector(this)(m.Id);
+				}
+				else
+				{
+					if (m.Id == 0)
+						throw new PermissionsException("Model uninitialized [3]");
+
+					if (id != m.Id)
+						throw new PermissionsException("Model Id != Id");
+					return permissionsSelector(this)(id);
+				}
+			}
+	    }
+
+	    public PermissionsUtility Confirm<T, M>(T model, Expression<Func<T, long?>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable{
+			return _ConfirmPermissions(model, false, idSelector, modelSelector, permissionsSelector);
+		}
+		public PermissionsUtility Confirm<T, M>(T model, Expression<Func<T, long>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable{
+			return _ConfirmPermissions(model, false, idSelector, modelSelector, permissionsSelector);
+		}
+		public PermissionsUtility ConfirmAndFix<T, M>(T model, Expression<Func<T, long>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable{
+			return _ConfirmPermissions(model, true, idSelector, modelSelector, permissionsSelector);
+		}
+		public PermissionsUtility ConfirmAndFix<T, M>(T model, Expression<Func<T, long?>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable
+		{
+			return _ConfirmPermissions(model, true, idSelector, modelSelector, permissionsSelector);
+		}
 
 	}
 }

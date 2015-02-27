@@ -29,6 +29,7 @@ namespace RadialReview.Utilities
 
 			}
 		}
+
 		/*
 		public static void UpdateLists<T>(this ISession self, T newValue, DateTime now, params Func<T, IEnumerable>[] selectors) where T : ILongIdentifiable
 		{

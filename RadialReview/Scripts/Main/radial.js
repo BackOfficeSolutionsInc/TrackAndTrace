@@ -16,6 +16,14 @@ function clearUnsaved() {
     $(".unsaved").removeClass("unsaved");
 }
 
+function UrlEncodingFix(str) {
+	str = replaceAll("%26%2339%3B", "%27", str);
+	str = replaceAll("%26%2334%3B", "%22", str);
+	str = replaceAll("%26%2313%3B", "%0A", str);
+	str = replaceAll("%26%2310%3B", "%0D", str);
+	return str;
+}
+
 (function ($) {
 	$.fn.valList = function () {
 		return $.map(this, function (elem) {

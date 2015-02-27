@@ -28,6 +28,7 @@ namespace RadialReview.Models.Scorecard
 		{
 			public MeasurableMap()
 			{
+				Table("measurablemodel");
 				Id(x => x.Id);
 				Map(x => x.Title);
 				Map(x => x.NextGeneration);

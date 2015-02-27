@@ -1296,6 +1296,9 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr :not(.tab
 }
 
 .verticalOnly {
+	-moz-resize: vertical;
+	-ms-resize: vertical;
+	-o-resize: vertical;
 	resize: vertical;
 }
 
@@ -1476,12 +1479,29 @@ textarea.reason {
 	top: 30px;
 	bottom: 20px;
 	padding: 0px;
+	position: relative;
+	left: 0px;
+	right: 0px;
+	top: 30px;
+	/* bottom: 20px; */
+	padding: 0;
+	padding-bottom: 20px; 
 }
 
 .body-full-width #footer {
-	margin-top: -20px;
+	/*margin-top: -20px;
 	padding: 0px;
 	height: 20px;
+	 margin-top: -20px; */
+	padding: 0px;
+	/* height: 20px; */
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 20px;
+	color: #aaa;
+	background-color:transparent;
 }
 
 .body-full-width #alerts {
@@ -1504,3 +1524,4 @@ textarea.reason {
 .bblue {
 	background-color: blue;
 }
+

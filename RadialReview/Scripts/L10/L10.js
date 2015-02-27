@@ -33,11 +33,21 @@ $(function () {
 		loadPage(loc);
 	});
 
-	$("body").on("click", ".issuesButton", function() {
-		showModal("Add to Issues", "/Issues/Modal", "/Issues/Modal");
+	$("body").on("click", ".issuesButton", function () {
+		var parm = $.param($(this).data());
+		showModal("Add to Issues", "/Issues/Modal?" + parm, "/Issues/Modal");
+	});
+
+	$("body").on("click", ".todoButton", function () {
+		var parm = $.param($(this).data());
+		showModal("Add a Todo", "/Todo/Modal?" + parm, "/Todo/Modal");
 	});
 
 });
+
+function replaceAll(find, replace, str) {
+	return str.split(find).join(replace);
+}
 
 function resetClickables() {
 	$(".agenda a").removeClass("clickable");

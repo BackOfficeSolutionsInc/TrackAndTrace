@@ -9,94 +9,98 @@
 	<div class="btn btn-primary pull-right" onclick="@Html.ShowModal("Add Measurable", "/L10/AddMeasurable/"+Model.Recurrence.Id, "/L10/AddMeasurable/")">Add Measurable</div>
 	<div class="clearfix"></div>
 	<div style="position: relative;">
-		@for (var i = 0; i < 2; i++)
-		{
-			if (i == 0)
-			{
-				@:<div class="table-responsive">
-			}
+	@for (var i = 0; i < 2; i++)
+	{
+	if (i == 0)
+	{
+		@:<div class="table-responsive">
+	}
 
-			<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm hidden-md" : "")">
-				<thead>
-					<tr>
-						<th class="heading who alignRight">Accountable<span class="newLine gray">/Admin</span></th>
-						@*<th class="heading who alignLeft "></th>*@
-						<th class="heading measurable">Measurable</th>
-						<th class="heading target">Target</th>
-						@if (i == 0)
-						{
-							foreach (var r in Model.Weeks)
-							{
-								<th class="date @(r.IsCurrentWeek ? "current" : "")">
-									@r.DisplayDate.ToString("MMM dd")
-								</th>
-							}
-						}
-					</tr>
-				</thead>
-				<tbody>
-					@{
-						var row = 0;
-					}
-					@foreach (var m in Model.Meeting._MeetingMeasurables)
+		<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm hidden-md" : "")">
+			<thead>
+				<tr>
+					<th class="heading who alignRight">Accountable<span class="newLine gray">/Admin</span></th>
+					@*<th class="heading who alignLeft "></th>*@
+					<th class="heading measurable">Measurable</th>
+					<th class="heading target">Target</th>
+					@if (i == 0)
 					{
-						<tr>
-							<td class="who first1 alignRight">
-								@m.Measurable.AccountableUser.NotNull(x => x.GetName())<span class="newLine gray">/@m.Measurable.AdminUser.NotNull(x => x.GetName())</span>
-							</td>
-							@*<td class="who first1 alignLeft gray">
-							</td>*@
-							<td class="measurable first1" title="@m.Measurable.Title">
-								@m.Measurable.Title
-							</td>
-							<td class="target first2">
-								@m.Measurable.ToSymbolString()
-							</td>
-
-							@if (i == 0)
-							{
-								var col = 0;
-								foreach (var r in Model.Weeks)
-								{
-									var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == m.Measurable.Id);
-
-									<td class="score @(r.IsCurrentWeek ? "current" : "")">
-										<input data-goal="@(m.Measurable.Goal)"
-											   data-goal-dir="@(m.Measurable.GoalDirection)"
-											   data-row="@(row)"
-											   data-col="@(col)"
-											   type="text"
-											   placeholder="N/A"
-											   value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
-											   class="grid rt"
-											   data-scoreid="@(found.NotNull(x => x.Id))"
-											   data-measurable="@m.Measurable.Id"
-											   data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
-											   @if (found != null) {  @: id="sc_@(found.Id)" />
-												}
-												else
-												{
-													@:id = "sc_@(row)_@(col)"/>
-												}
-										@if (r.IsCurrentWeek)
-										{
-											<span class="glyphicon glyphicon-pushpin issuesButton" data-message="@found.IssueMessage().EscapeHtml()"></span>
-										}
-									</td>
-									col += 1;
-								}
-							}
-						</tr>
-							row += 1;
+						foreach (var r in Model.Weeks)
+						{
+							<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
+								@r.DisplayDate.ToString("MMM dd")
+							</th>
+							@*if (r.IsCurrentWeek){
+								<th class="date current buttonColumn"></th>
+							}*@
+						}
 					}
-					<tr class="last"></tr>
-				</tbody>
-			</table>
-			if (i == 0)
-			{
-				@:</div>
-			}
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					var row = 0;
+				}
+				@foreach (var m in Model.Meeting._MeetingMeasurables)
+				{
+					<tr>
+						<td class="who first1 alignRight">
+							@m.Measurable.AccountableUser.NotNull(x => x.GetName())
+							<span class="newLine gray">/@m.Measurable.AdminUser.NotNull(x => x.GetName())</span>
+						</td>
+						<td class="measurable first1" title="@m.Measurable.Title">@m.Measurable.Title</td>
+						<td class="target first2">@m.Measurable.ToSymbolString()</td>
+
+						@if (i == 0){
+							var col = 0;
+							foreach (var r in Model.Weeks){
+								var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == m.Measurable.Id);
+
+								<td class="score @(r.IsCurrentWeek ? "current" : "")">
+									<input data-goal="@(m.Measurable.Goal)"
+										   data-goal-dir="@(m.Measurable.GoalDirection)"
+										   data-row="@(row)"
+										   data-col="@(col)"
+										   type="text"
+										   placeholder="N/A"
+										   value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+										   class="grid rt"
+										   data-scoreid="@(found.NotNull(x => x.Id))"
+										   data-measurable="@m.Measurable.Id"
+										   data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
+										   id="sc_@(found != null?""+found.Id : row+"_"+col)" />
+								</td>
+								if (r.IsCurrentWeek){
+									<td class="buttonHolder">
+										<span class="glyphicon glyphicon-pushpin issuesButton"
+										      data-meeting="@Model.Meeting.Id"
+										      data-recurrence="@Model.Recurrence.Id"
+										      data-measurable="@found.Measurable.Id"
+										      data-score="@(found.NotNull(x => x.Id))"
+											@*data-message="@found.IssueMessage().EscapeHtml()"
+													data-details="@found.IssueDetails().EscapeHtml()"*@>
+										</span>
+										<span class="glyphicon glyphicon-unchecked todoButton"
+											  data-meeting="@Model.Meeting.Id"
+											  data-recurrence="@Model.Recurrence.Id"
+											  data-measurable="@found.Measurable.Id"
+											  data-score="@(found.NotNull(x => x.Id))">
+										</span>
+									</td>
+								}
+								col += 1;
+							}
+							}
+					</tr>
+								row += 1;
+							}
+							<tr class="last"></tr>
+							</tbody>
+		</table>
+		if (i == 0){
+			@:</div>
 		}
+	}
 	</div>
 
 </div>

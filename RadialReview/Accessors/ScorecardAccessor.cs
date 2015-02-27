@@ -315,5 +315,35 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+
+		public static ScoreModel GetScoreInMeeting(UserOrganizationModel caller, long scoreId,long recurrenceId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var meeting = L10Accessor._GetCurrentL10Meeting(s, caller, recurrenceId);
+					var score = s.Get<ScoreModel>(scoreId);
+
+
+					if (score != null && score.DeleteTime == null)
+					{
+						//Editable in this meeting?
+						var ms = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
+							.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.Measurable.Id == score.MeasurableId)
+							.SingleOrDefault<L10Meeting.L10Meeting_Measurable>();
+						if (ms == null)
+							throw new PermissionsException("You do not have permission to edit this score.");
+
+						var a = score.Measurable.AccountableUser.GetName();
+						var b = score.Measurable.AdminUser.GetName();
+						var c = score.AccountableUser.GetName();
+
+						return score;
+					}
+					return null;
+				}
+			}
+		}
 	}
 }
