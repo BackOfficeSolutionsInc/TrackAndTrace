@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using ImageResizer.Configuration.Issues;
 using Microsoft.AspNet.SignalR;
 using NHibernate.Linq;
@@ -594,21 +595,105 @@ namespace RadialReview.Accessors
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
-					var issueIds = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+					var issues = s.QueryOver<IssueModel.IssueModel_Recurrence>()
 						.Where(x => x.DeleteTime == null && x.Recurrence.Id == recurrenceId)
-						//.JoinAlias(()=>linkAlias.Issue,()=>issueAlias)
-						//.Where(()=>issueAlias.DeleteTime==null && (includeResolved || issueAlias.CloseTime==null))
-						.Select(x => x.Issue.Id)
-						.List<long>().ToList();
+						////.JoinAlias(()=>linkAlias.Issue,()=>issueAlias)
+						////.Where(()=>issueAlias.DeleteTime==null && (includeResolved || issueAlias.CloseTime==null))
+						//.Select(x => x.Issue.Id)
+						.Fetch(x=>x.Issue).Eager
+						.List().ToList();
 
-					var query = s.QueryOver<IssueModel>();
+					/*var query = s.QueryOver<IssueModel>();
 					if (includeResolved)
 						query = query.Where(x => x.DeleteTime == null);
 					else
-						query = query.Where(x => x.DeleteTime == null && x.CloseTime == null);
-					
-					return query.WhereRestrictionOn(x => x.Id).IsIn(issueIds).List().ToList();
+						query = query.Where(x => x.DeleteTime == null && x.CloseTime == null);					
+					var issues =  query.WhereRestrictionOn(x => x.Id).IsIn(issueIds).List().ToList();*/
 
+
+
+					return _PopulateChildrenIssues(issues);
+
+
+				}
+			}
+		}
+
+		private static List<IssueModel> _PopulateChildrenIssues(List<IssueModel.IssueModel_Recurrence> list)
+		{
+
+			var output = list.Where(x => x.ParentIssue == null).Select(x =>{
+				x.Issue._Order = x.Ordering;
+				return x.Issue;
+			}).ToList();
+			foreach (var o in output){
+				_RecurseChildrenIssues(o, list);
+			}
+			return output;
+
+		}
+
+		private static void _RecurseChildrenIssues(IssueModel issue, List<IssueModel.IssueModel_Recurrence> list)
+		{
+			if (issue._ChildIssues != null)
+				return;
+			issue._ChildIssues = list.Where(x => x.ParentIssue!=null && x.ParentIssue.Id == issue.Id).Select(x =>{
+				x.Issue._Order = x.Ordering;
+				return x.Issue;
+			}).ToList();
+
+			foreach (var i in issue._ChildIssues){
+				_RecurseChildrenIssues(i,list);
+			}
+		}
+
+
+
+		public static void UpdateIssues(UserOrganizationModel caller,long recurrenceId, IssuesDataList model)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+
+					var perm = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var ids = model.GetAllIds();
+					var found = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.DeleteTime == null && x.Recurrence.Id==recurrenceId)
+						.WhereRestrictionOn(x => x.Issue.Id).IsIn(ids)
+						//.Fetch(x=>x.Issue).Eager
+						.List().ToList();
+
+					var ar = SetUtility.AddRemove(ids,found.Select(x => x.Issue.Id));
+
+					if (ar.RemovedValues.Any())
+						throw new PermissionsException("You do not have permission to edit this issue.");
+					if (ar.AddedValues.Any())
+						throw new PermissionsException("Unreachable.");
+					
+					var issues = found.ToList();
+
+					foreach (var e in model.GetIssueEdits()){
+						var f = issues.First(x => x.Issue.Id == e.IssueId);
+						var update = false;
+						if (f.ParentIssue.NotNull(x=>x.Id) != e.ParentIssueId){
+							f.ParentIssue = (e.ParentIssueId == null) ? null : issues.First(x => x.Issue.Id == e.ParentIssueId).Issue;
+							update = true;
+						}
+
+						if (f.Ordering != e.Order){
+							f.Ordering = e.Order;
+							update = true;
+						}
+
+						if (update)
+							s.Update(f);
+					}
+
+					var json = Json.Encode(model);
+
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId),model.connectionId).deserializeIssues(".ids-list", model);
+					
+					tx.Commit();
+					s.Flush();
 				}
 			}
 		}

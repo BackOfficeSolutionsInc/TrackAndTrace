@@ -244,10 +244,8 @@ namespace RadialReview.Controllers
 		{
 			//Secure hidden fields
 			ValidationCollection = filterContext.RequestContext.HttpContext.Request.Form;
-			foreach (var f in ValidationCollection.AllKeys)
-			{
-				if (f.EndsWith(SecuredValueFieldNameComputer.NameSuffix))
-				{
+			foreach (var f in ValidationCollection.AllKeys){
+				if (f!=null && f.EndsWith(SecuredValueFieldNameComputer.NameSuffix)){
 					ToValidate.Add(f.Substring(0, f.Length - SecuredValueFieldNameComputer.NameSuffix.Length));
 				}
 			}

@@ -254,14 +254,14 @@ function showAlert(message, alertType, preface) {
 
 var alertsTimer = null;
 function clearAlerts() {
-    var found = $("#alerts .alert");
-    found.css({ height: "0px", opacity: 0.0, padding: "0px", border: "0px", margin: "0px" });
+    var found = $("#alerts .alert").remove();
+    /*found.css({ height: "0px", opacity: 0.0, padding: "0px", border: "0px", margin: "0px" });
     if (alertsTimer) {
         clearTimeout(alertsTimer);
     }
     alertsTimer = setTimeout(function () {
         found.remove();
-    }, 1000);
+    }, 1000);*/
 
 }
 

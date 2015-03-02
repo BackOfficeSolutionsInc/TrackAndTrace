@@ -39,6 +39,7 @@ $(function () {
 	meetingHub.client.setCurrentPage = setCurrentPage;
 	meetingHub.client.setPageTime = setPageTime;
 	meetingHub.client.setupMeeting = setupMeeting;
+	meetingHub.client.deserializeIssues = deserializeIssues;
 
 
 	$.connection.hub.start().done(function () {

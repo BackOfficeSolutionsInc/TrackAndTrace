@@ -191,11 +191,7 @@ html, body {
 }
 
 	#alerts, #alerts * {
-		-webkit-transition: all 1s ease;
-		-moz-transition: all 1s ease;
-		-o-transition: all 1s ease;
-		-ms-transition: all 1s ease;
-		transition: all 1s ease;
+		transition: border 1s ease;
 	}
 
 .alert.start {
@@ -204,11 +200,11 @@ html, body {
 }
 
 .alert {
-	margin-bottom: 4px;
+	margin-bottom: 0px;
 }
 
 	.alert:last-child {
-		margin-bottom: 10px;
+		/*margin-bottom: 10px;*/
 	}
 /*
 .jumbotron hgroup h1,hgroup h2,hgroup h3,hgroup h4,hgroup h5,hgroup h6{

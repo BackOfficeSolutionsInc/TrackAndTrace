@@ -1,0 +1,80 @@
+﻿
+.histogram .bar.start rect {
+	fill: rgb(103, 164, 215);
+	stroke: white;
+}
+.histogram .bar.end rect {
+	fill: steelblue;
+	stroke: white;
+}
+.histogram .bar rect {
+	fill: steelblue;
+	stroke: white;
+	-webkit-shape-rendering: optimizeQuality;
+	-moz-shape-rendering: optimizeQuality;
+	-ms-shape-rendering: optimizeQuality;
+	-o-shape-rendering: optimizeQuality;
+	shape-rendering: optimizeQuality;
+}
+
+.histogram .bar text {
+	fill: #6993B6;
+}
+
+.histogram .axis path, .histogram .axis line {
+	fill: none;
+	stroke: #000;
+	-webkit-shape-rendering: optimizeQuality;
+	-moz-shape-rendering: optimizeQuality;
+	-ms-shape-rendering: optimizeQuality;
+	-o-shape-rendering: optimizeQuality;
+	shape-rendering: optimizeQuality;
+}
+
+.line-chart .axis path,
+.line-chart .axis line {
+	fill: none;
+	stroke: #000;
+	-webkit-shape-rendering: optimizeQuality;
+	-moz-shape-rendering: optimizeQuality;
+	-ms-shape-rendering: optimizeQuality;
+	-o-shape-rendering: optimizeQuality;
+	shape-rendering: optimizeQuality;
+}
+
+.line-chart .x.axis path {
+	/*display: none;*/
+}
+
+.line-chart .line {
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+	-webkit-shape-rendering: optimizeQuality;
+	-moz-shape-rendering: optimizeQuality;
+	-ms-shape-rendering: optimizeQuality;
+	-o-shape-rendering: optimizeQuality;
+	shape-rendering: optimizeQuality;
+}
+
+.line-chart .dot {
+  fill: white;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+
+.meeting-stats .histogram {
+	font-size: 23px;
+}
+
+.meeting-stats .charts {
+	font-size: 24px;
+}
+
+.chart-title {
+	font-size: 24px;
+	font-weight: bold;
+	padding-top: 10px;
+	padding-left: 40px;
+}

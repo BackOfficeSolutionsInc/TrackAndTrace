@@ -21,11 +21,14 @@ namespace RadialReview.Models.Issues
 		public virtual long? CreatedDuringMeetingId { get; set; }
 		public virtual L10Meeting CreatedDuringMeeting { get; set; }
 		public virtual List<L10Recurrence> _MeetingRecurrences { get; set; }
+		public virtual List<IssueModel> _ChildIssues { get; set; }
+		public virtual int? _Order { get; set; }
 
 		public virtual String ForModel { get; set; }
 		public virtual long ForModelId { get; set; }
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
+
 
 		public IssueModel()
 		{
@@ -54,6 +57,8 @@ namespace RadialReview.Models.Issues
 				Map(x => x.OrganizationId).Column("OrganizationId");
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();
 
+
+
 				//Map(x => x.MeetingRecurrenceId).Column("RecurrenceId");
 				//References(x => x.MeetingRecurrence).Column("RecurrenceId").LazyLoad().ReadOnly();
 
@@ -71,6 +76,14 @@ namespace RadialReview.Models.Issues
 			public virtual IssueModel Issue { get; set; }
 			public virtual L10Recurrence Recurrence { get; set; }
 
+			public virtual IssueModel ParentIssue { get; set; }
+			public virtual int? Ordering { get; set; }
+
+			public IssueModel_Recurrence()
+			{
+				Ordering = 0;
+			}
+
 			public class IssueModel_RecurrenceMap : ClassMap<IssueModel_Recurrence>
 			{
 				public IssueModel_RecurrenceMap()
@@ -78,10 +91,14 @@ namespace RadialReview.Models.Issues
 					Id(x => x.Id);
 					Map(x => x.CreateTime);
 					Map(x => x.DeleteTime);
+					Map(x => x.Ordering);
 					References(x => x.CreatedBy).Column("CreatedById");
 					References(x => x.CopiedFrom).Column("CopiedFromId").Nullable();
 					References(x => x.Issue).Column("IssueId");
 					References(x => x.Recurrence).Column("RecurrenceId");
+
+					//Map(x => x.ParentIssueId).Column("ParentIssueId");
+					References(x => x.ParentIssue).Column("ParentIssueId").Nullable();
 				}
 			}
 

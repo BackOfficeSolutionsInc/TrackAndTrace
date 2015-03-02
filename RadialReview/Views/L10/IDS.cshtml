@@ -5,18 +5,53 @@
 }
 
 
-<div class="component">
-	<h2>IDS:</h2>
-	<h4>Identify. Discuss. Solve.</h4>
-		
-	<table style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
-		@foreach (var i in Model.Issues){
-			<tr>
-				<td>@i.Message</td>
-				<td>@i.Description</td>
-				<td>@(i.CloseTime==null?"Incomplete":"Complete")</td>
-			</tr>
-		}
-	</table>
-
+<div class=" ids">
+	<div class="row">
+		<div class="col-md-8">
+			<hgroup class="page-header">
+				<h2>IDS <small>Identify. Discuss. Solve.</small></h2>
+			</hgroup>
+			<div class="dd">
+				<ol class="ids-list dd-list">
+					@foreach (var i in Model.Issues.OrderBy(x=>x._Order))
+					{
+						@Html.Partial("partial/IssueRow", i)
+					}
+				</ol>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="hidden-lg hidden-md" style="height: 25px;"></div>
+			<hgroup class="page-header details">
+				<h4>Details</h4>
+			</hgroup>
+			<div class="component issueDetails" id="issueDetails"></div>
+		</div>
+	</div>
 </div>
+<script>
+	$('.dd').nestable({
+		maxDepth :2000,
+		threshold: 10,
+	}).on('change', function() {
+		updateIssuesList(@Model.Recurrence.Id, this);
+	});;
+	//$('.sortable').sortable({
+	//	//handle: '.move-icon',
+	//	connectWith: '.sortable',
+	//	forcePlaceholderSize: true
+	//}).bind('sortupdate', function(e, ui) {
+	//	//ui.item contains the current dragged element.
+	//	//Triggered when the user stopped sorting and the DOM position has changed.
+	//	//debugger;
+	//});
+	//$('.inner-sortable').sortable({
+	//	//handle: '.move-icon',
+	//	forcePlaceholderSize: true
+	//	connectWith: '.sortable',
+	//}).bind('sortupdate', function(e, ui) {
+	//	//ui.item contains the current dragged element.
+	//	//Triggered when the user stopped sorting and the DOM position has changed.
+	//	//debugger;
+	//});;
+</script>

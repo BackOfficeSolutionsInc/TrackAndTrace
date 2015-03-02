@@ -1,0 +1,17 @@
+﻿@model RadialReview.Models.Issues.IssueModel
+
+<li class="issue-row dd-item" data-issue="@Model.Id" data-message="@Model.Message.EscapeHtml()" data-details="@Model.Description.EscapeHtml()">
+	<div class="move-icon noselect dd-handle">
+		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>
+		<span class="inner icon fontastic-icon-primitive-square"></span>
+	</div>
+	<div class="message">
+		@Model.Message
+	</div>
+	<ol class="dd-list">
+		@foreach (var i in Model._ChildIssues.OrderBy(x => x._Order))
+		{
+			@Html.Partial("partial/IssueRow", i)
+		}
+	</ol>
+</li>

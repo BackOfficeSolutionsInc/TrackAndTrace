@@ -377,6 +377,7 @@
     <Compile Include="Models\L10\old\L10Meeting_Item.cs" />
     <Compile Include="Models\L10\L10Recurrence.cs" />
     <Compile Include="Models\L10\VM\L10EditVM.cs" />
+    <Compile Include="Models\L10\VM\L10IssuesData.cs" />
     <Compile Include="Models\L10\VM\L10ListingVM.cs" />
     <Compile Include="Models\L10\VM\L10MeetingStatsVM.cs" />
     <Compile Include="Models\L10\VM\L10MeetingVM.cs" />
@@ -612,6 +613,10 @@
     <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\TimingUtility.cs" />
+    <Content Include="Content\fonts\fontastic.eot" />
+    <Content Include="Content\fonts\fontastic.ttf" />
+    <Content Include="Content\fonts\fontastic.woff" />
+    <None Include="Views\L10\partial\IssueRow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
@@ -639,9 +644,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Fonts.css" />
+    <Content Include="Content\fonts\fontastic.svg" />
+    <Content Include="Content\icons-reference.html" />
     <Content Include="Content\fonts\new.svg" />
     <Content Include="Content\fonts\Ref\icons-reference.html" />
     <Content Include="Content\fonts\Ref\styles.css" />
+    <Content Include="Content\fonts\styles.css" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\home\bootstrap.css" />
     <Content Include="Content\home\cityscape.jpg" />
@@ -690,6 +698,9 @@
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />
     <Content Include="Content\L10\L10.css" />
+    <Content Include="Content\L10\L10IDS.css" />
+    <Content Include="Content\L10\L10Scorecard.css" />
+    <Content Include="Content\L10\L10Stats.css" />
     <Content Include="Content\print.css" />
     <Content Include="Content\ReportBuilder\evaluation.css" />
     <Content Include="Content\ReportBuilder\ReportBuilder.css" />
@@ -792,12 +803,17 @@
     <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.js" />
     <Content Include="Scripts\jquery\jquery.fittext.js" />
     <Content Include="Scripts\jquery\jquery.hashchange.js" />
+    <Content Include="Scripts\jquery\jquery.nestable.js" />
     <Content Include="Scripts\jquery\jquery.nouislider.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
     <Content Include="Scripts\jquery\jquery.scrollTo.js" />
+    <Content Include="Scripts\jquery\jquery.sortable.js" />
+    <Content Include="Scripts\jquery\jquery.sortable.min.js" />
     <Content Include="Scripts\jquery\jquery.tablesorter.js" />
     <Content Include="Scripts\jquery\jquery.unveil.js" />
     <Content Include="Scripts\L10\L10.js" />
+    <Content Include="Scripts\L10\L10Ids.js" />
+    <Content Include="Scripts\L10\L10Scorecard.js" />
     <Content Include="Scripts\L10\rtL10.js" />
     <Content Include="Scripts\Main\finally.js" />
     <Content Include="Scripts\Main\radial.js" />
@@ -1086,6 +1102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\fonts\fonts\" />
     <Folder Include="Content\NewFolder1\" />
     <Folder Include="External\" />
     <Folder Include="Views\Admin\" />

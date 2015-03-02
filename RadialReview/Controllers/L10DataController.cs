@@ -5,9 +5,11 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.SignalR;
 using RadialReview.Accessors;
+using RadialReview.Exceptions;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Hubs;
 using RadialReview.Models.Json;
+using RadialReview.Models.L10.VM;
 
 namespace RadialReview.Controllers
 {
@@ -67,6 +69,16 @@ namespace RadialReview.Controllers
 			return PartialView(am);
 		}
 
+		
+
+	    [Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+	    public JsonResult UpdateIssues(long id, IssuesDataList model)
+	    {
+		    var recurrenceId = id;
+		    L10Accessor.UpdateIssues(GetUser(),recurrenceId, model);
+			return Json(ResultObject.SilentSuccess());
+	    }
 
 
     }

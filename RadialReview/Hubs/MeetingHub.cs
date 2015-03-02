@@ -96,15 +96,18 @@ namespace RadialReview.Hubs
 		}
 
 
+		public static string GenerateMeetingGroupId(long recurrenceId)
+		{
+			if (recurrenceId == 0)
+				throw new Exception();
+			return "L10MeetingRecurrence_" + recurrenceId;
+		}
 		public static string GenerateMeetingGroupId(L10Meeting meeting)
 		{
 			var id = meeting.L10Recurrence.NotNull(x => x.Id);
 			if (id == 0)
 				id = meeting.L10RecurrenceId;
-			if (id==0)
-				throw new Exception();
-
-			return "L10MeetingRecurrence_" + id;
+			return GenerateMeetingGroupId(id);
 		}
 
 		public override Task OnDisconnected(bool stopCalled)

@@ -1,0 +1,252 @@
+﻿.ids-list > .issue-row {
+	/*display: flex;
+	align-items: center;
+	justify-content: flex-start;*/
+	border-radius: 10px;
+	background-color: #FFF;
+	border: 1px solid #E8E8E8;
+	border-left: 1px solid #E8E8E8;
+	color: #666;
+	margin: 4px;
+}
+
+.issue-row .move-icon .icon:before {
+	display: inline-block;
+	transform: translate(0, 3px) rotate(90deg);
+}
+
+.ids-list .move-icon,
+.dd-dragel .move-icon {
+	display: inline-block;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.ids-list .outer, .ids-list .inner,
+.dd-dragel .outer,.dd-dragel .inner {
+	display: none;
+}
+
+.ids-list > .issue-row > .move-icon > .outer {
+	display: inline-block;
+	margin: 5px 6px 4px 8px;
+	color: #999;
+	cursor: move;
+}
+
+.ids-list > .issue-row .dd-list .move-icon .inner,
+.dd-dragel > .issue-row .dd-list .move-icon .inner  {
+	display: inline-block;
+	margin: 5px 6px 4px 8px;
+	color: #999;
+	cursor: move;
+}
+
+.dd-list .dd-list .dd-list .message,
+.dd-dragel .dd-list .dd-list .message {
+	font-size: 95%;
+}
+
+.dd-list .dd-list .dd-list .dd-list .message,
+.dd-dragel .dd-list .dd-list .dd-list .message {
+	font-size: 90%;
+}
+
+.ids-list {
+	padding-left: 0px;
+}
+
+.ids-list .dd-list {
+	padding-left: 0px;
+	margin-left: 30px;
+	padding-bottom: 2px;
+}
+
+.issue-row .move-icon:hover {
+	color: #565656;
+}
+
+.issue-row {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	position: relative;
+}
+
+
+	.issue-row .contents {
+		/*position: absolute;
+	top: 0px;*/
+		display: inline-block;
+		margin: 5px 0;
+	}
+	
+.ids-list > .issue-row > .message,
+.dd-dragel > .issue-row > .message {
+	/*margin: 5px 0 0;*/
+	font-weight: bold;
+	color: #545454;
+}
+
+.ids-list > .issue-row .message,
+.dd-dragel > .issue-row .message {
+	padding-left: 28px;
+	padding-top: 7px;
+	padding-bottom: 4px;
+}
+
+.issue-row .merge-list {
+	margin-bottom: 0px;
+	list-style: none;
+	padding-left: 0;
+}
+
+.ids .page-header {
+	margin-top: 0px;
+	margin: 5px 0;
+}
+
+.ids h2 {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+.ids h4 {
+	margin-top:20px;
+	margin-bottom: 0px;
+}
+
+.dd-placeholder {
+	border: 1px dotted #E8E8E8;
+	margin: 7px 7px;
+	min-height: 18px;
+}
+
+.dd > .dd-list div:first-child .dd-placeholder-icon:before {
+	content: "\e040";
+}
+
+/*.dd > .dd-list div:first-child .dd-placeholder-icon:after {
+	content: "\e041";
+}*/
+
+.dd > .dd-list > div:first-child .dd-placeholder-icon {
+	display: none;
+}
+
+
+.dd-placeholder > .dd-placeholder-icon {
+	font-family: "fontastic" !important;
+	font-style: normal !important;
+	font-weight: normal !important;
+	font-variant: normal !important;
+	text-transform: none !important;
+	speak: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	margin: 7px;
+	color: #bbb;
+}
+
+	.dd-placeholder > .dd-placeholder-icon:before {
+		content: "\e041";
+	}
+
+
+.dd-item > button {
+	display: none;
+}
+
+.ids-list > .issue-row:hover >.message{
+	cursor:pointer;
+	color: #2A6496;
+}
+
+.ids-list > .issue-row:hover {
+	cursor:pointer !important;
+}
+
+.dd-dragel {
+	position: absolute;
+	pointer-events: none;
+	margin-left: -8px;
+	margin-top: -4px;
+	padding: 0px;
+}
+
+.issueDetails .heading {
+	width: calc(100% - 32px);
+}
+
+.issueDetails h4 {
+	margin-top: 0px;
+	margin-bottom: 10px;
+}
+
+.issueDetails:empty { 
+	color: #ddd;
+}
+
+.issueDetails:empty:after {
+	content: "Click an issue to see its details.";
+}
+
+.issueDetails .move-icon {
+	display: none;
+}
+
+.issueDetails > ol {
+	overflow: visible;
+	color: #999;
+}
+.issueDetails ol {
+	padding-left: 22px;
+	font-size: 12px;
+}
+
+.issueDetails > ol .issue-row {
+	list-style-type: square;
+	overflow: visible;
+	white-space: normal;
+}
+.issueDetails > ol .issue-row .message {
+	color: #666;
+}
+
+.issueDetails .details {
+	/*white-space: pre-line;*/
+	border: 1px solid #E8E8E8;
+	padding: 2px 6px;
+	color: #666;
+	font-size: 12px;
+	background-color: #FcFcFc;
+	width: 100%;
+	resize: vertical;
+	height: 100px;
+}
+
+.page-header.details {
+	color: #666;
+}
+
+/*
+
+.dd-active .dd-item:hover > .dd-list,
+.dd-active .dd-item:hover > .dd-placeholder
+{
+	background-color: rgba(0,0,0,.2);
+}*/
+
+/*.dd-item > button:before {
+		content: '+';
+		display: block;
+		position: absolute;
+		width: 100%;
+		text-align: center;
+		text-indent: 0;
+	}
+	.dd-item > button[data-action="collapse"]:before {
+		content: '-';
+	}*/
