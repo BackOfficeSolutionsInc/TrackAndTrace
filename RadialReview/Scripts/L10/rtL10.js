@@ -39,7 +39,15 @@ $(function () {
 	meetingHub.client.setCurrentPage = setCurrentPage;
 	meetingHub.client.setPageTime = setPageTime;
 	meetingHub.client.setupMeeting = setupMeeting;
+
 	meetingHub.client.deserializeIssues = deserializeIssues;
+	meetingHub.client.appendIssue = appendIssue;
+	meetingHub.client.updateIssueCompletion = updateIssueCompletion;
+	
+	meetingHub.client.deserializeTodos = deserializeTodos;
+	meetingHub.client.appendTodo = appendTodo;
+	meetingHub.client.updateTodoList = updateTodoList;
+	meetingHub.client.updateTodoCompletion = updateTodoCompletion;
 
 
 	$.connection.hub.start().done(function () {

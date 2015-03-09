@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Scorecard;
+using RadialReview.Models.Todo;
 
 namespace RadialReview.Models.L10.VM
 {
@@ -12,7 +13,8 @@ namespace RadialReview.Models.L10.VM
 		public L10Recurrence Recurrence { get; set; }
 		public L10Meeting Meeting { get; set; }
 		public List<ScoreModel> Scores { get; set; }
-		public List<IssueModel> Issues { get; set; }
+		public List<IssueModel.IssueModel_Recurrence> Issues { get; set; }
+		public List<TodoModel> Todos { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 

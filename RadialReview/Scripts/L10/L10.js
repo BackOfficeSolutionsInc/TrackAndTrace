@@ -25,14 +25,20 @@ $(function () {
 		loadPage(loc);
 	});
 
-	$("body").on("click", ".issuesButton", function () {
+	$("body").on("click", ".issuesModal", function () {
 		var parm = $.param($(this).data());
-		showModal("Add to Issues", "/Issues/Modal?" + parm, "/Issues/Modal");
+		var m=$(this).data("method");
+		if (!m)
+			m = "Modal";
+		showModal("Add to Issues", "/Issues/"+m+"?" + parm, "/Issues/"+m);
 	});
 
-	$("body").on("click", ".todoButton", function () {
+	$("body").on("click", ".todoModal", function () {
 		var parm = $.param($(this).data());
-		showModal("Add a Todo", "/Todo/Modal?" + parm, "/Todo/Modal");
+		var m=$(this).data("method");
+		if (!m)
+			m = "Modal";
+		showModal("Add a Todo", "/Todo/"+m+"?" + parm, "/Todo/"+m);
 	});
 
 });
@@ -133,13 +139,15 @@ function loadPage(location) {
 }
 
 function loadPageForce(location) {
+	$(".issues-list").sortable("destroy");
+	$(".todo-list").sortable("destroy");
 	window.location.hash = location;
 	location = location.toLowerCase();
 	//if (location != myPage) {
 	showLoader();
 	myPage = location;
 	$.ajax({
-		url: "/L10/Load/" + MeetingId + "?page=" + location,
+		url: "/L10/Load/" + MeetingId + "?page=" + location+"&connection="+$.connection.hub.id,
 		success: function(data) {
 			replaceMainWindow(data);
 		},

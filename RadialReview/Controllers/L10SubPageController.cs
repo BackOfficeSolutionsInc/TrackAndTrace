@@ -7,6 +7,7 @@ using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Models.Json;
+using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RestSharp.Validation;
 
@@ -16,12 +17,12 @@ namespace RadialReview.Controllers
 	{
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Load(long id, string page = null)
+		public ActionResult Load(long id, string connection, string page = null)
 		{
 			var recurrenceId = id;
 			page = page.ToLower();
 			if (!String.IsNullOrEmpty(page))
-				L10Accessor.UpdatePage(GetUser(), GetUser().Id, recurrenceId, page);
+				L10Accessor.UpdatePage(GetUser(), GetUser().Id, recurrenceId, page, connection);
 
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
 			var model = new L10MeetingVM(){Recurrence = recurrence};
@@ -40,7 +41,10 @@ namespace RadialReview.Controllers
 			try{
 				model.Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
 
-				switch(page){
+				switch (page)
+				{
+					case "todo":
+						return Todo(model);
 					case "scorecard":
 						return ScoreCard(model);
 					case "segue":
@@ -161,11 +165,20 @@ namespace RadialReview.Controllers
 		}
 		#endregion
 
+		#region Todo
+
+		private PartialViewResult Todo(L10MeetingVM model)
+		{
+			model.Todos = L10Accessor.GetTodosForRecurrence(GetUser(), model.Recurrence.Id,model.Meeting.Id);
+			return PartialView("Todo", model);
+		}
+		#endregion
+
 		#region IDS
 
 		private PartialViewResult IDS(L10MeetingVM model)
 		{
-			var issues = L10Accessor.GetIssuesForRecurrence(GetUser(), model.Recurrence.Id, true);
+			var issues = L10Accessor.GetIssuesForRecurrence(GetUser(), model.Meeting.Id, true);
 			model.Issues = issues;
 
 			return PartialView("IDS", model);

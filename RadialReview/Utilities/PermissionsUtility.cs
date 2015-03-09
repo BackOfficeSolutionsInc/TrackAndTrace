@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Amazon.ElasticTranscoder.Model;
 using log4net;
 using NHibernate;
 using NHibernate.Linq;
@@ -6,6 +7,7 @@ using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Enums;
@@ -14,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.Todo;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.Prereview;
 
@@ -691,6 +694,27 @@ namespace RadialReview.Utilities
 
 			throw new PermissionsException();
 		}
+
+	    public PermissionsUtility ViewIssue(long issueId)
+	    {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var possibleRecurrences = session.QueryOver<IssueModel.IssueModel_Recurrence>()
+				.Where(x => x.DeleteTime == null && x.Issue.Id == issueId)
+				.Select(x => x.Recurrence.Id).List<long>()
+				.ToList();
+
+		    foreach (var p in possibleRecurrences){
+			    try{
+					return ViewL10Recurrence(p);
+			    }catch (PermissionsException){
+				    //try next one..
+			    }
+			}
+			throw new PermissionsException();
+	    }
+
 		public PermissionsUtility ViewL10Recurrence(long recurrenceId)
 		{
 			if (IsRadialAdmin(caller))
@@ -716,6 +740,25 @@ namespace RadialReview.Utilities
 			}
 			throw new PermissionsException();
 		}
+
+	    public PermissionsUtility ViewTodo(long todoId)
+	    {
+			if (IsRadialAdmin(caller))
+				return this;
+			var todo = session.Get<TodoModel>(todoId);
+		    if (todo.AccountableUserId == caller.Id)
+			    return this;
+			if (IsManagingOrganization(todo.OrganizationId))
+				return this;
+		    if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0){
+			    try{
+				    ViewL10Recurrence(todo.ForRecurrenceId.Value);
+				    return this;
+			    }catch (PermissionsException e){
+			    }
+		    }
+			throw new PermissionsException();
+	    }
 
 	    public PermissionsUtility ViewUsersL10Meetings(long userId)
 	    {
@@ -964,5 +1007,10 @@ namespace RadialReview.Utilities
 			return _ConfirmPermissions(model, true, idSelector, modelSelector, permissionsSelector);
 		}
 
+
+		public PermissionsUtility Noop(long id)
+		{
+			return this;
+		}
 	}
 }

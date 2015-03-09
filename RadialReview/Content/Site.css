@@ -482,7 +482,7 @@ body {
 	position: relative;
 }
 
-.navbar .picture-container	{
+.navbar .picture-container {
 	height: 49px;
 	width: 49px;
 	position: absolute;
@@ -1416,7 +1416,7 @@ textarea.reason {
 	}
 
 .picture-container {
-	margin:auto;
+	margin: auto;
 	max-width: 100%;
 	max-height: 100%;
 	display: inline-block;
@@ -1430,16 +1430,17 @@ textarea.reason {
 	display: inline-block;
 }
 
-.body-full-width .navbar	{
-	height:30px;
+.body-full-width .navbar {
+	height: 30px;
 	min-height: 30px;
 }
-.body-full-width .navbar .picture-container	{
-	height:26px;
-	width: 26px;
-	left: -30px;
-	margin: 1px;
-}
+
+	.body-full-width .navbar .picture-container {
+		height: 26px;
+		width: 26px;
+		left: -30px;
+		margin: 1px;
+	}
 
 .body-full-width .navbar-brand {
 	padding: 4px 15px;
@@ -1448,14 +1449,16 @@ textarea.reason {
 .body-full-width .navbar-nav > li > a {
 	padding: 4px 15px;
 }
+
 .body-full-width .navbar .btn {
 	padding: 3px 5px;
 }
+
 .body-full-width .btn-group.heading {
 	padding: 1px !important;
 }
 
-.body-full-width .body-content,r {
+.body-full-width .body-content, r {
 	padding: 8px 8px;
 	max-width: calc(100% - 20px );
 	height: 100%;
@@ -1481,7 +1484,7 @@ textarea.reason {
 	top: 30px;
 	/* bottom: 20px; */
 	padding: 0;
-	padding-bottom: 20px; 
+	padding-bottom: 20px;
 }
 
 .body-full-width #footer {
@@ -1497,7 +1500,8 @@ textarea.reason {
 	right: 0;
 	height: 20px;
 	color: #aaa;
-	background-color:transparent;
+	background-color: transparent;
+	pointer-events: none;
 }
 
 .body-full-width #alerts {
@@ -1508,6 +1512,7 @@ textarea.reason {
 	top: 4px;
 	left: 4px;
 }
+
 .body-full-width .navbar-toggle {
 	padding: 4px 8px;
 	margin-top: 4px;
@@ -1520,4 +1525,3 @@ textarea.reason {
 .bblue {
 	background-color: blue;
 }
-

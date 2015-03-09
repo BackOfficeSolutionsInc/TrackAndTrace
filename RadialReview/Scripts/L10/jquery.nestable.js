@@ -247,7 +247,7 @@
         {
             li.removeClass(this.options.collapsedClass);
             li.children('[data-action]').remove();
-            li.children(this.options.listNodeName).remove();
+            //li.children(this.options.listNodeName).remove();
         },
 
         dragStart: function(e)
@@ -362,10 +362,16 @@
             /**
              * move horizontal
              */
+			var tempDepth = this.placeEl.parents(opt.listNodeName).length;
 
 
+	        console.log(tempDepth+" "+mouse.dirAx);
+			if (tempDepth == 1 && !mouse.dirAx) {
+				
+			}
 
-            if (mouse.dirAx && mouse.distAxX >= opt.threshold) {
+            if ((mouse.dirAx && mouse.distAxX >= opt.threshold)) {
+				
                 // reset move distance on x-axis for new phase
                 mouse.distAxX = 0;
                 prev = this.placeEl.prev(opt.itemNodeName);

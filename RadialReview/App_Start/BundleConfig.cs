@@ -57,9 +57,10 @@ namespace RadialReview
 
 			bundles.Add(new StyleBundle("~/Content/L10").Include(
 					"~/Content/L10/L10.css",
+					"~/Content/L10/L10Todo.css",
 					"~/Content/L10/L10Scorecard.css",
 					"~/Content/L10/L10Stats.css",
-					"~/Content/L10/L10IDS.css"
+					"~/Content/L10/L10IDS.v2.css"
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/L10").Include(
@@ -67,16 +68,21 @@ namespace RadialReview
 					"~/Scripts/L10/L10.js",
 					"~/Scripts/L10/rtL10.js",
 					"~/Scripts/L10/L10Scorecard.js",
-					"~/Scripts/jquery/jquery.nestable.js"
+					"~/Scripts/L10/L10Todo.js",
+					//"~/Scripts/L10/jquery-ui.sortable.min.js",
+					//"~/Scripts/L10/jquery.mjs.nestedSortable.js"
+					//"~/Scripts/L10/jquery.nestable.js"
+					"~/Scripts/L10/jquery.sortable.js"
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/main").Include(
 					  "~/Scripts/Main/radial.js",
-				//"~/Scripts/jquery.signalR-{version}.js",
+					//"~/Scripts/jquery.signalR-{version}.js",
 					  "~/Scripts/jquery/jquery.qtip.js",
 					  "~/Scripts/jquery/jquery.tablesorter.js",
-					  "~/Scripts/Main/finally.js"
-					  ));
+					  "~/Scripts/Main/finally.js",
+					  "~/Scripts/L10/jquery-ui.color.js"
+			));
 
 #if DEBUG
 			BundleTable.EnableOptimizations = false;

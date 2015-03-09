@@ -1,0 +1,358 @@
+﻿.ids .page-header {
+	margin-top: 0px;
+	margin: 5px 0;
+}
+
+.ids h2 {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+.ids h4 {
+	margin-top:20px;
+	margin-bottom: 0px;
+}
+
+.sortable {
+margin: 0 0 9px 0;
+min-height: 10px;
+}
+ol.sortable:not(.dragged) {
+list-style-type: none;
+padding: 0;
+margin: 7px 0 9px 15px;
+list-style: decimal;
+}
+
+ol.sortable li {
+display: block;
+}
+ol.sortable li {
+line-height: 18px;
+}
+
+.sortable ul, .sortable ol {
+	margin-bottom: 0;
+}
+/*
+.issues-list li {
+	position: relative;	
+	
+}*/
+
+.issues-list > .issue-row {
+	border: 1px solid #CCC;
+	background: #EEE;
+	padding: 4px;
+	margin: 6px;
+}
+/*.issues-list > .issue-row >.fill{
+	/*display: flex;
+	align-items: center;
+	justify-content: flex-start;*
+	border-radius: 10px;
+	background-color: #FFF;
+	border: 1px solid #E8E8E8;
+	border-left: 1px solid #E8E8E8;
+	color: #666;
+	/*margin: 4px;*
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	z-index: -1;
+}*/
+
+.issues-list > .issue-row.selected {
+	border: 1px solid #A5ACB8;
+	background: #E9ECF4;
+
+}
+.issues-list > .issue-row.selected > .message {
+	font-weight: bold;
+	top: 2px;
+	position: relative;
+	color: #3B70CB !important;
+}
+
+.issues-list > .issue-row.selected > .move-icon {
+	color: #7188B0 !important;
+}
+
+.issues-list .issue-checkbox {
+	display: none;
+}
+.issues-list > .issue-row > .issue-checkbox {
+	display: inline-block;
+	position: relative;
+	left: -24px;
+}
+
+
+.issues-list .issue-checkbox:checked ~ *,
+.issues-list .issue-checkbox:checked ~ * * {
+	color: #ccc !important;
+}
+
+/*.issues-list .issue-checkbox:checked ~ * .message,*/
+.issues-list .issue-checkbox:checked ~ .message {
+	text-decoration: line-through;
+}
+
+.issues-list > .issue-row ol .move-icon .inner {
+	color: #969696;
+	cursor: move;
+}
+.issues-list .move-icon {
+	display: inline-block;
+	position: relative;
+	left: -16px;
+	top: -2px;
+	cursor: move;
+	color: #8E8E8E;
+}
+.issues-list .issue-row .move-icon:hover {
+	color: #565656;
+}
+
+
+.issues-list > .issue-row  .issue-row .move-icon > .outer {
+	display: none;
+}
+.issues-list > .issue-row > .move-icon > .inner {
+	display: none;
+}
+
+.issues-list > .issue-row  .issue-row  .move-icon > .outer {
+	display: none;
+}
+
+
+.issues-list .message {
+	display: inline-block;
+	position: relative;
+	top: 1px;
+	left: -16px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: calc(100% - 48px);
+}
+
+.issues-list > .issue-row > .message {
+	cursor: pointer;
+}
+
+.issues-list .issue-row .btn-group {
+	display: none;
+}
+.issues-list > .issue-row > .btn-group {
+	display: inline-block;
+}
+
+.issues-list .issue-row .btn-group .issuesButton {
+	color: gray;
+}
+	
+.issues-list  .placeholder{
+	min-height: 10px;
+	border: 1px dotted gray;
+	margin: 5px;
+	margin-left: -20px;
+
+}
+
+.issues-list > .placeholder {
+	margin-left: 6px;
+}
+
+
+.issues-list .issue-details-container {
+	display: none;
+}
+
+
+.issues-list .issue-row .issue-row .message {
+	font-size: 95%;
+	color: #969696;
+}
+
+
+.issues-list ol {
+	padding-left: 20px;
+}
+
+.issues-list.hideDetails ol li {
+	display: none;
+}
+
+.issues-list > .issue-row > ol {
+	padding-left: 35px;
+}
+
+.detailsBtn {
+	/*height: 18px;
+	width: 23px;
+	text-align: center;*/
+}
+
+.dragged {
+	position: absolute;
+	top: 0;
+	opacity: .5;
+	z-index: 2000;
+	margin: 0px !important;
+	margin-top: -10px  !important;
+	
+}
+.dragged, .dragged * {
+	background-color: transparent !important;
+}
+
+body.dragging, body.dragging * {
+	cursor: move !important;
+}
+
+.issueDetails .issue-details-container {
+	padding-left: 5px;
+}
+
+
+.issueDetails h4 {
+	margin-top: 0px;
+	margin-bottom: 4px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid #eee;
+}
+
+.issueDetails li {
+	cursor: pointer;
+	list-style-type: none;
+}
+.issueDetails .move-icon {
+	display: none;
+}
+.issueDetails .doneButton .issue-checkbox {
+	display: inline-block;
+	padding: 0px;
+	margin: 0px;
+	top: 3px;
+	position: relative;
+}
+.issueDetails .issue-checkbox {
+	display: none;
+}
+
+.issueDetails .issue-details-container {
+	border-left: 2px solid #EFEFEF;
+	padding-left: 13px;
+	margin-left: -14px;
+}
+
+.issueDetails .button-bar {
+	padding-top: 6px;
+}
+
+.issueDetails .button-bar .btn{
+	/*margin-top: 2px;
+	margin-bottom: 2px;*/
+}
+
+.issueDetails .button-bar .btn-group{
+	margin: 2px;
+}
+
+.issueDetails .button-bar .doneButton {
+	float: right;
+}
+
+.issueDetails .button-bar .expandContract {
+	float: left;
+}
+.issueDetails .button-bar .todoButton{
+	color:  #5E5E5E;
+	top: 1px;
+	opacity: 1;
+		transition: all .4s ease;
+}
+.createTodoButton:hover .todoButton:after {
+	position: absolute;
+	left: 0;
+	opacity: 1;
+	content: "\e067";
+}
+
+.issueDetails .heading {
+	width: calc(100% - 32px);
+}
+
+.issueDetails h4 {
+	margin-top: 0px;
+	margin-bottom: 10px;
+}
+
+.issueDetails:empty { 
+	color: #ddd;
+}
+
+.issueDetails:empty:after {
+	content: "Click an issue to see its details.";
+}
+
+.issueDetails .move-icon {
+	display: none;
+}
+
+.issueDetails > ol {
+	overflow: visible;
+	color: #999;
+}
+.issueDetails ol {
+	padding-left: 22px;
+	font-size: 12px;
+}
+
+.issueDetails > ol .issue-row {
+	list-style-type: square;
+	overflow: visible;
+	white-space: normal;
+}
+.issueDetails > ol .issue-row .message {
+	color: #666;
+}
+
+.issueDetails .createTime {
+	color: #ccc;
+	text-align: right;
+	position: absolute;
+	top: -24px;
+	right: 0px;
+}
+
+.issueDetails .details {
+	/*white-space: pre-line;*/
+	border: 1px solid #E8E8E8;
+	padding: 2px 6px;
+	color: #666;
+	font-size: 12px;
+	background-color: #FcFcFc;
+	width: 100%;
+	resize: vertical;
+	height: 100px;
+}
+
+.issueDetails > .dd-list {
+	max-height: 400px;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
+	overflow-y: auto;
+	border-bottom: 1px solid #eee;
+}
+
+.page-header.details {
+	color: #666;
+}
+
+.issueDetails {
+	position: relative;
+}

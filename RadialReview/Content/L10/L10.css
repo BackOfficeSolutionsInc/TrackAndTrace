@@ -1,4 +1,5 @@
-﻿html {
+﻿
+html {
 	overflow: auto;
 }
 
@@ -231,7 +232,7 @@ h3 {
 		transition: all .4s ease;
 	}
 
-	.issuesButton:hover {
+	.issuesButton.glyphicon-pushpin:hover {
 		left: -1px;
 		top: 4px;
 		opacity: 1;

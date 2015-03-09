@@ -13,7 +13,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Collections.Specialized;
 
-namespace RadialReview.Helpers
+namespace RadialReview
 {
 	//From http://blog.slatner.com/2010/01/20/SecuringFormValuesInASPNETMVC.aspx
 

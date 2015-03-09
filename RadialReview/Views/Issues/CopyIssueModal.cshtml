@@ -1,0 +1,14 @@
+﻿@model RadialReview.Models.Issues.CopyIssueVM
+
+@Html.SecuredHiddenFor(x => x.ParentIssue_RecurrenceId)
+@Html.SecuredHiddenFor(x => x.IssueId)
+	
+<h4>@Model.Message</h4>
+<h5>@Model.Details</h5>
+
+<div class="form-group">
+	@Html.LabelFor(x => x.CopyIntoRecurrenceId)
+	@Html.DropDownListFor(x => x.CopyIntoRecurrenceId,Model.PossibleRecurrences.ToSelectList(x=>x.Name,x=>x.Id), new{
+		@class = "form-control"
+	})
+</div>

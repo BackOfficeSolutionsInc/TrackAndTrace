@@ -12,7 +12,7 @@ namespace RadialReview.Models.Issues
 	{
 		public virtual long Id { get; set; }
 		public virtual DateTime CreateTime { get; set; }
-		public virtual DateTime? CloseTime { get; set; }
+		//public virtual DateTime? CloseTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual string Message { get; set; }
 		public virtual string Description { get; set; }
@@ -21,7 +21,6 @@ namespace RadialReview.Models.Issues
 		public virtual long? CreatedDuringMeetingId { get; set; }
 		public virtual L10Meeting CreatedDuringMeeting { get; set; }
 		public virtual List<L10Recurrence> _MeetingRecurrences { get; set; }
-		public virtual List<IssueModel> _ChildIssues { get; set; }
 		public virtual int? _Order { get; set; }
 
 		public virtual String ForModel { get; set; }
@@ -29,6 +28,7 @@ namespace RadialReview.Models.Issues
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
 
+		//public virtual long _RecurrenceIssueId { get; set; }
 
 		public IssueModel()
 		{
@@ -40,7 +40,7 @@ namespace RadialReview.Models.Issues
 			public IssueMap()
 			{
 				Id(x => x.Id);
-				Map(x => x.CloseTime);
+				//Map(x => x.CloseTime);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				
@@ -71,12 +71,13 @@ namespace RadialReview.Models.Issues
 			public virtual long Id { get; set; }
 			public virtual DateTime CreateTime { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
+			public virtual DateTime? CloseTime { get; set; }
 			public virtual UserOrganizationModel CreatedBy { get; set; }
 			public virtual IssueModel_Recurrence CopiedFrom { get; set; }
 			public virtual IssueModel Issue { get; set; }
 			public virtual L10Recurrence Recurrence { get; set; }
-
-			public virtual IssueModel ParentIssue { get; set; }
+			public virtual List<IssueModel.IssueModel_Recurrence> _ChildIssues { get; set; }
+			public virtual IssueModel_Recurrence ParentRecurrenceIssue { get; set; }
 			public virtual int? Ordering { get; set; }
 
 			public IssueModel_Recurrence()
@@ -91,6 +92,7 @@ namespace RadialReview.Models.Issues
 					Id(x => x.Id);
 					Map(x => x.CreateTime);
 					Map(x => x.DeleteTime);
+					Map(x => x.CloseTime);
 					Map(x => x.Ordering);
 					References(x => x.CreatedBy).Column("CreatedById");
 					References(x => x.CopiedFrom).Column("CopiedFromId").Nullable();
@@ -98,11 +100,12 @@ namespace RadialReview.Models.Issues
 					References(x => x.Recurrence).Column("RecurrenceId");
 
 					//Map(x => x.ParentIssueId).Column("ParentIssueId");
-					References(x => x.ParentIssue).Column("ParentIssueId").Nullable();
+					References(x => x.ParentRecurrenceIssue).Column("ParentRecurrenceIssueId").Nullable();
 				}
 			}
 
 		}
+
 
 	}
 }

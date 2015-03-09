@@ -187,7 +187,8 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
                                     showJsonAlert(data);
                                 } else {
                                     //$("#modal").modal("hide");
-                                    location.reload();
+									if (data.Refresh)
+										location.reload();
                                 }
                             }
                         }
@@ -361,3 +362,23 @@ Array.prototype.select = function (expr) {
 	//do custom stuff
 	return arr.map(expr); //or $.map(expr);
 };*/
+
+$.fn.flash = function(ms,backgroundColor,borderColor,color) {
+	ms = ms || 1000;
+	color = color || '#3C763D';
+	borderColor = borderColor || '#D6E9C6';
+	backgroundColor = backgroundColor || '#DFF0D8';
+	
+
+	var originalBackgroundColor = this.css('background-color');
+	var originalBorderColor = this.css('border-color');
+	var originalBoxColor = this.css('boxShadow');
+	var originalColor = this.css('color');
+
+    this.css({ 'border-color': borderColor,'background-color':backgroundColor,"boxShadow": "0px 0px 5px 3px "+borderColor,"color":color })
+	.animate({ 'border-color': originalBorderColor,'background-color':originalBackgroundColor,"boxShadow": "0px 0px 0px 0px "+borderColor,"color":originalColor}, ms,function() {
+	    $(this).css("boxShadow", originalBoxColor);
+    });
+
+
+};

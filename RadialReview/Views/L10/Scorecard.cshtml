@@ -72,7 +72,7 @@
 								</td>
 								if (r.IsCurrentWeek){
 									<td class="buttonHolder">
-										<span class="glyphicon glyphicon-pushpin issuesButton"
+										<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
 										      data-meeting="@Model.Meeting.Id"
 										      data-recurrence="@Model.Recurrence.Id"
 										      data-measurable="@found.Measurable.Id"
@@ -80,7 +80,7 @@
 											@*data-message="@found.IssueMessage().EscapeHtml()"
 													data-details="@found.IssueDetails().EscapeHtml()"*@>
 										</span>
-										<span class="glyphicon glyphicon-unchecked todoButton"
+										<span class="glyphicon glyphicon-unchecked todoButton todoModal"
 											  data-meeting="@Model.Meeting.Id"
 											  data-recurrence="@Model.Recurrence.Id"
 											  data-measurable="@found.Measurable.Id"

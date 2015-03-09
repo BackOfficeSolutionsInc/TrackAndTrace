@@ -266,6 +266,7 @@
     <Compile Include="Accessors\SettingsAccessor.cs" />
     <Compile Include="Accessors\TaskAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
+    <Compile Include="Accessors\TodoAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -286,6 +287,7 @@
     <Compile Include="Controllers\PeriodController.cs" />
     <Compile Include="Controllers\RocksController.cs" />
     <Compile Include="Controllers\ScorecardController.cs" />
+    <Compile Include="Controllers\TodoController.cs" />
     <Compile Include="Controllers\_MigrationController.cs" />
     <Compile Include="Controllers\PrereviewController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
@@ -369,7 +371,9 @@
     <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
     <Compile Include="Models\Charts\ChartOptions.cs" />
     <Compile Include="Models\Charts\ScatterPlot.cs" />
+    <Compile Include="Models\Issues\CopyIssueVM.cs" />
     <Compile Include="Models\Issues\IssueModel.cs" />
+    <Compile Include="Models\Issues\IssueVM.cs" />
     <Compile Include="Models\Issues\ScoreCardIssueVM.cs" />
     <Compile Include="Models\L10\FocusType.cs" />
     <Compile Include="Models\L10\L10Meeting.cs" />
@@ -381,6 +385,7 @@
     <Compile Include="Models\L10\VM\L10ListingVM.cs" />
     <Compile Include="Models\L10\VM\L10MeetingStatsVM.cs" />
     <Compile Include="Models\L10\VM\L10MeetingVM.cs" />
+    <Compile Include="Models\L10\VM\L10TodoData.cs" />
     <Compile Include="Models\L10\VM\L10VM.cs" />
     <Compile Include="Models\Periods\PeriodModel.cs" />
     <Compile Include="Models\Prereview\PrereviewMatchModel.cs" />
@@ -405,6 +410,8 @@
     <Compile Include="Models\Template\TemplateItemFeedback.cs" />
     <Compile Include="Models\Template\TemplateItemGroup.cs" />
     <Compile Include="Models\Template\TemplateModel.cs" />
+    <Compile Include="Models\Todo\TodoModel.cs" />
+    <Compile Include="Models\Todo\TodoVM.cs" />
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
     <Compile Include="Models\Askables\RoleModel.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
@@ -616,7 +623,14 @@
     <Content Include="Content\fonts\fontastic.eot" />
     <Content Include="Content\fonts\fontastic.ttf" />
     <Content Include="Content\fonts\fontastic.woff" />
-    <None Include="Views\L10\partial\IssueRow.cshtml" />
+    <Content Include="Content\L10\l10IDS.v2.css" />
+    <Content Include="Content\L10\L10Todo.css" />
+    <Content Include="Scripts\L10\jquery-ui.color.js" />
+    <Content Include="Scripts\L10\jquery-ui.sortable.min.js" />
+    <Content Include="Scripts\L10\jquery.mjs.nestedSortable.js" />
+    <Content Include="Scripts\L10\jquery.sortable.js" />
+    <Content Include="Scripts\L10\L10Todo.js" />
+    <Content Include="Views\L10\partial\IssueRow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
@@ -803,12 +817,12 @@
     <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.js" />
     <Content Include="Scripts\jquery\jquery.fittext.js" />
     <Content Include="Scripts\jquery\jquery.hashchange.js" />
-    <Content Include="Scripts\jquery\jquery.nestable.js" />
+    <Content Include="Scripts\L10\jquery.nestable.js" />
     <Content Include="Scripts\jquery\jquery.nouislider.js" />
     <Content Include="Scripts\jquery\jquery.rotate-1.0.1.js" />
     <Content Include="Scripts\jquery\jquery.scrollTo.js" />
     <Content Include="Scripts\jquery\jquery.sortable.js" />
-    <Content Include="Scripts\jquery\jquery.sortable.min.js" />
+    <Content Include="Scripts\L10\jquery.sortable.min.js" />
     <Content Include="Scripts\jquery\jquery.tablesorter.js" />
     <Content Include="Scripts\jquery\jquery.unveil.js" />
     <Content Include="Scripts\L10\L10.js" />
@@ -873,6 +887,10 @@
     <Content Include="Views\L10\_SetupScript.cshtml" />
     <Content Include="Views\Issues\ScorecardIssueModal.cshtml" />
     <Content Include="Views\L10\IDS.cshtml" />
+    <Content Include="Views\Issues\CopyIssueModal.cshtml" />
+    <Content Include="Views\Issues\CreateIssueModal.cshtml" />
+    <Content Include="Views\L10\Todo.cshtml" />
+    <Content Include="Views\L10\partial\TodoRow.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1099,6 +1117,7 @@
     <Content Include="Views\Shared\DisplayTemplates\Tristate.cshtml" />
     <Content Include="Views\Shared\_Picture.cshtml" />
     <Content Include="Views\Shared\_L10Layout.cshtml" />
+    <Content Include="Views\Todo\CreateTodo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

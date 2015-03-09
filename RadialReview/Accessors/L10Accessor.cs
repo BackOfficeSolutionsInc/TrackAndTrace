@@ -15,6 +15,7 @@ using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scorecard;
+using RadialReview.Models.Todo;
 using RadialReview.Utilities;
 using NHibernate;
 using ListExtensions = WebGrease.Css.Extensions.ListExtensions;
@@ -99,7 +100,12 @@ namespace RadialReview.Accessors
 								x.First().Page,
 								x.Sum(y => ((y.EndTime ?? now) - y.StartTime).TotalMinutes)
 								)).ToList();
-					var curPage = m._MeetingLogs.SingleOrDefault(x => x.User.Id == m.MeetingLeader.Id && x.EndTime == null);
+
+					var curPage = m._MeetingLogs
+						.Where(x => x.User.Id == m.MeetingLeader.Id && x.EndTime == null)
+						.OrderByDescending(x=>x.StartTime)
+						.FirstOrDefault();
+					
 					if (curPage != null){
 						m._MeetingLeaderCurrentPage = curPage.Page;
 						m._MeetingLeaderCurrentPageStartTime = curPage.StartTime;
@@ -107,7 +113,6 @@ namespace RadialReview.Accessors
 					}
 				}
 			}
-			
 		}
 
 		public static void _LoadMeetings(ISession s, bool loadUsers, bool loadMeasurables, params L10Meeting[] meetings)
@@ -248,7 +253,10 @@ namespace RadialReview.Accessors
 
 		public static L10Meeting.L10Meeting_Log _GetCurrentLog(ISession s, UserOrganizationModel caller, long meetingId, long userId, bool nullOnUnstarted = false)
 		{
-			var found= s.QueryOver<L10Meeting.L10Meeting_Log>().Where(x => x.DeleteTime == null && x.L10Meeting.Id == meetingId && x.User.Id == userId && x.EndTime == null).List().SingleOrDefault();
+			var found= s.QueryOver<L10Meeting.L10Meeting_Log>()
+				.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meetingId && x.User.Id == userId && x.EndTime == null)
+				.List().OrderByDescending(x=>x.StartTime)
+				.FirstOrDefault();
 			if (found == null && !nullOnUnstarted)
 				throw new PermissionsException("Meeting log does not exist");
 			return found;
@@ -290,6 +298,28 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					return _GetCurrentL10Meeting(s, caller, recurrenceId, nullOnUnstarted, load, loadLogs);
+				}
+			}
+		}
+
+		public static List<TodoModel> GetTodosForRecurrence(UserOrganizationModel caller, long recurrenceId,long meetingId)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId).ViewL10Meeting(meetingId);
+
+					var meeting = s.Get<L10Meeting>(meetingId);
+
+					if (meeting.L10RecurrenceId!=recurrenceId)
+						throw new PermissionsException("Incorrect Recurrence Id");
+
+					var todoList =  s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.ForRecurrenceId == recurrenceId);
+					if (meeting.CompleteTime!=null)
+						todoList = todoList.Where(x => x.CompleteTime == null || (x.CompleteTime < meeting.CompleteTime && x.CreateTime < meeting.StartTime));
+					else{
+						todoList = todoList.Where(x => x.CompleteTime == null || x.CompleteTime > meeting.StartTime);
+					}
+					return todoList.Fetch(x=>x.AccountableUser).Eager.List().ToList();
 				}
 			}
 		}
@@ -404,18 +434,17 @@ namespace RadialReview.Accessors
 
 					var ids = ratingValues.Select(x => x.Item1).ToArray();
 
+					//Set rating for attendees
 					var attendees = s.QueryOver<L10Meeting.L10Meeting_Attendee>()
 						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
 						.WhereRestrictionOn(x => x.User.Id)
 						.IsIn(ids)
 						.List().ToList();
-
 					foreach (var a in attendees){
 						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
 						s.Update(a);
 					}
-
-
+					//End all logs 
 					var logs = s.QueryOver<L10Meeting.L10Meeting_Log>()
 						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.EndTime==null)
 						.List().ToList();
@@ -424,10 +453,33 @@ namespace RadialReview.Accessors
 						s.Update(l);
 					}
 
+					//Close all sub issues
+					var issue_recurParents = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+						.Where(x => x.DeleteTime == null && x.CloseTime >= meeting.StartTime && x.CloseTime<= meeting.CompleteTime)
+						.Select(x=>x.Id)
+						.List<long>().ToList();
+					_RecursiveCloseIssues(s, issue_recurParents, now);
+					
 					tx.Commit();
 					s.Flush();
 				}
 			}
+		}
+
+		private static void _RecursiveCloseIssues(ISession s,List<long> parentIssue_RecurIds,DateTime now)
+		{
+			if (parentIssue_RecurIds.Count == 0)
+				return;
+
+			var children =s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.DeleteTime == null && x.CloseTime == null)
+				.WhereRestrictionOn(x => x.ParentRecurrenceIssue.Id)
+				.IsIn(parentIssue_RecurIds)
+				.List().ToList();
+			foreach (var c in children){
+				c.CloseTime = now;
+				s.Update(c);
+			}
+			_RecursiveCloseIssues(s, children.Select(x=>x.Id).ToList(),now);
 		}
 
 		/*
@@ -511,7 +563,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static void UpdatePage(UserOrganizationModel caller,long forUserId, long recurrenceId, string pageName)
+		public static void UpdatePage(UserOrganizationModel caller,long forUserId, long recurrenceId, string pageName,string connection)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -552,10 +604,25 @@ namespace RadialReview.Accessors
 						};
 
 						s.Save(newLog);
-
 						
 
+
 						if (meeting.MeetingLeader.NotNull(x=>x.Id) == forUserId){
+							if (log != null){
+								//Add additional minutes from current page
+								var cur = meeting._MeetingLeaderPageDurations.FirstOrDefault(x => x.Item1 == log.Page);
+								var duration = (log.EndTime.Value - log.StartTime).TotalMinutes;
+								if (cur == null){
+									meeting._MeetingLeaderPageDurations.Add(Tuple.Create(log.Page, duration));
+								}else{
+									for (var i=0;i<meeting._MeetingLeaderPageDurations.Count;i++){
+										var x = meeting._MeetingLeaderPageDurations[i];
+										if (x.Item1 == log.Page){
+											meeting._MeetingLeaderPageDurations[i] = Tuple.Create(x.Item1, x.Item2 + duration);
+										}
+									}
+								}
+							}
 							var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 							var meetingHub=hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting));
 							var baseMins = meeting._MeetingLeaderPageDurations.SingleOrDefault(x=>x.Item1==pageName).NotNull(x=>x.Item2);
@@ -584,23 +651,28 @@ namespace RadialReview.Accessors
 					var leaderId = s.Get<L10Meeting>(meetingId).MeetingLeader.Id;
 					var leaderpage = s.QueryOver<L10Meeting.L10Meeting_Log>()
 						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meetingId && x.User.Id==leaderId && x.EndTime == null)
-						.SingleOrDefault();
+						.List().OrderByDescending(x=>x.StartTime)
+						.FirstOrDefault();
 					return leaderpage.NotNull(x => x.Page);
 				}
 			}
 		}
 
-		public static List<IssueModel> GetIssuesForRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeResolved)
+		public static List<IssueModel.IssueModel_Recurrence> GetIssuesForRecurrence(UserOrganizationModel caller, long meetingId, bool includeResolved)
 		{
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
+					var meeting = s.Get<L10Meeting>(meetingId);
+					var recurrenceId = meeting.L10RecurrenceId;
+
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					//TODO optimize this call. Some issueRecurrence's parents are closed, but children are not.
+
 					var issues = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-						.Where(x => x.DeleteTime == null && x.Recurrence.Id == recurrenceId)
-						////.JoinAlias(()=>linkAlias.Issue,()=>issueAlias)
-						////.Where(()=>issueAlias.DeleteTime==null && (includeResolved || issueAlias.CloseTime==null))
-						//.Select(x => x.Issue.Id)
-						.Fetch(x=>x.Issue).Eager
+						.Where(x => 
+							x.DeleteTime == null && x.Recurrence.Id == recurrenceId &&
+							(x.CloseTime==null || x.CloseTime>= meeting.StartTime)
+						).Fetch(x=>x.Issue).Eager
 						.List().ToList();
 
 					/*var query = s.QueryOver<IssueModel>();
@@ -610,22 +682,19 @@ namespace RadialReview.Accessors
 						query = query.Where(x => x.DeleteTime == null && x.CloseTime == null);					
 					var issues =  query.WhereRestrictionOn(x => x.Id).IsIn(issueIds).List().ToList();*/
 
-
-
 					return _PopulateChildrenIssues(issues);
-
-
 				}
 			}
 		}
 
-		private static List<IssueModel> _PopulateChildrenIssues(List<IssueModel.IssueModel_Recurrence> list)
+		private static List<IssueModel.IssueModel_Recurrence> _PopulateChildrenIssues(List<IssueModel.IssueModel_Recurrence> list)
 		{
 
-			var output = list.Where(x => x.ParentIssue == null).Select(x =>{
+			var output = list.Where(x => x.ParentRecurrenceIssue == null)/*.Select(x =>{
 				x.Issue._Order = x.Ordering;
+				x.Issue._RecurrenceIssueId = x.Id;
 				return x.Issue;
-			}).ToList();
+			})*/.ToList();
 			foreach (var o in output){
 				_RecurseChildrenIssues(o, list);
 			}
@@ -633,21 +702,72 @@ namespace RadialReview.Accessors
 
 		}
 
-		private static void _RecurseChildrenIssues(IssueModel issue, List<IssueModel.IssueModel_Recurrence> list)
+		private static void _RecurseChildrenIssues(IssueModel.IssueModel_Recurrence issue, IEnumerable<IssueModel.IssueModel_Recurrence> list)
 		{
 			if (issue._ChildIssues != null)
 				return;
-			issue._ChildIssues = list.Where(x => x.ParentIssue!=null && x.ParentIssue.Id == issue.Id).Select(x =>{
+			issue._ChildIssues = list.Where(x => x.ParentRecurrenceIssue!=null && x.ParentRecurrenceIssue.Id == issue.Id)/*.Select(x =>{
 				x.Issue._Order = x.Ordering;
+				x.Issue._RecurrenceIssueId = x.Id;
 				return x.Issue;
-			}).ToList();
+			})*/.ToList();
 
 			foreach (var i in issue._ChildIssues){
 				_RecurseChildrenIssues(i,list);
 			}
 		}
 
+		public static void UpdateTodos(UserOrganizationModel caller, long recurrenceId, TodoDataList model)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var perm = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var ids = model.GetAllIds();
+					var existingTodos = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.ForRecurrenceId == recurrenceId)
+						.WhereRestrictionOn(x => x.Id).IsIn(ids)
+						.List().ToList();
 
+					var ar = SetUtility.AddRemove(ids, existingTodos.Select(x => x.Id));
+
+					if (ar.RemovedValues.Any())
+						throw new PermissionsException("You do not have permission to edit this issue.");
+					if (ar.AddedValues.Any())
+						throw new PermissionsException("Unreachable.");
+
+					//var recurrenceIssues = existingTodos.ToList();
+
+					foreach (var e in model.GetIssueEdits())
+					{
+						var f = existingTodos.First(x => x.Id == e.TodoId);
+						var update = false;
+						/*if (f..NotNull(x => x.Id) != e.ParentRecurrenceIssueId)
+						{
+							f.ParentRecurrenceIssue = (e.ParentRecurrenceIssueId == null) ? null : recurrenceIssues.First(x => x.Id == e.ParentRecurrenceIssueId);
+							update = true;
+						}*/
+
+						if (f.Ordering != e.Order){
+							f.Ordering = e.Order;
+							update = true;
+						}
+
+						if (update)
+							s.Update(f);
+					}
+
+					var json = Json.Encode(model);
+
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), model.connectionId)
+						.deserializeTodos(".todo-list", model);
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 
 		public static void UpdateIssues(UserOrganizationModel caller,long recurrenceId, IssuesDataList model)
 		{
@@ -657,24 +777,24 @@ namespace RadialReview.Accessors
 					var perm = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
 					var ids = model.GetAllIds();
 					var found = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.DeleteTime == null && x.Recurrence.Id==recurrenceId)
-						.WhereRestrictionOn(x => x.Issue.Id).IsIn(ids)
+						.WhereRestrictionOn(x => x.Id).IsIn(ids)
 						//.Fetch(x=>x.Issue).Eager
 						.List().ToList();
 
-					var ar = SetUtility.AddRemove(ids,found.Select(x => x.Issue.Id));
+					var ar = SetUtility.AddRemove(ids,found.Select(x => x.Id));
 
 					if (ar.RemovedValues.Any())
 						throw new PermissionsException("You do not have permission to edit this issue.");
 					if (ar.AddedValues.Any())
 						throw new PermissionsException("Unreachable.");
 					
-					var issues = found.ToList();
+					var recurrenceIssues = found.ToList();
 
 					foreach (var e in model.GetIssueEdits()){
-						var f = issues.First(x => x.Issue.Id == e.IssueId);
+						var f = recurrenceIssues.First(x => x.Id == e.RecurrenceIssueId);
 						var update = false;
-						if (f.ParentIssue.NotNull(x=>x.Id) != e.ParentIssueId){
-							f.ParentIssue = (e.ParentIssueId == null) ? null : issues.First(x => x.Issue.Id == e.ParentIssueId).Issue;
+						if (f.ParentRecurrenceIssue.NotNull(x=>x.Id) != e.ParentRecurrenceIssueId){
+							f.ParentRecurrenceIssue = (e.ParentRecurrenceIssueId == null) ? null : recurrenceIssues.First(x => x.Id == e.ParentRecurrenceIssueId);
 							update = true;
 						}
 
@@ -690,12 +810,131 @@ namespace RadialReview.Accessors
 					var json = Json.Encode(model);
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId),model.connectionId).deserializeIssues(".ids-list", model);
+					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId),model.connectionId)
+						.deserializeIssues(".issues-list", model);
 					
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
+
+		public static void UpdateIssueCompletion(UserOrganizationModel caller, long recurrenceId, long issue_recurrenceId,bool complete,string connectionId)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					var perm = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var issue = s.Get<IssueModel.IssueModel_Recurrence>(issue_recurrenceId);
+					/*var issue =s.QueryOver<IssueModel.IssueModel_Recurrence>()
+						.Where(x=>x.DeleteTime==null && x.Issue.Id == issueId && x.Recurrence.Id==recurrenceId)
+						.SingleOrDefault();*/
+					if (issue==null)
+						throw new PermissionsException("Issue does not exist.");
+					var now = DateTime.UtcNow;
+					var updated = false;
+					if (complete && issue.CloseTime == null){
+						issue.CloseTime = now;
+						s.Update(issue.Issue);
+						updated = true;
+					}else if (!complete && issue.CloseTime != null){
+						issue.CloseTime = null;
+						s.Update(issue.Issue);
+						updated = true;
+					}
+
+					if (updated){
+						tx.Commit();
+						s.Flush();
+						
+						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+						hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId),connectionId)
+							.updateIssueCompletion(issue_recurrenceId, complete);
+					}
+				}
+			}
+		}
+		public static void UpdateTodoCompletion(UserOrganizationModel caller, long recurrenceId, long todoId, bool complete, string connectionId)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					var perm = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var todo = s.Get<TodoModel>(todoId);
+					if (todo == null)
+						throw new PermissionsException("Todo does not exist.");
+					var now = DateTime.UtcNow;
+					var updated = false;
+					if (complete && todo.CompleteTime == null){
+						todo.CompleteTime = now;
+						s.Update(todo);
+						updated = true;
+					}else if (!complete && todo.CompleteTime != null){
+						todo.CompleteTime = null;
+						s.Update(todo);
+						updated = true;
+					}
+
+					if (updated)
+					{
+						tx.Commit();
+						s.Flush();
+
+						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+						hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), connectionId)
+							.updateTodoCompletion(todoId, complete);
+					}
+				}
+			}
+		}
+
+		//Finds all first degree connectioned L10Recurrences
+		public static List<L10Recurrence> GetAllConnectedL10Recurrence(UserOrganizationModel caller, long recurrenceId)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					return _GetAllConnectedL10Recurrence(s, caller, recurrenceId);
+				}
+			}
+		}
+
+		public static List<L10Recurrence> _GetAllConnectedL10Recurrence(ISession s,UserOrganizationModel caller, long recurrenceId)
+		{
+			var perm = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+
+			var userIds = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+				.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
+				.Select(x => x.User.Id)
+				.List<long>().ToList();
+
+			var recurrenceIds = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+				.Where(x => x.DeleteTime == null)
+				.WhereRestrictionOn(x => x.User.Id).IsIn(userIds)
+				.Select(x => x.L10Recurrence.Id)
+				.List<long>().ToList();
+
+			return s.QueryOver<L10Recurrence>()
+				.Where(x => x.DeleteTime == null)
+				.WhereRestrictionOn(x => x.Id).IsIn(recurrenceIds)
+				.List().ToList();
+
+		}
+
+		public static List<L10Recurrence> GetAllL10RecurrenceAtOrganization(UserOrganizationModel caller, long organizationId)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					return _GetAllL10RecurrenceAtOrganization(s, caller, organizationId);
+				}
+			}
+		}
+
+		public static List<L10Recurrence> _GetAllL10RecurrenceAtOrganization(ISession s, UserOrganizationModel caller, long organizationId)
+		{
+			PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+			return s.QueryOver<L10Recurrence>()
+				.Where(x => x.DeleteTime == null && x.Organization.Id == organizationId)
+				.List().ToList();
+		}
+
+		
 	}
 }

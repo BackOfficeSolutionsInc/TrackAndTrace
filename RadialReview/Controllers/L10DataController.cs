@@ -14,7 +14,9 @@ using RadialReview.Models.L10.VM;
 namespace RadialReview.Controllers
 {
     public partial class L10Controller : BaseController
-    {
+	{
+
+		#region Scorecard
 		// GET: L10Data
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult UpdateScore(long id, long s, long w, long m, string value, string dom)
@@ -68,18 +70,50 @@ namespace RadialReview.Controllers
 
 			return PartialView(am);
 		}
+		#endregion
+
+		#region Issues
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateIssues(long id, IssuesDataList model)
+		{
+			var recurrenceId = id;
+			L10Accessor.UpdateIssues(GetUser(), recurrenceId, model);
+			return Json(ResultObject.SilentSuccess());
+		}
+		
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateIssueCompletion(long id, long issueId,bool @checked,string connectionId=null)
+		{
+			var recurrenceId = id;
+			L10Accessor.UpdateIssueCompletion(GetUser(), recurrenceId, issueId, @checked, connectionId);
+			return Json(ResultObject.SilentSuccess(@checked));
+		}
+		#endregion
+
+		#region Todos
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateTodos(long id, TodoDataList model)
+		{
+			var recurrenceId = id;
+			L10Accessor.UpdateTodos(GetUser(), recurrenceId, model);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null)
+		{
+			var recurrenceId = id;
+			L10Accessor.UpdateTodoCompletion(GetUser(), recurrenceId, todoId, @checked, connectionId);
+			return Json(ResultObject.SilentSuccess(@checked));
+		}
+		
+		#endregion
 
 		
-
-	    [Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-	    public JsonResult UpdateIssues(long id, IssuesDataList model)
-	    {
-		    var recurrenceId = id;
-		    L10Accessor.UpdateIssues(GetUser(),recurrenceId, model);
-			return Json(ResultObject.SilentSuccess());
-	    }
-
 
     }
 }

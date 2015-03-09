@@ -29,6 +29,11 @@ namespace RadialReview.Models.Json
 
     public class ResultObject
     {
+	    public ResultObject NoRefresh(){
+		    Refresh = false;
+		    return this;
+	    }
+
         public StatusType Status { get; set; }
 
         public String MessageType { get { return Status.ToString(); } }
@@ -54,7 +59,8 @@ namespace RadialReview.Models.Json
 		public String Message { get; set; }
 		public String Trace { get; set; }
 		public String TraceMessage { get; set; }
-        public bool Error { get; set; }
+		public bool Error { get; set; }
+		public bool Refresh { get; set; }
 
         public static ResultObject Success(String message)
         {
@@ -64,6 +70,7 @@ namespace RadialReview.Models.Json
         protected ResultObject()
         {
             Status = StatusType.SilentSuccess;
+	        Refresh = true;
         }
 
         public static ResultObject SilentSuccess(object obj=null)

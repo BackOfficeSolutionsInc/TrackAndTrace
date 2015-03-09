@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Exceptions.MeetingExceptions;
-using RadialReview.Helpers;
 using RadialReview.Models;
 using RadialReview.Models.L10;
 using RadialReview.Accessors;

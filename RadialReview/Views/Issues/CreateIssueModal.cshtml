@@ -1,9 +1,9 @@
-﻿@model RadialReview.Models.Issues.ScoreCardIssueVM
+﻿@model RadialReview.Models.Issues.IssueVM
 
 @Html.SecuredHiddenFor(x => x.ByUserId)
 @Html.SecuredHiddenFor(x => x.MeetingId)
-@Html.SecuredHiddenFor(x => x.MeasurableId)
 @Html.SecuredHiddenFor(x => x.RecurrenceId)
+@Html.SecuredHiddenFor(x => x.ForId)
 	
 <div class="form-group">
 	@Html.LabelFor(x => x.Message)
