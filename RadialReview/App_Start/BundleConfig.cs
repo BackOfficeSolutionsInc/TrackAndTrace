@@ -58,20 +58,19 @@ namespace RadialReview
 			bundles.Add(new StyleBundle("~/Content/L10").Include(
 					"~/Content/L10/L10.css",
 					"~/Content/L10/L10Todo.css",
-					"~/Content/L10/L10Scorecard.css",
 					"~/Content/L10/L10Stats.css",
-					"~/Content/L10/L10IDS.v2.css"
+					"~/Content/L10/L10Rocks.css",
+					"~/Content/L10/L10IDS.v2.css",
+					"~/Content/L10/L10Scorecard.css"
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/L10").Include(
-					"~/Scripts/L10/L10Ids.js",
 					"~/Scripts/L10/L10.js",
 					"~/Scripts/L10/rtL10.js",
-					"~/Scripts/L10/L10Scorecard.js",
+					"~/Scripts/L10/L10Ids.js",
 					"~/Scripts/L10/L10Todo.js",
-					//"~/Scripts/L10/jquery-ui.sortable.min.js",
-					//"~/Scripts/L10/jquery.mjs.nestedSortable.js"
-					//"~/Scripts/L10/jquery.nestable.js"
+					"~/Scripts/L10/L10Rocks.js",
+					"~/Scripts/L10/L10Scorecard.js",
 					"~/Scripts/L10/jquery.sortable.js"
 				));
 
@@ -87,7 +86,7 @@ namespace RadialReview
 #if DEBUG
 			BundleTable.EnableOptimizations = false;
 #else
-                BundleTable.EnableOptimizations = true;
+			BundleTable.EnableOptimizations = true;
 #endif
 		}
 	}

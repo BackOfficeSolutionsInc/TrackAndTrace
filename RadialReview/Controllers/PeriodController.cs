@@ -42,7 +42,7 @@ namespace RadialReview.Controllers
         public ActionResult Index()
 		{
 			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id);
-			var canEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagingOrganization());
+			var canEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 			return View(periods.Select(x => new PeriodVM(x) { CanEdit = canEdit }));
         }
 

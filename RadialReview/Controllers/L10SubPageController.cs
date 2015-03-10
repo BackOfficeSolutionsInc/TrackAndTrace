@@ -43,6 +43,8 @@ namespace RadialReview.Controllers
 
 				switch (page)
 				{
+					case "rocks":
+						return Rocks(model);
 					case "todo":
 						return Todo(model);
 					case "scorecard":
@@ -164,9 +166,16 @@ namespace RadialReview.Controllers
 			return PartialView("Scorecard", model);
 		}
 		#endregion
+		
+		#region Rocks
+		private PartialViewResult Rocks(L10MeetingVM model)
+		{
+			model.Rocks = L10Accessor.GetRocksForRecurrence(GetUser(), model.Recurrence.Id, model.Meeting.Id);
+			return PartialView("Rocks", model);
+		}
+		#endregion
 
 		#region Todo
-
 		private PartialViewResult Todo(L10MeetingVM model)
 		{
 			model.Todos = L10Accessor.GetTodosForRecurrence(GetUser(), model.Recurrence.Id,model.Meeting.Id);
@@ -263,6 +272,8 @@ namespace RadialReview.Controllers
 
 
 		#endregion
+
+		
 
 	}
 }

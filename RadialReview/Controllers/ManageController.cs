@@ -149,11 +149,12 @@ namespace RadialReview.Controllers
 		{
 			var user = GetUser().Hydrate().Organization().Execute();
 
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization());
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 
 			var companyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
 				.Select(x => x.CompanyValue)
 				.ToList();
+			var companyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 
 			var model = new OrganizationViewModel()
 			{
@@ -164,9 +165,8 @@ namespace RadialReview.Controllers
 				ManagersCanEditPositions = user.Organization.ManagersCanEditPositions,
 				ManagersCanRemoveUsers = user.Organization.ManagersCanRemoveUsers,
 				CompanyValues = companyValues,
+				CompanyRocks = companyRocks,
 				SendEmailImmediately = user.Organization.SendEmailImmediately,
-
-
 			};
 
 			return View(model);
@@ -190,6 +190,8 @@ namespace RadialReview.Controllers
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
 				.Select(x => x.CompanyValue)
 				.ToList();
+
+			model.CompanyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 
 			return View(model);
 		}

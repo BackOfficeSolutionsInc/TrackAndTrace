@@ -10,6 +10,7 @@ using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Hubs;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10.VM;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Controllers
 {
@@ -110,7 +111,16 @@ namespace RadialReview.Controllers
 			L10Accessor.UpdateTodoCompletion(GetUser(), recurrenceId, todoId, @checked, connectionId);
 			return Json(ResultObject.SilentSuccess(@checked));
 		}
-		
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateRockCompletion(long id, long rockId, RockState state, string connectionId = null)
+		{
+			var recurrenceId = id;
+			L10Accessor.UpdateRockCompletion(GetUser(), recurrenceId, rockId, state, connectionId);
+			return Json(ResultObject.SilentSuccess(state.ToString()));
+		}
+
 		#endregion
 
 		

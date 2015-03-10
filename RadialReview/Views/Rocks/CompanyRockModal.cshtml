@@ -1,0 +1,51 @@
+﻿@model RadialReview.Controllers.RocksController.RockVM
+
+
+<div class="form">
+	@Html.HiddenFor(x => x.UserId)
+	<div class="">
+		<div class="row">
+			<div class="col-sm-2">
+				<label>Rocks:</label>
+			</div>
+			<div class="col-sm-8" id="allRows">
+				@foreach (var item in Model.Rocks) {
+					Html.RenderPartial("_RockRow", item);
+				}
+			</div>
+			<div class="col-sm-2">
+				<div class="btn btn-default clickable" onclick="addRow();">Add</div>
+			</div>
+		</div>
+	</div> 
+</div>
+<script>
+	function formatState(state) {
+			if (!state.id) {
+				return state.text;
+			}
+			var $state = $('<span><img width=32 height=32 src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+			return $state;
+		};
+
+	function addRow() {
+		$.ajax({
+			url: "/Rocks/BlankEditorRow?includeUsers=true",
+			cache: false,
+			success: function(html) {
+				$("#allRows").append(html);
+			}
+		});
+		return false;
+	}
+
+	$(function () {
+		$(document).on("click","span.deleteRow", function () {
+			$(this).parents("div.roleRow:first").hide();
+			$(this).parents("div.roleRow:first").find("[name*='DeleteTime']").val("@Model.CurrentTime.ToString()");
+			return false;
+		});
+	});
+
+
+</script>

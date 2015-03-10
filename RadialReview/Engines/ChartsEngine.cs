@@ -241,9 +241,6 @@ namespace RadialReview.Engines
 				}
 			}
 
-
-
-			
 			//var allAnswers = _ReviewAccessor.GetReviewContainerAnswers(caller, reviewsId);
 			//var reviewContainer = _ReviewAccessor.GetReviewContainer(caller, reviewsId, false, false, false);
 
@@ -255,7 +252,7 @@ namespace RadialReview.Engines
 			Dictionary<long, OrganizationTeamModel> teamLookup = null;
 			var teamMembers = _TeamAccessor.GetTeamMembersAtOrganization(caller, orgId);
 			if (admin){
-				_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization().Or(y=>y.EditReviewContainer(reviewsId)));
+				_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization(caller.Organization.Id).Or(y=>y.EditReviewContainer(reviewsId)));
 			}else{
 				var subordinateIds =_DeepSubordianteAccessor.GetSubordinatesAndSelf(caller, caller.Id);
 				teamMembers=teamMembers.Where(x => subordinateIds.Contains(x.UserId)).ToList();

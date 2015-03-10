@@ -355,12 +355,12 @@ namespace RadialReview.Utilities
 			
 			return ManagesUserOrganization(userId,false);
         }
-        public PermissionsUtility ManagingOrganization()
+        public PermissionsUtility ManagingOrganization(long organizationId)
         {
             if (IsRadialAdmin(caller))
                 return this;
 
-            if (IsManagingOrganization(caller.Organization.Id,true))
+            if (IsManagingOrganization(organizationId,true))
                 return this;
 
             throw new PermissionsException();
@@ -482,7 +482,7 @@ namespace RadialReview.Utilities
             if (team.ManagedBy == caller.Id)
                 return this;
 
-            ManagingOrganization();
+			ManagingOrganization(caller.Organization.Id);
 
             return this;
 
@@ -886,8 +886,8 @@ namespace RadialReview.Utilities
 		    foreach (var o in or){
 			    try{
 				    return o(this);
-			    }catch (PermissionsException){
-			    }
+			    }catch (PermissionsException){}
+			    catch (Exception){}
 		    }
 			throw new PermissionsException();
 	    }

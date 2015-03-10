@@ -378,6 +378,7 @@
     <Compile Include="Models\L10\FocusType.cs" />
     <Compile Include="Models\L10\L10Meeting.cs" />
     <Compile Include="Models\L10\L10MeetingAttendee.cs" />
+    <Compile Include="Models\L10\L10Rock.cs" />
     <Compile Include="Models\L10\old\L10Meeting_Item.cs" />
     <Compile Include="Models\L10\L10Recurrence.cs" />
     <Compile Include="Models\L10\VM\L10EditVM.cs" />
@@ -624,11 +625,13 @@
     <Content Include="Content\fonts\fontastic.ttf" />
     <Content Include="Content\fonts\fontastic.woff" />
     <Content Include="Content\L10\l10IDS.v2.css" />
+    <Content Include="Content\L10\L10Rocks.css" />
     <Content Include="Content\L10\L10Todo.css" />
     <Content Include="Scripts\L10\jquery-ui.color.js" />
     <Content Include="Scripts\L10\jquery-ui.sortable.min.js" />
     <Content Include="Scripts\L10\jquery.mjs.nestedSortable.js" />
     <Content Include="Scripts\L10\jquery.sortable.js" />
+    <Content Include="Scripts\L10\L10Rocks.js" />
     <Content Include="Scripts\L10\L10Todo.js" />
     <Content Include="Views\L10\partial\IssueRow.cshtml" />
   </ItemGroup>
@@ -891,6 +894,7 @@
     <Content Include="Views\Issues\CreateIssueModal.cshtml" />
     <Content Include="Views\L10\Todo.cshtml" />
     <Content Include="Views\L10\partial\TodoRow.cshtml" />
+    <Content Include="Views\L10\Rocks.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1118,12 +1122,14 @@
     <Content Include="Views\Shared\_Picture.cshtml" />
     <Content Include="Views\Shared\_L10Layout.cshtml" />
     <Content Include="Views\Todo\CreateTodo.cshtml" />
+    <Content Include="Views\Rocks\CompanyRockModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="Content\NewFolder1\" />
     <Folder Include="External\" />
+    <Folder Include="Models\Rocks\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\Img\" />

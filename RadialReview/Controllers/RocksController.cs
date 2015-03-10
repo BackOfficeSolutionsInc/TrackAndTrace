@@ -22,17 +22,6 @@ namespace RadialReview.Controllers
 				CurrentTime= DateTime.UtcNow;
 			}
 		}
-
-		[Access(AccessLevel.Manager)]
-		public PartialViewResult Modal(long id)
-		{
-			var userId = id;
-			var rocks = _RockAccessor.GetAllRocks(GetUser(), userId);
-			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x=>x.Name,x=>x.Id);
-			ViewBag.Periods = periods;
-			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
-		}
-
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult ModalSingle(long id,long userId,long periodId)
 		{
@@ -47,23 +36,54 @@ namespace RadialReview.Controllers
 
 			return PartialView(new RocksController.RockVM { Rocks = rock.AsList(), UserId = userId });
 		}
-
 	    [Access(AccessLevel.Manager)]
 	    public JsonResult Delete(long id)
 	    {
 		    RockAccessor.DeleteRock(GetUser(), id);
 		    return Json(ResultObject.SilentSuccess());
 	    }
-
 		[Access(AccessLevel.Manager)]
-		public PartialViewResult BlankEditorRow()
-		{
-
+		public PartialViewResult BlankEditorRow(bool includeUsers=false,bool companyRock=false){
 			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
-			return PartialView("_RockRow", new RockModel(){CreateTime = DateTime.UtcNow});
+			if (includeUsers)
+				ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+			return PartialView("_RockRow", new RockModel(){
+				CreateTime = DateTime.UtcNow,
+				CompanyRock = companyRock,
+			});
+		}
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult CompanyRockModal(long id)
+		{
+			var orgId = id;
+			var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+
+			//var rocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), orgId, true);
+			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
+			ViewBag.Periods = periods;
+			ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id,false,false);
+			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
+		}
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public JsonResult CompanyRockModal(RocksController.RockVM model)
+		{
+			//var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+			var oid = GetUser().Organization.Id;
+			model.Rocks.ForEach(x=>x.OrganizationId=oid);
+			_RockAccessor.EditCompanyRocks(GetUser(), GetUser().Organization.Id, model.Rocks);
+			return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.SilentSuccess));
 		}
 
-
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult Modal(long id)
+		{
+			var userId = id;
+			var rocks = _RockAccessor.GetAllRocks(GetUser(), userId);
+			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x=>x.Name,x=>x.Id);
+			ViewBag.Periods = periods;
+			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
+		}
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
@@ -98,9 +118,7 @@ namespace RadialReview.Controllers
 		    if (editor && _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(forUserId, false))){
 			    editables = rocks.Select(x => x.Id).ToList();
 		    }
-
-
-
+			
 		    var model= new RockTable(){
 				Editables = editables,
 				Rocks = rocks,

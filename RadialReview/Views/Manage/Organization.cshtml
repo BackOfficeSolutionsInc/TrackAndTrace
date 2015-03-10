@@ -33,6 +33,32 @@
 		}
 	</div>
 </div>
+<div class="panel panel-default">
+	<div class="headerButton btn-link" onclick="@Html.ShowModal("Edit Company Rocks", "/Rocks/CompanyRockModal/" + Model.Id, "/Rocks/CompanyRockModal", onComplete: "location.reload()")">Edit</div>
+	<div class="panel-heading">
+		<h3 class="panel-title">Company Rocks:</h3>
+	</div>
+	<div class="panel-body numbers">
+		@if (Model.CompanyRocks.Any())
+		{
+			foreach (var rg in Model.CompanyRocks.GroupBy(x => x.PeriodId).OrderByDescending(x => x.First().Period.EndTime))
+			{
+				<b>@rg.First().Period.NotNull(x => x.Name):</b>
+				<ul>
+					@foreach (var r in rg)
+					{
+						<li class="font-size:19px;">
+							@r.Rock
+						</li>
+					}
+				</ul>
+			}
+		}else{
+			<span class="gray">No company rocks. Click edit to add some.</span>
+		}
+	</div>
+</div>
+
 
 @using (var f = Html.BeginForm("Organization", "Manage", FormMethod.Post))
 {

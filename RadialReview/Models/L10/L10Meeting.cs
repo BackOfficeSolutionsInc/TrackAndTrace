@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
 using Microsoft.AspNet.SignalR;
+using RadialReview.Models.Askables;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
 
@@ -21,7 +23,6 @@ namespace RadialReview.Models.L10
 		public virtual OrganizationModel Organization { get; set; }
 		public virtual long L10RecurrenceId { get; set; }
 		public virtual L10Recurrence L10Recurrence { get; set; }
-		public virtual IList<L10Meeting_Attendee> _MeetingAttendees { get; set; }
 		public virtual long MeetingLeaderId { get; set; }
 		public virtual UserOrganizationModel MeetingLeader { get; set; }
 		/// <summary>
@@ -29,6 +30,8 @@ namespace RadialReview.Models.L10
 		/// </summary>
 		public virtual IList<L10Meeting_Measurable> _MeetingMeasurables { get; set; }
 		public virtual IList<L10Meeting_Measurable> _MeetingConnections { get; set; }
+		public virtual IList<L10Meeting_Attendee> _MeetingAttendees { get; set; }
+		public virtual IList<L10Meeting_Rock> _MeetingRocks { get; set; }
 		public virtual IList<L10Meeting_Log> _MeetingLogs { get; set; }
 		public virtual IList<Tuple<string,double>> _MeetingLeaderPageDurations { get; set; }
 		public virtual String _MeetingLeaderCurrentPage { get; set; }
@@ -38,8 +41,9 @@ namespace RadialReview.Models.L10
 		
 		public L10Meeting()
 		{
-			_MeetingAttendees=new List<L10Meeting_Attendee>();
-			_MeetingMeasurables=new List<L10Meeting_Measurable>();
+			_MeetingAttendees = new List<L10Meeting_Attendee>();
+			_MeetingMeasurables = new List<L10Meeting_Measurable>();
+			_MeetingRocks = new List<L10Meeting_Rock>();
 			HubId = Guid.NewGuid();
 		}
 
@@ -62,7 +66,38 @@ namespace RadialReview.Models.L10
 
 				//HasMany(x => x.MeetingAttendees).KeyColumn("L10MeetingId").Not.LazyLoad().Cascade.None();
 				//HasMany(x => x.MeetingMeasurables).KeyColumn("L10MeetingId").Not.LazyLoad().Cascade.None();
+			}
+		}
 
+		public class L10Meeting_Rock : ILongIdentifiable, IDeletable
+		{
+			public virtual long Id { get; set; }
+			public virtual DateTime? DeleteTime { get; set; }
+			public virtual DateTime? CompleteTime { get; set; }
+			public virtual DateTime CreateTime { get; set; }
+			public virtual RockState Completion { get; set; }
+			public virtual L10Meeting L10Meeting { get; set; }
+			public virtual RockModel ForRock { get; set; }
+			public virtual L10Recurrence ForRecurrence { get; set; }
+
+			public L10Meeting_Rock()
+			{
+				CreateTime = DateTime.UtcNow;
+			}
+
+			public class L10Meeting_RockMap : ClassMap<L10Meeting_Rock>
+			{
+				public L10Meeting_RockMap()
+				{
+					Id(x => x.Id);
+					Map(x => x.DeleteTime);
+					Map(x => x.CompleteTime);
+					Map(x => x.CreateTime);
+					Map(x => x.Completion);
+					References(x => x.ForRock).Column("RockId");
+					References(x => x.L10Meeting).Column("MeetingId");
+					References(x => x.ForRecurrence).Column("RecurrenceId");
+				}
 			}
 		}
 

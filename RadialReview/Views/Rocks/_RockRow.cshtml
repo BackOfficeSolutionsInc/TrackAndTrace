@@ -1,4 +1,8 @@
-﻿@model RadialReview.Models.Askables.RockModel
+﻿@using RadialReview.Models
+@model RadialReview.Models.Askables.RockModel
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-","");
+}
 <div class="roleRow">
 	@using (Html.BeginCollectionItem("Rocks"))
 	{
@@ -10,18 +14,47 @@
 				@Html.HiddenFor(x => x.CreateTime)
 				@Html.HiddenFor(x => x.CompleteTime)
 			</div>
-			@if (ViewBag.HideDelete==null || ViewBag.HideDelete == false){
+			@if (ViewBag.HideDelete == null || ViewBag.HideDelete == false)
+			{
 				<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
 			}
 		</div>
 
 		<div class="lineAfter @(ViewBag.HidePeriod ?? false ? "hidden" : "")" style="width:calc( 100% - 25px );display:inline-block">
-				@Html.DropDownListFor(x => x.PeriodId, (IEnumerable<SelectListItem>)ViewBag.Periods, new { @class = "form-control" })
+			@Html.DropDownListFor(x => x.PeriodId, (IEnumerable<SelectListItem>)ViewBag.Periods, new { @class = "form-control" })
 		</div>
+		if (ViewBag.PossibleUsers != null)
+		{
+			<div class="lineAfter" style="width: calc(100% - 25px); display: inline-block">
+				@*<select name="@Html.NameFor(x => x.ForUserId)" class="select-user form-control user-@guid" style="width: 100%; height: 64px;">
+					@foreach (var u in (IEnumerable<UserOrganizationModel>)ViewBag.PossibleUsers)
+					{
+						<option data-img="@u.ImageUrl(true, ImageSize._32)" value="@u.Id" @(u.Id==Model.ForUserId?"selected":"")>@u.GetName()</option>
+					}
+				</select>*@
+				@Html.DropDownListFor(x=>x.ForUserId,((IEnumerable<UserOrganizationModel>)ViewBag.PossibleUsers).ToSelectList(x=>x.GetNameAndTitle(),x=>x.Id),new {@class="form-control", style="width: 100%;"})
+			</div>
+		}
+		else
+		{
+			@Html.HiddenFor(x => x.ForUserId)
+		}
 	}
 	<div class="smallBreak"></div>
 	<div class="smallBreak"></div>
-	@if (!(ViewBag.HidePeriod ?? false)){
-		<hr/>
+	@if (!(ViewBag.HidePeriod ?? false) || ViewBag.PossibleUsers != null)
+	{
+		<hr />
 	}
 </div>
+
+
+@*@if (ViewBag.PossibleUsers != null)
+{
+	<script>
+		$(".user-@guid").select2({
+			templateResult: formatState,
+			templateSelection: formatState
+		});
+	</script>
+}*@

@@ -21,7 +21,7 @@ $(function () {
 		$("#todoDetails").append("<div class='createTime'>" + new Date(createtime).toLocaleDateString() + "</div>");
 
 		$("#todoDetails").append("<div class='heading'><h4>" + message + "</h2></div>");
-		$("#todoDetails").append("<textarea class='details'>" + details + "</textarea>");
+		$("#todoDetails").append("<textarea id='todoDetailsField' class='details rt'>" + details + "</textarea>");
 		$("#todoDetails").append("<div class='button-bar'>" +
 			"<span class='btn-group pull-right'>" +
 				"<span class='btn btn-default btn-xs doneButton'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Done</span>" +

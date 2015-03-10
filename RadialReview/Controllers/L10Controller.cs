@@ -43,6 +43,33 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Create()
+		{
+			var m = new L10Recurrence();
+
+			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
+			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+			var allRocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
+
+			var model = new L10EditVM()
+			{
+				Recurrence = new L10Recurrence()
+				{
+					CreateTime = DateTime.UtcNow,
+					OrganizationId = GetUser().Organization.Id,
+				},
+				PossibleMeasurables = allMeasurables,
+				PossibleMembers = allMembers,
+				PossibleRocks = allRocks,
+				SelectedMeasurables = new long[0],
+				SelectedMembers = new long[0],
+				SelectedRocks = new long[0],
+			};
+
+			return View("Edit", model);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Edit(long id)
 		{
 			var recurrenceId = id;
@@ -50,6 +77,7 @@ namespace RadialReview.Controllers
 
 			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+			var allRocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
 
 			var model = new L10EditVM()
 			{
@@ -57,57 +85,25 @@ namespace RadialReview.Controllers
 
 				PossibleMeasurables = allMeasurables,
 				PossibleMembers = allMembers,
+				PossibleRocks = allRocks,
 
 				SelectedMeasurables = r._DefaultMeasurables.Select(x => x.Measurable.Id).ToArray(),
 				SelectedMembers = r._DefaultAttendees.Select(x => x.User.Id).ToArray(),
-
+				SelectedRocks = r._DefaultRocks.Select(x => x.ForRock.Id).ToArray(),
 			};
 			return View("Edit", model);
 		}
-	/*
-		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Stats(long id)
-		{
-			var recurrenceId = id;
-			var pview = MeetingStats(id);
-			return View("MeetingStats", pview.Model);
-		}
-	*/
-		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Create()
-		{
-			var m = new L10Recurrence();
-			
-			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
-			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
-
-			var model = new L10EditVM(){
-				Recurrence = new L10Recurrence(){
-					CreateTime = DateTime.UtcNow,
-					OrganizationId = GetUser().Organization.Id,
-				},
-				PossibleMeasurables = allMeasurables,
-				PossibleMembers = allMembers,
-				SelectedMeasurables = new long[0],
-				SelectedMembers = new long[0],
-			};
-
-			return View("Edit",model);
-		}
-
+	
 		[HttpPost]
 	    [Access(AccessLevel.UserOrganization)]
 	    public ActionResult Edit(L10EditVM model)
 	    {
-
 			ValidateValues(model,x=>x.Recurrence.Id,x=>x.Recurrence.CreateTime,x=>x.Recurrence.OrganizationId);
-
 
 			if (String.IsNullOrWhiteSpace(model.Recurrence.Name)){
 				ModelState.AddModelError("Name","Meeting name is required");
 			}
-
-
+			var allRocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), GetUser().Organization.Id,true);
 			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 			if (ModelState.IsValid){
@@ -123,15 +119,25 @@ namespace RadialReview.Controllers
 					Measurable = x
 				}).ToList();
 
+				model.Recurrence._DefaultRocks = allRocks.Where(x => model.SelectedRocks.Any(y => y == x.Id))
+					.Select(x => new L10Recurrence.L10Recurrence_Rocks(){
+						L10Recurrence = model.Recurrence,
+						ForRock = x
+					}).ToList();
+
 				L10Accessor.EditL10Recurrence(GetUser(),model.Recurrence);
 
 				return RedirectToAction("Index");
 			}
 
-			model.PossibleMeasurables = allMeasurables;
+			model.PossibleRocks = allRocks;
 			model.PossibleMembers = allMembers;
-			model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
+			model.PossibleMeasurables = allMeasurables;
+
+			model.SelectedRocks = model.SelectedRocks ?? new long[0];
 			model.SelectedMembers = model.SelectedMembers ?? new long[0];
+			model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
+			
 
 			return View("Edit",model);
 		}

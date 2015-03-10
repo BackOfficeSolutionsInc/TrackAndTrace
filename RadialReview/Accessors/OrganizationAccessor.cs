@@ -1,21 +1,15 @@
-﻿using FluentNHibernate.Utils;
-using NHibernate.Util;
-using RadialReview.Exceptions;
+﻿using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
-using RadialReview.Models.Responsibilities;
-using RadialReview.Models.Interfaces;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities.DataTypes;
-using NHibernate;
 using RadialReview.Models.UserModels;
-using System.Text.RegularExpressions;
 using RadialReview.Utilities.Query;
+using NHibernate;
 
 namespace RadialReview.Accessors
 {
@@ -320,7 +314,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditOrganization(organizationId).ManagingOrganization();
+					PermissionsUtility.Create(s, caller).EditOrganization(organizationId).ManagingOrganization(caller.Organization.Id);
                     var org = s.Get<OrganizationModel>(organizationId);
                     if (managersHaveAdmin != null && managersHaveAdmin.Value != org.ManagersCanEdit)
                     {
@@ -544,6 +538,27 @@ namespace RadialReview.Accessors
 				}
 			}
 	    }
-		
-    }
+
+
+		public List<RockModel> GetCompanyRocks(UserOrganizationModel caller, long organizationId)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+					return s.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.OrganizationId == organizationId && x.CompanyRock)
+						.List().ToList();
+				}
+			}
+		}
+
+		public static List<long> GetAllUserOrganizations(ISession s, PermissionsUtility perm, long organizationId)
+		{
+			perm.ViewOrganization(organizationId);
+
+			return s.QueryOver<UserOrganizationModel>()
+				.Where(x => x.DeleteTime == null && x.Organization.Id == organizationId)
+				.Select(x => x.Id)
+				.List<long>().ToList();
+		}
+	}
 }

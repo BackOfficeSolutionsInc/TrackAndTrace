@@ -32,14 +32,6 @@
 				</div>
 				<h2>Todo List <small>.</small></h2>
 			</hgroup>
-			@*<div class="dd">
-					<ol class="ids-list dd-list">
-						@foreach (var i in Model.Issues.OrderBy(x => x._Order))
-						{
-							@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)
-						}
-					</ol>
-				</div>*@
 			<div class="todo-container ">
 				<ol class="todo-list sortable init-@(guid)">
 					@foreach (var i in Model.Todos.OrderBy(x => x.Ordering))
@@ -48,7 +40,6 @@
 					}
 				</ol>
 			</div>
-
 		</div>
 		<div class="col-md-4">
 			<div class="hidden-lg hidden-md" style="height: 25px;"></div>

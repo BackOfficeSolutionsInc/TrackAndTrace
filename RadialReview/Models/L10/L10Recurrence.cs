@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
 
@@ -20,6 +21,7 @@ namespace RadialReview.Models.L10
 
 		public virtual IList<L10Recurrence_Attendee> _DefaultAttendees { get; set; }
 		public virtual IList<L10Recurrence_Measurable> _DefaultMeasurables { get; set; }
+		public virtual IList<L10Recurrence_Rocks> _DefaultRocks { get; set; }
 
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>
@@ -36,6 +38,36 @@ namespace RadialReview.Models.L10
 
 				//HasMany(x => x.DefaultAttendees).KeyColumn("L10RecurrenceId");
 				//HasMany(x => x.DefaultMeasurables).KeyColumn("L10RecurrenceId");
+			}
+		}
+
+		public class L10Recurrence_Rocks : ILongIdentifiable, IDeletable, IOneToMany
+		{
+			public virtual long Id { get; set; }
+			public virtual DateTime CreateTime { get; set; }
+			public virtual DateTime? DeleteTime { get; set; }
+			public virtual RockModel ForRock { get; set; }
+			public virtual L10Recurrence L10Recurrence { get; set; }
+			public L10Recurrence_Rocks()
+			{
+				CreateTime = DateTime.UtcNow;
+			}
+
+			public class L10Recurrence_RocksMap : ClassMap<L10Recurrence_Rocks>
+			{
+				public L10Recurrence_RocksMap()
+				{
+					Id(x => x.Id);
+					Map(x => x.CreateTime);
+					Map(x => x.DeleteTime);
+					References(x => x.L10Recurrence).Column("L10RecurrenceId");//.LazyLoad().ReadOnly().Not.Nullable().Cascade.SaveUpdate();
+					References(x => x.ForRock).Column("RockId");//.LazyLoad().ReadOnly().Not.Nullable().Cascade.SaveUpdate();
+				}
+			}
+
+			public virtual object UniqueKey()
+			{
+				return Tuple.Create(ForRock.Id, L10Recurrence.Id, DeleteTime);
 			}
 		}
 

@@ -93,14 +93,20 @@ namespace RadialReview.Models.Todo
 					return "Todo was not completed";
 				else
 					return "";
-				
+
 			}
 			return "";
 		}
 
 		public virtual string GetIssueDetails()
 		{
-			return Message + "\n" + Details + "\nOwner:" + AccountableUser.GetName();
+			var week = CreateTime.ToString("d");
+			var accountable = AccountableUser.GetName();
+		
+			var footer = "Week of " + week + "\nOwner: " + accountable;
+
+
+			return "MESSAGE: " + Message + "\nDETAILS: " + Details + "\n\n" + footer;
 
 		}
 	}

@@ -455,7 +455,7 @@ namespace RadialReview.Accessors
 						if (found.Id == caller.Id)
 							throw new PermissionsException("You cannot unmanage this organization yourself.");
 
-						perm.ManagesUserOrganization(userOrganizationId, true).ManagingOrganization();
+						perm.ManagesUserOrganization(userOrganizationId, true).ManagingOrganization(caller.Organization.Id);
 						found.ManagingOrganization = manageringOrganization.Value;
 						/*
 						if (managerId.Value == -3)

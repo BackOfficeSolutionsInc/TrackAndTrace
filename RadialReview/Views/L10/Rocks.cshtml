@@ -1,0 +1,51 @@
+﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+
+
+
+<div class="rocks">
+	<div class="row">
+		<div class="col-md-8">
+			<hgroup class="page-header">
+				<div class="pull-right">
+					<div class="btn-group ">
+						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
+						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
+					</div>
+					<div class="btn-group">
+						<div class="btn btn-default btn-xs issuesModal"
+							 data-method="createissue"
+							 data-meeting="@Model.Meeting.Id"
+							 data-recurrence="@Model.Recurrence.Id">
+							<span class="glyphicon glyphicon-pushpin"></span> New Issue
+						</div>
+						<div class="btn btn-default btn-xs todoModal"
+							 data-method="createtodo"
+							 data-meeting="@Model.Meeting.Id"
+							 data-recurrence="@Model.Recurrence.Id">
+							<span class="glyphicon glyphicon-unchecked"></span> New Todo
+						</div>
+					</div>
+				</div>
+				<h2>Rock Review <small></small></h2>
+			</hgroup>
+			<div class="rocks-container">
+				@foreach (var i in Model.Rocks)
+				{
+					<div class="rocks-item">
+						<div class="component">
+							<div class="message">@i.ForRock.Rock</div>
+							@Html.EditorFor(x => i.Completion, new { name = "rock_" + i.Id })
+							
+							<div class="owner">@i.ForRock.AccountableUser.GetName()</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	var recurrenceId = @Model.Recurrence.Id;
+	var meetingId = @Model.Meeting.Id;
+</script>
+<script src="~/Scripts/components/rockstate.js"></script>

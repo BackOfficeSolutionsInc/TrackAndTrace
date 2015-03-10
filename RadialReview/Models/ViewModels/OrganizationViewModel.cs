@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.Askables;
 
 namespace RadialReview.Models.ViewModels
 {
@@ -16,7 +17,8 @@ namespace RadialReview.Models.ViewModels
         public bool ManagersCanRemoveUsers { get; set; }
         public String ImageUrl { get; set; }
 
-		public List<String> CompanyValues { get; set; } 
+		public List<String> CompanyValues { get; set; }
+		public List<RockModel> CompanyRocks { get; set; } 
 
     }
 }

@@ -1,0 +1,46 @@
+﻿
+.rocks-container {
+  /* We first create a flex layout context */
+  display: flex;
+  
+  /* Then we define the flow direction and if we allow the items to wrap 
+   * Remember this is the same as:
+   * flex-direction: row;
+   * flex-wrap: wrap;
+   */
+  flex-flow: row wrap;
+  
+  /* Then we define how is distributed the remaining space */
+  justify-content: space-around;
+}
+
+.rocks-container .rocks-item {
+	padding: 5px;
+	width: 400px;
+	height: 220px;
+	margin-top: 10px;
+	text-align: center;
+	position: relative;
+}
+
+.rocks-container .rocks-item .message {
+	font-weight: bold;
+	font-size: 20px;
+	height: 90px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: pre-wrap;
+}
+.rocks-container .rocks-item .owner {
+	text-align: right;
+	color: #B2B2B2;
+	/* width: 100%; */
+	position: absolute;
+	left: 0;
+	right: 10px;
+	bottom: 5px;
+	font-size: 12px;
+}
+.rocks-container .rocks-item .owner .lbl {
+	color: lightgray;
+}

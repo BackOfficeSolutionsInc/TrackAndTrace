@@ -48,6 +48,7 @@ $(function () {
 	meetingHub.client.appendTodo = appendTodo;
 	meetingHub.client.updateTodoList = updateTodoList;
 	meetingHub.client.updateTodoCompletion = updateTodoCompletion;
+	meetingHub.client.updateRockCompletion = updateRockCompletion;
 
 
 	$.connection.hub.start().done(function () {
