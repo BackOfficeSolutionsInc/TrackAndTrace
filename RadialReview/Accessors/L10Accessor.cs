@@ -927,14 +927,16 @@ namespace RadialReview.Accessors
 							.OrderByDescending(x => x.Id).GroupBy(x=>x.ForRock.Id)
 							.ToDictionary(x=>x.First().ForRock.Id,x=>x.First().Completion);
 
-						foreach (var r in recurrence._DefaultRocks)
-						{
+						foreach (var r in recurrence._DefaultRocks){
+							var state = RockState.Indeterminate;
+							previousRock.TryGetValue(r.ForRock.Id, out state);
+
 							var mm = new L10Meeting.L10Meeting_Rock()
 							{
 								ForRecurrence = recurrence,
 								L10Meeting = meeting,
 								ForRock = r.ForRock,
-								Completion = previousRock[r.ForRock.Id]==RockState.Complete?RockState.Complete : RockState.Indeterminate
+								Completion = state==RockState.Complete?RockState.Complete : RockState.Indeterminate
 							};
 							s.Save(mm);
 							meeting._MeetingRocks.Add(mm);
@@ -1048,11 +1050,16 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction()){
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId).ViewL10Meeting(meetingId);
 
-					return s.QueryOver<L10Meeting.L10Meeting_Rock>()
+					var found = s.QueryOver<L10Meeting.L10Meeting_Rock>()
 						.Where(x => x.DeleteTime == null && x.ForRecurrence.Id == recurrenceId && x.L10Meeting.Id == meetingId)
 						.Fetch(x=>x.ForRock).Eager
 						.List().ToList();
-					
+					foreach (var f in found)
+					{
+						var a=f.ForRock.AccountableUser.GetName();
+						var b=f.ForRock.AccountableUser.ImageUrl(true,ImageSize._32);
+					}
+					return found;
 				}
 			}
 		}

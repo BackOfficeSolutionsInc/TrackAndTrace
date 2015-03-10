@@ -120,20 +120,6 @@
 	padding-left: 0;
 }
 
-.ids .page-header {
-	margin-top: 0px;
-	margin: 5px 0;
-}
-
-.ids h2 {
-	margin-top: 0px;
-	margin-bottom: 0px;
-}
-.ids h4 {
-	margin-top:20px;
-	margin-bottom: 0px;
-}
-
 .ids-list .dd-placeholder/*, .ids-list .placeholder*/ {
 	border: 1px dotted #E8E8E8;
 	margin: 7px 7px;

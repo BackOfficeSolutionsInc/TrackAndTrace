@@ -895,6 +895,7 @@
     <Content Include="Views\L10\Todo.cshtml" />
     <Content Include="Views\L10\partial\TodoRow.cshtml" />
     <Content Include="Views\L10\Rocks.cshtml" />
+    <Content Include="Views\L10\Headlines.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

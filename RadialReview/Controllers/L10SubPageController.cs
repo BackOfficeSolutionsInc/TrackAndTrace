@@ -43,6 +43,8 @@ namespace RadialReview.Controllers
 
 				switch (page)
 				{
+					case "headlines":
+						return Headlines(model);
 					case "rocks":
 						return Rocks(model);
 					case "todo":
@@ -167,6 +169,7 @@ namespace RadialReview.Controllers
 		}
 		#endregion
 		
+		
 		#region Rocks
 		private PartialViewResult Rocks(L10MeetingVM model)
 		{
@@ -174,7 +177,12 @@ namespace RadialReview.Controllers
 			return PartialView("Rocks", model);
 		}
 		#endregion
-
+		#region Headlines
+		private PartialViewResult Headlines(L10MeetingVM model)
+		{
+			return PartialView("Headlines", model);
+		}
+		#endregion
 		#region Todo
 		private PartialViewResult Todo(L10MeetingVM model)
 		{

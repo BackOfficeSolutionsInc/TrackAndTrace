@@ -249,3 +249,18 @@ h3 {
 			opacity: 1;
 			content: "\e067";
 		}
+
+
+.meeting-page .page-header {
+	margin-top: 0px;
+	margin: 5px 0;
+}
+
+.meeting-page h2 {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+.meeting-page h4 {
+	margin-top:20px;
+	margin-bottom: 0px;
+}

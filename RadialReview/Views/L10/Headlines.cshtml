@@ -1,0 +1,37 @@
+﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+
+<div class="headlines meeting-page">
+	<div class="row">
+		<div class="col-md-12">
+			<hgroup class="page-header">
+				<div class="pull-right">
+					<div class="btn-group">
+						<div class="btn btn-default btn-xs issuesModal"
+						     data-method="createissue"
+						     data-meeting="@Model.Meeting.Id"
+						     data-recurrence="@Model.Recurrence.Id">
+							<span class="glyphicon glyphicon-pushpin"></span> New Issue
+						</div>
+						<div class="btn btn-default btn-xs todoModal"
+						     data-method="createtodo"
+						     data-meeting="@Model.Meeting.Id"
+						     data-recurrence="@Model.Recurrence.Id">
+							<span class="glyphicon glyphicon-unchecked"></span> New Todo
+						</div>
+					</div>
+				</div>
+				@*<h2>Employee/Customer Headlines <small></small></h2>*@
+				<h2>&nbsp;</h2>
+			</hgroup>
+			@*<div style="height:60px;"></div>*@
+			<div class="centered" style="width:65%; max-width: 600px;margin-top:-32px;">
+				<div class="component" style="padding: 20px 70px 30px 70px">
+					<h2>Employee/Customer Headlines:</h2>
+					<h4>Share any customer headlines, employee news, or issues for this week, good or bad.</h4>
+
+					@*<textarea class="rt" id="segue"></textarea>*@
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
