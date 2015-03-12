@@ -6,6 +6,10 @@
 		<label>Job Description:</label>
 	</div>
 	<div class="col-sm-9">
-		@Html.TextAreaFor(x => x.JobDescription, new { @class = "form-control verticalOnly" })
+		@Html.TextAreaFor(x => x.JobDescription, new { @class = "form-control verticalOnly unlockJD "+(Model.Locked?"disable":"")})
+		@if (Model.Locked){
+			<span class="icon fontastic-icon-link-broken lock" onclick="$('.unlockJD').removeClass('disable');$(this).remove();" title="This job description was created by a template. Click to disassociate."></span>
+		}
 	</div>
+
 </div>

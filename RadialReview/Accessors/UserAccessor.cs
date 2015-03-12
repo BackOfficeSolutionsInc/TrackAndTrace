@@ -798,12 +798,9 @@ namespace RadialReview.Accessors
 					tx.Commit();
 					s.Flush();
 
-					if (warnings.Count() == 0)
-					{
+					if (warnings.Count() == 0){
 						return ResultObject.CreateMessage(StatusType.Success, "Successfully removed " + user.GetFirstName() + ".");
-					}
-					else
-					{
+					}else{
 						return ResultObject.CreateMessage(StatusType.Warning, "Successfully removed " + user.GetFirstName() + ".<br/><b>Warning:</b><br/>" + string.Join("<br/>", warnings));
 					}
 				}
@@ -818,8 +815,11 @@ namespace RadialReview.Accessors
 				{
 					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId, false);
 					var user = s.Get<UserOrganizationModel>(userId);
-					user.JobDescription = jobDescription;
-					s.Update(user);
+					if (user.JobDescription != jobDescription){
+						user.JobDescription = jobDescription;
+						user.JobDescriptionFromTemplateId = null;
+						s.Update(user);
+					}
 					tx.Commit();
 					s.Flush();
 				}

@@ -8,6 +8,7 @@ namespace RadialReview.Models.Scorecard
 	public class MeasurableModel :ILongIdentifiable,IDeletable
 	{
 		public virtual long Id { get; set; }
+		public virtual long? FromTemplateItemId { get; set; }
 		public virtual string Title { get; set; }
 		public virtual long AccountableUserId { get; set; }
 		public virtual UserOrganizationModel AccountableUser { get; set; }
@@ -23,6 +24,21 @@ namespace RadialReview.Models.Scorecard
 
 		public virtual DayOfWeek DueDate { get; set; }
 		public virtual TimeSpan DueTime { get; set; }
+
+
+		public MeasurableModel(){
+		}
+
+		public MeasurableModel(OrganizationModel forOrganization)
+		{
+			var now = DateTime.UtcNow;
+			CreateTime = now;
+			NextGeneration =now- TimeSpan.FromDays(7);
+			DueDate = DayOfWeek.Friday;
+			DueTime = TimeSpan.FromHours(12).Add(TimeSpan.FromMinutes(-1*forOrganization.Settings.TimeZoneOffsetMinutes));
+			Organization = forOrganization;
+			OrganizationId = forOrganization.Id;
+		}
 
 		public class MeasurableMap : ClassMap<MeasurableModel>
 		{
@@ -45,6 +61,8 @@ namespace RadialReview.Models.Scorecard
 
 				Map(x => x.DueDate);
 				Map(x => x.DueTime);
+
+				Map(x => x.FromTemplateItemId);
 			} 
 		}
 		

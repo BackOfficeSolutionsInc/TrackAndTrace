@@ -7,6 +7,7 @@ using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models.Json;
 using RadialReview.Models.Scorecard;
+using RadialReview.Models.UserTemplate;
 
 namespace RadialReview.Controllers
 {
@@ -19,6 +20,9 @@ namespace RadialReview.Controllers
 			public List<MeasurableModel> Measurables { get; set; }
 			public DateTime CurrentTime = DateTime.UtcNow;
 
+
+			public List<UserTemplate.UT_Measurable> TemplateMeasurables { get; set; }
+			public long TemplateId { get; set; }
 		}
 
 		[Access(AccessLevel.Manager)]
@@ -34,13 +38,7 @@ namespace RadialReview.Controllers
 		public PartialViewResult BlankEditorRow()
 		{
 			ViewBag.AllMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToSelectList(x=>x.GetNameAndTitle(),x=>x.Id);
-
-			return PartialView("_MeasurableRow", new MeasurableModel(){
-				CreateTime = DateTime.UtcNow,
-				NextGeneration = DateTime.UtcNow-TimeSpan.FromDays(7),
-				DueDate = DayOfWeek.Friday,
-				DueTime = TimeSpan.FromHours(12).Add(TimeSpan.FromMinutes(-1*GetUser().Organization.Settings.TimeZoneOffsetMinutes)),
-			});
+			return PartialView("_MeasurableRow", new MeasurableModel(GetUser().Organization));
 		}
 
 		[HttpPost]
@@ -60,6 +58,43 @@ namespace RadialReview.Controllers
 			}
 			ScorecardAccessor.EditMeasurables(GetUser(), model.UserId, model.Measurables);
 			return Json(ResultObject.SilentSuccess());
-		} 
-    }
+		}
+
+		#region Template
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult TemplateModal(long id)
+		{
+			//var rocks = ScorecardAccessor.GetUserMeasurables(GetUser(), id);
+			//ViewBag.AllMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
+			var template = UserTemplateAccessor.GetUserTemplate(GetUser(), id, loadMeasurables: true);
+			return PartialView(new MeasurableController.MeasurableVM { TemplateMeasurables = template._Measurables, TemplateId = id });
+		}
+
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult BlankTemplateEditorRow(long id)
+		{
+			//ViewBag.AllMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
+			return PartialView("_TemplateMeasurableRow", new UserTemplate.UT_Measurable(){
+				TemplateId = id
+			});
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public JsonResult TemplateModal(MeasurableController.MeasurableVM model)
+		{
+			foreach (var r in model.TemplateMeasurables)
+			{
+				if (r.Id == 0)
+				{
+					if (r.DeleteTime == null)
+						UserTemplateAccessor.AddMeasurableToTemplate(GetUser(), model.TemplateId, r.Measurable,r.GoalDirection,r.Goal);
+				}
+				else
+					UserTemplateAccessor.UpdateMeasurableTemplate(GetUser(), r.Id, r.Measurable, r.GoalDirection, r.Goal, r.DeleteTime);
+			}
+			return Json(ResultObject.SilentSuccess());
+		}
+		#endregion
+	}
 }

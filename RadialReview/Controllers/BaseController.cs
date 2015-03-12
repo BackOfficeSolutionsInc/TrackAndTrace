@@ -98,7 +98,18 @@ namespace RadialReview.Controllers
 			_UserAccessor.ChangeRole(GetUserModel(),, roleId);
 		}
 		*/
-		protected UserOrganizationModel GetUser(long? userOrganizationId = null)//long? organizationId, Boolean full = false)
+
+		public UserOrganizationModel GetUser()
+		{
+			return _GetUser(null);
+		}
+		public UserOrganizationModel GetUser(long userOrganizationId)
+		{
+			return _GetUser(userOrganizationId);
+		}
+
+
+		private UserOrganizationModel _GetUser(long? userOrganizationId = null)//long? organizationId, Boolean full = false)
 		{
 			/**/
 			if (userOrganizationId == null)

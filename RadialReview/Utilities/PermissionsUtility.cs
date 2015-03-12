@@ -19,6 +19,7 @@ using System.Web;
 using RadialReview.Models.Todo;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.Prereview;
+using RadialReview.Models.UserTemplate;
 
 namespace RadialReview.Utilities
 {
@@ -170,7 +171,7 @@ namespace RadialReview.Utilities
                 return this;
             if (caller.Organization.Id == organizationId)
                 return this;
-            throw new PermissionsException();
+            throw new PermissionsException("Cannot view organization: "+organizationId);
         }
 
         #endregion
@@ -615,8 +616,23 @@ namespace RadialReview.Utilities
 
         #endregion
 
-        #region Prereview
-        public PermissionsUtility ViewPrereview(long prereviewId)
+		#region Templates
+		public PermissionsUtility CreateTemplates(long organizationId)
+		{
+			return ManagerAtOrganization(caller.Id, organizationId);
+		}
+		public PermissionsUtility ViewTemplate(long templateId)
+		{
+			return ViewOrganization(session.Get<UserTemplate>(templateId).OrganizationId);
+		}
+		public PermissionsUtility EditTemplate(long templateId)
+		{
+			return CreateTemplates(session.Get<UserTemplate>(templateId).OrganizationId);
+		}
+		#endregion
+
+		#region Prereview
+		public PermissionsUtility ViewPrereview(long prereviewId)
         {
             if (IsRadialAdmin(caller))
                 return this;
@@ -1012,5 +1028,7 @@ namespace RadialReview.Utilities
 		{
 			return this;
 		}
+
+	
 	}
 }

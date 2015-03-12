@@ -1525,3 +1525,26 @@ textarea.reason {
 .bblue {
 	background-color: blue;
 }
+
+
+input.disable,
+textarea.disable,
+select.disable{
+	pointer-events: none;
+	background-color: #ddd;
+}
+
+.glyphicon.disable,
+.icon.disable {
+	pointer-events: none;
+	opacity: .6;
+}
+
+.lock {
+	cursor: pointer;
+}
+
+.template-link {
+	color: #777;
+	padding: 0 3px ;
+}

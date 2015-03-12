@@ -209,7 +209,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
                 if (callback) {
                     eval(callback + '()');
                 } else {
-                    $('#modal input:not([type=hidden]):first').focus();
+                    $('#modal input:not([type=hidden]):not(.disable):first').focus();
                 }
             }, 550);
         }

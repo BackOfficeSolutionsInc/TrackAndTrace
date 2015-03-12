@@ -12,8 +12,8 @@ namespace RadialReview.Utilities
 		public static string BaseUrl()
 		{
 			switch(GetEnv()){
-				case Env.local_sqlite:return "http://localhost:2200/";
-				case Env.local_mysql:return "http://localhost:2200/";
+				case Env.local_sqlite:return "http://localhost:2201/";
+				case Env.local_mysql:return "http://localhost:2201/";
 				case Env.production:return "http://review.radialreview.com/";
 				default:throw new ArgumentOutOfRangeException();
 			}

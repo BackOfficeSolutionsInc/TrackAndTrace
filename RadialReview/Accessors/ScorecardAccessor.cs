@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.SignalR;
+using NHibernate;
 using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
@@ -83,9 +84,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}*/
-
-
-
+		
 		public static void EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables)
 		{
 			using (var s = HibernateSession.GetCurrentSession())

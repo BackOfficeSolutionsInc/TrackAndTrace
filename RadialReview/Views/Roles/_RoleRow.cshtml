@@ -1,15 +1,25 @@
 ﻿@model RadialReview.Models.Askables.RoleModel
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-","");
+	var lockedClass = Model.FromTemplateItemId.HasValue ? "disable unlockRLR-" + guid : " unlockRLR-" + guid;
+}
 <div class="roleRow">
 	@using (Html.BeginCollectionItem("roles"))
 	{
 		<div class="roww">
-			<div style="width:calc( 100% - 25px );display:inline-block">
+			<div style="width:calc( 100% - 52px );display:inline-block">
 				@Html.HiddenFor(x => x.Id)
-				@Html.TextBoxFor(x => x.Role, new { @class = "form-control roleItem" })
+				@Html.TextBoxFor(x => x.Role, new { @class = "form-control roleItem "+lockedClass })
 				@Html.HiddenFor(x => x.DeleteTime)
 			</div>
-			<span style="padding-left:8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
-
+			<span style="padding-left:8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>
+			@if (Model.FromTemplateItemId != null)
+			{
+				<span style="padding-left: 8px;" class="icon fontastic-icon-link-broken lock" 
+				      onclick="$('.unlockRLR-@guid').removeClass('disable');$(this).remove();$('.templateId.unlockRLR-@guid').prop('value',false);" 
+				      title="This role was created by a template. Click to disassociate.">
+				</span>
+			}
 		</div>
 	}
 	<div class="smallBreak"></div>

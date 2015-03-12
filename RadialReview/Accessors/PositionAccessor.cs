@@ -1,6 +1,7 @@
 ﻿using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
@@ -52,6 +53,11 @@ namespace RadialReview.Accessors
                     var forUser=s.Get<UserOrganizationModel>(forUserId);
                     forUser.Positions.Add(pd);
                     s.Update(forUser);
+
+	                var template=UserTemplateAccessor._GetAttachedUserTemplateUnsafe(s, positionId, AttachType.Position);
+					if (template!=null)
+						UserTemplateAccessor._AddUserToTemplateUnsafe(s,template.Organization,template.Id,forUserId,false);
+					
                     tx.Commit();
                     s.Flush();
                 }
@@ -73,6 +79,11 @@ namespace RadialReview.Accessors
                     posDur.DeletedBy = caller.Id;
                     s.Update(posDur);
 
+					var template = UserTemplateAccessor._GetAttachedUserTemplateUnsafe(s, posDur.Position.Id, AttachType.Position);
+
+					if (template != null)
+						UserTemplateAccessor._RemoveUserToTemplateUnsafe(s, template.Id, posDur.UserId);
+
                     tx.Commit();
                     s.Flush();
                 }
@@ -91,5 +102,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
+
+
     }
 }

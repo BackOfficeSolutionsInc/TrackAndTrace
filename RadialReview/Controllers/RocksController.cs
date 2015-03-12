@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using RadialReview.Accessors;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Json;
+using RadialReview.Models.UserTemplate;
 
 namespace RadialReview.Controllers
 {
@@ -13,14 +14,18 @@ namespace RadialReview.Controllers
     {
 		public class RockVM
 		{
+			public long TemplateId { get; set; }
 			public long UserId { get; set; }
 			public List<RockModel> Rocks { get; set; }
+			public List<Models.UserTemplate.UserTemplate.UT_Rock> TemplateRocks { get; set; }
 			public DateTime CurrentTime { get; set; }
+			public bool Locked { get; set; }
 
 			public RockVM()
 			{
 				CurrentTime= DateTime.UtcNow;
 			}
+
 		}
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult ModalSingle(long id,long userId,long periodId)
@@ -52,6 +57,7 @@ namespace RadialReview.Controllers
 				CompanyRock = companyRock,
 			});
 		}
+
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult CompanyRockModal(long id)
 		{
@@ -131,5 +137,42 @@ namespace RadialReview.Controllers
 	    }
 
 		//public ActionResult Assessment()
-    }
+		#region Template
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult TemplateModal(long id)
+		{
+			var templateId = id;
+			var template = UserTemplateAccessor.GetUserTemplate(GetUser(), templateId, loadRocks: true);
+			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
+			ViewBag.Periods = periods;
+			return PartialView(new RocksController.RockVM { TemplateRocks = template._Rocks, TemplateId = templateId });
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public JsonResult TemplateModal(RocksController.RockVM model)
+		{
+			foreach (var r in model.TemplateRocks){
+				if (r.Id == 0){
+					if (r.DeleteTime == null)
+						UserTemplateAccessor.AddRockToTemplate(GetUser(), model.TemplateId, r.Rock, r.PeriodId);
+				}
+				else
+					UserTemplateAccessor.UpdateRockTemplate(GetUser(), r.Id, r.Rock, r.PeriodId, r.DeleteTime);
+			}
+
+			return Json(ResultObject.SilentSuccess()); //ResultObject.Create(model.TemplateRocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.SilentSuccess));
+		}
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult BlankTemplateEditorRow(long id)
+		{
+			var templateId = id;
+			_PermissionsAccessor.Permitted(GetUser(),x=>x.ViewTemplate(templateId));
+			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
+			return PartialView("_TemplateRockRow", new UserTemplate.UT_Rock(){
+				TemplateId = templateId
+			});
+		}
+		#endregion
+	}
 }

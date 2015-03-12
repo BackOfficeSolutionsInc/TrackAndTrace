@@ -1,0 +1,14 @@
+﻿@model RadialReview.Controllers.JobDescriptionController.JobDescriptionVM
+
+@Html.SecuredHiddenFor(x => x.TemplateId)
+
+<div class="form-group">
+	<label>Job Description:</label>
+	@Html.TextAreaFor(x => x.JobDescription, new { @class = "form-control verticalOnly" })
+</div>
+<div class="checkbox">
+	<label>
+		Override Existing Job Description
+		@Html.CheckBoxFor(x => x.Override, new { })
+	</label>	
+</div>

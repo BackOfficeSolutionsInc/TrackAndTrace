@@ -1,4 +1,5 @@
 ﻿using RadialReview.Accessors;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.ViewModels;
 using System;
@@ -56,7 +57,7 @@ namespace RadialReview.Controllers
             _OrganizationAccessor.EditOrganizationPosition(caller,model.Id, caller.Organization.Id, /*model.Position.Value,*/model.PositionName);
             return Json(ResultObject.Success("Updated position."));
         }
-
+		
         /*
         public ActionResult EditAccountabilities(long positionId)
         {

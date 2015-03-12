@@ -1,0 +1,32 @@
+﻿
+@using RadialReview.Models.Enums
+@model RadialReview.Models.UserTemplate.UserTemplate.UT_Measurable
+<div class="roleRow">
+	@using (Html.BeginCollectionItem("TemplateMeasurables"))
+	{
+		<div class="roww">
+			<div style="width:calc( 100% - 25px );display:inline-block">
+				@Html.HiddenFor(x => x.Id)
+				@Html.HiddenFor(x => x.TemplateId)
+				<div class="row smallBreak2">
+					<div class="col-sm-12"><b>Measurable:</b>@Html.TextBoxFor(x => x.Measurable, new { @class = "form-control roleItem" })</div>
+					@*<div class="col-sm-6"><b>Measurable Admin:</b>@Html.DropDownListFor(x => x.AdminUserId, (IEnumerable<SelectListItem>)ViewBag.AllMembers, new { @class = "form-control roleItem" })</div>*@
+					@*<div class="col-sm-6"></div>*@
+				</div>
+				
+				<div><b>Goal:</b></div>
+				<div class ="row">
+					<div class="col-sm-6">@Html.EnumDropDownListFor(x => x.GoalDirection, new { @class = "form-control roleItem" })</div>
+					<div class="col-sm-6">
+						<input type="number" class="form-control roleItem" name="@Html.NameFor(x=>x.Goal)" value="@((Model.Goal).ToString("0.#####"))" />
+					</div>
+				</div>		
+				<hr/>																		
+				@Html.HiddenFor(x => x.DeleteTime)
+			</div>
+			<span style="padding-left:8px;top: -9px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+		</div>
+	}
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
+</div>

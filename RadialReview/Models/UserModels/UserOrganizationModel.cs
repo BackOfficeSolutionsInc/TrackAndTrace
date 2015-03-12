@@ -63,6 +63,8 @@ namespace RadialReview.Models
         public virtual int CountPerPage { get; set; }
         public virtual String JobDescription { get; set; }
 
+		public virtual long? JobDescriptionFromTemplateId { get; set; }
+
 		public virtual int NumRocks { get; set; }
 		public virtual int NumRoles { get; set; }
 		public virtual int NumMeasurables { get; set; }
@@ -224,7 +226,8 @@ namespace RadialReview.Models
 			Map(x => x.NumRoles);
 			Map(x => x.NumMeasurables);
 
-            Map(x => x.JobDescription).Length(65000);
+			Map(x => x.JobDescription).Length(65000);
+			Map(x => x.JobDescriptionFromTemplateId);
 
             References(x => x.TempUser).Not.LazyLoad().Cascade.All();
 

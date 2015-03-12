@@ -11,11 +11,10 @@ namespace RadialReview.Models.Askables {
 
 		public virtual String Rock { get; set; }
 
+		public virtual long? FromTemplateItemId { get; set; }
 		public virtual long OrganizationId { get; set; }
 		public virtual long ForUserId { get; set; }
-
 		public virtual bool CompanyRock { get; set; }
-
 		public override QuestionType GetQuestionType(){
 			return QuestionType.Rock;
 		}
@@ -25,7 +24,12 @@ namespace RadialReview.Models.Askables {
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? CompleteTime { get; set; }
 		public virtual UserOrganizationModel AccountableUser { get; set; }
-		
+
+		public RockModel()
+		{
+			CreateTime = DateTime.UtcNow;
+		}
+
 		public override string GetQuestion()
 		{
 			return Rock;
@@ -48,6 +52,7 @@ namespace RadialReview.Models.Askables {
 			{
 				Map(x => x.Rock);
 				Map(x => x.OrganizationId);
+				Map(x => x.FromTemplateItemId);
 				Map(x => x.CompanyRock);
 				Map(x => x.CreateTime);
 				Map(x => x.CompleteTime);

@@ -16,7 +16,7 @@
     <AssemblyName>RadialReview</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -223,6 +223,7 @@
   <ItemGroup>
     <Compile Include="Accessors\ApplicationAccessor.cs" />
     <Compile Include="Accessors\AskableAccessor.cs" />
+    <Compile Include="Accessors\AttachAccessor.cs" />
     <Compile Include="Accessors\BaseAccessor.cs" />
     <Compile Include="Accessors\CategoryAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
@@ -268,6 +269,7 @@
     <Compile Include="Accessors\TeamAccessor.cs" />
     <Compile Include="Accessors\TodoAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
+    <Compile Include="Accessors\UserTemplateAccessor.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\FluentConfigs.cs" />
@@ -288,6 +290,7 @@
     <Compile Include="Controllers\RocksController.cs" />
     <Compile Include="Controllers\ScorecardController.cs" />
     <Compile Include="Controllers\TodoController.cs" />
+    <Compile Include="Controllers\UserTemplateController.cs" />
     <Compile Include="Controllers\_MigrationController.cs" />
     <Compile Include="Controllers\PrereviewController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
@@ -344,6 +347,7 @@
     <Compile Include="Models\Application\MailModel.cs" />
     <Compile Include="Models\Askables\RockModel.cs" />
     <Compile Include="Models\Askables\CompanyValueModel.cs" />
+    <Compile Include="Models\Attach\AttachModel.cs" />
     <Compile Include="Models\Charts\Checktree.cs" />
     <Compile Include="Models\Charts\Histogram.cs" />
     <Compile Include="Models\Charts\Line.cs" />
@@ -351,6 +355,7 @@
     <Compile Include="Models\Charts\Table.cs" />
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
+    <Compile Include="Models\Enums\AttachType.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
     <Compile Include="Models\Enums\Env.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
@@ -416,6 +421,9 @@
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
     <Compile Include="Models\Askables\RoleModel.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
+    <Compile Include="Models\UserTemplate\IUserTemplateItem.cs" />
+    <Compile Include="Models\UserTemplate\UserTemplate.cs" />
+    <Compile Include="Models\UserTemplate\UserTemplateVM.cs" />
     <Compile Include="Models\ViewModels\AdditionalReviewViewModel.cs" />
     <Compile Include="Models\Completion\TwoBarCompletion.cs" />
     <Compile Include="Models\Enums\TeamType.cs" />
@@ -462,6 +470,7 @@
     <Compile Include="Models\ViewModels\ReviewsViewModel.cs" />
     <Compile Include="Models\ViewModels\TeamResponsibilitiesViewModel.cs" />
     <Compile Include="Models\ViewModels\UserPositionViewModel.cs" />
+    <Compile Include="Models\ViewModels\UserTemplateVM.cs" />
     <Compile Include="Properties\ErrorMessageStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -621,6 +630,14 @@
     <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\TimingUtility.cs" />
+    <Content Include="Views\JobDescription\TemplateModal.cshtml" />
+    <Content Include="Views\Rocks\TemplateModal.cshtml" />
+    <Content Include="Views\Rocks\_TemplateRockRow.cshtml" />
+    <Content Include="Views\Roles\TemplateModal.cshtml" />
+    <Content Include="Views\Roles\_TemplateRoleRow.cshtml" />
+    <Content Include="Views\Measurable\TemplateModal.cshtml" />
+    <Content Include="Views\Measurable\_TemplateMeasurableRow.cshtml" />
+    <None Include="Views\Shared\_TemplateDetails.cshtml" />
     <Content Include="Content\fonts\fontastic.eot" />
     <Content Include="Content\fonts\fontastic.ttf" />
     <Content Include="Content\fonts\fontastic.woff" />
@@ -634,6 +651,7 @@
     <Content Include="Scripts\L10\L10Rocks.js" />
     <Content Include="Scripts\L10\L10Todo.js" />
     <Content Include="Views\L10\partial\IssueRow.cshtml" />
+    <Content Include="Views\UserTemplate\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
@@ -896,6 +914,7 @@
     <Content Include="Views\L10\partial\TodoRow.cshtml" />
     <Content Include="Views\L10\Rocks.cshtml" />
     <Content Include="Views\L10\Headlines.cshtml" />
+    <Content Include="Views\Position\Template.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1124,6 +1143,7 @@
     <Content Include="Views\Shared\_L10Layout.cshtml" />
     <Content Include="Views\Todo\CreateTodo.cshtml" />
     <Content Include="Views\Rocks\CompanyRockModal.cshtml" />
+    <Content Include="Views\UserTemplate\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1301,7 +1321,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:2200/</IISUrl>
+          <IISUrl>http://localhost:2201</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

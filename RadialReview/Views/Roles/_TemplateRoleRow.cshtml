@@ -1,0 +1,20 @@
+﻿@model RadialReview.Models.UserTemplate.UserTemplate.UT_Role
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-","");
+}
+<div class="roleRow">
+	@using (Html.BeginCollectionItem("TemplateRoles"))
+	{
+		<div class="roww">
+			<div style="width:calc( 100% - 25px );display:inline-block">
+				@Html.HiddenFor(x => x.Id)
+				@Html.TextBoxFor(x => x.Role, new { @class = "form-control roleItem" })
+				@Html.HiddenFor(x => x.DeleteTime)
+			</div>
+			<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+		</div>
+		@Html.HiddenFor(x => x.TemplateId)
+	}
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
+</div>

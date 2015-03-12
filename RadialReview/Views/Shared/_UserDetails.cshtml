@@ -41,6 +41,10 @@
 					}
 					else
 					{
+						if (Model.User.JobDescriptionFromTemplateId.HasValue)
+						{
+							<span class="icon fontastic-icon-link-2 template-link" title="This job description was created by a template."></span>
+						}
 						@Model.User.JobDescription
 					}
 				</div>
@@ -64,7 +68,12 @@
 							<ul>
 								@foreach (var r in rg){
 									<li class="font-size:19px;">
+										
 										@r.Rock
+										@if (r.FromTemplateItemId.HasValue)
+										{
+											<span class="icon fontastic-icon-link-2 template-link" title="This rock was created by a template."></span>
+										}
 									</li>
 								}
 							</ul>
@@ -101,6 +110,9 @@
 							{
 								<li class="font-size:19px;">
 									@r.Role
+									@if (r.FromTemplateItemId.HasValue){
+											<span class="icon fontastic-icon-link-2 template-link" title="This role was created by a template."></span>
+									}
 								</li>
 							}
 						</ul>
@@ -145,7 +157,12 @@
 								{
 									<tr class="font-size:19px;">
 										<td class="alignRight" style="padding-right: 8px;">@i.</td>
-										<td>@r.Title</td>
+										<td>
+											@r.Title
+											@if (r.FromTemplateItemId.HasValue){
+												 <span class="icon fontastic-icon-link-2 template-link" title="This measurable was created by a template."></span>
+											}
+										</td>
 										<td class="alignCenter">@r.GoalDirection.GetDisplayName() @r.Goal.ToString("0.#####")</td>
 										<td class="alignCenter">@r.AdminUser.NotNull(x=>x.GetName())</td>
 									</tr>

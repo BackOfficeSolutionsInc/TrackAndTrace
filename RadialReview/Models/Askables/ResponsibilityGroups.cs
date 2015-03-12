@@ -45,6 +45,8 @@ namespace RadialReview.Models.Askables
         public virtual String CustomName { get; set; }
         public virtual long CreatedBy { get; set; }
 
+		public virtual long? TemplateId { get; set; }
+
         public override string GetName()
         {
             return CustomName;
@@ -133,8 +135,9 @@ namespace RadialReview.Models.Askables
     {
         public OrganizationPositionModelMap()
         {
-            Map(x => x.CustomName);
-            Map(x => x.CreatedBy);
+			Map(x => x.CustomName);
+			Map(x => x.CreatedBy);
+			Map(x => x.TemplateId);
             References(x => x.Position).Not.LazyLoad();
         }
     }

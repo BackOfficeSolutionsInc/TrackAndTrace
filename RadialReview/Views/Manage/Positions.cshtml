@@ -49,6 +49,7 @@
                 @*<th style="">Job Class</th>
 				<th style="width:1px" class="">Questions</th>*@
                 <th style="width:1px" class="">People</th>
+                <th style="width:1px" class="">Template</th>
             </tr>
             @foreach (var p in Model.Positions.OrderBy(x => x.Name))
             {
@@ -59,8 +60,17 @@
 			                <span onclick="@Html.ShowModal("Edit Position", "/Position/Modal/" + p.Id, "/Position/Modal")" class="editButton clickable glyphicon glyphicon-pencil alignCenter"></span>
 		                }
 	                </td>
-	                <td>
+	                <td class="alignCenter">
 		                @p.NumPeople
+	                </td>
+	                <td class="alignCenter">
+		                @if (p.TemplateId == null){
+							<a href="@Url.Action("Create","UserTemplate",new {type="position",id=p.Id})">Create</a>
+						}
+						else
+						{
+							<a href="@Url.Action("Edit","UserTemplate",new {id=p.TemplateId})">Edit</a>
+						}
 	                </td>
                     @*<td>@p.SimilarTo</td>
 					<td class="">

@@ -1,0 +1,10 @@
+﻿@model RadialReview.Models.ViewModels.UserTemplateVM
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Edit Template: <small>@Model.Name</small></h3>
+
+@Html.Partial("_TemplateDetails",Model)
+

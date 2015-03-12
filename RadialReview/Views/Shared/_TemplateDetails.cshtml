@@ -1,0 +1,169 @@
+﻿@model RadialReview.Models.ViewModels.UserTemplateVM
+
+@using (Html.BeginStyles())
+{
+	<style>
+		.numbers ul li {
+			list-style-type: decimal;
+		}
+	</style>
+}
+@{
+	var edit = Model.Edit;
+}
+
+<div class="revieww">
+	<div class="row">
+	
+		<div class="col-sm-9">
+			<div class="panel panel-default">
+				@if (edit)
+				{
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/TemplateModal/" + Model.TemplateId, "/JobDescription/TemplateModal/", onComplete: "location.reload()")">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Job Description</h3>
+				</div>
+				<div class="panel-body">
+					@if (String.IsNullOrWhiteSpace(Model.JobDescription))
+					{
+						<span class="gray">
+							None entered.
+							@if (edit)
+							{
+								@:Click 'Edit' to add a job description to the template.
+							}
+						</span>
+					}
+					else
+					{
+						@Model.JobDescription
+					}
+				</div>
+			</div>
+
+
+
+			<div class="panel panel-default">
+				@if (edit)
+				{
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Template Rocks", "/Rocks/TemplateModal/" + Model.TemplateId, "/Rocks/TemplateModal/", onComplete: "location.reload()")">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Template Quarterly Rocks</h3>
+				</div>
+				<div class="panel-body numbers">
+					@if (Model.Rocks.Any())
+					{
+						foreach (var rg in Model.Rocks)
+						{
+							<b>@rg.Period:</b>
+							<ul>
+								@foreach (var r in rg.Rocks)
+								{
+									<li class="font-size:19px;">
+										@r
+									</li>
+								}
+							</ul>
+						}
+					}
+					else
+					{
+						<div class="gray">
+							No rocks.
+							@if (edit)
+							{
+								@:Click 'Edit' to add rocks to the template.
+							}
+						</div>
+					}
+				</div>
+			</div>
+
+
+
+			<div class="panel panel-default">
+				@if (edit)
+				{
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Template Roles", "/Roles/TemplateModal/" + Model.TemplateId, "/Roles/TemplateModal/", onComplete: "location.reload()")">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Template Roles</h3>
+				</div>
+				<div class="panel-body numbers">
+					@if (Model.Roles.Any())
+					{
+						<ul>
+							@foreach (var r in Model.Roles)
+							{
+								<li class="font-size:19px;">
+									@r
+								</li>
+							}
+						</ul>
+					}
+					else
+					{
+						<div class="gray">
+							No roles.
+							@if (edit)
+							{
+								@:Click 'Edit' to add roles to the template.
+							}
+						</div>
+					}
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				@if (edit)
+				{
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Template Measurables", "/Measurable/TemplateModal/" + Model.TemplateId, "/Measurable/TemplateModal/", onComplete: "location.reload()")">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Template Scorecard Meaursables</h3>
+				</div>
+				<div class="panel-body numbers">
+					@if (Model.Measurables.Any())
+					{
+						<table class="fullWidth">
+							<thead>
+								<tr>
+									<th style="width: 40px;"></th>
+									<th>Measurable</th>
+									<th style="width: 160px;" class="alignCenter">Weekly Goal</th>
+								</tr>
+							</thead>
+
+							<tbody>
+								@{ var i = 1; }
+								@foreach (var r in Model.Measurables)
+								{
+									<tr class="font-size:19px;">
+										<td class="alignRight" style="padding-right: 8px;">@i.</td>
+										<td>@r.Measurable</td>
+										<td class="alignCenter">@r.GoalDirection @r.Goal.ToString("0.#####")</td>
+									</tr>
+									{
+										i++;
+									}
+								}
+							</tbody>
+						</table>
+					}
+					else
+					{
+						<div class="gray">
+							No measurables.
+							@if (edit)
+							{
+								@:Click 'Edit' to add measurables to the template.
+							}
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
