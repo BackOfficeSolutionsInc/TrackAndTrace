@@ -70,9 +70,11 @@
 		//$(".select2").hide();
 
 		$(".select2.attendee").select2({
-			matcher: function (term, text) {
-				var split = text.split("(")[0].split(" ");
-				var t = term.toUpperCase();
+			/*matcher: function (term, text) {
+				var split = text.text.split("(")[0].split(" ");
+				if (!term || !term.term)
+					return false;
+				var t = term.term.toUpperCase();
 				for (var i = 0; i < split.length; i++) {
 					var s = split[i].toUpperCase();
 					if ($.trim(s) == '')
@@ -81,11 +83,11 @@
 						return true;
 				}
 				return false;
-			},
+			},*/
 		});
 		$(".select2.measurables,.select2.rocks").select2({
 			/*matcher: function (term, text) {
-				var split = text.split("(")[0].split(" ");
+				var split = text.text.split("(")[0].split(" ");
 				var t = term.toUpperCase();
 				for (var i = 0; i < split.length; i++) {
 					var s = split[i].toUpperCase();

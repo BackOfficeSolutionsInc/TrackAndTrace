@@ -36,9 +36,11 @@
 
 
 		$(".select2").select2({
-			matcher: function (term, text) {
-				var split = text.split("(")[0].split(" ");
-				var t = term.toUpperCase();
+			/*matcher: function (term, text) {
+				var split = text.text.split("(")[0].split(" ");
+				if (!term || !term.term)
+					return false;
+				var t = term.term.toUpperCase();
 				for (var i = 0; i < split.length; i++) {
 					var s = split[i].toUpperCase();
 					if ($.trim(s) == '')
@@ -46,8 +48,8 @@
 					if (s.indexOf(t) == 0)
 						return true;
 				}
-				return false;
-			}
+				return null;
+			}*/
 		});
 	</script>
 }
