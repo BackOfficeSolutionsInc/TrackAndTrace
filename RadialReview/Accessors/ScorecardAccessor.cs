@@ -53,7 +53,14 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
-					return s.QueryOver<MeasurableModel>().Where(x => x.AccountableUserId == userId && x.DeleteTime == null).List().ToList();
+					var found = s.QueryOver<MeasurableModel>()
+						.Where(x => x.AccountableUserId == userId && x.DeleteTime == null)
+						.Fetch(x=>x.AdminUser).Eager
+						.List().ToList();
+					foreach (var f in found){
+						var a= f.AccountableUser;
+					}
+					return found;
 				}
 			}
 		}

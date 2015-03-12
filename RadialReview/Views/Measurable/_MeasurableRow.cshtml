@@ -29,6 +29,7 @@
 				@Html.HiddenFor(x => x.NextGeneration)
 				@Html.HiddenFor(x => x.DueDate)
 				@Html.HiddenFor(x => x.DueTime)
+				@Html.HiddenFor(x => x.FromTemplateItemId,new{@class="templateId "+lockedClass})
 			</div>
 			<span style="padding-left:8px;top: -9px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>
 			@if (Model.FromTemplateItemId != null)

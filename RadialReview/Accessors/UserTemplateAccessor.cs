@@ -374,6 +374,7 @@ namespace RadialReview.Accessors
 					utMeasurable.Measurable = measurable;
 					utMeasurable.Goal = goal;
 					utMeasurable.GoalDirection = goalDirection;
+					utMeasurable.DeleteTime = deleteTime;
 					s.Update(utMeasurable);
 					
 					var measurables = s.QueryOver<MeasurableModel>()
@@ -570,9 +571,14 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
+
+
 					var p = PermissionsUtility.Create(s, caller).EditTemplate(templateId);
 					var template = s.Get<UserTemplate>(templateId);
-					
+
+					if (String.IsNullOrWhiteSpace(jobDescription))
+						jobDescription = null;
+
 					template.JobDescription=jobDescription;
 					s.Update(template);
 					var users = s.QueryOver<UserTemplate.UT_User>().Where(x => x.DeleteTime == null && x.TemplateId == templateId)

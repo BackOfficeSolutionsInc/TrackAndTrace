@@ -637,7 +637,7 @@
     <Content Include="Views\Roles\_TemplateRoleRow.cshtml" />
     <Content Include="Views\Measurable\TemplateModal.cshtml" />
     <Content Include="Views\Measurable\_TemplateMeasurableRow.cshtml" />
-    <None Include="Views\Shared\_TemplateDetails.cshtml" />
+    <Content Include="Views\Shared\_TemplateDetails.cshtml" />
     <Content Include="Content\fonts\fontastic.eot" />
     <Content Include="Content\fonts\fontastic.ttf" />
     <Content Include="Content\fonts\fontastic.woff" />
