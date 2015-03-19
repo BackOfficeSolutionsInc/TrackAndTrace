@@ -1,6 +1,8 @@
 ﻿@using RadialReview.Models
 @using RadialReview.Models.Charts
 @using RadialReview.Models.Enums
+@using RadialReview.Utilities.DataTypes
+@using WebGrease.Css.Extensions
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 
@@ -29,9 +31,9 @@
 							var c = true;
 							var first = true;
 							var qs = new[]{
-								new Tuple<string, string, Func<GetWantCapacityAnswer, Tristate>, Func<GetWantCapacityAnswer, string>>("get", "getIt", x => x.GetIt, x => x.GetItReason),
-								new Tuple<string, string, Func<GetWantCapacityAnswer, Tristate>, Func<GetWantCapacityAnswer, string>>("want", "wantIt", x => x.WantIt, x => x.WantItReason),
-								new Tuple<string, string, Func<GetWantCapacityAnswer, Tristate>, Func<GetWantCapacityAnswer, string>>("capacity", "hasCapacity", x => x.HasCapacity, x => x.HasCapacityReason),
+								new Tuple<string, string, Func<GetWantCapacityAnswer, FiveState>, Func<GetWantCapacityAnswer, string>>("get", "getIt", x => x.GetIt, x => x.GetItReason),
+								new Tuple<string, string, Func<GetWantCapacityAnswer, FiveState>, Func<GetWantCapacityAnswer, string>>("want", "wantIt", x => x.WantIt, x => x.WantItReason),
+								new Tuple<string, string, Func<GetWantCapacityAnswer, FiveState>, Func<GetWantCapacityAnswer, string>>("capacity", "hasCapacity", x => x.HasCapacity, x => x.HasCapacityReason),
 							};
 
 					}
@@ -39,27 +41,29 @@
 					@foreach (var r in gwcs)
 					{
 						<tr>
-							<td class="row-header fixedWidth">@r.First().Askable.GetQuestion()</td>
+							<td class="row-header fixedWidth" style="vertical-align: middle;">@r.First().Askable.GetQuestion()</td>
 
 							@foreach (var q in qs)
 							{
 								<td>
 									@{
-								var positiveG = r.Count(x => q.Item3(x) == Tristate.True);
-								var negativeG = r.Count(x => q.Item3(x) == Tristate.False);
-								var clzG = "Indeterminate";
-								if (negativeG > 0)
-								{
-									clzG = "False";
-								}
-								else if (positiveG > 0)
-								{
-									clzG = "True";
-								}
-								var hasReason = r.Any(x => !String.IsNullOrWhiteSpace(q.Item4(x))) ? "hasReason" : "";
+										//var positiveG = r.Count(x => q.Item3(x) == FiveState.True);
+										//var negativeG = r.Count(x => q.Item3(x) == FiveState.False);
+										var ratio = new Ratio();
+										r.ForEach(x => ratio.Merge(q.Item3(x).Ratio()));
+										var clzG = "Indeterminate";
+										;
+										if (ratio.GetValue(-1) ==-1){
+											clzG = "Indeterminate";
+										}else if (ratio.GetValue(-1) < 0.8m){
+											clzG = "False";
+										}else{
+											clzG = "True";
+										}
+										var hasReason = r.Any(x => !String.IsNullOrWhiteSpace(q.Item4(x))) ? "hasReason" : "";
 
 									}
-									<span data-roleid="@r.First().Askable.Id" data-gwc="@q.Item1" data-reviewid="@Model.Review.Id" class="fill roles @hasReason @q.Item2 @clzG noSelect">@(positiveG)/@(positiveG + negativeG)</span>
+									<span data-roleid="@r.First().Askable.Id" data-gwc="@q.Item1" data-reviewid="@Model.Review.Id" class="fill roles @hasReason @q.Item2 @clzG noSelect">@(ratio.ToPercentage("n/a"))</span>
 								</td>
 							}
 							@if (first)
@@ -86,7 +90,7 @@
 		@if (ViewBag.Client ?? false)
 		{
 			var gwcs2 = Model.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>();
-			var feedbacks = new List<Tuple<string, string, string, Tristate, string>>();
+			var feedbacks = new List<Tuple<string, string, string, FiveState, string>>();
 			foreach (var f in gwcs2)
 			{
 				if (f.IncludeGetItReason)

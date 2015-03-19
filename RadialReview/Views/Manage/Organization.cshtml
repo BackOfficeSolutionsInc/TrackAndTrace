@@ -94,6 +94,24 @@
 					<div class="col-sm-4">
 						@Html.CheckBoxFor(x => x.StrictHierarchy, new { @class = "checkbox" })
 					</div>
+				</div>	
+				
+				<div class="row">
+					<div class="col-sm-3">
+						<label class="control-label">Managers can edit their own questions:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.ManagersCanEditSelf, new { @class = "checkbox" })
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-3">
+						<label class="control-label">Employees can edit their own questions:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.EmployeesCanEditSelf, new { @class = "checkbox" })
+					</div>
 				</div>
 
 				<div class="row">

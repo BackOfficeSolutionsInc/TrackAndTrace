@@ -96,9 +96,9 @@ namespace RadialReview.Controllers
 						count++;
 					}
 					foreach (var v in roles){
-						v.GetIt = Tristate.Indeterminate;
-						v.WantIt = Tristate.Indeterminate;
-						v.HasCapacity = Tristate.Indeterminate;
+						v.GetIt = FiveState.Indeterminate;
+						v.WantIt = FiveState.Indeterminate;
+						v.HasCapacity = FiveState.Indeterminate;
 						v.Complete = false;
 						v.CompleteTime = null;
 						s.Update(v); 
@@ -223,15 +223,15 @@ namespace RadialReview.Controllers
 							v.Complete = true;
 							if (r.NextDouble() < a.luckB)
 							{
-								v.GetIt = Tristate.True;
-								v.WantIt = Tristate.True;
-								v.HasCapacity = Tristate.True;
+								v.GetIt = (r.NextDouble() > .666) ? FiveState.Always : FiveState.Mostly;
+								v.WantIt = (r.NextDouble() > .666) ? FiveState.Always : FiveState.Mostly;
+								v.HasCapacity = (r.NextDouble() > .666) ? FiveState.Always : FiveState.Mostly;
 							}
 							else
 							{
-								v.GetIt = (r.NextDouble() > .666) ? Tristate.False : Tristate.True;
-								v.WantIt = (r.NextDouble() > .666) ? Tristate.False : Tristate.True;
-								v.HasCapacity = (r.NextDouble() > .666) ? Tristate.False : Tristate.True;
+								v.GetIt = (r.NextDouble() > .666) ? FiveState.Rarely : FiveState.Never;
+								v.WantIt = (r.NextDouble() > .666) ? FiveState.Rarely : FiveState.Never;
+								v.HasCapacity = (r.NextDouble() > .666) ? FiveState.Rarely : FiveState.Never;
 							}
 							s.Update(v);
 						}

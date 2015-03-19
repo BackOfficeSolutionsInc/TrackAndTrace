@@ -46,6 +46,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AWSSDK.2.0.3.0\lib\net45\AWSSDK.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.2.1.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="CsvHelper">
       <HintPath>..\packages\CsvHelper.2.8.2\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
@@ -110,6 +113,12 @@
     </Reference>
     <Reference Include="OpenPop">
       <HintPath>..\packages\OpenPop.NET.2.0.4.369\lib\net20\OpenPop.dll</HintPath>
+    </Reference>
+    <Reference Include="Pechkin">
+      <HintPath>..\packages\Pechkin.0.5.8.1\lib\net40\Pechkin.dll</HintPath>
+    </Reference>
+    <Reference Include="Pechkin.Synchronized">
+      <HintPath>..\packages\Pechkin.Synchronized.0.5.8.1\lib\net40\Pechkin.Synchronized.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp">
       <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
@@ -363,6 +372,7 @@
     <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
     <Compile Include="Models\Enums\RepeatsType.cs" />
     <Compile Include="Models\Enums\RockState.cs" />
+    <Compile Include="Models\Enums\FiveState.cs" />
     <Compile Include="Models\Enums\TaskType.cs" />
     <Compile Include="Models\Enums\Tristate.cs" />
     <Compile Include="Models\ExtraTab.cs" />
@@ -630,6 +640,20 @@
     <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\TimingUtility.cs" />
+    <Content Include="Content\components\fivestate.css" />
+    <Content Include="libeay32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libgcc_s_dw2-1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="mingwm10.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\components\fivestate.js" />
+    <Content Include="ssleay32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\JobDescription\TemplateModal.cshtml" />
     <Content Include="Views\Rocks\TemplateModal.cshtml" />
     <Content Include="Views\Rocks\_TemplateRockRow.cshtml" />
@@ -916,6 +940,9 @@
     <Content Include="Views\L10\Headlines.cshtml" />
     <Content Include="Views\Position\Template.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
+    <Content Include="wkhtmltox0.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1144,6 +1171,8 @@
     <Content Include="Views\Todo\CreateTodo.cshtml" />
     <Content Include="Views\Rocks\CompanyRockModal.cshtml" />
     <Content Include="Views\UserTemplate\Index.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\FiveState.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FiveState.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -110,7 +110,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public Boolean UpdateGWCAnswer(UserOrganizationModel caller, long questionId, string type, Tristate tristate, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
+		public Boolean UpdateGWCAnswer(UserOrganizationModel caller, long questionId, string type, FiveState fivestate, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -123,27 +123,27 @@ namespace RadialReview.Accessors
 					switch (type)
 					{
 						case "GetIt":
-							if (tristate != answer.GetIt)
+							if (fivestate != answer.GetIt)
 							{
 								edited = true;
-								answer.Complete = (tristate != Tristate.Indeterminate);
-								answer.GetIt = tristate;
+								answer.Complete = (fivestate != FiveState.Indeterminate);
+								answer.GetIt = fivestate;
 							}
 							break;
 						case "WantIt":
-							if (tristate != answer.WantIt)
+							if (fivestate != answer.WantIt)
 							{
 								edited = true;
-								answer.Complete = (tristate != Tristate.Indeterminate);
-								answer.WantIt = tristate;
+								answer.Complete = (fivestate != FiveState.Indeterminate);
+								answer.WantIt = fivestate;
 							}
 							break;
 						case "HasCapacity":
-							if (tristate != answer.HasCapacity)
+							if (fivestate != answer.HasCapacity)
 							{
 								edited = true;
-								answer.Complete = (tristate != Tristate.Indeterminate);
-								answer.HasCapacity = tristate;
+								answer.Complete = (fivestate != FiveState.Indeterminate);
+								answer.HasCapacity = fivestate;
 							}
 							break;
 						default:

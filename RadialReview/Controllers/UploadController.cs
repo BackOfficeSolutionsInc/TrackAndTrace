@@ -1,4 +1,5 @@
-﻿using RadialReview.Accessors;
+﻿using System.Threading.Tasks;
+using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
@@ -44,7 +45,7 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.User)]
-        public JsonResult Image(HttpPostedFileBase file, String forType)
+        public async Task<JsonResult> Image(HttpPostedFileBase file, String forType)
         {
             var user = GetUserModel();
             if (user == null)
@@ -54,8 +55,8 @@ namespace RadialReview.Controllers
             if (file != null && file.ContentLength > 0)
             {
                 // extract only the fielname
-                UploadType uploadType = forType.Parse<UploadType>();
-                var url=_ImageAccessor.UploadImage(user, Server, file, uploadType);
+                var uploadType = forType.Parse<UploadType>();
+                var url=await _ImageAccessor.UploadImage(user, Server, file, uploadType);
                 return Json(ResultObject.Create(url));
             }
             return Json(new ResultObject(true,ExceptionStrings.SomethingWentWrong));            

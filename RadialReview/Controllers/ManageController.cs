@@ -167,6 +167,8 @@ namespace RadialReview.Controllers
 				CompanyValues = companyValues,
 				CompanyRocks = companyRocks,
 				SendEmailImmediately = user.Organization.SendEmailImmediately,
+				ManagersCanEditSelf = user.Organization.Settings.ManagersCanEditSelf,
+				EmployeesCanEditSelf = user.Organization.Settings.EmployeesCanEditSelf
 			};
 
 			return View(model);
@@ -184,7 +186,9 @@ namespace RadialReview.Controllers
 				model.StrictHierarchy,
 				model.ManagersCanEditPositions,
 				model.SendEmailImmediately,
-				model.ManagersCanRemoveUsers);
+				model.ManagersCanRemoveUsers,
+				model.ManagersCanEditSelf,
+				model.EmployeesCanEditSelf);
 			ViewBag.Success = "Successfully Saved.";
 
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)

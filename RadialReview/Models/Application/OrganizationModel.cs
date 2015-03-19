@@ -26,6 +26,8 @@ namespace RadialReview.Models
 			public virtual bool ManagersCanCreateL10 { get; set; }
 			public virtual bool ManagersCanViewSubordinateL10 { get; set; }
 			public virtual bool ManagersCanEditSubordinateL10 { get; set; }
+			public virtual bool ManagersCanEditSelf { get; set; }
+			public virtual bool EmployeesCanEditSelf { get; set; }
 
 			public OrganizationSettings()
 			{
@@ -59,6 +61,8 @@ namespace RadialReview.Models
 					Map(x => x.ManagersCanViewSubordinateL10);
 					Map(x => x.ManagersCanEditSubordinateL10);
 
+					Map(x => x.ManagersCanEditSelf);
+					Map(x => x.EmployeesCanEditSelf);
 				}
 			}
 
@@ -78,11 +82,11 @@ namespace RadialReview.Models
 		public virtual bool StrictHierarchy { get; set; }
 
 		protected virtual OrganizationSettings _Settings { get; set; }
-		public virtual OrganizationSettings Settings
-		{
-			get
-			{
-				return _Settings ?? new OrganizationSettings();
+		public virtual OrganizationSettings Settings{
+			get{
+				if(_Settings==null )
+					_Settings =new OrganizationSettings();
+				return _Settings;
 			}
 		}
 

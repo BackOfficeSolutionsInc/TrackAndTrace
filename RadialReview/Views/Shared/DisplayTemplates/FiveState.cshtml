@@ -1,0 +1,13 @@
+﻿@model RadialReview.Models.Enums.FiveState
+
+<div class="fivestate display">
+	<div class="fivestate-contents">
+		<input name="@ViewData["name"]" class="" type="hidden" value="@Model" />
+		<span class="fivestate-val fivestate-always">Always</span>
+		<span class="fivestate-val fivestate-mostly">Mostly</span>
+		<span class="fivestate-val fivestate-rarely">Rarely</span>
+		<span class="fivestate-val fivestate-never">Never</span>
+		<span class="fivestate-val fivestate-indeterminate">n/a</span>
+		<div class="fill"></div>
+	</div>
+</div>

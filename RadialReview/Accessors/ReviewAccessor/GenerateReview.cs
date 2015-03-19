@@ -51,9 +51,9 @@ namespace RadialReview.Accessors {
 			{
 				Anonymous = anonymous,
 				Complete = false,
-				GetIt		= Tristate.Indeterminate,
-				WantIt		= Tristate.Indeterminate,
-				HasCapacity = Tristate.Indeterminate,
+				GetIt		= FiveState.Indeterminate,
+				WantIt		= FiveState.Indeterminate,
+				HasCapacity = FiveState.Indeterminate,
 				GetItReason  = null,
 				WantItReason = null,
 				HasCapacityReason = null,

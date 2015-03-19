@@ -101,7 +101,7 @@ namespace RadialReview.Accessors
 					if (measurables.Any(x => x.AccountableUserId != userId))
 						throw new PermissionsException("Measurable UserId does not match UserId");
 
-					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId, false);
+					PermissionsUtility.Create(s, caller).EditQuestionForUser(userId);
 					var user = s.Get<UserOrganizationModel>(userId);
 					var orgId = user.Organization.Id;
 

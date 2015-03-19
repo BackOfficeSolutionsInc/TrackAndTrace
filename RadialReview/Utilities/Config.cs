@@ -52,5 +52,16 @@ namespace RadialReview.Utilities
 		{
 			return GetAppSetting("sha_secret");
 		}
+
+		public static bool OptimizationEnabled()
+		{
+			switch (GetEnv())
+			{
+				case Env.local_sqlite:	return false;
+				case Env.local_mysql:	return false;
+				case Env.production:	return false;
+				default: throw new ArgumentOutOfRangeException();
+			}
+		}
 	}
 }

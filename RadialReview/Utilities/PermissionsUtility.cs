@@ -259,6 +259,20 @@ namespace RadialReview.Utilities
             }
             return this;
         }
+
+	    public PermissionsUtility EditQuestionForUser(long forUserId)
+	    {
+		    try{
+			    return ManagesUserOrganization(forUserId, true);
+		    }catch (PermissionsException p){
+			    var foundUser = session.Get<UserOrganizationModel>(forUserId);
+			    if (foundUser.Id == caller.Id && ((foundUser.ManagerAtOrganization && foundUser.Organization.Settings.ManagersCanEditSelf)||foundUser.Organization.Settings.EmployeesCanEditSelf || foundUser.ManagingOrganization)){
+				    return this;
+			    }
+			}
+			throw new PermissionsException("Cannot edit for user.");
+
+	    }
         #endregion
 
         #region Origin

@@ -164,7 +164,7 @@ namespace RadialReview.Accessors
                                 unsentEmails.Add(
                                     MailModel.To(manager.GetEmail())
                                     .Subject(EmailStrings.Prereview_Subject,caller.Organization.GetName())
-									.Body(EmailStrings.Prereview_Body, manager.GetName(), preReviewDue.ToShortDateString(),url, url, ProductStrings.ProductName)
+									.Body(EmailStrings.Prereview_Body, manager.GetName(), reviewName, preReviewDue.Subtract(TimeSpan.FromDays(1)).ToShortDateString(),url, url, ProductStrings.ProductName)
                                     );
                             }
                             catch (Exception e)

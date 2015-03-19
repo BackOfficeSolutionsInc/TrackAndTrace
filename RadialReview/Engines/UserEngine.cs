@@ -44,6 +44,7 @@ namespace RadialReview.Engines
 			var roles = _RoleAccessor.GetRoles(caller, id);
 			var rocks = _RockAccessor.GetAllRocks(caller, id);
 	        var measurables = ScorecardAccessor.GetUserMeasurables(caller, id);
+			//foundUser.PopulatePersonallyManaging(caller, caller.AllSubordinates);
 
             var model = new UserOrganizationDetails()
             {
@@ -52,7 +53,10 @@ namespace RadialReview.Engines
 				Roles = roles,
 				Rocks = rocks,
 				Measurables = measurables,
-				ManagingOrganization = caller.ManagingOrganization
+				ManagingOrganization = caller.ManagingOrganization,
+				/*Editable =	caller.ManagingOrganization || foundUser.GetPersonallyManaging() || 
+							(foundUser.Organization.Settings.ManagersCanEditSelf && foundUser.ManagerAtOrganization) ||
+							(foundUser.Organization.Settings.EmployeesCanEditSelf)*/
             };
 
             return model;

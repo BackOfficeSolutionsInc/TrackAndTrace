@@ -174,16 +174,24 @@
 	}
 
 	
-.fill.True {
+.fill.True,.fill.Always {
 	background-color: #449D44;
 	border: 1px solid #449D44;
 }
 
-.fill.False {
+
+.fill.False,.fill.Mostly {
+	background-color: #71BE71;
+	border: 1px solid #71BE71;
+}
+.fill.False,.fill.Rarely {
+	background-color: #FC827F;
+	border: 1px solid #FC827F;
+}
+.fill.False,.fill.Never {
 	background-color: #D9534F;
 	border: 1px solid #D9534F;
 }
-
 
 .fill.Complete {
 	background-color: #449D44;
@@ -213,14 +221,49 @@
 	content: "COMPLETE";
 }
 
-
-.table-io.rocks .fill.True:after, .gwc-details-square .True:after, .roleTable .True:after {
+/*
+.table-io.rocks .fill.True:after, 
+.gwc-details-square .True:after, 
+.roleTable .True:after {
 	content: "YES";
 }
 
-.table-io.rocks .fill.False:after, .gwc-details-square .False:after, .roleTable .False:after {
+.table-io.rocks .fill.False:after, 
+.gwc-details-square .False:after, 
+.roleTable .False:after {
 	content: "NO";
+}*/
+
+.table-io.rocks .fill.Always:after, 
+.gwc-details-square .Always:after, 
+.roleTable .Always:after,
+.table-io.rocks .fill.True:after, 
+.gwc-details-square .True:after, 
+.roleTable .True:after  {
+	content: "Always";
 }
+
+.table-io.rocks .fill.Mostly:after, 
+.gwc-details-square .Mostly:after, 
+.roleTable .Mostly:after {
+	content: "Mostly";
+}
+.table-io.rocks .fill.Rarely:after, 
+.gwc-details-square .Rarely:after, 
+.roleTable .Rarely:after {
+	content: "Rarely";
+}
+
+.table-io.rocks .fill.Never:after, 
+.gwc-details-square .Never:after, 
+.roleTable .Never:after,
+.table-io.rocks .fill.False:after, 
+.gwc-details-square .False:after, 
+.roleTable .False:after {
+	content: "Never";
+}
+
+
 
 
 .gwc-details-square, .roleTable .fill {
@@ -343,10 +386,14 @@
 
 .gwc-details .fill,
 .roleTable .fill {
-	height: 23px !important;
+	/*height: 23px !important;
 	width: 23px !important;
 	padding-top: 2px !important;
-	margin-top: 1px;
+	margin-top: 1px;*/
+	height: 20px !important;
+	width: 32px !important;
+	padding-top: 0px !important;
+	margin-top: 0px;
 }
 
 .gwc-details table {

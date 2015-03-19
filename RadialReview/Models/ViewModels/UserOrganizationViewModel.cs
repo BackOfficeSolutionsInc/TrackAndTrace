@@ -62,5 +62,13 @@ namespace RadialReview.Models.ViewModels
 		public List<RockModel> Rocks { get; set; }
 		public List<MeasurableModel> Measurables { get; set; }
 		public bool ManagingOrganization { get; set; }
+		public bool Editable {
+			get
+			{
+				return ManagingOrganization || User.GetPersonallyManaging() ||
+				       (User.Organization.Settings.ManagersCanEditSelf && User.ManagerAtOrganization) ||
+				       (User.Organization.Settings.EmployeesCanEditSelf);
+			}
+		}
     }
 }

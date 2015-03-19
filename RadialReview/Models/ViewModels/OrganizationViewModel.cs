@@ -15,7 +15,9 @@ namespace RadialReview.Models.ViewModels
         public Boolean ManagersCanEditPositions { get; set; }
         public Boolean SendEmailImmediately { get; set; }
         public bool ManagersCanRemoveUsers { get; set; }
-        public String ImageUrl { get; set; }
+		public String ImageUrl { get; set; }
+		public Boolean ManagersCanEditSelf { get; set; }
+		public Boolean EmployeesCanEditSelf { get; set; }
 
 		public List<String> CompanyValues { get; set; }
 		public List<RockModel> CompanyRocks { get; set; } 

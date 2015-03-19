@@ -113,9 +113,9 @@ namespace RadialReview.Models
 		}
     }
 	public class GetWantCapacityAnswer : AnswerModel {
-		public virtual Tristate GetIt { get; set; }
-		public virtual Tristate WantIt { get; set; }
-		public virtual Tristate HasCapacity { get; set; }
+		public virtual FiveState GetIt { get; set; }
+		public virtual FiveState WantIt { get; set; }
+		public virtual FiveState HasCapacity { get; set; }
 		public virtual String GetItReason { get; set; }
 		public virtual String WantItReason { get; set; }
 		public virtual String HasCapacityReason { get; set; }
@@ -124,19 +124,24 @@ namespace RadialReview.Models
 		{
 			get
 			{
-				return new Ratio(GetIt == Tristate.True ? 1 : 0, GetIt != Tristate.Indeterminate ? 1 : 0);
+				return GetIt.Ratio();
+
+				//return new Ratio(GetIt == Tristate.True ? 1 : 0, GetIt != Tristate.Indeterminate ? 1 : 0);
 			}
 		}
 		public virtual Ratio WantItRatio
 		{
 			get
 			{
-				return new Ratio(WantIt == Tristate.True ? 1 : 0, WantIt != Tristate.Indeterminate ? 1 : 0);
+				return WantIt.Ratio();
+				//return new Ratio(WantIt == Tristate.True ? 1 : 0, WantIt != Tristate.Indeterminate ? 1 : 0);
 			}
 		}
 		public virtual Ratio HasCapacityRatio{
-			get{
-				return new Ratio(HasCapacity == Tristate.True ? 1 : 0, HasCapacity != Tristate.Indeterminate ? 1 : 0);
+			get
+			{
+				return HasCapacity.Ratio();
+				//return new Ratio(HasCapacity == Tristate.True ? 1 : 0, HasCapacity != Tristate.Indeterminate ? 1 : 0);
 			}
 		}
 

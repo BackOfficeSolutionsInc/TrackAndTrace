@@ -5,7 +5,7 @@
 	@{
 		var found = Model.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().Where(x => x.Askable.Id == ViewBag.RoleId);
 		var titleGWC = new Dictionary<string, string> { { "get", "Gets It" }, { "want", "Wants It" }, { "capacity", "Capacity To Do It" } };
-		var lookup = new Dictionary<string, Func<GetWantCapacityAnswer, Tristate>> { { "get", x => x.GetIt }, { "want", x => x.WantIt }, { "capacity", x => x.HasCapacity } };
+		var lookup = new Dictionary<string, Func<GetWantCapacityAnswer, FiveState>> { { "get", x => x.GetIt }, { "want", x => x.WantIt }, { "capacity", x => x.HasCapacity } };
 		var lookupReason = new Dictionary<string, Func<GetWantCapacityAnswer, string>> { { "get", x => x.GetItReason }, { "want", x => x.WantItReason }, { "capacity", x => x.HasCapacityReason } };
 
 	}

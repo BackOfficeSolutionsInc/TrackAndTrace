@@ -54,6 +54,12 @@ namespace RadialReview.Utilities.DataTypes
 		{
 			return String.Format("{0:0.00}/{1:0.00}", Numerator, Denominator);
 		}
+		public string ToPercentage(string onInvalid)
+		{
+			if (IsValid())
+				return String.Format("{0}%", Math.Round(GetValue()*100));
+			return onInvalid;
+		}
 
 		public class RatioComponent : ComponentMap<Ratio> 
 		{

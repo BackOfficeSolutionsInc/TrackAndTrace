@@ -813,7 +813,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId, false);
+					PermissionsUtility.Create(s, caller).EditQuestionForUser(userId);
 					var user = s.Get<UserOrganizationModel>(userId);
 					if (user.JobDescription != jobDescription){
 						user.JobDescription = jobDescription;

@@ -48,6 +48,7 @@ namespace RadialReview.Accessors
 		public static void Upload(Stream stream, string path, Instructions instructions)
 		{
 			using (var ms = new MemoryStream()){
+				stream.Seek(0, SeekOrigin.Begin);
 				var i = new ImageJob(stream , ms,instructions);
 				i.Build();
 				ms.Seek(0, SeekOrigin.Begin);
@@ -91,12 +92,25 @@ namespace RadialReview.Accessors
 
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction())
-				{
-					Upload(file.InputStream, path,     BIG_INSTRUCTIONS);
-					Upload(file.InputStream, pathTiny, TINY_INSTRUCTIONS);
-					Upload(file.InputStream, pathMed,  MED_INSTRUCTIONS);
-					Upload(file.InputStream, pathLarge,  LARGE_INSTRUCTIONS);
+				using (var tx = s.BeginTransaction()){
+					var sBig=new MemoryStream();
+					var sTiny=new MemoryStream();
+					var sMed = new MemoryStream();
+					var sLarge=new MemoryStream();
+					file.InputStream.Seek(0, SeekOrigin.Begin);
+					await file.InputStream.CopyToAsync(sBig);
+					file.InputStream.Seek(0, SeekOrigin.Begin);
+					await file.InputStream.CopyToAsync(sTiny);
+					file.InputStream.Seek(0, SeekOrigin.Begin);
+					await file.InputStream.CopyToAsync(sMed);
+					file.InputStream.Seek(0, SeekOrigin.Begin);
+					await file.InputStream.CopyToAsync(sLarge);
+					file.InputStream.Seek(0, SeekOrigin.Begin);
+
+					Upload(sBig,	path,		BIG_INSTRUCTIONS);
+					Upload(sTiny,	pathTiny,	TINY_INSTRUCTIONS);
+					Upload(sMed,	pathMed,	MED_INSTRUCTIONS);
+					Upload(sLarge,	pathLarge,	LARGE_INSTRUCTIONS);
 				
 					img.Url = path;
 					s.Update(img);

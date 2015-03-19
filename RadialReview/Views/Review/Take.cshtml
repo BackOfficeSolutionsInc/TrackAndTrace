@@ -148,6 +148,16 @@
 	<script>
 		var canUpdate = true;
 
+		$(function() {
+			$(".sidebar1 img").one("load",fixMinheight);
+			fixMinheight();
+		});
+
+		function fixMinheight() {
+			var h = Math.max($(".front .sidebar").height(),$(".back .sidebar").height())+15;
+			$(".sidebar1").css("min-height", h);
+		}
+
 		function sliderUpdateInternal(self) {
 			var d = { value: parseInt($(self).val()) };
 			var disp = d.value;

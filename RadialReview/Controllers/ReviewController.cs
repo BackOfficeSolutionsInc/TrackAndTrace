@@ -369,7 +369,7 @@ namespace RadialReview.Controllers
 									if (args[5].EndsWith("Reason"))
 										currentComplete = _ReviewAccessor.UpdateGWCReasonAnswer(user, questionId, args[5], collection[k], now, out edited, ref qA, ref oA);
 									else
-										currentComplete = _ReviewAccessor.UpdateGWCAnswer(user, questionId, args[5], collection[k].Parse<Tristate>(), now, out edited, ref qA, ref oA);
+										currentComplete = _ReviewAccessor.UpdateGWCAnswer(user, questionId, args[5], collection[k].Parse<FiveState>(), now, out edited, ref qA, ref oA);
 									break;
 								case QuestionType.CompanyValue:
 

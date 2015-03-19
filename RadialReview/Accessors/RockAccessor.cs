@@ -100,7 +100,7 @@ namespace RadialReview.Accessors
 						perm.ManagingOrganization(userId_OR_organizationId);
 						orgId = org.Id;
 					}else if (user != null && org == null){*/
-						perm.ManagesUserOrganization(userId, false);
+						perm.EditQuestionForUser(userId);
 						orgId = user.Organization.Id;
 						user.NumRocks = rocks.Count(x => x.DeleteTime == null);
 						s.SaveOrUpdate(user);

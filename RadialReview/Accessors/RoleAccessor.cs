@@ -42,7 +42,7 @@ namespace RadialReview.Accessors {
 					if (roles.Any(x => x.ForUserId != userId))
 						throw new PermissionsException("Role UserId does not match UserId");
 
-					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId, false);
+					PermissionsUtility.Create(s, caller).EditQuestionForUser(userId);
 					var user = s.Get<UserOrganizationModel>(userId);
 					var orgId = user.Organization.Id;
 					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);

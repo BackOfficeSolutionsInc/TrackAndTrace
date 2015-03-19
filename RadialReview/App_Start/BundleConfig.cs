@@ -1,5 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
+using RadialReview.Models.Enums;
+using RadialReview.Utilities;
 
 namespace RadialReview
 {
@@ -29,6 +31,7 @@ namespace RadialReview
 			bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
 					  "~/Scripts/components/posneg.js",
 					  "~/Scripts/components/tristate.js",
+					  "~/Scripts/components/fivestate.js",
 					  "~/Scripts/components/checktree.js",
 					  "~/Scripts/components/rockstate.js",
 					  "~/Scripts/components/approvereject.js",
@@ -42,6 +45,7 @@ namespace RadialReview
 			bundles.Add(new StyleBundle("~/Content/css").Include(
 					  "~/Content/components/posneg.css",
 					  "~/Content/components/tristate.css",
+					  "~/Content/components/fivestate.css",
 					  "~/Content/components/table.css",
 					  "~/Content/components/checktree.css",
 					  "~/Content/components/rockstate.css",
@@ -82,12 +86,14 @@ namespace RadialReview
 					  "~/Scripts/Main/finally.js",
 					  "~/Scripts/L10/jquery-ui.color.js"
 			));
-
-#if DEBUG
+			BundleTable.EnableOptimizations = Config.OptimizationEnabled();
+			/*
+#if DEBUG 
 			BundleTable.EnableOptimizations = false;
 #else
 			BundleTable.EnableOptimizations = true;
 #endif
+			 */
 		}
 	}
 }

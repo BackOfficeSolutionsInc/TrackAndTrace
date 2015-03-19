@@ -19,14 +19,16 @@
 	<tbody>
 		@{
 			var gwcs = new[]{
-				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Gets It",x=>x.GetIt,x=>x.GetItReason,x=>x.IncludeGetItReason,"get"),
-				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Wants It",x=>x.WantIt,x=>x.WantItReason,x=>x.IncludeWantItReason,"want"),
-				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Capacity To Do It",x=>x.HasCapacity,x=>x.HasCapacityReason,x=>x.IncludeHasCapacityReason,"capacity")
+				Tuple.Create<string,Func<GetWantCapacityAnswer,FiveState>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Gets It",x=>x.GetIt,x=>x.GetItReason,x=>x.IncludeGetItReason,"get"),
+				Tuple.Create<string,Func<GetWantCapacityAnswer,FiveState>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Wants It",x=>x.WantIt,x=>x.WantItReason,x=>x.IncludeWantItReason,"want"),
+				Tuple.Create<string,Func<GetWantCapacityAnswer,FiveState>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Capacity To Do It",x=>x.HasCapacity,x=>x.HasCapacityReason,x=>x.IncludeHasCapacityReason,"capacity")
 
 			};
 
-			var sorter = new Dictionary<Tristate, string> { { Tristate.True, "1" }, { Tristate.Indeterminate, "" }, { Tristate.False, "-1" } };
-			var text = new Dictionary<Tristate, string> { { Tristate.True, "yes" }, { Tristate.Indeterminate, "n/a" }, { Tristate.False, "no" } };
+			//var sorter = new Dictionary<FiveState, string> { { FiveState.True, "1" }, { FiveState.Indeterminate, "" }, { FiveState.False, "-1" } };
+			//var text = new Dictionary<FiveState, string> { { FiveState.True, "yes" }, { FiveState.Indeterminate, "n/a" }, { FiveState.False, "no" } };
+			var sorter = new Dictionary<FiveState, string> { { FiveState.Always, "2" }, { FiveState.Mostly, "1" }, { FiveState.Indeterminate, "" }, { FiveState.Rarely, "-1" }, { FiveState.Never, "-2" } };
+			var text = new Dictionary<FiveState, string> { { FiveState.Always, "always" }, { FiveState.Mostly, "mostly" }, { FiveState.Indeterminate, "n/a" }, { FiveState.Rarely, "rarely" }, { FiveState.Never, "never" } };
 			
 		}
 
@@ -39,7 +41,9 @@
 					<td>@r.ByUser.GetName()</td>
 					<td class="alignLeft italic">@gwc.Item1</td>
 					<td class="bold">@r.Askable.GetQuestion()</td>
-					<td class="block"><div class="fill @gwc.Item2(r)" data-sort="@(sorter[gwc.Item2(r)])"></div><span style="display:none">@(sorter[gwc.Item2(r)]) @text[gwc.Item2(r)]</span></td>
+					<td class="block">
+						<div class="fill @gwc.Item2(r)" data-sort="@(sorter[gwc.Item2(r)])"></div><span style="display:none">@(sorter[gwc.Item2(r)]) @text[gwc.Item2(r)]</span>
+					</td>
 					<td class="remainingWidth" style="padding-left: 10px; white-space: normal;">
 						@{
 							var reason = gwc.Item3(r);

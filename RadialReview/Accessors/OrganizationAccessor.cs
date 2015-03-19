@@ -307,8 +307,10 @@ namespace RadialReview.Accessors
                                                                             bool? managersHaveAdmin = null,
                                                                             bool? strictHierarchy = null,
                                                                             bool? managersCanEditPositions = null,
-                                                                            bool? sendEmailImmediately = null,
-                                                                            bool? managersCanRemoveUsers = null)
+																			bool? sendEmailImmediately = null,
+																			bool? managersCanRemoveUsers = null,
+																			bool? managersCanEditSelf = null,
+																			bool? employeesCanEditSelf = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -334,8 +336,15 @@ namespace RadialReview.Accessors
                     if (sendEmailImmediately != null)
                         org.SendEmailImmediately = sendEmailImmediately.Value;
 
-                    if (managersCanRemoveUsers != null)
-                        org.ManagersCanRemoveUsers = managersCanRemoveUsers.Value;
+					if (managersCanRemoveUsers != null)
+						org.ManagersCanRemoveUsers = managersCanRemoveUsers.Value;
+
+
+					if (managersCanEditSelf != null)
+						org.Settings.ManagersCanEditSelf = managersCanEditSelf.Value;
+
+					if (employeesCanEditSelf != null)
+						org.Settings.EmployeesCanEditSelf = employeesCanEditSelf.Value;
 
                     s.Update(org);
                     tx.Commit();

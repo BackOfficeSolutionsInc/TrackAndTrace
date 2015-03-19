@@ -1,4 +1,5 @@
 ﻿using Amazon.IdentityManagement.Model;
+using FluentNHibernate.Utils;
 using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Linq;
@@ -633,9 +634,11 @@ namespace RadialReview.Engines
 				{
 					using (var tx = s.BeginTransaction())
 					{
-						new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, false));
+						var p =new PermissionsAccessor();
+						p.Permitted(caller, x => x.ManagesUserOrganization(forUserId, false));
 						var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewsId && x.ForUserId == forUserId).SingleOrDefault();
-						if (forUserId == caller.Id && (!review.ClientReview.Visible || !review.ClientReview.IncludeScatterChart))
+						var managingOrg = p.IsPermitted(caller, x => x.ManagingOrganization(review.ForReviewContainer.ForOrganizationId));
+						if (forUserId == caller.Id && ((!review.ClientReview.Visible && !managingOrg) || !review.ClientReview.IncludeScatterChart))
 							throw new PermissionsException();
 
 						groupBy = review.ClientReview.ScatterChart.Groups;
@@ -753,11 +756,14 @@ namespace RadialReview.Engines
 				default: throw new PermissionsException("Unrecognized group");
 			}
 
+			var pointsNoTeammates = points.Where(x => !x.@class.Contains("about-" + AboutType.Teammate)).ToList();
+			var legendNoTeammates = legend.Where(x => !x.@class.Contains("about-" + AboutType.Teammate)).ToList();
+
 
 			var scatter = new Scatter()
 			{
-				Points = points,
-				Legend = legend,
+				Points = pointsNoTeammates,
+				Legend = legendNoTeammates,
 				title  = title,
 				xAxis  = "Company Values",
 				yAxis  = "Roles",
