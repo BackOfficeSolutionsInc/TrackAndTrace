@@ -1,0 +1,6 @@
+﻿@model RadialReview.Controllers.L10Controller.NoteVM
+<div class="form-group">
+	@Html.LabelFor(x => x.Name)
+	@Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Enter a page name" })
+	@Html.SecuredHiddenFor(x=>x.RecurrenceId)
+</div>

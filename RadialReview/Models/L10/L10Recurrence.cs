@@ -23,6 +23,7 @@ namespace RadialReview.Models.L10
 		public virtual IList<L10Recurrence_Measurable> _DefaultMeasurables { get; set; }
 		public virtual IList<L10Recurrence_Rocks> _DefaultRocks { get; set; }
 
+		public virtual List<L10Note> _MeetingNotes { get; set; }
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>
 		{
@@ -137,6 +138,7 @@ namespace RadialReview.Models.L10
 				return Tuple.Create(Measurable.Id, L10Recurrence.Id, DeleteTime);
 			}
 		}
+
 
 	}
 }

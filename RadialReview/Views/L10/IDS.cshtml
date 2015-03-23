@@ -16,20 +16,7 @@
 						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
 						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
 					</div>
-					<div class="btn-group">
-						<div class="btn btn-default btn-xs issuesModal"
-							 data-method="createissue"
-							 data-meeting="@Model.Meeting.Id"
-							 data-recurrence="@Model.Recurrence.Id">
-							<span class="glyphicon glyphicon-pushpin"></span> New Issue
-						</div>
-						<div class="btn btn-default btn-xs todoModal"
-							 data-method="createtodo"
-							 data-meeting="@Model.Meeting.Id"
-							 data-recurrence="@Model.Recurrence.Id">
-							<span class="glyphicon glyphicon-unchecked"></span> New Todo
-						</div>
-					</div>
+					@Html.Partial("partial/ButtonBar",Model)
 				</div>
 				<h2>IDS <small>Identify. Discuss. Solve.</small></h2>
 			</hgroup>
@@ -42,12 +29,7 @@
 					</ol>
 				</div>*@
 			<div class="issues-container ">
-				<ol class="issues-list sortable init-@(guid)">
-					@foreach (var i in Model.Issues.OrderBy(x => x.Ordering))
-					{
-						@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)
-					}
-				</ol>
+				<ol class="issues-list sortable init-@(guid)">@foreach (var i in Model.Issues.OrderBy(x => x.Ordering)){@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)}</ol>
 			</div>
 
 		</div>

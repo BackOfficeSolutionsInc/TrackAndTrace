@@ -54,7 +54,7 @@
 			@Html.SecuredHiddenFor(x => x.Recurrence.Id)
 			@Html.SecuredHiddenFor(x => x.Recurrence.CreateTime)
 			@Html.SecuredHiddenFor(x => x.Recurrence.OrganizationId)
-
+			@Html.HiddenFor(x=>x.Return)
 			<div class="alignCenter">
 				<input class="btn btn-primary" type="submit" value="Submit" />
 			</div>

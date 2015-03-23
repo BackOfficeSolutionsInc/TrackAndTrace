@@ -1,17 +1,17 @@
 ﻿
 .rocks-container {
   /* We first create a flex layout context */
-  display: flex;
+  /*display: flex;*/
   
   /* Then we define the flow direction and if we allow the items to wrap 
    * Remember this is the same as:
    * flex-direction: row;
    * flex-wrap: wrap;
    */
-  flex-flow: row wrap;
-  
+  /*flex-flow: row wrap;
+  */
   /* Then we define how is distributed the remaining space */
-  justify-content: space-around;
+  /*justify-content: space-around;*/
 }
 
 .rocks-container .rocks-item {
@@ -23,13 +23,14 @@
 	position: relative;
 }
 
-.rocks-container .rocks-item .message {
-	font-weight: bold;
-	font-size: 20px;
-	height: 90px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: pre-wrap;
+.rocks-container .message {
+	/*font-weight: bold;*/
+	font-size: 17px;
+	padding-left: 14px;
+	/*height: 90px;*/
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	  white-space: nowrap;
 }
 .rocks-container .rocks-item .owner {
 	text-align: right;
@@ -43,4 +44,32 @@
 }
 .rocks-container .rocks-item .owner .lbl {
 	color: lightgray;
+}
+
+.rocks-container .owner {
+	font-size: 17px;
+	position: relative;
+	top: -6px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+.rocks-container .picture-container {
+	width: 30px;
+	height: 30px;
+	border: 1px solid #DDD;
+	padding: 1px;
+	margin: 0px 6px;
+}
+
+.rocks-container tr:first-child {
+	border-bottom: 1px solid #f0f0f0;
+}
+
+.rocks-container tr td {
+	border-bottom: 1px solid #f0f0f0;
+}
+.rocks-container td.currentBlue {
+	background-color: #2C77BA;
+	border-bottom: 1px solid #2C77BA;
+	text-align: center;
 }

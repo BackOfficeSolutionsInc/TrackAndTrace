@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.SignalR;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Exceptions.MeetingExceptions;
+using RadialReview.Hubs;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
@@ -246,6 +248,11 @@ namespace RadialReview.Controllers
 				if (ModelState.IsValid)
 				{
 					L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues);
+
+
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(model.Recurrence.Id)).setHash("stats");
+					
 					return RedirectToAction("Load", new { id = model.Recurrence.Id, page = "stats" });
 
 					//return MeetingStats(model.Recurrence.Id);

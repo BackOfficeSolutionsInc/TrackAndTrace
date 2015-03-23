@@ -23,7 +23,7 @@ namespace RadialReview.Engines
             return allReviews.Where(x => x.Reviews.Any(y => subordinates.Any(z => z.Id == y.ForUserId))).ToList();
         }
 
-        public CustomizeModel GetCustomizeModel(UserOrganizationModel caller, long teamId)
+        public CustomizeModel GetCustomizeModel(UserOrganizationModel caller, long teamId, bool includeCopyFrom)
         {
             var parameters = new ReviewParameters()
             {
@@ -74,15 +74,19 @@ namespace RadialReview.Engines
                 Name = "All",
                 UniqueId = "All",
                 Pairs = reviewWhoRefined.Distinct(x => Tuple.Create(x.First, x.Second)).Select(x => Tuple.Create(x.First.Id, x.Second.Id)).ToList()
-            };
-            //Self
-            var self = new CustomizeSelector()
-            {
-                Name = "Self",
-                UniqueId = "Self",
-                Pairs = reviewWhoRefined.Distinct(x => Tuple.Create(x.First, x.Second)).Where(x => x.First == x.Second).Select(x => Tuple.Create(x.First.Id, x.Second.Id)).ToList()
-            };
-            //Default
+			};
+			//Self
+			var self = new CustomizeSelector()
+			{
+				Name = "Self",
+				UniqueId = "Self",
+				Pairs = reviewWhoRefined.Distinct(x => Tuple.Create(x.First, x.Second)).Where(x => x.First == x.Second).Select(x => Tuple.Create(x.First.Id, x.Second.Id)).ToList()
+			};
+
+	    
+
+
+	        //Default
             var Default = new CustomizeSelector()
             {
                 Name = "Default",
@@ -92,7 +96,21 @@ namespace RadialReview.Engines
 
             var combine=new List<CustomizeSelector>() {  Default,all, self, managers, subordinates, peers, teams };
 
-            //selected team
+	        if (includeCopyFrom){
+		        string reviewName = null;
+		        var copy = _PrereviewAccessor.GetPreviousPrereviewForUser(caller, caller.Id, out reviewName);
+		        if (reviewName != null){
+			        //last review
+			        var last = new CustomizeSelector(){
+				        Name = "Copy from " + reviewName,
+				        UniqueId = "CopyFrom",
+				        Pairs = copy
+			        };
+			        combine.Add(last);
+		        }
+	        }
+
+	        //selected team
             if(team.Type != TeamType.AllMembers)
             {
                 var selectedTeamPairs = new List<Tuple<long, long>>();
@@ -138,7 +156,7 @@ namespace RadialReview.Engines
                 admin.Organization = new OrganizationModel() { Id = reviewContainer.ForOrganizationId };
 
 
-                var defaultCustomize = GetCustomizeModel(admin, reviewContainer.ForTeamId).Selectors.Where(x=>x.UniqueId==DEFAULT).SelectMany(x=>x.Pairs).ToList();
+                var defaultCustomize = GetCustomizeModel(admin, reviewContainer.ForTeamId,true).Selectors.Where(x=>x.UniqueId==DEFAULT).SelectMany(x=>x.Pairs).ToList();
 
                 var whoReviewsWho = _PrereviewAccessor.GetAllMatchesForReview(admin, reviewContainerId, defaultCustomize);
                 var organization = _OrganizationAccessor.GetOrganization(admin, reviewContainer.ForOrganizationId);

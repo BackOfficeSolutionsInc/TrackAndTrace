@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FluentNHibernate.Utils;
+using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
+using RadialReview.Models.L10;
 using RadialReview.Models.Periods;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Query;
@@ -185,6 +187,25 @@ namespace RadialReview.Accessors
 					return q.List().ToList();
 				}
 			}
-		} 
+		}
+
+		public static L10Meeting.L10Meeting_Rock GetRockInMeeting(UserOrganizationModel caller, long rockId, long meetingId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var p = PermissionsUtility.Create(s, caller).ViewL10Meeting(meetingId);
+					var found =s.QueryOver<L10Meeting.L10Meeting_Rock>().Where(x => x.DeleteTime == null && x.L10Meeting.Id == meetingId && x.ForRock.Id == rockId).Take(1).SingleOrDefault();
+					if (found==null)
+						throw new PermissionsException("Rock not available.");
+
+					var a = found.ForRock.AccountableUser.GetName();
+					var b = found.ForRock.AccountableUser.ImageUrl(true);
+					var c = found.Completion;
+					var d = found.L10Meeting.CreateTime;
+					return found;
+				}
+			}
+		}
 	}
 }

@@ -102,7 +102,7 @@ namespace RadialReview.Controllers
         {
             var teamId = id;
 
-            var model = _ReviewEngine.GetCustomizeModel(GetUser(), teamId);
+            var model = _ReviewEngine.GetCustomizeModel(GetUser(), teamId, false);
 
 			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToList();
 			var plist = periods.ToSelectList(x => x.Name, x => x.Id);

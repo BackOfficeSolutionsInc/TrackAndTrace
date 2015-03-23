@@ -40,6 +40,8 @@ $(function () {
 	meetingHub.client.setPageTime = setPageTime;
 	meetingHub.client.setupMeeting = setupMeeting;
 
+	meetingHub.client.setHash = setHash;
+
 	meetingHub.client.deserializeIssues = deserializeIssues;
 	meetingHub.client.appendIssue = appendIssue;
 	meetingHub.client.updateIssueCompletion = updateIssueCompletion;
@@ -49,6 +51,10 @@ $(function () {
 	meetingHub.client.updateTodoList = updateTodoList;
 	meetingHub.client.updateTodoCompletion = updateTodoCompletion;
 	meetingHub.client.updateRockCompletion = updateRockCompletion;
+
+	meetingHub.client.createNote = createNote;
+	meetingHub.client.updateNoteName = updateNoteName;
+	meetingHub.client.updateNoteContents = updateNoteContents;
 
 
 	$.connection.hub.start().done(function () {

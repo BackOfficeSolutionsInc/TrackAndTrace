@@ -70,7 +70,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Edit(long id)
+		public ActionResult Edit(long id,string @return=null)
 		{
 			var recurrenceId = id;
 			var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
@@ -90,6 +90,7 @@ namespace RadialReview.Controllers
 				SelectedMeasurables = r._DefaultMeasurables.Select(x => x.Measurable.Id).ToArray(),
 				SelectedMembers = r._DefaultAttendees.Select(x => x.User.Id).ToArray(),
 				SelectedRocks = r._DefaultRocks.Select(x => x.ForRock.Id).ToArray(),
+				Return = @return
 			};
 			return View("Edit", model);
 		}
@@ -126,6 +127,9 @@ namespace RadialReview.Controllers
 					}).ToList();
 
 				L10Accessor.EditL10Recurrence(GetUser(),model.Recurrence);
+
+				if (model.Return == "meeting")
+					return RedirectToAction("meeting", new{id = model.Recurrence.Id});
 
 				return RedirectToAction("Index");
 			}

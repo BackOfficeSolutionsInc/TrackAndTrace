@@ -1,24 +1,24 @@
-﻿@model RadialReview.Models.Todo.TodoVM
+﻿@model RadialReview.Models.Todo.RockTodoVM
 
-@Html.SecuredHiddenFor(x => x.MeetingId)
-@Html.SecuredHiddenFor(x => x.RecurrenceId)
 @Html.SecuredHiddenFor(x => x.ByUserId)
-
+@Html.SecuredHiddenFor(x => x.MeetingId)
+@Html.SecuredHiddenFor(x => x.RockId)
+@Html.SecuredHiddenFor(x => x.RecurrenceId)
+	
 <div class="form-group">
 	@Html.LabelFor(x => x.Message)
-	@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter To-do message" })
+	@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter the To-do" })
 </div>
 <div class="form-group">
 	@Html.LabelFor(x => x.Details)
 	@Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
 </div>
-
 <div class="form-group">
 	@Html.LabelFor(x => x.AccountabilityId)
 	<select name="@Html.NameFor(x => x.AccountabilityId)" class="select-user form-control" style="width: 100%;height:64px;">
 		@foreach (var u in Model.PossibleUsers)
 		{
-			<option data-img="@u.imageUrl" value="@u.id">@u.name</option>
+			<option @(u.id==Model.AccountabilityId?"selected":"") data-img="@u.imageUrl" value="@u.id">@u.name</option>
 		}
 	</select>
 </div>
@@ -31,9 +31,9 @@
 		var $state = $('<span><img src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
 		return $state;
 	};
-
 	$(".select-user").select2({
 		templateResult: formatState,
-		templateSelection: formatState,
+		templateSelection:formatState
 	});
+
 </script>

@@ -8,7 +8,7 @@ using RadialReview.Models.Interfaces;
 
 namespace RadialReview.Models.Scorecard
 {
-	public class ScoreModel : ILongIdentifiable, IDeletable, IIssue
+	public class ScoreModel : ILongIdentifiable, IDeletable, IIssue,ITodo
 	{
 		public virtual long Id { get; set; }
 		public virtual DateTime? DateEntered { get; set; }
@@ -59,32 +59,59 @@ namespace RadialReview.Models.Scorecard
 				accountable += "/" + admin;
 			}
 			var footer = "Week of " + week + "\nOwner: " + accountable;
-
 			if (Measured.HasValue){
-				//var v = Measured.Value;
-				//var g = Measurable.Goal;
-				//var dir = (decimal) Measurable.GoalDirection;
 
 				var goal = "GOAL: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.Goal.ToString("0.####");
 				var recorded = "RECORDED: " + Measured.Value.ToString("0.####");
-
 				return goal + "\n" + recorded + "\n\n" + footer;
-				/*
-				if (MetGoal()){
-					if (v == g)
-						return  footer;
-					if (v == Math.Floor(v) && g == Math.Floor(g)){
-						return	"Goal exceeded by " + ((v - g) * dir).ToString("0.####") + ".\n" +
-								"RECORDED: " + Measured.Value.ToString("0.####") + "   " + "REQUIRED: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.Goal.ToString("0.####") + ".\n\n" +
-								footer;
-					}return	"RECORDED: " + Measured.Value.ToString("0.####") + "   " + "REQUIRED: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.Goal.ToString("0.####") + ".\n\n" +
-							footer;
-				}else{
-					return	"RECORDED: " + Measured.Value.ToString("0.####") + "   " +"REQUIRED: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.Goal.ToString("0.####") + ".\n\n" +
-							footer;
-				}*/
 			}
 			return footer ;
+		}
+
+		public virtual string GetTodoMessage()
+		{
+			var name = "'" + Measurable.Title + "'";
+
+			if (!Measured.HasValue)
+			{
+				return "Enter "+name ;
+			}
+			var v = Measured.Value;
+			var g = Measurable.Goal;
+			var dir = (decimal)Measurable.GoalDirection;
+			if (MetGoal())
+			{
+				var diff = (Measured - Measurable.Goal) * (decimal)Measurable.GoalDirection;
+				if (diff == 0)
+					return name + " goal was met at " + g;
+				if (v == Math.Floor(v) && g == Math.Floor(g))
+					return name + " goal was exceeded by " + ((v - g) * dir).ToString("0.####");
+				return name + " goal was exceeded by " + ((v - g) / g * dir * 100).ToString("0.####") + "%";
+			}
+			else
+			{
+				return name + " goal was missed by " + ((g - v) * dir).ToString("0.####");
+			}
+		}
+
+		public virtual string GetTodoDetails()
+		{
+			var week = ForWeek.ToString("d");
+			var accountable = Measurable.AccountableUser.GetName();
+			var admin = Measurable.AdminUser.GetName();
+			if (admin != accountable)
+			{
+				accountable += "/" + admin;
+			}
+			var footer = "Week of " + week + "\nOwner: " + accountable;
+			if (Measured.HasValue)
+			{
+
+				var goal = "GOAL: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.Goal.ToString("0.####");
+				var recorded = "RECORDED: " + Measured.Value.ToString("0.####");
+				return goal + "\n" + recorded + "\n\n" + footer;
+			}
+			return footer;
 		}
 
 		public virtual bool MetGoal()
@@ -122,5 +149,7 @@ namespace RadialReview.Models.Scorecard
 		}
 
 
+
+		
 	}
 }

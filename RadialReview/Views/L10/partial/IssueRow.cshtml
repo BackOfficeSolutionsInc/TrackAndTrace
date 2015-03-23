@@ -21,10 +21,8 @@
 	</div>
 	<div class="message">@Model.Issue.Message</div>
 	<div class="issue-details-container"><div class="issue-details">@Model.Issue.Description</div></div>
-	<ol class="dd-list">
-		@foreach (var i in Model._ChildIssues.OrderBy(x => x.Ordering))
+	<ol class="dd-list">@foreach (var i in Model._ChildIssues.OrderBy(x => x.Ordering))
 		{
 			@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)
-		}
-	</ol>
+		}</ol>
 </li>

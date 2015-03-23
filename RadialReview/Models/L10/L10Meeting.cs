@@ -34,6 +34,8 @@ namespace RadialReview.Models.L10
 		public virtual IList<L10Meeting_Rock> _MeetingRocks { get; set; }
 		public virtual IList<L10Meeting_Log> _MeetingLogs { get; set; }
 		public virtual IList<Tuple<string,double>> _MeetingLeaderPageDurations { get; set; }
+		//public virtual IList<L10Note> _MeetingNotes { get; set; }
+
 		public virtual String _MeetingLeaderCurrentPage { get; set; }
 		public virtual DateTime? _MeetingLeaderCurrentPageStartTime { get; set; }
 		public virtual double? _MeetingLeaderCurrentPageBaseMinutes { get; set; }
@@ -69,7 +71,7 @@ namespace RadialReview.Models.L10
 			}
 		}
 
-		public class L10Meeting_Rock : ILongIdentifiable, IDeletable
+		public class L10Meeting_Rock : ILongIdentifiable, IDeletable, IIssue, ITodo
 		{
 			public virtual long Id { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
@@ -83,6 +85,7 @@ namespace RadialReview.Models.L10
 			public L10Meeting_Rock()
 			{
 				CreateTime = DateTime.UtcNow;
+				Completion=RockState.Indeterminate;
 			}
 
 			public class L10Meeting_RockMap : ClassMap<L10Meeting_Rock>
@@ -99,6 +102,40 @@ namespace RadialReview.Models.L10
 					References(x => x.ForRecurrence).Column("RecurrenceId");
 				}
 			}
+
+			public virtual string GetTodoMessage()
+			{
+				return  "'" + ForRock.Rock + "'";
+			}
+
+			public virtual string GetTodoDetails()
+			{
+				var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
+				var accountable = ForRock.AccountableUser.GetName();
+				var footer = "Week of " + week + "\nOwner: " + accountable;
+				return footer;
+			}
+
+			public virtual string GetIssueMessage()
+			{
+				var name = "'" + ForRock.Rock + "'";
+				switch(Completion){
+					case RockState.Indeterminate:	return name;
+					case RockState.AtRisk:			return name + " is marked 'At Risk'";
+					case RockState.OnTrack:			return name + " is marked 'On Track'";
+					case RockState.Complete:		return name + " is marked 'Complete'";
+					default:throw new ArgumentOutOfRangeException();
+				}
+			}
+
+			public virtual string GetIssueDetails()
+			{
+				var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
+				var accountable = ForRock.AccountableUser.GetName();
+				var footer = "Week of " + week + "\nOwner: " + accountable;
+				return footer;
+			}
+
 		}
 
 		public class L10Meeting_Measurable : IDeletable, ILongIdentifiable
@@ -224,6 +261,7 @@ namespace RadialReview.Models.L10
 			}
 
 		}
+
 
 	}
 }

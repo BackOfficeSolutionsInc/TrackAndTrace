@@ -1,0 +1,26 @@
+﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+<div class="btn-group">
+	<div class="btn btn-default btn-xs notesButton" >
+		<span class="icon fontastic-icon-align-left-2"></span> Notes
+	</div>
+</div>
+<div class="btn-group">
+	<div class="btn btn-default btn-xs issuesModal"
+	     data-method="createissue"
+	     data-meeting="@Model.Meeting.Id"
+	     data-recurrence="@Model.Recurrence.Id">
+		<span class="glyphicon glyphicon-pushpin"></span> New Issue
+	</div>
+	<div class="btn btn-default btn-xs todoModal"
+	     data-method="createtodo"
+	     data-meeting="@Model.Meeting.Id"
+	     data-recurrence="@Model.Recurrence.Id">
+		<span class="glyphicon glyphicon-unchecked"></span> New Todo
+	</div>
+</div>
+
+<div class="btn-group">
+	<a class="btn btn-default btn-xs" href="@Url.Action("Edit",new { id=Model.Recurrence.Id, @return="meeting" })" >
+		<span class="glyphicon glyphicon-cog"></span>
+	</a>
+</div>

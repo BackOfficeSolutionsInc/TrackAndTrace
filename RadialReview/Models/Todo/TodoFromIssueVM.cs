@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace RadialReview.Models.Todo
 {
-	public class TodoVM
+	public class TodoFromIssueVM
 	{
 		[Required]
 		public long MeetingId { get; set; }
@@ -22,16 +22,10 @@ namespace RadialReview.Models.Todo
 
 		public long RecurrenceId { get; set; }
 		[Required]
-
+		public long IssueId { get; set; }
+		[Required]
 		[Display(Name = "Who's Accountable")]
 		public long AccountabilityId { get; set; }
 		public List<AccountableUserVM> PossibleUsers { get; set; }
-	}
-
-	public class AccountableUserVM
-	{
-		public long id { get; set; }
-		public string name { get; set; }
-		public string imageUrl { get; set; }
 	}
 }

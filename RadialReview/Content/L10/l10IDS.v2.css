@@ -349,6 +349,10 @@ body.dragging, body.dragging * {
 	border-bottom: 1px solid #eee;
 }
 
+.issueDetails > .dd-list:empty {
+	display: none;
+}
+
 .page-header.details {
 	color: #666;
 }

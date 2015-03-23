@@ -8,7 +8,7 @@ using RadialReview.Models.L10;
 
 namespace RadialReview.Models.Issues
 {
-	public class IssueModel : ILongIdentifiable,IDeletable
+	public class IssueModel : ILongIdentifiable, IDeletable, ITodo
 	{
 		public virtual long Id { get; set; }
 		public virtual DateTime CreateTime { get; set; }
@@ -29,6 +29,20 @@ namespace RadialReview.Models.Issues
 		public virtual OrganizationModel Organization { get; set; }
 
 		//public virtual long _RecurrenceIssueId { get; set; }
+		public virtual string GetTodoMessage()
+		{
+			return "";
+		}
+
+		public virtual string GetTodoDetails()
+		{
+			var header = "RESOLVE ISSUE: " + Message;
+			if (!String.IsNullOrWhiteSpace(Description)){
+				header += "\n\n" + Description;
+			}
+			return header;
+		}
+
 
 		public IssueModel()
 		{
@@ -43,7 +57,7 @@ namespace RadialReview.Models.Issues
 				//Map(x => x.CloseTime);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
-				
+
 				Map(x => x.ForModel);
 				Map(x => x.ForModelId);
 
@@ -105,6 +119,8 @@ namespace RadialReview.Models.Issues
 			}
 
 		}
+
+
 
 
 	}

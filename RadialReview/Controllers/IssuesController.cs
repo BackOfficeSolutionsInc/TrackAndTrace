@@ -112,7 +112,7 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 	    [Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateIssue(IssueVM model)
+		public JsonResult CreateIssue(IssueVM model)
 	    {
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x=>x.RecurrenceId,x=>x.ForId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
@@ -151,7 +151,7 @@ namespace RadialReview.Controllers
 		}
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Modal(ScoreCardIssueVM model)
+		public JsonResult Modal(ScoreCardIssueVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
@@ -170,5 +170,44 @@ namespace RadialReview.Controllers
 			//return PartialView("ScorecardIssueModal", model);
 		}
 
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult CreateRockIssue(long meeting, long rock)
+		{
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+
+			var s = RockAccessor.GetRockInMeeting(GetUser(), rock, meeting);
+
+			var model = new RockIssueVM()
+			{
+				ByUserId = GetUser().Id,
+				Message = s.GetIssueMessage(),
+				Details = s.GetIssueDetails(),
+				MeetingId = meeting,
+				RockId = rock,
+				RecurrenceId =  s.ForRecurrence.Id
+			};
+			return PartialView("RockIssueModal", model);
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult CreateRockIssue(RockIssueVM model)
+		{
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RockId,x=>x.RecurrenceId);
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+
+			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, new IssueModel()
+			{
+				CreatedById = GetUser().Id,
+				//MeetingRecurrenceId = model.RecurrenceId,
+				CreatedDuringMeetingId = model.MeetingId,
+				Message = model.Message,
+				Description = model.Details,
+				ForModel = "RockModel",
+				ForModelId = model.RockId,
+				Organization = GetUser().Organization
+			});
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+			//return PartialView("ScorecardIssueModal", model);
+		}
     }
 }

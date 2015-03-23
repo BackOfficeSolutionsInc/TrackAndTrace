@@ -202,14 +202,18 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ViewPrereview(prereviewId);
-                    return s.QueryOver<PrereviewMatchModel>()
-                        .Where(x => x.PrereviewId == prereviewId && x.DeleteTime == null)
-                        .List()
-                        .Select(x => Tuple.Create(x.FirstUserId, x.SecondUserId))
-                        .ToList();
+					return GetCustomMatches_Unsafe(s,prereviewId);
                 }
             }
         }
+		public static List<Tuple<long, long>> GetCustomMatches_Unsafe(ISession s, long prereviewId)
+		{
+			return s.QueryOver<PrereviewMatchModel>()
+				.Where(x => x.PrereviewId == prereviewId && x.DeleteTime == null)
+				.List()
+				.Select(x => Tuple.Create(x.FirstUserId, x.SecondUserId))
+				.ToList();
+		}
 
         public List<Tuple<long, long>> GetAllMatchesForReview(UserOrganizationModel caller, long reviewContainerId,List<Tuple<long, long>> defaultModel)
         {
@@ -260,5 +264,28 @@ namespace RadialReview.Accessors
                 s.Update(prereview);
             }
         }
+
+
+	    public List<Tuple<long, long>> GetPreviousPrereviewForUser(UserOrganizationModel caller, long managerId,out string ReviewName)
+	    {
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var found = s.QueryOver<PrereviewModel>().Where(x => x.Executed != null && x.ManagerId==managerId).OrderBy(x => x.Executed.Value).Desc.Take(1).SingleOrDefault();
+
+					if (found == null){
+						ReviewName = null;
+						return new List<Tuple<long, long>>();
+					}
+
+					PermissionsUtility.Create(s, caller).ViewPrereview(found.Id);
+					ReviewName = s.Get<ReviewsModel>(found.ReviewContainerId).ReviewName;
+
+					return GetCustomMatches_Unsafe(s, found.Id);
+				}
+			}
+	    }
+		
     }
 }

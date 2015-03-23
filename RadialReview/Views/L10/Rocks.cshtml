@@ -7,37 +7,48 @@
 		<div class="col-md-12">
 			<hgroup class="page-header">
 				<div class="pull-right">
-					@*<div class="btn-group ">
-						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
-						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
-					</div>*@
-					<div class="btn-group">
-						<div class="btn btn-default btn-xs issuesModal"
-							 data-method="createissue"
-							 data-meeting="@Model.Meeting.Id"
-							 data-recurrence="@Model.Recurrence.Id">
-							<span class="glyphicon glyphicon-pushpin"></span> New Issue
-						</div>
-						<div class="btn btn-default btn-xs todoModal"
-							 data-method="createtodo"
-							 data-meeting="@Model.Meeting.Id"
-							 data-recurrence="@Model.Recurrence.Id">
-							<span class="glyphicon glyphicon-unchecked"></span> New Todo
-						</div>
-					</div>
+					@Html.Partial("partial/ButtonBar", Model)
 				</div>
 				<h2>Rock Review <small></small></h2>
 			</hgroup>
 			<div class="rocks-container">
-				@foreach (var i in Model.Rocks)
+				@foreach (var person in Model.Rocks.GroupBy(x => x.ForRock.ForUserId))
 				{
-					<div class="rocks-item">
-						<div class="component">
-							<div class="message">@i.ForRock.Rock</div>
-							@Html.EditorFor(x => i.Completion, new { name = "rock_" + i.Id })
-							
-							<div class="owner">@i.ForRock.AccountableUser.GetName()</div>
-						</div>
+					<div class="component">
+						@Html.Partial("_Picture", person.First().ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
+						<span class="owner">
+							@person.First().ForRock.AccountableUser.GetName()
+						</span>
+						<table style="width:100%">
+							<tr>
+								<th style="width: 33px"></th>
+								<th></th>
+								<th style="width: 1px"></th>
+								<th style="width: 46px"></th>
+							</tr>
+							@foreach (var i in person)
+							{
+								<tr>
+									<td></td>
+									<td class="message">@i.ForRock.Rock</td>
+									<td class="">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
+									<td class="buttonHolder currentBlue">
+										<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
+											  data-meeting="@Model.Meeting.Id"
+											  data-recurrence="@Model.Recurrence.Id"
+											  data-rock="@(i.ForRock.Id)"
+											  data-method="CreateRockIssue"
+										></span>
+										<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+											  data-meeting="@Model.Meeting.Id"
+											  data-recurrence="@Model.Recurrence.Id"
+											  data-rock="@(i.ForRock.Id)"
+											  data-method="CreateRockTodo">
+										</span>
+									</td>
+								</tr>
+							}
+						</table>
 					</div>
 				}
 			</div>

@@ -250,6 +250,7 @@
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
     <Compile Include="Accessors\PaymentAccessor.cs" />
+    <Compile Include="Accessors\PdfAccessor.cs" />
     <Compile Include="Accessors\PeriodAccessor.cs" />
     <Compile Include="Accessors\PermissionsAccessor.cs" />
     <Compile Include="Accessors\PositionAccessor.cs" />
@@ -386,10 +387,15 @@
     <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
     <Compile Include="Models\Charts\ChartOptions.cs" />
     <Compile Include="Models\Charts\ScatterPlot.cs" />
+    <Compile Include="Models\Interfaces\ITodo.cs" />
     <Compile Include="Models\Issues\CopyIssueVM.cs" />
     <Compile Include="Models\Issues\IssueModel.cs" />
     <Compile Include="Models\Issues\IssueVM.cs" />
+    <Compile Include="Models\Issues\RockIssueVM.cs" />
     <Compile Include="Models\Issues\ScoreCardIssueVM.cs" />
+    <Compile Include="Models\L10\L10Note.cs" />
+    <Compile Include="Models\Todo\RockTodoVM.cs" />
+    <Compile Include="Models\Todo\ScoreCardTodoVM.cs" />
     <Compile Include="Models\L10\FocusType.cs" />
     <Compile Include="Models\L10\L10Meeting.cs" />
     <Compile Include="Models\L10\L10MeetingAttendee.cs" />
@@ -403,6 +409,7 @@
     <Compile Include="Models\L10\VM\L10MeetingVM.cs" />
     <Compile Include="Models\L10\VM\L10TodoData.cs" />
     <Compile Include="Models\L10\VM\L10VM.cs" />
+    <Compile Include="Models\Pdf\PdfModel.cs" />
     <Compile Include="Models\Periods\PeriodModel.cs" />
     <Compile Include="Models\Prereview\PrereviewMatchModel.cs" />
     <Compile Include="Models\Prereview\PrereviewModel.cs" />
@@ -427,6 +434,7 @@
     <Compile Include="Models\Template\TemplateItemGroup.cs" />
     <Compile Include="Models\Template\TemplateModel.cs" />
     <Compile Include="Models\Todo\TodoModel.cs" />
+    <Compile Include="Models\Todo\TodoFromIssueVM.cs" />
     <Compile Include="Models\Todo\TodoVM.cs" />
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
     <Compile Include="Models\Askables\RoleModel.cs" />
@@ -641,6 +649,7 @@
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\TimingUtility.cs" />
     <Content Include="Content\components\fivestate.css" />
+    <Content Include="Content\L10\L10Notes.css" />
     <Content Include="libeay32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -651,6 +660,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\components\fivestate.js" />
+    <Content Include="Scripts\L10\L10Notes.js" />
     <Content Include="ssleay32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -939,6 +949,9 @@
     <Content Include="Views\L10\Rocks.cshtml" />
     <Content Include="Views\L10\Headlines.cshtml" />
     <Content Include="Views\Position\Template.cshtml" />
+    <Content Include="Views\Issues\RockIssueModal.cshtml" />
+    <Content Include="Views\L10\partial\ButtonBar.cshtml" />
+    <Content Include="Views\L10\CreateNote.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1173,6 +1186,10 @@
     <Content Include="Views\UserTemplate\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\FiveState.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FiveState.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\RockStateThin.cshtml" />
+    <Content Include="Views\Todo\ScorecardTodoModal.cshtml" />
+    <Content Include="Views\Todo\RockTodoModal.cshtml" />
+    <Content Include="Views\Todo\CreateTodoFromIssue.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

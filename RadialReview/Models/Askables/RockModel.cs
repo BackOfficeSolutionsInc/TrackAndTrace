@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Interfaces;
 using RadialReview.Models.Periods;
-
 namespace RadialReview.Models.Askables {
 	public class RockModel :Askable {
 

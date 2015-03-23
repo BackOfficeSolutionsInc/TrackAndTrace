@@ -30,7 +30,7 @@ $(function () {
 		var m=$(this).data("method");
 		if (!m)
 			m = "Modal";
-		showModal("Add to Issues", "/Issues/"+m+"?" + parm, "/Issues/"+m);
+		showModal("Add an issue", "/Issues/"+m+"?" + parm, "/Issues/"+m);
 	});
 
 	$("body").on("click", ".todoModal", function () {
@@ -38,7 +38,7 @@ $(function () {
 		var m=$(this).data("method");
 		if (!m)
 			m = "Modal";
-		showModal("Add a Todo", "/Todo/"+m+"?" + parm, "/Todo/"+m);
+		showModal("Add a to-do", "/Todo/"+m+"?" + parm, "/Todo/"+m);
 	});
 
 });
@@ -116,8 +116,9 @@ function setPageTime(pageName, minutes) {
 	}
 
 }
-function setupMeeting() {
+function setupMeeting(_startTime) {
 	$(".page-item .page-time").html("");
+	startTime = _startTime;
 }
 function setCurrentPage(pageName, startTime,baseMinutes) {
 	currentPage = pageName;
@@ -128,7 +129,10 @@ function setCurrentPage(pageName, startTime,baseMinutes) {
 	if (followLeader && !isLeader) {
 		loadPageForce(pageName);
 	}
+}
 
+function setHash(hash) {
+	window.location.hash = '#'+hash;
 }
 
 function loadPage(location) {

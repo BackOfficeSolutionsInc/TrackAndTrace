@@ -1,5 +1,5 @@
 ﻿$(function() {
-	$("body").on("change", ".rocks-item .rockstate input", function() {
+	$("body").on("change", ".rocks-container .rockstate input", function() {
 		var name = $(this).prop("name");
 		var rockId = parseInt(name.split("_")[1]);
 

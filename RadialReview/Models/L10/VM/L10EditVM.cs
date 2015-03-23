@@ -25,5 +25,7 @@ namespace RadialReview.Models.L10.VM
 			SelectedMeasurables = new long[0] { };
 			SelectedRocks=new long[0]{};
 		}
+
+		public string Return { get; set; }
 	}
 }

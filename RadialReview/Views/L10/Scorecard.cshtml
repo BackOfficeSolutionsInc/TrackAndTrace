@@ -9,31 +9,12 @@
 		<div class="col-md-12">
 			<hgroup class="page-header">
 				<div class="pull-right">
-					@*<div class="btn-group ">
-						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
-						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
-					</div>*@
-					<div class="btn-group">
+					@*<div class="btn-group">
 						<div class="btn btn-default btn-xs" onclick="@Html.ShowModal("Add Measurable", "/L10/AddMeasurable/"+Model.Recurrence.Id, "/L10/AddMeasurable/")">
 							<span class="icon fontastic-icon-science-laboratory"></span> Add Measurable
 						</div>
-					</div>
-
-					<div class="btn-group">
-						<div class="btn btn-default btn-xs issuesModal"
-						     data-method="createissue"
-						     data-meeting="@Model.Meeting.Id"
-						     data-recurrence="@Model.Recurrence.Id">
-							<span class="glyphicon glyphicon-pushpin"></span> New Issue
-						</div>
-						<div class="btn btn-default btn-xs todoModal"
-						     data-method="createtodo"
-						     data-meeting="@Model.Meeting.Id"
-						     data-recurrence="@Model.Recurrence.Id">
-							<span class="glyphicon glyphicon-unchecked"></span> New Todo
-						</div>
-					</div>
-					
+					</div>*@
+					@Html.Partial("partial/ButtonBar", Model)
 				</div>
 				<h2>Scorecard<small></small></h2>
 			</hgroup>
@@ -113,9 +94,11 @@
 																data-details="@found.IssueDetails().EscapeHtml()"*@>
 													</span>
 													<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+														  data-method="CreateScorecardTodo"
 														  data-meeting="@Model.Meeting.Id"
 														  data-recurrence="@Model.Recurrence.Id"
 														  data-measurable="@found.Measurable.Id"
+														  data-accountable="@found.AccountableUserId"
 														  data-score="@(found.NotNull(x => x.Id))">
 													</span>
 												</td>

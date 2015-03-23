@@ -59,13 +59,13 @@
 											<span class="progress-bar @(Model.OrderedPeople[i].Item2 ? "progress-bar-success" : "progress-bar-primary progress-bar-striped")" style="width:@(Model.OrderedPeople[i].Item3)%"></span>
 										</span>
 									</span>
-									<a class="@(i == Model.Page ? "currentPage" : "")"href="@Url.Action("take", new{id = Model.Id, page = i} )">@Model.OrderedPeople[i].Item1</a>
-									
+									<a class="@(i == Model.Page ? "currentPage" : "")" href="@Url.Action("take", new{id = Model.Id, page = i} )">@Model.OrderedPeople[i].Item1</a>
+
 								</li>
 							}
 						</ol>
 						<hr />
-						<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Review Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
+						<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default reviewOthersButton" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Review Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
 
 					</div>
 				</div>
@@ -95,7 +95,9 @@
 	</div>
 }
 
-
+<span class="glyphicon glyphicon-question-sign"
+	  style="float: right;margin-top: -17px;opacity: .4; cursor:pointer"
+	  onclick="cancelTips($('.cancelTipsButton'));resetHints();runTips();"></span>
 <div class="row">
 	<div class="col-md-12">
 		<div>
@@ -148,13 +150,13 @@
 	<script>
 		var canUpdate = true;
 
-		$(function() {
-			$(".sidebar1 img").one("load",fixMinheight);
+		$(function () {
+			$(".sidebar1 img").one("load", fixMinheight);
 			fixMinheight();
 		});
 
 		function fixMinheight() {
-			var h = Math.max($(".front .sidebar").height(),$(".back .sidebar").height())+15;
+			var h = Math.max($(".front .sidebar").height(), $(".back .sidebar").height()) + 15;
 			$(".sidebar1").css("min-height", h);
 		}
 
@@ -173,11 +175,15 @@
 		var tips = [];
 
 		function cancelTips(self) {
-			$(self).parents(".qtip").qtip("hide");
-			$(self).parents(".qtip").qtip("disable");
-			var item = $(tips[0].selector);
-			$(item).removeClass("tip");
-			setTimeout(function () { $(item).removeClass("slowFade"); }, 500);
+			try {
+				$(self).parents(".qtip").qtip("hide");
+				$(self).parents(".qtip").qtip("disable");
+				var item = $(tips[0].selector);
+				$(item).removeClass("tip");
+				setTimeout(function () { $(item).removeClass("slowFade"); }, 500);
+			} catch (e) {
+				console.log(e);
+			}
 		}
 		function nextTips(self) {
 			var item = $(tips[0].selector);
@@ -218,7 +224,7 @@
 					$(item).addClass("currentTip");
 
 					var next = "Next";
-					var closeBtn = "<span class='btn btn-default' style='margin:2px;' onclick='cancelTips(this)'>Close</span>";
+					var closeBtn = "<span class='btn btn-default cancelTipsButton' style='margin:2px;' onclick='cancelTips(this)'>Close</span>";
 					if (tips.length == 1) {
 						next = "Got it!";
 						closeBtn = "";
@@ -273,6 +279,19 @@
 			$(this).attr("name");
 		}
 
+		function resetHints() {
+			tips = [];
+			addTip($(".table-gwc tr").eq(1).find(".fill").first(), "Evaluating Roles", "You'll need to evaluate how well an individual performs their roles.<br/> Click this box to toggle between Always, Mostly, Rarely and Never.");
+			addTip($(".table-gwc tr").eq(1).find(".glyphicon-pencil").first(), "Adding Comments", 'You can optionally add a comment by clicking the pencil.');
+			addTip($(".table-values .posneg").first(), "Evaluating Values", "You'll need to evaluate whether an individual exhibits Company Values. Choose between <i>Almost Always</i>, <i>Sometimes</i>, or <i>Hardly Ever</i>.");
+			var t = addTip($(".table-values .reason").first(), "Adding Comments", 'You can optionally add a comment by clicking here.');
+			t.position = { at: 'top center', my: 'bottom center' };
+			t = addTip($("#nameList").first(), "Who are you reviewing?", "The sidebar lists all the people you'll need to review. Red text indicates an incomplete review, while blue indicates that it is complete.");
+			t.position = { at: 'center left', my: 'center right' };
+			t = addTip($(".reviewOthersButton").last(), "Review more people", "You may optionally add more people to review by clicking 'Review Others'.");
+			t.position = { at: 'center left', my: 'center right' };
+		}
+
 		$(function () {
 
 			/*
@@ -291,76 +310,68 @@
 			});
 			$('.btn-group').button();
 
-			addTip($(".table-gwc tr").eq(1).find(".fill").first(), "Evaluating Roles", "You'll need to evaluate whether an individual is performing their roles.<br/> Click this box to toggle between Yes and No.");
-			addTip($(".table-gwc tr").eq(1).find(".glyphicon-pencil").first(), "Adding Comments", 'You can optionally add a comment by clicking the pencil.');
-			addTip($(".table-values > tbody > tr > td").eq(1), "Evaluating Values", "You'll need to evaluate whether an individual exhibits Company Values. Choose between <i>Almost Always</i>, <i>Sometimes</i>, or <i>Hardly Ever</i>.");
-			var t = addTip($(".table-values .reason").first(), "Adding Comments", 'You can optionally add a comment by clicking here.');
-			t.position = { at: 'top center', my: 'bottom center' };
-			t = addTip($("#nameList").first(), "Who are you reviewing?", "The sidebar lists all the people you'll need to review. Red text indicates an incomplete review, while blue indicates that it is complete.");
-			t.position = { at: 'center left', my: 'center right' };
-			t = addTip($("#nameList li").last(), "Review more people", "You may optionally add more people to review by clicking 'Review Others'.");
-			t.position = { at: 'center left', my: 'center right' };
-
+			resetHints();
 
 			setTimeout(function () {
 				$('.flipCard,.nameFade,.flipButton').addClass("flipped");
 			}, 1500);
-			
+
 		});
 
 
 
 	</script>
-	if(ViewBag.NoSubmit == null){
-		 <script>
-			 $(function(){
-			 	$(".changeable").change(function () {
-			 		reviewChanges = true;
-			 		console.log("change");
-			 	});
+	if (ViewBag.NoSubmit == null)
+	{
+		<script>
+			$(function () {
+				$(".changeable").change(function () {
+					reviewChanges = true;
+					console.log("change");
+				});
 
-				 $(".changeable").on('input propertychange', function() {
-				 	reviewChanges = true;
-					 console.log("propertychange");
-				 });
+				$(".changeable").on('input propertychange', function () {
+					reviewChanges = true;
+					console.log("propertychange");
+				});
 
-			 	var onleaving = function () {
-			 		if (reviewChanges) {
-						 var o;
-						 $.ajax({
-							method:"post",
-			 				data: $("#form").serialize(),
-			 				url: "/Review/Save/",
-			 				async: false,
-							success:function(data) {
+				var onleaving = function () {
+					if (reviewChanges) {
+						var o;
+						$.ajax({
+							method: "post",
+							data: $("#form").serialize(),
+							url: "/Review/Save/",
+							async: false,
+							success: function (data) {
 								//nothin.
 							},
-							error: function (a,b,c) {
-								o= 'Are you sure you want to leave this page? Without clicking Back or Next, your changes will be lost.';
+							error: function (a, b, c) {
+								o = 'Are you sure you want to leave this page? Without clicking Back or Next, your changes will be lost.';
 							}
-			 			});
-						 return o;
-					 }
-			 	};
+						});
+						return o;
+					}
+				};
 
-			 	$(document).ready(function () {
-			 		$('.submitButton').on('mousedown', stopNavigate);
-			 		$('.submitButton').on('mouseleave', function () {
-			 			$(window).on('beforeunload', onleaving);
-			 		});
-			 	});
+				$(document).ready(function () {
+					$('.submitButton').on('mousedown', stopNavigate);
+					$('.submitButton').on('mouseleave', function () {
+						$(window).on('beforeunload', onleaving);
+					});
+				});
 
-			 	$(window).on('beforeunload', onleaving);
+				$(window).on('beforeunload', onleaving);
 
 
-			 	function stopNavigate() {
-			 		$(window).off('beforeunload');
-			 	}
-			 });
+				function stopNavigate() {
+					$(window).off('beforeunload');
+				}
+			});
 
- 		
- 		</script>
-	 }
+
+		</script>
+	}
 
 	if (Model.Page == 0 && Model.Editable && Model.FirstPageHint)
 	{
@@ -397,9 +408,33 @@
 			transition: opacity .2s ease;
 		}
 
-		.tip {
-			-ms-opacity: .6;
-			opacity: .6;
+		.tip.fill {
+			 background-color: #413452 !important;
+		}
+
+		.tip.posneg,textarea.tip,.reviewOthersButton.tip {
+			border: 1px solid #413452 !important;
+			box-shadow: 0 0 8px 2px #413452;
+		}
+
+		.tip.glyphicon {
+			opacity: 1;
+			color: #413452;
+		}
+		@@-webkit-keyframes thumb {
+			0% { -webkit-transform: translateX(0px); }
+			25% { -webkit-transform: translateX(-5px); }
+			50% { -webkit-transform: translateX(0px); }
+			75% { -webkit-transform: translateX(5px); }
+			100% { -webkit-transform: translateX(0px); }
+		}
+
+		#nameList.tip li a{
+			-webkit-animation-name: thumb;
+			-webkit-animation-duration: 500ms;
+			-webkit-transform-origin:50% 50%;
+			-webkit-animation-iteration-count: 3;
+			-webkit-animation-timing-function: ease;
 		}
 	</style>
 }

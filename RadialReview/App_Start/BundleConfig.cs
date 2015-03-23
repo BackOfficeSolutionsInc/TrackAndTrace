@@ -65,7 +65,8 @@ namespace RadialReview
 					"~/Content/L10/L10Stats.css",
 					"~/Content/L10/L10Rocks.css",
 					"~/Content/L10/L10IDS.v2.css",
-					"~/Content/L10/L10Scorecard.css"
+					"~/Content/L10/L10Scorecard.css",
+					"~/Content/L10/L10Notes.css"
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/L10").Include(
@@ -75,6 +76,7 @@ namespace RadialReview
 					"~/Scripts/L10/L10Todo.js",
 					"~/Scripts/L10/L10Rocks.js",
 					"~/Scripts/L10/L10Scorecard.js",
+					"~/Scripts/L10/L10Notes.js",
 					"~/Scripts/L10/jquery.sortable.js"
 				));
 

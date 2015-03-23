@@ -28,7 +28,7 @@ namespace RadialReview.Controllers
 			//var membersAndSubordinates=_OrganizationAccessor.GetOrganizationMembersAndSubordinates(GetUser(),GetUser().Id,false);
 
 			var teamId = review.ForTeamId;
-			var customization = _ReviewEngine.GetCustomizeModel(GetUser(), teamId);
+			var customization = _ReviewEngine.GetCustomizeModel(GetUser(), teamId,true);
 			var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
 			var subordinates = GetUser().AsList().Union(_UserAccessor.GetDirectSubordinates(GetUser(), GetUser().Id)).ToList();
@@ -88,7 +88,7 @@ namespace RadialReview.Controllers
 		    var review =_ReviewAccessor.GetReview(GetUser(), id, true);
 
 			var teamId = review.ForReviewContainer.ForTeamId;
-			var customization = _ReviewEngine.GetCustomizeModel(GetUser(), teamId);
+			var customization = _ReviewEngine.GetCustomizeModel(GetUser(), teamId,false);
 
 			customization.AllUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 		    customization.Subordinates = review.ForUser.AsList();

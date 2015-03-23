@@ -15,22 +15,9 @@
 						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
 						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
 					</div>*@
-					<div class="btn-group">
-						<div class="btn btn-default btn-xs issuesModal"
-						     data-method="createissue"
-						     data-meeting="@Model.Meeting.Id"
-						     data-recurrence="@Model.Recurrence.Id">
-							<span class="glyphicon glyphicon-pushpin"></span> New Issue
-						</div>
-						<div class="btn btn-default btn-xs todoModal"
-						     data-method="createtodo"
-						     data-meeting="@Model.Meeting.Id"
-						     data-recurrence="@Model.Recurrence.Id">
-							<span class="glyphicon glyphicon-unchecked"></span> New Todo
-						</div>
-					</div>
+					@Html.Partial("partial/ButtonBar", Model)
 				</div>
-				<h2>Todo List <small>.</small></h2>
+				<h2>To-do List <small></small></h2>
 			</hgroup>
 			<div class="todo-container ">
 				<ol class="todo-list sortable init-@(guid)">

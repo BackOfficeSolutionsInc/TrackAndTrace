@@ -25,14 +25,14 @@ $(function () {
 
 		$("#issueDetails").append("<div class='heading'><h4>" + message + "</h2></div>");
 		$("#issueDetails").append(detailsList);
-		$("#issueDetails").append("<textarea class='details'>" + details + "</textarea>");
+		$("#issueDetails").append("<textarea disabled class='details'>" + details + "</textarea>");
 		$("#issueDetails").append("<div class='button-bar'>" +
 			"<span class='btn-group pull-right'>" +
 				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Done</span>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
 			"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + recurrenceId + "'><span class='icon fontastic-icon-forward-1'></span> Copy To</span>" +
-			"<span class='btn btn-default btn-xs createTodoButton todoModal'><span class='glyphicon glyphicon-unchecked todoButton'></span> Todo</span>" +
+			"<span class='btn btn-default btn-xs createTodoButton todoModal' data-method='CreateTodoFromIssue' data-meeting='"+meetingId+"' data-issue='"+issueId+"' data-recurrence='"+recurrenceId+"' ><span class='glyphicon glyphicon-unchecked todoButton'></span> Todo</span>" +
 			"</span>" +
 			"<span class='clearfix'></span>" +
 			"</div>");

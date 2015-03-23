@@ -33,6 +33,10 @@ $(function () {
 			"<span class='clearfix'></span>" +
 			"</div>");
 	});
+		
+	$("body").on("click", ".todoDetails .doneButton", function () { $(this).find(">input").trigger("click"); });
+
+
 
 	$("body").on("change", ".todo-checkbox", function () {
 		var todoId = $(this).data("todo");
