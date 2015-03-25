@@ -29,6 +29,9 @@ namespace RadialReview.Models
 			public virtual bool ManagersCanEditSelf { get; set; }
 			public virtual bool EmployeesCanEditSelf { get; set; }
 
+			public virtual bool EnableL10 { get; set; }
+			public virtual bool EnableReview { get; set; }
+
 			public OrganizationSettings()
 			{
 				TimeZoneOffsetMinutes = -360;
@@ -42,6 +45,9 @@ namespace RadialReview.Models
 
 				ManagersCanViewSubordinateL10 = true;
 				ManagersCanEditSubordinateL10 = false;
+
+				EnableL10 = false;
+				EnableReview = false;
 			}
 
 			public class OrgSettingsVM : ComponentMap<OrganizationSettings>
@@ -63,6 +69,9 @@ namespace RadialReview.Models
 
 					Map(x => x.ManagersCanEditSelf);
 					Map(x => x.EmployeesCanEditSelf);
+
+					Map(x => x.EnableL10);
+					Map(x => x.EnableReview);
 				}
 			}
 
@@ -117,6 +126,7 @@ namespace RadialReview.Models
 		}
 
 		public virtual bool ManagersCanEditPositions { get; set; }
+		
 
 		public OrganizationModel()
 		{

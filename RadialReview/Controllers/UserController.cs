@@ -138,14 +138,14 @@ namespace RadialReview.Controllers
                             .OrderBy(x => x.CustomName)
                             .ToSelectList(x => x.CustomName, x => x.Id).ToList();
 			if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditPositions(GetUser().Organization.Id))){
-                orgPos.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
+                orgPos.Insert(0,new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
             }
-
             var e2 = sw.ElapsedMilliseconds;
             var positions = _PositionAccessor
                                 .AllPositions()
                                 .ToSelectList(x => x.Name.Translate(), x => x.Id)
                                 .ToList();
+			orgPos.Insert(0,new SelectListItem() { Value = "-2", Text = "<None>" });
 
             var e3 = sw.ElapsedMilliseconds;
             var posModel = new UserPositionViewModel()
@@ -154,10 +154,11 @@ namespace RadialReview.Controllers
                 PositionId = -2L,
                 OrgPositions = orgPos,
                 Positions = positions,
-                CustomPosition = null
+                CustomPosition = null,
+				
             };
 
-            List<SelectListItem> managers = new List<SelectListItem>();
+            var managers = new List<SelectListItem>();
             var strictHierarchy = caller.Organization.StrictHierarchy;
             if (!strictHierarchy)
                 managers = _OrganizationAccessor.GetOrganizationManagers(GetUser(), GetUser().Organization.Id)
@@ -167,7 +168,7 @@ namespace RadialReview.Controllers
             var e4 = sw.ElapsedMilliseconds;
             if (caller.ManagingOrganization)
             {
-                managers.Insert(0,new SelectListItem() { Selected = false, Text = "[Manage Organization]", Value = "-3" });
+                managers.Insert(0,new SelectListItem() { Selected = false, Text = "[Organization Admin]", Value = "-3" });
             }
 
             var model = new CreateUserOrganizationViewModel()

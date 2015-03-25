@@ -20,7 +20,7 @@ namespace RadialReview.Controllers
 {
 	public class MigrationController : BaseController
 	{
-
+		#region old
 
 		// GET: Migration
 		[Access(AccessLevel.Radial)]
@@ -330,5 +330,32 @@ namespace RadialReview.Controllers
 			}
 			return count + "";
 		}
+
+		#endregion
+
+		[Access(AccessLevel.Radial)]
+		public string M3_24_2015()
+		{
+			var count = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var org = s.QueryOver<OrganizationModel>().List().ToList();
+
+					foreach (var x in org){
+						if (x.Settings.EnableL10 == false && x.Settings.EnableReview == false){
+							x.Settings.EnableReview = true;
+							s.Update(x);
+							count++;
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return count + "";
+		}
+
 	}
 }

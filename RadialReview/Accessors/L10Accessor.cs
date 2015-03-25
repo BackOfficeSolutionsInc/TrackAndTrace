@@ -102,6 +102,8 @@ namespace RadialReview.Accessors
 						{
 							u.Measurable.AccountableUser.GetName();
 							u.Measurable.AccountableUser.ImageUrl();
+							u.Measurable.AdminUser.GetName();
+							u.Measurable.AdminUser.ImageUrl();
 						}
 					}
 					if (loadRocks){
@@ -164,6 +166,8 @@ namespace RadialReview.Accessors
 						{
 							u.Measurable.AccountableUser.GetName();
 							u.Measurable.AccountableUser.ImageUrl();
+							u.Measurable.AdminUser.GetName();
+							u.Measurable.AdminUser.ImageUrl();
 						}
 					}
 					if (loadRocks)
@@ -436,6 +440,8 @@ namespace RadialReview.Accessors
 						var v = a.Measurable.AccountableUser.ImageUrl();
 						var j = a.AccountableUser.GetName();
 						var k = a.AccountableUser.ImageUrl();
+						var u1 = a.Measurable.AdminUser.GetName();
+						var v1 = a.Measurable.AdminUser.ImageUrl();
 					}
 
 					return scores;

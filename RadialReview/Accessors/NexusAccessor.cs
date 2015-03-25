@@ -77,17 +77,21 @@ namespace RadialReview.Accessors
                     };
                     newUser.TempUser = tempUser;
 
-                    var position = db.Get<OrganizationPositionModel>(orgPositionId);
 
-                    if (position.Organization.Id != newUser.Organization.Id)
+
+					var position = orgPositionId!= -2?db.Get<OrganizationPositionModel>(orgPositionId):null;
+
+					if (position!=null && position.Organization.Id != newUser.Organization.Id)
                         throw new PermissionsException();
 
                     db.Save(newUser);
 
-                    var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id) { Start = now };
-                    newUser.Positions.Add(positionDuration);
+	                if (position != null){
+		                var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id){Start = now};
+		                newUser.Positions.Add(positionDuration);
+	                }
 
-                    if (managerId > 0)
+	                if (managerId > 0)
                     {
                         var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id) { Start = now };
                         var manager = db.Get<UserOrganizationModel>(managerId);

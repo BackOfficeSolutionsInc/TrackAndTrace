@@ -4,20 +4,20 @@
 
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="SHORTCUT ICON" href="/content/favicon.ico?v=2" />
-		<link href='http://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
-		<title>@ViewBag.Title - @RadialReview.Properties.ProductStrings.ProductName</title>
-		<link href="~/Content/jquery.qtip.css" rel="stylesheet" />
-		@Styles.Render("~/Content/css")
-		@RenderSection("styles", required: false)
-		@Html.PageStyles()
-	</head>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="SHORTCUT ICON" href="/content/favicon.ico?v=2" />
+	<link href='http://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
+	<title>@ViewBag.Title - @RadialReview.Properties.ProductStrings.ProductName</title>
+	<link href="~/Content/jquery.qtip.css" rel="stylesheet" />
+	@Styles.Render("~/Content/css")
+	@RenderSection("styles", required: false)
+	@Html.PageStyles()
+</head>
 @if (ViewBag.HasBaseController == null)
 {
-    throw new Exception("You must extend from the base controller.");
+	throw new Exception("You must extend from the base controller.");
 }
 <body class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width") ">
 	@if (ViewBag.IsLocal ?? false)
@@ -68,22 +68,35 @@
 											@if (ViewBag.TaskCount > 0)
 											{
 												@:[@ViewBag.TaskCount]
-                                            }
+											}
 											<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
 										</a>
 									</li>
-									<li>
-										<a href="@Url.Action("Index", "Reviews")">
-											Reviews
-											<span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
-										</a>
-									</li>
+									if (ViewBag.ShowL10 ?? false)
+									{
+										<li>
+											<a href="@Url.Action("Index", "L10")">
+												L10
+												<span id="ManageNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+											</a>
+										</li>
+									}
+									if (ViewBag.ShowReview ?? false)
+									{
+										<li>
+											<a href="@Url.Action("Index", "Reviews")">
+												Reviews
+												<span id="ManageNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+											</a>
+										</li>
+									}
+									
 									@*<li>
-								<a href="@Url.Action("Index", "Reports")">
-									Reports
-									<span id="ReviewsNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
-								</a>
-							</li>*@
+											<a href="@Url.Action("Index", "Reports")">
+												Reports
+												<span id="ReviewsNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+											</a>
+										</li>*@
 								}
 								if (ViewBag.IsManager ?? false)
 								{
@@ -135,10 +148,10 @@
 					ForceUnhide();
 					@if (ViewBag.Alert!=null){
                         @:showAlert("@ViewBag.Alert");
-					                                        }
+															                                        }
 					@if(ViewBag.Success!=null){
                         @:showAlert("@ViewBag.Success", "alert-success", "Success!");
-					                    }
+															                    }
 					UnstoreJsonAlert();
 
 				});

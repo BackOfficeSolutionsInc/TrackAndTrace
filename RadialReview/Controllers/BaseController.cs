@@ -319,6 +319,8 @@ namespace RadialReview.Controllers
 				filterContext.Controller.ViewBag.UserName = MessageStrings.User;
 				filterContext.Controller.ViewBag.UserImage = "/img/placeholder";
 				filterContext.Controller.ViewBag.IsManager = false;
+				filterContext.Controller.ViewBag.ShowL10 = false;
+				filterContext.Controller.ViewBag.ShowReview = false;
 				filterContext.Controller.ViewBag.Organizations = userOrgs.Count();
 				filterContext.Controller.ViewBag.Hints = GetUserModel().Hints;
 				filterContext.Controller.ViewBag.ManagingOrganization = false;
@@ -345,6 +347,8 @@ namespace RadialReview.Controllers
 					filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser, oneUser.Id, DateTime.UtcNow);
 					//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
 					filterContext.Controller.ViewBag.UserName = name;
+					filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
+					filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview;
 					var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
 					filterContext.Controller.ViewBag.IsManager = isManager;
 					filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;

@@ -569,5 +569,26 @@ namespace RadialReview.Accessors
 				.Select(x => x.Id)
 				.List<long>().ToList();
 		}
-	}
+
+	    public void UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10)
+	    {
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ManagingOrganization(caller.Organization.Id);
+
+					var org = s.Get<OrganizationModel>(caller.Organization.Id);
+
+					org.Settings.EnableL10 = enableL10;
+					org.Settings.EnableReview = enableReview;
+
+					
+					s.Update(org);
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+	    }
+    }
 }

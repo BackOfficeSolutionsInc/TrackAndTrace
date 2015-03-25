@@ -65,11 +65,8 @@ $(function () {
 		$('#message').val('').focus();
 	});*/
 
-		meetingHub.server.join(MeetingId, $.connection.hub.id).done(function (d) {
-			//update(d);
-			$(".rt").prop("disabled", false);
-		});
-
+		rejoin();
+		afterLoad();
 		$("body").on("kypress", ".rt", function() { typed = typed + String.fromCharCode(event.charCode); });
 		$("body").on("keyup", ".rt", $.throttle(250, sendTextContents));
 		$("body").on("focus", ".rt", $.throttle(250, sendFocus));
@@ -88,6 +85,19 @@ $(function () {
 		$.connection.hub.stop();
 	};
 });
+
+function rejoin() {
+	try {
+		if (meetingHub) {
+			meetingHub.server.join(MeetingId, $.connection.hub.id).done(function(d) {
+				//update(d);
+				$(".rt").prop("disabled", false);
+			});
+		}
+	} catch (e) {
+		console.log(e);
+	}
+}
 
 function sendTextContents() {
 	var val = $(this).val();

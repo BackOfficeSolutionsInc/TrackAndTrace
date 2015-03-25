@@ -1,10 +1,10 @@
 ﻿
 var myPage = "";
 var followLeader = true;
-var isLeader = false;
-var meetingStart = false;
+//var isLeader = false;
+//var meetingStart = false;
 
-$(function () {
+function initL10() {
 	updateTime();
 	resizing();
 	if (meetingStart && (isLeader || !followLeader)) {
@@ -41,7 +41,7 @@ $(function () {
 		showModal("Add a to-do", "/Todo/"+m+"?" + parm, "/Todo/"+m);
 	});
 
-});
+}
 
 function replaceAll(find, replace, str) {
 	return str.split(find).join(replace);
@@ -121,6 +121,9 @@ function setupMeeting(_startTime) {
 	startTime = _startTime;
 }
 function setCurrentPage(pageName, startTime,baseMinutes) {
+	if (pageName == "") {
+		pageName = "segue";
+	}
 	currentPage = pageName;
 	currentPageStartTime = startTime;
 	currentPageBaseMinutes = baseMinutes;

@@ -32,8 +32,8 @@
 					<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm hidden-md" : "")">
 						<thead>
 							<tr>
-								<th class="heading who alignRight">Accountable<span class="newLine gray">/Admin</span></th>
-								@*<th class="heading who alignLeft "></th>*@
+								<th class="heading who alignRight">Accountable</th>
+								<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
 								<th class="heading measurable">Measurable</th>
 								<th class="heading target">Target</th>
 								@if (i == 0)
@@ -59,6 +59,8 @@
 								<tr>
 									<td class="who first1 alignRight">
 										@m.Measurable.AccountableUser.NotNull(x => x.GetName())
+									</td>
+									<td class="who first1 alignLeft">
 										<span class="newLine gray">/@m.Measurable.AdminUser.NotNull(x => x.GetName())</span>
 									</td>
 									<td class="measurable first1" title="@m.Measurable.Title">@m.Measurable.Title</td>

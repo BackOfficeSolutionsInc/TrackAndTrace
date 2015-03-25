@@ -6,7 +6,6 @@
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
 		}
 
-		var meetingStart = false;
 
 		@if (Model.Meeting != null){
 			@:var isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
@@ -14,7 +13,17 @@
 			@:var currentPageStartTime = @Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds());
 			@:var currentPageBaseMinutes = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0);
 			@:meetingStart = true;
-			@:resetClickables();
+		}
+		else{
+
+			@:var meetingStart = false;
 		}
 	</script>
 }
+@*<script>
+	try {
+		rejoin();
+	} catch (e) {
+			
+	}
+</script>*@

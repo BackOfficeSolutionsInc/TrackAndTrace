@@ -18,17 +18,7 @@
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
 		}
 
-		$(function() {
-			@if (Model.Meeting != null)
-			{
-				@:var isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@Model.Meeting._MeetingLeaderCurrentPageBaseMinutes)
-
-				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
-					@:setPageTime("@i.Item1",@i.Item2);
-				}
-			}
-		});
+		
 	</script>
 	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
 	<script src="~/signalr/hubs"></script>
@@ -37,6 +27,29 @@
 	@*<script src="~/Scripts/L10/L10.js"></script>
 	<script src="~/Scripts/L10/rtL10.js"></script>*@
 	@Scripts.Render("~/bundles/L10")
+	@Html.Partial("_SetupScript", Model)
+	<script>
+		function afterLoad() {
+			debugger;
+			@if (Model.Meeting != null){
+				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
+				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
+
+				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
+					@:setPageTime("@i.Item1",@i.Item2);
+				}
+			}
+			else{
+				@:isLeader =false;
+			}
+			initL10();
+			try {
+				resetClickables();
+			} catch (e) {
+				
+			}
+		}
+	</script>
 
 }
 
@@ -112,4 +125,3 @@
 		</div>
 	</div>
 </div>
-@Html.Partial("_SetupScript", Model)

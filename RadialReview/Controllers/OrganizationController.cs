@@ -48,6 +48,25 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("SetRole", "Account", new { id = newRoleId });
 		}
 
+		[HttpGet]
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Products()
+		{
+			_PermissionsAccessor.Permitted(GetUser(),x=>x.ManagingOrganization(GetUser().Organization.Id));
+			return View(GetUser().Organization);
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Products(OrganizationModel model)
+		{
+			if (ModelState.IsValid){
+				_OrganizationAccessor.UpdateProducts(GetUser(), model.Settings.EnableReview, model.Settings.EnableL10);
+				return RedirectToAction("Index", "Manage");
+			}
+			return View(GetUser().Organization);
+		}
+
 		[Access(AccessLevel.Any)]
 		public ActionResult Join(String id) {
 			var nexus = _NexusAccessor.Get(id);

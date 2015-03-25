@@ -153,7 +153,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Modal(ScoreCardIssueVM model)
 		{
-			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId);
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 			IssuesAccessor.CreateIssue(GetUser(),model.RecurrenceId, new IssueModel(){

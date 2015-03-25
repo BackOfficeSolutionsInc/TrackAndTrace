@@ -1,5 +1,4 @@
-﻿
-@model RadialReview.Models.L10.VM.L10MeetingStatsVM
+﻿@model RadialReview.Models.L10.VM.L10MeetingStatsVM
 @{
 	//Layout = "~/Views/L10/BasePage.cshtml";
 }
@@ -24,6 +23,9 @@
 <script>
 
 	@{
+		
+		
+		
 		var start = Model.AllMeetings
 			.Select(x => x.StartTime)
 			.Where(x => x.HasValue)
@@ -41,6 +43,8 @@
 			y = x._MeetingAttendees.Average(y => y.Rating)
 		}).Where(x => x.y != null);
 
+		
+		
 	}
 
 	////////////////////

@@ -12,6 +12,7 @@ using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RestSharp.Validation;
+using MathNet.Numerics.Distributions;
 
 namespace RadialReview.Controllers
 {
@@ -282,6 +283,34 @@ namespace RadialReview.Controllers
 			{
 				AllMeetings = meetings
 			};
+
+#region For Demo
+			if (recurrenceId == 1){
+				var latest =model.AllMeetings.Where(x => x.CompleteTime != null).OrderByDescending(x => x.CompleteTime.Value).FirstOrDefault();
+
+				if (latest != null){
+
+					var maxAvg = latest._MeetingAttendees.Average(x => x.Rating)??8;
+					var count = latest._MeetingAttendees.Count();
+					var past = 30;
+					model.AllMeetings = Enumerable.Range(1, past).Select(x => new L10Meeting()
+					{
+						StartTime = latest.StartTime.Value.Date+TimeSpan.FromHours(9) + TimeSpan.FromMinutes(Normal.Sample(2.5, 4)) - TimeSpan.FromDays(x * 7),
+						CompleteTime = latest.StartTime.Value.Date + TimeSpan.FromHours(9) + TimeSpan.FromMinutes(Normal.Sample(3, 4) + 90) - TimeSpan.FromDays(x * 7),
+						_MeetingAttendees = Enumerable.Range(1,count).Select(y=>new L10Meeting.L10Meeting_Attendee(){
+							Rating = (int)Math2.Coerce(
+							(double)Math.Round(
+								-1.0*maxAvg/(past*past*1.7777)*x*x+
+								maxAvg+Normal.Sample(0,(1-.35)/(past-1)*x+.35)
+							),1,10)
+						}).ToList()
+
+					}).ToList();
+					//model.AllMeetings.Add(latest);
+				}
+			}
+#endregion
+
 			return PartialView("MeetingStats", model);
 		}
 

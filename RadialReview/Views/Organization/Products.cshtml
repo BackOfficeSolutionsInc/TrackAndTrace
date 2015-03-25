@@ -1,0 +1,19 @@
+﻿@model RadialReview.Models.OrganizationModel
+
+@{
+	ViewBag.Title = "title";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm()){
+	<div class="form-group">
+		@Html.LabelFor(x => x.Settings.EnableL10)
+		@Html.CheckBoxFor(x => x.Settings.EnableL10, new{@class = "checkbox"})
+	</div>
+	<div class="form-group">
+		@Html.LabelFor(x => x.Settings.EnableReview)
+		@Html.CheckBoxFor(x => x.Settings.EnableReview, new{@class = "checkbox"})
+	</div>
+	
+	<input type="submit" class="btn btn-primary">
+}

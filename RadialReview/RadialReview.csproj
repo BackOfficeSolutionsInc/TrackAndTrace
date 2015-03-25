@@ -16,7 +16,7 @@
     <AssemblyName>RadialReview</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -73,6 +73,9 @@
     </Reference>
     <Reference Include="Mandrill">
       <HintPath>..\packages\Mandrill.1.0.74\lib\net40\Mandrill.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.3.6.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
       <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.1.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
@@ -132,6 +135,7 @@
       <HintPath>..\packages\System.Data.SQLite.1.0.88.0\lib\net45\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -364,6 +368,7 @@
     <Compile Include="Models\Charts\Scatter.cs" />
     <Compile Include="Models\Charts\Table.cs" />
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
+    <Compile Include="Models\Components\ForModel.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\AttachType.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
@@ -592,7 +597,9 @@
     <Compile Include="Utilities\Extensions\ExpressionExtensions.cs" />
     <Compile Include="Utilities\Extensions\IssuesExtensions.cs" />
     <Compile Include="Utilities\Extensions\Math2.cs" />
+    <Compile Include="Utilities\Log.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
+    <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\RandomUtil.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
@@ -632,7 +639,7 @@
     <Compile Include="Utilities\Extensions\StringExtensions.cs" />
     <Compile Include="Utilities\Extensions\UserOrganizationExtensions.cs" />
     <Compile Include="Utilities\HeatMapBinner.cs" />
-    <Compile Include="Utilities\HibernateSession.cs" />
+    <Compile Include="Utilities\NHibernate\HibernateSession.cs" />
     <Compile Include="Utilities\Extensions\LocalizationExtensions.cs" />
     <Compile Include="Utilities\HttpContextUtility.cs" />
     <Compile Include="Utilities\PermissionsUtility.cs" />
@@ -648,6 +655,7 @@
     <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\TimingUtility.cs" />
+    <Compile Include="Views\Log\LogModel.cs" />
     <Content Include="Content\components\fivestate.css" />
     <Content Include="Content\L10\L10Notes.css" />
     <Content Include="libeay32.dll">
@@ -952,6 +960,7 @@
     <Content Include="Views\Issues\RockIssueModal.cshtml" />
     <Content Include="Views\L10\partial\ButtonBar.cshtml" />
     <Content Include="Views\L10\CreateNote.cshtml" />
+    <Content Include="Views\Organization\Products.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1367,7 +1376,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:2201</IISUrl>
+          <IISUrl>http://localhost:2200/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

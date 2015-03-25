@@ -26,6 +26,12 @@ namespace RadialReview
 			}
 			return new DateTime(min);
 		}
+
+
+		public static double Coerce(double val, double low, double high)
+		{
+			return Math.Max(Math.Min(high, val), low);
+		}
 	}
 
 }

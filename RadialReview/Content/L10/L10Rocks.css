@@ -73,3 +73,7 @@
 	border-bottom: 1px solid #2C77BA;
 	text-align: center;
 }
+
+.rocks-container .component {
+	margin: 5px;
+}

@@ -3,6 +3,7 @@ using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Event;
 using NHibernate.SqlCommand;
 using NHibernate.Tool.hbm2ddl;
 using RadialReview.App_Start;
@@ -14,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using RadialReview.Models.Enums;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview.Utilities
 {
@@ -29,6 +31,8 @@ namespace RadialReview.Utilities
             return sql;
         }
     }
+
+
 
     public class HibernateSession
     {
@@ -66,7 +70,7 @@ namespace RadialReview.Utilities
 										m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
 										   .Conventions.Add<StringColumnLengthConvention>();
                                         m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
-                                        //m.AutoMappings.Add(CreateAutomappings);
+										//m.AutoMappings.Add(CreateAutomappings);
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
                                     }).ExposeConfiguration(BuildSchema)
@@ -162,6 +166,10 @@ namespace RadialReview.Utilities
                 new SchemaUpdate(config).Execute(false, true);
             }
 
+			var auditEvents = new AuditEventListener();
+			config.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { auditEvents };
+			config.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { auditEvents };
+
             // this NHibernate tool takes a configuration (with mapping info in)
             // and exports a database schema from it
         }
@@ -172,7 +180,10 @@ namespace RadialReview.Utilities
         {
             //UPDATE DATABASE:
             new SchemaUpdate(config).Execute(true, true);
-           
+
+			var auditEvents = new AuditEventListener();
+			config.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { auditEvents };
+			config.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { auditEvents };
 
             //KILL/CREATE DATABASE:
             //new SchemaExport(config).Execute(true, true, false);

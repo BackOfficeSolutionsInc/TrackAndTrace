@@ -71,13 +71,13 @@ namespace RadialReview
 
 			bundles.Add(new ScriptBundle("~/bundles/L10").Include(
 					"~/Scripts/L10/L10.js",
-					"~/Scripts/L10/rtL10.js",
 					"~/Scripts/L10/L10Ids.js",
 					"~/Scripts/L10/L10Todo.js",
 					"~/Scripts/L10/L10Rocks.js",
 					"~/Scripts/L10/L10Scorecard.js",
 					"~/Scripts/L10/L10Notes.js",
-					"~/Scripts/L10/jquery.sortable.js"
+					"~/Scripts/L10/jquery.sortable.js",
+					"~/Scripts/L10/rtL10.js"//Ensure last
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/main").Include(
