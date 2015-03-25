@@ -31,6 +31,7 @@
 	<script>
 		function afterLoad() {
 			debugger;
+			userId = @(ViewBag.UserId);
 			@if (Model.Meeting != null){
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
 				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))

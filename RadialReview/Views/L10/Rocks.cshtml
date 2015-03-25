@@ -19,36 +19,35 @@
 						<span class="owner">
 							@person.First().ForRock.AccountableUser.GetName()
 						</span>
-						<table style="width:100%">
-							<tr>
-								<th style="width: 33px"></th>
-								<th></th>
-								<th style="width: 1px"></th>
-								<th style="width: 46px"></th>
-							</tr>
-							@foreach (var i in person)
-							{
+						<div class="table-responsive">
+							<table style="width:100%">
 								<tr>
-									<td></td>
-									<td class="message">@i.ForRock.Rock</td>
-									<td class="">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
-									<td class="buttonHolder currentBlue">
-										<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
-											  data-meeting="@Model.Meeting.Id"
-											  data-recurrence="@Model.Recurrence.Id"
-											  data-rock="@(i.ForRock.Id)"
-											  data-method="CreateRockIssue"
-										></span>
-										<span class="glyphicon glyphicon-unchecked todoButton todoModal"
-											  data-meeting="@Model.Meeting.Id"
-											  data-recurrence="@Model.Recurrence.Id"
-											  data-rock="@(i.ForRock.Id)"
-											  data-method="CreateRockTodo">
-										</span>
-									</td>
+									<th style="width: 46px"></th>
+									<th style="width: 1px"></th>
+									<th></th>
 								</tr>
-							}
-						</table>
+								@foreach (var i in person)
+								{
+									<tr>
+										<td class="buttonHolder currentBlue">
+											<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
+											      data-meeting="@Model.Meeting.Id"
+											      data-recurrence="@Model.Recurrence.Id"
+											      data-rock="@(i.ForRock.Id)"
+											      data-method="CreateRockIssue"></span>
+											<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+											      data-meeting="@Model.Meeting.Id"
+											      data-recurrence="@Model.Recurrence.Id"
+											      data-rock="@(i.ForRock.Id)"
+											      data-method="CreateRockTodo">
+											</span>
+										</td>
+										<td class="">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
+										<td class="message">@i.ForRock.Rock</td>
+									</tr>
+								}
+							</table>
+						</div>
 					</div>
 				}
 			</div>

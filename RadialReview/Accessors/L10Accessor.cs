@@ -372,19 +372,19 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public static L10Meeting.L10Meeting_Connection GetConnection(ISession s, UserOrganizationModel caller, long recurrenceId)
-		{
-			var meeting = _GetCurrentL10Meeting(s, caller, recurrenceId);
-			var meetingId = meeting.Id;
-			var found = s.QueryOver<L10Meeting.L10Meeting_Connection>().Where(x =>
-					x.DeleteTime == null &&
-					x.L10Meeting.Id == meetingId &&
-					x.User.Id == caller.Id
-				).SingleOrDefault<L10Meeting.L10Meeting_Connection>();
-			if (found == null)
-				throw new PermissionsException("You do not have access to this meeting.");
-			return found;
-		}
+		//public static L10Meeting.L10Meeting_Connection GetConnection(ISession s, UserOrganizationModel caller, long recurrenceId)
+		//{
+		//	var meeting = _GetCurrentL10Meeting(s, caller, recurrenceId);
+		//	var meetingId = meeting.Id;
+		//	var found = s.QueryOver<L10Meeting.L10Meeting_Connection>().Where(x =>
+		//			x.DeleteTime == null &&
+		//			x.L10Meeting.Id == meetingId &&
+		//			x.User.Id == caller.Id
+		//		).SingleOrDefault<L10Meeting.L10Meeting_Connection>();
+		//	if (found == null)
+		//		throw new PermissionsException("You do not have access to this meeting.");
+		//	return found;
+		//}
 		public static L10Meeting GetCurrentL10Meeting(UserOrganizationModel caller, long recurrenceId, bool nullOnUnstarted = false, bool load = false, bool loadLogs = false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -1012,7 +1012,7 @@ namespace RadialReview.Accessors
 						tx.Commit();
 						s.Flush();
 						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-						hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).setupMeeting(meeting.CreateTime.ToJavascriptMilliseconds());
+						hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).setupMeeting(meeting.CreateTime.ToJavascriptMilliseconds(), meetingLeader.Id);
 					}
 				}
 			}
@@ -1063,6 +1063,9 @@ namespace RadialReview.Accessors
 						.List<long>().ToList();
 					_RecursiveCloseIssues(s, issue_recurParents, now);
 
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).concludeMeeting();
+					
 					tx.Commit();
 					s.Flush();
 				}
@@ -1070,6 +1073,10 @@ namespace RadialReview.Accessors
 		}
 		public static L10Meeting.L10Meeting_Connection JoinL10Meeting(UserOrganizationModel caller, long recurrenceId, string connectionId)
 		{
+			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+			hub.Groups.Add(connectionId, MeetingHub.GenerateMeetingGroupId(recurrenceId));
+			return null;
+			/*
 			//Should already check permissions here
 			var meeting = GetCurrentL10Meeting(caller, recurrenceId);
 			using (var s = HibernateSession.GetCurrentSession())
@@ -1105,7 +1112,7 @@ namespace RadialReview.Accessors
 						return conn;
 					}
 				}
-			}
+			}*/
 		}
 
 		#endregion

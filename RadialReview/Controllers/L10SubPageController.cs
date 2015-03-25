@@ -254,8 +254,8 @@ namespace RadialReview.Controllers
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(model.Recurrence.Id)).setHash("stats");
 					
-					return RedirectToAction("Load", new { id = model.Recurrence.Id, page = "stats" });
-
+					//return RedirectToAction("Load", new { id = model.Recurrence.Id, page = "stats" });
+					return Json(ResultObject.SilentSuccess().NoRefresh());
 					//return MeetingStats(model.Recurrence.Id);
 
 				}
@@ -284,7 +284,7 @@ namespace RadialReview.Controllers
 				AllMeetings = meetings
 			};
 
-#region For Demo
+			#region For Demo
 			if (recurrenceId == 1){
 				var latest =model.AllMeetings.Where(x => x.CompleteTime != null).OrderByDescending(x => x.CompleteTime.Value).FirstOrDefault();
 
@@ -309,13 +309,13 @@ namespace RadialReview.Controllers
 					//model.AllMeetings.Add(latest);
 				}
 			}
-#endregion
+			#endregion
 
 			return PartialView("MeetingStats", model);
 		}
 
-
 		#endregion
+
 
 		
 

@@ -51,11 +51,12 @@ namespace RadialReview.Hubs
 			}
 		}
 
-		public UserMeetingModel Join(long meetingId, string connectionId)
+		public void Join(long meetingId, string connectionId)
 		{
-			var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), meetingId);
+			//var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), meetingId);
 			var conn= L10Accessor.JoinL10Meeting(GetUser(), meetingId, connectionId);
-			return new UserMeetingModel(conn);
+			//return new UserMeetingModel(conn);
+			return;
 		}
 
 		public ResultObject UpdateUserFocus(long meetingId, string domId)
@@ -64,13 +65,13 @@ namespace RadialReview.Hubs
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					var us = GetUserStatus(s, meetingId);
+					//var us = GetUserStatus(s, meetingId);
 
-					us.FocusId = domId;
+					//us.FocusId = domId;
 					tx.Commit();
 					s.Flush();
-					Clients.OthersInGroup(GenerateMeetingGroupId(us.L10Meeting))
-						.UpdateUserFocus(domId, us.User.Id);
+					Clients.OthersInGroup(GenerateMeetingGroupId(meetingId /*us.L10Meeting*/))
+						.UpdateUserFocus(domId, GetUser().Id/*us.User.Id*/);
 					return ResultObject.SilentSuccess();
 				}
 			}
@@ -81,8 +82,8 @@ namespace RadialReview.Hubs
 			using(var s = HibernateSession.GetCurrentSession())
 			{
 				using(var tx=s.BeginTransaction()){
-					var us = GetUserStatus(s,meetingId);
-					Clients.OthersInGroup(GenerateMeetingGroupId(us.L10Meeting))
+					//var us = GetUserStatus(s,meetingId);
+					Clients.OthersInGroup(GenerateMeetingGroupId(/*us.L10Meeting*/meetingId))
 						.updateTextContents(domId,contents);
 					return ResultObject.SilentSuccess();
 				}
@@ -90,10 +91,10 @@ namespace RadialReview.Hubs
 		}
 
 		
-		private L10Meeting.L10Meeting_Connection GetUserStatus(ISession s,long meetingId)
-		{
-			return L10Accessor.GetConnection(s,GetUser(), meetingId);
-		}
+		//private L10Meeting.L10Meeting_Connection GetUserStatus(ISession s,long meetingId)
+		//{
+		//	return L10Accessor.GetConnection(s,GetUser(), meetingId);
+		//}
 
 
 		public static string GenerateMeetingGroupId(long recurrenceId)

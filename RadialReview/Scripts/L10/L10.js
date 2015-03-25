@@ -48,9 +48,10 @@ function replaceAll(find, replace, str) {
 }
 
 function resetClickables() {
+	console.log("resetClickables");
 	$(".agenda a").removeClass("clickable");
 	$(".agenda a").prop("href", "#");
-	if (isLeader || !followLeader) {
+	if (isLeader || !followLeader || !meetingStart) {
 		$(".agenda a").addClass("clickable");
 		$(".agenda a").each(function() {
 			$(this).prop("href", "#" + $(this).data("location"));
@@ -116,10 +117,22 @@ function setPageTime(pageName, minutes) {
 	}
 
 }
-function setupMeeting(_startTime) {
+function setupMeeting(_startTime,leaderId) {
+	console.log("setupmeeting");
 	$(".page-item .page-time").html("");
+	meetingStart = true;
+	isLeader = (leaderId == userId);
 	startTime = _startTime;
+	resetClickables();
 }
+
+function concludeMeeting() {
+	isLeader = false;
+	meetingStart = false;
+	resetClickables();
+	loadPage("stats");
+}
+
 function setCurrentPage(pageName, startTime,baseMinutes) {
 	if (pageName == "") {
 		pageName = "segue";

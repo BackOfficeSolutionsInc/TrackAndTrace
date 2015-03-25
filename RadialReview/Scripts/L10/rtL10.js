@@ -39,6 +39,7 @@ $(function () {
 	meetingHub.client.setCurrentPage = setCurrentPage;
 	meetingHub.client.setPageTime = setPageTime;
 	meetingHub.client.setupMeeting = setupMeeting;
+	meetingHub.client.concludeMeeting = concludeMeeting;
 
 	meetingHub.client.setHash = setHash;
 
@@ -55,7 +56,9 @@ $(function () {
 	meetingHub.client.createNote = createNote;
 	meetingHub.client.updateNoteName = updateNoteName;
 	meetingHub.client.updateNoteContents = updateNoteContents;
+	//meetingHub.client.setLeader = setLeader;
 
+	console.log("StartingHub ");
 
 	$.connection.hub.start().done(function () {
 		/*$('#sendmessage').click(function () {
@@ -64,9 +67,12 @@ $(function () {
 		// Clear text box and reset focus for next comment. 
 		$('#message').val('').focus();
 	});*/
-
-		rejoin();
-		afterLoad();
+		rejoin(function() {
+			afterLoad();
+			console.log("Logged in: " + $.connection.hub.id);
+		});
+		
+		
 		$("body").on("kypress", ".rt", function() { typed = typed + String.fromCharCode(event.charCode); });
 		$("body").on("keyup", ".rt", $.throttle(250, sendTextContents));
 		$("body").on("focus", ".rt", $.throttle(250, sendFocus));
@@ -86,12 +92,16 @@ $(function () {
 	};
 });
 
-function rejoin() {
+function rejoin(callback) {
 	try {
 		if (meetingHub) {
-			meetingHub.server.join(MeetingId, $.connection.hub.id).done(function(d) {
+			meetingHub.server.join(MeetingId, $.connection.hub.id).done(function() {
 				//update(d);
+				console.log("rejoin");
 				$(".rt").prop("disabled", false);
+				if (callback) {
+					callback();
+				}
 			});
 		}
 	} catch (e) {
