@@ -4,42 +4,54 @@
 }
 
 
-<div class="centered" style="width:50%;">
-	<div class="component">
-		<div class="meeting-manager">
-			<div class="title">Ratings (1 to 10)</div>
-			@using (Ajax.BeginForm("Conclusion", new AjaxOptions()
-			{
-				HttpMethod = "POST",
-				UpdateTargetId = "main-window",
-				LoadingElementDuration = 1000,
-				InsertionMode = InsertionMode.Replace,
-			}))
-			{
-				@Html.ValidationSummaryMin()
-				@Html.SecuredHiddenFor(x => x.Recurrence.Id)
-				<table style="width: 100%;">
-					@for(var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++)
-					{
-						<tr>
-							<td style=""></td>
-							<td style="width: 1px;">
-								@Html.Partial("_ProfilePicture", Model.Meeting._MeetingAttendees[i].User)
-							</td>
-							<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;text-align: left;">
-								@Model.Meeting._MeetingAttendees[i].User.GetName()
-							</td>
-							<td style="width: 1px;">
-								@Html.TextBox("rating_"+(Model.Meeting._MeetingAttendees[i].User.Id),Model.Meeting._MeetingAttendees[i].Rating,new {ariaValuemax="10",ariaValuemin="1",type="number",style="width:60px", @class="rt"})
-							</td>
-							<td></td>
-						</tr>
-					}
-				</table>
-				<div class="alignCenter">
-					<input type="submit" class="btn btn-primary center" value="Conclude Meeting" />
+<div class="conclusion meeting-page">
+	<div class="row">
+		<div class="col-md-12">
+			<hgroup class="page-header">
+				<div class="pull-right">
+					@Html.Partial("partial/ButtonBar", Model)
 				</div>
-			}
+				<h2>&nbsp;</h2>
+			</hgroup>
+			<div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;">
+				<div class="component">
+					<div class="meeting-manager">
+						<div class="title">Ratings (1 to 10)</div>
+						@using (Ajax.BeginForm("Conclusion", new AjaxOptions()
+						{
+							HttpMethod = "POST",
+							UpdateTargetId = "main-window",
+							LoadingElementDuration = 1000,
+							InsertionMode = InsertionMode.Replace,
+						}))
+						{
+							@Html.ValidationSummaryMin()
+							@Html.SecuredHiddenFor(x => x.Recurrence.Id)
+							<table style="width: 100%;">
+								@for(var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++)
+								{
+									<tr>
+										<td style=""></td>
+										<td style="width: 1px;">
+											@Html.Partial("_ProfilePicture", Model.Meeting._MeetingAttendees[i].User)
+										</td>
+										<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;text-align: left;">
+											@Model.Meeting._MeetingAttendees[i].User.GetName()
+										</td>
+										<td style="width: 1px;">
+											@Html.TextBox("rating_"+(Model.Meeting._MeetingAttendees[i].User.Id),Model.Meeting._MeetingAttendees[i].Rating,new {ariaValuemax="10",ariaValuemin="1",type="number",style="width:60px", @class="rt"})
+										</td>
+										<td></td>
+									</tr>
+								}
+							</table>
+							<div class="alignCenter">
+								<input type="submit" class="btn btn-primary center" value="Conclude Meeting" />
+							</div>
+						}
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

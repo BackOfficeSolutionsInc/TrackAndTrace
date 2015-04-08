@@ -181,7 +181,10 @@ ScatterImage.prototype.Pull = function Pull(url, data, callback) {
 		method: "GET",
 		data: data,
 		success: function (data) {
-			onComplete(data.Object);
+			showJsonAlert(data, false, false);
+			if (!data.Error) {
+				onComplete(data.Object);
+			}
 		}
 	});
 };
@@ -269,6 +272,7 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 		.size([options.width, options.height])
 		.gravity(0)
 		.charge(0)
+		.alpha(1000)
 		.on("tick", tick)
 		.on('end', function () {
 			d3.selectAll(".beginHidden").classed("beginHidden", false);
@@ -332,12 +336,19 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 
 		d.cx = xMap(d.cx);
 		d.cy = yMap(d.cy);
+
+		if (d.ox != null || d.oy != null) {
+			d.ox = xMap(d.ox);
+			d.oy = yMap(d.oy);
+		}
+
 		d.radius = this.nodeSize;
 	});
 
 
-
+	
 	var enter = svg.selectAll("g.points").data(scatterData).enter();
+	var enterPrev = svg.selectAll("g.points").data(scatterData.filter(function(d) { return d.ox != null && d.oy != null; })).enter();
 
 	if (options.useForce) {
 		var lines = enter.append("line")
@@ -351,6 +362,21 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 			//.style("stroke",function(d){return d.color;})
 			.call(force.drag);
 	}
+
+	//enterPrev.append("circle")
+	//	.attr("class", function(d) {
+	//		return d.class + " prev";
+	//	}).attr("cx", function(d) { return d.ox; }).attr("cy", function(d) { return d.oy; }).attr("r","2").attr("fill","transparent");
+	
+	enterPrev.append("line")
+		.attr("class", function(d) {return d.class + " prev";})
+		.attr("x1", function(d) {
+			 return d.cx;
+		}).attr("x2", function(d) { return d.ox; })
+		.attr("y1", function(d) { return d.cy; }).attr("y2", function(d) { return d.oy; });
+
+
+
 	var gs = enter.append("g")
 					.classed("beginHidden", true)
 					.attr("x", function (d) { return d.x; })
@@ -363,16 +389,16 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 
 	function tick(e) {
 		if (options.useForce) {
-			gs.each(gravity(.15 * e.alpha))
-				.each(collide(.05))
+			gs.each(gravity(1.5 * e.alpha))
+				.each(collide(.5))
 				.attr("transform", function (d) {
 					return "translate(" + d.x + "," + d.y + ")";
 				});
 			//.attr("cx", function(d) { return d.x; })
 			//.attr("cy", function(d) { return d.y; });
 
-			lines.each(gravity(.15 * e.alpha))
-				.each(collide(.05))
+			lines.each(gravity(1.5 * e.alpha))
+				.each(collide(.5))
 				.attr("x1", function (d) { return d.x; })
 				.attr("x2", function (d) { return d.cx; })
 				.attr("y1", function (d) { return d.y; })

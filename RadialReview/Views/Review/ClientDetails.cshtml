@@ -22,219 +22,8 @@
 
 @using (Html.BeginStyles())
 {
-	<link href="~/Content/Chart/Scatter.v2.css" rel="stylesheet" />
-	<link href="~/Content/ReportBuilder/evaluation.css" rel="stylesheet" />
-	<link href="~/Content/Chart/Chart.css" rel="stylesheet" />
-	<style>
-		.jumbotron.reviewing {
-			background-color: rgba(255, 60, 60, 0.14);
-			-moz-transition: background-color .2s ease-in-out;
-			-o-transition: background-color .2s ease-in-out;
-			-webkit-transition: background-color .2s ease-in-out;
-			transition: background-color .2s ease-in-out;
-		}
-
-			.jumbotron.reviewing.on {
-				background-color: rgba(60, 255, 99, 0.14);
-			}
-
-
-
-		.chart {
-			width: 600px;
-			height: 600px;
-			position: relative;
-			margin: auto;
-		}
-
-		.chartButton {
-			top: 39px;
-			position: absolute;
-			right: 39px;
-		}
-
-		.sidebar-contents {
-			padding: 6px;
-		}
-
-			.sidebar-contents ol {
-				padding-left: 25px;
-			}
-
-
-		svg,
-		canvas {
-			position: relative !important;
-		}
-
-		.legend .title {
-			font-size: 10px;
-		}
-
-		#legend {
-			top: 28px;
-			position: relative;
-		}
-
-		.rockReason {
-			height: 80px;
-		}
-
-		.chartItem {
-			width: calc( 100% - 145px );
-			padding-left: 13px;
-			display: inline-block;
-			/*float: left;*/
-		}
-
-		.legendItem {
-			width: 136px;
-			display: inline-block;
-			position: absolute;
-			top: 28px;
-			/*float: right;*/
-		}
-
-		.markedAs {
-			margin-top: 9px;
-		}
-
-		.rockReasonHeight {
-			min-height: 40px;
-		}
-
-		.sidebar {
-			/*padding: 10px;
-				font-size: 12px;
-				background-color: #FDFDFD;
-				border: 1px solid #DFDFDF;
-				-webkit-box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);
-				box-shadow: 0 1px 10px 0 rgba(1, 1, 1, 0.13);*/
-		}
-
-		/*.legend {
-			position: absolute;
-			right: 0px;
-			padding-right: 25px;
-		}
-
-			.legend .container {
-				margin-top: 30px;
-				border: 1px solid #E7E7E7;
-				padding: 10px;
-				-webkit-print-color-adjust: exact;
-				text-align: left;
-			}
-
-			.legend svg {
-				position: relative;
-			}
-
-			.legend .title {
-				font-size: 16px;
-			}
-
-			.legend .circle {
-				border: 1px solid black;
-				border-radius: 6px;
-				width: 12px;
-				height: 12px;
-				display: inline-block;
-				margin-right: 5px;
-			}*/
-		/*
-
-		.legend .container {
-			margin-top: 30px;
-			border: 1px solid #E7E7E7;
-			padding: 10px;
-			-webkit-print-color-adjust: exact;
-		}
-
-		.legend .title {
-			font-size: 16px;
-		}
-
-		.legend .circle {
-			border: 1px solid black;
-			border-radius: 6px;
-			width: 12px;
-			height: 12px;
-			display: inline-block;
-			margin-right: 5px;
-		}*/
-
-		.shiftContainer {
-			padding-top: 20px;
-		}
-
-		.row-title {
-			margin-left: -30px;
-			margin-right: -30px;
-			padding-top: 10px;
-			padding-bottom: 10px;
-			background-color: #E4E5E9;
-			text-align: center;
-			font-size: 18px;
-			color: #6E7392;
-			-webkit-text-shadow: 0 1px 0px #F3F3F3;
-			text-shadow: 0 1px 0px #F3F3F3;
-			border-top: 1px solid #C5C9DF;
-			border-bottom: 1px solid #C5C9DF;
-			margin-top: 5px;
-			margin-bottom: 5px;
-		}
-
-		.valueTable .fill {
-			margin-top: 2px;
-			width: 22px;
-		}
-
-		.subtitle {
-			font-size: 23px;
-		}
-
-		.fixed {
-			position: fixed;
-			top: 138px;
-		}
-
-		.row-title.first {
-			margin-top: -30px;
-			padding-top: 0px;
-			padding-bottom: 5px;
-			/*color: #84858B;*/
-			border-top-left-radius: 9px;
-			border-top-right-radius: 9px;
-			font-size: 38px;
-			margin-bottom: 5px;
-			border-top: 1px solid #E0E0E0;
-		}
-
-		.padBottom td {
-			padding-bottom: 15px !important;
-		}
-
-		.reviewName {
-			position: absolute;
-			top: 0;
-			right: 10px;
-			font-size: 20px;
-		}
-
-		.reviewPosition {
-			position: absolute;
-			top: 0;
-			left: 10px;
-			font-size: 20px;
-		}
-
-		.scatterPoint {
-			opacity: 1;
-		}
-	</style>
-	<link href="~/Content/chart.css" rel="stylesheet" />
-	<link href="~/Content/print.css" media="print" rel="stylesheet" />
+	@Styles.Render("~/Content/ClientDetails")
+	<link href="~/Content/print.css?rnd=1" media="print" rel="stylesheet" />
 }
 
 <div class="shiftContainer" style="">
@@ -536,7 +325,7 @@
 			}
 		</div>
 
-		<div class="noBreak">
+		<div class="noBreak2">
 			<div class="row zoom8">
 				@if (Model.Review.ClientReview.IncludeScatterChart)
 				{
@@ -680,12 +469,13 @@
 
 @using (Html.BeginScripts())
 {
-
-	<script src="~/Scripts/d3/d3.v3.min.js"></script>
+	
+	@*<script src="~/Scripts/d3/d3.v3.min.js"></script>
 	<script src="/scripts/d3/d3.csv.js"></script>
 	<script src="/scripts/d3/Plot.js"></script>
 	<script src="~/Scripts/d3/Scatter.v2.js"></script>
-	<script src="~/Scripts/review/translateSlider.js"></script>
+	<script src="~/Scripts/review/translateSlider.js"></script>*@
+	@Scripts.Render("~/bundles/ClientDetails")
 	<script>
 		var $sidebar = $("#sidebar"), $window = $(window), offset = $sidebar.offset(), topPadding = 60;
 
@@ -705,20 +495,7 @@
 		};
 
 		var updates = [];
-		/*
-		function legend(legendData, chart) {
-			if (legendData.length > 0) {
-				$("#legend_" + chart.id).html("<div class='container'><div class='title'>Legend:</div><div class='contents'></div></div>");
-
-				for (var i in legendData) {
-					var item = legendData[i];
-					$("#legend_" + chart.id + " .contents").append("<div><div class='" + item.Class + " circle inlineBlock'></div><div class='inlineBlock'>" + item.Name + "</div></div>")
-				}
-			}
-		}
-		*/
-
-
+		
 		function legend(legendData, chart) {
 
 			if (legendData.length > 0) {
@@ -783,25 +560,6 @@
 				};
 			}
 
-			/*if (groupBy === "user-*") {
-				opts.drawPoints = chart.shapePoints;
-				opts.useForce = false;
-			} else if (groupBy === "about-*" || groupBy === "review-*") {
-				opts.drawPoints = chart.shapePoints;
-				opts.useForce = false;
-			}
-			if (groupBy === "about-*") {
-				opts.legendFunc = chart.shapeLegend;
-			}
-
-			if (groupBy === "review-*") {
-				opts.legendFunc = function (lid, pts) {
-					var pts = [{ title: "Aggregate Score", class: "scatterPoint" }];
-
-					return chart.shapeLegend(lid, pts);
-				};
-			}*/
-
 			chart.PullPlot(dataUrl + "&groupBy=" + groupBy, null, function (data) {
 				$(".chartPlaceholder").addClass("hidden");
 				$("#chart2,#legend").fadeIn();
@@ -829,77 +587,5 @@
 		$(function () {
 			updateChart();
 		});
-
-		@*function update() {
-			var eachs = $(updates);
-			counter = eachs.length;
-			eachs.each(function (indexInArray) {
-				var item = this;
-				setTimeout(function () {
-					var reset = item[0];
-					var data = item[1];
-					var that = item[2];
-					var chart = item[3];
-
-					var date1 = +$(that).data("start");
-					var date2 = +$(that).data("end");
-					var date3 = new Date();
-
-					var groups = null;
-					var filters = [];
-
-					var legendFunc = legend;
-					if (data.LegendType && data.LegendType == "Review")
-						legendFunc = legendReview;
-
-					chart.Plot(data, {
-
-						animate: true,
-						reset: reset,
-						xAxis: categoryLookup[$(that).data("xaxis")],
-						yAxis: categoryLookup[$(that).data("yaxis")],
-						xDimensionId: "category-" + $(that).data("xaxis"),
-						yDimensionId: "category-" + $(that).data("yaxis"),
-						startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
-						endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
-						time: date3,//new Date(parseInt($("#date").val()))
-						//groups: "none",
-						legendFunc: legendFunc,
-						filters: filters,
-						defaultFilter: "all",
-						callback: function () {
-							counter--;
-							if (counter == 0) {
-								if (window.location.href.indexOf("printing=true") != -1) {
-									window.print();
-									window.close();
-								}
-							}
-						}
-					});
-				}, indexInArray * 150);
-			});
-		}
-
-		var count = 0;
-		var required = $(".chart").length;
-
-		var c = $(".chart");
-		var counter = c.length;
-		c.each(function () {
-			var id = $(this).attr("id");
-			var chart = new ScatterChart(id);
-			var that = this;
-			var id = $(this).data("id");
-			var dataUrl = "/Data/Scatter/" + id + "?reviewId=@Model.Review.Id";
-			chart.Pull(dataUrl, null, function (dat) {
-				data = dat;
-				updates.push([true, data, that, chart]);
-				counter--;
-				if (counter <= 0) {
-					update();
-				}
-			});
-		});*@
 	</script>
 }

@@ -1,0 +1,42 @@
+﻿@model System.Collections.Generic.List<RadialReview.Models.Todo.TodoModel>
+
+@{
+	ViewBag.Title = "All Todos";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>All Todos</h2>
+
+<table id = "myTable" style="width:100%">
+	<thead>
+		<tr>
+
+			<th>Name</th>
+			<th>Todo</th>
+			<th>Created</th>
+			<th>Completed</th>
+		</tr>
+
+	</thead>
+	<tbody>
+		@foreach (var t in Model)
+		{
+			<tr>
+				<td>@t.AccountableUser.GetName()</td>
+				<td>@t.Message</td>
+				<td>@t.CreateTime.ToShortDateString()</td>
+				<td>@t.CompleteTime.NotNull(x => x.Value.ToShortDateString())</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@using (Html.BeginScripts())
+{
+	<script>
+		$(document).ready(function () {
+			$("#myTable").tablesorter();
+		}
+);
+	</script>
+}

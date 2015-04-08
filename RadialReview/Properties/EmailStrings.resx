@@ -147,7 +147,7 @@
     <comment>[productName]</comment>
   </data>
   <data name="JoinOrganizationUnderManager_Body" xml:space="preserve">
-    <value>&lt;p&gt;{0},&lt;br/&gt; {1} would like to link to your account. Simply click the following link:&lt;/p&gt;
+    <value>&lt;p&gt;{0},&lt;br/&gt; Please join {1} on {4} by click the following link:&lt;/p&gt;
 &lt;br&gt; 
     &lt;a href="{2}"&gt;{3}&lt;/a&gt;
 &lt;br /&gt;&lt;br /&gt;If you are prompted for an access code, please use the following:
@@ -171,7 +171,7 @@
 		&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;br /&gt;If you believe you have received this message in error, you may simply ignore this email. If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+&lt;br /&gt;If you have any questions, you can reply to this e-mail address.
 &lt;br /&gt;
 &lt;br /&gt;
 Sincerely,&lt;br/&gt;

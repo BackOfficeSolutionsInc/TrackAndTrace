@@ -39,8 +39,8 @@
 			right: 8px;
 			font-size: 9px;
 			color: white;
-			-ms-opacity: .3;
-			opacity: .3;
+			-ms-opacity: .45;
+			opacity: .45;
 		}
 
 
@@ -311,6 +311,14 @@
 	height: 80px;
 	width: 80px;
 	position: relative;
+	vertical-align: middle;
+	padding-bottom: 1px;
+	padding-right: 1px;
+}
+
+.table-io.gwc > tbody > tr > td:first-child {
+	padding-bottom: 6px;
+	padding-top: 6px;  
 }
 
 	.table-io.gwc > tbody > tr > td > .fill {
@@ -322,6 +330,7 @@
 		color: white;
 		font-size: 16px;
 		cursor: pointer;
+		position: relative;
 	}
 
 		.table-io.gwc > tbody > tr > td > .fill.Indeterminate {
@@ -393,7 +402,8 @@
 	height: 20px !important;
 	width: 32px !important;
 	padding-top: 0px !important;
-	margin-top: 0px;
+	margin-top: 2px;
+	margin-left: 2px;
 }
 
 .gwc-details table {
@@ -516,8 +526,8 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	content: "\e111";
-	-ms-opacity: .2;
-	opacity: .2;
+	-ms-opacity: .45;
+	opacity: .45;
 }
 
 .clientDetailsContainer .fill.hasReason:before {
@@ -577,7 +587,7 @@
 }
 
 .roleTable td,.valueTable td {
-	white-space: nowrap;
+	/*white-space: nowrap;*/
 	border: 0px;
 	margin: 0px;
 	padding: 0px;

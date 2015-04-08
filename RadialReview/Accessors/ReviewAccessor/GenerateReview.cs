@@ -24,7 +24,7 @@ namespace RadialReview.Accessors {
 		
 		#region Generate Review
 		#region Generate Answers
-		private static void GenerateSliderAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateSliderAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 
 			var slider = new SliderAnswer()
@@ -45,7 +45,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static void GenerateGWCAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateGWCAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var gwc = new GetWantCapacityAnswer()
 			{
@@ -68,7 +68,7 @@ namespace RadialReview.Accessors {
 			session.Save(gwc);
 		}
 
-		private static void GenerateRockAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateRockAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var rock = new RockAnswer()
 			{
@@ -89,7 +89,7 @@ namespace RadialReview.Accessors {
 			session.Save(rock);
 		}
 
-		private static void GenerateCompanyValuesAnswer(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateCompanyValuesAnswer(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var gwc = new CompanyValueAnswer()
 			{
@@ -108,7 +108,8 @@ namespace RadialReview.Accessors {
 			session.Save(gwc);
 		}
 
-		private static void GenerateFeedbackAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous) {
+		private static void GenerateFeedbackAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		{
 			var feedback = new FeedbackAnswer() {
 				Anonymous = anonymous,
 				Complete = false,
@@ -125,7 +126,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static void GenerateThumbsAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateThumbsAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var thumbs = new ThumbsAnswer() {
 				Anonymous = anonymous,
@@ -143,7 +144,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static void GenerateRelativeComparisonAnswers(AbstractUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateRelativeComparisonAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var peers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager).SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate));
 			var managers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager);
@@ -154,7 +155,7 @@ namespace RadialReview.Accessors {
 			var union = peers.UnionBy(x => x.Id, managers, managing, groupMembers).ToList();
 
 			var len = union.Count();
-			List<Tuple<UserOrganizationModel, UserOrganizationModel>> items = new List<Tuple<UserOrganizationModel, UserOrganizationModel>>();
+			var items = new List<Tuple<UserOrganizationModel, UserOrganizationModel>>();
 			for (int i = 0; i < len - 1; i++) {
 				for (int j = i + 1; j < len; j++) {
 					var relComp = new RelativeComparisonAnswer()

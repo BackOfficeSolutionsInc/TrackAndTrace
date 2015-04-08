@@ -1,0 +1,23 @@
+﻿@model RadialReview.Controllers.PermissionsController.PermissionsVM
+
+
+@Html.SecuredHiddenFor(x=>x.Id)
+
+<div class="form-group">
+	@Html.LabelFor(x => x.ForUser)
+	@Html.DropDownListFor(x => x.ForUser, Model.PossibleUsers.ToSelectList(x => x.GetName(), x => x.Id), new{
+		@class = "form-control"
+	})
+</div>
+<div class="form-group">
+	@Html.LabelFor(x => x.PermissionType)
+	@Html.EnumDropDownListFor(x=>x.PermissionType, new{
+		@class = "form-control"
+	})
+</div>
+<div class="form-group">
+	@Html.LabelFor(x => x.CopyFrom)
+	@Html.DropDownListFor(x => x.CopyFrom,Model.PossibleUsers.ToSelectList(x=>x.GetName(),x=>x.Id), new{
+		@class = "form-control"
+	})
+</div>

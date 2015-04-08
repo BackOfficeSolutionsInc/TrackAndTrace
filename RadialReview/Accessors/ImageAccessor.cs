@@ -58,9 +58,9 @@ namespace RadialReview.Accessors
 					InputStream = ms,
 					StorageClass = S3StorageClass.ReducedRedundancy,
 					Key = path,
-					CannedACL = S3CannedACL.PublicRead
+					CannedACL = S3CannedACL.PublicRead,
 				};
-
+				fileTransferUtilityRequest.Headers.CacheControl = "public, max-age=604800";
 
 				var fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.USEast1));
 				fileTransferUtility.Upload(fileTransferUtilityRequest);

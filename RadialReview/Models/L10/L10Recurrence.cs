@@ -24,6 +24,7 @@ namespace RadialReview.Models.L10
 		public virtual IList<L10Recurrence_Rocks> _DefaultRocks { get; set; }
 
 		public virtual List<L10Note> _MeetingNotes { get; set; }
+		public virtual long? MeetingInProgress { get; set; }
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>
 		{
@@ -32,6 +33,7 @@ namespace RadialReview.Models.L10
 				Id(x => x.Id);
 				Map(x => x.Name).Length(10000);
 				Map(x => x.CreateTime);
+				Map(x => x.MeetingInProgress);
 				Map(x => x.DeleteTime);
 
 				Map(x => x.OrganizationId).Column("OrganizationId");

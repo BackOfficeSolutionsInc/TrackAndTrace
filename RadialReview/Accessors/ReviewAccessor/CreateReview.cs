@@ -131,8 +131,11 @@ namespace RadialReview.Accessors {
                     var orgName = organization.Name.Translate();
                     int sent, errors;
 
-                    unsentEmails.AddRange(CreateReviewFromPrereview(dataInteraction, perms, caller, reviewContainer,
-                                orgName, whoReviewsWho, hub, userId, usersToReview.Count()));
+					////////////////////////////////////////////
+					//HEAVY LIFTING HERE:
+	                var clientReviews = CreateReviewFromPrereview(dataInteraction, perms, caller, reviewContainer, orgName, whoReviewsWho, hub, userId, usersToReview.Count());
+					////////////////////////////////////////////
+                    unsentEmails.AddRange(clientReviews);
 
 
                     tx.Commit();
@@ -249,7 +252,7 @@ namespace RadialReview.Accessors {
                         try {
                             var r = reviewsLookup.Where(x => x.ForUserId == askableUser.Item1.Id).SingleOrDefault();
                             if (r != null) {
-                                AddToReview(dataInteraction, perms, caller, caller.Id, r.Id, beingReviewedUserId, askableUser.Item2.Invert());
+                                AddToReview(dataInteraction, perms, caller, askableUser.Item1.Id, r.ForReviewsId, beingReviewedUserId, askableUser.Item2.Invert());
                             }
                         }
                         catch (Exception e) {

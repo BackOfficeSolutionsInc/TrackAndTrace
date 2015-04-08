@@ -39,7 +39,8 @@ namespace RadialReview.Accessors
 			long? yAxis,
 			DateTime? startTime,
 			DateTime? endTime,
-			bool? included)
+			bool? included,
+			bool? includedPrevious)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -65,6 +66,8 @@ namespace RadialReview.Accessors
 						review.ClientReview.ScatterChart.EndDate = endTime.Value;
 					if (included != null)
 						review.ClientReview.IncludeScatterChart = included.Value;
+					if (includedPrevious != null)
+						review.ClientReview.ScatterChart.IncludePrevious = includedPrevious.Value;
 
 					s.Update(review.ClientReview);
 					tx.Commit();
@@ -256,7 +259,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var rockAnswer = s.Get<RockAnswer>(rockAnswerId);
-					PermissionsUtility.Create(s, caller).ManageUserReview(rockAnswer.ForReviewId, false);
+					PermissionsUtility.Create(s, caller).ManageUserReview_Answer(rockAnswerId, false);
 					switch (val)
 					{
 						case Tristate.False: rockAnswer.ManagerOverride = RockState.AtRisk; break;
@@ -276,7 +279,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var rockAnswer = s.Get<RockAnswer>(rockAnswerId);
-					PermissionsUtility.Create(s, caller).ManageUserReview(rockAnswer.ForReviewId, false);
+					PermissionsUtility.Create(s, caller).ManageUserReview_Answer(rockAnswerId, false);
 					rockAnswer.OverrideReason = notes;
 					s.Update(rockAnswer);
 					tx.Commit();
@@ -292,7 +295,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var answer = s.Get<GetWantCapacityAnswer>(answerId);
-					PermissionsUtility.Create(s, caller).ManageUserReview(answer.ForReviewId, false);
+					PermissionsUtility.Create(s, caller).ManageUserReview_Answer(answerId, false);
 
 
 
@@ -318,7 +321,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var answer = s.Get<CompanyValueAnswer>(answerId);
-					PermissionsUtility.Create(s, caller).ManageUserReview(answer.ForReviewId, false);
+					PermissionsUtility.Create(s, caller).ManageUserReview_Answer(answerId, false);
 					
 					answer.IncludeReason = on;
 					s.Update(answer);

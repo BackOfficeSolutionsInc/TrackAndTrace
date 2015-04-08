@@ -247,17 +247,20 @@ svg .legend {
 	border: 25px solid;
 	font-weight: bold;
 	position: absolute;
-	top: 2px !important;
-	left: 2px !important;
+	top: -4px !important;
+	left: -4px !important;
+
 }
 
 .roleTable .fill:before {
-	content: "";
-	border: 11px solid;
-	font-weight: bold;
-	position: absolute;
-	top: 0px !important;
-	left: 0px !important;
+  content: "";
+  border: 9px solid;
+  font-weight: bold;
+  position: absolute;
+  top: 0px !important;
+  left: 0px !important;
+  right: 0px !important;
+  bottom: 0px !important;
 }
 
 .companyValues .fill:before {
@@ -287,7 +290,8 @@ svg .legend {
 
 
 /*.gwc .fill.True:before,.roleTable .fill.True:before,.companyValues .fill.Positive:before,.valueTable .fill.Positive:before {*/
-.gwc .fill.True:before, .roleTable .fill.True:before, .companyValues .fill.Positive:before, .valueTable .fill.Positive:before {
+.gwc .fill.True:before, .roleTable .fill.True:before, .companyValues .fill.Positive:before, .valueTable .fill.Positive:before ,
+.gwc .fill.Always:before, .roleTable .fill.Always:before{
 	border-color: #449D44 !important;
 	-ms-opacity: 0.2;
 	opacity: 0.2;
@@ -303,6 +307,17 @@ svg .legend {
 	border-color: #EC971F !important;
 	-ms-opacity: 0.25;
 	opacity: 0.25;
+}
+
+.gwc .fill.Rarely:before, .roleTable .fill.Rarely:before{
+	border-color: #FC827F !important;
+	-ms-opacity: 0.2;
+	opacity: 0.2;
+}
+.gwc .fill.Mostly:before, .roleTable .fill.Mostly:before{
+	border-color: #71BE71 !important;
+	-ms-opacity: 0.2;
+	opacity: 0.2;
 }
 
 .fill .percent {
@@ -361,11 +376,16 @@ svg .legend {
 }
 
 .roleTable td, .valueTable td {
+	white-space: normal;
 	padding: 0px 3px;
 }
 
 .subsection {
 	margin-bottom: 10px;
+}
+
+.print-pull-right {
+	float:  right!important;
 }
 
 .print-col-xs-6 {

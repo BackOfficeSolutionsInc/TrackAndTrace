@@ -953,7 +953,7 @@ namespace RadialReview.Accessors
 
 						var now = DateTime.UtcNow;
 						var recurrence = s.Get<L10Recurrence>(recurrenceId);
-
+						
 						var meeting = new L10Meeting
 						{
 							CreateTime = now,
@@ -966,6 +966,9 @@ namespace RadialReview.Accessors
 						};
 
 						s.Save(meeting);
+
+						recurrence.MeetingInProgress = meeting.Id;
+						s.Update(recurrence);
 
 						_LoadRecurrences(s, false, false, false, recurrence);
 
@@ -1062,6 +1065,9 @@ namespace RadialReview.Accessors
 						.Select(x => x.Id)
 						.List<long>().ToList();
 					_RecursiveCloseIssues(s, issue_recurParents, now);
+
+					recurrence.MeetingInProgress = null;
+					s.Update(recurrence);
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).concludeMeeting();
@@ -1246,6 +1252,23 @@ namespace RadialReview.Accessors
 		}
 		#endregion
 
-		
+
+
+		public static List<TodoModel> GetPreviousTodos(UserOrganizationModel caller, long recurrenceId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+
+					var todos = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.ForRecurrenceId == recurrenceId).List().ToList();
+
+					foreach (var t in todos){
+						var a =t.AccountableUser.GetName();
+					}
+					return todos;
+				}
+			}
+		}
 	}
 }

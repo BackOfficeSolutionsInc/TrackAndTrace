@@ -19,6 +19,8 @@ namespace RadialReview.Controllers
 			public long UserId { get; set; }
 			public List<RoleModel> Roles { get; set; }
 			public List<UserTemplate.UT_Role> TemplateRoles { get; set; }
+			public bool UpdateOutstandingReviews { get; set; }
+
 			public DateTime CurrentTime = DateTime.UtcNow;
 		}
 
@@ -41,7 +43,7 @@ namespace RadialReview.Controllers
 			foreach (var r in model.Roles){
 				r.ForUserId = model.UserId;
 			}
-			_RoleAccessor.EditRoles(GetUser(), model.UserId, model.Roles);
+			_RoleAccessor.EditRoles(GetUser(), model.UserId, model.Roles,model.UpdateOutstandingReviews);
 			return Json(ResultObject.SilentSuccess());
 		}
 

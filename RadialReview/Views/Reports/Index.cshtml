@@ -90,7 +90,9 @@
 									double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
 									double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
 									return complete / total;
-								}))
+
+								//return x.GetCompletion().GetPercentage();
+							}))
 							{
 								@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
 								<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
@@ -138,6 +140,8 @@
 									double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
 									double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
 									return complete / total;
+
+									/*return x.GetCompletion().GetPercentage();*/
 								}))
 					{
 						@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@

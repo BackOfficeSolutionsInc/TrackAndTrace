@@ -28,7 +28,7 @@
 		if (!state.id) {
 			return state.text;
 		}
-		var $state = $('<span><img src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+		var $state = $('<span><img width="32" height="32" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
 		return $state;
 	};
 

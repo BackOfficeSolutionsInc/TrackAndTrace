@@ -20,6 +20,7 @@ namespace RadialReview.Controllers
 			public List<Models.UserTemplate.UserTemplate.UT_Rock> TemplateRocks { get; set; }
 			public DateTime CurrentTime { get; set; }
 			public bool Locked { get; set; }
+			public bool UpdateOutstandingReviews { get; set; }
 
 			public RockVM()
 			{
@@ -99,7 +100,7 @@ namespace RadialReview.Controllers
 			{
 				r.ForUserId = model.UserId;
 			}
-			_RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks);
+			_RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks,model.UpdateOutstandingReviews);
 			return Json(ResultObject.Create(model.Rocks.Select(x=>new { Session = x.Period.Name, Rock = x.Rock, Id =x.Id }),status:StatusType.SilentSuccess));
 		}
 

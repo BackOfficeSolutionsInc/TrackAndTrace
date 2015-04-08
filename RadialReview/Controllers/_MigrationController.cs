@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using Amazon.S3;
@@ -330,9 +331,6 @@ namespace RadialReview.Controllers
 			}
 			return count + "";
 		}
-
-		#endregion
-
 		[Access(AccessLevel.Radial)]
 		public string M3_24_2015()
 		{
@@ -356,6 +354,39 @@ namespace RadialReview.Controllers
 			}
 			return count + "";
 		}
+		#endregion
+		[Access(AccessLevel.Radial)]
+		public string M4_4_2015()
+		{
+			var count = new StringBuilder();
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var reviews = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null).List().ToList();
+					var answers = s.QueryOver<AnswerModel>().Where(x => x.DeleteTime == null).List().ToList();
+					
+					foreach (var r in reviews)
+					{
+						if (r.QuestionCompletion.NumRequired == 0)
+						{
+							var r1 = r;
+							r.QuestionCompletion.NumRequired		 = answers.Count(x => x.DeleteTime == null && x.Required && x.ForReviewId == r1.Id);
+							r.QuestionCompletion.NumRequiredComplete = answers.Count(x => x.DeleteTime == null && x.Required && x.ForReviewId == r1.Id && x.Complete);
+							r.QuestionCompletion.NumOptional		 = answers.Count(x => x.DeleteTime == null && !x.Required && x.ForReviewId == r1.Id);
+							r.QuestionCompletion.NumOptionalComplete = answers.Count(x => x.DeleteTime == null && !x.Required && x.ForReviewId == r1.Id && x.Complete);
+
+							s.Update(r);
+							count.AppendLine(r.Id + "," + r.QuestionCompletion.NumRequired + "," + r.QuestionCompletion.NumRequiredComplete + "," + r.QuestionCompletion.NumOptional + "," + r.QuestionCompletion.NumOptionalComplete+"<br/>");
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return count.ToString();
+		}
+		
 
 	}
 }

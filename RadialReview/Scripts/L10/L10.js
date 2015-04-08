@@ -159,6 +159,7 @@ function loadPage(location) {
 }
 
 function loadPageForce(location) {
+	debugger;
 	$(".issues-list").sortable("destroy");
 	$(".todo-list").sortable("destroy");
 	window.location.hash = location;

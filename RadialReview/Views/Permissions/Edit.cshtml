@@ -1,0 +1,39 @@
+﻿@model List<RadialReview.Controllers.PermissionsController.PermissionsVM>
+@{
+    ViewBag.Title = "Permissions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="panel panel-default">
+	<a class="headerButton clickable" onclick="@Html.ShowModal("Add Permissions", "/Permissions/Modal", "/Permissions/Modal/", onComplete: "location.reload()")">Add</a>
+	<div class="panel-heading">Edit Permissions</div>
+
+	<table class="fullWidth table">
+		<tr>
+			<th>Name</th>
+			<th>Permission</th>
+			<th>Copy From</th>
+		</tr>
+		@foreach (var v in Model){
+			<tr class="row_@(v.Id)">
+				<td>@v.PossibleUsers.FirstOrDefault(x=>x.Id==v.ForUser).NotNull(x=>x.GetName())</td>
+				<td>@v.PermissionType</td>
+				<td>@v.PossibleUsers.FirstOrDefault(x => x.Id == v.CopyFrom).NotNull(x => x.GetName())</td>
+				<td><span class="glyphicon glyphicon-trash" onclick="deleteRow(@v.Id)"></span></td>
+			</tr>
+		}
+	</table>
+</div>
+
+<script>
+	function deleteRow(row) {
+		$.ajax({
+			url: "/permissions/delete/" + row,
+			onsuccess: function(data) {
+				showJsonAlert(data, false, true);
+				if (!data.Error){
+					$(".row_" + data.Object).remove();
+				}
+			}
+		});
+	}
+</script>

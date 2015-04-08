@@ -117,6 +117,7 @@ namespace RadialReview.Controllers
             public long ReviewId { get; set; }
             public List<SelectListItem> AdditionalUsers { get; set; }
             public long SelectedUserId { get; set; }
+			public bool SendEmail { get; set; }
         }
 
 	    public class DueDateVM
@@ -283,7 +284,8 @@ namespace RadialReview.Controllers
             var model = new UpdateReviewsViewModel()
             {
                 ReviewId = id,
-                AdditionalUsers = additionalMembers.ToSelectList(x => x.GetNameAndTitle(youId: GetUser().Id), x => x.Id)
+                AdditionalUsers = additionalMembers.ToSelectList(x => x.GetNameAndTitle(youId: GetUser().Id), x => x.Id),
+				SendEmail = true
             };
             return PartialView(model);
         }
@@ -304,7 +306,7 @@ namespace RadialReview.Controllers
                     ResultObject output;
                     try
                     {
-                        output = await _ReviewAccessor.AddUserToReviewContainer(user, model.ReviewId, model.SelectedUserId,true);
+                        output = await _ReviewAccessor.AddUserToReviewContainer(user, model.ReviewId, model.SelectedUserId,model.SendEmail);
                     }
                     catch (Exception e)
                     {

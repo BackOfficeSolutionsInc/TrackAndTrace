@@ -12,7 +12,30 @@ using RadialReview.Models.Todo;
 namespace RadialReview.Controllers
 {
     public class TodoController : BaseController
-    {
+	{
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Previous(long id)
+		{
+			var recurrenceId = id;
+			var model = L10Accessor.GetPreviousTodos(GetUser(), recurrenceId);
+
+			/*var model = new List<TodoVM()
+			{
+				ByUserId = GetUser().Id,
+				MeetingId = meeting,
+				RecurrenceId = recurrence,
+				PossibleUsers = recur._DefaultAttendees
+					.Select(x => x.User)
+					.Select(x => new AccountableUserVM()
+					{
+						id = x.Id,
+						imageUrl = x.ImageUrl(true, ImageSize._32),
+						name = x.GetName()
+					}).ToList(),
+			};*/
+			return View(model);
+		}
+
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult CreateTodo(long meeting, long recurrence)
 		{

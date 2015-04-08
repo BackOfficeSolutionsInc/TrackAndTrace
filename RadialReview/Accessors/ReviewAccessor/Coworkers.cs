@@ -15,6 +15,50 @@ using RadialReview.Utilities.Query;
 namespace RadialReview.Accessors {
 	public partial class ReviewAccessor : BaseAccessor {
 
+		public static bool ShouldAddToReview(Askable askable, AboutType relationshipToReviewee)
+		{
+			var a = (long) askable.OnlyAsk == long.MaxValue;
+			var b = (relationshipToReviewee.Invert() & askable.OnlyAsk) != AboutType.NoRelationship;
+			return a || b;
+		}
+
+
+		private static List<AskableAbout> GetAskables(UserOrganizationModel caller,PermissionsUtility perms, DataInteraction dataInteraction,IEnumerable<long> revieweeIds,long reviewerId,long? periodId)
+		{
+			var allAskables = new List<AskableAbout>();
+			var queryProvider = dataInteraction.GetQueryProvider();
+
+			//var applicationQuestions = ApplicationAccessor.GetApplicationQuestions(queryProvider).ToList();
+
+			foreach (var revieweeId in revieweeIds) {
+				var revieweeAskables = AskableAccessor.GetAskablesForUser(caller, queryProvider, perms, revieweeId, periodId).ToListAlive();
+				var relationships = RelationshipAccessor.GetRelationships(perms, queryProvider, reviewerId, revieweeId);
+
+				//Merge relationships
+				var relationshipToReviewee = relationships.Aggregate(AboutType.NoRelationship, (o, n) => (o|n));
+
+				foreach (var askable in revieweeAskables){
+					//Filter only where OnlyAsk is satisfied
+					if (ShouldAddToReview(askable,relationshipToReviewee))
+					{
+						var askableAbout = new AskableAbout(){
+							AboutType = relationshipToReviewee,
+							AboutUserId = revieweeId,
+							Askable = askable,
+						};
+						allAskables.Add(askableAbout);
+					}
+					else{
+						int a = 0;
+						a++;
+					}
+				}
+				//allAskables.AddRange(revieweeAskables.Select(x => new AskableAbout() { AboutType = bestRelationship, AboutUserId = revieweeId, Askable = x }));
+				//allAskables.AddRange(applicationQuestions.Select(aq => new AskableAbout() { AboutType = bestRelationship, AboutUserId = revieweeId, Askable = aq }));
+			}
+			return allAskables;
+		}
+
 		/// <summary>
 		/// Requires:
 		///     <br/>
@@ -166,42 +210,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		private static List<AskableAbout> GetAskables(UserOrganizationModel caller,PermissionsUtility perms, DataInteraction dataInteraction,IEnumerable<long> revieweeIds,long reviewerId,long? periodId)
-		{
-			var allAskables = new List<AskableAbout>();
-			var queryProvider = dataInteraction.GetQueryProvider();
-
-			//var applicationQuestions = ApplicationAccessor.GetApplicationQuestions(queryProvider).ToList();
-
-			foreach (var revieweeId in revieweeIds) {
-				var revieweeAskables = AskableAccessor.GetAskablesForUser(caller, queryProvider, perms, revieweeId, periodId).ToListAlive();
-				var relationships = RelationshipAccessor.GetRelationships(perms, queryProvider, reviewerId, revieweeId);
-
-				//Merge relationships
-				var relationshipToReviewee = relationships.Aggregate(AboutType.NoRelationship, (o, n) => (o|n));
-
-				foreach (var askable in revieweeAskables){
-					//Filter only where OnlyAsk is satisfied
-					if ((long)askable.OnlyAsk == long.MaxValue || (relationshipToReviewee.Invert() & askable.OnlyAsk) != AboutType.NoRelationship)
-					{
-						var askableAbout = new AskableAbout(){
-							AboutType = relationshipToReviewee,
-							AboutUserId = revieweeId,
-							Askable = askable,
-						};
-						allAskables.Add(askableAbout);
-					}
-					else{
-						int a = 0;
-						a++;
-					}
-				}
-				//allAskables.AddRange(revieweeAskables.Select(x => new AskableAbout() { AboutType = bestRelationship, AboutUserId = revieweeId, Askable = x }));
-				//allAskables.AddRange(applicationQuestions.Select(aq => new AskableAbout() { AboutType = bestRelationship, AboutUserId = revieweeId, Askable = aq }));
-			}
-			return allAskables;
-		}
-
+		
 		private static AskableUtility GetAskablesBidirectional(
 		DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller,
 		UserOrganizationModel reviewee, OrganizationTeamModel team, ReviewParameters parameters,
@@ -224,7 +233,7 @@ namespace RadialReview.Accessors {
 			//Ensures uniqueness and removes people not in the review.
 			var askableUtil = new AskableUtility();
 			var reviewers= GetReviewersForUser(caller, perms, s, reviewee, parameters, team, accessibleUsers);
-			var questions = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewee.Id, periodId);
+			var questions = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewee.Id, periodId).ToListAlive();
 
 			if (parameters.ReviewSelf) {
 				askableUtil.AddUnique(questions, AboutType.Self, reviewee.Id);
@@ -238,8 +247,7 @@ namespace RadialReview.Accessors {
 				 .SelectMany(x => x.Responsibilities).ToListAlive();*/
 				foreach (var relationship in reviewer.Value) {
 					foreach (var reviewerAskable in reviewerAskables){
-						if ((long)reviewerAskable.OnlyAsk == long.MaxValue || (relationship.Invert() & reviewerAskable.OnlyAsk) != AboutType.NoRelationship)
-						{
+						if (ReviewAccessor.ShouldAddToReview(reviewerAskable,relationship)){// (long)reviewerAskable.OnlyAsk == long.MaxValue || (relationship.Invert() & reviewerAskable.OnlyAsk) != AboutType.NoRelationship)
 							askableUtil.AddUnique(reviewerAskable, relationship, reviewerId);
 						}
 					}

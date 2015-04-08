@@ -16,6 +16,9 @@ namespace RadialReview.Controllers
 	    {
        
 			var user = GetUser().Hydrate().ManagingUsers(true).Execute();
+
+			//TODO remove first true, we dont want all answers
+
 			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, reviewContainerId, true, true);
 		
 			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();

@@ -84,7 +84,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;br/&gt; {1} would like to link to your account. Simply click the following link:&lt;/p&gt;
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;br/&gt; Please join {1} on {4} by click the following link:&lt;/p&gt;
         ///&lt;br&gt; 
         ///    &lt;a href=&quot;{2}&quot;&gt;{3}&lt;/a&gt;
         ///&lt;br /&gt;&lt;br /&gt;If you are prompted for an access code, please use the following:
@@ -98,7 +98,7 @@ namespace RadialReview.Properties {
         ///			&lt;table width=&quot;450&quot; style=&quot;background-color:#f3f4f4&quot; cellpadding=&quot;10&quot; border=&quot;0&quot; bgcolor=&quot;#F3F4F4&quot; align=&quot;center&quot;&gt;
         ///				&lt;tbody&gt;
         ///					&lt;tr align=&quot;center&quot; &gt;
-        ///							&lt;td style=&quot;color:#77 [rest of string was truncated]&quot;;.
+        ///							&lt;td style=&quot;color:#777&quot;&gt;Access Code:&lt;/td&gt;        /// [rest of string was truncated]&quot;;.
         /// </summary>
         public static string JoinOrganizationUnderManager_Body {
             get {

@@ -790,5 +790,10 @@ namespace RadialReview.Accessors {
 		}
 
 
+		public static List<ReviewsModel> OutstandingReviewsForOrganization_Unsafe(ISession s, long orgId)
+		{
+			return s.QueryOver<ReviewsModel>().Where(x => x.DeleteTime == null && x.ForOrganizationId == orgId && x.DueDate > DateTime.UtcNow).List().ToList();
+			//return s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null ).WhereRestrictionOn(x=>x.ForReviewsId).IsIn(found).List().ToList();
+		}
 	}
 }

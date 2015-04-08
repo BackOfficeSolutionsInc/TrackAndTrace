@@ -65,10 +65,11 @@ namespace RadialReview.Models.ViewModels
 		public bool Editable {
 			get
 			{
-				return ManagingOrganization || User.GetPersonallyManaging() ||
+				return ForceEditable || ManagingOrganization || User.GetPersonallyManaging() ||
 				       (User.Organization.Settings.ManagersCanEditSelf && User.ManagerAtOrganization) ||
 				       (User.Organization.Settings.EmployeesCanEditSelf);
 			}
 		}
+	    public bool ForceEditable { get; set; }
     }
 }

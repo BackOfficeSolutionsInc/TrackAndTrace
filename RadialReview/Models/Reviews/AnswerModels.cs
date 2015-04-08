@@ -31,6 +31,7 @@ namespace RadialReview.Models
         public virtual long ByUserId { get; set; }
 		public virtual UserOrganizationModel ByUser { get; set; }
 		public virtual AboutType AboutType { get; set; }
+		public virtual long AboutTypeNum { get; set; }
 		public virtual bool Anonymous { get; set; }
 
         public virtual ICompletionModel GetCompletion(bool split = false)
@@ -53,7 +54,8 @@ namespace RadialReview.Models
 				Map(x => x.CompleteTime);
 				Map(x => x.Anonymous);
 
-				Map(x => x.AboutType).CustomType(typeof(Int64));
+				Map(x => x.AboutType).CustomType(typeof(Int64)).Column("AboutType");
+				Map(x => x.AboutTypeNum).Column("AboutType").ReadOnly();
 
 				Map(x => x.AboutUserId).Column("AboutUserId");
 				References(x => x.AboutUser).Column("AboutUserId").Not.LazyLoad().ReadOnly();

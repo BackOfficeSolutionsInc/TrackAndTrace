@@ -123,6 +123,7 @@ namespace RadialReview.Models.Reviews
         public virtual DateTime StartDate { get; set; }
 
         public virtual DateTime EndDate { get; set; }
+		public virtual bool IncludePrevious { get; set; }
     }
     public class LongTupleMap : ClassMap<LongTuple>
     {
@@ -131,8 +132,9 @@ namespace RadialReview.Models.Reviews
             Id(x => x.Id);
             Map(x => x.Item1);
             Map(x => x.Item2);
-            Map(x => x.Title);
-            Map(x => x.Groups);
+			Map(x => x.Title);
+			Map(x => x.Groups);
+			Map(x => x.IncludePrevious);
             Map(x => x.Filters);
             Map(x => x.EndDate);
             Map(x => x.StartDate);

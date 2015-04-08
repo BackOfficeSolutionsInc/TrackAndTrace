@@ -83,7 +83,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public void EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks)
+		public void EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks,bool updateOutstanding)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -109,6 +109,8 @@ namespace RadialReview.Accessors
 					/*}else{
 						throw new PermissionsException("What?");
 					}*/
+						var outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, orgId);
+
 
 					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
 
@@ -118,7 +120,15 @@ namespace RadialReview.Accessors
 						r.Category = category;
 						r.OrganizationId = orgId;
 						r.Period = s.Get<PeriodModel>(r.PeriodId);
+						var added = r.Id == 0;
 						s.SaveOrUpdate(r);
+
+						if (updateOutstanding && added){
+							var r1 = r;
+							foreach (var o in outstanding.Where(x=>x.PeriodId==r1.PeriodId)){
+								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perm, o.Id, userId, r.Id);
+							}
+						}
 					}
 
 					tx.Commit();

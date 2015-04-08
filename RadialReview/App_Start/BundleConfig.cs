@@ -13,6 +13,7 @@ namespace RadialReview
 			bundles.Add(new ScriptBundle("~/bundles/jquery")
 				.Include("~/Scripts/jquery-{version}.js")
 				.Include("~/Scripts/jquery.unobtrusive-ajax.js")
+				.Include("~/Scripts/jquery/jquery.qtip.js")
 				);
 
 			bundles.Add(new ScriptBundle("~/bundles/animations")
@@ -57,9 +58,31 @@ namespace RadialReview
 					  "~/Content/bootstrap.css",
 					  "~/Content/slider.css",
 					  "~/Content/site.css",
-					  "~/Content/Fonts.css"));
+					  "~/Content/Fonts.css",
+					  "~/Content/jquery.qtip.css"));
 
-			bundles.Add(new StyleBundle("~/Content/L10").Include(
+
+			bundles.Add(new StyleBundle("~/Content/ClientDetails").Include(
+					"~/Content/Chart/Scatter.v2.css",
+					"~/Content/ReportBuilder/evaluation.css",
+					"~/Content/Chart/Scatter.v2.css",
+					"~/Content/ReportBuilder/evaluation.css",
+					"~/Content/Chart/Chart.css",
+					"~/Content/ReportBuilder/ClientDetails.css",
+					"~/Content/chart.css"
+				));
+			bundles.Add(new ScriptBundle("~/bundles/ClientDetails").Include(
+					"~/Scripts/d3/d3.v3.min.js",
+					"~/scripts/d3/d3.csv.js",
+					"~/scripts/d3/Plot.js",
+					"~/Scripts/d3/Scatter.v2.js",
+					"~/Scripts/review/translateSlider.js"
+				));
+
+
+
+
+			bundles.Add(new StyleBundle("~/styles/L10").Include(
 					"~/Content/L10/L10.css",
 					"~/Content/L10/L10Todo.css",
 					"~/Content/L10/L10Stats.css",
@@ -76,14 +99,13 @@ namespace RadialReview
 					"~/Scripts/L10/L10Rocks.js",
 					"~/Scripts/L10/L10Scorecard.js",
 					"~/Scripts/L10/L10Notes.js",
-					"~/Scripts/L10/jquery.sortable.js",
+					"~/Scripts/L10/sortable.js",
 					"~/Scripts/L10/rtL10.js"//Ensure last
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/main").Include(
 					  "~/Scripts/Main/radial.js",
 					//"~/Scripts/jquery.signalR-{version}.js",
-					  "~/Scripts/jquery/jquery.qtip.js",
 					  "~/Scripts/jquery/jquery.tablesorter.js",
 					  "~/Scripts/Main/finally.js",
 					  "~/Scripts/L10/jquery-ui.color.js"

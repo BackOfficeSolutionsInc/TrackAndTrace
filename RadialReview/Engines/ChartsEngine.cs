@@ -1,4 +1,5 @@
-﻿using Amazon.IdentityManagement.Model;
+﻿using Amazon.ElasticTranscoder.Model;
+using Amazon.IdentityManagement.Model;
 using FluentNHibernate.Utils;
 using NHibernate;
 using NHibernate.Criterion;
@@ -21,6 +22,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using RadialReview.Utilities.DataTypes;
+using System.Security.Cryptography;
+using TimeSpan = System.TimeSpan;
 
 namespace RadialReview.Engines
 {
@@ -532,7 +535,7 @@ namespace RadialReview.Engines
 			};
 		}
 
-		private static IEnumerable<Scatter.ScatterPoint> Aggregate(IEnumerable<AnswerModel> reviewAnswers, long reviewsId)
+		private static IEnumerable<Scatter.ScatterPoint> Aggregate(IEnumerable<AnswerModel> reviewAnswers, long reviewsId,string encryptionKey)
 		{
 			var lookup = new DefaultDictionary<string, Ratio>(x => new Ratio());
 			foreach (var a in reviewAnswers)
@@ -551,7 +554,8 @@ namespace RadialReview.Engines
 					cx = ScatterScorer.ShiftRatio(lookup["Values"]),
 					cy = ScatterScorer.ShiftRatio(lookup["Roles"]),
 					xAxis = "Values",
-					yAxis = "Roles"
+					yAxis = "Roles",
+					id = Hash(encryptionKey, "Review")
 				};
 				yield return o;
 			}
@@ -614,7 +618,7 @@ namespace RadialReview.Engines
 
 			foreach (var r in foundReviews){
 				try{
-					var scatter=ReviewScatter2(caller, forUserId, r.Id, groupBy, sensitive);
+					var scatter=ReviewScatter2(caller, forUserId, r.Id, groupBy, sensitive, true);
 					output.Add(scatter);
 				}
 				catch (Exception){
@@ -624,8 +628,9 @@ namespace RadialReview.Engines
 			return output;
 		}
 
-		public Scatter ReviewScatter2(UserOrganizationModel caller, long forUserId, long reviewsId, string groupBy, bool sensitive)
+		public Scatter ReviewScatter2(UserOrganizationModel caller, long forUserId, long reviewsId, string groupBy, bool sensitive,bool includePrevious)
 		{
+			
 			if (sensitive){
 				new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, true));
 			}
@@ -634,19 +639,36 @@ namespace RadialReview.Engines
 				{
 					using (var tx = s.BeginTransaction())
 					{
-						var p =new PermissionsAccessor();
-						p.Permitted(caller, x => x.ManagesUserOrganization(forUserId, false));
+						var p=PermissionsUtility.Create(s, caller);//.ManagesUserOrganization(forUserId, false);
+						//p.Permitted(caller, x => x.ManagesUserOrganization(forUserId, false));
 						var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewsId && x.ForUserId == forUserId).SingleOrDefault();
-						var managingOrg = p.IsPermitted(caller, x => x.ManagingOrganization(review.ForReviewContainer.ForOrganizationId));
+						var managingOrg = p.IsPermitted(x => x.ManagingOrganization(review.ForReviewContainer.ForOrganizationId));
 						if (forUserId == caller.Id && ((!review.ClientReview.Visible && !managingOrg) || !review.ClientReview.IncludeScatterChart))
 							throw new PermissionsException();
-
+						if (forUserId != caller.Id && !managingOrg)
+							p.ManagesUserOrganization(forUserId, false);
+						
+						includePrevious = review.ClientReview.ScatterChart.IncludePrevious;
 						groupBy = review.ClientReview.ScatterChart.Groups;
 					}
 				}
 			}
-			
+			long? previousReview=null;
+			if (includePrevious){
+				using (var s = HibernateSession.GetCurrentSession()){
+					using (var tx = s.BeginTransaction())
+					{
+						var review = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null && x.ForUserId == forUserId && x.ForReviewsId<reviewsId)
+							.OrderBy(x=>x.DueDate).Desc
+							.Take(1).SingleOrDefault();
+						previousReview = review.NotNull(x => x.ForReviewsId);
+
+					}
+				}
+			}
 			var reviewAnswers = _ReviewAccessor.GetAnswersForUserReview(caller, forUserId, reviewsId);
+
+
 
 			List<Scatter.ScatterPoint> points;
 			String title = null;
@@ -654,106 +676,21 @@ namespace RadialReview.Engines
 
 			string groupByStandard = null;
 
-			switch (groupBy)
-			{
-				case "about-*":
-					{
-						//lookup[AboutType][Category]=score
-						var lookup = new DefaultDictionary<String, DefaultDictionary<string, Ratio>>(x => new DefaultDictionary<string, Ratio>(y => new Ratio()));
-						var bestType = new DefaultDictionary<string, string>(x => "");
+			var encryptKey = Guid.NewGuid().ToString();
 
-						foreach (var flag in Enum.GetNames(typeof(AboutType)))
-						{
-							var aboutType = ((AboutType)Enum.Parse(typeof(AboutType), flag));
-							foreach (var a in reviewAnswers)
-							{
-								var aboutTypes = a.AboutType.Invert();
-								if (aboutTypes != AboutType.NoRelationship && aboutType == AboutType.NoRelationship)
-									continue;
+			points = GenScatterPoints(reviewsId, groupBy, sensitive, reviewAnswers,encryptKey, ref title, ref groupByStandard);
 
-								if (!aboutTypes.HasFlag(aboutType))
-									continue;
-
-								Ratio ratio;
-								String category;
-								if (ScatterScorer.ScoreFunction(a, out ratio, out category))
-									lookup[flag][category].Merge(ratio);
-							}
-							bestType[flag] = aboutType.GetBestShape();
-						}
-						points = lookup.SelectMany(x =>
-						{
-							var cx = x.Value["Values"];
-							var cy = x.Value["Roles"];
-							if (!cx.IsValid() && !cy.IsValid())
-								return new List<Scatter.ScatterPoint>();
-
-							return new Scatter.ScatterPoint()
-							{
-								@class = "about-" + x.Key + " " + ((AboutType)Enum.Parse(typeof(AboutType), x.Key)).GetBestShape(),
-								cx = ScatterScorer.ShiftRatio(cx),
-								cy = ScatterScorer.ShiftRatio(cy),
-								xAxis = "Values",
-								yAxis = "Roles"
-							}.AsList();
-						}).ToList();
-						title = "Evaluations grouped by Relationship";
-						groupByStandard = "about-*";
-					} break;
-				case "user-*":
-					{
-						points = reviewAnswers.GroupBy(x => x.ByUserId).Select(answers =>
-						{
-							//lookup[user][Category]=score
-							var lookup = new DefaultDictionary<string, Ratio>(x => new Ratio());
-							var aboutType = AboutType.NoRelationship;
-
-							foreach (var a in answers)
-							{
-								Ratio ratio;
-								String category;
-								if (ScatterScorer.ScoreFunction(a, out ratio, out category))
-									lookup[category].Merge(ratio);
-								aboutType = aboutType | a.AboutType.Invert();
-							}
-							aboutType = aboutType.GetBestAboutType();
-
-							var remapperUser = RandomUtility.CreateRemapper();
-							if (!lookup.Backing.ContainsKey("Roles") && !lookup.Backing.ContainsKey("Values"))
-								return null;
-
-							var o = new Scatter.ScatterPoint()
-							{
-								@class = "user-" + remapperUser.Remap(answers.First().ByUserId) + " about-" + aboutType + " " + aboutType.GetBestShape(),
-								cx = ScatterScorer.ShiftRatio(lookup["Values"]),
-								cy = ScatterScorer.ShiftRatio(lookup["Roles"]),
-								xAxis = "Values",
-								yAxis = "Roles"
-							};
-							if (sensitive)
-							{
-								var u = answers.First().ByUser;
-								o.imageUrl = u.ImageUrl(true);
-								o.title = u.GetName();
-								o.subtitle = u.GetTitles();
-							}
-							return o;
-
-						}).Where(x=>x!=null).ToList();
-						title = "Evaluations grouped by User";
-						groupByStandard = "user-*";
-
-					} break;
-				case "undefined": goto case "review-*";
-				case "": goto case "review-*";
-				case null: goto case "review-*";
-				case "review-*":
-					{
-						points = Aggregate(reviewAnswers, reviewsId).ToList();
-						title = "Aggregate Evaluation";
-						groupByStandard = "review-*";
-					} break;
-				default: throw new PermissionsException("Unrecognized group");
+			if (previousReview != null){
+				string temp = null;
+				var previousReviewAnswers = _ReviewAccessor.GetAnswersForUserReview(caller, forUserId, previousReview.Value);
+				var previous = GenScatterPoints(previousReview.Value, groupBy, sensitive, previousReviewAnswers, encryptKey, ref temp, ref temp);
+				points.ForEach(x => {
+					var p = previous.FirstOrDefault(y => y.id == x.id);
+					if (p != null){
+						x.ox = p.cx;
+						x.oy = p.cy;
+					}
+				});
 			}
 
 			var pointsNoTeammates = points.Where(x => !x.@class.Contains("about-" + AboutType.Teammate)).ToList();
@@ -774,10 +711,117 @@ namespace RadialReview.Engines
 				groupBy = groupByStandard
 
 			};
-
 			return scatter;
 		}
-		
+
+		private static string Hash(string privateKey, string encrypt)
+		{
+			SHA256 shaM = new SHA256Managed();
+			return shaM.ComputeHash((privateKey+encrypt).GetBytes()).GetString();
+		}
+
+		private static List<Scatter.ScatterPoint> GenScatterPoints(long reviewsId, string groupBy, bool sensitive, List<AnswerModel> reviewAnswers,string encryptionKey, ref string title, ref string groupByStandard)
+		{
+			List<Scatter.ScatterPoint> points;
+			switch(groupBy){
+				case "about-*":{
+					//lookup[AboutType][Category]=score
+					var lookup = new DefaultDictionary<String, DefaultDictionary<string, Ratio>>(x => new DefaultDictionary<string, Ratio>(y => new Ratio()));
+					var bestType = new DefaultDictionary<string, string>(x => "");
+
+					foreach (var flag in Enum.GetNames(typeof (AboutType))){
+						var aboutType = ((AboutType) Enum.Parse(typeof (AboutType), flag));
+						foreach (var a in reviewAnswers){
+							var aboutTypes = a.AboutType.Invert();
+							if (aboutTypes != AboutType.NoRelationship && aboutType == AboutType.NoRelationship)
+								continue;
+
+							if (!aboutTypes.HasFlag(aboutType))
+								continue;
+
+							Ratio ratio;
+							String category;
+							if (ScatterScorer.ScoreFunction(a, out ratio, out category))
+								lookup[flag][category].Merge(ratio);
+						}
+						bestType[flag] = aboutType.GetBestShape();
+					}
+					points = lookup.SelectMany(x =>{
+						var cx = x.Value["Values"];
+						var cy = x.Value["Roles"];
+						if (!cx.IsValid() && !cy.IsValid())
+							return new List<Scatter.ScatterPoint>();
+
+						return new Scatter.ScatterPoint(){
+							@class = "about-" + x.Key + " " + ((AboutType) Enum.Parse(typeof (AboutType), x.Key)).GetBestShape(),
+							cx = ScatterScorer.ShiftRatio(cx),
+							cy = ScatterScorer.ShiftRatio(cy),
+							xAxis = "Values",
+							yAxis = "Roles",
+							id= Hash(encryptionKey,x.Key)
+						}.AsList();
+					}).ToList();
+					title = "Evaluations grouped by Relationship";
+					groupByStandard = "about-*";
+				}
+					break;
+				case "user-*":{
+					points = reviewAnswers.GroupBy(x => x.ByUserId).Select(answers =>{
+						//lookup[user][Category]=score
+						var lookup = new DefaultDictionary<string, Ratio>(x => new Ratio());
+						var aboutType = AboutType.NoRelationship;
+
+						foreach (var a in answers){
+							Ratio ratio;
+							String category;
+							if (ScatterScorer.ScoreFunction(a, out ratio, out category))
+								lookup[category].Merge(ratio);
+							aboutType = aboutType | a.AboutType.Invert();
+						}
+						aboutType = aboutType.GetBestAboutType();
+
+						var remapperUser = RandomUtility.CreateRemapper();
+						if (!lookup.Backing.ContainsKey("Roles") && !lookup.Backing.ContainsKey("Values"))
+							return null;
+
+						var o = new Scatter.ScatterPoint(){
+							@class = "user-" + remapperUser.Remap(answers.First().ByUserId) + " about-" + aboutType + " " + aboutType.GetBestShape(),
+							cx = ScatterScorer.ShiftRatio(lookup["Values"]),
+							cy = ScatterScorer.ShiftRatio(lookup["Roles"]),
+							xAxis = "Values",
+							yAxis = "Roles",
+							id = Hash(encryptionKey, answers.First().ByUserId.ToString())
+						};
+						if (sensitive){
+							var u = answers.First().ByUser;
+							o.imageUrl = u.ImageUrl(true);
+							o.title = u.GetName();
+							o.subtitle = u.GetTitles();
+						}
+						return o;
+					}).Where(x => x != null).ToList();
+					title = "Evaluations grouped by User";
+					groupByStandard = "user-*";
+				}
+					break;
+				case "undefined":
+					goto case "review-*";
+				case "":
+					goto case "review-*";
+				case null:
+					goto case "review-*";
+				case "review-*":{
+					points = Aggregate(reviewAnswers, reviewsId,encryptionKey).ToList();
+					title = "Aggregate Evaluation";
+					groupByStandard = "review-*";
+				}
+					break;
+				default:
+					throw new PermissionsException("Unrecognized group");
+			}
+			return points;
+		}
+
 		public ScatterPlot ReviewScatter(UserOrganizationModel caller, long forUserId, long reviewsId, bool sensitive)
 		{
 			if (sensitive)

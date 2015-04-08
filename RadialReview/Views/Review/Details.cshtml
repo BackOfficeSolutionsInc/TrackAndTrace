@@ -70,6 +70,7 @@
 	    var ReviewId = "@Model.Review.Id";
 	    var ForReviewsId = "@Model.Review.ForReviewsId";
 		var ForUserId = "@Model.Review.ForUserId";
+		var IncludePrevious = @(Model.Review.ClientReview.ScatterChart.IncludePrevious?"true":"false");
     </script>
 	<script src="~/Scripts/report/reportbuilder.js"></script>
 	<script>

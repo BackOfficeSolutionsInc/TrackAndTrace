@@ -20,7 +20,8 @@ namespace RadialReview
 				case AboutType.Subordinate:
 					return "Subordinate";
 				case AboutType.Teammate:
-					return "Teammate";
+					goto case AboutType.NoRelationship;
+					//return "Teammate";
 				case AboutType.Peer:
 					return "Peers";
 				case AboutType.Manager:
@@ -40,6 +41,7 @@ namespace RadialReview
 			    case AboutType.Subordinate:
 				    return "shape-diamond";
 			    case AboutType.Teammate:
+					goto case AboutType.NoRelationship;
 				    return "shape-plus";
 				case AboutType.Peer:
 					return "shape-triangle";
@@ -59,8 +61,8 @@ namespace RadialReview
 				return AboutType.Subordinate; 
 			if (self.HasFlag(AboutType.Peer))
 				return AboutType.Peer; 
-			if (self.HasFlag(AboutType.Teammate))
-				return AboutType.Teammate; 
+			/*if (self.HasFlag(AboutType.Teammate))
+				return AboutType.Teammate; */
 			if (self.HasFlag(AboutType.NoRelationship))
 				return AboutType.NoRelationship; 
 			throw new ArgumentException("Unknown about type (" + self + ")");

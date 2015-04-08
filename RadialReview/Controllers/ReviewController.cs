@@ -620,11 +620,12 @@ namespace RadialReview.Controllers
 				long? yAxis = null,
 				long? startTime = null,
 				long? endTime = null,
-				bool? include = null
+				bool? include = null,
+				bool? includePrevious = null
 			)
 		{
 
-			_ReviewAccessor.UpdateScatterChart(GetUser(), reviewId, aggregateBy, filterBy, title, xAxis, yAxis, startTime.NotNull(x => x.Value.ToDateTime()), endTime.NotNull(x => x.Value.ToDateTime()), include);
+			_ReviewAccessor.UpdateScatterChart(GetUser(), reviewId, aggregateBy, filterBy, title, xAxis, yAxis, startTime.NotNull(x => x.Value.ToDateTime()), endTime.NotNull(x => x.Value.ToDateTime()), include, includePrevious);
 			return Json(ResultObject.Create(new { ReviewId = reviewId }), JsonRequestBehavior.AllowGet);
 		}
 

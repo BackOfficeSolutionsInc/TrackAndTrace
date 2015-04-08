@@ -11,6 +11,8 @@ namespace RadialReview.Models.Charts
 		{
 			public decimal cx { get; set; }
 			public decimal cy { get; set; }
+			public decimal? ox { get; set; }
+			public decimal? oy { get; set; }
 			public DateTime date { get; set; }
 			public string title { get; set; }
 			public string subtitle { get; set; }

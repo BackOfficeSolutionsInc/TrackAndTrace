@@ -85,7 +85,7 @@
 }
 
 
-.scatterPoint.about-Manager {
+.scatterPoint.about-Manager,line.prev.about-Manager {
     border-width:2px !important;
     border-color: blue !important;
     stroke: blue;
@@ -93,7 +93,7 @@
     background-color: lightblue;
 }
 
-.scatterPoint.about-Subordinate {
+.scatterPoint.about-Subordinate,line.prev.about-Subordinate {
     border-width:2px !important;
     border-color: darkred !important;
     stroke: darkred;
@@ -101,7 +101,7 @@
     background-color: red;
 }
 
-.scatterPoint.about-Teammate {
+.scatterPoint.about-Teammate,line.prev.about-Teammate {
     border-width:2px !important;
     border-color: darkorange !important;
     stroke: darkorange;
@@ -109,10 +109,10 @@
     background-color: orange;
 }
 
-.scatterPoint.about-Peer {
+.scatterPoint.about-Peer,line.prev.about-Peer {
     border-width:2px !important;
-    border-color: #000 !important;
-    stroke: #000;
+    border-color: #305930 !important;
+    stroke: #305930;
     fill: #7AD17A;
     background-color: #7AD17A;
 }
@@ -121,7 +121,7 @@
 	/*opacity: .85;*/
 }
 
-.scatterPoint.about-Self {
+.scatterPoint.about-Self,line.prev.about-Self {
     border-width:2px !important;
     stroke: darkgoldenrod;
     fill: yellow;
@@ -129,12 +129,17 @@
     border-color: darkgoldenrod !important;
 }
 
-.scatterPoint.about-NoRelationship {
+.scatterPoint.about-NoRelationship,line.prev.about-NoRelationship {
     border-width:2px !important;
     stroke: #000;
     fill: #808080;
     background-color: #808080;
     border-color: #000 !important;
+}
+
+line.prev {
+	opacity: .2;
+	stroke-width: 2px;
 }
 
 .separateReview .scatter-point {

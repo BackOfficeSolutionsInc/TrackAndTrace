@@ -135,9 +135,12 @@ function UpdateChart() {
     	extraClasses.push($(this).data("addclass"));
     	filters.push(split);
     });*/
+
+	IncludePrevious = $(".showPrevious").is(":checked");
     var dat = {
         reviewId: ReviewId,
         aggregateBy: groups.join(" "),
+        includePrevious:IncludePrevious,
        // filterBy: filters.join(","),
         //title: $(".title").val(),
         //xAxis: parseInt($("#xAxis").val().split("category-")[1]),
@@ -480,7 +483,8 @@ $(function () {
 
 var chart = new ScatterImage("chart2");
 
-var dataUrl = "/Data/ReviewScatter2/" + ForUserId + "?reviewsId=" + ForReviewsId;//"@Model.Review.ForReviewsId";
+IncludePrevious = $(".showPrevious").is(":checked");
+var dataUrl = "/Data/ReviewScatter2/" + ForUserId + "?reviewsId=" + ForReviewsId ;//"@Model.Review.ForReviewsId";
 
 var first = true;
 
@@ -513,7 +517,7 @@ function updateChart() {
 		};
 	}
 
-	chart.PullPlot(dataUrl+"&groupBy="+groupBy, null, function(data) {
+	chart.PullPlot(dataUrl+"&groupBy="+groupBy+"&includePrevious="+IncludePrevious, null, function(data) {
 		$(".chartPlaceholder").addClass("hidden");
 		$("#chart2,#legend").fadeIn();
 	},opts);

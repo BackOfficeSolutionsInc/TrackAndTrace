@@ -32,7 +32,7 @@ namespace RadialReview.Accessors {
 			return queryProvider.Where<RoleModel>(x => x.ForUserId == forUserId && x.DeleteTime == null);
 		}
 
-		public void EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles)
+		public void EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles,bool updateOutstanding)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -42,21 +42,31 @@ namespace RadialReview.Accessors {
 					if (roles.Any(x => x.ForUserId != userId))
 						throw new PermissionsException("Role UserId does not match UserId");
 
-					PermissionsUtility.Create(s, caller).EditQuestionForUser(userId);
+					var perms =PermissionsUtility.Create(s, caller).EditQuestionForUser(userId);
 					var user = s.Get<UserOrganizationModel>(userId);
 					var orgId = user.Organization.Id;
 					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+
+					var outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, orgId);
 
 
 					foreach (var r in roles)
 					{
 						r.Category = category;
 						r.OrganizationId = orgId;
+						var added = r.Id == 0;
 						s.SaveOrUpdate(r);
+
+						if (updateOutstanding && added){
+							foreach (var o in outstanding){
+								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perms, o.Id, userId, r.Id);
+							}
+						}
 					}
 
 					user.NumRoles = roles.Count(x => x.DeleteTime == null);
 					s.SaveOrUpdate(user);
+					
 
 					tx.Commit();
 					s.Flush();

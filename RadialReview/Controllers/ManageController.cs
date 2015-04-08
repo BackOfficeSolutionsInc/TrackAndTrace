@@ -46,6 +46,8 @@ namespace RadialReview.Controllers
 			var details = _UserEngine.GetUserDetails(GetUser(), id);
 			details.User.PopulatePersonallyManaging(caller, caller.AllSubordinates);
 
+			details.ForceEditable = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditQuestionForUser(id));
+
 			var model = new ManageUserModel()
 			{
 				Details = details

@@ -9,6 +9,7 @@ using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
@@ -30,6 +31,8 @@ namespace RadialReview.Utilities
 		protected ISession session;
 		protected UserOrganizationModel caller;
 
+		protected List<PermissionOverride> Overrides { get; set; } 
+
 		public PermissionsUtility RadialAdmin()
 		{
 			if (IsRadialAdmin(caller))
@@ -48,7 +51,9 @@ namespace RadialReview.Utilities
 		{
 			this.session = session;
 			this.caller = caller;
+
 		}
+
 
 		public static PermissionsUtility Create(ISession session, UserOrganizationModel caller)
 		{
@@ -262,20 +267,19 @@ namespace RadialReview.Utilities
 
 		public PermissionsUtility EditQuestionForUser(long forUserId)
 		{
-			try
-			{
-				return ManagesUserOrganization(forUserId, true);
-			}
-			catch (PermissionsException p)
-			{
-				var foundUser = session.Get<UserOrganizationModel>(forUserId);
-				if (foundUser.Id == caller.Id && ((foundUser.ManagerAtOrganization && foundUser.Organization.Settings.ManagersCanEditSelf) || foundUser.Organization.Settings.EmployeesCanEditSelf || foundUser.ManagingOrganization))
+			return TryWithOverrides(x => {
+				try{
+					return ManagesUserOrganization(forUserId, true);
+				}catch (PermissionsException p)
 				{
-					return this;
+					var foundUser = session.Get<UserOrganizationModel>(forUserId);
+					if (foundUser.Id == caller.Id && ((foundUser.ManagerAtOrganization && foundUser.Organization.Settings.ManagersCanEditSelf) || foundUser.Organization.Settings.EmployeesCanEditSelf || foundUser.ManagingOrganization))
+					{
+						return this;
+					}
 				}
-			}
-			throw new PermissionsException("Cannot edit for user.");
-
+				throw new PermissionsException("Cannot edit for user.");
+			}, PermissionType.EditEmployeeDetails);
 		}
 		#endregion
 
@@ -383,6 +387,21 @@ namespace RadialReview.Utilities
 				return this;
 
 			throw new PermissionsException();
+		}
+
+		public PermissionsUtility ManageUserReview_Answer(long answerId, bool userCanManageOwnReview)
+		{
+			var answer = session.Get<AnswerModel>(answerId);
+
+			if (answer == null)
+				throw new PermissionsException("Answer does not exist");
+			var review = session.QueryOver<ReviewModel>()
+				.Where(x => x.DeleteTime == null && x.ForReviewsId == answer.ForReviewContainerId && x.ForUserId == answer.AboutUserId)
+				.SingleOrDefault();
+			if (review == null)
+				throw new PermissionsException("Review does not exist");
+
+			return ManageUserReview(review.Id, userCanManageOwnReview);
 		}
 
 		#endregion
@@ -876,6 +895,25 @@ namespace RadialReview.Utilities
 		}
 		#endregion
 
+		#region PermissionOverride
+		public PermissionsUtility EditPermissionOverride(long permissionOverrideId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			if (caller.ManagingOrganization && permissionOverrideId == 0)
+				return this;
+
+			var p = session.Get<PermissionOverride>(permissionOverrideId);
+
+			if (IsManagingOrganization(p.Organization.Id,true))
+				return this;
+
+			throw new PermissionsException("Cannot edit this permission override.");
+
+		}
+		#endregion
+
 		public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)
 		{
 			if (IsOwnedBelowOrEqual(caller, visiblility))
@@ -921,7 +959,35 @@ namespace RadialReview.Utilities
 			return false;
 		}
 
+		protected PermissionsUtility TryWithOverrides(Func<PermissionsUtility, PermissionsUtility> p, params PermissionType[] types)
+		{
+			try{
+				return p(this);
+			}
+			catch (PermissionsException){
 
+				if (Overrides == null)
+					Overrides = session.QueryOver<PermissionOverride>().Where(x => x.DeleteTime == null && x.ForUser.Id == caller.Id).List().ToList();
+
+
+				var tryWith = Overrides.Where(x => types.Any(y => y == x.Permissions)).Select(x => x.AsUser);
+				var originalCaller = caller;
+				foreach (var x in tryWith){
+					try{
+						caller = x;
+						return p(this);
+					}catch (PermissionsException){
+						//Pass through;
+					}
+					finally{
+						caller = originalCaller;
+					}
+				}
+				caller = originalCaller;
+			}
+			throw new PermissionsException();
+
+		}
 
 		/*public PermissionsUtility ViewImage(string imageId)
 		{
@@ -1084,6 +1150,17 @@ namespace RadialReview.Utilities
 		}
 
 
-
+		public bool IsPermitted(Action<PermissionsUtility> ensurePermitted)
+		{
+			try
+			{
+				ensurePermitted(this);
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+		}
 	}
 }

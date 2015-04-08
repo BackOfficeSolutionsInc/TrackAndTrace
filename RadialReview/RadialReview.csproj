@@ -301,6 +301,7 @@
     <Compile Include="Controllers\L10SubPageController.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
     <Compile Include="Controllers\PeriodController.cs" />
+    <Compile Include="Controllers\PermissionsController.cs" />
     <Compile Include="Controllers\RocksController.cs" />
     <Compile Include="Controllers\ScorecardController.cs" />
     <Compile Include="Controllers\TodoController.cs" />
@@ -368,6 +369,7 @@
     <Compile Include="Models\Charts\Scatter.cs" />
     <Compile Include="Models\Charts\Table.cs" />
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
+    <Compile Include="Models\Components\Completion.cs" />
     <Compile Include="Models\Components\ForModel.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\AttachType.cs" />
@@ -399,6 +401,7 @@
     <Compile Include="Models\Issues\RockIssueVM.cs" />
     <Compile Include="Models\Issues\ScoreCardIssueVM.cs" />
     <Compile Include="Models\L10\L10Note.cs" />
+    <Compile Include="Models\Permissions\PermissionOverride.cs" />
     <Compile Include="Models\Todo\RockTodoVM.cs" />
     <Compile Include="Models\Todo\ScoreCardTodoVM.cs" />
     <Compile Include="Models\L10\FocusType.cs" />
@@ -658,6 +661,7 @@
     <Compile Include="Views\Log\LogModel.cs" />
     <Content Include="Content\components\fivestate.css" />
     <Content Include="Content\L10\L10Notes.css" />
+    <Content Include="Content\ReportBuilder\ClientDetails.css" />
     <Content Include="libeay32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -689,7 +693,7 @@
     <Content Include="Scripts\L10\jquery-ui.color.js" />
     <Content Include="Scripts\L10\jquery-ui.sortable.min.js" />
     <Content Include="Scripts\L10\jquery.mjs.nestedSortable.js" />
-    <Content Include="Scripts\L10\jquery.sortable.js" />
+    <Content Include="Scripts\L10\sortable.js" />
     <Content Include="Scripts\L10\L10Rocks.js" />
     <Content Include="Scripts\L10\L10Todo.js" />
     <Content Include="Views\L10\partial\IssueRow.cshtml" />
@@ -961,6 +965,8 @@
     <Content Include="Views\L10\partial\ButtonBar.cshtml" />
     <Content Include="Views\L10\CreateNote.cshtml" />
     <Content Include="Views\Organization\Products.cshtml" />
+    <Content Include="Views\Permissions\Edit.cshtml" />
+    <Content Include="Views\Permissions\Modal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1199,6 +1205,7 @@
     <Content Include="Views\Todo\ScorecardTodoModal.cshtml" />
     <Content Include="Views\Todo\RockTodoModal.cshtml" />
     <Content Include="Views\Todo\CreateTodoFromIssue.cshtml" />
+    <Content Include="Views\Todo\Previous.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -22,7 +22,7 @@ namespace RadialReview.Accessors
 {
     public partial class ReviewAccessor : BaseAccessor
     {
-        private IEnumerableQuery GetReviewQueryProvider(ISession s, long orgId, long? reviewContainerId = null)
+        private static IEnumerableQuery GetReviewQueryProvider(ISession s, long orgId, long? reviewContainerId = null)
         {
             var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
             var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
