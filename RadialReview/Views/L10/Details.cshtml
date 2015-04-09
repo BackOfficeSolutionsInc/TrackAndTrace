@@ -1,0 +1,35 @@
+﻿@{
+	ViewBag.Title = "Details";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div style="height:28px"></div>
+<ul class="nav nav-tabs tabs-up" id="friends">
+	<li><a href="/L10/Details/Todo" data-target="#Todo" class="media_node active span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
+	<li><a href="/L10/Details/Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
+	<li><a href="/L10/Details/Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
+	<li><a href="/L10/Details/Recent" data-target="#Recent" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Recent </a></li>
+</ul>
+
+<div class="tab-content">
+	<div id="Todo"			class="tab-pane active"></div>
+	<div id="Issues"		class="tab-pane"></div>
+	<div id="Scorecard"		class="tab-pane"></div>
+	<div id="Recent"		class="tab-pane"></div>
+</div>
+
+@using (Html.BeginScripts()){
+	<script>
+		$('[data-toggle="tabajax"]').click(function(e) {
+			var $this = $(this),
+				loadurl = $this.attr('href'),
+				targ = $this.attr('data-target');
+
+			$.get(loadurl, function(data) {
+				$(targ).html(data);
+			});
+
+			$this.tab('show');
+			return false;
+		});
+	</script>
+}

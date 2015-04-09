@@ -211,9 +211,9 @@
 			var firstTab = true;
 			$('a').on('shown.bs.tab', function (e) {
 				if (firstTab) {
-					setTimeout(1, function() {
+					setTimeout( function() {
 						window.scrollTo(0, 0);
-					});
+					},1);
 				}
 				firstTab = false;
 			});
@@ -226,6 +226,13 @@
 			@foreach (var p in panels){
 					@:$("#table_@p.Item2").tablesorter({ sortList: [[4, 1]] });
 			}
+
+		});
+
+		$(document).ready(function() {
+			setTimeout(function() {
+				$(this).scrollTop(0);
+			},1);
 		});
 
 		function sendReminders() {

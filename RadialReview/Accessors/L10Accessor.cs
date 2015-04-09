@@ -1270,5 +1270,20 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+
+		public static void GetVisibleTodos(UserOrganizationModel caller, long[] forUsers, bool includeComplete)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var p = PermissionsUtility.Create(s,caller);
+					forUsers.Distinct().ForEach(x=>p.ManagesUserOrganizationOrSelf(x));
+
+					s.QueryOver<TodoModel>().Where(x=>x.)
+
+				}
+			}
+		}
 	}
 }

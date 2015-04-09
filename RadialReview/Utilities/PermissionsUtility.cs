@@ -144,6 +144,14 @@ namespace RadialReview.Utilities
 				return this;
 			throw new PermissionsException();
 		}
+
+		public PermissionsUtility ManagesUserOrganizationOrSelf(long userOrganizationId)
+		{
+			if (userOrganizationId == caller.Id)
+				return this;
+			return ManagesUserOrganization(userOrganizationId, false);
+		}
+
 		#endregion
 
 		#region Organization

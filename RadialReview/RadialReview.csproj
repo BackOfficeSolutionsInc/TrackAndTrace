@@ -298,6 +298,7 @@
     <Compile Include="Controllers\JobDescriptionController.cs" />
     <Compile Include="Controllers\L10Controller.cs" />
     <Compile Include="Controllers\L10DataController.cs" />
+    <Compile Include="Controllers\L10DetailsController.cs" />
     <Compile Include="Controllers\L10SubPageController.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
     <Compile Include="Controllers\PeriodController.cs" />
@@ -967,6 +968,7 @@
     <Content Include="Views\Organization\Products.cshtml" />
     <Content Include="Views\Permissions\Edit.cshtml" />
     <Content Include="Views\Permissions\Modal.cshtml" />
+    <Content Include="Views\L10\Details.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1217,6 +1219,8 @@
     <Folder Include="Views\Data\" />
     <Folder Include="Views\Img\" />
     <Folder Include="Views\L10Data\" />
+    <Folder Include="Views\L10Details\" />
+    <Folder Include="Views\L10\Details\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
     <Folder Include="Views\Scheduler\" />

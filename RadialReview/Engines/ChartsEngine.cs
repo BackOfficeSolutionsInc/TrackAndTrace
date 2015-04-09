@@ -741,8 +741,10 @@ namespace RadialReview.Engines
 
 							Ratio ratio;
 							String category;
-							if (ScatterScorer.ScoreFunction(a, out ratio, out category))
-								lookup[flag][category].Merge(ratio);
+							if (ScatterScorer.ScoreFunction(a, out ratio, out category)){
+								var fmod=flag.Replace("Teammate", "NoRelationship");
+								lookup[fmod][category].Merge(ratio);
+							}
 						}
 						bestType[flag] = aboutType.GetBestShape();
 					}

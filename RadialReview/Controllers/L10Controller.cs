@@ -28,7 +28,8 @@ namespace RadialReview.Controllers
 			return View(model);
         }
 
-
+		// GET: L10
+	
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Meeting(long id)
 		{
