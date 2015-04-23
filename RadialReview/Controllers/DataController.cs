@@ -246,10 +246,13 @@ namespace RadialReview.Controllers
 
                 sb.AppendLine("Employee," + row);
 
-                if (c.First().AboutUser.IsManager())
-                    sbMiddle.AppendLine("Management," + row);
+	            if (c.First().AboutUser is UserOrganizationModel &&
+	                ((UserOrganizationModel) (c.First().AboutUser)).IsManager()
+		            ){
+		            sbMiddle.AppendLine("Management," + row);
+	            }
 
-                if (c.First().AboutUserId == id)
+	            if (c.First().AboutUserId == id)
                     sbEnd.AppendLine("You," + row);
             }
             var managers = sbMiddle.ToString();

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 
 namespace RadialReview.Accessors {
@@ -14,22 +15,22 @@ namespace RadialReview.Accessors {
 
 
 
-		public List<RoleModel> GetRoles(UserOrganizationModel caller, long id)
+		public List<RoleModel> GetRoles(UserOrganizationModel caller, long id, DateRange range=null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetRoles(s.ToQueryProvider(true), perms, id);
+					return GetRoles(s.ToQueryProvider(true), perms, id, range);
 				}
 			}
 		}
 
-		public static List<RoleModel> GetRoles(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId)
+		public static List<RoleModel> GetRoles(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId, DateRange range)
 		{
 			perms.ViewUserOrganization(forUserId, false);
-			return queryProvider.Where<RoleModel>(x => x.ForUserId == forUserId && x.DeleteTime == null);
+			return queryProvider.Where<RoleModel>(x => x.ForUserId == forUserId).FilterRange(range).ToList();
 		}
 
 		public void EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles,bool updateOutstanding)

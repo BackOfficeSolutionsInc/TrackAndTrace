@@ -7,33 +7,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 
 namespace RadialReview.Accessors {
 	public class AskableAccessor : BaseAccessor{
 
-		public List<Askable> GetAskablesForUser(UserOrganizationModel caller, long forUserId,long? periodId)
+		public List<Askable> GetAskablesForUser(UserOrganizationModel caller, long forUserId, long? periodId, DateRange range)
 		{
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (s.BeginTransaction()){
 					var perm = PermissionsUtility.Create(s, caller);
-					return GetAskablesForUser(caller, s.ToQueryProvider(true), perm, forUserId, periodId);
+					return GetAskablesForUser(caller, s.ToQueryProvider(true), perm, forUserId, periodId,range);
 				}
 			}
 		}
-		[Obsolete("Includes dead askables. Call with ToListAlive()", false)]
-		public static List<Askable> GetAskablesForUser(UserOrganizationModel caller, AbstractQuery queryProvider, PermissionsUtility perms, long forUserId,long? periodId)
+		/*[Obsolete("Includes dead askables. Call with ToListAlive()", false)]*/
+		public static List<Askable> GetAskablesForUser(UserOrganizationModel caller, AbstractQuery queryProvider, PermissionsUtility perms, long forRGMId,long? periodId, DateRange range)
 		{
 			var allAskables = new List<Askable>();
 
-			var orgId = queryProvider.Get<UserOrganizationModel>(forUserId).Organization.Id;
+			var rgm = queryProvider.Get<ResponsibilityGroupModel>(forRGMId);
+			var orgId = rgm.Organization.Id;
 
-			allAskables.AddRange(ApplicationAccessor.GetApplicationQuestions(queryProvider));
-			allAskables.AddRange(ResponsibilitiesAccessor.GetResponsibilitiesForUser(caller, queryProvider, perms, forUserId));
-			allAskables.AddRange(QuestionAccessor.GetQuestionsForUser(queryProvider, perms, forUserId));
-			allAskables.AddRange(RockAccessor.GetRocks(queryProvider, perms, forUserId,periodId));
-			allAskables.AddRange(RoleAccessor.GetRoles(queryProvider, perms, forUserId));
-			allAskables.AddRange(OrganizationAccessor.GetCompanyValues(queryProvider, perms, orgId));
+			if (rgm is OrganizationModel){
+				allAskables.AddRange(OrganizationAccessor.AskablesAboutOrganization(queryProvider,perms,orgId,range));
+			}else if (rgm is UserOrganizationModel){
+				allAskables.AddRange(ApplicationAccessor.GetApplicationQuestions(queryProvider));
+				allAskables.AddRange(ResponsibilitiesAccessor.GetResponsibilitiesForUser(caller, queryProvider, perms, forRGMId, range));
+				allAskables.AddRange(QuestionAccessor.GetQuestionsForUser(queryProvider, perms, forRGMId, range));
+				allAskables.AddRange(RockAccessor.GetRocks(queryProvider, perms, forRGMId, periodId, range));
+				allAskables.AddRange(RoleAccessor.GetRoles(queryProvider, perms, forRGMId, range));
+				allAskables.AddRange(OrganizationAccessor.GetCompanyValues(queryProvider, perms, orgId, range));
+			}
 
 			return allAskables.ToList();
 		}

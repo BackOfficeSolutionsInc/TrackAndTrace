@@ -1,5 +1,7 @@
-﻿var possibleAnswers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
-var possibleColors = ["#FF0000", "#F45E00", "#E9B500", "#BADF00", "#5FD400", "#0CC900", "#00BF3D"];
+﻿//var possibleAnswers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
+//var possibleColors = ["#FF0000", "#F45E00", "#E9B500", "#BADF00", "#5FD400", "#0CC900", "#00BF3D"];
+var possibleAnswers = ["0","10", "20","30","40","50", "60", "70","80","90", "100"];
+var possibleColors = ["#FF0000", "#F45E00", "#E9B500", "#5FD400", "#0CC900", "#00BF3D"];
 
 function sliderIndex(value)
 {

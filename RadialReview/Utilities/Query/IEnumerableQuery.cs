@@ -74,5 +74,20 @@ namespace RadialReview.Utilities.Query
         {
             return GetIEnumerable<T>().ToList();
         }
-    }
+
+		public override T Load<T>(long id)
+		{
+			return Get<T>(id);
+		}
+
+		public override T Load<T>(string id)
+		{
+			return Get<T>(id);
+		}
+
+		public override T Load<T>(Guid id)
+		{
+			return Get<T>(id);
+		}
+	}
 }

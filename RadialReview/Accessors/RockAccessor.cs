@@ -11,29 +11,30 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
 using RadialReview.Models.Periods;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 
 namespace RadialReview.Accessors
 {
 	public class RockAccessor
 	{
-		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId, long? periodId)
+		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId, long? periodId,DateRange range=null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perm = PermissionsUtility.Create(s, caller);
-					return GetRocks(s.ToQueryProvider(true), perm, forUserId, periodId);
+					return GetRocks(s.ToQueryProvider(true), perm, forUserId, periodId, range);
 				}
 			}
 		}
-		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId,long? periodId)
+		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId,long? periodId,DateRange range)
 		{
 			perms.ViewUserOrganization(forUserId, false);
 			if (periodId == null)
-				return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.DeleteTime == null);
-			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.DeleteTime == null && x.PeriodId==periodId);
+				return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId).FilterRange(range).ToList();
+			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.PeriodId==periodId).FilterRange(range).ToList();
 		}
 		public void EditCompanyRocks(UserOrganizationModel caller, long organizationId, List<RockModel> rocks)
 		{

@@ -1,17 +1,18 @@
-﻿@model dynamic
+﻿@using System.Dynamic
+@model dynamic
 
 @{
     var Rand = new Random().Next();
-    dynamic M;
+    dynamic M=new ExpandoObject();
     M.width     = Model.width   ?? 450;
     M.height    = Model.height  ?? 450;
     
     //Titles
-    M.xs=(System.Collections.IEnumerable<String>)Model.xs;
+    M.xs=(List<String>)Model.xs;
     //Values
-    M.ys=(System.Collections.IEnumerable<double>)Model.ys;
+	M.ys = (List<double>)Model.ys;
 
-    M.colors = Model.colors ?? new List<string>() { { "#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00" } };
+    M.colors = Model.colors ?? new List<string>() { "#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00" } ;
     
 }
 

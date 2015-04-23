@@ -1,0 +1,49 @@
+﻿@model List<RadialReview.Models.Todo.AbstractTodoCreds>
+
+@{
+    ViewBag.Title = "External";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="text-align: right;margin-bottom: 3px;">
+		<div class="btn btn-primary" onclick="@Html.ShowModal("Link to an external account","/Todo/LinkToExternal?recurrence="+(long)ViewBag.Recurrence,"/Todo/LinkToExternal",onCompleteFunction:"redirect")">Attach New Account</div>
+</div>
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Link Todos</h3>
+	</div>
+	<div class="panel-body form-horizontal">
+		<table class="table table-condensed" style="width:100%">
+			<tr><th></th><th style="width:100px;">Service</th><th style="width:110px;">Account Name</th><th style="width:1px;"></th></tr>
+			@foreach (var t in Model){
+				<tr class="row_@(t.Id)">
+					<td>@t.ForRGM.GetNameExtended()</td>
+					<td>@t.GetServiceName()</td>
+					<td>@t.AccountName</td>
+					<td><span class="glyphicon glyphicon-trash clickable" onclick="deleteRow(@(t.Id))"></span></td>
+				</tr>
+			}
+		</table>
+	</div>
+</div>
+
+<script>
+	function redirect(data) {
+		showJsonAlert(data, false, false);
+		if(!data.Error){
+			window.location = data.Object;
+		}
+	}
+
+	function deleteRow(id) {
+		$.ajax({
+			url: "/Todo/DetachLink/" + id,
+			success: function(d) {
+				showJsonAlert(d, false, true);
+				if (!d.Error) {
+					$(".row_" + id).remove();
+				}
+			}
+		});
+	}
+</script>

@@ -1,0 +1,32 @@
+﻿@model RadialReview.Models.Askables.AboutCompanyAskable
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-","");
+}
+<div class="roleRow">
+	@using (Html.BeginCollectionItem("Questions"))
+	{
+		<div class="roww">
+			<div style="width:calc( 100% - 52px );display:inline-block">
+				@Html.HiddenFor(x => x.Id)
+				@Html.TextBoxFor(x => x.Question, new { @class = "form-control roleItem "})
+				@Html.HiddenFor(x => x.DeleteTime)
+				@Html.HiddenFor(x => x.CreateTime)
+				@Html.HiddenFor(x => x.Weight)
+				@Html.HiddenFor(x => x.OrganizationId)
+			</div>
+			
+			@if (ViewBag.HideDelete == null || ViewBag.HideDelete == false)
+			{
+				<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+			}
+		</div>
+
+		<div class="lineAfter @(ViewBag.HideQuestionTypes ?? false ? "hidden" : "")" style="width:calc( 100% - 52px );display:inline-block">
+			@Html.DropDownListFor(x => x.QuestionType, (IEnumerable<SelectListItem>)ViewBag.QuestionTypes, new { @class = "form-control " })
+		</div>
+		
+	}
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
+</div>
+

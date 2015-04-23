@@ -27,11 +27,11 @@
 	<div class="hover" style="position: relative; bottom: -28px; padding-left: 6px; color: #FFF;">
 		@if (Model.Anonymous)
 		{
-			@:<span class="glyphicon glyphicon-lock"></span> Your feedback will be anonymous to @(Model.ForUser.GetFirstName()). &nbsp;Only their manager will see your name.
+			@:<span class="glyphicon glyphicon-lock"></span> Your feedback will be anonymous to @(Model.ForUser.GetNameShort()). &nbsp;Only their manager will see your name.
 		}
 		else
 		{
-			@:<span class="glyphicon glyphicon-eye-open"></span>Your name will be included on your feedback to @Model.ForUser.GetFirstName().
+			@:<span class="glyphicon glyphicon-eye-open"></span>Your name will be included on your feedback to @Model.ForUser.GetNameShort().
 		}
 	</div>
 }
@@ -43,7 +43,7 @@
 			<figure class="front ">
 				<div class="sidebar noselect">
 					<div class="sidebar-contents">
-						@Html.Partial("_User", Model.ForUser)
+						@Html.Partial("_ResponsibilityGroup", Model.ForUser)
 					</div>
 				</div>
 			</figure>

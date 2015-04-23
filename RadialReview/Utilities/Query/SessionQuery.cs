@@ -53,5 +53,20 @@ namespace RadialReview.Utilities.Query
         {
             return Session.QueryOver<T>().List().ToList();
         }
-    }
+
+		public override T Load<T>(long id)
+		{
+			return Session.Load<T>(id);
+		}
+
+		public override T Load<T>(string id)
+		{
+			return Session.Load<T>(id);
+		}
+
+		public override T Load<T>(Guid id)
+		{
+			return Session.Load<T>(id);
+		}
+	}
 }

@@ -1,0 +1,30 @@
+﻿@model RadialReview.Controllers.CallbackController.SelectTrelloList	
+@{
+    ViewBag.Title = "Link to service";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model.PossibleItems != null){
+	using (Html.BeginForm()){
+		 <div class="form-group isHidden hidden">
+			 <label>Select a @Model.ServiceName list to update when a To-do is created for @Model.UserName during '@Model.RecurrenceName' meeting:</label>
+			 @Html.DropDownListFor(x => x.Selected, Model.PossibleItems, new{@class = "form-control"})
+	   		 @Html.SecuredHiddenFor(x => x.token)
+			 @Html.SecuredHiddenFor(x => x.apiid)
+			 @Html.SecuredHiddenFor(x => x.user)
+			 @Html.SecuredHiddenFor(x => x.recurrence)
+		 </div>
+		 <input class="btn btn-primary" type="submit" value="Submit"/>
+	 }
+}
+@using (Html.BeginScripts()){
+	<script>
+		if (window.location.hash) {
+			debugger;
+			window.location = window.location.href.replace("#", "&");
+		} else {
+			debugger;
+			$(".isHidden").removeClass("hidden");
+		}
+	</script>
+}

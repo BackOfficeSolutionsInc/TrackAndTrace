@@ -1,6 +1,7 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Periods;
 using RadialReview.Models.Reviews;
@@ -110,8 +111,12 @@ namespace RadialReview.Controllers
 
 	        model.Periods = plist;
 
-            var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
-            model.AllUsers = allUsers;
+			var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false)
+				.Cast<ResponsibilityGroupModel>().ToList();
+
+
+            model.AllReviewees = allUsers;
+			model.AllReviewees.Add( GetUser().Organization);
 
             return PartialView(model);
             

@@ -27,6 +27,7 @@
 						<th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>*@
 						<th class="alignRight" style="width:50%;padding:0">@*Attendees*@</th>
 						<th style="width:10px;padding:0"></th>
+						<th style="width:10px;padding:0"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -54,7 +55,10 @@
 								<a href="/L10/Edit/@meeting.Recurrence.Id"><span class="btn btn-default glyphicon glyphicon-cog" title="Archives"></span></a>
 							</td>*@
 							<td>
-								<a href="/L10/Edit/@meeting.Recurrence.Id"><span class="btn btn-default glyphicon glyphicon-cog" title="Edit meeting"></span></a>
+								<a href="/L10/Edit/@meeting.Recurrence.Id" class="btn btn-default"><span style="top: 2px;" class="glyphicon glyphicon-cog" title="Edit meeting"></span></a>
+							</td>
+							<td>
+								<a href="/L10/External/@meeting.Recurrence.Id" class="btn btn-default"><span style="top: 2px;"  class="icon fontastic-icon-share-1" title="Link to external services"></span></a>
 							</td>
 						</tr>
 					}

@@ -29,10 +29,22 @@ namespace RadialReview.Controllers
 
 	    private PartialViewResult DetailsTodo(bool complete)
 	    {
-		    L10Accessor.GetVisibleTodos(GetUser(), GetUser().Id, complete);
+		    L10Accessor.GetVisibleTodos(GetUser(), new []{GetUser().Id}, complete);
+		    return null;
 	    }
 
-
+		private PartialViewResult DetailsIssues()
+		{
+			return null;
+		}
+		private PartialViewResult DetailsScorecard()
+		{
+			return null;
+		}
+		private PartialViewResult DetailsRecent()
+		{
+			return null;
+		}
 
     }
 }

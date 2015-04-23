@@ -20,7 +20,8 @@ namespace RadialReview.Models.ViewModels
 		public Boolean EmployeesCanEditSelf { get; set; }
 
 		public List<String> CompanyValues { get; set; }
-		public List<RockModel> CompanyRocks { get; set; } 
-
+		public List<RockModel> CompanyRocks { get; set; }
+		public List<AboutCompanyAskable> CompanyQuestions { get; set; }
+	    public String  RockName { get; set; }
     }
 }

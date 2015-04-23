@@ -64,7 +64,11 @@ namespace System.Web
                 var fi = enumType.GetField(item.ToString());
                 var attribute = fi.GetCustomAttributes(typeof(DisplayAttribute), true).FirstOrDefault() as DisplayAttribute;
 	            string title;
-	            title = attribute.ResourceType == null ? attribute.Name : new ResourceManager(attribute.ResourceType).GetString(attribute.Name);
+	            if (attribute != null){
+		            title = attribute.ResourceType == null ? attribute.Name : new ResourceManager(attribute.ResourceType).GetString(attribute.Name);
+	            }else{
+		            title = item.ToString();
+	            }
 	            if (item.ToString().ToLower() == "invalid")
                     continue;
                 

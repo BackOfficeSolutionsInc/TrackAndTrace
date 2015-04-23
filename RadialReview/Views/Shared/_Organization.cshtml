@@ -1,0 +1,14 @@
+﻿@model RadialReview.Models.OrganizationModel
+
+<div style="text-align:center">
+    <div class="alignCenter fullWidth" style="display:inline-block" data-id="@Model.Id">
+        <div class="thumbnaill fullWidth" style="min-height:256px;">
+            <div class="imageContainer id_@Model.Id">
+                <img alt="@Model.GetName()" onload="this.className=this.className.replace('fixsizeimage', '' );" class="thumbnail " style="text-align: center; margin-left: auto; margin-right: auto;/*min-width:256px;min-height:256px; /*max-width:256px;height:256px;*/" src="@Model.GetImageUrl()" />
+            </div>
+            <div class="caption  id_@Model.Id">
+                <h3>@Model.GetName()</h3>
+            </div>
+        </div>
+    </div>
+</div>

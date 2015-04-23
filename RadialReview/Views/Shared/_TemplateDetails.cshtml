@@ -47,10 +47,10 @@
 			<div class="panel panel-default">
 				@if (edit)
 				{
-					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Template Rocks", "/Rocks/TemplateModal/" + Model.TemplateId, "/Rocks/TemplateModal/", onComplete: "location.reload()")">Edit</a>
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Template " + @Html.Organization().Settings.RockName, "/Rocks/TemplateModal/" + Model.TemplateId, "/Rocks/TemplateModal/", onComplete: "location.reload()")">Edit</a>
 				}
 				<div class="panel-heading">
-					<h3 class="panel-title">Template Quarterly Rocks</h3>
+					<h3 class="panel-title">Template Quarterly @Html.Organization().Settings.RockName</h3>
 				</div>
 				<div class="panel-body numbers">
 					@if (Model.Rocks.Any())
@@ -71,10 +71,10 @@
 					else
 					{
 						<div class="gray">
-							No rocks.
+							No @Html.Organization().Settings.RockName.
 							@if (edit)
 							{
-								@:Click 'Edit' to add rocks to the template.
+								@:Click 'Edit' to add @Html.Organization().Settings.RockName to the template.
 							}
 						</div>
 					}

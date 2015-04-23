@@ -1,0 +1,58 @@
+﻿@model List<RadialReview.Models.SliderAnswer>
+@{
+	var ordered = Model.Where(x => x.Complete).OrderBy(x => x.ByUser.GetNameExtended());
+	var guid = "slider_" + Guid.NewGuid().ToString().Replace("-", "");
+	var i = 0;
+}
+<div class="row">
+	<div class="col-md-8 alignCenter">
+		<div id="@guid" class="survey-histogram"></div>
+	</div>
+	<div class="col-md-4">
+		<div style="max-height: 360px; overflow-y: auto">
+			<table style="width:90%;">
+				<tr><td></td><td></td><td style="width: 1px;"></td></tr>
+				@foreach (var a in ordered){
+					i++;
+					<tr>
+						<td>@(i).</td>
+						<td>@a.ByUser.GetName()</td>
+						<td class="alignRight">@(Math.Round(a.Percentage.Value*100m))%</td>
+					</tr>
+				}
+			</table>
+		</div>
+	</div>
+</div>
+
+<script>
+	var c = new Charts.Histogram("#@guid", new Charts.Dimension(500, 500));
+	var data = [];
+
+	@foreach (var m in ordered){
+		@:data.push({x: @(m.Percentage*100)});
+	}
+
+	c.bins = [0, 20, 40, 60, 80, 100];
+	c.InitializeWidth(data);
+</script>
+
+<style>
+	.survey-histogram {
+		width:  360px;
+		display: inline-block;
+	}
+
+	 .survey-histogram .bar rect {
+		 stroke: #FFF;
+		 fill: #767F99;
+		 stroke-width: 4px
+	 }
+	.survey-histogram .x.axis path {
+		stroke: #767F99;
+		fill: #767F99;
+		stroke-width: 2px;
+		transform: translate(0,-3px);
+	}
+</style>
+

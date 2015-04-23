@@ -1,11 +1,9 @@
 ﻿using System.Web.Helpers;
+using RadialReview.Models;
 using RadialReview.Properties;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 
@@ -14,7 +12,10 @@ namespace System.Web
 {
     public static class HtmlExtensions
     {
-		
+	    public static OrganizationModel Organization(this HtmlHelper html){
+		    return (OrganizationModel) html.ViewBag.Organization;
+	    }
+
         public static MvcHtmlString CollapseSection(this HtmlHelper html,String title,String viewName,object model,string checkboxClass=null)
         {
 			html.ViewData["PartialViewName"] = viewName;

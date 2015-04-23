@@ -36,8 +36,8 @@
 			<table class="table table-condensed tablesorter tablefilter tablesorter-default">
 				<thead>
 					<tr>
-						<th style="width:1px;" data-title="Your Report"></th>
-						<th style="min-width: 120px"> @RadialReview.Properties.DisplayNameStrings.name</th>
+						<th style="width:1px;" data-title="Your Report">Your Report</th>
+						<th style="min-width: 120px">Review @RadialReview.Properties.DisplayNameStrings.name</th>
 						@*<th style="width:100px" class="alignCenter">Created</th>*@
 						<th style="width:100px" class="alignCenter">Due</th>
 						<th style="width:80px" class="alignCenter">Status</th>
@@ -46,10 +46,11 @@
 						@if (ViewBag.IsManager ?? false)
 						{
 							@*<th style="width: 20px;" class="alignCenter" data-title="Review statistics"></th>*@
-							<th class="alignCenter" style="width:1px" data-title="Send review reminders"></th>
-							<th class="alignCenter" style="width:1px" data-title="Edit your subordinate's reports"></th>
+							<th class="alignCenter" style="width:1px" @*data-title="Send review reminders"*@></th>
+							@*<th class="alignCenter" style="width:1px" data-title="Edit your subordinate's reports"></th>
+							<th class="alignCenter" style="width:1px" data-title="View  chart"></th>
 							<th class="alignCenter" style="width:1px" data-title="View aggregate chart"></th>
-							<th class="alignCenter" style="width:1px" data-title="View review stats"></th>
+							<th class="alignCenter" style="width:1px" data-title="View review stats"></th>*@
 						}
 						@if (Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
 						{
@@ -69,16 +70,18 @@
 						var takable = review.TakableId;
 						@*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
 						<tr class="startHiddenn @(review.Review.DueDate > DateTime.UtcNow ? "" : "grayRoww")">
-							<td>
+							<td class="alignCenter">
 								@if (review.UserReview != null)
 								{
 									if (review.UserReview.ClientReview.Visible)
 									{
-										<span class="icon icon new-icon-clipboard-notes clickable" onclick=" location.href='/Review/ClientDetails/@review.UserReview.ClientReview.Id' ; "></span>
+										<a href="/Review/ClientDetails/@review.UserReview.ClientReview.Id">View</a>
+										@*<span class="icon icon new-icon-clipboard-notes clickable" onclick=" location.href='/Review/ClientDetails/@review.UserReview.ClientReview.Id' ; "></span>*@
 									}
 									else
 									{
-										<span class="icon icon new-icon-clipboard-notes gray hover" title="Your supervisor has not shared this report with you yet."></span>
+										<span class="gray hover" title="Your supervisor has not shared this report with you yet.">N/A</span>
+										@*<span class="icon icon new-icon-clipboard-notes gray hover" title="Your supervisor has not shared this report with you yet."></span>*@
 									}
 								}
 							</td>
@@ -147,7 +150,7 @@
 											txt = "complete";
 										}
 									}
-									<span class="@clzz" style="display: block;">@txt</span>
+									<span class="@clzz" style="display: block; top: 1px;position: relative;">@txt</span>
 								}
 								else
 								{
@@ -165,23 +168,26 @@
 							{
 								@*<td class="alignCenter">
 										<a href="/Statistics/Review/@review.Review.Id"><span class="glyphicon glyphicon-stats" title="Review statistics"></span></a>
-									</td>*@
+									</td>
 
 								<td class="alignCenter">
 									@if (review.Review.DueDate > DateTime.UtcNow)
 									{
-									<a href="/Reports/Index/@review.Review.Id#Reminders"><span class="glyphicon glyphicon-bell" title="Send review reminders" @*title="View, edit, or print your subordinates' reports"*@></span></a>
+									<a href="/Reports/Index/@review.Review.Id#Reminders"><span class="glyphicon glyphicon-bell" title="Send review reminders" ></span></a>
 
 									}
 								</td>
 								<td class="alignCenter">
-									<a href="/Reports/Index/@review.Review.Id#Reports"><span class="icon new-icon-page-multiple" title="Edit your subordinate's reports" @*title="View, edit, or print your subordinates' reports"*@></span></a>
+									<a href="/Reports/Index/@review.Review.Id#Reports"><span class="icon new-icon-page-multiple" title="Edit your subordinate's reports" ></span></a>
 								</td>
 								<td class="alignCenter">
-									<a href="/Reports/Index/@review.Review.Id#Aggregate"><span class="glyphicon glyphicon-th-large" title="View aggregate chart" @*title="View, edit, or print your subordinates' reports"*@></span></a>
+									<a href="/Reports/Index/@review.Review.Id#Aggregate"><span class="glyphicon glyphicon-th-large" title="View aggregate chart"> </span></a>
 								</td>
 								<td class="alignCenter">
-									<a href="/Reports/Index/@review.Review.Id#Stats"><span class="glyphicon glyphicon-stats" title="View review stats" @*title="View, edit, or print your subordinates' reports"*@></span></a>
+									<a href="/Reports/Index/@review.Review.Id#Stats"><span class="glyphicon glyphicon-stats" title="View review stats" ></span></a>
+								</td>*@
+								<td class="alignCenter">
+									<a href="/Reports/Index/@review.Review.Id"><span class="icon fontastic-icon-checklist" title="Manage this review"></span></a>
 								</td>
 							}
 

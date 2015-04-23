@@ -77,5 +77,20 @@ namespace RadialReview.Utilities.Query
         {
             UpdateProvider.Update(obj);
         }
-    }
+
+		public T Load<T>(long id) where T : ILongIdentifiable
+		{
+			return QueryProvider.Load<T>(id);
+		}
+
+		public T Load<T>(string id) where T : IStringIdentifiable
+		{
+			return QueryProvider.Load<T>(id);
+		}
+
+		public T Load<T>(Guid id) where T : IGuidIdentifiable
+		{
+			return QueryProvider.Load<T>(id);
+		}
+	}
 }

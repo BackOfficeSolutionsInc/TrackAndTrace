@@ -1,11 +1,14 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Web.UI.WebControls.Expressions;
+using Amazon.DynamoDBv2;
 using RadialReview.Exceptions;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview
 {
@@ -87,7 +90,7 @@ namespace RadialReview
                 var isSelected = id.Equals(selected);
                 if (selected==null || selected.Equals(default(TId)))
                     isSelected = i == 0;
-                return new SelectListItem() { Selected = isSelected, Text = text.ToString(), Value = id.ToString() };
+                return new SelectListItem() { Selected = isSelected, Text = text.NotNull(y=>y.ToString()), Value = id.NotNull(y=>y.ToString()) };
             }).ToList();
         }
 
@@ -206,6 +209,35 @@ namespace RadialReview
 	    {
 		    if (!source.ContainsAll(other,selector))
 				throw new PermissionsException("Item is required in source.");
+	    }
+
+	    public static IEnumerable<T> FilterRange<T>(this IEnumerable<T> source, DateRange range, DateRangeType rangeType = DateRangeType.Any) where T : IHistorical
+	    {
+		    if (range == null)
+			    return source.Where(x => x.DeleteTime == null);
+
+		    return source.FilterRange(range, x => x.CreateTime, x => x.DeleteTime, rangeType);
+	    }
+
+		private static IEnumerable<T> FilterRange<T>(this IEnumerable<T> source, DateRange range, Func<T, DateTime> createTime, Func<T, DateTime?> deleteTime, DateRangeType rangeType = DateRangeType.Any)
+		{
+			if (range == null)
+				return source;
+
+			switch(rangeType){
+				case DateRangeType.Any:
+					return source.Where(x =>{
+						var del = deleteTime(x);
+						return createTime(x) <= range.EndTime && (del == null || del.Value >= range.StartTime);
+					});
+				case DateRangeType.All: 
+					return source.Where(x =>{
+						var del = deleteTime(x);
+						return createTime(x) <= range.StartTime && (del == null || del.Value >= range.EndTime);
+					});
+				default:
+					throw new ArgumentOutOfRangeException("rangeType");
+			}
 	    }
 
 	    /*public static Boolean Contains<T>(this IEnumerable<T> enumerable, Func<T, Boolean> contains)

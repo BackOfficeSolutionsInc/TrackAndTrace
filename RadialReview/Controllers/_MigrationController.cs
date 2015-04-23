@@ -386,7 +386,55 @@ namespace RadialReview.Controllers
 			}
 			return count.ToString();
 		}
-		
 
+		[Access(AccessLevel.Radial)]
+		public string M4_17_2015()
+		{
+			var c = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var orgs = s.QueryOver<OrganizationModel>().List();
+					foreach (var organizationModel in orgs)
+					{
+						if (organizationModel.Organization == null)
+						{
+							organizationModel.Organization = organizationModel;
+							s.Update(organizationModel);
+							c++;
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return c + "";
+		}
+
+		[Access(AccessLevel.Radial)]
+		public string M4_22_2015()
+		{
+			var c = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var orgs = s.QueryOver<OrganizationModel>().List();
+					foreach (var organizationModel in orgs)
+					{
+						if (organizationModel.Settings.RockName == null)
+						{
+							organizationModel.Settings.RockName = "Rocks";
+							s.Update(organizationModel);
+							c++;
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return c + "";
+		}
 	}
 }

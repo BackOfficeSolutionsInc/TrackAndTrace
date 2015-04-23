@@ -9,7 +9,7 @@
 				<div class="pull-right">
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
-				<h2>Rock Review <small></small></h2>
+				<h2>@Html.Organization().Settings.RockName Review <small></small></h2>
 			</hgroup>
 			<div class="rocks-container">
 				@foreach (var person in Model.Rocks.GroupBy(x => x.ForRock.ForUserId))

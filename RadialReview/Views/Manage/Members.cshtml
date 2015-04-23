@@ -20,7 +20,7 @@
 	@Html.AlertBoxDismissable(@"From this page you can add employees to your organization.
             Employees are assigned questions that evaluate how they are doing in the organization.
             These can be questions unique to the individual or shared with their teams, positions, or the company as a whole.
-            During the review process, peers, teammates, supervisors and subordinates answer questions of the employee to gauge how well they are fulfilling their responsibilities.
+            During the review process, peers, teammates, supervisors and direct reports answer questions of the employee to gauge how well they are fulfilling their responsibilities.
             To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
 }
 
@@ -191,7 +191,7 @@
 								}
 							}
 						</td>
-						<td class="alignCenter" title="Individual Quarterly Rocks">
+						<td class="alignCenter" title="Individual Quarterly @Html.Organization().Settings.RockName">
 							<a href="~/Manage/UserDetails/@p.Id">@p.NumRocks</a>
 						</td>
 						<td class="alignCenter" title="Individual Roles">

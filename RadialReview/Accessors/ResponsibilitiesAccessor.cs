@@ -6,6 +6,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
@@ -28,23 +29,24 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        public List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller, long forUserId)
+		public List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller, long forUserId, DateRange range)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetResponsibilitiesForUser(caller, s.ToQueryProvider(true), perms, forUserId);
+                    return GetResponsibilitiesForUser(caller, s.ToQueryProvider(true), perms, forUserId, range);
                 }
             }
         }
 
 		[Obsolete("Use AskableAccessor.GetAskablesForUser",false)]
-        public static List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller,AbstractQuery queryProvider, PermissionsUtility perms,  long forUserId)
+        public static List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller,AbstractQuery queryProvider, PermissionsUtility perms,  long forUserId, DateRange range)
         {
             return GetResponsibilityGroupsForUser(queryProvider, perms, caller, forUserId)
                     .SelectMany(x => x.Responsibilities)
+					.FilterRange(range)
                     .ToList();
         }
 
@@ -132,13 +134,13 @@ namespace RadialReview.Accessors
                     {
                         if (responsibility == null || categoryId == null || responsibilityGroupId == null)
                             throw new PermissionsException();
-                        r.ForOrganizationId = caller.Organization.Id;
 
                         var rg = s.Get<ResponsibilityGroupModel>(responsibilityGroupId.Value);
                         permissions.ViewOrganization(rg.Organization.Id);
                         r.ForResponsibilityGroup = responsibilityGroupId.Value;
                         r.Responsibility = responsibility;
                         r.Required = true;
+                        r.ForOrganizationId = caller.Organization.Id;
                         s.Save(r);
                         rg.Responsibilities.Add(r);
                         s.Update(rg);

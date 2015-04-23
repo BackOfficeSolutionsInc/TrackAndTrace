@@ -20,14 +20,14 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Meeting Name:</label>
 				<div class="col-sm-9">
-					@Html.TextBoxFor(x => x.Recurrence.Name, new { @class = "form-control", style = "max-width:600px;width:100%;", placeholder="Add a name for the meeting..." })
+					@Html.TextBoxFor(x => x.Recurrence.Name, new { @class = "form-control", style = "max-width:600px;width:100%;", placeholder = "Add a name for the meeting..." })
 				</div>
 			</div>
 
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Members:</label>
 				<div class="col-sm-9">
-					@Html.ListBoxFor(x => 
+					@Html.ListBoxFor(x =>
 					   x.SelectedMembers,
 						Model.PossibleMembers.ToSelectList(x => x.GetNameAndTitle(), x => x.Id).OrderBy(x => x.Text),
 						new { @class = "select2 form-control attendee", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a name..." })
@@ -41,20 +41,20 @@
 						Model.PossibleMeasurables.ToSelectList(x => x.Title + " (Owner: " + x.AccountableUser.GetName() + ")", x => x.Id).OrderBy(x => x.Text),
 								 new { @class = "select2 form-control measurables", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a measurable..." })
 				</div>
-			</div>			
+			</div>
 			<div class="form-group">
-				<label class="col-sm-3 control-label">Rocks:</label>
+				<label class="col-sm-3 control-label">@Html.Organization().Settings.RockName:</label>
 				<div class="col-sm-9">
-					@Html.ListBoxFor(x => 
-						x.SelectedRocks, 
+					@Html.ListBoxFor(x =>
+						x.SelectedRocks,
 						Model.PossibleRocks.ToSelectList(x => x.ToFriendlyString(), x => x.Id).OrderBy(x => x.Text),
-						new { @class = "select2 form-control rocks", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a rock..." })
+						new { @class = "select2 form-control rocks", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typeing one of your "+Html.Organization().Settings.RockName+"..." })
 				</div>
-			</div>												
+			</div>
 			@Html.SecuredHiddenFor(x => x.Recurrence.Id)
 			@Html.SecuredHiddenFor(x => x.Recurrence.CreateTime)
 			@Html.SecuredHiddenFor(x => x.Recurrence.OrganizationId)
-			@Html.HiddenFor(x=>x.Return)
+			@Html.HiddenFor(x => x.Return)
 			<div class="alignCenter">
 				<input class="btn btn-primary" type="submit" value="Submit" />
 			</div>

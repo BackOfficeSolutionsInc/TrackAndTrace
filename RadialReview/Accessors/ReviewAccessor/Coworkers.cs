@@ -23,15 +23,15 @@ namespace RadialReview.Accessors {
 		}
 
 
-		private static List<AskableAbout> GetAskables(UserOrganizationModel caller,PermissionsUtility perms, DataInteraction dataInteraction,IEnumerable<long> revieweeIds,long reviewerId,long? periodId)
+		private static List<AskableAbout> GetAskables(UserOrganizationModel caller,PermissionsUtility perms, DataInteraction dataInteraction,IEnumerable<long> revieweeIds,long reviewerId,long? periodId,DateRange range)
 		{
 			var allAskables = new List<AskableAbout>();
 			var queryProvider = dataInteraction.GetQueryProvider();
 
 			//var applicationQuestions = ApplicationAccessor.GetApplicationQuestions(queryProvider).ToList();
-
+			
 			foreach (var revieweeId in revieweeIds) {
-				var revieweeAskables = AskableAccessor.GetAskablesForUser(caller, queryProvider, perms, revieweeId, periodId).ToListAlive();
+				var revieweeAskables = AskableAccessor.GetAskablesForUser(caller, queryProvider, perms, revieweeId, periodId, range);
 				var relationships = RelationshipAccessor.GetRelationships(perms, queryProvider, reviewerId, revieweeId);
 
 				//Merge relationships
@@ -136,6 +136,8 @@ namespace RadialReview.Accessors {
 				}
 			}
 
+			//coworkerRelationship.AddOrganization(forTeam.Organization);
+
 			return coworkerRelationship;
 		}
 		public List<CoworkerRelationships> GetReviewersForUsers(
@@ -200,6 +202,13 @@ namespace RadialReview.Accessors {
 						}*/
 					}
 
+					foreach (var member in teamMemberIds){
+						var orgRelationships = new CoworkerRelationships(queryProvider.Get<UserOrganizationModel>(member));
+						orgRelationships.Add(team.Organization);
+						items.Add(orgRelationships);
+					}
+
+
 					//var output = reviewWhoDictionary.ToDictionary(x=>x.Key,x=>x.Value.ToList());
 					/*.ToDictionary(
 						x => queryProvider.Get<UserOrganizationModel>(x.Key),
@@ -214,7 +223,8 @@ namespace RadialReview.Accessors {
 		private static AskableUtility GetAskablesBidirectional(
 		DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller,
 		UserOrganizationModel reviewee, OrganizationTeamModel team, ReviewParameters parameters,
-		List<long> accessibleUsers, long? periodId) {
+		List<long> accessibleUsers, long? periodId,
+		DateRange range) {
 			#region comment
 			/** Old questions way to do things.
             var review = _QuestionAccessor.GenerateReviewForUser(user, s, reviewContainer);
@@ -233,7 +243,7 @@ namespace RadialReview.Accessors {
 			//Ensures uniqueness and removes people not in the review.
 			var askableUtil = new AskableUtility();
 			var reviewers= GetReviewersForUser(caller, perms, s, reviewee, parameters, team, accessibleUsers);
-			var questions = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewee.Id, periodId).ToListAlive();
+			var questions = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewee.Id, periodId, range);
 
 			if (parameters.ReviewSelf) {
 				askableUtil.AddUnique(questions, AboutType.Self, reviewee.Id);
@@ -242,7 +252,7 @@ namespace RadialReview.Accessors {
 			foreach (var reviewer in reviewers.Relationships) {
 				var reviewerId =/* aboutSelf ? beingReviewed.Id :*/ reviewer.Key.Id;
 
-				var reviewerAskables = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewerId, periodId).ToListAlive();
+				var reviewerAskables = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewerId, periodId,range);
 				/* .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, id)
 				 .SelectMany(x => x.Responsibilities).ToListAlive();*/
 				foreach (var relationship in reviewer.Value) {

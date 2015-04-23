@@ -1,4 +1,5 @@
 ﻿using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using System;
 using System.Collections;
@@ -19,33 +20,33 @@ namespace RadialReview.Utilities.DataTypes
         }
     }
     */
-    public class CoworkerRelationships : IEnumerable<KeyValuePair<UserOrganizationModel,List<AboutType>>>
+	public class CoworkerRelationships : IEnumerable<KeyValuePair<ResponsibilityGroupModel, List<AboutType>>>
     {
-        public UserOrganizationModel User { get; set; }
-        public Multimap<UserOrganizationModel, AboutType> Relationships { get; set; }
+		//public OrganizationModel Organization { get; set; }
+		public ResponsibilityGroupModel Reviewer { get; set; }
+		public Multimap<ResponsibilityGroupModel, AboutType> Relationships { get; set; }
 
-        public CoworkerRelationships(UserOrganizationModel user)
-        {
-            User = user;
-            Relationships = new Multimap<UserOrganizationModel, AboutType>();
-
+		public CoworkerRelationships(ResponsibilityGroupModel reviewer){
+			Reviewer = reviewer;
+			Relationships = new Multimap<ResponsibilityGroupModel, AboutType>();
         }
 
-        public void Add(UserOrganizationModel coworker, AboutType relationship)
-        {
-            Relationships.Add(coworker, relationship);
-        }
+		public void Add(UserOrganizationModel coworker, AboutType relationship){
+			Relationships.Add(coworker, relationship);
+		}
+
+		public void Add(OrganizationModel coworker){
+			Relationships.Add(coworker, AboutType.Organization);
+		}
 
 
-        public IEnumerator<KeyValuePair<UserOrganizationModel,List<AboutType>>> GetEnumerator()
-        {
+		public IEnumerator<KeyValuePair<ResponsibilityGroupModel, List<AboutType>>> GetEnumerator(){
             return Relationships.GetEnumerator();
         }
 
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
+        IEnumerator IEnumerable.GetEnumerator(){
             return Relationships.GetEnumerator();
         }
-    }
+	}
 }

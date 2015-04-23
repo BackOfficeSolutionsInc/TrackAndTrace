@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.SignalR;
@@ -213,7 +214,7 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Conclusion(L10MeetingVM model, FormCollection form)
+		public async Task<ActionResult> Conclusion(L10MeetingVM model, FormCollection form)
 		{
 			ValidateValues(model, x => x.Recurrence.Id);
 
@@ -248,7 +249,7 @@ namespace RadialReview.Controllers
 
 				if (ModelState.IsValid)
 				{
-					L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues);
+					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues);
 
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();

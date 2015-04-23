@@ -11,6 +11,7 @@ using RadialReview.Models.Reviews;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.ViewModels;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
@@ -422,7 +423,11 @@ namespace RadialReview.Controllers
         {
             var existing = _ReviewAccessor.GetDistinctQuestionsAboutUserFromReview(GetUser(), userId, reviewId);
 	        var period =PeriodAccessor.GetPeriodForReviewContainer(GetUser(), reviewId);
-			var answers = _AskableAccessor.GetAskablesForUser(GetUser(), userId, period.Id).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
+
+	        var review = _ReviewAccessor.GetReviewContainer(GetUser(), reviewId, false, false, false);
+
+	        var range = new DateRange(review.DateCreated,DateTime.UtcNow);
+			var answers = _AskableAccessor.GetAskablesForUser(GetUser(), userId, period.Id, range).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
 
             return Json(answers.ToSelectList(x => x.GetQuestion(), x => x.Id), JsonRequestBehavior.AllowGet);
 

@@ -1,4 +1,4 @@
-﻿@model RadialReview.Models.Charts.LineChart
+﻿@model RadialReview.Models.Charts.Line.LineChart
 
 <style>
 	body {
@@ -56,7 +56,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.tsv("@Model.Url", function(error, data) {
+d3.tsv("@*@(Model.Url)*@", function(error, data) {
   data.forEach(function(d) {
     d.date = parseDate(d.date);
     d.close = +d.close;

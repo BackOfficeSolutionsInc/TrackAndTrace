@@ -46,7 +46,7 @@
 }
 
 <div class="scorecard-container">
-	@foreach (var s in Model.ScoreModels)
+	@foreach (var s in Model.ScoreModels.SelectMany(x=>x))
 	{
 		<div class="scorecard-item">
 			<div class="scorecard scorecard-value-container">

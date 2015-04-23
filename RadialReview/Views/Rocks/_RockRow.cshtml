@@ -24,7 +24,7 @@
 			}
 			@if (Model.FromTemplateItemId != null)
 			{
-				<span style="padding-left: 8px;" class="icon fontastic-icon-link-broken lock" onclick="$('.unlockRR-@guid').removeClass('disable');$(this).remove();$('.templateId.unlockRR-@guid').prop('value',false);" title="This rock was created by a template. Click to disassociate."></span>
+				<span style="padding-left: 8px;" class="icon fontastic-icon-link-broken lock" onclick="$('.unlockRR-@guid').removeClass('disable');$(this).remove();$('.templateId.unlockRR-@guid').prop('value',false);" title="This was created by a template. Click to disassociate."></span>
 			}
 		</div>
 
@@ -41,7 +41,7 @@
 					}
 				</select>*@
 				@Html.DropDownListFor(x=>x.ForUserId,((IEnumerable<UserOrganizationModel>)ViewBag.PossibleUsers).ToSelectList(x=>x.GetNameAndTitle(),x=>x.Id),
-				  new { @class = "form-control " + lockedClass, style = "width: 100%;", @readonly = (Model.FromTemplateItemId != null) })
+				new { @class = "form-control " + lockedClass+ " "+((Model.FromTemplateItemId != null)?"disabled":""), style = "width: 100%;"})
 			</div>
 		}
 		else

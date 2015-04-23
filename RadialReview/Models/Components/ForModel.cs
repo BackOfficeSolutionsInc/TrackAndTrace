@@ -25,8 +25,25 @@ namespace RadialReview.Models.Components
 		{
 			return new ForModel(){
 				ModelId = creator.Id,
-				ModelType = HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(creator.GetType()).EntityName,
+				ModelType = GetModelType(creator)
 			};
+		}
+
+		public static ForModel Create<T>(long id) where T : ILongIdentifiable
+		{
+			return new ForModel(){
+				ModelId = id,
+				ModelType = GetModelType<T>()
+			};
+		}
+
+		public static string GetModelType(ILongIdentifiable creator)
+		{
+			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(creator.GetType()).EntityName;
+		}
+		public static string GetModelType<T>() where T : ILongIdentifiable
+		{
+			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(typeof(T)).EntityName;
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Amazon.ElasticTranscoder.Model;
+using FluentNHibernate;
 using log4net;
 using NHibernate;
 using NHibernate.Linq;
@@ -7,6 +8,7 @@ using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.Permissions;
@@ -288,6 +290,11 @@ namespace RadialReview.Utilities
 				}
 				throw new PermissionsException("Cannot edit for user.");
 			}, PermissionType.EditEmployeeDetails);
+		}
+
+		public PermissionsUtility EditOrganizationQuestions(long orgId)
+		{
+			return EditOrganization(orgId);
 		}
 		#endregion
 
@@ -723,24 +730,32 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region L10
-		public PermissionsUtility EditL10Meeting(long organizationId, long recurrenceId)
+
+		public PermissionsUtility CreateL10Recurrence(long organizationId)
+		{
+			var organization = session.Get<OrganizationModel>(organizationId);
+			if (IsManagingOrganization(organizationId))
+				return this;
+			if (organization.Settings.EmployeeCanCreateL10 && caller.Organization.Id == organizationId)
+				return this;
+			if (organization.Settings.ManagersCanCreateL10 && IsManager(organizationId))
+				return this;
+			throw new PermissionsException("Cannot create meeting.");
+		}
+
+
+		public PermissionsUtility EditL10Recurrence(long recurrenceId)
 		{
 			if (IsRadialAdmin(caller))
 				return this;
 
-			if (IsManagingOrganization(organizationId))
-				return this;
-
-			var organization = session.Get<OrganizationModel>(organizationId);
-			if (recurrenceId == 0)
-			{
-				if (organization.Settings.EmployeeCanCreateL10 && caller.Organization.Id == organizationId)
+			
+			if (recurrenceId == 0){
+				throw new PermissionsException("Meeting does not exist.");
+			}else{
+				var recur = session.Get<L10Recurrence>(recurrenceId);
+				if (IsManagingOrganization(recur.OrganizationId))
 					return this;
-				if (organization.Settings.ManagersCanCreateL10 && IsManager(organizationId))
-					return this;
-			}
-			else
-			{
 				var availUserIds = new[] { caller.Id };
 				if (caller.Organization.Settings.ManagersCanEditSubordinateL10)
 				{
@@ -754,8 +769,6 @@ namespace RadialReview.Utilities
 				if (exists > 0)
 					return this;
 			}
-
-
 			throw new PermissionsException();
 		}
 
@@ -921,6 +934,20 @@ namespace RadialReview.Utilities
 
 		}
 		#endregion
+		#region ForModel
+		public PermissionsUtility EditForModel(ForModel model)
+		{
+			if (model.ModelType == ForModel.GetModelType<L10Recurrence>())
+				return EditL10Recurrence(model.ModelId);
+			throw new PermissionsException("ModelType unhandled");
+		}
+		public PermissionsUtility ViewForModel(ForModel model)
+		{
+			if (model.ModelType == ForModel.GetModelType<L10Recurrence>())
+				return ViewL10Recurrence(model.ModelId);
+			throw new PermissionsException("ModelType unhandled");
+		}
+		#endregion
 
 		public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)
 		{
@@ -1024,8 +1051,6 @@ namespace RadialReview.Utilities
 			}
 			throw new PermissionsException();
 		}
-
-
 
 		public PermissionsUtility RemoveUser(long userId)
 		{

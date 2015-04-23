@@ -50,7 +50,7 @@
                 $(this).addClass("glyphicon-ok save");
                 $(this).attr("data-save",true);
             } else {
-                alert("Button not recognized.")
+	            alert("Button not recognized.");
             }
         });
 
@@ -76,7 +76,7 @@
                 var save= {
                         forUser:@(Model.User.Id),
                         toSave:saveData,
-                        OrganizationId:@Model.OrganizationId
+                        OrganizationId:@(Model.OrganizationId)
                     };
 
                 $(".save").removeClass("save");
@@ -113,7 +113,7 @@
 
 <div class="row">
 
-    <div class="col-xs-10"><h2>Manage @Model.User.Name()</h2></div>
+    <div class="col-xs-10"><h2>Manage @Model.User.GetName()</h2></div>
 
     <div class="col-xs-2"><h2 id="saveStatus" class="progress active" style="height:inherit"><button onclick="save()" class="btn btn-success progress-bar progress-bar-success fullWidth">Save</button></h2></div>
 </div>
@@ -126,7 +126,7 @@
         <th class="small-centered">@RadialReview.Properties.DisplayNameStrings.category</th>
         <th class="small-centered">@RadialReview.Properties.DisplayNameStrings.For</th>
         <th></th>
-        <th style="width:70px;"><button class="btn fullWidth" onclick="showModal('@RadialReview.Properties.DisplayNameStrings.addQuestion (@Model.User.Name())','/Question/Modal?organizationId=@Model.OrganizationId&origin=@RadialReview.Models.Enums.OriginType.User&originId=@Model.User.Id','/Question/Edit')">+</button></th>
+        <th style="width:70px;"><button class="btn fullWidth" onclick="showModal('@RadialReview.Properties.DisplayNameStrings.addQuestion (@Model.User.GetName())','/Question/Modal?organizationId=@Model.OrganizationId&origin=@RadialReview.Models.Enums.OriginType.User&originId=@Model.User.Id','/Question/Edit')">+</button></th>
     </tr>
     @foreach (var q in Model.MatchingQuestions)
     {

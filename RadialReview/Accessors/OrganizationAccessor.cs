@@ -1,6 +1,10 @@
-﻿using RadialReview.Exceptions;
+﻿using Amazon.ElasticMapReduce.Model;
+using Amazon.ElasticTranscoder.Model;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Periods;
+using RadialReview.Models.Responsibilities;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,17 +14,18 @@ using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities.Query;
 using NHibernate;
+using WebGrease.Css.Extensions;
 
 namespace RadialReview.Accessors
 {
     public class OrganizationAccessor : BaseAccessor
     {
 
-        public OrganizationModel CreateOrganization(UserModel user, LocalizedStringModel name, Boolean managersCanAddQuestions, PaymentPlanModel paymentPlan,DateTime now,out long newUserId)
+        public OrganizationModel CreateOrganization(UserModel user, LocalizedStringModel name, Boolean managersCanAddQuestions, PaymentPlanModel paymentPlan,DateTime now,out long newUserId,bool enableL0,bool enableReview)
         {
             UserOrganizationModel userOrgModel;
             OrganizationModel organization;
-
+			OrganizationTeamModel allMemberTeam;
             using (var db = HibernateSession.GetCurrentSession())
             {
                 using (var tx = db.BeginTransaction())
@@ -31,10 +36,14 @@ namespace RadialReview.Accessors
                         PaymentPlan = paymentPlan,
                         Name = name,
                         ManagersCanEdit = false,
-                        
-                    };
+
+					};
+					organization.Settings.EnableL10 = enableL0;
+					organization.Settings.EnableReview= enableReview;
 
                     db.Save(organization);
+	                organization.Organization = organization;
+					db.Update(organization);
                     //db.Organizations.Add(organization);
                     //db.SaveChanges();
                     //db.UserModels.Attach(user);
@@ -64,7 +73,7 @@ namespace RadialReview.Accessors
                     db.Save(organization);
 
                     //Add team for every member
-                    var allMemberTeam = new OrganizationTeamModel()
+                    allMemberTeam = new OrganizationTeamModel()
                     {
                         CreatedBy = userOrgModel.Id,
                         Name = organization.Name.Translate(),
@@ -93,9 +102,41 @@ namespace RadialReview.Accessors
                     //organization.ManagedBy.Add(userOrgModel);
                     //db.SaveChanges();
                 }
-                using (var tx = db.BeginTransaction())
-                {
-                    db.Save(new DeepSubordinateModel
+                using (var tx = db.BeginTransaction()){
+
+					var year = DateTime.UtcNow.Year;
+	                foreach (var q in Enumerable.Range(1, 4)){
+						db.Save(new PeriodModel(){
+							Name = year+" Q"+q,
+							StartTime = new DateTime(year,1,1).AddDays((q-1)*13*7).StartOfWeek(DayOfWeek.Sunday),
+							EndTime = new DateTime(year, 1, 1).AddDays(q * 13 * 7).StartOfWeek(DayOfWeek.Sunday),
+							OrganizationId = organization.Id,
+						});
+	                }
+					
+					
+					
+					foreach (var defaultQ in new[]{
+		                "What is their greatest contribution to the team?",
+						"What should they start or stop doing?"
+	                }){
+		                var r = new ResponsibilityModel(){
+			                Category = ApplicationAccessor.GetApplicationCategory(db, ApplicationAccessor.FEEDBACK),
+			                ForOrganizationId = organization.Id,
+							ForResponsibilityGroup = allMemberTeam.Id,
+			                CreateTime = now,
+			                Weight = WeightType.Normal,
+			                Required = true,
+							Responsibility = defaultQ
+						}; 
+						r.SetQuestionType(QuestionType.Feedback);
+		                db.Save(r);
+
+						allMemberTeam.Responsibilities.Add(r);
+	                }
+					db.Update(allMemberTeam);
+
+	                db.Save(new DeepSubordinateModel
                     {
                         CreateTime = now,
                         Links = 1,
@@ -237,8 +278,8 @@ namespace RadialReview.Accessors
                     if (orgPositionId == 0)
                     {
                         var org = s.Get<OrganizationModel>(organizationId);
-                        if (/*positionId == null ||*/ String.IsNullOrWhiteSpace(customName))
-                            throw new PermissionsException();
+	                    if ( /*positionId == null ||*/ String.IsNullOrWhiteSpace(customName))
+		                    throw new PermissionsException();
 
                         orgPos = new OrganizationPositionModel() { Organization = org, CreatedBy = caller.Id };
                     }
@@ -310,7 +351,9 @@ namespace RadialReview.Accessors
 																			bool? sendEmailImmediately = null,
 																			bool? managersCanRemoveUsers = null,
 																			bool? managersCanEditSelf = null,
-																			bool? employeesCanEditSelf = null)
+																			bool? employeesCanEditSelf = null,
+																			string rockName = null
+			)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -345,6 +388,9 @@ namespace RadialReview.Accessors
 
 					if (employeesCanEditSelf != null)
 						org.Settings.EmployeesCanEditSelf = employeesCanEditSelf.Value;
+
+					if (!String.IsNullOrWhiteSpace(rockName))
+						org.Settings.RockName = rockName;
 
                     s.Update(org);
                     tx.Commit();
@@ -513,20 +559,20 @@ namespace RadialReview.Accessors
             }
         }
 
-	    public static List<CompanyValueModel> GetCompanyValues(AbstractQuery query,PermissionsUtility perms, long organizationId)
+	    public static List<CompanyValueModel> GetCompanyValues(AbstractQuery query,PermissionsUtility perms, long organizationId,DateRange range)
 	    {
 			perms.ViewOrganization(organizationId);
-			return query.Where<CompanyValueModel>(x => x.DeleteTime == null && x.OrganizationId == organizationId)
+			return query.Where<CompanyValueModel>(x => x.OrganizationId == organizationId).FilterRange(range)
 				.ToList();
 	    }
 
-		public List<CompanyValueModel> GetCompanyValues(UserOrganizationModel caller, long organizationId)
+		public List<CompanyValueModel> GetCompanyValues(UserOrganizationModel caller, long organizationId,DateRange range=null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetCompanyValues(s.ToQueryProvider(true), perms, organizationId);
+					return GetCompanyValues(s.ToQueryProvider(true), perms, organizationId, range);
 				}
 			}
 	    }
@@ -590,5 +636,50 @@ namespace RadialReview.Accessors
 				}
 			}
 	    }
-    }
+
+		public static IEnumerable<Askable> AskablesAboutOrganization(AbstractQuery query,PermissionsUtility perms, long orgId,DateRange range)
+		{
+			perms.ViewOrganization(orgId);
+			return query.Where<AboutCompanyAskable>(x => x.DeleteTime == null && x.OrganizationId == orgId)
+				.FilterRange(range)
+				.ToList();
+		}
+
+		public static List<AboutCompanyAskable> GetQuestionsAboutCompany(UserOrganizationModel caller, long orgId, DateRange range)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var perm = PermissionsUtility.Create(s, caller);
+					var q = s.ToQueryProvider(false);
+					return AskablesAboutOrganization(q,perm,orgId, range).Cast<AboutCompanyAskable>().ToList();
+				}
+			}
+		}
+
+		public static void EditQuestionsAboutCompany(UserOrganizationModel caller, List<AboutCompanyAskable> questions)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var perm = PermissionsUtility.Create(s, caller);
+					questions.Select(x => x.OrganizationId)
+						.Distinct()
+						.ForEach(x=>
+							perm.EditOrganizationQuestions(x)
+						);
+
+					var cat =  ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.COMPANY_QUESTION);
+					foreach (var q in questions){
+						q.Organization = s.Load<OrganizationModel>(q.OrganizationId);
+						q.Category = cat;
+						s.SaveOrUpdate(q);
+					}
+					
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+	}
 }

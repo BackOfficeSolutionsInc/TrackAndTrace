@@ -1303,7 +1303,7 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr :not(.tab
 }
 
 .tab-pane > .panel {
-	border-left: 1px solid #DDD;
+	/*border-left: 1px solid #DDD;
 	border-bottom: 1px solid #DDD;
 	border-right: 1px solid #DDD;
 	-ms-border-top-left-radius: 0px;
@@ -1311,8 +1311,8 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr :not(.tab
 	border-top-left-radius: 0px;
 	-ms-border-top-right-radius: 0px;
 	-webkit-border-top-right-radius: 0px;
-	border-top-right-radius: 0px;
-	padding: 10px 20px 0px;
+	border-top-right-radius: 0px;*/
+	/*padding: 10px 20px 0px;*/
 }
 
 .scorecard .row {
@@ -1547,4 +1547,10 @@ select.disable{
 .template-link {
 	color: #777;
 	padding: 0 3px ;
+}
+
+.fontastic-icon-checklist:before {
+  /*line-height: 0 !important;
+  top: 6px !important;*/
+  font-size: 19px;
 }

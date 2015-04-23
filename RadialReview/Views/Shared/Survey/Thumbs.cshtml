@@ -1,0 +1,41 @@
+﻿@using RadialReview.Models.Enums
+@model List<RadialReview.Models.ThumbsAnswer>
+@{
+	var ordered = Model.Where(x => x.Complete).OrderBy(x => x.ByUser.GetNameExtended());
+	var guid = "thumbs_" + Guid.NewGuid().ToString().Replace("-", "");
+	var up = @Model.Count(x => x.Thumbs == ThumbsType.Up);
+	var down = @Model.Count(x => x.Thumbs == ThumbsType.Down);
+	var i = 0;
+}
+<div class="row">
+	<div class="col-md-8 alignCenter">
+		<div id="@guid"></div>
+	</div>
+	<div class="col-md-4">
+		<div style="max-height: 360px; overflow-y: auto">
+			<table style="width:90%;">
+				<tr><td></td><td></td><td style="width: 1px;"></td></tr>
+				@foreach (var a in ordered){
+					i++;
+					<tr>
+						<td>@(i).</td>
+						<td>@a.ByUser.GetName()</td>
+						<td class="alignRight">@a.Thumbs.GetIcon()</td>
+					</tr>
+				}
+			</table>
+		</div>
+	</div>
+</div>
+
+<script>
+	var c = new Charts.Pie("#@guid", new Charts.Dimension(500, 500));
+	var data = [];
+	@if (up > 0){
+		@:data.push({x: 1,y: @up,group: "Yes",color:"#468847"});
+	}
+	@if (down > 0){
+		@:data.push({x: 2,y: @down,group: "No",color:"#B94A48"});
+	}
+	c.Initialize(data);
+</script>  

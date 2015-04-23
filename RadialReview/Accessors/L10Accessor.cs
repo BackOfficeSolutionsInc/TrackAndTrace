@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
 using ImageResizer.Configuration.Issues;
 using Microsoft.AspNet.SignalR;
 using NHibernate.Linq;
 using NHibernate.Transform;
+using RadialReview.Accessors.TodoIntegrations;
 using RadialReview.Exceptions;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
+using RadialReview.Properties;
 using RadialReview.Utilities;
 using NHibernate;
 using ListExtensions = WebGrease.Css.Extensions.ListExtensions;
@@ -24,7 +30,7 @@ using RadialReview.Models.Enums;
 
 namespace RadialReview.Accessors
 {
-	public class L10Accessor
+	public class L10Accessor : BaseAccessor
 	{
 		#region Load Members
 		public static void _LoadMeetingLogs(ISession s, params L10Meeting[] meetings)
@@ -526,9 +532,12 @@ namespace RadialReview.Accessors
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction())
-				{
-					PermissionsUtility.Create(s, caller).EditL10Meeting(caller.Organization.Id, l10Recurrence.Id);
+				using (var tx = s.BeginTransaction()){
+					var perm = PermissionsUtility.Create(s, caller);
+					if (l10Recurrence.Id == 0)
+						perm.CreateL10Recurrence(caller.Organization.Id);
+					else
+						perm.EditL10Recurrence(l10Recurrence.Id);
 
 					//s.UpdateLists(l10Recurrence,DateTime.UtcNow,x=>x.DefaultAttendees,x=>x.DefaultMeasurables);
 					/*if (l10Recurrence.Id != 0){
@@ -1020,7 +1029,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public static void ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, int?>> ratingValues)
+		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, int?>> ratingValues)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -1071,7 +1080,41 @@ namespace RadialReview.Accessors
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).concludeMeeting();
-					
+
+					//send emails
+					try{
+						var todoList = s.QueryOver<TodoModel>().Where(x =>
+							x.DeleteTime == null &&
+							x.ForRecurrenceId == recurrenceId &&
+							x.CompleteTime == null
+							).List().ToList();
+						var unsent = new List<MailModel>();
+
+						foreach (var personTodos in todoList.GroupBy(x => x.AccountableUser.GetEmail())){
+							var user = personTodos.First().AccountableUser;
+							var email = user.GetEmail();
+
+							var table = new StringBuilder();
+							table.Append(@"<table width=""100%"">");
+							table.Append(@"<tr><th colspan=""2"" align=""left"">To-do</th><th align=""right"">Due Date</th></tr>");
+							var i = 1;
+							foreach (var todo in personTodos.OrderBy(x => x.DueDate.Date).ThenBy(x => x.Message)){
+								table.Append(@"<tr><td width=""1px"">").Append(i).Append(@". </td><td align=""left"">").Append(todo.Message).Append(@"</td><td  align=""right"">").Append(todo.DueDate.ToShortDateString()).Append("</td></tr>");
+								i++;
+							}
+							table.Append("</table>");
+
+							var mail = MailModel.To(email)
+								.Subject(EmailStrings.MeetingSummary_Subject, recurrence.Name)
+								.Body(EmailStrings.MeetingSummary_Body, user.GetName(), table.ToString(), ProductStrings.ProductName);
+							unsent.Add(mail);
+						}
+
+						await Emailer.SendEmails(unsent);
+					}catch(Exception e){
+						log.Error("Emailer issue:"+recurrence.Id,e);
+					}
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -1280,8 +1323,19 @@ namespace RadialReview.Accessors
 					var p = PermissionsUtility.Create(s,caller);
 					forUsers.Distinct().ForEach(x=>p.ManagesUserOrganizationOrSelf(x));
 
-					s.QueryOver<TodoModel>().Where(x=>x.)
+					//s.QueryOver<TodoModel>().Where(x=>x.)
+					throw new Exception("todo");
 
+				}
+			}
+		}
+
+		public static List<AbstractTodoCreds> GetExternalLinksForRecurrence(UserOrganizationModel caller, long recurrenceId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					return ExternalTodoAccessor.GetExternalLinksForModel(s, PermissionsUtility.Create(s, caller), ForModel.Create<L10Recurrence>(recurrenceId));
 				}
 			}
 		}

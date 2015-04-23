@@ -14,9 +14,12 @@ namespace RadialReview.Utilities.Query
 
         T SingleOrDefault<T>(Expression<Func<T, bool>> pred) where T : class;
 
-        T Get<T>(long id) where T : ILongIdentifiable;
-        T Get<T>(String id) where T : IStringIdentifiable;
-        T Get<T>(Guid id) where T : IGuidIdentifiable;
+		T Get<T>(long id) where T : ILongIdentifiable;
+		T Get<T>(String id) where T : IStringIdentifiable;
+		T Get<T>(Guid id) where T : IGuidIdentifiable;
+		T Load<T>(long id) where T : ILongIdentifiable;
+		T Load<T>(String id) where T : IStringIdentifiable;
+		T Load<T>(Guid id) where T : IGuidIdentifiable;
         ITransaction BeginTransaction();
     }
 
@@ -32,7 +35,10 @@ namespace RadialReview.Utilities.Query
         public abstract T Get<T>(long id) where T : ILongIdentifiable;
         public abstract T Get<T>(String id) where T : IStringIdentifiable;
         public abstract T Get<T>(Guid id) where T : IGuidIdentifiable;
-        public abstract ITransaction BeginTransaction();
+	    public abstract T Load<T>(long id) where T : ILongIdentifiable;
+	    public abstract T Load<T>(string id) where T : IStringIdentifiable;
+	    public abstract T Load<T>(Guid id) where T : IGuidIdentifiable;
+	    public abstract ITransaction BeginTransaction();
 
     }
 }

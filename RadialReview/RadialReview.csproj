@@ -15,7 +15,7 @@
     <RootNamespace>RadialReview</RootNamespace>
     <AssemblyName>RadialReview</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <MvcBuildViews>false</MvcBuildViews>
+    <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -45,6 +45,9 @@
     <Reference Include="AWSSDK, Version=2.0.3.0, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AWSSDK.2.0.3.0\lib\net45\AWSSDK.dll</HintPath>
+    </Reference>
+    <Reference Include="BCXAPI">
+      <HintPath>..\packages\BCXAPI.1.0.4554.21216\lib\net40\BCXAPI.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging">
       <HintPath>..\packages\Common.Logging.2.1.1\lib\net40\Common.Logging.dll</HintPath>
@@ -186,6 +189,9 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="TrelloNet">
+      <HintPath>..\packages\TrelloNet.0.6.2\lib\net40-Client\TrelloNet.dll</HintPath>
+    </Reference>
     <Reference Include="TypeLite">
       <HintPath>..\packages\TypeLite.1.1.0.0\lib\net4\TypeLite.dll</HintPath>
     </Reference>
@@ -282,6 +288,9 @@
     <Compile Include="Accessors\TaskAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
     <Compile Include="Accessors\TodoAccessor.cs" />
+    <Compile Include="Accessors\TodoIntegrations\BaseCampAccessor.cs" />
+    <Compile Include="Accessors\TodoIntegrations\ExternalTodoAccessor.cs" />
+    <Compile Include="Accessors\TodoIntegrations\TrelloAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
     <Compile Include="Accessors\UserTemplateAccessor.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -290,6 +299,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountabilityController.cs" />
+    <Compile Include="Controllers\CallbackController.cs" />
     <Compile Include="Controllers\CompanyValuesController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\FaqController.cs" />
@@ -301,6 +311,7 @@
     <Compile Include="Controllers\L10DetailsController.cs" />
     <Compile Include="Controllers\L10SubPageController.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
+    <Compile Include="Controllers\OrganizationQuestionController.cs" />
     <Compile Include="Controllers\PeriodController.cs" />
     <Compile Include="Controllers\PermissionsController.cs" />
     <Compile Include="Controllers\RocksController.cs" />
@@ -361,6 +372,7 @@
     <Compile Include="Hubs\MeetingHub.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Application\MailModel.cs" />
+    <Compile Include="Models\Askables\AboutCompanyAskable.cs" />
     <Compile Include="Models\Askables\RockModel.cs" />
     <Compile Include="Models\Askables\CompanyValueModel.cs" />
     <Compile Include="Models\Attach\AttachModel.cs" />
@@ -375,7 +387,9 @@
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\AttachType.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
+    <Compile Include="Models\Enums\DateRangeType.cs" />
     <Compile Include="Models\Enums\Env.cs" />
+    <Compile Include="Models\Enums\ExternalTodoType.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Enums\LessGreater.cs" />
     <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
@@ -389,6 +403,7 @@
     <Compile Include="Models\Enums\AboutType.cs" />
     <Compile Include="Models\Interfaces\ICompletionModel.cs" />
     <Compile Include="Models\Interfaces\IGuidIdentifiable.cs" />
+    <Compile Include="Models\Interfaces\IHistorical.cs" />
     <Compile Include="Models\Interfaces\IIssue.cs" />
     <Compile Include="Models\Interfaces\IOneToMany.cs" />
     <Compile Include="Models\Interfaces\IPagination.cs" />
@@ -403,6 +418,7 @@
     <Compile Include="Models\Issues\ScoreCardIssueVM.cs" />
     <Compile Include="Models\L10\L10Note.cs" />
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
+    <Compile Include="Models\Todo\ExternalTodoCreds.cs" />
     <Compile Include="Models\Todo\RockTodoVM.cs" />
     <Compile Include="Models\Todo\ScoreCardTodoVM.cs" />
     <Compile Include="Models\L10\FocusType.cs" />
@@ -595,6 +611,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Models\Enums\AccessLevel.cs" />
     <Compile Include="Utilities\AwsUtil.cs" />
+    <Compile Include="Utilities\DataTypes\DateRange.cs" />
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
     <Compile Include="Utilities\Config.cs" />
     <Compile Include="Utilities\DbUtil.cs" />
@@ -660,6 +677,8 @@
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\TimingUtility.cs" />
     <Compile Include="Views\Log\LogModel.cs" />
+    <Content Include="Content\Bootstrap-tabs.css" />
+    <Content Include="Content\bootstrap.vertical-tabs.css" />
     <Content Include="Content\components\fivestate.css" />
     <Content Include="Content\L10\L10Notes.css" />
     <Content Include="Content\ReportBuilder\ClientDetails.css" />
@@ -969,6 +988,10 @@
     <Content Include="Views\Permissions\Edit.cshtml" />
     <Content Include="Views\Permissions\Modal.cshtml" />
     <Content Include="Views\L10\Details.cshtml" />
+    <Content Include="Views\OrganizationQuestion\_CompanyQuestionRow.cshtml" />
+    <Content Include="Views\OrganizationQuestion\Modal.cshtml" />
+    <Content Include="Views\L10\External.cshtml" />
+    <Content Include="Views\Callback\PickList.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1208,6 +1231,13 @@
     <Content Include="Views\Todo\RockTodoModal.cshtml" />
     <Content Include="Views\Todo\CreateTodoFromIssue.cshtml" />
     <Content Include="Views\Todo\Previous.cshtml" />
+    <Content Include="Views\Shared\_ResponsibilityGroup.cshtml" />
+    <Content Include="Views\Shared\_Organization.cshtml" />
+    <Content Include="Views\Shared\_Survey.cshtml" />
+    <Content Include="Views\Shared\Survey\Slider.cshtml" />
+    <Content Include="Views\Shared\Survey\Thumbs.cshtml" />
+    <Content Include="Views\Shared\Survey\Feedback.cshtml" />
+    <Content Include="Views\Todo\LinkToExternal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

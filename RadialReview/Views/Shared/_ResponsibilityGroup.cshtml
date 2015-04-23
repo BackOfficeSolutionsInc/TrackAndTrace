@@ -1,0 +1,11 @@
+﻿@using System.IdentityModel.Metadata
+@using RadialReview.Models
+@model RadialReview.Models.Askables.ResponsibilityGroupModel
+		   
+@if (Model is UserOrganizationModel){
+	@Html.Partial("_User", (UserOrganizationModel)Model)
+}
+else if (Model is OrganizationModel)
+{
+	@Html.Partial("_Organization", (OrganizationModel)Model)
+}

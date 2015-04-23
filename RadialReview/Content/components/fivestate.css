@@ -2,9 +2,9 @@
 	height: 80px;
 	width: 80px;
 	position: relative;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
+	display: inline-block;
+	/*align-items: center;
+	justify-content: center;*/
 	font-weight: bold;
 	color: white;
 	-moz-user-select: none;
@@ -54,6 +54,8 @@
 	position: relative;
 	z-index: 3;
 	pointer-events: none;
+	text-align: center;
+	line-height: 80px;
 }
 
 .fivestate input[value='True'] ~ .fill,.fivestate input[value='Always'] ~ .fill {

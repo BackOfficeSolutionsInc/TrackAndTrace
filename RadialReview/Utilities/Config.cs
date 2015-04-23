@@ -12,8 +12,8 @@ namespace RadialReview.Utilities
 		public static string BaseUrl()
 		{
 			switch(GetEnv()){
-				case Env.local_sqlite:return "http://localhost:2201/";
-				case Env.local_mysql:return "http://localhost:2201/";
+				case Env.local_sqlite:return "http://localhost:2200/";
+				case Env.local_mysql:return "http://localhost:2200/";
 				case Env.production:return "http://review.radialreview.com/";
 				default:throw new ArgumentOutOfRangeException();
 			}
@@ -61,6 +61,52 @@ namespace RadialReview.Utilities
 				case Env.local_mysql:	return true;
 				case Env.production:	return true;
 				default: throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		public static string GetTrelloKey()
+		{
+			return GetAppSetting("TrelloKey");
+		}
+
+		public static class Basecamp
+		{
+			/*public static string GetUrl()
+			{
+				return GetAppSetting("BasecampUrl");
+			}*/
+
+			public static string GetUserAgent()
+			{
+				switch (GetEnv()){
+					case Env.local_mysql:	goto case Env.local_sqlite;
+					case Env.local_sqlite:	return GetAppSetting("BasecampTestApp");
+					case Env.production:	return GetAppSetting("BasecampApp");
+					default:				throw new ArgumentOutOfRangeException();
+				}
+			}
+
+			public static BCXAPI.Service GetService()
+			{
+				string key, secret, app;
+				var redirect = BaseUrl() + "Callback/Basecamp";
+				switch(GetEnv()){
+					case Env.local_mysql:
+						goto case Env.local_sqlite;
+					case Env.local_sqlite:{
+						key = GetAppSetting("BasecampTestKey");
+						secret = GetAppSetting("BasecampTestSecret");
+						break;
+					}
+					case Env.production:{
+						key = GetAppSetting("BasecampKey");
+						secret = GetAppSetting("BasecampSecret");
+						break;
+					}
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+				return new BCXAPI.Service(key, secret, redirect, GetUserAgent());
 			}
 		}
 	}

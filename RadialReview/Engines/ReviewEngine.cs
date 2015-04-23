@@ -2,6 +2,7 @@
 using RadialReview.Accessors;
 using RadialReview.Models;
 using RadialReview.Models.Application;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Reviews;
 using RadialReview.Utilities;
@@ -36,15 +37,15 @@ namespace RadialReview.Engines
             var reviewWho = _ReviewAccessor.GetReviewersForUsers(caller, parameters, teamId);
 			var teamMembers = _TeamAccessor.GetTeamMembers(caller, teamId, false);
             var team = _TeamAccessor.GetTeam(caller, teamId);
-            var reviewWhoRefined = reviewWho.SelectMany(x => x.ToList().SelectMany(y => y.Value.Select(z => new { First = x.User, Second = y.Key, Relationship = z }))).ToList();
+            var reviewWhoRefined = reviewWho.SelectMany(x => x.ToList().SelectMany(y => y.Value.Select(z => new { First = x.Reviewer, Second = y.Key, Relationship = z }))).ToList();
 
             var selectors = new List<CustomizeSelector>();
 
             //Managers
             var managers = new CustomizeSelector()
             {
-                Name = "Managers",
-                UniqueId = "Managers",
+                Name = "Supervisors",
+				UniqueId = "Supervisors",
                 Pairs = reviewWhoRefined.Where(x => x.Relationship == AboutType.Manager).Select(x => Tuple.Create(x.First.Id, x.Second.Id)).ToList()
             };
             //Peers
@@ -64,8 +65,8 @@ namespace RadialReview.Engines
             //Subordinates
             var subordinates = new CustomizeSelector()
             {
-                Name = "Subordinates",
-                UniqueId = "Subordinates",
+                Name = "Direct Reports",
+				UniqueId = "DirectReports",
                 Pairs = reviewWhoRefined.Where(x => x.Relationship == AboutType.Subordinate).Select(x => Tuple.Create(x.First.Id, x.Second.Id)).ToList()
             };
             //All
@@ -82,6 +83,13 @@ namespace RadialReview.Engines
 				UniqueId = "Self",
 				Pairs = reviewWhoRefined.Distinct(x => Tuple.Create(x.First, x.Second)).Where(x => x.First == x.Second).Select(x => Tuple.Create(x.First.Id, x.Second.Id)).ToList()
 			};
+			//Self
+			var company = new CustomizeSelector()
+			{
+				Name = "Organization",
+				UniqueId = "Organization",
+				Pairs = reviewWhoRefined.Where(x => x.Relationship == AboutType.Organization).Select(x => Tuple.Create(x.First.Id, x.Second.Id)).ToList()
+			};
 
 	    
 
@@ -91,10 +99,10 @@ namespace RadialReview.Engines
             {
                 Name = "Default",
                 UniqueId = DEFAULT, //Don't change
-                Pairs = managers.Pairs.Union(subordinates.Pairs).Union(peers.Pairs).Union(teams.Pairs).Union(self.Pairs).ToList()
+				Pairs = managers.Pairs.Union(subordinates.Pairs).Union(peers.Pairs).Union(teams.Pairs).Union(self.Pairs).Union(company.Pairs).ToList()
             };
 
-            var combine=new List<CustomizeSelector>() {  Default,all, self, managers, subordinates, peers, teams };
+            var combine=new List<CustomizeSelector>() {  Default,all, self, managers, subordinates, peers, teams,company };
 
 	        if (includeCopyFrom){
 		        string reviewName = null;
@@ -135,7 +143,7 @@ namespace RadialReview.Engines
             var model = new CustomizeModel()
             {
                 Subordinates = teamMembers.Select(x => x.User).ToList(),
-                AllUsers = new List<UserOrganizationModel>(),
+                AllReviewees = new List<ResponsibilityGroupModel>(),
                 Selectors = combine,
                 Selected=new List<Tuple<long,long>>(),
             };

@@ -29,14 +29,14 @@
 			</ol>
 		}
 		else{
-			<span class="gray">No company values. Click edit to add some.</span>
+			<span class="gray">No Company Values. Click edit to add some.</span>
 		}
 	</div>
 </div>
 <div class="panel panel-default">
-	<div class="headerButton btn-link" onclick="@Html.ShowModal("Edit Company Rocks", "/Rocks/CompanyRockModal/" + Model.Id, "/Rocks/CompanyRockModal", onComplete: "location.reload()")">Edit</div>
+	<div class="headerButton btn-link" onclick="@Html.ShowModal("Edit Company " + @Html.Organization().Settings.RockName, "/Rocks/CompanyRockModal/" + Model.Id, "/Rocks/CompanyRockModal", onComplete: "location.reload()")">Edit</div>
 	<div class="panel-heading">
-		<h3 class="panel-title">Company Rocks:</h3>
+		<h3 class="panel-title">Company @Html.Organization().Settings.RockName:</h3>
 	</div>
 	<div class="panel-body numbers">
 		@if (Model.CompanyRocks.Any())
@@ -54,7 +54,39 @@
 				</ul>
 			}
 		}else{
-			<span class="gray">No company rocks. Click edit to add some.</span>
+			<span class="gray">No Company @Html.Organization().Settings.RockName. Click edit to add some.</span>
+		}
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="headerButton btn-link" onclick="@Html.ShowModal("Edit Organization Questions", "/OrganizationQuestion/Modal/" + Model.Id, "/OrganizationQuestion/Modal", onComplete: "location.reload()")">Edit</div>
+	<div class="panel-heading">
+		<h3 class="panel-title">Company Questions:</h3>
+	</div>
+	<div class="panel-body numbers">
+		@if (Model.CompanyQuestions.Any())
+		{
+			
+			<table style="width:100%">
+				<tr>
+					<th></th>
+					<th>Question</th>
+					<th>Question Type</th>
+				</tr>
+
+				@{ var i = 1;}
+				@foreach (var r in Model.CompanyQuestions)
+				{
+					<tr>
+						<td style="width:20px">@(i).</td>
+						<td>@r.Question</td>
+						<td class="bold1 alignCenter" style="width:96px">@r.QuestionType</td>
+					</tr>
+					i++;
+				}
+			</table>
+		}else{
+			<span class="gray">No Company Questions. Click edit to add some.</span>
 		}
 	</div>
 </div>
@@ -75,6 +107,12 @@
 					<label class="col-sm-3 control-label">Organization name:</label>
 					<div class="col-sm-4">
 						@Html.TextBoxFor(x => x.OrganizationName, new { @class = "form-control", placeholder = "Organization name" })
+					</div>
+				</div>
+				<div class="row ">
+					<label class="col-sm-3 control-label">Quarterly Goals are called:</label>
+					<div class="col-sm-4">
+						@Html.TextBoxFor(x => x.RockName, new { @class = "form-control", placeholder = "Quarterly goal name" })
 					</div>
 				</div>
 

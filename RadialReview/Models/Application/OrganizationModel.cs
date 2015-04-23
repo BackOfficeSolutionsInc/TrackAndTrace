@@ -48,7 +48,10 @@ namespace RadialReview.Models
 
 				EnableL10 = false;
 				EnableReview = false;
+
+				RockName = "Rocks";
 			}
+			public virtual string RockName { get; set; }
 
 			public class OrgSettingsVM : ComponentMap<OrganizationSettings>
 			{
@@ -72,8 +75,11 @@ namespace RadialReview.Models
 
 					Map(x => x.EnableL10);
 					Map(x => x.EnableReview);
+
+					Map(x => x.RockName);
 				}
 			}
+
 
 
 		}
@@ -110,6 +116,7 @@ namespace RadialReview.Models
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual DateTime CreationTime { get; set; }
 		public virtual bool SendEmailImmediately { get; set; }
+		public virtual String ImageUrl { get; set; }
 
 		public virtual IList<ReviewsModel> Reviews { get; set; }
 
@@ -166,6 +173,10 @@ namespace RadialReview.Models
 		{
 			return Name.Translate();
 		}
+		public override string GetImageUrl()
+		{
+			return ImageUrl??base.GetImageUrl();
+		}
 
 		public override string GetGroupType()
 		{
@@ -179,6 +190,7 @@ namespace RadialReview.Models
 			{
 				Map(x => x.ManagersCanEdit);
 				Map(x => x.DeleteTime);
+				Map(x => x.ImageUrl);
 				Map(x => x.CreationTime);
 				Map(x => x.StrictHierarchy);
 				Map(x => x.ManagersCanEditPositions);

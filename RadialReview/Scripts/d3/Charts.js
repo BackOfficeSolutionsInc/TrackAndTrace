@@ -81,6 +81,58 @@ var Charts;
         return Base;
     })();
     Charts.Base = Base;
+    var Pie = (function (_super) {
+        __extends(Pie, _super);
+        function Pie(selector, dimension, margin) {
+            if (dimension === void 0) { dimension = new Dimension(960, 500); }
+            if (margin === void 0) { margin = new Margin(); }
+            _super.call(this, selector, dimension, margin);
+            margin.bottom = Math.max(110, margin.bottom);
+            margin.left = Math.max(40, margin.left);
+            this.DefaultColors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
+            this.TextColor = "#F4F4F4";
+        }
+        Pie.prototype.Initialize = function (data, yTitle) {
+            //var parseDate = d3.time.format("%d-%b-%y").parse;
+            var _this = this;
+            if (yTitle === void 0) { yTitle = ""; }
+            var values = [];
+            for (var i = 0; i < data.length; i++) {
+                var v = data[i];
+                v.i = i;
+                values.push(data[i]);
+            }
+            //var color = d3.scale.ordinal().range(colors);
+            var radius = Math.min(this.width(), this.height()) / 2;
+            var arc = d3.svg.arc().outerRadius(radius - 10).innerRadius(0);
+            var pie = d3.layout.pie().sort(null).value(function (d) { return d.y; });
+            var svg = d3.select(this._selector).append("svg").attr("width", this.width()).attr("height", this.height()).append("g").attr("transform", "translate(" + this.width() / 2 + "," + this.height() / 2 + ")");
+            var g = svg.selectAll(".arc").data(pie(values)).enter().append("g").attr("class", "arc");
+            g.append("path").attr("d", arc).style("fill", function (d) {
+                if (d.data.color)
+                    return d.data.color;
+                return _this.DefaultColors[d.data.i % _this.DefaultColors.length];
+            });
+            g.append("text").attr("transform", function (d) {
+                var shift = [0, 0];
+                if (values.length != 1)
+                    shift = arc.centroid(d);
+                shift[1] -= 10;
+                return "translate(" + shift + ")";
+            }).attr("dy", ".35em").style({ "text-anchor": "middle", "font-size": "1.75em", "fill": this.TextColor }).text(function (d) { return d.data.group; });
+            g.append("text").attr("transform", function (d) {
+                var shift = [0, 0];
+                if (values.length != 1)
+                    shift = arc.centroid(d);
+                shift[1] += 10;
+                return "translate(" + shift + ")";
+            }).attr("dy", ".55em").style({ "text-anchor": "middle", "font-size": "1em", "fill": this.TextColor }).text(function (d) { return d.data.y; });
+            this.SetInitialized();
+            return this;
+        };
+        return Pie;
+    })(Base);
+    Charts.Pie = Pie;
     var Line = (function (_super) {
         __extends(Line, _super);
         function Line(selector, dimension, margin) {
@@ -121,6 +173,7 @@ var Charts;
             this.initialized = false;
             margin.bottom = Math.max(110, margin.bottom);
             margin.top = Math.max(25, margin.top);
+            this.bins = [];
         }
         Histogram.prototype._CreateSvg = function () {
             return d3.select(this._selector).append("svg").classed("charts histogram", true).attr("viewBox", "0 0 " + this._dimension.width + " " + this._dimension.height).attr("width", "100%").attr("height", "100%").append("g").attr("transform", "translate(" + this._margin.left + "," + this._margin.top + ")");
@@ -154,24 +207,38 @@ var Charts;
             min = Math.floor(min / binWidth) * binWidth;
             max = Math.ceil(max / binWidth) * binWidth;
             var count = Math.ceil((max - min) / binWidth);
-            var bins = [];
             var binsHalf = [];
-            var pad = 1;
-            if (count < 8)
-                pad = 4;
-            var low = min - binWidth * pad;
-            var high = max + binWidth * pad;
-            i = low;
+            var constructBins = !this.bins || this.bins.length == 0;
             var even = true;
-            while (i <= high) {
-                bins.push(i);
-                if (even)
-                    binsHalf.push(i);
-                i += binWidth;
-                even = !even;
+            var low = Number.MAX_VALUE;
+            var high = Number.MIN_VALUE;
+            if (constructBins) {
+                this.bins = [];
+                var pad = 1;
+                if (count < 8)
+                    pad = 4;
+                low = min - binWidth * pad;
+                high = max + binWidth * pad;
+                i = low;
+                while (i <= high) {
+                    this.bins.push(i);
+                    if (even)
+                        binsHalf.push(i);
+                    i += binWidth;
+                    even = !even;
+                }
             }
-            var useBins = bins;
-            if (bins.length > 20)
+            else {
+                for (var j in this.bins) {
+                    if (even)
+                        binsHalf.push(this.bins[j]);
+                    even = !even;
+                    low = Math.min(low, this.bins[j]);
+                    high = Math.max(high, this.bins[j]);
+                }
+            }
+            var useBins = this.bins;
+            if (this.bins.length > 20)
                 useBins = binsHalf;
             var svg = this._CreateSvg();
             var maxFreq = 0;
@@ -182,7 +249,7 @@ var Charts;
                         values.push(values2[i].x);
                     }
                 }
-                var data = d3.layout.histogram().bins(bins)(values);
+                var data = d3.layout.histogram().bins(this.bins)(values);
                 maxFreq = Math.max(maxFreq, d3.max(data, function (d) { return d.y; }));
             }
             var first = true;
@@ -193,7 +260,7 @@ var Charts;
                         values.push(values2[i].x);
                     }
                 }
-                var data = d3.layout.histogram().bins(bins)(values);
+                var data = d3.layout.histogram().bins(this.bins)(values);
                 var x = d3.scale.linear().domain([low, high]).range([0, this.width()]);
                 var y = d3.scale.linear().domain([0, maxFreq]).range([this.height(), 0]);
                 var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(0).tickFormat(function (d) { return _this.LabelFunction(d); });

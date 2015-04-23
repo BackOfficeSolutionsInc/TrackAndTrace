@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Controllers
 {
@@ -157,6 +158,7 @@ namespace RadialReview.Controllers
 				.Select(x => x.CompanyValue)
 				.ToList();
 			var companyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+			var companyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 
 			var model = new OrganizationViewModel()
 			{
@@ -170,7 +172,9 @@ namespace RadialReview.Controllers
 				CompanyRocks = companyRocks,
 				SendEmailImmediately = user.Organization.SendEmailImmediately,
 				ManagersCanEditSelf = user.Organization.Settings.ManagersCanEditSelf,
-				EmployeesCanEditSelf = user.Organization.Settings.EmployeesCanEditSelf
+				EmployeesCanEditSelf = user.Organization.Settings.EmployeesCanEditSelf,
+				CompanyQuestions = companyQuestions,
+				RockName = user.Organization.Settings.RockName
 			};
 
 			return View(model);
@@ -190,7 +194,8 @@ namespace RadialReview.Controllers
 				model.SendEmailImmediately,
 				model.ManagersCanRemoveUsers,
 				model.ManagersCanEditSelf,
-				model.EmployeesCanEditSelf);
+				model.EmployeesCanEditSelf,
+				model.RockName);
 			ViewBag.Success = "Successfully Saved.";
 
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
@@ -198,6 +203,8 @@ namespace RadialReview.Controllers
 				.ToList();
 
 			model.CompanyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+
+			model.CompanyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 
 			return View(model);
 		}

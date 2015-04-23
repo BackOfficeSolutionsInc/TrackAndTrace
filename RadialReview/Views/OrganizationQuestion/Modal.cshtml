@@ -1,0 +1,45 @@
+﻿@model RadialReview.Controllers.OrganizationQuestionController.OrgQuestionVM
+
+
+<div class="form">
+	@Html.HiddenFor(x => x.OrganizationId)
+	<div class="">
+		<div class="row">
+			<div class="col-sm-2">
+				<label>Questions:</label>
+			</div>
+			<div class="col-sm-8" id="allRows">
+				@foreach (var item in Model.Questions) {
+					Html.RenderPartial("_CompanyQuestionRow", item);
+				}
+			</div>
+			<div class="col-sm-2">
+				<div class="btn btn-default clickable" onclick="addRow();">Add</div>
+			</div>
+		</div>
+	</div> 
+	<label>Update Outstanding Reviews: </label> @Html.CheckBoxFor(x=>x.UpdateOutstandingReviews)
+
+</div>
+<script>
+	function addRow() {
+		$.ajax({
+			url: "/OrganizationQuestion/BlankEditorRow",
+			cache: false,
+			success: function(html) {
+				$("#allRows").append(html);
+			}
+		});
+		return false;
+	}
+
+	$(function () {
+		$(document).on("click","span.deleteRow", function () {
+			$(this).parents("div.roleRow:first").hide();
+			$(this).parents("div.roleRow:first").find("[name*='DeleteTime']").val("@Model.CurrentTime.ToString()");
+			return false;
+		});
+	});
+
+
+</script>

@@ -118,7 +118,7 @@ namespace RadialReview.Controllers
 					ForUser = forUser,
 					OrderedPeople = pages.Select(x =>
 						Tuple.Create(
-							x.First().AboutUser.GetNameAndTitle(),
+							x.First().AboutUser.GetNameExtended(),
 							x.All(y => !y.Required || y.Complete),
 							x.Count(y => y.Required && y.Complete)/(decimal)x.Count(y=>y.Required)*100
 						)).ToList()
@@ -448,7 +448,7 @@ namespace RadialReview.Controllers
 			public bool Editable { get; set; }
 			public DateTime StartTime { get; set; }
 			public List<AnswerVM> Answers { get; set; }
-			public UserOrganizationModel ForUser { get; set; }
+			public ResponsibilityGroupModel ForUser { get; set; }
 			public List<Tuple<String, bool,decimal>> OrderedPeople { get; set; }
 			public bool FirstPageHint { get; set; }
 			public bool Anonymous { get; set; }
@@ -1044,7 +1044,7 @@ namespace RadialReview.Controllers
 
 			var reviewContainer = _ReviewAccessor.GetReviewContainer(GetUser(), review.ForReviewsId, false, false, false);
 
-			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), review.ForUserId, review.PeriodId);
+			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), review.ForUserId, review.PeriodId,new DateRange(reviewContainer.DateCreated,DateTime.UtcNow));
 			var activeQuestions = questions.Where(x => answers.Any(y => y.Askable.Id == x.Id)).ToList();
 
 			var chartTypes = new List<ReviewDetailsViewModel.ChartType>();

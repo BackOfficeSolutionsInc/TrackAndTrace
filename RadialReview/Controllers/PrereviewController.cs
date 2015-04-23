@@ -2,6 +2,7 @@
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Reviews;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace RadialReview.Controllers
 
 			var subordinates = GetUser().AsList().Union(_UserAccessor.GetDirectSubordinates(GetUser(), GetUser().Id)).ToList();
 			customization.Subordinates = subordinates;
-			customization.AllUsers = allUsers;
+			customization.AllReviewees = allUsers.Cast<ResponsibilityGroupModel>().ToList();
 			ViewBag.PrereviewId = prereview.Id;
 
 			var selectedPrereivew = _PrereviewAccessor.GetCustomMatches(GetUser(), prereviewId);
@@ -90,7 +91,8 @@ namespace RadialReview.Controllers
 			var teamId = review.ForReviewContainer.ForTeamId;
 			var customization = _ReviewEngine.GetCustomizeModel(GetUser(), teamId,false);
 
-			customization.AllUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+			customization.AllReviewees = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false)
+				.Cast<ResponsibilityGroupModel>().ToList(); ;
 		    customization.Subordinates = review.ForUser.AsList();
 	
 			customization.Selected= review.Answers.GroupBy(x => x.AboutUserId).Select(x => Tuple.Create(review.ForUserId,x.Key)).ToList();

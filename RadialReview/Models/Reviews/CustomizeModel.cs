@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Controllers;
+using RadialReview.Models.Askables;
 
 namespace RadialReview.Models.Reviews
 {
@@ -18,7 +19,7 @@ namespace RadialReview.Models.Reviews
     {
 
         public List<UserOrganizationModel> Subordinates { get; set; }
-        public List<UserOrganizationModel> AllUsers { get; set; }
+        public List<ResponsibilityGroupModel> AllReviewees { get; set; }
         public List<CustomizeSelector> Selectors { get; set; }
         public List<Tuple<long, long>> Selected { get; set; }
 

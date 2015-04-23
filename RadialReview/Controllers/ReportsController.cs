@@ -45,7 +45,12 @@ namespace RadialReview.Controllers
 			reviewContainer.Reviews = acceptedReviews;
 			
 			var model = new ReviewsViewModel(reviewContainer);
-		    return model;
+
+		    var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.ForOrganizationId).Or(y => y.EditReviewContainer(reviewContainerId)));
+		    if (viewSurvey){
+			    model.SurveyAnswers = reviewContainer.Reviews.SelectMany(x => x.Answers.Where(y => y.AboutUserId == reviewContainer.ForOrganizationId)).ToList();
+		    }
+			return model;
 	    }
 
 

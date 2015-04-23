@@ -14,6 +14,7 @@ using RadialReview.Models.Prereview;
 using RadialReview.Models.Reviews;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,13 @@ using System.Threading.Tasks;
 namespace RadialReview.Accessors {
 	public partial class ReviewAccessor : BaseAccessor {
 		#region Edit Review
-		public static void AddAskablesToReview(AbstractUpdate s, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewModel reviewModel,bool anonymous, List<AskableAbout> askables) {
+		public static void AddAskablesToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller, 
+			ResponsibilityGroupModel forUser, ReviewModel reviewModel, bool anonymous, List<AskableAbout> askables) 
+		{
 			foreach (var q in askables) {
 				switch (q.Askable.GetQuestionType()) {
 					case QuestionType.RelativeComparison:
-						GenerateRelativeComparisonAnswers(s, caller, forUser, q, reviewModel, anonymous);
+						GenerateRelativeComparisonAnswers(s, caller, (UserOrganizationModel)forUser, q, reviewModel, anonymous);
 						break;
 					case QuestionType.Slider:
 						GenerateSliderAnswers(s, caller, forUser, q, reviewModel, anonymous);
@@ -180,12 +183,14 @@ namespace RadialReview.Accessors {
 			foreach (var aq in appQuestions)
 				askable.AddUnique(aq, aboutType, aboutUserId);*/
 
-			var askables = ReviewAccessor.GetAskables(caller, perms, s, new[] { aboutUserId }, byUserId, reviewContainer.PeriodId);
+			var range = new DateRange(reviewContainer.DateCreated, DateTime.UtcNow);
+
+			var askables = ReviewAccessor.GetAskables(caller, perms, s, new[] { aboutUserId }, byUserId, reviewContainer.PeriodId,range);
 
 			var forUser = s.Get<UserOrganizationModel>(review.ForUserId);
 			//var review=s.QueryOver<ReviewModel>().Where(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).SingleOrDefault();
 
-			AddAskablesToReview(s.GetUpdateProvider(), perms, caller, forUser, review,reviewContainer.AnonymousByDefault, askables);
+			AddAskablesToReview(s, perms, caller, forUser, review,reviewContainer.AnonymousByDefault, askables);
 		}
 
 		public void RemoveQuestionFromReviewForUser(UserOrganizationModel caller, long reviewContainerId, long userId, long askableId) {
@@ -243,7 +248,7 @@ namespace RadialReview.Accessors {
 							askableUtil.AddUnique(askable, about.Invert(), userId);
 						}
 					}
-					AddAskablesToReview(dataInteration.GetUpdateProvider(), perms, caller, r.Key, existingReview, reviewContainer.AnonymousByDefault, askableUtil.Askables);
+					AddAskablesToReview(dataInteration, perms, caller, r.Key, existingReview, reviewContainer.AnonymousByDefault, askableUtil.Askables);
 				}
 			}
 
@@ -307,17 +312,17 @@ namespace RadialReview.Accessors {
 						var reviewPeers = reviewContainer.ReviewPeers;
 						var organization = reviewContainer.ForOrganization;
 
-						OrganizationTeamModel team = TeamAccessor.GetTeam(s, perms, caller, reviewContainer.ForTeamId);
+						var team = TeamAccessor.GetTeam(s, perms, caller, reviewContainer.ForTeamId);
 
 
-						List<Exception> exceptions = new List<Exception>();
+						var exceptions = new List<Exception>();
 						// int sent = 0;
 						//int errors = 0;
 
 						var beingReviewedUser = s.Get<UserOrganizationModel>(userOrganizationId);
 
 						var orgId = organization.Id;
-
+						
 						var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
 						var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
 						var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).List();
@@ -326,34 +331,40 @@ namespace RadialReview.Accessors {
 						var applicationQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).List();
 						var application = s.QueryOver<ApplicationWideModel>().Where(x => x.Id == ApplicationAccessor.APPLICATION_ID).List();
 						var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).List();
-						var allAskable = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
+						var allRoles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
 						var allRocks = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
 						var allValues = s.QueryOver<CompanyValueModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
 						var allReviewContainers = s.QueryOver<ReviewsModel>().Where(x => x.ForOrganizationId == orgId && x.DeleteTime == null).List();
+						var allRGM = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
+						var allAboutCompany = s.QueryOver<AboutCompanyAskable>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
 
 						var queryProvider = new IEnumerableQuery();
+						queryProvider.AddData(allRGM);
 						queryProvider.AddData(allOrgTeams);
 						queryProvider.AddData(allTeamDurations);
 						queryProvider.AddData(allMembers);
 						queryProvider.AddData(allManagerSubordinates);
 						queryProvider.AddData(allPositions);
-						queryProvider.AddData(allAskable);
+						queryProvider.AddData(allRoles);
 						queryProvider.AddData(allRocks);
 						queryProvider.AddData(allValues);
-						queryProvider.AddData(allReviewContainers);
+						queryProvider.AddData(allAboutCompany);
 						queryProvider.AddData(applicationQuestions);
 						queryProvider.AddData(application);
 						queryProvider.AddData(reviews);
-
-
+						queryProvider.AddData(allReviewContainers);
+						
 						var accessibleUsers = TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perms, reviewContainer.ForTeamId, false)
 														.ToListAlive()
 														.Select(x => x.User).ToListAlive();
 
 						accessibleUsers.Add(beingReviewedUser);
 
+						var now = DateTime.UtcNow;
+						var range=new DateRange(now,now);
+
 						//TODO Populate a query provider structure here..
-						var toEmail = AddUserToReview(caller, true, dueDate,reviewContainer.GetParameters(),new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team, ref exceptions,beingReviewedUser, accessibleUsers);
+						var toEmail = AddUserToReview(caller, true, dueDate,reviewContainer.GetParameters(),new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team, ref exceptions,beingReviewedUser, accessibleUsers,range);
 						unsent.AddRange(toEmail);
 						userBeingReviewed = beingReviewedUser.GetName();
 						tx.Commit();

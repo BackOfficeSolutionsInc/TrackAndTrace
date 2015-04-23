@@ -1,16 +1,16 @@
 ﻿@model RadialReview.Models.ViewModels.ReviewsViewModel
 @{
-	ViewBag.Title = "Reports";
+	ViewBag.Title = "Manage";
 	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.Page = "Stats";
+	ViewBag.Page = "Stats1";
 	ViewBag.ExtraTabs = ExtraTab.Create("Stats", "/Statistics/Review/" + Model.Review.Id);
-	ViewBag.Subheading = "Reports for '" + Model.Review.ReviewName + "'";
+	ViewBag.Subheading = "Manage '" + Model.Review.ReviewName + "'";
 
 }
 
 @section top{
-	<div class="jumbotron">
-		<h1>Reports</h1>
+	<div class="jumbotron noPrint">
+		<h1>Manage</h1>
 	</div>
 }
 
@@ -42,209 +42,210 @@
 
 @using (Html.BeginStyles())
 {
+	
+	<link href="~/Content/print.css" rel="stylesheet" media="print" />
 	<style>
 		.nav-tabs .active a {
 			background-color: #FFF !important;
 		}
+		.nav-tabs.tabs-left a span {
+			float: left;
+		}
 	</style>
 }
 
-<div style="height: 45px;"></div>
-<div role="tabpanel">
-	<ul class="nav nav-tabs" role="tablist">
-		<li role="presentation" class="active"><a href="#Stats" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-stats"></span> Stats</a></li>
-		<li role="presentation" class=""><a href="#Aggregate" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-th-large"></span> Aggregate</a></li>
-		@if (ViewBag.IsManager ?? false && panels.Any())
-		{
-			<li role="presentation" class=""><a href="#Reports" aria-controls="home" role="tab" data-toggle="tab"><span class="icon new-icon-page-multiple"></span> Reports</a></li>
-			<li role="presentation" class=""><a href="#Reminders" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-bell"></span> Reminders</a></li>
-		}
-	</ul>
-	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane in active" id="Stats">
-			<div class="panel panel-body">
+<div class="row">
+	<div class="col-sm-3 noPrint">
+		<ul class="nav nav-tabs tabs-left">
+			@if (ViewBag.IsManager ?? false && panels.Any())
+			{
+				<li role="presentation" class=""><a href="#Reminders" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-bell"></span> Send Reminders</a></li>
+				<li role="presentation" class=""><a href="#Reports" aria-controls="home" role="tab" data-toggle="tab"><span class="icon new-icon-page-multiple"></span> Report Builder</a></li>
+				if (Model.SurveyAnswers.Any())
+				{
+					<li role="presentation" class=""><a href="#Survey" aria-controls="home" role="tab" data-toggle="tab"><span class="icon fontastic-icon-checklist"></span> Survey Results</a></li>
+				}
+			}
+			<li role="presentation" class=""><a href="#Aggregate" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-th-large"></span> Aggregate</a></li>
+			<li role="presentation" class="active"><a href="#Stats" aria-controls="home" role="tab" data-toggle="tab"><span class="icon fontastic-icon-chart-pie"></span> Review Stats</a></li>
+		
+		</ul>
+	</div>
+	<div class="col-sm-9">
+		<div class="tab-content tabs-left">
+			<div role="tabpanel" class="tab-pane in active" id="Stats">
 				@Html.Partial("_ReviewStats", Model.Review.Id)
 			</div>
-		</div>
-		<div role="tabpanel" class="tab-pane in" id="Aggregate">
-			<div class="panel panel-body">
+			<div role="tabpanel" class="tab-pane in" id="Aggregate">
 				@Html.Partial("_ReviewStats2", Model.Review.Id)
 			</div>
-		</div>
-		@if (ViewBag.IsManager ?? false && panels.Any())
-		{
-
-			<div role="tabpanel" class="tab-pane in" id="Reports">
-				<div class="table-responsive">
-					<table id="table_@(panel.Item2)" class="table table-condensed table-hover tablesorter reports">
-						<thead>
-							<tr>
-								<th style="width:1px;"></th>
-								<th>Name</th>
-								<th class="alignCenter" style="width:10px;">Shared</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var review in panel.Item3.OrderByDescending(x =>
-								{
-									double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
-									double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
-									return complete / total;
-
-								//return x.GetCompletion().GetPercentage();
-							}))
-							{
-								@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
-								<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
-									<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
-									<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new { id = review.Id })">@review.ForUser.GetNameAndTitle()</a></td>
-									<td class="alignCenter" style="width: 30px;">
-										<a data-sort="@(review.ClientReview.Visible? "1" : "2")">@review.ClientReview.Visible.GetIcon()</a>
-									</td>
+			@if (ViewBag.IsManager ?? false && panels.Any())
+			{
+				if (Model.SurveyAnswers.Any())
+				{
+					<div role="tabpanel" class="tab-pane in" id="Survey">
+							@Html.Partial("_Survey", Model.SurveyAnswers)
+					</div>
+				}
+				<div role="tabpanel" class="tab-pane in" id="Reports">
+					<div class="table-responsive">
+						<table id="table_@(panel.Item2)" class="table table-condensed table-hover tablesorter reports">
+							<thead>
+								<tr>
+									<th style="width: 1px;"></th>
+									<th>Name</th>
+									<th class="alignCenter" style="width: 10px;">Shared</th>
 								</tr>
-							}
-						</tbody>
+							</thead>
+							<tbody>
+								@foreach (var review in panel.Item3.OrderByDescending(x =>
+											{
+												double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
+												double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
+												return complete / total;
 
-					</table>
-				</div>
-			</div>
-			@*Reminders*@
-	<div role="tabpanel" class="tab-pane in" id="Reminders">
-		<div class="" style="padding: 5px;background-color:white;">
-			<div class="pull-left">
-				<div class="btn btn-default" onclick="sendReminders()">Send Reminder</div>
-			</div>
-			<div class="pull-right">
-				<div class="btn btn-link" onclick="$('.active .userCheck').prop('checked',true)">Select All</div>
-				<div class="btn btn-link" onclick="$('.active .userCheck').removeAttr('checked')">Select None</div>
-				<div class="btn btn-link" onclick="$('.active .userCheck.incomplete').prop('checked', true)">Select Incomplete</div>
-				<div class="btn btn-link" onclick="$('.active .userCheck.unstarted').prop('checked', true)">Select Unstarted</div>
-			</div>
-			<div class="clearfix"></div>
-		</div>
-		<div class="table-responsive">
-			<table id="table_@(panel.Item2)" class="table table-condensed table-hover tablesorter reminder">
-				<thead>
-					<tr>
-						<th style="width:1px;"></th>
-						<th style="width:10px;"></th>
-						<th>Name</th>
-						<th class="alignCenter" style="width:10px;">Reviewed by</th>
-						<th class="alignCenter" style="width:10px;"># Reviewed</th>
-						<th class="alignCenter" style="width:150px;">Completion</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var review in panel.Item3.OrderByDescending(x =>
+												//return x.GetCompletion().GetPercentage();
+											}))
 								{
-									double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
-									double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
-									return complete / total;
-
-									/*return x.GetCompletion().GetPercentage();*/
-								}))
-					{
-						@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
-						<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
-							<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
-							<td style="cursor:pointer" onclick="$(this).find('>input').prop('checked', function (i, v) { return !v;})"><input type="checkbox" class="userCheck clickThrough @(review.GetCompletion().GetPercentage()<1?"incomplete":"") @(review.GetCompletion().GetPercentage()<=0?"unstarted":"")" name="user_@review.ForUserId" data-id="@review.ForUserId" /></td>
-							<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new { id = review.Id })">@review.ForUser.GetNameAndTitle()</a></td>
-							<td class="alignCenter">
-								@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete)) /
-								@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count())
-							</td>
-							<td class="alignCenter">
-								@if (review.ForUser.GetDirectlyManaging())
-								{
-									@:<a style="border-bottom: 1px dotted " href="/Prereview/Update/@review.Id">
-										}
-								@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete)) /
-								@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count())
-								@if (review.ForUser.GetDirectlyManaging())
-								{
-									@:</a>
+									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
+									<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
+										<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
+										<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
+										<td class="alignCenter" style="width: 30px;">
+											<a data-sort="@(review.ClientReview.Visible ? "1" : "2")">@review.ClientReview.Visible.GetIcon()</a>
+										</td>
+									</tr>
 								}
-							</td>
-							<td><span data-sort="@review.GetCompletion().GetPercentage()">@Html.Partial("_Completion", review.GetCompletion())</span></td>
-						</tr>
-					}
-				</tbody>
+							</tbody>
 
-			</table>
+						</table>
+					</div>
+				</div>
+				@*Reminders*@
+				<div role="tabpanel" class="tab-pane in" id="Reminders">
+					<div class="" style="padding: 5px; background-color: white;">
+						<div class="pull-left">
+							<div class="btn btn-default" onclick=" sendReminders() ">Send Reminder</div>
+						</div>
+						<div class="pull-right">
+							<div class="btn btn-link" onclick=" $('.active .userCheck').prop('checked', true) ">Select All</div>
+							<div class="btn btn-link" onclick=" $('.active .userCheck').removeAttr('checked') ">Select None</div>
+							<div class="btn btn-link" onclick=" $('.active .userCheck.incomplete').prop('checked', true) ">Select Incomplete</div>
+							<div class="btn btn-link" onclick=" $('.active .userCheck.unstarted').prop('checked', true) ">Select Unstarted</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="table-responsive">
+						<table id="table_@(panel.Item2)" class="table table-condensed table-hover tablesorter reminder">
+							<thead>
+								<tr>
+									<th style="width: 1px;"></th>
+									<th style="width: 10px;"></th>
+									<th>Name</th>
+									<th class="alignCenter" style="width: 10px;">Reviewed by</th>
+									<th class="alignCenter" style="width: 10px;"># Reviewed</th>
+									<th class="alignCenter" style="width: 150px;">Completion</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var review in panel.Item3.OrderByDescending(x =>
+											{
+												double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
+												double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
+												return complete / total;
+
+												/*return x.GetCompletion().GetPercentage();*/
+											}))
+								{
+									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
+									<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
+										<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
+										<td style="cursor: pointer" onclick=" $(this).find('* > input').prop('checked', function(i, v) { return !v; }) "><input type="checkbox" class="userCheck clickThrough @(review.GetCompletion().GetPercentage() < 1 ? "incomplete" : "") @(review.GetCompletion().GetPercentage() <= 0 ? "unstarted" : "")" name="user_@review.ForUserId" data-id="@review.ForUserId" /></td>
+										<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
+										<td class="alignCenter">
+											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete)) /
+											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count())
+										</td>
+										<td class="alignCenter">
+											@if (review.ForUser.GetDirectlyManaging())
+											{
+												@:<a style="border-bottom: 1px dotted" href="/Prereview/Update/@review.Id">
+														}
+											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete)) /
+											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count())
+											@if (review.ForUser.GetDirectlyManaging())
+											{
+												@:</a>
+														}
+										</td>
+										<td><span data-sort="@review.GetCompletion().GetPercentage()">@Html.Partial("_Completion", review.GetCompletion())</span></td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
 		</div>
-
-	</div>
-		}
 	</div>
 </div>
 
+	@using (Html.BeginScripts())
+	{
+		<script>
 
-@*<div class="panel panel-primary startHiddenGroup">
-		<div class="panel-heading">
-			<h3 class="panel-title">Review progress</h3>
-		</div>
-
-		<div class="panel-body">
-		</div>
-	</div>*@
-
-
-@using (Html.BeginScripts())
-{
-	<script>
-
-		$(function () {
-			$(".tablesorter.reports").tablesorter({
-				sortList: [[0, 0], [1, 0]],
-				sortForce: [[0,0]]
-			});
-			$(".tablesorter.reminder").tablesorter({
-				sortList: [[0, 0], [5, 1]],
-				sortForce: [[0, 0]]
-			});
+			$(function () {
+				$(".tablesorter.reports").tablesorter({
+					sortList: [[0, 0], [1, 0]],
+					sortForce: [[0, 0]]
+				});
+				$(".tablesorter.reminder").tablesorter({
+					sortList: [[0, 0], [5, 1]],
+					sortForce: [[0, 0]]
+				});
 
 
-			$("ul.nav-tabs > li > a").click(function (e) {
-				$(this).tab('show');
-				history.pushState(null, null, $(e.target).attr("href"));
-			});
-			var firstTab = true;
-			$('a').on('shown.bs.tab', function (e) {
-				if (firstTab) {
-					setTimeout( function() {
-						window.scrollTo(0, 0);
-					},1);
-				}
-				firstTab = false;
-			});
-			$('ul.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
+				$("ul.nav-tabs > li > a").click(function (e) {
+					$(this).tab('show');
+					history.pushState(null, null, $(e.target).attr("href"));
+				});
+				var firstTab = true;
+				$('a').on('shown.bs.tab', function (e) {
+					if (firstTab) {
+						setTimeout(function () {
+							window.scrollTo(0, 0);
+						}, 1);
+					}
+					firstTab = false;
+				});
+				$('ul.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
 
 
-		
 
 
-			@foreach (var p in panels){
+
+				@foreach (var p in panels){
 					@:$("#table_@p.Item2").tablesorter({ sortList: [[4, 1]] });
-			}
+																					}
 
-		});
-
-		$(document).ready(function() {
-			setTimeout(function() {
-				$(this).scrollTop(0);
-			},1);
-		});
-
-		function sendReminders() {
-			var ids = [];
-			$('.userCheck:checked').each(function () {
-				ids.push($(this).data("id"));
 			});
-			if (ids && ids.length != 0) {
-				showModal('Send Reminder', '/Email/Remind?reviewId=@(Model.Review.Id)&userIds=' + ids.join(","), '/Email/Remind');
-			} else {
-				showAlert("You must select at least one user");
+
+			$(document).ready(function () {
+				setTimeout(function () {
+					$(this).scrollTop(0);
+				}, 1);
+			});
+
+			function sendReminders() {
+				var ids = [];
+				$('.userCheck:checked').each(function () {
+					ids.push($(this).data("id"));
+				});
+				if (ids && ids.length != 0) {
+					showModal('Send Reminder', '/Email/Remind?reviewId=@(Model.Review.Id)&userIds=' + ids.join(","), '/Email/Remind');
+				} else {
+					showAlert("You must select at least one user");
+				}
 			}
-		}
-	</script>
-}
+		</script>
+	}

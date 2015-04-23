@@ -1,0 +1,126 @@
+/*!
+ * bootstrap-vertical-tabs - v1.2.1
+ * https://dbtek.github.io/bootstrap-vertical-tabs
+ * 2014-11-07
+ * Copyright (c) 2014 İsmail Demirbilek
+ * License: MIT
+ */
+.nav-tabs.tabs-left, .nav-tabs.tabs-right {
+  border-bottom: none;
+  padding-top: 10px;
+}
+.nav-tabs.tabs-left {
+  border-right: 1px solid #ddd;
+}
+.nav-tabs.tabs-right {
+  border-left: 1px solid #ddd;
+}
+.nav-tabs.tabs-left>li, .nav-tabs.tabs-right>li {
+  float: none;
+  margin-bottom: 2px;
+}
+.nav-tabs.tabs-left>li {
+  margin-right: -1px;
+}
+.nav-tabs.tabs-right>li {
+  margin-left: -1px;
+}
+.nav-tabs.tabs-left>li.active>a,
+.nav-tabs.tabs-left>li.active>a:hover,
+.nav-tabs.tabs-left>li.active>a:focus {
+  border-bottom-color: #ddd;
+  border-right-color: transparent;
+}
+
+.nav-tabs.tabs-right>li.active>a,
+.nav-tabs.tabs-right>li.active>a:hover,
+.nav-tabs.tabs-right>li.active>a:focus {
+  border-bottom: 1px solid #ddd;
+  border-left-color: transparent;
+}
+.tabs-left>li>a {
+  border-radius: 4px 0 0 4px;
+  margin-right: 0;
+  display:block;
+}
+.nav-tabs.tabs-right>li>a {
+  border-radius: 0 4px 4px 0;
+  margin-right: 0;
+}
+.sideways {
+  margin-top:50px;
+  border: none;
+  position: relative;
+}
+.sideways>li {
+  height: 20px;
+  width: 120px;
+  margin-bottom: 100px;
+}
+.sideways>li>a {
+  border-bottom: 1px solid #ddd;
+  border-right-color: transparent;
+  text-align: center;
+  border-radius: 4px 4px 0px 0px;
+}
+.sideways>li.active>a,
+.sideways>li.active>a:hover,
+.sideways>li.active>a:focus {
+  border-bottom-color: transparent;
+  border-right-color: #ddd;
+  border-left-color: #ddd;
+}
+.sideways.tabs-left {
+  left: -50px;
+}
+.sideways.nav-tabs.tabs-right {
+  right: -50px;
+}
+.sideways.nav-tabs.tabs-right>li {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+.sideways.tabs-left>li {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}
+
+.nav-tabs.tabs-left,.nav-tabs.tabs-right {
+	margin-top: 0px !important;
+}
+.nav-tabs.tabs-left {
+	text-align: left;
+}
+.nav-tabs.tabs-right {
+	text-align: right;
+}
+
+.nav-tabs.tabs-left > li.active > a, .nav-tabs.tabs-left > li.active > a:hover, .nav-tabs.tabs-left > li.active > a:focus,
+.nav-tabs.tabs-right > li.active > a, .nav-tabs.tabs-right > li.active > a:hover, .nav-tabs.tabs-right > li.active > a:focus {
+	border-bottom: 1px solid #DDD;
+	z-index: 1;
+}
+
+.tab-content.tabs-left,
+.tab-content.tabs-right {
+	z-index: 0;
+	border: 1px solid #ddd;
+	background-color: white;  
+	margin-left: -31px;
+	padding: 15px;
+	min-height: 300px;
+}
+
+.tab-content.tabs-left>.table-responsive,
+.tab-content.tabs-right>.table-responsive{
+	margin-left: -15px;
+	margin-right: -15px;
+	margin-top: -10px;
+	width: calc(100% + 30px);
+}

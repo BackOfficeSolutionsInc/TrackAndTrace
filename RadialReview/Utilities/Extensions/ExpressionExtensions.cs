@@ -26,9 +26,16 @@ namespace RadialReview.Utilities.Extensions
 					name.Add(((UnaryExpression)s).Operand.;
 				}
 			}*/
-
-			var p = ((UnaryExpression) selector.Body).Operand.ToString();
-			return p.Substring(p.IndexOf(".") + 1);
+			string p;
+			if (selector.Body is UnaryExpression){
+				p = ((UnaryExpression) selector.Body).Operand.ToString();
+				return p.Substring(p.IndexOf(".") + 1);
+			}
+			if (selector.Body is MemberExpression){
+				p = ((MemberExpression)selector.Body).Member.Name.ToString();
+				return p;
+			}
+			throw new Exception("Unhandled");
 		}
 	}
 }

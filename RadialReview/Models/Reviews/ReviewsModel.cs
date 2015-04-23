@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Models.Periods;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models
 {
@@ -58,10 +59,7 @@ namespace RadialReview.Models
         {
             Reviews = null;
         }
-
-
-
-    }
+	}
 
     public class ReviewsModelMap : ClassMap<ReviewsModel>
     {

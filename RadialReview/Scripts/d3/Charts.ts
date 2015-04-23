@@ -1,4 +1,5 @@
 ﻿module Charts {
+
 	interface NumToStringCallback {
 		(n: number): string;
 	}
@@ -6,15 +7,18 @@
 	interface DataPoint {
 		x: number;
 		y?: number;
-		group?:string;
+		color?:string;
+		group?: string;
 	}
 
 	export class Util {
+
 		static pad(num: number, size: number): string {
 			var s = num + "";
 			while (s.length < size) s = "0" + s;
 			return s;
 		}
+
 	}
 
 	export class Margin {
@@ -22,32 +26,37 @@
 		bottom: number;
 		left: number;
 		right: number;
+
 		constructor() {
 			this.top = 10;
 			this.bottom = 30;
 			this.left = 30;
 			this.right = 30;
 		}
+
 	}
 
 	export class Dimension {
-		constructor(public width: number, public height: number) { }
+
+		constructor(public width: number, public height: number) {}
+
 	}
 
 	export class Base {
 
-		constructor(public _selector: string, public _dimension: Dimension = new Dimension(960, 500), public _margin = new Margin()) { }
+		constructor(public _selector: string, public _dimension: Dimension = new Dimension(960, 500), public _margin = new Margin()) {}
 
 		width(): number {
 			return this._dimension.width - this._margin.left - this._margin.right;
 		}
+
 		height(): number {
 			return this._dimension.height - this._margin.top - this._margin.bottom;
 		}
 
 		LabelFunction = d=> "" + d;
 		_WasInitialized = false;
-		_AfterInitialized : any[]= [];
+		_AfterInitialized: any[]= [];
 
 		SetLabelFunction(f: NumToStringCallback): any {
 			this.LabelFunction = f;
@@ -55,7 +64,7 @@
 		}
 
 		RotateXTitle(): any {
-			this.RunAfterInitialized(this,function () {
+			this.RunAfterInitialized(this, function() {
 				d3.select(this._selector + " svg .x.axis").selectAll("text")
 					.attr("y", 0)
 					.attr("x", 9)
@@ -65,21 +74,101 @@
 			});
 			return this;
 		}
-	
-		RunAfterInitialized(self,f: Function) {
+
+		RunAfterInitialized(self, f: Function) {
 			if (this._WasInitialized) {
 				f.call(self);
 			} else {
-				this._AfterInitialized.push([self,f]);
+				this._AfterInitialized.push([self, f]);
 			}
 		}
-	
-		SetInitialized():void {
+
+		SetInitialized(): void {
 			this._WasInitialized = true;
 			for (var i in this._AfterInitialized) {
 				var a = this._AfterInitialized[i];
 				a[1].call(a[0]);
 			}
+		}
+
+	}
+
+	export class Pie extends Base {
+
+		DefaultColors: string[];
+		TextColor: string;
+
+		constructor(selector: string, dimension: Dimension = new Dimension(960, 500), margin = new Margin()) {
+			super(selector, dimension, margin);
+			margin.bottom = Math.max(110, margin.bottom);
+			margin.left = Math.max(40, margin.left);
+			this.DefaultColors = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
+			this.TextColor = "#F4F4F4";
+		}
+
+		Initialize(data: DataPoint[], yTitle = "") {
+			
+			//var parseDate = d3.time.format("%d-%b-%y").parse;
+
+			var values: any[] = [];
+
+			for (var i = 0; i < data.length; i++) {
+				var v : any = data[i];
+				v.i = i;
+				values.push(data[i]);
+			}
+
+			//var color = d3.scale.ordinal().range(colors);
+			var radius = Math.min(this.width(), this.height()) / 2;
+			var arc = d3.svg.arc().outerRadius(radius - 10).innerRadius(0);
+
+			var pie = d3.layout.pie().sort(null).value(d=> d.y);
+
+			var svg = d3.select(this._selector).append("svg")
+				.attr("width", this.width())
+				.attr("height", this.height())
+				.append("g")
+				.attr("transform", "translate(" + this.width() / 2 + "," + this.height() / 2 + ")");
+
+			var g = svg.selectAll(".arc")
+				.data(pie(values))
+				.enter().append("g")
+				.attr("class", "arc");
+
+			g.append("path")
+				.attr("d", arc)
+				.style("fill", d=> {
+					if (d.data.color)
+						return d.data.color;
+					return this.DefaultColors[d.data.i % this.DefaultColors.length];
+				});
+
+			g.append("text")
+				.attr("transform", d=> {
+				var shift = [0, 0];
+				if (values.length != 1)
+					shift = arc.centroid(d);
+				shift[1] -= 10;
+				return "translate(" + shift + ")";
+			})
+				.attr("dy", ".35em")
+				.style({ "text-anchor": "middle", "font-size": "1.75em", "fill": this.TextColor })
+				.text(d=> d.data.group);
+
+			g.append("text")
+				.attr("transform", d=> {
+					var shift = [0, 0];
+					if (values.length != 1)
+						shift = arc.centroid(d);
+					shift[1] += 10;
+					return "translate(" + shift + ")";
+				})
+				.attr("dy", ".55em")
+				.style({ "text-anchor": "middle", "font-size": "1em", "fill": this.TextColor })
+				.text(d=> d.data.y);
+
+			this.SetInitialized();
+			return this;
 		}
 	}
 
@@ -92,7 +181,6 @@
 		}
 
 		Initialize(data: DataPoint[], yTitle = "") {
-			
 			//var parseDate = d3.time.format("%d-%b-%y").parse;
 
 			var x = d3.time.scale().range([0, this.width()]);
@@ -151,12 +239,15 @@
 	export class Histogram extends Base {
 
 		values: DataPoint[];
+		bins : number[];
+
 		private initialized = false;
 
 		constructor(selector: string, dimension: Dimension = new Dimension(960, 500), margin = new Margin()) {
 			super(selector, dimension, margin);
 			margin.bottom = Math.max(110, margin.bottom);
 			margin.top = Math.max(25, margin.top);
+			this.bins = [];
 		}
 
 		private _CreateSvg() {
@@ -219,31 +310,44 @@
 			max = Math.ceil(max / binWidth) * binWidth;
 
 			var count = Math.ceil((max - min) / binWidth);
-			var bins: number[] = [];
+
 			var binsHalf: number[] = [];
-			var pad = 1;
-			if (count < 8)
-				pad = 4;
+			var constructBins = !this.bins || this.bins.length == 0;
 
-			var low = min - binWidth * pad;
-			var high = max + binWidth * pad;
-
-			i = low;
 			var even = true;
-			while (i <= high) {
-				bins.push(i);
-				if (even)
-					binsHalf.push(i);
-				i += binWidth;
-				even = !even;
+			var low: number = Number.MAX_VALUE;
+			var high: number = Number.MIN_VALUE;
+			if (constructBins) {
+				this.bins = [];
+				var pad = 1;
+				if (count < 8)
+					pad = 4;
+
+				low = min - binWidth * pad;
+				high = max + binWidth * pad;
+
+				i = low;
+				while (i <= high) {
+					this.bins.push(i);
+					if (even)
+						binsHalf.push(i);
+					i += binWidth;
+					even = !even;
+				}
+			} else {
+				
+				for (var j in this.bins) {
+					if (even)
+						binsHalf.push(this.bins[j]);
+					even = !even;
+					low = Math.min(low, this.bins[j]);
+					high = Math.max(high, this.bins[j]);
+				}
 			}
-		
-		
-		
-			var useBins = bins;
-			if (bins.length > 20)
+			
+			var useBins = this.bins;
+			if (this.bins.length > 20)
 				useBins = binsHalf;
-		
 			var svg = this._CreateSvg();
 
 			var maxFreq = 0;
@@ -255,7 +359,7 @@
 						values.push(values2[i].x);
 					}
 				}
-				var data = d3.layout.histogram().bins(bins)(values);
+				var data = d3.layout.histogram().bins(this.bins)(values);
 				maxFreq = Math.max(maxFreq, d3.max(data, d=> d.y));
 			}
 			var first = true;
@@ -266,7 +370,7 @@
 						values.push(values2[i].x);
 					}
 				}
-				var data = d3.layout.histogram().bins(bins)(values);
+				var data = d3.layout.histogram().bins(this.bins)(values);
 				var x = d3.scale.linear().domain([low, high]).range([0, this.width()]);
 				var y = d3.scale.linear().domain([0, maxFreq]).range([this.height(), 0]);
 				var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(0).tickFormat(d=> this.LabelFunction(d));

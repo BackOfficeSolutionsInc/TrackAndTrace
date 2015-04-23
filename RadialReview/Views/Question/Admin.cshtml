@@ -26,7 +26,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Question, new { @class = "control-label col-xs-2" })
             <div class="col-xs-10">
-                @Html.TextBoxFor(model => model.Question.Default.Value, new { @class = "col-xs-10" ,autocomplete="off"})
+                @Html.TextBoxFor(model => model.Question.Standard, new { @class = "col-xs-10" ,autocomplete="off"})
                 @Html.ValidationMessageFor(model => model.Question)
             </div>
         </div>

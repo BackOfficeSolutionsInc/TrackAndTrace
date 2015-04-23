@@ -147,6 +147,15 @@ namespace RadialReview.Controllers
 			return View("Edit",model);
 		}
 
+	    [Access(AccessLevel.UserOrganization)]
+	    public ActionResult External(long id)
+	    {
+		    var recurrence = id;
+		    var links = L10Accessor.GetExternalLinksForRecurrence(GetUser(), id);
+		    ViewBag.Recurrence = recurrence;
+		    return View(links);
+	    }
+
 
 		#region Error
 		[Access(AccessLevel.Any)]

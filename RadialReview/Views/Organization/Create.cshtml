@@ -4,7 +4,7 @@
 }
 
 <div class="row">
-    <div class="col-md-12 jumbotron" style="height:265px;">
+    <div class="col-md-12 jumbotron" style="height:300px;">
         <div class="container">
 
             <h2 class="text-center">@RadialReview.Properties.DisplayNameStrings.createOrganization</h2>
@@ -20,7 +20,9 @@
 
                 <div class="row col-md-6 col-md-offset-3">
                     <div class="col-md-12">
-                        <input type="text" class="form-control" name="name" placeholder="@RadialReview.Properties.DisplayNameStrings.organizationName" />
+						<input type="text" class="form-control" name="name" placeholder="@RadialReview.Properties.DisplayNameStrings.organizationName" />
+	                    <label>Enable L10 Meeting Software:</label> 						@Html.CheckBox("enableL10")
+						<label>Enable Review Software:</label> @Html.CheckBox("enableReview")
                     </div>
                     @*<div class="col-md-12">
                         @Html.CheckBox("managersCanEdit")

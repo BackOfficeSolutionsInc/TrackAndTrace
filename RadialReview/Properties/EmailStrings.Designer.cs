@@ -117,6 +117,31 @@ namespace RadialReview.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
+        ///&lt;p&gt;Here are your to-dos for this week:&lt;/p&gt;
+        ///{1}
+        ///&lt;br /&gt;&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+        ///&lt;br /&gt;
+        ///&lt;br /&gt;
+        ///Sincerely,&lt;br/&gt;
+        ///The {2} Team.
+        /// </summary>
+        public static string MeetingSummary_Body {
+            get {
+                return ResourceManager.GetString("MeetingSummary_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meeting Summary - {0}.
+        /// </summary>
+        public static string MeetingSummary_Subject {
+            get {
+                return ResourceManager.GetString("MeetingSummary_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
         ///&lt;p&gt;{6} is now open. This review is due on {2}. You can take your review by clicking the following link:&lt;/p&gt;
         ///&lt;br&gt; 
         ///    &lt;a href=&quot;{3}&quot;&gt;{4}&lt;/a&gt;

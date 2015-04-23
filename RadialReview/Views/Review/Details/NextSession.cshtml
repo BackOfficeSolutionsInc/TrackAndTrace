@@ -8,7 +8,7 @@
 				<table style="width: 100%;">
 					<thead>
 						<tr>
-							<th>@Model.ReviewContainer.NextPeriod.Name Rocks:</th>
+							<th>@Model.ReviewContainer.NextPeriod.Name @Html.Organization().Settings.RockName:</th>
 							@*<th style="width:20%">Session:</th>*@
 							<th style="width:1px"></th>
 						</tr>
@@ -17,11 +17,11 @@
 				</table>
 			</div>
 			<div class="nextRock_flip2 hidden" style="padding: 7px;">
-				<div class="gray">No rocks for next session. Make sure you click 'Add Rock' to create some.</div>
+				<div class="gray">No @Html.Organization().Settings.RockName for next session. Make sure you click 'Add @Html.Organization().Settings.RockName' to create some.</div>
 			</div>
 		</div>
 		<div class="col-sm-2 alignCenter">
-			<div class="btn btn-default clickable" onclick="addRow();">Add Rock</div>
+			<div class="btn btn-default clickable" onclick="addRow();">Add @Html.Organization().Settings.RockName</div>
 		</div>
 	</div>
 </div>
@@ -38,7 +38,7 @@
 
 
 		function addRow() {
-			showModal("Add Rock", "/Rocks/ModalSingle/0?userId=@Model.Review.ForUserId&periodId=@Model.ReviewContainer.NextPeriodId", "/Rocks/Modal/", null, null, function (data) {
+			showModal("Add @Html.Organization().Settings.RockName", "/Rocks/ModalSingle/0?userId=@Model.Review.ForUserId&periodId=@Model.ReviewContainer.NextPeriodId", "/Rocks/Modal/", null, null, function (data) {
 				for (var i = 0; i < data.Object.length; i++) {
 					var o = data.Object[i];
 					appendRow(o.Id,o.Rock,o.Session);

@@ -56,6 +56,8 @@ namespace RadialReview
 					  "~/Content/select2.css",
 					  "~/Content/datepicker.css",
 					  "~/Content/bootstrap.css",
+					  //"~/Content/Bootstrap-tabs.css",
+					  "~/Content/bootstrap.vertical-tabs.css",
 					  "~/Content/slider.css",
 					  "~/Content/site.css",
 					  "~/Content/Fonts.css",

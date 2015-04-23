@@ -6,11 +6,13 @@ using Microsoft.AspNet.SignalR;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Todo;
 using RadialReview.Utilities;
+using RadialReview.Accessors.TodoIntegrations;
 
 namespace RadialReview.Accessors
 {
@@ -55,6 +57,9 @@ namespace RadialReview.Accessors
 						x => x.AccountableUserId,
 						x => x.AccountableUser,
 						x => y => x.ViewUserOrganization(y, false));
+
+					var r = s.Get<L10Recurrence>(recurrenceId);
+					ExternalTodoAccessor.AddLink(s,perms,ForModel.Create(r),todo.AccountableUserId,todo);
 
 					s.Save(todo);
 

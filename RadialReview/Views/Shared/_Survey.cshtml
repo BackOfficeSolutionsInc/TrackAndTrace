@@ -1,0 +1,34 @@
+﻿@using RadialReview.Models
+@using RadialReview.Models.Enums
+@model List<RadialReview.Models.AnswerModel>
+
+<script src="~/Scripts/d3/d3.v3.min.js"></script>
+<script src="~/Scripts/d3/Charts.js"></script>
+
+@foreach (var answers in Model.GroupBy(x => x.Askable.Id))
+{
+	<div class="panel panel-primary noBreak">
+		<div class="panel-heading">@answers.First().Askable.GetQuestion()</div>
+		<div class="panel-body">
+		@{
+			var type = answers.First().Askable.GetQuestionType();
+			if (type == QuestionType.Slider)
+			{
+				Html.RenderPartial("~/Views/Shared/Survey/Slider.cshtml", answers.Cast<SliderAnswer>().ToList());
+			}
+			else if (type == QuestionType.Thumbs)
+			{
+				Html.RenderPartial("~/Views/Shared/Survey/Thumbs.cshtml", answers.Cast<ThumbsAnswer>().ToList());
+			}
+			else if (type == QuestionType.Feedback)
+			{
+				Html.RenderPartial("~/Views/Shared/Survey/Feedback.cshtml", answers.Cast<FeedbackAnswer>().ToList());
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+		}
+		</div>
+	</div>
+}

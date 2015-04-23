@@ -17,12 +17,15 @@ namespace RadialReview.Models.ViewModels
         public bool Viewable { get; set; }
         public bool Editable { get; set; }
 
-        //public Dictionary<long,RatioModel> Completed { get; set; }
+		public List<AnswerModel> SurveyAnswers { get; set; }  
+
+		//public Dictionary<long,RatioModel> Completed { get; set; }
         //public RatioModel Signed { get; set; }
-        
-        public ReviewsViewModel(ReviewsModel review)
+
+		public ReviewsViewModel(ReviewsModel review)
         {
             Review = review;
+			SurveyAnswers=new List<AnswerModel>();
         }
 
     }

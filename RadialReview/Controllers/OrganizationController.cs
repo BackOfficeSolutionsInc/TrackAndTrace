@@ -38,13 +38,13 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.Any)]
-		public ActionResult Create(String name) {
+		public ActionResult Create(String name,bool enableL10,bool enableReview) {
 			Boolean managersCanEdit = false;
 			var user = GetUserModel();
 			var basicPlan=_PaymentAccessor.BasicPaymentPlan();
 			var localizedName=new LocalizedStringModel() { Standard = name };
 			long newRoleId;
-			var organization = _OrganizationAccessor.CreateOrganization(user, localizedName, managersCanEdit, basicPlan, DateTime.UtcNow, out newRoleId);
+			var organization = _OrganizationAccessor.CreateOrganization(user, localizedName, managersCanEdit, basicPlan, DateTime.UtcNow, out newRoleId,enableL10,enableReview);
 			return RedirectToAction("SetRole", "Account", new { id = newRoleId });
 		}
 
@@ -295,21 +295,21 @@ namespace RadialReview.Controllers {
 		    using (var sr = new StreamReader(data.ToStream())){
 			    var csv = new CsvReader(sr);
 			    while (csv.Read()){
-					var email = csv.GetField(model.EmailColumn);
-					var firstName =csv.GetField(model.FirstNameColumn);
-					var lastName =csv.GetField(model.LastNameColumn);
-					var position =csv.GetField(model.PositionColumn);
-					var managerFirst = csv.GetField(model.ManagerFirstNameColumn);
-					var managerLast = csv.GetField(model.ManagerLastNameColumn);
+					var email = csv.GetField(model.EmailColumn).Trim();
+					var firstName = csv.GetField(model.FirstNameColumn).Trim();
+					var lastName = csv.GetField(model.LastNameColumn).Trim();
+					var position = csv.GetField(model.PositionColumn).Trim();
+					var managerFirst = csv.GetField(model.ManagerFirstNameColumn).Trim();
+					var managerLast = csv.GetField(model.ManagerLastNameColumn).Trim();
 
-				    if ((new[]{email, firstName, lastName, position, managerFirst, managerLast}.All(x => string.IsNullOrWhiteSpace(x)))){
+				    if ((new[]{email, firstName, lastName, position, managerFirst, managerLast}.All(string.IsNullOrWhiteSpace))){
 						//Empty row
 						continue;
 				    }
 
 				    var positionFound =existingPositions.FirstOrDefault(x => x.CustomName == position);
 
-					if (positionFound == null)
+					if (positionFound == null && !String.IsNullOrWhiteSpace(position))
 					{
 						var newPosition = _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*pos.Id,*/ position);
 						existingPositions.Add(newPosition);
@@ -324,7 +324,7 @@ namespace RadialReview.Controllers {
 						ManagerId = -4,
 						Position = new UserPositionViewModel(){
 							CustomPosition = null,
-							PositionId = positionFound.Id
+							PositionId = positionFound!=null?positionFound.Id:-2
 						},
 				    };
 				    try{

@@ -12,6 +12,7 @@ using RadialReview.Models.Reviews;
 using RadialReview.Models.UserModels;
 using RadialReview.Properties;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
@@ -30,12 +31,14 @@ namespace RadialReview.Accessors {
             int count = 0;
 
             var unsentEmails = new List<MailModel>();
+	        var nw = DateTime.UtcNow;
+			var range = new DateRange(nw,nw);
             foreach (var reviewerId in whoReviewsWho.Select(x => x.Item1).Distinct()) {
                 //Create review for user
 				var revieweeIds = whoReviewsWho.Where(x => x.Item1 == reviewerId).Distinct().Select(x => x.Item2);
                 var user = dataInteraction.Get<UserOrganizationModel>(reviewerId);
 
-	            var allAskables=GetAskables(caller, perms, dataInteraction, revieweeIds, reviewerId,reviewContainer.PeriodId);
+	            var allAskables=GetAskables(caller, perms, dataInteraction, revieweeIds, reviewerId,reviewContainer.PeriodId,range);
 				
 				if (allAskables.Any()) {
                     QuestionAccessor.GenerateReviewForUser(dataInteraction, perms, caller, user, reviewContainer, allAskables);
@@ -170,6 +173,8 @@ namespace RadialReview.Accessors {
 			var allRoles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
 			var allValues = s.QueryOver<CompanyValueModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
 			var allRocks = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
+			var allRGM = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
+			var allAboutCompany = s.QueryOver<AboutCompanyAskable>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
 
 
             var queryProvider = new IEnumerableQuery();
@@ -181,6 +186,8 @@ namespace RadialReview.Accessors {
 			queryProvider.AddData(allRoles);
 			queryProvider.AddData(allValues);
 			queryProvider.AddData(allRocks);
+			queryProvider.AddData(allAboutCompany);
+			queryProvider.AddData(allRGM);
 			queryProvider.AddData(applicationQuestions);
 			queryProvider.AddData(application);
 
@@ -213,12 +220,13 @@ namespace RadialReview.Accessors {
             ReviewParameters parameters, DataInteraction dataInteraction, ReviewsModel reviewContainer, PermissionsUtility perms,
             OrganizationModel organization, OrganizationTeamModel team, ref List<Exception> exceptions,
             UserOrganizationModel beingReviewedUser,
-            List<UserOrganizationModel> accessibleUsers) {
+            List<UserOrganizationModel> accessibleUsers,
+			DateRange range) {
             var unsentEmails = new List<MailModel>();
             try {
 				var askables = GetAskablesBidirectional(
 					dataInteraction, perms, caller, beingReviewedUser,
-					team, parameters, accessibleUsers.Select(x=>x.Id).ToList(),reviewContainer.PeriodId);
+					team, parameters, accessibleUsers.Select(x=>x.Id).ToList(),reviewContainer.PeriodId,range);
 
                 //Create the Review
                 if (askables.Askables.Any()) {

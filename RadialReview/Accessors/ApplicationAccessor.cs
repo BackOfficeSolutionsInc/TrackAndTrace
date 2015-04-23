@@ -24,10 +24,11 @@ namespace RadialReview.Accessors
 		//public const string COMPANY_VALUES = "Company Values";
 		//public const string ROCKS = "Rocks";
 		public const string EVALUATION = "Evaluation";
-		public const string ROLES = "Roles"; 
+		public const string ROLES = "Roles";
 		public const string COMPANY_VALUES = "Company Values";
+		public const string COMPANY_QUESTION = "Company Questions";
 
-        private static string[] ApplicationCategories = new string[]{ 
+        private static string[] ApplicationCategories ={ 
                 "Performance",
                 "Culture",
                 FEEDBACK,
@@ -37,7 +38,8 @@ namespace RadialReview.Accessors
 				//ROCKS,
 				EVALUATION,
 				ROLES,
-				COMPANY_VALUES
+				COMPANY_VALUES,
+				COMPANY_QUESTION
         };
 
         private class Q

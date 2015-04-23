@@ -26,8 +26,9 @@ namespace RadialReview.Models
         public virtual Askable Askable { get; set; }
         public virtual bool Required { get; set; }
         public virtual bool Complete { get; set; }
-        public virtual long AboutUserId { get; set; }
-        public virtual UserOrganizationModel AboutUser { get; set; }
+		public virtual long AboutUserId { get; set; }
+		public virtual ResponsibilityGroupModel AboutUser { get; set; }
+		//public virtual OrganizationModel AboutOrganization { get; set; }
         public virtual long ByUserId { get; set; }
 		public virtual UserOrganizationModel ByUser { get; set; }
 		public virtual AboutType AboutType { get; set; }
@@ -59,6 +60,7 @@ namespace RadialReview.Models
 
 				Map(x => x.AboutUserId).Column("AboutUserId");
 				References(x => x.AboutUser).Column("AboutUserId").Not.LazyLoad().ReadOnly();
+				//References(x => x.AboutOrganization).Column("AboutUserId").NotFound.Ignore().ReadOnly().Nullable();
 
 				Map(x => x.ByUserId).Column("ByUserId");
 				References(x => x.ByUser).Column("ByUserId").Not.LazyLoad().ReadOnly();
@@ -74,6 +76,7 @@ namespace RadialReview.Models
     #endregion
 
     #region Impls
+	
     public class FeedbackAnswer : AnswerModel
     {
         public virtual String Feedback { get; set; }

@@ -1,22 +1,10 @@
-﻿using NHibernate;
-using NHibernate.Criterion;
-using RadialReview.Exceptions;
-using RadialReview.Models;
+﻿using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
-using RadialReview.Models.Json;
-using RadialReview.Models.Responsibilities;
-using RadialReview.Models.Reviews;
-using RadialReview.Models.UserModels;
-using RadialReview.Properties;
-using RadialReview.Utilities;
-using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace RadialReview.Accessors {
 	public partial class ReviewAccessor : BaseAccessor {
@@ -24,7 +12,7 @@ namespace RadialReview.Accessors {
 		
 		#region Generate Review
 		#region Generate Answers
-		private static void GenerateSliderAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateSliderAnswers(DataInteraction session, UserOrganizationModel caller, ResponsibilityGroupModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 
 			var slider = new SliderAnswer()
@@ -37,6 +25,8 @@ namespace RadialReview.Accessors {
 				ForReviewId = review.Id,
 				ByUserId = forUser.Id,
 				AboutUserId = askable.AboutUserId,
+				AboutUser = session.Load<ResponsibilityGroupModel>(askable.AboutUserId),
+
 				ForReviewContainerId = review.ForReviewsId,
 				AboutType = askable.AboutType
 
@@ -45,7 +35,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static void GenerateGWCAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateGWCAnswers(DataInteraction session, UserOrganizationModel caller, ResponsibilityGroupModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var gwc = new GetWantCapacityAnswer()
 			{
@@ -62,13 +52,14 @@ namespace RadialReview.Accessors {
 				ForReviewId = review.Id,
 				ByUserId = forUser.Id,
 				AboutUserId = askable.AboutUserId,
+				AboutUser = session.Load<ResponsibilityGroupModel>(askable.AboutUserId),
 				ForReviewContainerId = review.ForReviewsId,
 				AboutType = askable.AboutType
 			};
 			session.Save(gwc);
 		}
 
-		private static void GenerateRockAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateRockAnswers(DataInteraction session, UserOrganizationModel caller, ResponsibilityGroupModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var rock = new RockAnswer()
 			{
@@ -83,13 +74,14 @@ namespace RadialReview.Accessors {
 				ForReviewId = review.Id,
 				ByUserId = forUser.Id,
 				AboutUserId = askable.AboutUserId,
+				AboutUser = session.Load<ResponsibilityGroupModel>(askable.AboutUserId),
 				ForReviewContainerId = review.ForReviewsId,
 				AboutType = askable.AboutType
 			};
 			session.Save(rock);
 		}
 
-		private static void GenerateCompanyValuesAnswer(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateCompanyValuesAnswer(DataInteraction session, UserOrganizationModel caller, ResponsibilityGroupModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var gwc = new CompanyValueAnswer()
 			{
@@ -102,13 +94,14 @@ namespace RadialReview.Accessors {
 				ForReviewId = review.Id,
 				ByUserId = forUser.Id,
 				AboutUserId = askable.AboutUserId,
+				AboutUser = session.Load<ResponsibilityGroupModel>(askable.AboutUserId),
 				ForReviewContainerId = review.ForReviewsId,
 				AboutType = askable.AboutType
 			};
 			session.Save(gwc);
 		}
 
-		private static void GenerateFeedbackAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateFeedbackAnswers(DataInteraction session, UserOrganizationModel caller, ResponsibilityGroupModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var feedback = new FeedbackAnswer() {
 				Anonymous = anonymous,
@@ -119,6 +112,7 @@ namespace RadialReview.Accessors {
 				ForReviewId = review.Id,
 				ByUserId = forUser.Id,
 				AboutUserId = askable.AboutUserId,
+				AboutUser = session.Load<ResponsibilityGroupModel>(askable.AboutUserId),
 				ForReviewContainerId = review.ForReviewsId,
 				AboutType = askable.AboutType
 			};
@@ -126,7 +120,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static void GenerateThumbsAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateThumbsAnswers(DataInteraction session, UserOrganizationModel caller, ResponsibilityGroupModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var thumbs = new ThumbsAnswer() {
 				Anonymous = anonymous,
@@ -137,6 +131,7 @@ namespace RadialReview.Accessors {
 				ForReviewId = review.Id,
 				ByUserId = forUser.Id,
 				AboutUserId = askable.AboutUserId,
+				AboutUser = session.Load<ResponsibilityGroupModel>(askable.AboutUserId),
 				ForReviewContainerId = review.ForReviewsId,
 				AboutType = askable.AboutType
 			};
@@ -144,7 +139,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static void GenerateRelativeComparisonAnswers(IUpdate session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
+		private static void GenerateRelativeComparisonAnswers(DataInteraction session, UserOrganizationModel caller, UserOrganizationModel forUser, AskableAbout askable, ReviewModel review, bool anonymous)
 		{
 			var peers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager).SelectMany(x => x.ManagingUsers.ToListAlive().Select(y => y.Subordinate));
 			var managers = forUser.ManagedBy.ToListAlive().Select(x => x.Manager);
@@ -170,6 +165,7 @@ namespace RadialReview.Accessors {
 						ForReviewId = review.Id,
 						ByUserId = forUser.Id,
 						AboutUserId = askable.AboutUserId,
+						AboutUser = session.Load<ResponsibilityGroupModel>(askable.AboutUserId),
 						ForReviewContainerId = review.ForReviewsId,
 						AboutType = askable.AboutType
 					};

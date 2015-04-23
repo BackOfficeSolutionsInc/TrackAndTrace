@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Accessors;
+using RadialReview.Accessors.TodoIntegrations;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Json;
 using RadialReview.Models.Todo;
@@ -236,5 +239,56 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
 
-    }
+	    public class LinkExternalTodo
+		{
+			[Display(Name = "For User")]
+			public long UserId { get; set; }
+			[Display(Name = "Account Type")]
+		    public ExternalTodoType Account { get; set; } 
+			public List<AccountableUserVM> PossibleUsers { get; set; }
+			public long RecurrenceId { get; set; }
+	    }
+
+	    [Access(AccessLevel.UserOrganization)]
+	    public ActionResult LinkToExternal(long recurrence,long user =0)
+		{
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+		    var model = new LinkExternalTodo(){
+				RecurrenceId = recurrence,
+				UserId = user,
+			    PossibleUsers = recur._DefaultAttendees
+				    .Select(x => x.User)
+				    .Select(x => new AccountableUserVM(){
+					    id = x.Id,
+					    imageUrl = x.ImageUrl(true, ImageSize._32),
+					    name = x.GetName()
+				    }).ToList(),
+		    };
+
+			return PartialView(model);
+	    }
+
+	    [HttpPost]
+	    [Access(AccessLevel.UserOrganization)]
+		public JsonResult LinkToExternal(LinkExternalTodo model)
+	    {
+			ValidateValues(model,x=>x.RecurrenceId);
+		    switch(model.Account){
+			    case ExternalTodoType.Trello:
+					return Json(ResultObject.SilentSuccess(TrelloAccessor.AuthUrl(GetUser(), model.RecurrenceId,model.UserId)));
+			    case ExternalTodoType.Basecamp:
+					return Json(ResultObject.SilentSuccess(BaseCampAccessor.AuthUrl(GetUser(), model.RecurrenceId, model.UserId)));
+
+				
+				default:
+				    throw new ArgumentOutOfRangeException();
+		    }
+	    }
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult DetachLink(long id)
+		{
+			ExternalTodoAccessor.DetatchLink(GetUser(),id);
+			return Json(ResultObject.SilentSuccess(true), JsonRequestBehavior.AllowGet);
+		}
+	}
 }

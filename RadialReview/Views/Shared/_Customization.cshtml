@@ -63,7 +63,7 @@
         <div class="col-sm-5 col-sm-push-7">
             <div class="well">
                 <p>
-                    From this menu, you can choose select who each employee will review. The "Default" option ensures that users will review themselves and their Managers, Subordinates, Teammates, and Peers.
+                    From this menu, you can choose select who each employee will review. The "Default" option ensures that users will review themselves and their Supervisors, Direct Reports, Teammates, and Peers.
 
                     <i> For the most organizations, selecting "Default" is sufficient.</i>
                 </p>
@@ -99,7 +99,7 @@
                         }
                         first = false;
                     }
-                    @for (int i = Model.Subordinates.Count; i < Model.AllUsers.Count; i++)
+                    @for (int i = Model.Subordinates.Count; i < Model.AllReviewees.Count; i++)
                     {
                         <div id="" class="">
                             <div class="pull-left counter">&nbsp;</div>
@@ -113,7 +113,7 @@
                 @foreach (var firstUser in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
                 {
                     <div id="second_@firstUser.Id" class="col-xs-6 noPad alignLeft customize hideable @(first ? "selected" : "hide")">
-                        @foreach (var secondUser in Model.AllUsers.OrderBy(x => x.GetNameAndTitle()))
+                        @foreach (var secondUser in Model.AllReviewees.OrderBy(x => x.GetName()))
 						{
 							var classes = new HashSet<String>();
 							foreach (var s in Model.Selectors)
@@ -131,7 +131,7 @@
 								<label class="noMargin" style="padding-left:15px;">
 			                        <input data-original="@(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")" @(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")
 			                               class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.Id)" data-parent="first_@(firstUser.Id)" type="checkbox" name="customize_@(firstUser.Id)_@secondUser.Id" />
-			                        @secondUser.GetNameAndTitle()
+			                        @secondUser.GetNameExtended()
 		                        </label>
 	                        </div>
                         }

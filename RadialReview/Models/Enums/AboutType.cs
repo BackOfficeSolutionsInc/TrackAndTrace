@@ -12,8 +12,9 @@ namespace RadialReview.Models.Enums
         Self            = 1,
         Subordinate     = 2,
         Teammate        = 4,
-        Peer            = 8,
-        Manager         = 16,
+		Peer			= 8,
+		Manager			= 16,
+		Organization	= 32,
     }
 
 }

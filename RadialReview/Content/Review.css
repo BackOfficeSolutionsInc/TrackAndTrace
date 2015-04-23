@@ -197,8 +197,8 @@ input[type="range"] {
 	right: 3px;
 	z-index: 2;
 	color: white;
-	-ms-opacity: .2;
-	opacity: .2;
+	-ms-opacity: .5;
+	opacity: .5;
 	cursor: pointer;
 }
 

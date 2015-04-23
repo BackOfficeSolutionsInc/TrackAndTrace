@@ -8,6 +8,7 @@ using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Reviews;
 using RadialReview.Properties;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
@@ -123,12 +124,12 @@ namespace RadialReview.Accessors
             reviewModel.ClientReview.ReviewId = reviewModel.Id;
             dataInteraction.Update(reviewModel);
 
-			ReviewAccessor.AddAskablesToReview(dataInteraction.GetUpdateProvider(), perms, caller, forUser, reviewModel, reviewContainer.AnonymousByDefault ,askables);
+			ReviewAccessor.AddAskablesToReview(dataInteraction, perms, caller, forUser, reviewModel, reviewContainer.AnonymousByDefault ,askables);
             return reviewModel;
         }
 		
 		[Obsolete("Use AskableAccessor.GetAskablesForUser",false)]
-        public static List<QuestionModel> GetQuestionsForUser(AbstractQuery s, PermissionsUtility perms, long forUserId)
+        public static List<QuestionModel> GetQuestionsForUser(AbstractQuery s, PermissionsUtility perms, long forUserId,DateRange range)
         {
             perms.ViewUserOrganization(forUserId, false);
             var forUser = s.Get<UserOrganizationModel>(forUserId);
@@ -147,17 +148,17 @@ namespace RadialReview.Accessors
             //Application Questions
             var applicationQuestions = s.All<ApplicationWideModel>().SelectMany(x => x.CustomQuestions).ToList();
             questions.AddRange(applicationQuestions);
-            return questions;
+            return questions.FilterRange(range).ToList();
         }
 
-        public List<QuestionModel> GetQuestionsForUser(UserOrganizationModel caller, long forUserId)
+		public List<QuestionModel> GetQuestionsForUser(UserOrganizationModel caller, long forUserId, DateRange range=null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetQuestionsForUser(s.ToQueryProvider(true), perms, forUserId);
+					return GetQuestionsForUser(s.ToQueryProvider(true), perms, forUserId, range);
                 }
             }
         }

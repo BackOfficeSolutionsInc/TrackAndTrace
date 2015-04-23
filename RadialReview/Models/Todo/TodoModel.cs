@@ -13,6 +13,7 @@ namespace RadialReview.Models.Todo
 		public virtual long Id { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual DateTime CreateTime { get; set; }
+		public virtual DateTime DueDate { get; set; }
 		public virtual DateTime? CompleteTime { get; set; }
 		public virtual String Message { get; set; }
 		public virtual String Details { get; set; }
@@ -34,6 +35,7 @@ namespace RadialReview.Models.Todo
 		public TodoModel()
 		{
 			CreateTime = DateTime.UtcNow;
+			DueDate = CreateTime.AddDays(7);
 		}
 
 		public class IssueMap : ClassMap<TodoModel>
@@ -46,6 +48,7 @@ namespace RadialReview.Models.Todo
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.CompleteTime);
+				Map(x => x.DueDate);
 
 				Map(x => x.ForModel);
 				Map(x => x.ForModelId);

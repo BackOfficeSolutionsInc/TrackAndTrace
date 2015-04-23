@@ -9,8 +9,20 @@ namespace RadialReview.Models.Askables
 {
     public abstract class ResponsibilityGroupModel : ILongIdentifiable, IDeletable
     {
-        public virtual long Id { get; set; }
-        public abstract String GetName();
+		public virtual long Id { get; set; }
+		public abstract String GetName();
+
+	    public virtual String GetNameExtended(){
+		    return GetName();
+	    }
+		public virtual string GetNameShort(){
+			return GetName();
+		}
+
+	    public virtual string GetImageUrl(){
+		    return ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder;
+	    }
+
         public abstract String GetGroupType();
 
         public virtual OrganizationModel Organization { get; set; }
@@ -37,6 +49,8 @@ namespace RadialReview.Models.Askables
 		public virtual DateTime? DeleteTime { get;set; }
 
 		#endregion
+
+		
 	}
 
     public class OrganizationPositionModel : ResponsibilityGroupModel
@@ -88,7 +102,7 @@ namespace RadialReview.Models.Askables
                 CreatedBy = creator.Id,
                 InterReview = false,
                 ManagedBy = manager.Id,
-                Name = manager.GetNameAndTitle() + " Subordinates",
+                Name = manager.GetNameAndTitle() + " Direct Reports",
                 OnlyManagersEdit=true,
                 Organization = manager.Organization,
                 Responsibilities = new List<ResponsibilityModel>(),

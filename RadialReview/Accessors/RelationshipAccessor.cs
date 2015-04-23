@@ -1,4 +1,6 @@
-﻿using RadialReview.Models;
+﻿using RadialReview.Exceptions;
+using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
@@ -15,16 +17,24 @@ namespace RadialReview.Accessors
     {
         public static List<AboutType> GetRelationships(PermissionsUtility perms, AbstractQuery q, long userId, long otherId)
         {
-            perms.ViewUserOrganization(userId,false);
-            perms.ViewUserOrganization(otherId, false);
 
-            var user = q.Get<UserOrganizationModel>(userId);
-            var other = q.Get<UserOrganizationModel>(otherId);
+            var user = q.Get<ResponsibilityGroupModel>(userId);
+			var other = q.Get<ResponsibilityGroupModel>(otherId);
+
+            perms.ViewUserOrganization(userId,false);
+			if (other is UserOrganizationModel)
+				perms.ViewUserOrganization(otherId, false);
+			else if (other is OrganizationModel)
+				perms.ViewOrganization(otherId);
+			else 
+				throw new PermissionsException("Unhandled.");
             
             var output = new List<AboutType>();
 
             //Self
-	        if (userId == other.Id){
+	        if (other.Organization.Id == other.Id){
+				output.Add(AboutType.Organization);
+	        }else if (userId == other.Id){
 		        output.Add(AboutType.Self);
 	        }else{
 		        //Teammates
@@ -52,7 +62,7 @@ namespace RadialReview.Accessors
             if (!output.Any())
                 output.Add(AboutType.NoRelationship);
 
-            var preferredOrder = new AboutType[] {
+            var preferredOrder = new [] {
                 AboutType.Self,
                 AboutType.Manager,
                 AboutType.Subordinate,

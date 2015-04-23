@@ -147,6 +147,14 @@ namespace RadialReview.Models
             return ownedBy;
         }
 
+		public override string GetNameExtended()
+		{
+			return this.GetNameAndTitle();
+		}
+		public override string GetNameShort()
+		{
+			return this.GetFirstName();
+		}
         public override string GetName()
         {
             if (this.User != null)
