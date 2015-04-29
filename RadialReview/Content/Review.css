@@ -400,6 +400,7 @@ input[type="range"] {
 	-ms-transform-style: preserve-3d;
 	-o-transform-style: preserve-3d;
 	transform-style: preserve-3d;
+	transition: opacity .4s ease;
 }
 
 .flipCar figure * {
@@ -428,6 +429,17 @@ input[type="range"] {
 	-o-transform: rotateY( 180deg );
 	-webkit-transform: rotateY( 180deg );
 	transform: rotateY( 180deg );
+}
+	.flipCard.flipped .front {
+		opacity: 0;
+	}
+
+	.flipCard:not(.flipped) .back {
+		opacity: 0;
+	}
+
+.flipCard.flipped .back {
+	-ms-backface-visibility: visible !important;
 }
 
 .flipButton {

@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RadialReview.Models;
 using RadialReview.Utilities;
-using NHibernate;
 using RadialReview.Tests.Utilities;
 using RadialReview.Exceptions;
 using Moq.Protected;

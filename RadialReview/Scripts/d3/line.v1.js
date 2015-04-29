@@ -187,7 +187,7 @@ function LineGraph(argsMap) {
 
 	//var formatNumber = d3.format(",.0f"); // for formatting integers
 	var tickFormatForLogScale = ",.0f";/*function (d) {
-		debugger;
+		
 		return d3.format(",.0f")(d);//formatNumber(d);
 	};*/
 
@@ -484,7 +484,7 @@ function LineGraph(argsMap) {
  				 * We also reach out to the persisted 'data' object for time
  				 * since the 'd' passed in here is one of the children, not the parent object
 				 */
-				debugger;
+				
 				var _x = x(data.startTime.getTime() + (data.step * i));
 
 				// verbose logging to show what's actually being done
@@ -494,7 +494,7 @@ function LineGraph(argsMap) {
 			})
 			.y(function (d, i) {
 
-				debugger;
+				
 				if (yScale == 'log' && d < 0.1) {
 					// log scale can't have 0s, so we set it to the smallest value we set on y
 					d = 0.1;
@@ -611,7 +611,7 @@ function LineGraph(argsMap) {
 	var createLegend = function () {
 
 		// append a group to contain all lines
-		//debugger;
+		//
 		var legendLabelGroup = graph.append("svg:g")
 				.attr("class", "legend-group")
 			.selectAll("g")
@@ -974,7 +974,7 @@ function LineGraph(argsMap) {
 	 */
 	var initDimensions = function () {
 		// automatically size to the container using JQuery to get width/height
-		//debugger;
+		//
 
 		w = $("#" + containerId).width() - margin[1] - margin[3]; // width
 		h = $("#" + containerId).height() - margin[0] - margin[2]; // height

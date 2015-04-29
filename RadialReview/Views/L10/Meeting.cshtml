@@ -30,7 +30,6 @@
 	@Html.Partial("_SetupScript", Model)
 	<script>
 		function afterLoad() {
-			debugger;
 			userId = @(ViewBag.UserId);
 			@if (Model.Meeting != null){
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");

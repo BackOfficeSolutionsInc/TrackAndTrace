@@ -20,10 +20,8 @@
 @using (Html.BeginScripts()){
 	<script>
 		if (window.location.hash) {
-			debugger;
 			window.location = window.location.href.replace("#", "&");
 		} else {
-			debugger;
 			$(".isHidden").removeClass("hidden");
 		}
 	</script>

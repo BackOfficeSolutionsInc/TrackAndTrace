@@ -104,7 +104,7 @@
 			<div class="smallBreak"></div>
 			@foreach (var group in Model.Answers.GroupBy(x => x.BaseAnswer.Askable.Category.Id).OrderByDescending(x => x.Key))
 			{
-				var dict = new ViewDataDictionary();
+				var dict = new ViewDataDictionary(ViewData);
 
 				var sliders = group.ToList().Where(x => x.BaseAnswer is SliderAnswer).Select(x => x.BaseAnswer).Cast<SliderAnswer>().ToList();
 				var thumbs = group.ToList().Where(x => x.BaseAnswer is ThumbsAnswer).Select(x => x.BaseAnswer).Cast<ThumbsAnswer>().ToList();

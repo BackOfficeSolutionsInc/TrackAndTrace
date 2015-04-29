@@ -1,19 +1,14 @@
-﻿
-using FluentNHibernate.Automapping;
-using FluentNHibernate.Automapping.Alterations;
+﻿using System.Web;
 using FluentNHibernate.Mapping;
-using NHibernate.Proxy;
+using NHibernate;
 using RadialReview.Models.Askables;
-using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.UserModels;
 using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Web;
 
 namespace RadialReview.Models
 {
@@ -28,8 +23,8 @@ namespace RadialReview.Models
 
         public virtual TempUserModel TempUser { get; set; }
         public virtual String EmailAtOrganization { get; set; }
-        public virtual Boolean ManagerAtOrganization { get; set; }
-        public virtual Boolean ManagingOrganization { get; set; }
+		public virtual Boolean ManagerAtOrganization { get; set; }
+		public virtual Boolean ManagingOrganization { get; set; }
         public virtual Boolean IsRadialAdmin { get; set; }
         //public virtual String Title { get; set; }
         public virtual DateTime AttachTime { get; set; }
@@ -43,9 +38,11 @@ namespace RadialReview.Models
 			    if (User == null)
 				    return new long[]{Id};
 			    
-				return User.UserOrganization.Select(x => x.Id).ToArray();
+				return User.UserOrganizationIds;//.Select(x => x.Id).ToArray();
 		    }
 	    }
+
+		public virtual UserLookup Cache { get; set; }
 
 	    public virtual IList<ManagerDuration> ManagingUsers { get; set; }
         public virtual IList<ManagerDuration> ManagedBy { get; set; }
@@ -62,7 +59,7 @@ namespace RadialReview.Models
         public virtual DateTime CreateTime { get; set; }
         public virtual int CountPerPage { get; set; }
         public virtual String JobDescription { get; set; }
-
+		
 		public virtual long? JobDescriptionFromTemplateId { get; set; }
 
 		public virtual int NumRocks { get; set; }
@@ -122,6 +119,7 @@ namespace RadialReview.Models
             Positions = new List<PositionDurationModel>();
             Teams = new List<TeamDurationModel>();
             TempUser = null;
+			Cache=new UserLookup();
         }
 
         public override string ToString()
@@ -213,6 +211,43 @@ namespace RadialReview.Models
             return User.NotNull(x => x.UserName) ?? TempUser.Email;
         }
 
+
+		public virtual void UpdateCache(ISession s)
+		{
+			if (Cache==null)
+				Cache=new UserLookup();
+
+			Cache.OrganizationId = Organization.Id;
+			Cache._ImageUrlSuffix = this.ImageUrl(true, ImageSize._suffix);
+			Cache.AttachTime = AttachTime;
+			Cache.CreateTime = CreateTime;
+			Cache.DeleteTime = DeleteTime;
+			Cache.Email = this.GetEmail();
+			Cache.HasJoined = User != null;
+			Cache.HasSentInvite = !(TempUser != null && TempUser.LastSent == null);
+			Cache.IsAdmin = ManagingOrganization;
+			Cache.IsManager = this.IsManager();
+			Cache.Managers = String.Join(", ", ManagedBy.ToListAlive().Select(x => x.Manager.GetName()));
+			Cache.Positions = String.Join(", ", Positions.ToListAlive().Select(x => x.Position.CustomName));
+			Cache.Teams = String.Join(", ", Teams.ToListAlive().Select(x => x.Team.Name));
+			Cache.Name = this.GetName();
+			Cache.NumMeasurables = NumMeasurables;
+			Cache.NumRoles = NumRoles;
+			Cache.NumRocks = NumRocks;
+			Cache.UserId = Id;
+			s.SaveOrUpdate(Cache);
+			try{
+				var id = HttpContext.Current.Session[Constants.SESSION_USERORGANIZATION_ID];
+				if (id != null && (long)id==Id){
+					//cache is dirty
+					HttpContext.Current.Session[Constants.SESSION_USERORGANIZATION]=null;
+				}
+
+			}catch (Exception e){
+				throw new Exception("Could not update Session",e);
+			}
+
+		}
 	}
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
@@ -237,7 +272,8 @@ namespace RadialReview.Models
 			Map(x => x.JobDescription).Length(65000);
 			Map(x => x.JobDescriptionFromTemplateId);
 
-            References(x => x.TempUser).Not.LazyLoad().Cascade.All();
+			References(x => x.TempUser).Not.LazyLoad().Cascade.All();
+			References(x => x.Cache).LazyLoad().Cascade.All();
 
             //Reviews
             HasMany(x => x.Reviews)
@@ -259,14 +295,17 @@ namespace RadialReview.Models
                 .Column("Organization_Id")
                 .Cascade.SaveUpdate();*/
             HasMany(x => x.Teams)
+				.LazyLoad()
                 .KeyColumn("User_id")
                 .Cascade.SaveUpdate();
 
             HasMany(x => x.ManagedBy)
+				.LazyLoad()
                 .KeyColumn("SubordinateId")
                 .Cascade.SaveUpdate();
 
             HasMany(x => x.ManagingUsers)
+				.LazyLoad()
                 .KeyColumn("ManagerId")
                 .Cascade.SaveUpdate();
 
@@ -283,19 +322,24 @@ namespace RadialReview.Models
                 .Cascade.SaveUpdate();*/
 
 
-            HasManyToMany(x => x.Groups)
+			HasManyToMany(x => x.Groups)
+				.LazyLoad()
                 .Table("GroupMembers")
                 .Inverse();
-            HasManyToMany(x => x.ManagingGroups)
+			HasManyToMany(x => x.ManagingGroups)
+				.LazyLoad()
                 .Table("GroupManagement")
                 .Inverse();
             HasMany(x => x.CustomQuestions)
+				.LazyLoad()
                 .KeyColumn("UserQuestion_Id")
                 .Inverse();
             HasMany(x => x.CreatedQuestions)
+				.LazyLoad()
                 .KeyColumn("CreatedQuestionsId")
                 .Inverse();
             HasManyToMany(x => x.CreatedNexuses)
+				.LazyLoad()
                 .Cascade.SaveUpdate()
                 .Table("UserOrganizationNexuses");
 

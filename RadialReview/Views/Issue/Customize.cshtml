@@ -80,7 +80,6 @@
         qtip();
         $('form').unbind('submit');
         $("form").submit(function (event) {
-            debugger;
 	        $("#submitButton").prop("disabled", true);
             if ($(".customizeBoxes:checked").length == 0) {
                 alert("You haven't customized the review. You must ensure that some members review each other.");
@@ -107,7 +106,7 @@
                 return;
             }*/
 
-	        debugger;
+	        
             if ($("#SessionId").val() == -3) {
             	alert("You must specify this session.");
             	event.preventDefault();
@@ -126,7 +125,6 @@
 
 		function showPeriodModal(that) {
 			showModal("Add Session", "/Period/Modal/0", "/Period/Modal", null, null, function (data) {
-				debugger;
 				$(".SessionForm").prepend("<option value='" + data.Object.Id + "'>" + data.Object.Name + "</option>");
 				$(that).val(data.Object.Id);
 			});
@@ -148,7 +146,6 @@
 
         var nowTemp = new Date();
         var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-        debugger;
         var checkout = $('#DueDate').datepicker({
             format: 'mm-dd-yyyy',
             onRender: function (date) {

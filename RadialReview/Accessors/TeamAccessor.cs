@@ -561,6 +561,7 @@ namespace RadialReview.Accessors
 					var teamDuration = new TeamDurationModel(uOrg, team, caller.Id);
 
 					s.Save(teamDuration);
+					uOrg.UpdateCache(s);
 
 					tx.Commit();
 					s.Flush();

@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<button onclick="$.ajax('/UnitTest/TestRequest?error=true')">Test Error</button>
+<button onclick="$.ajax('/UnitTest/TestRequest?error=false&silent=false')">Test Success</button>
+<button onclick="$.ajax('/UnitTest/TestRequest')">Test Silent</button>
+<button onclick="$.ajax('/UnitTest/TestRequest?refresh=true&silent=false')">Test Refresh</button>

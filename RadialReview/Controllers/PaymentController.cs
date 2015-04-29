@@ -11,7 +11,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Any)]
         public ActionResult Index(int? count)
         {
-            GetUserModel();
+            //GetUserModel();
 
             if (count == null)
                 return RedirectToAction("Index", "Organization");

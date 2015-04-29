@@ -125,7 +125,7 @@ function updateOrgChart(chart) {
    /* if (chart.chartNodes.length > 0)
         flatten();*/
     /*var root=chart.roots[0];
-    debugger;
+    
     var nodes2 = flatten(root);
     var links2 = d3.layout.tree().links(nodes2);*/
     chart.chartNodes.forEach(function (d, i) {
@@ -272,7 +272,7 @@ function addNode(chart,id ,depth) {
     chart.nodes.push(node);
     chart.chartNodes.push(node);
     chart.lookup["n_" + id] = node;
-    //debugger;
+    //
 }
 /*
 function addRoot(chart, id) {
@@ -282,6 +282,6 @@ function addRoot(chart, id) {
     chart.roots.push(node);
     chart.chartNodes.push(node);
     chart.lookup["r_" + id] = node;
-    //debugger;
+    //
 }
 */

@@ -198,8 +198,10 @@ namespace RadialReview.Controllers {
 			_UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, model.LastSent);
 			model.Id = TempId;
 			var result = await Emailer.SendEmail(_NexusAccessor.CreateJoinEmailToGuid(GetUser(), model));
-
-			return Json(result.ToResults("Resent invite to " + model.Name() + "."));
+			var prefix = "Resent";
+			if (model.LastSent == null)
+				prefix = "Sent";
+			return Json(result.ToResults(prefix+" invite to " + model.Name() + "."));
 		}
 
 

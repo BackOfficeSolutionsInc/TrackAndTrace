@@ -111,8 +111,7 @@ namespace RadialReview.Accessors
 
 			// var askable = new List<Askable>();
 
-            var reviewModel = new ReviewModel()
-            {
+            var reviewModel = new ReviewModel(){
                 ForUserId = forUser.Id,
                 ForReviewsId = reviewContainer.Id,
                 DueDate = reviewContainer.DueDate,
@@ -122,6 +121,7 @@ namespace RadialReview.Accessors
 
             dataInteraction.Save(reviewModel);
             reviewModel.ClientReview.ReviewId = reviewModel.Id;
+	        reviewModel.ClientReview.ReviewContainerId = reviewModel.ForReviewsId;
             dataInteraction.Update(reviewModel);
 
 			ReviewAccessor.AddAskablesToReview(dataInteraction, perms, caller, forUser, reviewModel, reviewContainer.AnonymousByDefault ,askables);

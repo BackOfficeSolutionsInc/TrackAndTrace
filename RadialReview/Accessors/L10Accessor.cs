@@ -10,6 +10,7 @@ using Microsoft.AspNet.SignalR;
 using NHibernate.Linq;
 using NHibernate.Transform;
 using RadialReview.Accessors.TodoIntegrations;
+using RadialReview.Controllers;
 using RadialReview.Exceptions;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Hubs;
@@ -20,6 +21,7 @@ using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
+using RadialReview.Models.Scheduler;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
 using RadialReview.Properties;
@@ -1029,7 +1031,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, int?>> ratingValues)
+		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, int?>> ratingValues,bool sendEmail)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -1082,37 +1084,40 @@ namespace RadialReview.Accessors
 					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).concludeMeeting();
 
 					//send emails
-					try{
-						var todoList = s.QueryOver<TodoModel>().Where(x =>
-							x.DeleteTime == null &&
-							x.ForRecurrenceId == recurrenceId &&
-							x.CompleteTime == null
-							).List().ToList();
-						var unsent = new List<MailModel>();
+					if (sendEmail){
+						try{
+							var todoList = s.QueryOver<TodoModel>().Where(x =>
+								x.DeleteTime == null &&
+								x.ForRecurrenceId == recurrenceId &&
+								x.CompleteTime == null
+								).List().ToList();
+							var unsent = new List<MailModel>();
 
-						foreach (var personTodos in todoList.GroupBy(x => x.AccountableUser.GetEmail())){
-							var user = personTodos.First().AccountableUser;
-							var email = user.GetEmail();
+							foreach (var personTodos in todoList.GroupBy(x => x.AccountableUser.GetEmail())){
+								var user = personTodos.First().AccountableUser;
+								var email = user.GetEmail();
 
-							var table = new StringBuilder();
-							table.Append(@"<table width=""100%"">");
-							table.Append(@"<tr><th colspan=""2"" align=""left"">To-do</th><th align=""right"">Due Date</th></tr>");
-							var i = 1;
-							foreach (var todo in personTodos.OrderBy(x => x.DueDate.Date).ThenBy(x => x.Message)){
-								table.Append(@"<tr><td width=""1px"">").Append(i).Append(@". </td><td align=""left"">").Append(todo.Message).Append(@"</td><td  align=""right"">").Append(todo.DueDate.ToShortDateString()).Append("</td></tr>");
-								i++;
+								var table = new StringBuilder();
+								table.Append(@"<table width=""100%"">");
+								table.Append(@"<tr><th colspan=""2"" align=""left"">To-do</th><th align=""right"">Due Date</th></tr>");
+								var i = 1;
+								foreach (var todo in personTodos.OrderBy(x => x.DueDate.Date).ThenBy(x => x.Message)){
+									table.Append(@"<tr><td width=""1px"">").Append(i).Append(@". </td><td align=""left"">").Append(todo.Message).Append(@"</td><td  align=""right"">").Append(todo.DueDate.ToShortDateString()).Append("</td></tr>");
+									i++;
+								}
+								table.Append("</table>");
+
+								var mail = MailModel.To(email)
+									.Subject(EmailStrings.MeetingSummary_Subject, recurrence.Name)
+									.Body(EmailStrings.MeetingSummary_Body, user.GetName(), table.ToString(), ProductStrings.ProductName);
+								unsent.Add(mail);
 							}
-							table.Append("</table>");
 
-							var mail = MailModel.To(email)
-								.Subject(EmailStrings.MeetingSummary_Subject, recurrence.Name)
-								.Body(EmailStrings.MeetingSummary_Body, user.GetName(), table.ToString(), ProductStrings.ProductName);
-							unsent.Add(mail);
+							await Emailer.SendEmails(unsent);
 						}
-
-						await Emailer.SendEmails(unsent);
-					}catch(Exception e){
-						log.Error("Emailer issue:"+recurrence.Id,e);
+						catch (Exception e){
+							log.Error("Emailer issue:" + recurrence.Id, e);
+						}
 					}
 
 					tx.Commit();
@@ -1336,6 +1341,80 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction()){
 					return ExternalTodoAccessor.GetExternalLinksForModel(s, PermissionsUtility.Create(s, caller), ForModel.Create<L10Recurrence>(recurrenceId));
+				}
+			}
+		}
+
+		public static void UpdateTodo(UserOrganizationModel caller, long todoId, string message = null, string details = null, DateTime? dueDate = null, long? accountableUser = null)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var todo = s.Get<TodoModel>(todoId);
+					if (todo==null)
+						throw new PermissionsException("Todo does not exist.");
+					if (todo.ForRecurrenceId == null || todo.ForRecurrenceId == 0)
+						throw new PermissionsException("Meeting does not exist.");
+					PermissionsUtility.Create(s, caller).EditL10Recurrence(todo.ForRecurrenceId.Value);
+					
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(todo.ForRecurrenceId.Value));
+					
+
+					if (message != null){
+						todo.Message = message;
+						group.updateTodoMessage(todoId, message);
+					}
+					if (details != null){
+						todo.Details = details;
+						group.updateTodoDetails(todoId, details);
+					}
+					if (dueDate != null){
+						todo.DueDate = dueDate.Value;
+						group.updateTodoDueDate(todoId, dueDate.Value.ToJavascriptMilliseconds());
+					}
+					if (accountableUser!=null){
+						todo.AccountableUserId = accountableUser.Value;
+						todo.AccountableUser = s.Load<UserOrganizationModel>(accountableUser.Value);
+						group.updateTodoAccountableUser(todoId, accountableUser.Value, todo.AccountableUser.GetName(), todo.AccountableUser.ImageUrl(true,ImageSize._32));
+
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, string message, string details)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var issue = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
+					if (issue == null)
+						throw new PermissionsException("Todo does not exist.");
+
+					var recurrenceId = issue.Recurrence.Id;
+					if (recurrenceId == 0)
+						throw new PermissionsException("Meeting does not exist.");
+					PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
+
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+					
+					if (message != null){
+						issue.Issue.Message = message;
+						group.updateIssueMessage(issueRecurrenceId, message);
+					}
+					if (details != null){
+						issue.Issue.Description = details;
+						group.updateIssueDetails(issueRecurrenceId, details);
+					}
+
+					tx.Commit();
+					s.Flush();
 				}
 			}
 		}

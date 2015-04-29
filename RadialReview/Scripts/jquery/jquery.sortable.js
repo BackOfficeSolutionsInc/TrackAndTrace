@@ -106,8 +106,8 @@ $.fn.sortable = function(options) {
 					placeholders.not(placeholder).detach();
 				}
 			} else if (!placeholders.is(this) && !$(this).children(options.items).length) {
-				if (e.type == "dragenter")
-					debugger;
+				if (e.type == "dragenter") {
+				}
 				placeholders.detach();
 				$(this).append(placeholder);
 			}

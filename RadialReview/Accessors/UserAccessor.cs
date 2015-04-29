@@ -26,11 +26,11 @@ namespace RadialReview.Accessors
 
 	public class UserAccessor : BaseAccessor
 	{
-		public String GetUserIdByUsername(String username)
+		public String GetUserIdByUsername(ISession s,String username)
 		{
 			return (string)CacheLookup.GetOrAddDefault("username_" + username, x =>
 			{
-				return GetUserByEmail(username).Id;
+				return GetUserByEmail(s,username).Id;
 			});
 		}
 		public String GetUserNameByUserOrganizationId(long userOrgId)
@@ -43,15 +43,24 @@ namespace RadialReview.Accessors
 
 		public UserModel GetUserById(String userId)
 		{
-			if (userId == null)
-				throw new LoginException();
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					return s.Get<UserModel>(userId);
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					return GetUserById(s, userId);
 				}
 			}
+		}
+
+		public UserModel GetUserById(ISession s,String userId)
+		{
+			if (userId == null)
+				throw new LoginException();
+			//using (var s = HibernateSession.GetCurrentSession())
+			//{
+				//using (var tx = s.BeginTransaction())
+				//{
+			return s.Get<UserModel>(userId);
+				//}
+			//}
 		}
 
 
@@ -69,19 +78,29 @@ namespace RadialReview.Accessors
 		}
 
 		[Obsolete("Dont use this elsewhere", false)]
-		public UserModel GetUserByEmail(String email)
+		public UserModel GetUserByEmail(ISession s,String email)
 		{
 			if (email == null)
 				throw new LoginException();
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var lower = email.ToLower();
-					return s.QueryOver<UserModel>().Where(x => x.UserName == lower).SingleOrDefault();
+			//using (var s = HibernateSession.GetCurrentSession())
+			//{
+			//	using (var tx = s.BeginTransaction())
+			//	{
+			var lower = email.ToLower();
+			return s.QueryOver<UserModel>().Where(x => x.UserName == lower).SingleOrDefault();
+			//	}
+			//}
+		}
+		[Obsolete("Dont use this elsewhere", false)]
+		public UserModel GetUserByEmail(String email)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					return GetUserByEmail(s, email);
 				}
 			}
 		}
+
 
 		[Obsolete("Dont use this, its unsafe", false)]
 		public UserOrganizationModel GetUserOrganizationUnsafe(long userOrganizationId)
@@ -118,29 +137,38 @@ namespace RadialReview.Accessors
 			return s.Get<UserOrganizationModel>(userOrganizationId);
 		}
 
-		public List<UserOrganizationModel> GetUserOrganizations(String userId, String redirectUrl, Boolean full = false)
+		public List<UserOrganizationModel> GetUserOrganizations(ISession s,String userId, String redirectUrl, Boolean full = false)
 		{
 			if (userId == null)
 				throw new LoginException(redirectUrl);
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var user = s.Get<UserModel>(userId);
-					//var user = users.SingleOrDefault();
-					//.FetchMany(x=>x.UserOrganization)
-					//.SingleOrDefault();// db.UserModels.AsNoTracking().FirstOrDefault(x => x.IdMapping == userId);
-					if (user == null)
-						throw new LoginException(redirectUrl);
-					var userOrgs = new List<UserOrganizationModel>();
+			//using (var s = HibernateSession.GetCurrentSession())
+			//{
+			//	using (var tx = s.BeginTransaction())
+			//	{
+			var user = s.Get<UserModel>(userId);
+			//var user = users.SingleOrDefault();
+			//.FetchMany(x=>x.UserOrganization)
+			//.SingleOrDefault();// db.UserModels.AsNoTracking().FirstOrDefault(x => x.IdMapping == userId);
+			if (user == null)
+				throw new LoginException(redirectUrl);
+			var userOrgs = new List<UserOrganizationModel>();
 
-					foreach (var userOrg in user.UserOrganization.ToListAlive())
-					{
-						userOrgs.Add(GetUserOrganizationModel(s, userOrg.Id, full));
-					}
-					return userOrgs;
-				}
+			foreach (var userOrg in user.UserOrganization.ToListAlive()){
+				userOrgs.Add(GetUserOrganizationModel(s, userOrg.Id, full));
 			}
+			return userOrgs;
+			//	}
+			//}
+		}
+
+		public int GetUserOrganizationCounts(ISession s, String userId, String redirectUrl, Boolean full = false)
+		{
+			if (userId == null)
+				throw new LoginException(redirectUrl);
+			var user = s.Get<UserModel>(userId);
+			if (user == null)
+				throw new LoginException(redirectUrl);
+			return user.UserOrganizationCount;
 		}
 
 		public List<UserOrganizationModel> GetPeers(UserOrganizationModel caller, long forId)
@@ -230,17 +258,22 @@ namespace RadialReview.Accessors
 		{
 			/*if (full)
 			{*/
-			var result = session.Query<UserOrganizationModel>().Where(x => x.Id == id);
-			//result.FetchMany(x => x.ManagingGroups).ToFuture();
-			result.FetchMany(x => x.ManagingUsers).ToFuture();
+			//var result = session.Query<UserOrganizationModel>().Where(x => x.Id == id);
+			////result.FetchMany(x => x.ManagingGroups).ToFuture();
+			////result.FetchMany(x => x.ManagingUsers).ToFuture();
 			//result.FetchMany(x => x.Groups).ToFuture();
-			result.FetchMany(x => x.ManagedBy).ToFuture();
-			result.FetchMany(x => x.CustomQuestions).ToFuture();
+			//result.FetchMany(x => x.ManagedBy).ToFuture();
+			////result.FetchMany(x => x.CustomQuestions).ToFuture();
 			//result.FetchMany(x => x.CreatedNexuses).ToFuture();
-			result.Fetch(x => x.Organization).ToFuture();
-			result.Fetch(x => x.User).ToFuture();
+			//result.Fetch(x => x.Organization).ToFuture();
+			//result.Fetch(x => x.User).ToFuture();
 
-			return result.AsEnumerable().SingleOrDefault();
+			var result = session.Get<UserOrganizationModel>(id);
+			/*if (result.User!=null)
+				result.User = session.Get<UserModel>(result.User.Id);
+			result.Organization = session.Get<OrganizationModel>(result.Organization.Id);
+			*/
+			return result;//.AsEnumerable().SingleOrDefault();
 
 
 			/*return db.UserOrganizationModels
@@ -291,40 +324,45 @@ namespace RadialReview.Accessors
 		}*/
 		}
 
-		public UserOrganizationModel GetUserOrganizations(String userId, long userOrganizationId, String redirectUrl, Boolean full = false)
+		public UserOrganizationModel GetUserOrganizations(ISession s,String userId, long userOrganizationId, String redirectUrl, Boolean full = false)
 		{
 			if (userId == null)
 				throw new LoginException();
-			using (var s = HibernateSession.GetCurrentSession())
+			//using (var s = HibernateSession.GetCurrentSession())
+			//{
+			//	using (var tx = s.BeginTransaction())
+			//	{
+			var user = s.Get<UserModel>(userId);
+			/*.FetchMany(x => x.UserOrganization)
+			.ThenFetch(x => x.Organization)
+			.SingleOrDefault();*/
+
+			//                    var user = db.UserModels.Include(x => x.UserOrganization.Select(y => y.Organization)).FirstOrDefault(x => x.IdMapping == userId);
+			long matchId = -1;
+
+			if (user == null || !user.IsRadialAdmin)
 			{
-				using (var tx = s.BeginTransaction())
+				if (user == null)
+					throw new LoginException();
+
+				var match = s.Get<UserOrganizationModel>(userOrganizationId);
+				if (match.DetachTime != null || match.DeleteTime != null || match.User ==null || match.User.Id != userId)
+					throw new OrganizationIdException(redirectUrl);
+
+				/*var match = user.UserOrganization.SingleOrDefault(x => x.Id == userOrganizationId && x.DetachTime == null && x.DeleteTime == null);
+				if (match == null)
 				{
-					var user = s.Get<UserModel>(userId);
-					/*.FetchMany(x => x.UserOrganization)
-					.ThenFetch(x => x.Organization)
-					.SingleOrDefault();*/
-
-					//                    var user = db.UserModels.Include(x => x.UserOrganization.Select(y => y.Organization)).FirstOrDefault(x => x.IdMapping == userId);
-					long matchId = -1;
-
-					if (user == null || !user.IsRadialAdmin)
-					{
-						if (user == null)
-							throw new LoginException();
-						var match = user.UserOrganization.SingleOrDefault(x => x.Id == userOrganizationId && x.DetachTime == null && x.DeleteTime == null);
-						if (match == null)
-						{
-							throw new OrganizationIdException(redirectUrl);
-						}
-						matchId = match.Id;
-					}
-					else
-					{
-						matchId = userOrganizationId;
-					}
-					return GetUserOrganizationModel(s, matchId, full);
-				}
+					throw new OrganizationIdException(redirectUrl);
+				}*/
+				matchId = match.Id;
 			}
+			else
+			{
+				matchId = userOrganizationId;
+			}
+			return GetUserOrganizationModel(s, matchId, full);
+			//	}
+			//}
 		}
 
 		public void CreateUser(UserModel userModel)
@@ -383,6 +421,7 @@ namespace RadialReview.Accessors
 					{
 						PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrgId, false);
 						s.Update(tempUser);
+						found.UpdateCache(s);
 						tx.Commit();
 						s.Flush();
 					}
@@ -437,6 +476,8 @@ namespace RadialReview.Accessors
 								m.DeleteTime = deleteTime;
 								m.DeletedBy = caller.Id;
 								s.Update(m);
+								m.Subordinate.UpdateCache(s);
+								m.Manager.UpdateCache(s);
 							}
 							var subordinatesTeam = s.QueryOver<OrganizationTeamModel>()
 								.Where(x => x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId)
@@ -477,6 +518,7 @@ namespace RadialReview.Accessors
 					}
 
 					s.Update(found);
+					found.UpdateCache(s);
 
 					tx.Commit();
 					s.Flush();
@@ -577,6 +619,8 @@ namespace RadialReview.Accessors
 			managerDuration.DeletedBy = caller.Id;
 			managerDuration.DeleteTime = now;
 			s.Update(managerDuration);
+			managerDuration.Subordinate.UpdateCache(s);
+			managerDuration.Manager.UpdateCache(s);
 		}
 
 		public void RemoveManager(UserOrganizationModel caller, long managerDurationId, DateTime now)
@@ -624,8 +668,14 @@ namespace RadialReview.Accessors
 				throw new PermissionsException(manager.GetName() + " is not a manager.");
 
 			DeepSubordianteAccessor.Add(s, manager, user, manager.Organization.Id, now);
-			user.ManagedBy.Add(new ManagerDuration(managerId, userId, caller.Id) { Start = now });
+			user.ManagedBy.Add(new ManagerDuration(managerId, userId, caller.Id){
+				Start = now,
+				Manager = manager,
+				Subordinate = user
+			});
+
 			s.Update(user);
+			user.UpdateCache(s);
 			//s.Update(new DeepSubordinateModel(){ManagerId=manager.Id}
 
 		}
@@ -663,7 +713,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					caller = s.Get<UserModel>(caller.Id);
-					if ((caller != null && caller.IsRadialAdmin) || (callerUserOrg != null && callerUserOrg.IsRadialAdmin) || caller.UserOrganization.Any(x => x.Id == roleId))
+					if ((caller != null && caller.IsRadialAdmin) || (callerUserOrg != null && callerUserOrg.IsRadialAdmin) || caller.UserOrganizationIds.Any(x => x == roleId))
 						caller.CurrentRole = roleId;
 					else
 						throw new PermissionsException();
@@ -687,10 +737,16 @@ namespace RadialReview.Accessors
 						userOrg.FirstName = firstName;
 					if (lastName != null)
 						userOrg.LastName = lastName;
-					if (imageGuid != null)
-					{
+					if (imageGuid != null){
 						userOrg.ImageGuid = imageGuid;
 					}
+
+					if (userOrg.UserOrganization != null){
+						foreach (var u in userOrg.UserOrganization){
+							u.UpdateCache(s);
+						}
+					}
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -735,6 +791,13 @@ namespace RadialReview.Accessors
 					var user = s.Get<UserOrganizationModel>(userId);
 					user.DetachTime = now;
 					user.DeleteTime = now;
+					
+					var newArray = user.User.UserOrganizationIds.ToList();
+					if (!newArray.Remove(userId))
+						throw new PermissionsException("User does not exist.");
+
+					user.User.UserOrganizationIds = newArray.ToArray();
+					
 
 					var tempUser = user.TempUser;
 					if (tempUser != null)
@@ -752,6 +815,8 @@ namespace RadialReview.Accessors
 						sub.DeletedBy = caller.Id;
 						sub.DeleteTime = now;
 						s.Update(sub);
+						//sub.Subordinate.UpdateCache(s);
+						sub.Manager.UpdateCache(s);
 					}
 					var subordinates = s.QueryOver<ManagerDuration>().Where(x => x.ManagerId == userId && x.DeleteTime == null).List().ToList();
 					foreach (var subordinate in subordinates)
@@ -759,6 +824,8 @@ namespace RadialReview.Accessors
 						subordinate.DeletedBy = caller.Id;
 						subordinate.DeleteTime = now;
 						s.Update(subordinate);
+						subordinate.Subordinate.UpdateCache(s);
+						//subordinate.Manager.UpdateCache(s);
 
 						warnings.Add(user.GetFirstName() + " no longer manages " + subordinate.Subordinate.GetNameAndTitle() + ".");
 					}
@@ -769,6 +836,8 @@ namespace RadialReview.Accessors
 						t.DeletedBy = caller.Id;
 						t.DeleteTime = now;
 						s.Update(t);
+						//subordinate.Subordinate.UpdateCache(s);
+						//subordinate.Manager.UpdateCache(s);
 					}
 					//managed teams
 					var managedTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.ManagedBy == userId).List().ToList();
@@ -795,6 +864,8 @@ namespace RadialReview.Accessors
 							s.Update(m);
 						}
 					}
+					s.Update(user);
+					user.UpdateCache(s);
 					tx.Commit();
 					s.Flush();
 
@@ -819,6 +890,7 @@ namespace RadialReview.Accessors
 						user.JobDescription = jobDescription;
 						user.JobDescriptionFromTemplateId = null;
 						s.Update(user);
+						user.UpdateCache(s);
 					}
 					tx.Commit();
 					s.Flush();

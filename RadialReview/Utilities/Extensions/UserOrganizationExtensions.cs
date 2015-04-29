@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using Amazon.EC2.Model;
 using NHibernate;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
@@ -17,7 +18,7 @@ namespace RadialReview
 {
 	public enum ImageSize
 	{
-		_32, _64, _128, _img
+		_32, _64, _128, _img, _suffix
 	}
 
 	public static partial class UserOrganizationExtensions
@@ -156,21 +157,33 @@ namespace RadialReview
 	
 		public static String ImageUrl(this UserOrganizationModel self, bool awsFaster = false, ImageSize size = ImageSize._64)
 		{
-			if (self.User == null || self.User.ImageGuid == null)
+			/*if (self.User == null || self.User.ImageGuid == null)
 				return "/i/userplaceholder";
 			if (awsFaster){
+				var suffix = "/" + self.User.ImageGuid + ".png";
+				if (size == ImageSize._suffix)
+					return suffix;
 				var s = size.ToString().Substring(1);
-				return ConstantStrings.AmazonS3Location + s + "/" + self.User.ImageGuid + ".png";
+				return ConstantStrings.AmazonS3Location + s + suffix;
 			}
-
-			return "/i/" + self.User.ImageGuid;
+			return "/i/" + self.User.ImageGuid;*/
+			return ImageUrl(self.User, awsFaster, size);
 		}
-		public static String ImageUrl(this UserModel self)
+		public static String ImageUrl(this UserModel self,bool awsFaster = false, ImageSize size = ImageSize._64)
 		{
 			if (self == null || self.ImageGuid == null)
 				return "/i/userplaceholder";
+			if (awsFaster){
+				var suffix = "/" + self.ImageGuid + ".png";
+				if (size == ImageSize._suffix)
+					return suffix;
+				var s = size.ToString().Substring(1);
+				return ConstantStrings.AmazonS3Location + s + suffix;
+			}
+
 			return "/i/" + self.ImageGuid;
 		}
+
 		public static String ImageUrl(this UserOrganizationModel self, int width, int height)
 		{
 			if (self.User == null || self.User.ImageGuid == null)

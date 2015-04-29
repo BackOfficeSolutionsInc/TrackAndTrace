@@ -141,7 +141,6 @@
 
 		function showPeriodModal(that) {
 			showModal("Add Session", "/Period/Modal/0", "/Period/Modal", null, null, function (data) {
-				debugger;
 				$(".SessionForm").append("<option value='" + data.Object.Id + "'>" + data.Object.Name + "</option>");
 				$(that).val(data.Object.Id);
 			});

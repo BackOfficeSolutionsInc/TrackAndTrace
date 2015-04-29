@@ -29,7 +29,7 @@
 }
 .todo-list > .todo-row.selected > .message {
 	font-weight: bold;
-	top: -3px;
+	top: -4px;
 	position: relative;
 	color: #3B70CB !important;
 }
@@ -89,12 +89,13 @@
 .todo-list .message {
 	display: inline-block;
 	position: relative;
-	top: -3px;
+	top: -4px;
 	left: -16px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	width: calc(100% - 68px);
+	font-size: 18px;
 }
 
 .todo-list > .todo-row > .message {

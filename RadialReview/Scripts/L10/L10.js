@@ -4,6 +4,14 @@ var followLeader = true;
 //var isLeader = false;
 //var meetingStart = false;
 
+function imageListFormat(state) {
+	if (!state.id) {
+		return state.text;
+	}
+	var $state = $('<span><img style="max-width:32;max-height:32px"  src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+	return $state;
+};
+
 function initL10() {
 	updateTime();
 	resizing();
@@ -159,7 +167,6 @@ function loadPage(location) {
 }
 
 function loadPageForce(location) {
-	debugger;
 	$(".issues-list").sortable("destroy");
 	$(".todo-list").sortable("destroy");
 	window.location.hash = location;

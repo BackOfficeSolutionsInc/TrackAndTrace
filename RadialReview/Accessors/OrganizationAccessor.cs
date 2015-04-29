@@ -65,11 +65,16 @@ namespace RadialReview.Accessors
                     //userOrgModel.ManagerAtOrganization.Add(organization);
 
                     user.UserOrganization.Add(userOrgModel);
+	                user.UserOrganizationCount += 1;
+					var newArray = user.UserOrganizationIds.ToList();
+					newArray.Add(userOrgModel.Id);
+	                user.UserOrganizationIds = newArray.ToArray();
 
                     //organization.ManagedBy.Add(userOrgModel);
                     organization.Members.Add(userOrgModel);
 
                     db.Save(user);
+
                     db.Save(organization);
 
                     //Add team for every member
@@ -95,6 +100,7 @@ namespace RadialReview.Accessors
                     };
                     db.Save(managerTeam);
 
+					userOrgModel.UpdateCache(db);
                     tx.Commit();
                     //db.UserOrganizationModels.Add(userOrgModel);
                     //db.SaveChanges();
@@ -145,6 +151,7 @@ namespace RadialReview.Accessors
                         OrganizationId = organization.Id,
                     });
                     newUserId = userOrgModel.Id;
+
                     tx.Commit();
                     db.Flush();
                     return organization;
@@ -172,15 +179,21 @@ namespace RadialReview.Accessors
                     user.CurrentRole = userOrgPlaceholder;
 
                     user.UserOrganization.Add(userOrg);
+	                user.UserOrganizationCount += 1;
+
+					var newArray = user.UserOrganizationIds.ToList();
+					newArray.Add(userOrg.Id);
+					user.UserOrganizationIds = newArray.ToArray();
 
                     db.Delete(userOrg.TempUser);
-
+					
                     userOrg.TempUser = null;
 
                     //manager.ManagingUsers.Add(userOrg);
                     //organization.Members.Add(userOrg);
-
+					
                     db.SaveOrUpdate(user);
+	                userOrg.UpdateCache(db);
 
                     tx.Commit();
                     db.Flush();
@@ -600,8 +613,7 @@ namespace RadialReview.Accessors
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
 					PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-					return s.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.OrganizationId == organizationId && x.CompanyRock)
-						.List().ToList();
+					return s.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.OrganizationId == organizationId && x.CompanyRock).List().ToList();
 				}
 			}
 		}
@@ -678,6 +690,24 @@ namespace RadialReview.Accessors
 					
 					tx.Commit();
 					s.Flush();
+				}
+			}
+		}
+
+		public List<UserLookup> GetOrganizationMembersLookup(UserOrganizationModel caller, long organizationId,bool populatePersonallyManaging)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+					var users = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
+					if (populatePersonallyManaging){
+						var subs=DeepSubordianteAccessor.GetSubordinatesAndSelf(s,caller,caller.Id);
+						users.ForEach(u=>u._PersonallyManaging = subs.Contains(u.UserId));
+					}
+
+					return users;
 				}
 			}
 		}

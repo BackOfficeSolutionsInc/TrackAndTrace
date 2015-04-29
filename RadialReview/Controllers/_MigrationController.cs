@@ -12,6 +12,7 @@ using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
+using RadialReview.Models.Reviews;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Models.Responsibilities;
@@ -54,10 +55,6 @@ namespace RadialReview.Controllers
 			}
 			return teams.ToString();
 		}
-
-
-
-
 
 		// GET: Migration
 		[Access(AccessLevel.Radial)]
@@ -354,7 +351,6 @@ namespace RadialReview.Controllers
 			}
 			return count + "";
 		}
-		#endregion
 		[Access(AccessLevel.Radial)]
 		public string M4_4_2015()
 		{
@@ -435,6 +431,89 @@ namespace RadialReview.Controllers
 				}
 			}
 			return c + "";
+		}
+		#endregion
+
+		[Access(AccessLevel.Radial)]
+		public string M4_24_2015()
+		{
+			var c = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var cr = s.QueryOver<ClientReviewModel>().List();
+					foreach (var x in cr)
+					{
+						if (x.ReviewContainerId == 0){
+
+							var review = s.Get<ReviewModel>(x.ReviewId);
+							if (review != null){
+								x.ReviewContainerId = review.ForReviewsId;
+								s.Update(x);
+								c++;
+							}
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return c + "";
+		}
+
+		[Access(AccessLevel.Radial)]
+		public string M4_27_2015()
+		{
+			var c = 0;
+			var d = 0;
+			var e = 0;
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+					var cr = s.QueryOver<UserOrganizationModel>().List();
+					foreach (var x in cr)
+					{
+						if (x.TempUser != null)
+						{
+
+							if (x.TempUser.UserOrganizationId==0)
+							{
+								x.TempUser.UserOrganizationId = x.Id;
+								s.Update(x);
+								c++;
+							}
+						}
+
+						if (x.Cache == null){
+							x.UpdateCache(s);
+							d++;
+						}
+
+						if (x.User!=null && x.User.UserOrganizationCount == 0){
+							x.User.UserOrganizationCount = x.User.UserOrganization.Count;
+							if (x.User.UserOrganizationCount != 0){
+								s.Update(x);
+								e++;
+							}
+						}
+
+						if (x.User != null && x.User.UserOrganizationIds==null)
+						{
+							x.User.UserOrganizationIds = x.User.UserOrganization.Select(y=>y.Id).ToArray();
+							s.Update(x);
+							f++;
+						}
+
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return c + " "+d+" " +e+" "+f;
 		}
 	}
 }

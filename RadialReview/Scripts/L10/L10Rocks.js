@@ -4,7 +4,6 @@
 		var rockId = parseInt(name.split("_")[1]);
 
 		var selector = "input[name='" + name + "']";
-		debugger;
 		$.ajax({
 			url: "/l10/UpdateRockCompletion/" + recurrenceId,
 			method: "post",

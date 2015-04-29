@@ -7,6 +7,7 @@
 	data-message="@Model.Message.EscapeHtml()"
 	data-details="@Model.Details.EscapeHtml()"
     data-name="@Model.AccountableUser.GetName()" 
+    data-accountable="@Model.AccountableUser.Id" 
     data-imageurl="@Model.AccountableUser.ImageUrl(true,ImageSize._32)"
 >
 	<input data-todo="@Model.Id" class="todo-checkbox" type="checkbox" @(Model.CompleteTime == null ? "" : "checked") />
@@ -21,6 +22,6 @@
 				  data-recurrence_issue="@Model.Id"
 				  data-method='copymodal'></span>
 		</div>*@
-	<div class="message">@Model.Message</div>
-	<div class="todo-details-container"><div class="todo-details">@Model.Details</div></div>
+	<div class="message" data-todo="@Model.Id">@Model.Message</div>
+	<div class="todo-details-container"><div class="todo-details" data-todo="@Model.Id">@Model.Details</div></div>
 </li>

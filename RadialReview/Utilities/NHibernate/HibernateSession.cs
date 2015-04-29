@@ -1,8 +1,10 @@
-﻿using FluentNHibernate.Automapping;
+﻿using System.Diagnostics;
+using FluentNHibernate.Automapping;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Event;
 using NHibernate.SqlCommand;
 using NHibernate.Tool.hbm2ddl;
@@ -16,6 +18,7 @@ using System.Threading;
 using System.Web;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities.NHibernate;
+using Microsoft.VisualStudio.Profiler;
 
 namespace RadialReview.Utilities
 {
@@ -31,8 +34,6 @@ namespace RadialReview.Utilities
             return sql;
         }
     }
-
-
 
     public class HibernateSession
     {
@@ -84,8 +85,10 @@ namespace RadialReview.Utilities
                             }
 						case Env.local_mysql:
 							{
-								factory = Fluently.Configure().Database(
-											MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
+								var c = new Configuration();
+								c.SetInterceptor(new NHSQLInterceptor());
+								factory = Fluently.Configure(c).Database(
+											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
 								   .Mappings(m =>
 								   {
 									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
@@ -102,7 +105,7 @@ namespace RadialReview.Utilities
                         case Env.production:
                             {
                                 factory = Fluently.Configure().Database(
-											MySQLConfiguration.Standard.ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
+											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
                                    .Mappings(m =>
                                    {
 									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
@@ -121,6 +124,7 @@ namespace RadialReview.Utilities
                         default: throw new Exception("No database type");
                     }
                 }
+	            DataCollection.MarkProfile(1);
                 return factory;
             }
         }
@@ -178,8 +182,12 @@ namespace RadialReview.Utilities
 
         private static void BuildProductionMySqlSchema(Configuration config)
         {
+	        var sw = Stopwatch.StartNew();
             //UPDATE DATABASE:
-            new SchemaUpdate(config).Execute(true, true);
+            var su = new SchemaUpdate(config);
+			su.Execute(false, true);
+
+	        var end =sw.Elapsed;
 
 			var auditEvents = new AuditEventListener();
 			config.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { auditEvents };

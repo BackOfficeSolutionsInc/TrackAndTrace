@@ -130,7 +130,7 @@
 		var that = this;
 
 		$(window).resize(function () {
-		    //debugger;
+		    //
 		    that.layout();
 		});
 
@@ -195,13 +195,13 @@
 					' : ' + 
 					this.formater(this.value[1])
 				);
-				//debugger;
+				//
 				this.tooltip[0].style[this.stylePos] = this.size * (this.percentage[0] + (this.percentage[1] - this.percentage[0])/2)/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) +'px';
 			} else {
 				this.tooltipInner.text(
 					this.formater(this.value[0])
 				);
-				//debugger;
+				//
 				this.tooltip[0].style[this.stylePos] = this.size * this.percentage[0]/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) +'px';
 			}
 		},
@@ -244,7 +244,7 @@
 
 			this.inDrag = true;
 			var val = this.calculateValue();
-			//debugger;
+			//
 			this.element.trigger({
 					type: 'slideStart',
 					value: val

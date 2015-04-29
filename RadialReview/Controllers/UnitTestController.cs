@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Json;
 using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
@@ -36,10 +37,23 @@ namespace RadialReview.Controllers
 
 
 
-	    [Access(AccessLevel.Radial)]
+		[Access(AccessLevel.Radial)]
 		public ActionResult Tristate(Tristate state = Models.Enums.Tristate.Indeterminate)
-	    {
+		{
 			return View(state);
-	    }
+		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult TestRequest(bool error = false, string message = "TestMessage")
+		{
+
+			var res = new ResultObject(error,message);
+			if (!error){
+				res.Status = StatusType.Success;
+			}
+			return Json(res, JsonRequestBehavior.AllowGet);
+		}
+
+
 	}
 }

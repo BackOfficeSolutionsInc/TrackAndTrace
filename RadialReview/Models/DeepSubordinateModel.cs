@@ -10,8 +10,8 @@ namespace RadialReview.Models
     public class DeepSubordinateModel : IDeletable
     {
         public virtual long Id { get; set; }
-        public virtual UserOrganizationModel Manager { get; set; }
-        public virtual UserOrganizationModel Subordinate { get; set; }
+        //public virtual UserOrganizationModel Manager { get; set; }
+        //public virtual UserOrganizationModel Subordinate { get; set; }
         public virtual long ManagerId { get; set; }
         public virtual long SubordinateId { get; set; }
         public virtual int Links { get; set; }
@@ -37,10 +37,10 @@ namespace RadialReview.Models
             Map(x => x.Links);
 
             Map(x => x.SubordinateId).Column("SubordinateId");
-            References(x => x.Subordinate).Column("SubordinateId").LazyLoad().ReadOnly();
+            //References(x => x.Subordinate).Column("SubordinateId").LazyLoad().ReadOnly();
 
             Map(x => x.ManagerId).Column("ManagerId");
-            References(x => x.Manager).Column("ManagerId").LazyLoad().ReadOnly();
+            //References(x => x.Manager).Column("ManagerId").LazyLoad().ReadOnly();
         }
     }
 }

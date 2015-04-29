@@ -249,7 +249,7 @@ namespace RadialReview.Controllers
 
 				if (ModelState.IsValid)
 				{
-					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues);
+					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues, model.SendEmail);
 
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();

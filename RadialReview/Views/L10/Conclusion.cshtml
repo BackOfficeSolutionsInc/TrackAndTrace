@@ -44,7 +44,12 @@
 										<td></td>
 									</tr>
 								}
+								<tr>
+									<td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
+									<td>@Html.CheckBoxFor(x=>x.SendEmail,new{@class="checkbox", style="margin:auto;"})</td>
+								</tr>
 							</table>
+							
 							<div class="alignCenter">
 								<input type="submit" class="btn btn-primary center" value="Conclude Meeting" />
 							</div>

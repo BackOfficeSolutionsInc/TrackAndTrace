@@ -107,6 +107,7 @@ namespace RadialReview.Accessors
 						orgId = user.Organization.Id;
 						user.NumRocks = rocks.Count(x => x.DeleteTime == null);
 						s.SaveOrUpdate(user);
+						user.UpdateCache(s);
 					/*}else{
 						throw new PermissionsException("What?");
 					}*/

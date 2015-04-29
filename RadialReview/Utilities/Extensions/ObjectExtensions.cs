@@ -31,6 +31,10 @@ namespace RadialReview
         {
             return b ? 1 : 0;
         }
+		public static int ToLong(this Boolean b)
+		{
+			return b ? 1 : 0;
+		}
 
         public static long ToLong(this String s)
         {

@@ -10,7 +10,6 @@ namespace RadialReview.Models.Askables {
 		public virtual long ForUserId { get; set; }
 		public virtual String Role { get; set; }
 		
-
 		public override QuestionType GetQuestionType(){
 			return QuestionType.GWC;
 		}

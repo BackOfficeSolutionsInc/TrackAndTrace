@@ -104,6 +104,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Profiler">
+      <HintPath>..\..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Team Tools\Performance Tools\Microsoft.VisualStudio.Profiler.dll</HintPath>
+    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -464,6 +467,7 @@
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
     <Compile Include="Models\Askables\RoleModel.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
+    <Compile Include="Models\UserModels\UserLookup.cs" />
     <Compile Include="Models\UserTemplate\IUserTemplateItem.cs" />
     <Compile Include="Models\UserTemplate\UserTemplate.cs" />
     <Compile Include="Models\UserTemplate\UserTemplateVM.cs" />
@@ -611,6 +615,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Models\Enums\AccessLevel.cs" />
     <Compile Include="Utilities\AwsUtil.cs" />
+    <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\DataTypes\DateRange.cs" />
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
     <Compile Include="Utilities\Config.cs" />
@@ -692,6 +697,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\components\fivestate.js" />
+    <Content Include="Scripts\home\colResizable-1.5.min.js" />
+    <Content Include="Scripts\home\resizeable-tables.js" />
     <Content Include="Scripts\L10\L10Notes.js" />
     <Content Include="ssleay32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1238,6 +1245,7 @@
     <Content Include="Views\Shared\Survey\Thumbs.cshtml" />
     <Content Include="Views\Shared\Survey\Feedback.cshtml" />
     <Content Include="Views\Todo\LinkToExternal.cshtml" />
+    <Content Include="Views\UnitTest\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

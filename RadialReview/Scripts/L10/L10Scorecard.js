@@ -16,6 +16,10 @@ $(function() {
 			e.preventDefault();
 		}
 	});
+	
+	/*$("body").on("click", ".scorecard-table .target.direction", function(e, d) {
+		$(this).html("<select><option>");
+	});*/
 
 });
 

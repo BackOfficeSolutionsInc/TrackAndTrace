@@ -79,7 +79,7 @@ namespace RadialReview.Controllers
 			var oid = GetUser().Organization.Id;
 			model.Rocks.ForEach(x=>x.OrganizationId=oid);
 			_RockAccessor.EditCompanyRocks(GetUser(), GetUser().Organization.Id, model.Rocks);
-			return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.SilentSuccess));
+			return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.Success));
 		}
 
 		[Access(AccessLevel.Manager)]
@@ -96,12 +96,11 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public JsonResult Modal(RocksController.RockVM model)
 		{
-			foreach (var r in model.Rocks)
-			{
+			foreach (var r in model.Rocks){
 				r.ForUserId = model.UserId;
 			}
 			_RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks,model.UpdateOutstandingReviews);
-			return Json(ResultObject.Create(model.Rocks.Select(x=>new { Session = x.Period.Name, Rock = x.Rock, Id =x.Id }),status:StatusType.SilentSuccess));
+			return Json(ResultObject.Create(model.Rocks.Select(x=>new { Session = x.Period.Name, Rock = x.Rock, Id =x.Id }),status:StatusType.Success));
 		}
 
 	    public class RockTable

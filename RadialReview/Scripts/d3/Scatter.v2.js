@@ -93,7 +93,6 @@ function ScatterImage(id) {
 					}
 				});
 		/*$.getScript("/Scripts/jquery/jquery.unveil.js", function () {
-			debugger;
 			$("#" + id + " image").unveil();
 		});*/
 	};

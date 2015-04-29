@@ -48,7 +48,7 @@ namespace RadialReview.Controllers
         {
             var reviewContainerId = id;
             var output = _ReviewAccessor.GetReviewStats(GetUser(), reviewContainerId);
-            return Json(ResultObject.Create(output), JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Create(output).ForceSilent(), JsonRequestBehavior.AllowGet);
 
         }
 
@@ -75,7 +75,7 @@ namespace RadialReview.Controllers
                 Source = ChartDataSource.Review,
             };
             var scatter = _ChartsEngine.ScatterFromOptions(GetUser(), options, false);
-            return Json(ResultObject.Create(scatter), JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Create(scatter).ForceSilent(), JsonRequestBehavior.AllowGet);
         }
 
 	    [Access(AccessLevel.UserOrganization)]
@@ -83,7 +83,7 @@ namespace RadialReview.Controllers
 	    {
 		    var measurableId = id;
 			var model = _ChartsEngine.ScorecardChart(GetUser(),measurableId);
-			return Json(ResultObject.Create(model), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(model).ForceSilent(), JsonRequestBehavior.AllowGet);
 	    }
 
 	    [Access(AccessLevel.UserOrganization)]
@@ -97,21 +97,21 @@ namespace RadialReview.Controllers
 	    {
 		    var reviewContainerId = id;
 			var newScatter = _ChartsEngine.AggregateReviewScatter(GetUser(), id, admin);
-			return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(newScatter).ForceSilent(), JsonRequestBehavior.AllowGet);
 	    }
 
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult ReviewScatter(long id, long reviewsId)
 		{
 			var newScatter = _ChartsEngine.ReviewScatter(GetUser(), id, reviewsId, true);
-			return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(newScatter).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult ReviewScatter2(long id, long reviewsId,string groupBy,bool client=false,bool includePrevious=false)
 		{
 			var newScatter = _ChartsEngine.ReviewScatter2(GetUser(), id, reviewsId, groupBy, !client, includePrevious);
-			return Json(ResultObject.Create(newScatter), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(newScatter).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 	    [Access(AccessLevel.UserOrganization)]

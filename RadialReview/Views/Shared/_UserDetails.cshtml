@@ -23,7 +23,7 @@
 			<div class="panel panel-default">
 				@if (edit)
 				{
-					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/Modal/" + Model.User.Id, "/JobDescription/Modal/", onComplete: "location.reload()")">Edit</a>
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/Modal/" + Model.User.Id, "/JobDescription/Modal?refresh=true&silent=true")">Edit</a>
 				}
 				<div class="panel-heading">
 					<h3 class="panel-title">Job Description</h3>
@@ -55,7 +55,7 @@
 			<div class="panel panel-default">
 				@if (edit)
 				{
-					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Individual " + @Html.Organization().Settings.RockName, "/Rocks/Modal/" + Model.User.Id, "/Rocks/Modal/", onComplete: "location.reload()")">Edit</a>
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Individual " + @Html.Organization().Settings.RockName, "/Rocks/Modal/" + Model.User.Id, "/Rocks/Modal?refresh=true&silent=true")">Edit</a>
 				}
 				<div class="panel-heading">
 					<h3 class="panel-title">Individual Quarterly @Html.Organization().Settings.RockName</h3>
@@ -97,7 +97,7 @@
 			<div class="panel panel-default">
 				@if (edit)
 				{
-					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Roles", "/Roles/Modal/" + Model.User.Id, "/Roles/Modal/", onComplete: "location.reload()")">Edit</a>
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Roles", "/Roles/Modal/" + Model.User.Id, "/Roles/Modal?refresh=true&silent=true")">Edit</a>
 				}
 				<div class="panel-heading">
 					<h3 class="panel-title">Individual Roles</h3>
@@ -133,7 +133,7 @@
 			<div class="panel panel-default">
 				@if (edit)
 				{
-					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Measurables", "/Measurable/Modal/" + Model.User.Id, "/Measurable/Modal/", onComplete: "location.reload()")">Edit</a>
+					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Measurables", "/Measurable/Modal/" + Model.User.Id, "/Measurable/Modal?refresh=true&silent=true")">Edit</a>
 				}
 				<div class="panel-heading">
 					<h3 class="panel-title">Scorecard Meaursables</h3>

@@ -367,7 +367,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 					found = true;
 					/*if(required[r]!=list[i])
                     {
-                        debugger;
+                        
                         comparableWildcards.push(list[i]);
                     }*/
 				}
@@ -640,12 +640,12 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 			return "scatter-point";
 		}
 	});/*.on("mouseover", function () {
-        debugger;
+        
         return tooltip.style("visibility", "visible");
     }).on("mousemove", function () {
 	    return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
 	}).on("mouseout", function () {
-	    debugger;
+	    
 	    return tooltip.style("visibility", "hidden");
 	}).text(function(d){
         return d.Title;

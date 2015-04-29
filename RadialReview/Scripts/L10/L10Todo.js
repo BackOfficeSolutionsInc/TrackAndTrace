@@ -3,12 +3,13 @@
 $(function () {
 
 	$("body").on("click", ".todo-list>.todo-row>.message", function () {
-		debugger;
 		var todoRow = $(this).closest(".todo-row");
 		$(".todo-row.selected").removeClass("selected");
 		$(todoRow).addClass("selected");
 		currentTodoDetailsId = $(todoRow).data("todo");
 		var createtime = $(todoRow).data("createtime");
+		var accountable = $(todoRow).data("accountable");
+		var owner = $(todoRow).data("name");
 		var message = $(todoRow).data("message");
 		var details = $(todoRow).data("details");
 		//var issueId = $(todoRow).data("issue");
@@ -20,8 +21,8 @@ $(function () {
 		$("#todoDetails").append("<span class='expandContract btn-group pull-right'></span>");
 		$("#todoDetails").append("<div class='createTime'>" + new Date(createtime).toLocaleDateString() + "</div>");
 
-		$("#todoDetails").append("<div class='heading'><h4>" + message + "</h2></div>");
-		$("#todoDetails").append("<textarea id='todoDetailsField' class='details rt'>" + details + "</textarea>");
+		$("#todoDetails").append("<div class='heading'><h4 class='message-holder clickable' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message'>" + message + "</span></h4></div>");
+		$("#todoDetails").append("<textarea id='todoDetailsField' class='details todo-details' data-todo='" + todo + "'>" + details + "</textarea>");
 		$("#todoDetails").append("<div class='button-bar'>" +
 			"<span class='btn-group pull-right'>" +
 				"<span class='btn btn-default btn-xs doneButton'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Done</span>" +
@@ -31,12 +32,56 @@ $(function () {
 			//"<span class='btn btn-default btn-xs createTodoButton todoModal'><span class='glyphicon glyphicon-unchecked todoButton'></span> Todo</span>"+
 			"</span>" +
 			"<span class='clearfix'></span>" +
+			"<span class='gray'>Assigned to:</span><span style='width:200px' class='assignee' data-accountable='"+accountable+"' data-todo='"+todo+"' ><span data-todo='"+todo+"' class='btn btn-link'>"+owner+"</span></span>" +
 			"</div>");
 	});
 		
 	$("body").on("click", ".todoDetails .doneButton", function () { $(this).find(">input").trigger("click"); });
+	
+	$("body").on("click", ".todoDetails .message-holder .message", function() {
+		var input = $("<input value='" + $(this).html() + "' data-old='" +escapeString($(this).html()) + "' onblur='sendTodoMessage(this," + $(this).parent().data("todo") + ")'/>");
+		$(this).parent().html(input);
+		input.focusTextToEnd();
+	});
 
+	$("body").on("click", ".todoDetails .assignee .btn", function() {
+		var that = $(this).parent();
+		$.ajax({
+			method:"POST",
+			url: "/L10/Members/" + recurrenceId,
+			success: function(data) {
+				if (showJsonAlert(data)) {
 
+					var input = $("<select data-todo='"+$(that).data("todo")+"'/>");
+
+					for (var i = 0; i < data.Object.length; i++) {
+						var d = data.Object[i];
+						var selected = $(that).data("accountable")==d.id?"selected":"";
+						$(input).append("<option "+selected+" data-img='"+d.imageUrl+"' value='"+d.id+"'>"+d.name+"</option>");
+					}
+
+					$(input).on('change', function() {
+						debugger;
+						sendNewAccountable(this, $(this).data("todo"));
+					});
+
+					$(that).html(input);
+
+					$(input).select2({
+						templateResult: imageListFormat,
+						templateSelection: imageListFormat
+					});
+					$(input).css("width", "200px");
+					$(input).select2("open");
+				}
+			}
+		});
+		
+	});
+
+	$("body").on("blur", ".todoDetails .todo-details", function() {
+		sendTodoDetails(this,$(this).data("todo"));
+	});
 
 	$("body").on("change", ".todo-checkbox", function () {
 		var todoId = $(this).data("todo");
@@ -68,6 +113,59 @@ $(function () {
 
 });
 
+function sendNewAccountable(self, id) {
+	var val = $(self).val();
+	var data = {
+		accountableUser: val
+	};
+	$(".todo .assignee[data-todo=" + id + "]").html("<span class='btn btn-link' data-todo='"+id+"'></span>");
+	$.ajax({
+		method:"POST",
+		data:data,
+		url: "/L10/UpdateTodo/" + id,
+		success:function(data) {
+			if (showJsonAlert(data, false, true)) {
+			}
+		}
+	});
+}
+
+function sendTodoDetails(self,id) {
+	var val = $(self).val();
+	var data = {
+		details: val
+	};
+	$(".todo .todo-details[data-todo=" + id + "]").prop("disabled", true);
+	$.ajax({
+		method:"POST",
+		data:data,
+		url: "/L10/UpdateTodo/" + id,
+		success:function(data) {
+			if (showJsonAlert(data, false, true)) {
+				$(".todo .todo-details[data-todo=" + id + "]").prop("disabled", false);
+			}
+		}
+	});
+}
+
+function sendTodoMessage(self,id) {
+	var val = $(self).val();
+	$(".todoDetails .message-holder[data-todo=" + id + "] input").prop("disabled", true);
+	var data = {
+		message: val
+	};
+	$.ajax({
+		method:"POST",
+		data:data,
+		url: "/L10/UpdateTodo/" + id,
+		success:function(data) {
+			if (showJsonAlert(data, false, true)) {
+				$(".todoDetails .message-holder[data-todo="+id+"]").html("<span data-todo='"+id+"' class='message'>"+val+"</span>");
+			}
+		}
+	});
+}
+
 function refreshCurrentTodoDetails() {
 	$(".todo-row[data-todo=" + currentTodoDetailsId + "]")
 		.closest(".todo-list>.todo-row").find(">.message")
@@ -76,11 +174,14 @@ function refreshCurrentTodoDetails() {
 }
 
 function constructTodoRow(todo) {
+	debugger;
+	//Accountable user name populated?
 	return '<li class="todo-row dd-item"' +
 			'data-createtime="' + todo.createtime + '"' +
 			'data-checked="' + todo.checked + '" ' +
 			'data-imageurl="' + todo.imageurl + '" ' +
-			'data-name="' + todo.name + '" ' +
+			'data-name="' + todo.accountableUser + '" ' +
+			'data-accountable="' + todo.accountableUserId + '" ' +
 			'data-todo="' + todo.todo + '" ' +
 			'data-message="' + todo.message + '" ' +
 			'data-details="' + todo.details + '">' +
@@ -90,12 +191,12 @@ function constructTodoRow(todo) {
 			'	<span class="inner icon fontastic-icon-primitive-square"></span>' +
 			'	</div>' +
 			'	<span class="profile-image"><span class="profile-picture">' +
-			'	<span class="picture-container" title="'+todo.name+'">' +
+			'	<span class="picture-container" title="'+todo.accountableUser+'">' +
 			'	<span class="picture" style="background: url('+todo.imageurl+') no-repeat center center;"></span>' +
 			'	</span>' +
 			'	</span></span>' +
-			'	<div class="message">' + todo.message + '</div>' +
-			'	<div class="todo-details-container"><div class="todo-details">' + todo.details + '</div></div>' +
+			'	<div class="message" data-todo='+todo.todo+'>' + todo.message + '</div>' +
+			'	<div class="todo-details-container"><div class="todo-details" data-todo='+todo.todo+'>' + todo.details + '</div></div>' +
 			'</li>';
 }
 
@@ -153,4 +254,24 @@ function appendTodo(selector, issue) {
 function updateTodoCompletion(todoId, complete) {
 	var selector = ".todo-checkbox[data-todo='" + todoId + "']";
 	$(selector).prop("checked", complete);
+}
+
+function updateTodoMessage(id, message) {
+	$(".todo .message[data-todo=" + id + "]").val(message);
+	$(".todo .todo-row[data-todo=" + id + "]").data("message",escapeString(message));
+}
+function updateTodoDetails(id, details) {
+	$(".todo .todo-details[data-todo=" + id + "]").html(details);
+	$(".todo textarea.todo-details[data-todo=" + id + "]").val(details);
+	$(".todo .todo-row[data-todo=" + id + "]").data("details",escapeString(details));
+}
+
+function updateTodoAccountableUser(id, userId,name, image) {
+	$(".todo [data-todo=" + id + "] .picture-container").prop("title",name);
+	$(".todo [data-todo=" + id + "] .picture").css("background","url("+image+") no-repeat center center");
+	$(".todo .assignee .btn[data-todo=" + id + "]").html(name);
+	var row = $(".todo .todo-row[data-todo=" + id + "]");
+	$(row).data("name", name);
+	$(row).data("accountable", userId);
+	$(row).data("imageurl", image);
 }

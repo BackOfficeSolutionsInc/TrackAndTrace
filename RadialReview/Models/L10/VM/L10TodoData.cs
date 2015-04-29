@@ -27,6 +27,8 @@ namespace RadialReview.Models.L10.VM
 				details = todo.Details,
 				message = todo.Message,
 				imageurl = todo.AccountableUser.ImageUrl(true,ImageSize._32),
+				accountableUser = todo.AccountableUser.GetName(),
+				accountableUserId = todo.AccountableUserId,
 				todo = todo.Id
 			};
 		}

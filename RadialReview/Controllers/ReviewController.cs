@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using System.Web.UI;
 using Microsoft.AspNet.SignalR;
 using NHibernate.Util;
@@ -271,165 +272,28 @@ namespace RadialReview.Controllers
 
 		private Boolean ParseAndSave(FormCollection collection, out long reviewId, out int currentPage, out DateTime dueDate)
 		{
-			try
-			{
+			try{
 				var now = DateTime.UtcNow;
 				reviewId = long.Parse(collection["reviewId"]);
-				try
-				{
+				try{
 					currentPage = int.Parse(collection["page"]);
-				}
-				catch (FormatException)
-				{
+				}catch (FormatException){
 					currentPage = 0;
 				}
 
-				if (collection.AllKeys.Contains("back"))
-				{
+				if (collection.AllKeys.Contains("back")){
 					currentPage = currentPage - 2;
 				}
 
-				var user = GetUser();
-				//var review = _ReviewAccessor.GetReview(user, reviewId);
+				var sw = Stopwatch.StartNew();
+				var o =_ReviewAccessor.UpdateAnswers(GetUser(),reviewId, collection, now, out dueDate);
+				var end = sw.Elapsed;
+				return o;
 
 
-
-				/**/
-				var reviews = _ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, reviewId);
-
-				if (!reviews.All(x => user.UserIds.Any(y => y == x.ForUserId)))
-					throw new PermissionsException("You cannot take this review.");
-
-				var answers = reviews.SelectMany(x => x.Answers).ToList();
-				/**/
-
-
-				dueDate = reviews.Max(x => x.DueDate);
-				if (dueDate < DateTime.UtcNow)
-				{
-					return false;
-				}
-				//if (reviews.First().ForUserId != user.Id)
-				//	throw new PermissionsException("You cannot take this review.");
-				var allComplete = true;
-				var values = collection.AllKeys.Select(k => collection[k]).ToList();
-
-				var started = false;
-				var editAny = false;
-				//var questionsAnswered = 0;
-				//var optionalAnswered = 0;
-
-				var questionsAnswered = new DefaultDictionary<long, int>(x => 0);
-				var optionalAnswered = new DefaultDictionary<long, int>(x => 0);
-
-				foreach (var k in collection.AllKeys)
-				{
-					var args = k.Split('_');
-					if (args[0] == "question")
-					{
-						var askableId = long.Parse(args[2]);
-						var aboutUserId = long.Parse(args[3]);
-						var forReviewContainerId = long.Parse(args[4]);
-						var edited = false;
-						var currentComplete = false;
-
-						var matchingQuestions = answers.Where(x => x.Askable.Id == askableId && x.AboutUserId == aboutUserId && x.ForReviewContainerId == forReviewContainerId);
-
-						foreach (var question in matchingQuestions)
-						{
-							var rid = question.ForReviewId;
-							var questionId = question.Id;
-							var qA = 0;
-							var oA = 0;
-							switch (args[1].Parse<QuestionType>())
-							{
-								case QuestionType.Slider:
-									{
-										decimal value = 0;
-										decimal? output = null;
-										if (decimal.TryParse(collection[k], out value))
-											output = value / 100.0m;
-										if (value == 0)
-											output = null;
-										currentComplete = _ReviewAccessor.UpdateSliderAnswer(user, questionId, output, now, out edited, ref qA, ref oA);
-
-									}
-									break;
-								case QuestionType.Thumbs:
-									currentComplete =
-										_ReviewAccessor.UpdateThumbsAnswer(user, questionId, collection[k].Parse<ThumbsType>(), now, out edited, ref qA, ref oA);
-									break;
-								case QuestionType.Feedback:
-									currentComplete = _ReviewAccessor.UpdateFeedbackAnswer(user, questionId, collection[k], now, out edited, ref qA, ref oA);
-									break;
-								case QuestionType.RelativeComparison:
-									currentComplete = _ReviewAccessor.UpdateRelativeComparisonAnswer(user, questionId, collection[k].Parse<RelativeComparisonType>(), now, out edited, ref qA, ref oA);
-									break;
-								case QuestionType.GWC:
-									if (args[5].EndsWith("Reason"))
-										currentComplete = _ReviewAccessor.UpdateGWCReasonAnswer(user, questionId, args[5], collection[k], now, out edited, ref qA, ref oA);
-									else
-										currentComplete = _ReviewAccessor.UpdateGWCAnswer(user, questionId, args[5], collection[k].Parse<FiveState>(), now, out edited, ref qA, ref oA);
-									break;
-								case QuestionType.CompanyValue:
-
-									if (args.Length == 6)
-									{
-										if (args[5] != "Reason")
-											throw new Exception("Unexpected CompanyValue argument.");
-										currentComplete = _ReviewAccessor.UpdateCompanyValueReasonAnswer(user, questionId, collection[k], now, out edited, ref qA, ref oA);
-									}
-									else
-									{
-										currentComplete = _ReviewAccessor.UpdateCompanyValueAnswer(user, questionId, collection[k].Parse<PositiveNegativeNeutral>(), now, out edited, ref qA, ref oA);
-									}
-									break;
-								case QuestionType.Rock:
-
-									if (args.Length == 6)
-									{//reason
-										if (args[5] != "Reason")
-											throw new Exception("Unexpected Rock argument.");
-										currentComplete = _ReviewAccessor.UpdateRockReasonAnswer(user, questionId, collection[k], now, out edited, ref qA, ref oA);
-									}
-									else
-									{
-										currentComplete = _ReviewAccessor.UpdateRockAnswer(user, questionId, collection[k].Parse<RockState>(), now, out edited, ref qA, ref oA);
-									}
-									break;
-								default:
-									throw new Exception();
-							}
-							allComplete = allComplete && currentComplete;
-							started = started || currentComplete;
-							editAny = editAny || edited;
-							questionsAnswered[rid] += qA;
-							optionalAnswered[rid] += oA;
-
-						}
-					}
-				}
-
-				var durationMinutes = 0.0m;
-
-				var startTime = new DateTime(collection["StartTime.Ticks"].ToLong());
-				if (editAny)
-				{
-					durationMinutes = (decimal)(now - startTime).TotalMinutes;
-				}
-				foreach (var rId in questionsAnswered.Keys)
-				{
-					_ReviewAccessor.UpdateAllCompleted(GetUser(), rId, started, durationMinutes, questionsAnswered[rId], optionalAnswered[rId]);
-				}
-
-				return allComplete;
-			}
-			catch (PermissionsException e)
-			{
+			}catch (PermissionsException e){
 				throw e;
-			}
-			catch (Exception e)
-			{
+			}catch (Exception e){
 				throw new PermissionsException();
 			}
 		}

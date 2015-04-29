@@ -9,7 +9,7 @@
     <div class="col-sm-3 col-md-offset-2 clickable alignCenter" data-id="@user.Id">
         <div class="thumbnail ">
             <div class="imageContainer id_@user.Id">
-                <img alt="@user.GetName()" class="thumbnail" src="@user.ImageUrl()?dim=256x256" />
+                <img alt="@user.GetName()" class="thumbnail" src="@user.ImageUrl(true, ImageSize._img)?dim=256x256" />
             </div>
             <div class="caption  id_@user.Id">
                 <h3>@user.GetName()</h3>

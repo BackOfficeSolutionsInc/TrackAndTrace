@@ -101,19 +101,19 @@ namespace RadialReview.Controllers
 		public ActionResult Members()
 		{
 			Session["Manage"] = "Members";
-			var user = GetUser().Hydrate().ManagingUsers(true).Execute();
+			//var user = GetUser().Hydrate().ManagingUsers(true).Execute();
 
-			var members = _OrganizationAccessor.GetOrganizationMembers(user, user.Organization.Id, true, true);
+			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true);
+			//var members = 
 
 			for (int i = 0; i < members.Count(); i++)
 			{
 				var u = members[i];
-				u.PopulatePersonallyManaging(user, user.AllSubordinates);
-				u.Teams = u.Teams.OrderBy(x => x.Team.Type).ToList();
+				//u.Teams = u.Teams.OrderBy(x => x.Team.Type).ToList();
 				//var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
 				//members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Managers().Execute();
 			}
-			var model = new OrgMembersViewModel(GetUser(), members, user.Organization);
+			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization);
 			return View(model);
 		}
 

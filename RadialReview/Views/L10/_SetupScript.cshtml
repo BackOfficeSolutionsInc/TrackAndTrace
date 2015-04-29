@@ -1,7 +1,11 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingVM
 
-@using (Html.BeginScripts()){
+@using (Html.BeginScripts())
+{
+	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 	<script>
+		$.fn.editable.defaults.mode = 'inline';
+
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
 		}
@@ -19,8 +23,16 @@
 			@:var meetingStart = false;
 			@:var isLeader = false;
 		}
+
+		$(".inlineEdit").editable();
+
 	</script>
 }
+@using (Html.BeginStyles())
+{
+	<link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
+}
+
 @*<script>
 	try {
 		rejoin();

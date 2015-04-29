@@ -1,4 +1,5 @@
-﻿using RadialReview.Exceptions;
+﻿using System.Net;
+using RadialReview.Exceptions;
 using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
@@ -23,18 +24,37 @@ namespace RadialReview.Models.Json
         Warning,
         Info,
         Primary,
-        @Default,
-        SilentSuccess
+        @Default
     }
 
-    public class ResultObject
+	public class ResultObject
     {
 	    public ResultObject NoRefresh(){
 		    Refresh = false;
 		    return this;
 	    }
-
-        public StatusType Status { get; set; }
+		public ResultObject ForceRefresh()
+		{
+			Refresh = true;
+			return this;
+		}
+		public StatusType Status { get; set; }
+		private bool _Error { get; set; }
+        public bool Error {
+	        get { return _Error; }
+	        set{
+		        _Error = value;
+		        try{
+			        if (Error)
+				        System.Web.HttpContext.Current.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+			        else
+				        System.Web.HttpContext.Current.Response.StatusCode = (int) HttpStatusCode.OK;
+		        }
+		        catch (Exception e){
+			        
+		        }
+	        }
+        }
 
         public String MessageType { get { return Status.ToString(); } }
         public String Heading
@@ -49,7 +69,7 @@ namespace RadialReview.Models.Json
                     case StatusType.Info: return "Info";
                     case StatusType.Primary: return "";
                     case StatusType.Default: return "";
-                    case StatusType.SilentSuccess: return "Success!";
+                   // case StatusType.SilentSuccess: return "Success!";
                     default: throw new ArgumentOutOfRangeException("Unknown message type");
                 }
             }
@@ -59,18 +79,58 @@ namespace RadialReview.Models.Json
 		public String Message { get; set; }
 		public String Trace { get; set; }
 		public String TraceMessage { get; set; }
-		public bool Error { get; set; }
-		public bool Refresh { get; set; }
+		private bool? _Refresh { get; set; }
 
+		public bool Refresh {
+			get
+			{
+				if (_Refresh != null)
+					return _Refresh.Value;
+				try{
+					var requestRefresh = System.Web.HttpContext.Current.Request.Params["refresh"];
+					if (requestRefresh != null && requestRefresh.ToLower() == "true")
+						return true;
+				}
+				catch (Exception e){
+					var ops = true;
+				}
+				return false;
+			}
+			set{_Refresh = value;}
+		}
+
+		private bool? _Silent { get; set; }
+
+		public bool Silent{
+			get{
+				//Show By Default
+				if (_Silent != null)
+					return _Silent.Value;
+				try
+				{
+					var requestSilent = System.Web.HttpContext.Current.Request.Params["silent"];
+
+					//If Url says not to silence, then show..
+					if (requestSilent != null){
+						if (requestSilent.ToLower() == "false"){
+							return false;
+						}
+					}
+				}catch (Exception e){
+					var ops = true;
+				}
+				//Assume Noisy
+				return false;
+			}
+			set { _Silent = value; }
+		}
         public static ResultObject Success(String message)
         {
             return new ResultObject(false, message) { Status=StatusType.Success };
         }
 
-        protected ResultObject()
-        {
-            Status = StatusType.SilentSuccess;
-	        Refresh = true;
+        protected ResultObject(){
+            Status = StatusType.Success;
         }
 
         public static ResultObject SilentSuccess(object obj=null)
@@ -80,16 +140,27 @@ namespace RadialReview.Models.Json
                 Object = obj,
                 Error = false,
                 Message = "Success",
-                Status = StatusType.SilentSuccess
+                Status = StatusType.Success,
+				Silent=true,
             };
         }
 
-        public static ResultObject Create(object obj, String message = "Success",StatusType status = StatusType.Success)
+		public static ResultObject CreateError(String message,object obj = null)
+		{
+			return new ResultObject()
+			{
+				Object = obj,
+				Error = true,
+				Message = Capitalize(message),
+				Status = StatusType.Danger
+			};
+		}
+        public static ResultObject Create(object obj, String message = "Success",StatusType status = StatusType.Success,bool error=false)
         {
             return new ResultObject()
             {
                 Object = obj,
-                Error = false,
+				Error = error,
                 Message = message,
                 Status = status
             };
@@ -112,7 +183,7 @@ namespace RadialReview.Models.Json
 #endif
         }
 
-        private String Capitalize(String message)
+        private static String Capitalize(String message)
         {
             StringBuilder builder = new StringBuilder(message);
             if (builder.Length > 0)
@@ -146,7 +217,7 @@ namespace RadialReview.Models.Json
                 Error = false,
                 Message = null,
                 Object = null,
-                Status = StatusType.SilentSuccess
+                Status = StatusType.Success
             };
         }
 
@@ -160,5 +231,11 @@ namespace RadialReview.Models.Json
                 Status = status
             };
         }
-    }
+
+
+		public ResultObject ForceSilent(){
+			Silent = true;
+			return this;
+		}
+	}
 }

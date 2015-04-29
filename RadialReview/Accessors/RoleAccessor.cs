@@ -67,6 +67,7 @@ namespace RadialReview.Accessors {
 
 					user.NumRoles = roles.Count(x => x.DeleteTime == null);
 					s.SaveOrUpdate(user);
+					user.UpdateCache(s);
 					
 
 					tx.Commit();

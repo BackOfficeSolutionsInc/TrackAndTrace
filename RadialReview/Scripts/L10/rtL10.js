@@ -3,6 +3,7 @@ var userMeeting = null;
 var typed = "";
 var selectionStarted = false;
 var meetingItemId = 0;
+var disconnected = false;
 
 $(".rt").prop("disabled", true);
 $(function () {
@@ -52,6 +53,13 @@ $(function () {
 	meetingHub.client.updateTodoList = updateTodoList;
 	meetingHub.client.updateTodoCompletion = updateTodoCompletion;
 	meetingHub.client.updateRockCompletion = updateRockCompletion;
+	
+	meetingHub.client.updateTodoMessage = updateTodoMessage;
+	meetingHub.client.updateTodoDetails = updateTodoDetails;
+	meetingHub.client.updateTodoAccountableUser = updateTodoAccountableUser;
+
+	meetingHub.client.updateIssueMessage = updateIssueMessage;
+	meetingHub.client.updateIssueDetails = updateIssueDetails;
 
 	meetingHub.client.createNote = createNote;
 	meetingHub.client.updateNoteName = updateNoteName;
@@ -60,13 +68,35 @@ $(function () {
 
 	console.log("StartingHub ");
 
-	$.connection.hub.start().done(function () {
-		/*$('#sendmessage').click(function () {
+	$.connection.hub.start().done(initConnection);
+
+	$.connection.hub.disconnected(function() {
+		clearAlerts();
+
+		setTimeout(function() {
+			showAlert("Connection lost. Reconnecting.");
+			disconnected = true;
+			setTimeout(function() {
+				$.connection.hub.start().done(initConnection);
+			}, 5000); // Restart connection after 5 seconds.
+		}, 1000);
+	});
+
+	window.onbeforeunload = function (e) {
+		disconnected = false;
+		$.connection.hub.stop();
+	};
+});
+
+function initConnection() {
+	/*$('#sendmessage').click(function () {
 		// Call the Send method on the hub. 
 		chat.server.send($('#displayname').val(), $('#message').val());
 		// Clear text box and reset focus for next comment. 
 		$('#message').val('').focus();
 	});*/
+
+
 		rejoin(function() {
 			afterLoad();
 			console.log("Logged in: " + $.connection.hub.id);
@@ -85,12 +115,7 @@ $(function () {
 		//$(".rt").click($.throttle(250, sendFocus));
 		$(".rt").focus($.throttle(250, sendFocus));
 		$(".rt").blur($.throttle(250, sendUnfocus));*/
-	});
-
-	window.onbeforeunload = function (e) {
-		$.connection.hub.stop();
-	};
-});
+}
 
 function rejoin(callback) {
 	try {
@@ -102,6 +127,11 @@ function rejoin(callback) {
 				if (callback) {
 					callback();
 				}
+				if (disconnected) {
+					clearAlerts();
+					showAlert("Reconnected.", "alert-success", "Success");
+				}
+				disconnected = false;
 			});
 		}
 	} catch (e) {

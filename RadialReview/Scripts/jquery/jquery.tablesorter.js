@@ -34,7 +34,6 @@ $(function () {
 		format: function (s, table, cell, cellIndex) {
 			// get data attributes from $(cell).attr('data-something');
 			// check specific column using cellIndex
-			debugger;
 			return $(cell).find("input[type=checkbox]").prop('checked');
 		},
 		// set type, either numeric or text 

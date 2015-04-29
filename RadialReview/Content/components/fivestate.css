@@ -14,7 +14,7 @@
 	-ms-user-select: none;
 	user-select: none;
 	padding: 0px;
-	margin: -2px;
+	margin: -1px;
 }
 
 .editor.fivestate {
@@ -46,7 +46,8 @@
 }
 
 .editor .fill:hover {
-	-webkit-filter: brightness(95%);
+	/*-webkit-filter: brightness(95%);*/
+	opacity: .85;
 }
 
 .fivestate .fivestate-val {

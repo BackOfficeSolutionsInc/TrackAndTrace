@@ -31,6 +31,7 @@ namespace RadialReview.Models
         public virtual long CurrentRole { get; set; }
         public virtual string ImageGuid { get; set; }
         public virtual GenderType? Gender { get; set; }
+		protected virtual string _UserOrganizationIds { get; set; }
         /*
         public ICollection<UserLogin> Logins { get; set; }
         */
@@ -39,6 +40,7 @@ namespace RadialReview.Models
 
 
         public virtual IList<UserOrganizationModel> UserOrganization { get; set; }
+		public virtual int UserOrganizationCount{get;set;}
 
         public virtual String Name()
         {
@@ -55,7 +57,7 @@ namespace RadialReview.Models
 
         public virtual long? GetCurrentRole()
         {
-            if (UserOrganization.Any(x => x.Id == CurrentRole))
+            if (UserOrganizationIds!=null && UserOrganizationIds.Any(x => x == CurrentRole))
                 return CurrentRole;
             return null;
         }
@@ -65,32 +67,40 @@ namespace RadialReview.Models
 
 
         public virtual bool IsRadialAdmin { get; set; }
+		public virtual long[] UserOrganizationIds
+		{
+		    get { return _UserOrganizationIds == null ? null : _UserOrganizationIds.Split(new[]{'~'}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.ToLong()).ToArray(); }
+		    set { _UserOrganizationIds = String.Join("~", value); }
+	    }
+
+	    public class UserModelMap : ClassMap<UserModel>
+		{
+			public UserModelMap()
+			{
+				Id(x => x.Id).CustomType(typeof(string)).GeneratedBy.Custom(typeof(GuidStringGenerator)).Length(36);
+				Map(x => x.UserName).Index("UserName_IDX");
+				Map(x => x.FirstName).Not.LazyLoad();
+				Map(x => x.LastName).Not.LazyLoad();
+				Map(x => x.PasswordHash);
+				Map(x => x.Hints);
+				Map(x => x.CurrentRole);
+				Map(x => x._UserOrganizationIds).Length(10000);
+				Map(x => x.SecurityStamp);
+				Map(x => x.IsRadialAdmin);
+				Map(x => x.DeleteTime);
+				Map(x => x.ImageGuid);
+				Map(x => x.Gender);
+				Map(x => x.UserOrganizationCount);
+				HasMany(x => x.UserOrganization).LazyLoad().Cascade.SaveUpdate();
+				HasMany(x => x.Logins).Cascade.SaveUpdate();
+				HasMany(x => x.Roles).Cascade.SaveUpdate();
+				HasMany(x => x.Claims).Cascade.SaveUpdate();
+			}
+		}
 
     }
 
-    public class UserModelMap : ClassMap<UserModel>
-    {
-        public UserModelMap()
-        {
-            Id(x => x.Id).CustomType(typeof(string)).GeneratedBy.Custom(typeof(GuidStringGenerator)).Length(36);
-            Map(x => x.UserName).Index("UserName_IDX");
-            Map(x => x.FirstName).Not.LazyLoad();
-            Map(x => x.LastName).Not.LazyLoad();
-            Map(x => x.PasswordHash);
-            Map(x => x.Hints);
-            Map(x => x.CurrentRole);
-            //Map(x => x.Email);
-            Map(x => x.SecurityStamp);
-            Map(x => x.IsRadialAdmin);
-            Map(x => x.DeleteTime);
-            Map(x => x.ImageGuid);
-            Map(x => x.Gender);
-            HasMany(x => x.UserOrganization).Not.LazyLoad().Cascade.SaveUpdate();
-            HasMany(x => x.Logins).Cascade.SaveUpdate();
-            HasMany(x => x.Roles).Cascade.SaveUpdate();
-            HasMany(x => x.Claims).Cascade.SaveUpdate();
-        }
-    }
+    
 
     public class IdentityUserLoginMap : ClassMap<IdentityUserLogin>
     {

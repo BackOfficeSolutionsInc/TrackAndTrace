@@ -1,4 +1,5 @@
-﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+﻿@using NHibernate.Util
+@model RadialReview.Models.L10.VM.L10MeetingVM
 @{
 	ViewBag.Title = "Scorecard";
 	Layout = "~/Views/L10/BasePage.cshtml";
@@ -22,26 +23,44 @@
 				<h3 class="pull-left">Scorecard:</h3>
 				<div class="clearfix"></div>
 				<div style="position: relative;">
-				@for (var i = 0; i < 2; i++)
+				@for (var i = 0; i < 1; i++)
 				{
 				if (i == 0)
 				{
 					@:<div class="table-responsive">
 				}
 
-					<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm hidden-md" : "")">
+					<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm hidden-md" : "")" >
 						<thead>
 							<tr>
-								<th class="heading who alignRight">Accountable</th>
-								<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
-								<th class="heading measurable">Measurable</th>
-								<th class="heading target">Target</th>
+								<th>&nbsp;</th>
+								<th>&nbsp;</th>
+								<th>&nbsp;</th>
+								<th>&nbsp;</th>
 								@if (i == 0)
 								{
 									foreach (var r in Model.Weeks)
 									{
 										<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-											@r.DisplayDate.ToString("MMM dd")
+											@r.DisplayDate.AddDays(-6).ToString("MM/dd")
+										</th>
+										@*if (r.IsCurrentWeek){
+											<th class="date current buttonColumn"></th>
+										}*@
+									}
+								}
+							</tr>
+							<tr>
+								<th class="heading who alignRight">Accountable</th>
+								<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
+								<th class="heading measurable">Measurable</th>
+								<th class="heading target" colspan="2">Target</th>
+								@if (i == 0)
+								{
+									foreach (var r in Model.Weeks)
+									{
+										<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
+											@r.DisplayDate.ToString("MM/dd")
 										</th>
 										@*if (r.IsCurrentWeek){
 											<th class="date current buttonColumn"></th>
@@ -64,7 +83,8 @@
 										<span class="newLine gray">/@m.Measurable.AdminUser.NotNull(x => x.GetName())</span>
 									</td>
 									<td class="measurable first1" title="@m.Measurable.Title">@m.Measurable.Title</td>
-									<td class="target first2">@m.Measurable.ToSymbolString()</td>
+									<td class="target direction" data-measurable="@m.Id">@m.Measurable.GoalDirection.ToSymbol()</td>
+									<td class="target value" data-measurable="@m.Id"><span class="inlineEdit" data-measurable="@m.Measurable.Id" data-url="/L10/UpdateMeasurable" >@m.Measurable.Goal.ToString("0.#####")</span></td>
 
 									@if (i == 0){
 										var col = 0;
@@ -125,7 +145,13 @@
 </div>
 <script>
 	$(".score input").each(function () { updateScore(this); });
-
+	//debugger;
+	//new ColumnResize($("#ScorecardTable")[0]);
+	//$(".scorecard-table").colResizable({
+	//	liveDrag: true,
+	//	gripInnerHtml: "<div class='grip'></div>",
+	//	draggingClass: "dragging"
+	//});
 	//$("#ScorecardTable").wrap('<div id="table_container"></div>').after('<div id="bottom_anchor"></div>');
 	//$("#ScorecardTable_resp").scroll(moveScroll("#ScorecardTable", "#ScorecardTable_resp"));
 

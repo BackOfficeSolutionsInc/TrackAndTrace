@@ -1,4 +1,5 @@
-﻿using RadialReview.Models;
+﻿using NHibernate.Criterion;
+using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Prereview;
 using RadialReview.Models.Scorecard;
@@ -132,12 +133,12 @@ namespace RadialReview.Accessors
 	                }
 
 
-	                var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).RowCount();
-					var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started && x.DeleteTime == null).RowCount();
+					var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
+					var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
 	                var nowPlus = now.Add(TimeSpan.FromDays(1));
 
-					var scorecardCount = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == forUserId && x.DateDue < nowPlus && x.DateEntered == null).RowCount();
-					return reviewCount + prereviewCount + scorecardCount + profileImage;
+					var scorecardCount = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == forUserId && x.DateDue < nowPlus && x.DateEntered == null).Select(Projections.RowCount()).FutureValue<int>();
+					return reviewCount.Value + prereviewCount.Value + scorecardCount.Value + profileImage;
                 }
             }
         }

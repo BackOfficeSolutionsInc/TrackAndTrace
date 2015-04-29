@@ -29,7 +29,6 @@
 
 !function ($, window, pluginName, undefined) {
 	console.log("start sortable");
-	debugger;
 	var eventNames,
 		containerDefaults = {
 			// If true, items can be dragged from this container

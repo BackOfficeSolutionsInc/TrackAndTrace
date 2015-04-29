@@ -9,24 +9,27 @@ namespace RadialReview.Models.Askables
 {
     public abstract class ResponsibilityGroupModel : ILongIdentifiable, IDeletable
     {
-		public virtual long Id { get; set; }
-		public abstract String GetName();
+        public virtual long Id { get; set; }
+        public abstract String GetName();
 
-	    public virtual String GetNameExtended(){
-		    return GetName();
-	    }
-		public virtual string GetNameShort(){
-			return GetName();
-		}
+        public virtual String GetNameExtended()
+        {
+            return GetName();
+        }
+        public virtual string GetNameShort()
+        {
+            return GetName();
+        }
 
-	    public virtual string GetImageUrl(){
-		    return ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder;
-	    }
+        public virtual string GetImageUrl()
+        {
+            return ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder;
+        }
 
         public abstract String GetGroupType();
 
         public virtual OrganizationModel Organization { get; set; }
-		//public virtual long OrganizationId { get; set; }
+        //public virtual long OrganizationId { get; set; }
         public virtual IList<ResponsibilityModel> Responsibilities { get; set; }
         protected virtual Boolean? _Editable { get; set; }
 
@@ -44,14 +47,27 @@ namespace RadialReview.Models.Askables
             Responsibilities = new List<ResponsibilityModel>();
         }
 
-		#region IDeletable Members
+        #region IDeletable Members
 
-		public virtual DateTime? DeleteTime { get;set; }
+        public virtual DateTime? DeleteTime { get; set; }
 
-		#endregion
+        #endregion
 
-		
-	}
+        public class ResponsibilityGroupModelMap : ClassMap<ResponsibilityGroupModel>
+        {
+            public ResponsibilityGroupModelMap()
+            {
+                Id(x => x.Id);
+                Map(x => x.DeleteTime);
+                References(x => x.Organization).Not.LazyLoad().Column("Organization_id");
+                //Map(x => x.OrganizationId).Column("Organization_id");
+                HasMany(x => x.Responsibilities)
+                    .Cascade.SaveUpdate()
+                    .Not.LazyLoad();
+
+            }
+        }
+    }
 
     public class OrganizationPositionModel : ResponsibilityGroupModel
     {
@@ -59,7 +75,7 @@ namespace RadialReview.Models.Askables
         public virtual String CustomName { get; set; }
         public virtual long CreatedBy { get; set; }
 
-		public virtual long? TemplateId { get; set; }
+        public virtual long? TemplateId { get; set; }
 
         public override string GetName()
         {
@@ -80,10 +96,10 @@ namespace RadialReview.Models.Askables
         public virtual Boolean OnlyManagersEdit { get; set; }
         public virtual Boolean InterReview { get; set; }
         public virtual Boolean Secret { get; set; }
-       // public virtual IList<TeamMemberModel> Members { get; set; }
-        public OrganizationTeamModel():base()
+        // public virtual IList<TeamMemberModel> Members { get; set; }
+        public OrganizationTeamModel() : base()
         {
-           // Members = new List<TeamMemberModel>();
+            // Members = new List<TeamMemberModel>();
             OnlyManagersEdit = true;
             InterReview = true;
         }
@@ -96,19 +112,20 @@ namespace RadialReview.Models.Askables
             return DisplayNameStrings.team;
         }
 
-        public static OrganizationTeamModel SubordinateTeam(UserOrganizationModel creator,UserOrganizationModel manager)
+        public static OrganizationTeamModel SubordinateTeam(UserOrganizationModel creator, UserOrganizationModel manager)
         {
-            return new OrganizationTeamModel() {
+            return new OrganizationTeamModel()
+            {
                 CreatedBy = creator.Id,
                 InterReview = false,
                 ManagedBy = manager.Id,
                 Name = manager.GetNameAndTitle() + " Direct Reports",
-                OnlyManagersEdit=true,
+                OnlyManagersEdit = true,
                 Organization = manager.Organization,
                 Responsibilities = new List<ResponsibilityModel>(),
                 Secret = false,
                 Type = TeamType.Subordinates,
-                _Editable= false,
+                _Editable = false,
             };
         }
     }
@@ -149,25 +166,12 @@ namespace RadialReview.Models.Askables
     {
         public OrganizationPositionModelMap()
         {
-			Map(x => x.CustomName);
-			Map(x => x.CreatedBy);
-			Map(x => x.TemplateId);
+            Map(x => x.CustomName);
+            Map(x => x.CreatedBy);
+            Map(x => x.TemplateId);
             References(x => x.Position).Not.LazyLoad();
         }
     }
 
-    public class ResponsibilityGroupModelMap : ClassMap<ResponsibilityGroupModel>
-    {
-        public ResponsibilityGroupModelMap()
-        {
-			Id(x => x.Id);
-			Map(x => x.DeleteTime);
-			References(x => x.Organization).Not.LazyLoad().Column("Organization_id");
-			//Map(x => x.OrganizationId).Column("Organization_id");
-            HasMany(x => x.Responsibilities)
-                .Cascade.SaveUpdate()
-                .Not.LazyLoad();
 
-        }
-    }
 }

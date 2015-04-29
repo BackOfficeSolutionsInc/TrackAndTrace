@@ -66,20 +66,8 @@ namespace RadialReview.Models.Scorecard
 			} 
 		}
 		
-		public virtual string ToSymbolString()
-		{
-			var sym = "";
-			switch(GoalDirection){
-				case LessGreater.LessThan:
-					sym = "< ";
-					break;
-				case LessGreater.GreaterThan:
-					sym = "≥ ";
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-			return sym+Goal.ToString("0.#####");
+		public virtual string ToSymbolString(){
+			return GoalDirection.ToSymbol()+" "+Goal.ToString("0.#####");
 		}
 	}
 }

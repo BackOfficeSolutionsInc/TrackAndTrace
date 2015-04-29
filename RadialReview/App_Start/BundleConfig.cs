@@ -26,8 +26,8 @@ namespace RadialReview
 
 			// Use the development version of Modernizr to develop with and learn from. Then, when you're
 			// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
-			bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
-						"~/Scripts/modernizr-*"));
+			//bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
+			//			"~/Scripts/modernizr-*"));
 
 			bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
 					  "~/Scripts/components/posneg.js",
@@ -95,6 +95,7 @@ namespace RadialReview
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/L10").Include(
+					"~/Scripts/home/resizeable-tables.js",
 					"~/Scripts/L10/L10.js",
 					"~/Scripts/L10/L10Ids.js",
 					"~/Scripts/L10/L10Todo.js",

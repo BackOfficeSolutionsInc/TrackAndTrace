@@ -31,6 +31,27 @@ namespace RadialReview.Accessors
 			}
 		}
 
+		public class ReviewIncomplete
+		{
+			public long reviewId { get; set; }
+			public long numberIncomplete { get; set; }
+		}
+
+		public static List<ReviewIncomplete> AnyUnansweredReviewQuestions(ISession s, IEnumerable<long> reviewIds)
+		{
+			var query =
+@"select
+	a.ForReviewId,
+	count(*)
+from AnswerModel as a 
+Where a.ForReviewId in (:reviewIds) and Required=true and Complete=false and DeleteTime is NULL
+group by a.ForReviewId";
+
+			var result = s.CreateSQLQuery(query).SetParameterList("reviewIds", reviewIds).List<object[]>();
+			var o = result.Select(x => new ReviewIncomplete { reviewId = (long)x[0], numberIncomplete = (long)x[1] }).ToList();
+			return o;
+		}
+
 
 		public static List<UserReviewRoleValues> GetAllRoleValues(ISession s, long reviewContainerId)
 		{

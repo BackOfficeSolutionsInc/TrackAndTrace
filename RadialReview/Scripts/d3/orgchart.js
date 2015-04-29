@@ -267,7 +267,6 @@ function startOrgChart(selector, orgId) {
                             }
                         } else {
                             alert("err");
-                            debugger;
                             // NowAdd(this);
                         }
                     } else {

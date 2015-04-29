@@ -28,9 +28,8 @@ namespace RadialReview
                 }
                 return (V)context.Cache.Get(key);
             }else{
-                if (context.Items[key] == null || forceUpdate((V)context.Items[key]))
-                {
-                    context.Items[key] = generator(key);
+                if (context.Items[key] == null || forceUpdate((V)context.Items[key])){
+	                context.Push(key, generator(key));
                 }
                 return (V)context.Items[key];
             }

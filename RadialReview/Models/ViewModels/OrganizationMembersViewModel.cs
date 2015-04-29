@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Models.ViewModels
 {
@@ -12,7 +13,7 @@ namespace RadialReview.Models.ViewModels
 
 		public bool ManagingOrganization { get; set; }
 
-        public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserOrganizationModel> members,OrganizationModel organization)
+        public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserLookup> members,OrganizationModel organization)
         {
 	        ManagingOrganization = caller.ManagingOrganization;
             Organization = organization;
@@ -59,15 +60,42 @@ namespace RadialReview.Models.ViewModels
 
             //PositionTitle = userOrg.Positions.ToListAlive().FirstOrDefault().NotNull(x => x.Position.CustomName);
 
-            NumTotalResponsibilities =
+           /* NumTotalResponsibilities =
                 userOrg.Responsibilities.ToListAlive().Count() +
                 userOrg.Positions.ToListAlive().Sum(x => x.Position.Responsibilities.Count()) +
-                userOrg.Teams.ToListAlive().Sum(x => x.Team.Responsibilities.Count());
+                userOrg.Teams.ToListAlive().Sum(x => x.Team.Responsibilities.Count());*/
 
 			NumRocks	   = userOrg.NumRocks;
 			NumRoles	   = userOrg.NumRoles;
 			NumMeasurables = userOrg.NumMeasurables;
         }
+
+		public OrgMemberViewModel(UserLookup u)
+		{
+			Id = u.UserId;
+			Name = u.Name;
+			Email = u.Email;
+			Manager = u.IsManager;
+			Verified = u.HasJoined;
+			TeamsTitles = u.Teams.Split(',').Select(x=>x.Trim()).Where(x=>!String.IsNullOrWhiteSpace(x)).ToList();
+			PositionTitles = u.Positions.Split(',').Select(x => x.Trim()).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+			ManagersTitles = u.Managers.Split(',').Select(x => x.Trim()).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+			EmailSent = u.HasSentInvite;
+			Admin = u.IsAdmin;
+
+			Managing = u._PersonallyManaging;
+
+			//PositionTitle = userOrg.Positions.ToListAlive().FirstOrDefault().NotNull(x => x.Position.CustomName);
+
+			/* NumTotalResponsibilities =
+				 userOrg.Responsibilities.ToListAlive().Count() +
+				 userOrg.Positions.ToListAlive().Sum(x => x.Position.Responsibilities.Count()) +
+				 userOrg.Teams.ToListAlive().Sum(x => x.Team.Responsibilities.Count());*/
+
+			NumRocks = u.NumRocks;
+			NumRoles = u.NumRoles;
+			NumMeasurables = u.NumMeasurables;
+		}
 
 
 

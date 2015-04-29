@@ -36,7 +36,7 @@
                        onclick="@Html.ShowModal(
 							"Add Supervisor",
                             Url.Action("ManagerModal", "User", new {id=Model.Id}),
-                            Url.Action("AddManager", "User")
+							Url.Action("AddManager", "User", new { refresh = true })
                         )">+</a>
                 </th>
             }

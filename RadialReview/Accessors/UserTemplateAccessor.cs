@@ -165,6 +165,7 @@ namespace RadialReview.Accessors
 						});
 						user.NumMeasurables += 1;
 						s.Update(user);
+						user.UpdateCache(s);
 					}
 
 
@@ -210,6 +211,7 @@ namespace RadialReview.Accessors
 						});
 						user.NumRoles += 1;
 						s.Update(user);
+						user.UpdateCache(s);
 					}
 
 					tx.Commit();
@@ -266,6 +268,7 @@ namespace RadialReview.Accessors
 
 						user.NumRocks += 1;
 						s.Update(user);
+						user.UpdateCache(s);
 					}
 
 					tx.Commit();
@@ -309,6 +312,7 @@ namespace RadialReview.Accessors
 							var u = s.Get<UserOrganizationModel>(r.ForUserId);
 							u.NumRocks -= 1;
 							s.Update(u);
+							u.UpdateCache(s);
 						}
 						s.Update(r);
 					}
@@ -347,6 +351,7 @@ namespace RadialReview.Accessors
 							var u =s.Get<UserOrganizationModel>(r.ForUserId);
 							u.NumRoles -= 1;
 							s.Update(u);
+							u.UpdateCache(s);
 						}
 						s.Update(r);
 					}
@@ -391,6 +396,7 @@ namespace RadialReview.Accessors
 							var u = s.Get<UserOrganizationModel>(m.AccountableUserId);
 							u.NumMeasurables -= 1;
 							s.Update(u);
+							u.UpdateCache(s);
 						}
 						s.Update(m);
 					}
@@ -508,6 +514,7 @@ namespace RadialReview.Accessors
 			};
 			s.Save(utUser);
 			s.Update(user);
+			user.UpdateCache(s);
 		}
 		public static void _RemoveUserToTemplateUnsafe(ISession s, long templateId, long userId)
 		{
@@ -561,6 +568,7 @@ namespace RadialReview.Accessors
 					user.JobDescriptionFromTemplateId = null;
 					s.Update(user);
 				}
+				user.UpdateCache(s);
 			}
 		}
 
@@ -595,8 +603,9 @@ namespace RadialReview.Accessors
 						u.JobDescription = template.JobDescription;
 						u.JobDescriptionFromTemplateId = templateId;
 						s.Update(u);
+						u.UpdateCache(s);
 					}
-
+					
 					tx.Commit();
 					s.Flush();
 				}

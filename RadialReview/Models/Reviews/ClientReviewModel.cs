@@ -14,7 +14,8 @@ namespace RadialReview.Models.Reviews
     public class ClientReviewModel : ILongIdentifiable
     {
 
-        public virtual long Id {get;set;}
+		public virtual long Id { get; set; }
+		public virtual long ReviewContainerId { get; set; }
         public virtual long ReviewId { get; set; }
         public virtual IList<LongModel> FeedbackIds { get; set; }
         public virtual IList<LongTuple> Charts { get; set; }
@@ -61,7 +62,8 @@ namespace RadialReview.Models.Reviews
     {
         public ClientReviewModelMap()
         {
-            Id(x => x.Id);
+			Id(x => x.Id);
+			Map(x => x.ReviewContainerId);
             Map(x => x.ReviewId);
 			Map(x => x.Visible);
 			Map(x => x.ManagerNotes);

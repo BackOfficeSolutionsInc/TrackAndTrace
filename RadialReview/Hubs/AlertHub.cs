@@ -9,6 +9,7 @@ using RadialReview.Accessors;
 using System.Collections.Concurrent;
 using System.Web.Caching;
 using RadialReview.Models;
+using RadialReview.Utilities;
 
 namespace RadialReview.Hubs
 {
@@ -26,15 +27,21 @@ namespace RadialReview.Hubs
             var httpContext= Context.Request.GetHttpContext();
 
 
-
             if (!httpContext.CacheContains(REGISTERED_KEY + username))
             {
-                var userId = _UserAccessor.GetUserIdByUsername(username);
-                var userOrgs = _UserAccessor.GetUserOrganizations(userId, "");
-                httpContext.CacheAdd(REGISTERED_KEY + username, userOrgs, now.AddDays(1));
+				using (var s = HibernateSession.GetCurrentSession())
+				{
+					using (var tx = s.BeginTransaction())
+					{
+					    var userId = _UserAccessor.GetUserIdByUsername(s,username);
+						var userOrgs = _UserAccessor.GetUserOrganizations(s,userId, "");
+						httpContext.CacheAdd(REGISTERED_KEY + username, userOrgs, now.AddDays(1));
+					}
+				}
+             
             }
 
-            IHubContext hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+            var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
             foreach (var u in httpContext.CacheGet<List<UserOrganizationModel>>(REGISTERED_KEY + username))
             {
                 try{
@@ -45,7 +52,7 @@ namespace RadialReview.Hubs
                     }
                 }catch (Exception e)
                 {
-                    int a = 0;
+                    var a = 0;
                 }
             }
 

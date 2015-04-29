@@ -137,6 +137,7 @@ line-height: 18px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	width: calc(100% - 48px);
+	font-size: 18px;
 }
 
 .issues-list > .issue-row > .message {
@@ -173,7 +174,7 @@ line-height: 18px;
 
 
 .issues-list .issue-row .issue-row .message {
-	font-size: 95%;
+	font-size: 15px;
 	color: #969696;
 }
 

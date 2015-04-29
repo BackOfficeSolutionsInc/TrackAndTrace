@@ -12,6 +12,7 @@ using RadialReview.Hubs;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Todo;
 
 namespace RadialReview.Controllers
 {
@@ -92,6 +93,15 @@ namespace RadialReview.Controllers
 			L10Accessor.UpdateIssueCompletion(GetUser(), recurrenceId, issueId, @checked, connectionId);
 			return Json(ResultObject.SilentSuccess(@checked));
 		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateIssue(long id, string message, string details)
+		{
+			L10Accessor.UpdateIssue(GetUser(), id, message, details);
+			return Json(ResultObject.SilentSuccess());
+		}
+
 		#endregion
 
 		#region Todos
@@ -104,6 +114,14 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess());
 		}
 
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateTodo(long id,string message,string details,DateTime? dueDate,long? accountableUser)
+		{
+			L10Accessor.UpdateTodo(GetUser(), id, message, details, dueDate, accountableUser);
+			return Json(ResultObject.SilentSuccess());
+		}
+		
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null)
@@ -121,6 +139,8 @@ namespace RadialReview.Controllers
 			L10Accessor.UpdateRockCompletion(GetUser(), recurrenceId, rockId, state, connectionId);
 			return Json(ResultObject.SilentSuccess(state.ToString()));
 		}
+
+
 
 		#endregion
 
@@ -180,6 +200,19 @@ namespace RadialReview.Controllers
 
 
 		#endregion
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Members(long id)
+		{
+			var recurrenceId = id;
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var result = recur._DefaultAttendees.Select(x => new{
+				id = x.User.Id,
+				name = x.User.GetName(),
+				imageUrl = x.User.ImageUrl(true,ImageSize._32)
+			});
+			return Json(ResultObject.SilentSuccess(result), JsonRequestBehavior.AllowGet);
+		}
 
 	}
 }

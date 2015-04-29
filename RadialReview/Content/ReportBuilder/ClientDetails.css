@@ -53,6 +53,7 @@
 		}
 
 		.chartItem {
+			width: 78%;
 			width: calc( 100% - 145px );
 			padding-left: 13px;
 			display: inline-block;

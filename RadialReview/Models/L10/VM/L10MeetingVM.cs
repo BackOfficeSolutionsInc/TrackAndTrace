@@ -43,6 +43,7 @@ namespace RadialReview.Models.L10.VM
 		}
 
 		public long[] Attendees { get; set; }
+		public bool SendEmail { get; set; }
 
 
 		public L10MeetingVM()

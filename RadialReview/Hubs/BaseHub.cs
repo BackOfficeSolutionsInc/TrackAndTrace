@@ -37,12 +37,21 @@ namespace RadialReview.Hubs
 					if (user.IsRadialAdmin)
 						_CurrentUser = s.Get<UserOrganizationModel>(user.CurrentRole);
 					else{
-						var avail = user.UserOrganization.ToListAlive();
-						_CurrentUser = avail.FirstOrDefault(x => x.Id == user.CurrentRole);
-						if (_CurrentUser == null)
-							_CurrentUser = avail.FirstOrDefault();
-						if (_CurrentUser == null)
-							throw new NoUserOrganizationException("No user exists.");
+						var found = s.Get<UserOrganizationModel>(user.CurrentRole);
+						if (found.DeleteTime != null || found.User.Id == userId){
+							//Expensive
+							var avail = user.UserOrganization.ToListAlive();
+							_CurrentUser = avail.FirstOrDefault(x => x.Id == user.CurrentRole);
+							if (_CurrentUser == null)
+								_CurrentUser = avail.FirstOrDefault();
+							if (_CurrentUser == null)
+								throw new NoUserOrganizationException("No user exists.");
+						}
+						else{
+							_CurrentUser = found;
+						}
+
+						
 					}
 					return _CurrentUser;
 				}

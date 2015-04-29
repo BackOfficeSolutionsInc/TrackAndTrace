@@ -33,6 +33,13 @@ namespace RadialReview.Utilities
 		protected ISession session;
 		protected UserOrganizationModel caller;
 
+		public class CacheResult
+		{
+			public Exception Exception { get; set; }
+		}
+
+		protected Dictionary<string, CacheResult> cache = new Dictionary<string, CacheResult>();
+
 		protected List<PermissionOverride> Overrides { get; set; } 
 
 		public PermissionsUtility RadialAdmin()
@@ -63,6 +70,48 @@ namespace RadialReview.Utilities
 			if (!session.Contains(caller) && caller.Id != UserOrganizationModel.ADMIN_ID)
 				attached = session.Get<UserOrganizationModel>(caller.Id);
 			return new PermissionsUtility(session, attached);
+		}
+		#endregion
+
+		#region Cache
+		public class CacheChecker
+		{
+			private PermissionsUtility p;
+			private String key;
+
+			public CacheChecker(String key, PermissionsUtility p)
+			{
+				this.key = key;
+				this.p = p;
+			}
+
+			public PermissionsUtility Execute(Func<PermissionsUtility> action)
+			{
+				if (p.cache.ContainsKey(key))
+				{
+					if (p.cache[key].Exception != null)
+						throw p.cache[key].Exception;
+					return p;
+				}else{
+					try
+					{
+						var result = action();
+						p.cache[key] = new CacheResult();
+						return result;
+					}
+					catch (Exception e)
+					{
+						p.cache[key] = new CacheResult() { Exception = e };
+						throw;
+					}
+				}
+			}
+		}
+
+		public CacheChecker CheckCacheFirst(string key, params long[] arguments)
+		{
+			key = key + "~" + String.Join("_", arguments);
+			return new CacheChecker(key,this);
 		}
 		#endregion
 
@@ -101,28 +150,30 @@ namespace RadialReview.Utilities
 		}
 		public PermissionsUtility ViewUserOrganization(long userOrganizationId, Boolean sensitive)
 		{
-			if (IsRadialAdmin(caller))
-				return this;
-			var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
-
-			if (IsManagingOrganization(userOrg.Organization.Id))
-				return this;
-
-			if (sensitive)
-			{
-				/*if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
-					return this;*/
-
-				if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
+			return CheckCacheFirst("ViewUserOrganization", userOrganizationId, sensitive.ToLong()).Execute(()=>{
+				if (IsRadialAdmin(caller))
 					return this;
-			}
-			else
-			{
-				if (userOrg.Organization.Id == caller.Organization.Id)
-					return this;
-			}
+				var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
 
-			throw new PermissionsException();
+				if (IsManagingOrganization(userOrg.Organization.Id))
+					return this;
+
+				if (sensitive)
+				{
+					/*if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
+						return this;*/
+
+					if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
+						return this;
+				}
+				else
+				{
+					if (userOrg.Organization.Id == caller.Organization.Id)
+						return this;
+				}
+
+				throw new PermissionsException();
+			});
 		}
 		public PermissionsUtility ManagesUserOrganization(long userOrganizationId, bool disableIfSelf)
 		{
@@ -154,6 +205,18 @@ namespace RadialReview.Utilities
 			return ManagesUserOrganization(userOrganizationId, false);
 		}
 
+		public PermissionsUtility RemoveUser(long userId)
+		{
+			var found = session.Get<UserOrganizationModel>(userId);
+
+			if (caller.ManagingOrganization || caller.Organization.Id == found.Organization.Id)
+				return this;
+
+			if (caller.Organization.ManagersCanRemoveUsers)
+				ManagesUserOrganization(userId, true);
+
+			throw new PermissionsException("You cannot remove this user.");
+		}
 		#endregion
 
 		#region Organization
@@ -545,16 +608,18 @@ namespace RadialReview.Utilities
 
 		public PermissionsUtility EditReview(long reviewId)
 		{
-			//TODO more permissions here?
-			if (IsRadialAdmin(caller))
-				return this;
-			var review = session.Get<ReviewModel>(reviewId);
-			if (review.DueDate < DateTime.UtcNow)
-				throw new PermissionsException("Review period has expired.");
-			if (review.ForUserId == caller.Id)
-				return this;
+			return CheckCacheFirst("EditReview", reviewId).Execute(() =>{
+				//TODO more permissions here?
+				if (IsRadialAdmin(caller))
+					return this;
+				var review = session.Get<ReviewModel>(reviewId);
+				if (review.DueDate < DateTime.UtcNow)
+					throw new PermissionsException("Review period has expired.");
+				if (review.ForUserId == caller.Id)
+					return this;
 
-			throw new PermissionsException();
+				throw new PermissionsException();
+			});
 		}
 
 		public PermissionsUtility ViewReviews(long reviewContainerId, bool sensitive)
@@ -949,6 +1014,7 @@ namespace RadialReview.Utilities
 		}
 		#endregion
 
+		#region Recursions
 		public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)
 		{
 			if (IsOwnedBelowOrEqual(caller, visiblility))
@@ -993,7 +1059,8 @@ namespace RadialReview.Utilities
 
 			return false;
 		}
-
+		#endregion
+		#region Overrides
 		protected PermissionsUtility TryWithOverrides(Func<PermissionsUtility, PermissionsUtility> p, params PermissionType[] types)
 		{
 			try{
@@ -1023,6 +1090,7 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 
 		}
+	#endregion
 
 		/*public PermissionsUtility ViewImage(string imageId)
 		{
@@ -1052,18 +1120,6 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility RemoveUser(long userId)
-		{
-			var found = session.Get<UserOrganizationModel>(userId);
-
-			if (caller.ManagingOrganization || caller.Organization.Id == found.Organization.Id)
-				return this;
-
-			if (caller.Organization.ManagersCanRemoveUsers)
-				ManagesUserOrganization(userId, true);
-
-			throw new PermissionsException("You cannot remove this user.");
-		}
 
 		public static bool IsAdmin(UserOrganizationModel caller)
 		{

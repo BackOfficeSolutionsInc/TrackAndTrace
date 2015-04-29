@@ -46,7 +46,8 @@
 }
 
 .editor .fill:hover {
-	-webkit-filter: brightness(95%);
+	/*-webkit-filter: brightness(95%);*/
+	opacity: .85;
 }
 
 .tristate .tristate-val {

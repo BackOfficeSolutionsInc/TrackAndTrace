@@ -18,16 +18,16 @@
 </div>
 
 <script>
-	function formatState(state) {
-		if (!state.id) {
-			return state.text;
-		}
-		var $state = $('<span><img width="32" height="32" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
-		return $state;
-	};
+	//function formatState(state) {
+	//	if (!state.id) {
+	//		return state.text;
+	//	}
+	//	var $state = $('<span><img style="max-width:32;max-height:32px" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+	//	return $state;
+	//};
 
 	$(".select-user").select2({
-		templateResult: formatState,
-		templateSelection: formatState,
+		templateResult: imageListFormat,
+		templateSelection: imageListFormat,
 	});
 </script>

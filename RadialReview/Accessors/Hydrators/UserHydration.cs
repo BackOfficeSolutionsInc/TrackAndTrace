@@ -116,7 +116,9 @@ namespace RadialReview
                 using (var tx = Session.BeginTransaction())
                 {
                     var user=GetUnderlying();
-                    var children = SubordinateUtility.GetSubordinates(Session, user, true, levels);
+					var children = DeepSubordianteAccessor.GetSubordinatesAndSelfModels(Session, user, user.Id)
+						.Where(x=>x.Id!=user.Id).ToList();
+                    //var children = SubordinateUtility.GetSubordinates(Session, user, true, levels);
                     User.AllSubordinates = children;
                 }
             }
@@ -206,7 +208,7 @@ namespace RadialReview
             return User;
         }
 
-        public UserHydration Reviews(bool answers=false)
+       /* public UserHydration Reviews(bool answers=false)
         {
             List<ReviewsModel> reviews = new List<ReviewsModel>();
             using (var tx = Session.BeginTransaction())
@@ -235,11 +237,11 @@ namespace RadialReview
                 {
                     var nex = Session.Query<ReviewsModel>().Where(x => x.Id == g.Id).SingleOrDefault();
                     reviews.Add(nex);
-                }*/
+                }*
             }
             User.CreatedReviews = reviews;
             return this;
-        }
+        }*/
         public UserHydration SetTeams(List<TeamDurationModel> teams)
         {
             /*using(var tx = Session.BeginTransaction())

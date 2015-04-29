@@ -23,7 +23,6 @@
 			var source = this.getAttribute(attrib);
 			source = source || this.getAttribute("data-src");
 			if (source) {
-				debugger;
 				this.setAttribute("src", source);
 				this.setAttribute("xlink:href", source);
 				if (typeof callback === "function") callback.call(this);
@@ -34,7 +33,7 @@
 			var inview = images.filter(function () {
 				var $e = $(this);
 				if ($e.is(":hidden")) {
-					debugger;
+					
 					return;
 				}
 
@@ -44,10 +43,10 @@
 					eb = et + $e.height();
 
 				if (eb >= wt - th && et <= wb + th) {
-					debugger;
+					
 					return true;
 				}
-				debugger;
+				
 				return false;
 			});
 

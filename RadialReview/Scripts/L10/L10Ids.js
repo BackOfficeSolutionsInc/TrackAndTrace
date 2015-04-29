@@ -23,9 +23,9 @@ $(function () {
 			"</span>");
 		$("#issueDetails").append("<div class='createTime'>" + new Date(createtime).toLocaleDateString() + "</div>");
 
-		$("#issueDetails").append("<div class='heading'><h4>" + message + "</h2></div>");
+		$("#issueDetails").append("<div class='heading'><h4 class='message-holder clickable' data-recurrence_issue='" + recurrence_issue + "'><span class='message' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
 		$("#issueDetails").append(detailsList);
-		$("#issueDetails").append("<textarea disabled class='details'>" + details + "</textarea>");
+		$("#issueDetails").append("<textarea class='details issue-details' data-recurrence_issue='" + recurrence_issue + "'>" + details + "</textarea>");
 		$("#issueDetails").append("<div class='button-bar'>" +
 			"<span class='btn-group pull-right'>" +
 				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Done</span>" +
@@ -36,12 +36,16 @@ $(function () {
 			"</span>" +
 			"<span class='clearfix'></span>" +
 			"</div>");
-
-
 	});
 
+	$("body").on("click", ".issueDetails .message-holder .message", function() {
+		var input = $("<input value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html())+ "' onblur='sendIssueMessage(this," + $(this).parent().data("recurrence_issue") + ")'/>");
+		$(this).parent().html(input);
+		input.focusTextToEnd();
+	});
+
+
 	$("body").on("click", ".detailsBtn", function () {
-		debugger;
 		if ($(this).is(".sm")) {
 			$(".issues-list ol li").slideUp(400);
 		} else {
@@ -109,6 +113,10 @@ function constructRow(issue) {
 			sub += constructRow(issue.children[i]);
 		}
 	}
+	var details = "";
+	if (issue.details)
+		details = issue.details;
+
 	return '<li class="issue-row dd-item" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '">'
 		+ '	<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>'
 		+ '	<div class="move-icon noselect dd-handle">'
@@ -116,8 +124,8 @@ function constructRow(issue) {
 		+ '		<span class="inner icon fontastic-icon-primitive-square"></span>'
 		+ '	</div>'
 		+ '<div class="btn-group pull-right"><span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + recurrenceId + '" data-recurrence_issue="' + issue.issue + '" data-method="copymodal"></span></div>'
-		+ '	<div class="message">' + issue.message + '</div>'
-		+ '	<div class="issue-details-container"><div class="issue-details">' + issue.details + '</div></div>'
+		+ '	<div class="message" data-recurrence_issue='+issue.issue+'>' + issue.message + '</div>'
+		+ '	<div class="issue-details-container"><div class="issue-details" data-recurrence_issue='+issue.issue+'>' + details + '</div></div>'
 		+ '<ol class="dd-list">'
 		+ sub
 		+ '</ol>'
@@ -166,3 +174,58 @@ function refreshCurrentIssueDetails() {
 		.trigger("click");
 	$(".issue-row[data-recurrence_issue=" + currentIssuesDetailsId + "]").addClass("selected");
 }
+
+function updateIssueMessage(id, message) {
+	$(".ids .message[data-recurrence_issue=" + id + "]").html(message);
+	$(".ids .issue-row[data-recurrence_issue=" + id + "]").data("message",escapeString(message));
+}
+function updateIssueDetails(id, details) {
+	$(".ids .issue-details[data-recurrence_issue=" + id + "]").html(details);
+	$(".ids textarea.issue-details[data-recurrence_issue=" + id + "]").val(details);
+	$(".ids .issue-row[data-recurrence_issue=" + id + "]").data("details",escapeString(details));
+}
+
+function sendIssueDetails(self,id) {
+	var val = $(self).val();
+	var data = {
+		details: val
+	};
+	$(".ids .details[data-recurrence_issue=" + id + "]").prop("disabled", true);
+	$.ajax({
+		method:"POST",
+		data:data,
+		url: "/L10/UpdateIssue/" + id,
+		success:function(data) {
+			showJsonAlert(data, false, true);
+			$(".ids .details[data-recurrence_issue=" + id + "]").prop("disabled", false);
+		}
+	});
+}
+
+function sendIssueMessage(self,id) {
+	var val = $(self).val();
+	if (val.trim() == "") {
+		$(".issueDetails .message-holder[data-recurrence_issue="+id+"]").html("<span data-recurrence_issue='"+id+"' class='message'>"+$(self).data("old")+"</span>");
+		return;
+	}
+	
+	$(".ids .message-holder[data-recurrence_issue=" + id + "] input").prop("disabled", true);
+	var data = {
+		message: val
+	};
+	$.ajax({
+		method:"POST",
+		data:data,
+		url: "/L10/UpdateIssue/" + id,
+		success:function(data) {
+			showJsonAlert(data, false, true);
+			if (!data.Error) {
+				$(".issueDetails .message-holder[data-recurrence_issue="+id+"]").html("<span data-recurrence_issue='"+id+"' class='message'>"+val+"</span>");
+			}
+		}
+	});
+}
+
+$("body").on("blur", ".issueDetails .details", function() {
+	sendIssueDetails(this,$(this).data("recurrence_issue"));
+});

@@ -19,8 +19,8 @@
 		      data-recurrence_issue="@Model.Id"
 			  data-method='copymodal'></span>
 	</div>
-	<div class="message">@Model.Issue.Message</div>
-	<div class="issue-details-container"><div class="issue-details">@Model.Issue.Description</div></div>
+	<div class="message" data-recurrence_issue="@Model.Id">@Model.Issue.Message</div>
+	<div class="issue-details-container"><div class="issue-details" data-recurrence_issue="@Model.Id">@Model.Issue.Description</div></div>
 	<ol class="dd-list">@foreach (var i in Model._ChildIssues.OrderBy(x => x.Ordering))
 		{
 			@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)

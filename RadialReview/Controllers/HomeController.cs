@@ -28,13 +28,12 @@ namespace RadialReview.Controllers
         {
             if (IsLoggedIn())
             {
-                var model = new BackendViewModel(){
-                    User = new UserViewModel() { User = GetUserModel() },
-                };
+                var model = new BackendViewModel();
 
                 try
                 {
                     var user=GetUser();
+					model.User = new UserViewModel(){User = user.User};
                     if (user.IsManager())
                     {
                         var recentReview = _ReviewAccessor.GetMostRecentReviewContainer(GetUser(), GetUser().Id);
@@ -46,7 +45,7 @@ namespace RadialReview.Controllers
                         };
                     }
                 }catch(Exception){
-
+	                model.User = new UserViewModel(){User = GetUserModel()};
                 }
                 return View("Backend", model);
             }

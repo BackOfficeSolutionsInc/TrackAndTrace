@@ -26,6 +26,7 @@ using RadialReview.Utilities;
 using System.Web.Security;
 using System.Security.Principal;
 using RadialReview.Utilities.Extensions;
+using Microsoft.VisualStudio.Profiler;
 
 
 namespace RadialReview.Controllers
@@ -66,31 +67,65 @@ namespace RadialReview.Controllers
 			if (!user.IsManagerCanEditOrganization())
 				throw new PermissionsException();
 		}
-
 		protected UserModel GetUserModel()
 		{
-			return HttpContextUtility.Get(HttpContext, "User", x =>
-			{
-				var id = User.Identity.GetUserId();
-				return _UserAccessor.GetUserById(id);
-			}, false);
-		}
-		protected List<UserOrganizationModel> GetUserOrganizations(String redirectUrl)//Boolean full = false)
-		{
-			var id = User.Identity.GetUserId();
-			return _UserAccessor.GetUserOrganizations(id, redirectUrl/*, full*/);
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					return GetUserModel(s);
+				}
+			}
 		}
 
-		private UserOrganizationModel GetUserOrganization(long userOrganizationId, String redirectUrl)//, Boolean full = false)
+		private static readonly string USER_KEY = "User";
+		private static readonly string USERORGANIZATION_KEY = "UserOrganization";
+
+		protected UserModel GetUserModel(ISession s)
 		{
-			return HttpContextUtility.Get(HttpContext, "UserOrganization", x =>
+			return HttpContextUtility.Get(HttpContext, USER_KEY, x =>
 			{
 				var id = User.Identity.GetUserId();
-				return _UserAccessor.GetUserOrganizations(id, userOrganizationId, redirectUrl/*, full*/);
+				return _UserAccessor.GetUserById(s, id);
+			}, false);
+		}
+
+		protected List<UserOrganizationModel> GetUserOrganizations(String redirectUrl) //Boolean full = false)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					return GetUserOrganizations(s, redirectUrl);
+				}
+			}
+		}
+		protected int GetUserOrganizationCounts(ISession s, String redirectUrl)//Boolean full = false)
+		{
+			var id = User.Identity.GetUserId();
+			return _UserAccessor.GetUserOrganizationCounts(s, id, redirectUrl/*, full*/);
+		}
+		protected List<UserOrganizationModel> GetUserOrganizations(ISession s, String redirectUrl)//Boolean full = false)
+		{
+			var id = User.Identity.GetUserId();
+			return _UserAccessor.GetUserOrganizations(s, id, redirectUrl/*, full*/);
+		}
+		/*protected List<UserOrganizationModel> GetUserOrganizations(String redirectUrl)//Boolean full = false)
+		{
+			var id = User.Identity.GetUserId();
+			return _UserAccessor.GetUserOrganizations(s, id, redirectUrl/*, full*);
+		}*/
+
+		private UserOrganizationModel GetUserOrganization(ISession s, long userOrganizationId, String redirectUrl)//, Boolean full = false)
+		{
+			return HttpContextUtility.Get(HttpContext, USERORGANIZATION_KEY, x =>
+			{
+				var id = User.Identity.GetUserId();
+				var found = _UserAccessor.GetUserOrganizations(s, id, userOrganizationId, redirectUrl/*, full*/);
+				if (found!=null && found.User!=null && !HttpContext.CacheContains(USER_KEY)){
+					HttpContext.Push(USER_KEY, found.User);
+				}
+				return found;
 			}, x => x.Id != userOrganizationId);
 		}
 
-		private UserOrganizationModel _CurrentUser = null;
+		//private UserOrganizationModel _CurrentUser = null;
 		private long? _CurrentUserOrganizationId = null;
 		/*
 		protected void ChangeRole(long roleId)
@@ -99,60 +134,91 @@ namespace RadialReview.Controllers
 		}
 		*/
 
+		public UserOrganizationModel GetUser(ISession s)
+		{
+			return _GetUser(s, null);
+		}
+
 		public UserOrganizationModel GetUser()
 		{
-			return _GetUser(null);
-		}
-		public UserOrganizationModel GetUser(long userOrganizationId)
-		{
-			return _GetUser(userOrganizationId);
-		}
+			long? userOrganizationId = null;
 
-
-		private UserOrganizationModel _GetUser(long? userOrganizationId = null)//long? organizationId, Boolean full = false)
-		{
-			/**/
-			if (userOrganizationId == null)
-			{
+			if (userOrganizationId == null){
 				var orgIdParam = Request.Params.Get("organizationId");
 				if (orgIdParam != null)
 					userOrganizationId = long.Parse(orgIdParam);
 			}
 
-			if (userOrganizationId == null && Session["UserOrganizationId"] != null)
-			{
-				userOrganizationId = (long)Session["UserOrganizationId"];
-			}
-			if (userOrganizationId == null)
-			{
-				userOrganizationId = GetUserModel().GetCurrentRole();
+			if (userOrganizationId == null && Session[Constants.SESSION_USERORGANIZATION_ID] != null){
+				userOrganizationId = (long)Session[Constants.SESSION_USERORGANIZATION_ID];
 			}
 
+			if ((UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION] != null && userOrganizationId == _CurrentUserOrganizationId)
+				return (UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION];
 
-			if (_CurrentUser != null && userOrganizationId == _CurrentUserOrganizationId)
-				return _CurrentUser;
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					return _GetUser(s, null);
+				}
+			}
+		}
+		public UserOrganizationModel GetUser(long userOrganizationId)
+		{
+			if ((UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION] != null && userOrganizationId == _CurrentUserOrganizationId)
+				return (UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION];
 
-			if (userOrganizationId == null)
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					return _GetUser(s, userOrganizationId);
+				}
+			}
+		}
+
+
+		private UserOrganizationModel _GetUser(ISession s, long? userOrganizationId = null)//long? organizationId, Boolean full = false)
+		{
+			/**/
+			if (userOrganizationId == null){
+				var orgIdParam = Request.Params.Get("organizationId");
+				if (orgIdParam != null)
+					userOrganizationId = long.Parse(orgIdParam);
+			}
+
+			if (userOrganizationId == null && Session[Constants.SESSION_USERORGANIZATION_ID] != null)
 			{
-				var found = GetUserOrganizations(Server.HtmlEncode(Request.Path.ToString()));
-				if (found.Count == 0)
+				userOrganizationId = (long)Session[Constants.SESSION_USERORGANIZATION_ID];
+			}
+			if (userOrganizationId == null){
+				userOrganizationId = GetUserModel(s).GetCurrentRole();
+			}
+
+
+			if ((UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION] != null && userOrganizationId == ((UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION]).Id)
+				return (UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION];
+
+			if (userOrganizationId == null){
+				var returnPath = Server.HtmlEncode(Request.Path);
+
+				var found = GetUserOrganizations(s,returnPath);
+				if (found.Count() == 0)
 					throw new NoUserOrganizationException();
-				else if (found.Count == 1)
+				else if (found.Count() == 1)
 				{
-					_CurrentUser = found.First();
-					_CurrentUserOrganizationId = _CurrentUser.Id;
-					Session["UserOrganizationId"] = _CurrentUserOrganizationId;
-					return _CurrentUser;
+					var uo = found.First();
+					//_CurrentUserOrganizationId = uo.Id;
+					Session[Constants.SESSION_USERORGANIZATION] = uo;
+					Session[Constants.SESSION_USERORGANIZATION_ID] = _CurrentUserOrganizationId;
+					return uo;
 				}
 				else
 					throw new OrganizationIdException(Request.Url.PathAndQuery);
-			}
-			else
-			{
-				_CurrentUser = GetUserOrganization(userOrganizationId.Value, Request.Url.PathAndQuery);
-				_CurrentUserOrganizationId = _CurrentUser.Id;
-				Session["UserOrganizationId"] = userOrganizationId.Value;
-				return _CurrentUser;
+			}else{
+				var uo=GetUserOrganization(s, userOrganizationId.Value, Request.Url.PathAndQuery);
+				//_CurrentUserOrganizationId = uo.Id;
+				Session[Constants.SESSION_USERORGANIZATION] = uo;
+				Session[Constants.SESSION_USERORGANIZATION_ID] = userOrganizationId.Value;
+				return uo;
+
 			}
 		}
 
@@ -164,7 +230,7 @@ namespace RadialReview.Controllers
 
 		protected void SignOut()
 		{
-			Session["UserOrganizationId"] = null;
+			Session[Constants.SESSION_USERORGANIZATION_ID] = null;
 			AuthenticationManager.SignOut();
 			FormsAuthentication.SignOut();
 			HttpContext.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
@@ -252,122 +318,150 @@ namespace RadialReview.Controllers
 
 		protected override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			//Secure hidden fields
-			ValidationCollection = filterContext.RequestContext.HttpContext.Request.Form;
-			foreach (var f in ValidationCollection.AllKeys){
-				if (f!=null && f.EndsWith(SecuredValueFieldNameComputer.NameSuffix)){
-					ToValidate.Add(f.Substring(0, f.Length - SecuredValueFieldNameComputer.NameSuffix.Length));
-				}
-			}
 
-
-			//Access Level Filtering
-			var accessAttributes = filterContext.ActionDescriptor.GetCustomAttributes(typeof(AccessAttribute), false).Cast<AccessAttribute>();
-			if (accessAttributes.Count() == 0)
-				throw new NotImplementedException("Access attribute missing.");
-
-			switch ((AccessLevel)accessAttributes.Min(x => (int)x.AccessLevel))
+			using (var s = HibernateSession.GetCurrentSession())
 			{
-				case AccessLevel.SignedOut:
+				using (var tx = s.BeginTransaction()){
+					DataCollection.CommentMarkProfile(2, "Validation");
+					//Secure hidden fields
+					ValidationCollection = filterContext.RequestContext.HttpContext.Request.Form;
+					foreach (var f in ValidationCollection.AllKeys)
 					{
-						if (Request.IsAuthenticated)
+						if (f != null && f.EndsWith(SecuredValueFieldNameComputer.NameSuffix))
 						{
-							SignOut();
-							//HttpContext.User.Identity = null;
-							//throw new LoginException(Request.Url.PathAndQuery);
-						}
-					} break;
-				case AccessLevel.Any: break;
-				case AccessLevel.User: GetUserModel(); break;
-				case AccessLevel.UserOrganization: GetUser(); break;
-				case AccessLevel.Manager: if (!GetUser().IsManager()) throw new PermissionsException("You must be a manager to view this resource."); break;
-				case AccessLevel.Radial: if (!(GetUserModel().IsRadialAdmin || GetUser().IsRadialAdmin)) throw new PermissionsException("You must be a Radial Admin to view this resource."); break;
-				default: throw new Exception("Unknown Access Type");
-			}
-
-
-
-
-			// eat the cookie (if any) and set the culture
-			if (Request.Cookies["lang"] != null)
-			{
-				HttpCookie cookie = Request.Cookies["lang"];
-				string lang = cookie.Value;
-				var culture = new System.Globalization.CultureInfo(lang);
-				Thread.CurrentThread.CurrentCulture = culture;
-				Thread.CurrentThread.CurrentUICulture = culture;
-			}
-
-			filterContext.Controller.ViewBag.IsLocal = Config.IsLocal();
-
-			filterContext.Controller.ViewBag.HasBaseController = true;
-			if (IsLoggedIn())
-			{
-				var userOrgs = GetUserOrganizations(Request.Url.PathAndQuery);
-				UserOrganizationModel oneUser = null;
-				try
-				{
-					oneUser = GetUser();
-				}
-				catch (OrganizationIdException)
-				{
-				}
-				catch (NoUserOrganizationException)
-				{
-				}
-
-				filterContext.Controller.ViewBag.UserName = MessageStrings.User;
-				filterContext.Controller.ViewBag.UserImage = "/img/placeholder";
-				filterContext.Controller.ViewBag.IsManager = false;
-				filterContext.Controller.ViewBag.ShowL10 = false;
-				filterContext.Controller.ViewBag.ShowReview = false;
-				filterContext.Controller.ViewBag.Organizations = userOrgs.Count();
-				filterContext.Controller.ViewBag.Hints = GetUserModel().Hints;
-				filterContext.Controller.ViewBag.ManagingOrganization = false;
-				filterContext.Controller.ViewBag.Organization = null;
-
-				if (oneUser != null)
-				{
-					HtmlString name = new HtmlString(oneUser.GetName());
-
-					if (userOrgs.Count > 1)
-					{
-						name = new HtmlString(oneUser.GetNameAndTitle(1));
-						try
-						{
-							name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate() + "</span>");
-						}
-						catch (Exception e)
-						{
-							log.Error(e);
+							ToValidate.Add(f.Substring(0, f.Length - SecuredValueFieldNameComputer.NameSuffix.Length));
 						}
 					}
+					DataCollection.CommentMarkProfile(2, "Attribute");
 
-					filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._64);
-					filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser, oneUser.Id, DateTime.UtcNow);
-					//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
-					filterContext.Controller.ViewBag.UserName = name;
-					filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
-					filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview;
-					var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
-					filterContext.Controller.ViewBag.IsManager = isManager;
-					filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
-					filterContext.Controller.ViewBag.UserId = oneUser.Id;
-					filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
-					filterContext.Controller.ViewBag.Organization = oneUser.Organization;
 
+					//Access Level Filtering
+					var accessAttributes = filterContext.ActionDescriptor.GetCustomAttributes(typeof(AccessAttribute), false).Cast<AccessAttribute>();
+					if (accessAttributes.Count() == 0)
+						throw new NotImplementedException("Access attribute missing.");
+
+					switch ((AccessLevel)accessAttributes.Min(x => (int)x.AccessLevel))
+					{
+						case AccessLevel.SignedOut:
+							{
+								if (Request.IsAuthenticated)
+								{
+									SignOut();
+									//HttpContext.User.Identity = null;
+									//throw new LoginException(Request.Url.PathAndQuery);
+								}
+							}
+							break;
+						case AccessLevel.Any:
+							break;
+						case AccessLevel.User:
+							GetUserModel(s);
+							break;
+						case AccessLevel.UserOrganization:
+							GetUser(s);
+							break;
+						case AccessLevel.Manager:
+							if (!GetUser(s).IsManager()) throw new PermissionsException("You must be a manager to view this resource.");
+							break;
+						case AccessLevel.Radial:
+							if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin)) throw new PermissionsException("You must be a Radial Admin to view this resource.");
+							break;
+						default:
+							throw new Exception("Unknown Access Type");
+					}
+
+
+
+
+					// eat the cookie (if any) and set the culture
+					if (Request.Cookies["lang"] != null)
+					{
+						HttpCookie cookie = Request.Cookies["lang"];
+						string lang = cookie.Value;
+						var culture = new System.Globalization.CultureInfo(lang);
+						Thread.CurrentThread.CurrentCulture = culture;
+						Thread.CurrentThread.CurrentUICulture = culture;
+					}
+
+					filterContext.Controller.ViewBag.IsLocal = Config.IsLocal();
+
+					filterContext.Controller.ViewBag.HasBaseController = true;
+
+					DataCollection.CommentMarkProfile(2, "ViewBag");
+					if (IsLoggedIn())
+					{
+						var userOrgsCount = GetUserOrganizationCounts(s,Request.Url.PathAndQuery);
+						UserOrganizationModel oneUser = null;
+						var hints = true;
+						try
+						{
+							oneUser = GetUser(s);
+							hints = oneUser.User.Hints;
+						}
+						catch (OrganizationIdException)
+						{
+						}
+						catch (NoUserOrganizationException)
+						{
+						}
+
+						filterContext.Controller.ViewBag.UserName = MessageStrings.User;
+						filterContext.Controller.ViewBag.UserImage = "/img/placeholder";
+						filterContext.Controller.ViewBag.IsManager = false;
+						filterContext.Controller.ViewBag.ShowL10 = false;
+						filterContext.Controller.ViewBag.ShowReview = false;
+						filterContext.Controller.ViewBag.Organizations = userOrgsCount;
+						filterContext.Controller.ViewBag.Hints = hints;
+						filterContext.Controller.ViewBag.ManagingOrganization = false;
+						filterContext.Controller.ViewBag.Organization = null;
+
+						if (oneUser != null)
+						{
+							HtmlString name = new HtmlString(oneUser.GetName());
+
+							if (userOrgsCount > 1)
+							{
+								name = new HtmlString(oneUser.GetNameAndTitle(1));
+								try
+								{
+									name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate() + "</span>");
+								}
+								catch (Exception e)
+								{
+									log.Error(e);
+								}
+							}
+
+							DataCollection.CommentMarkProfile(2, "ViewBagPop");
+							filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._64);
+							filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser, oneUser.Id, DateTime.UtcNow);
+							//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
+							filterContext.Controller.ViewBag.UserName = name;
+							filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
+							filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview;
+							var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+							filterContext.Controller.ViewBag.IsManager = isManager;
+							filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+							filterContext.Controller.ViewBag.UserId = oneUser.Id;
+							filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
+							filterContext.Controller.ViewBag.Organization = oneUser.Organization;
+
+						}
+						else
+						{
+							var user = GetUserModel(s);
+							filterContext.Controller.ViewBag.Hints = user.Hints;
+							filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
+						}
+
+						// ViewBag.OrganizationId = Session["OrganizationId"];
+					}
 				}
-				else
-				{
-					var user = GetUserModel();
-					filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
-				}
-
-				// ViewBag.OrganizationId = Session["OrganizationId"];
 			}
-
+			DataCollection.CommentMarkProfile(2, "End");
 			base.OnActionExecuting(filterContext);
 		}
+
 
 		protected void ValidateValues<T>(T model, params Expression<Func<T, object>>[] selectors)
 		{

@@ -1,4 +1,5 @@
-﻿using RadialReview.Exceptions;
+﻿using FluentNHibernate.Utils;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
@@ -76,24 +77,29 @@ namespace RadialReview.Accessors
                         OrganizationId = caller.Organization.Id,
                     };
                     newUser.TempUser = tempUser;
-
-
-
+					
 					var position = orgPositionId!= -2?db.Get<OrganizationPositionModel>(orgPositionId):null;
 
 					if (position!=null && position.Organization.Id != newUser.Organization.Id)
                         throw new PermissionsException();
 
                     db.Save(newUser);
+	                newUser.TempUser.UserOrganizationId = newUser.Id;
 
 	                if (position != null){
-		                var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id){Start = now};
+		                var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id){
+			                Start = now,
+		                };
 		                newUser.Positions.Add(positionDuration);
 	                }
 
 	                if (managerId > 0)
                     {
-                        var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id) { Start = now };
+                        var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id){
+							Start = now,
+							Manager = db.Load<UserOrganizationModel>(managerId),
+							Subordinate = db.Load<UserOrganizationModel>(newUser.Id),
+                        };
                         var manager = db.Get<UserOrganizationModel>(managerId);
                         //db.Save(new DeepSubordinateModel() { CreateTime = now, Links = 1, ManagerId = newUserId, SubordinateId = newUserId });
                         DeepSubordianteAccessor.Add(db, manager, newUser, caller.Organization.Id, now);
@@ -109,6 +115,8 @@ namespace RadialReview.Accessors
                     }
 
                     newUserId = newUser.Id;
+
+	                newUser.UpdateCache(db);
                     tx.Commit();
                 }
 
@@ -165,7 +173,8 @@ namespace RadialReview.Accessors
                     foreach (var user in toSend)
                     {
                        unsentEmails.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser));
-                    }
+					   user.UpdateCache(s);
+					}
                     tx.Commit();
                     s.Flush();
                 
@@ -185,10 +194,15 @@ namespace RadialReview.Accessors
 
                     var toSend = s.QueryOver<TempUserModel>().Where(x => x.OrganizationId == organizationId && x.LastSent == null).List().ToList();
                     
-                    foreach (var tempUser in toSend)
-                    {
+                    foreach (var tempUser in toSend){
                         unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
                     }
+	                var toUpdate = s.QueryOver<UserOrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(toSend.Select(x => x.UserOrganizationId).ToArray()).List().ToList();
+	                foreach (var user in toUpdate){
+		                user.UpdateCache(s);
+	                }
+
+
                 }
             }
             return ((await Emailer.SendEmails(unsent)).Sent);
@@ -201,13 +215,16 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var result = CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
+
+					s.Get<UserOrganizationModel>(tempUser.UserOrganizationId).UpdateCache(s);
+
                     tx.Commit();
                     s.Flush();
                     return result;
                 }
             }
         }
-
+		[Obsolete("Update userOrganization cache",false)]
         public static MailModel CreateJoinEmailToGuid(DataInteraction s, UserOrganizationModel caller, TempUserModel tempUser)
         {
             var emailAddress = tempUser.Email;
@@ -218,7 +235,7 @@ namespace RadialReview.Accessors
             tempUser = s.Get<TempUserModel>(tempUser.Id);
             tempUser.LastSent = DateTime.UtcNow;
             s.SaveOrUpdate(tempUser);
-
+			
             //Send Email
             //[OrganizationName,LinkUrl,LinkDisplay,ProductName]            
             var url = "Account/Register?message=Please%20login%20to%20join%20" + caller.Organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
