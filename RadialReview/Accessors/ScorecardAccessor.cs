@@ -111,7 +111,6 @@ namespace RadialReview.Accessors
 						s.SaveOrUpdate(r);
 					}
 
-					user.NumMeasurables = measurables.Count(x => x.DeleteTime == null);
 					s.SaveOrUpdate(user);
 					user.UpdateCache(s);
 

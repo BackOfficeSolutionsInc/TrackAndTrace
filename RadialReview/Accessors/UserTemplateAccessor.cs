@@ -163,7 +163,7 @@ namespace RadialReview.Accessors
 							Title = measurable,
 							FromTemplateItemId = utm.Id,
 						});
-						user.NumMeasurables += 1;
+						//user.NumMeasurables += 1;
 						s.Update(user);
 						user.UpdateCache(s);
 					}
@@ -209,7 +209,7 @@ namespace RadialReview.Accessors
 							Role = role,
 							Category = category,
 						});
-						user.NumRoles += 1;
+						//user.NumRoles += 1;
 						s.Update(user);
 						user.UpdateCache(s);
 					}
@@ -266,7 +266,7 @@ namespace RadialReview.Accessors
 							PeriodId = periodId,
 						});
 
-						user.NumRocks += 1;
+						//user.NumRocks += 1;
 						s.Update(user);
 						user.UpdateCache(s);
 					}
@@ -310,7 +310,7 @@ namespace RadialReview.Accessors
 						if (deleteTime.HasValue)
 						{
 							var u = s.Get<UserOrganizationModel>(r.ForUserId);
-							u.NumRocks -= 1;
+							//u.NumRocks -= 1;
 							s.Update(u);
 							u.UpdateCache(s);
 						}
@@ -349,7 +349,7 @@ namespace RadialReview.Accessors
 						r.DeleteTime = deleteTime;
 						if (deleteTime.HasValue){
 							var u =s.Get<UserOrganizationModel>(r.ForUserId);
-							u.NumRoles -= 1;
+							//u.NumRoles -= 1;
 							s.Update(u);
 							u.UpdateCache(s);
 						}
@@ -394,7 +394,7 @@ namespace RadialReview.Accessors
 						if (deleteTime.HasValue)
 						{
 							var u = s.Get<UserOrganizationModel>(m.AccountableUserId);
-							u.NumMeasurables -= 1;
+							//u.NumMeasurables -= 1;
 							s.Update(u);
 							u.UpdateCache(s);
 						}
@@ -449,7 +449,7 @@ namespace RadialReview.Accessors
 					Title = a.Measurable,
 					FromTemplateItemId = a.Id,
 				});
-				user.NumMeasurables += 1;
+				//user.NumMeasurables += 1;
 			}
 			#endregion
 			#region Rocks
@@ -473,7 +473,7 @@ namespace RadialReview.Accessors
 					PeriodId = a.PeriodId,
 					Category = category
 				});
-				user.NumRocks += 1;
+				//user.NumRocks += 1;
 			}
 			#endregion
 			#region Roles
@@ -495,7 +495,7 @@ namespace RadialReview.Accessors
 					Role = a.Role,
 					Category = category
 				});
-				user.NumRoles += 1;
+				//user.NumRoles += 1;
 			}
 			#endregion
 			#region Job Description

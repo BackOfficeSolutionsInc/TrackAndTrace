@@ -1,4 +1,5 @@
 ﻿@using NHibernate.Util
+@using RadialReview.Models.ViewModels
 @model RadialReview.Models.L10.VM.L10MeetingVM
 @{
 	ViewBag.Title = "Scorecard";
@@ -10,135 +11,141 @@
 		<div class="col-md-12">
 			<hgroup class="page-header">
 				<div class="pull-right">
-					@*<div class="btn-group">
+					<div class="btn-group">
 						<div class="btn btn-default btn-xs" onclick="@Html.ShowModal("Add Measurable", "/L10/AddMeasurable/"+Model.Recurrence.Id, "/L10/AddMeasurable/")">
 							<span class="icon fontastic-icon-science-laboratory"></span> Add Measurable
 						</div>
-					</div>*@
+					</div>
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
 				<h2>Scorecard<small></small></h2>
 			</hgroup>
-			<div class="component">
-				<h3 class="pull-left">Scorecard:</h3>
+			<div class="component" >
 				<div class="clearfix"></div>
 				<div style="position: relative;">
-				@for (var i = 0; i < 1; i++)
-				{
-				if (i == 0)
-				{
-					@:<div class="table-responsive">
-				}
+					@for (var i = 0; i < 1; i++)
+					{
+						if (i == 0)
+						{
+							@:<div class="table-responsive" style="min-height: 600px;">
+						}
 
-					<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm hidden-md" : "")" >
-						<thead>
-							<tr>
-								<th>&nbsp;</th>
-								<th>&nbsp;</th>
-								<th>&nbsp;</th>
-								<th>&nbsp;</th>
-								<th>&nbsp;</th>
-								@if (i == 0)
-								{
-									foreach (var r in Model.Weeks)
-									{
-										<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-											@r.DisplayDate.AddDays(-6).ToString("MM/dd")
-										</th>
-										@*if (r.IsCurrentWeek){
-											<th class="date current buttonColumn"></th>
-										}*@
-									}
-								}
-							</tr>
-							<tr>
-								<th class="heading who alignRight">Accountable</th>
-								<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
-								<th class="heading measurable">Measurable</th>
-								<th class="heading target" colspan="2">Target</th>
-								@if (i == 0)
-								{
-									foreach (var r in Model.Weeks)
-									{
-										<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-											@r.DisplayDate.ToString("MM/dd")
-										</th>
-										@*if (r.IsCurrentWeek){
-											<th class="date current buttonColumn"></th>
-										}*@
-									}
-								}
-							</tr>
-						</thead>
-						<tbody>
-							@{
-								var row = 0;
-							}
-							@foreach (var m in Model.Meeting._MeetingMeasurables)
-							{
+						<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm hidden-md" : "")" >
+							<thead>
 								<tr>
-									<td class="who first1 alignRight">
-										@m.Measurable.AccountableUser.NotNull(x => x.GetName())
-									</td>
-									<td class="who first1 alignLeft">
-										<span class="newLine gray">/@m.Measurable.AdminUser.NotNull(x => x.GetName())</span>
-									</td>
-									<td class="measurable first1" title="@m.Measurable.Title">@m.Measurable.Title</td>
-									<td class="target direction" data-measurable="@m.Id">@m.Measurable.GoalDirection.ToSymbol()</td>
-									<td class="target value" data-measurable="@m.Id"><span class="inlineEdit" data-measurable="@m.Measurable.Id" data-url="/L10/UpdateMeasurable" >@m.Measurable.Goal.ToString("0.#####")</span></td>
-
-									@if (i == 0){
-										var col = 0;
-										foreach (var r in Model.Weeks){
-											var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == m.Measurable.Id);
-
-											<td class="score @(r.IsCurrentWeek ? "current" : "")">
-												<input data-goal="@(m.Measurable.Goal)"
-													   data-goal-dir="@(m.Measurable.GoalDirection)"
-													   data-row="@(row)"
-													   data-col="@(col)"
-													   type="text"
-													   placeholder="N/A"
-													   value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
-													   class="grid rt"
-													   data-scoreid="@(found.NotNull(x => x.Id))"
-													   data-measurable="@m.Measurable.Id"
-													   data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
-													   id="sc_@(found != null?""+found.Id : row+"_"+col)" />
-											</td>
-											if (r.IsCurrentWeek){
-												<td class="buttonHolder">
-													<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
-														  data-meeting="@Model.Meeting.Id"
-														  data-recurrence="@Model.Recurrence.Id"
-														  data-measurable="@found.Measurable.Id"
-														  data-score="@(found.NotNull(x => x.Id))"
-														@*data-message="@found.IssueMessage().EscapeHtml()"
-																data-details="@found.IssueDetails().EscapeHtml()"*@>
-													</span>
-													<span class="glyphicon glyphicon-unchecked todoButton todoModal"
-														  data-method="CreateScorecardTodo"
-														  data-meeting="@Model.Meeting.Id"
-														  data-recurrence="@Model.Recurrence.Id"
-														  data-measurable="@found.Measurable.Id"
-														  data-accountable="@found.AccountableUserId"
-														  data-score="@(found.NotNull(x => x.Id))">
-													</span>
-												</td>
-											}
-											col += 1;
+									<th>&nbsp;</th>
+									<th>&nbsp;</th>
+									<th>&nbsp;</th>
+									<th>&nbsp;</th>
+									<th>&nbsp;</th>
+									@if (i == 0)
+									{
+										foreach (var r in Model.Weeks)
+										{
+											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
+												@r.DisplayDate.AddDays(-6).ToString("MM/dd")
+											</th>
+										@*if (r.IsCurrentWeek){
+											<th class="date current buttonColumn"></th>
+										}*@
 										}
-										}
+									}
 								</tr>
-											row += 1;
+								<tr>
+									<th class="heading who alignRight">Accountable</th>
+									<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
+									<th class="heading measurable">Measurable</th>
+									<th class="heading target" colspan="2">Target</th>
+									@if (i == 0)
+									{
+										foreach (var r in Model.Weeks)
+										{
+											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
+												@r.DisplayDate.ToString("MM/dd")
+											</th>
+										@*if (r.IsCurrentWeek){
+											<th class="date current buttonColumn"></th>
+										}*@
 										}
-										<tr class="last"></tr>
-										</tbody>
-					</table>
-					if (i == 0){
-						@:</div>
+									}
+								</tr>
+							</thead>
+							<tbody>
+								@{
+									var row = 0;
+								}
+								@foreach (var m in Model.Meeting._MeetingMeasurables){
+									ViewBag.Row = row;
+									@Html.Partial("partial/ScorecardRow", new ScorecardRowVM(){
+										MeetingMeasurable = m,
+										MeetingId = m.L10Meeting.Id,
+										RecurrenceId = m.L10Meeting.L10RecurrenceId,
+										Scores = Model.Scores,
+										Weeks = Model.Weeks,
+									})
+									@*<tr>
+										<td class="who first1 alignRight">
+											@m.Measurable.AccountableUser.NotNull(x => x.GetName())
+										</td>
+										<td class="who first1 alignLeft">
+											<span class="newLine gray">/@m.Measurable.AdminUser.NotNull(x => x.GetName())</span>
+										</td>
+										<td class="measurable first1" title="@m.Measurable.Title"><span class="inlineEdit" data-type="text" data-name="title"  data-measurable="@m.Measurable.Id" data-pk="@m.Id" data-url="/L10/UpdateMeasurable" >@m.Measurable.Title</span></td>
+										<td class="target direction" data-measurable="@m.Id"><span class="inlineEdit" data-type="select" data-name="direction" data-measurable="@m.Measurable.Id" data-pk="@m.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" data-title="Select target direction" data-value="@m.Measurable.GoalDirection">@m.Measurable.GoalDirection.ToSymbol()</span></td>
+										<td class="target value"	 data-measurable="@m.Id"><span class="inlineEdit" data-type="number" data-name="target"	   data-measurable="@m.Measurable.Id" data-pk="@m.Id" data-url="/L10/UpdateMeasurable" >@m.Measurable.Goal.ToString("0.#####")</span></td>
+
+										@if (i == 0){
+											var col = 0;
+											foreach (var r in Model.Weeks){
+												var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == m.Measurable.Id);
+
+												<td class="score @(r.IsCurrentWeek ? "current" : "")">
+													<input data-goal="@(m.Measurable.Goal)"
+													       data-goal-dir="@(m.Measurable.GoalDirection)"
+													       data-row="@(row)"
+													       data-col="@(col)"
+													       type="text"
+													       placeholder="N/A"
+													       value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+													       class="grid rt"
+													       data-scoreid="@(found.NotNull(x => x.Id))"
+													       data-measurable="@m.Measurable.Id"
+													       data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
+													       id="sc_@(found != null?""+found.Id : row+"_"+col)" />
+												</td>
+												if (r.IsCurrentWeek){
+													<td class="buttonHolder">
+														<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
+														      data-meeting="@Model.Meeting.Id"
+														      data-recurrence="@Model.Recurrence.Id"
+														      data-measurable="@found.Measurable.Id"
+														      data-score="@(found.NotNull(x => x.Id))"
+															@*data-message="@found.IssueMessage().EscapeHtml()"
+																data-details="@found.IssueDetails().EscapeHtml()"*>
+														</span>
+														<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+														      data-method="CreateScorecardTodo"
+														      data-meeting="@Model.Meeting.Id"
+														      data-recurrence="@Model.Recurrence.Id"
+														      data-measurable="@found.Measurable.Id"
+														      data-accountable="@found.AccountableUserId"
+														      data-score="@(found.NotNull(x => x.Id))">
+														</span>
+													</td>
+												}
+												col += 1;
+											}
+										}
+									</tr>*@
+									row += 1;
+								}
+								@*<tr class="last"></tr>*@
+							</tbody>
+						</table>
+						if (i == 0){
+							@:</div>
+						}
 					}
-				}
 				</div>
 			</div>
 		</div>
@@ -146,6 +153,16 @@
 </div>
 <script>
 	$(".score input").each(function () { updateScore(this); });
+	$(".inlineEdit").editable({
+		savenochange:true,
+		validate: function(value) {
+			if($.trim(value) == '') {
+				return 'This field is required';
+			}
+		}
+	});
+
+	var Weeks = [@(String.Join(",",Model.Weeks.Select(x=>x.ForWeek.ToJavascriptMilliseconds())))];
 	//debugger;
 	//new ColumnResize($("#ScorecardTable")[0]);
 	//$(".scorecard-table").colResizable({

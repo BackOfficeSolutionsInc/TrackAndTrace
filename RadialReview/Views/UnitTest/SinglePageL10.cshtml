@@ -1,0 +1,232 @@
+﻿<html ng-app="L10App">
+<head>
+	<title>My Angular App</title>
+	@using (Html.BeginScripts())
+	{
+		<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+		<script src="~/signalr/hubs"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
+
+		<script>
+			var MeetingId = 1;
+			var l10App = angular.module('L10App', ['angular.filter']);
+			//l10App.value('backendServerUrl', '');
+			l10App.filter('transform', function() {
+				function populate(item,scope) {
+					if (Array.isArray(item)) {
+						var out = [];
+						for (var k in item) {
+							out.push(populate(item[k], scope));
+						}
+						return out;
+					}else if (item && item.Pointer) {
+						var out = scope.Lookup[item.Key];
+						for (var k in out) {
+							out[k] = populate(out[k], scope);
+						}
+						return out;
+					} else {
+						return item;
+					}
+				}
+
+				return function(items, scope) {
+					return populate(items,scope);
+				};
+			});
+
+
+			//////////////////////////////////
+			l10App.factory('signalR', ['$rootScope',
+			  function ($rootScope) {
+
+			  	function signalRFactory(hubName, callback) {
+			  		var connection = $.hubConnection();
+			  		var proxy = connection.createHubProxy(hubName);
+
+			  		connection.start()
+						.done(function () {
+							console.log('Now connected, connection ID=' + connection.id);
+							if (callback) {
+								callback(connection,proxy);
+							}
+						})
+						.fail(function () { alert("Connection failed"); });
+
+			  		return {
+						proxy:proxy,
+			  			connection: connection,
+			  			on: function (eventName, callback) {
+			  				proxy.on(eventName, function (result) {
+			  					$rootScope.$apply(function () {
+			  						if (callback) {
+			  							callback(result);
+			  						}
+			  					});
+			  				});
+			  			},
+			  			invoke: function (methodName, callback) {
+			  				proxy.invoke(methodName)
+							.done(function (result) {
+								$rootScope.$apply(function () {
+									if (callback) {
+										callback(result);
+									}
+								});
+							});
+			  			}
+			  		};
+			  	};
+
+			  	return signalRFactory;
+			  }]);
+			//////////////////////////////////
+			l10App.controller('L10Controller', ['$scope', '$http', 'signalR', function ($scope, $http, signalR) {
+
+				$scope.disconnected = false;
+				function rejoin(connection,proxy, callback) {
+					try {
+						if (proxy) {
+							proxy.invoke("join",MeetingId, connection.id).done(function () {
+								//update(d);
+								console.log("rejoin");
+								$(".rt").prop("disabled", false);
+								if (callback) {
+									callback();
+								}
+								if ($scope.disconnected) {
+									clearAlerts();
+									showAlert("Reconnected.", "alert-success", "Success");
+								}
+								$scope.disconnected = false;
+							});
+						}
+					} catch (e) {
+						console.log(e);
+					}
+				}
+
+				console.log('trying to connect to service');
+				var meetingHub = signalR('meetingHub', function (connection,proxy) {
+					rejoin(connection,proxy, function () {
+						console.log("Logged in: " + connection.id);
+					});
+				});
+
+				function update(data,status) {
+					debugger;
+					angular.merge($scope, data);
+				}
+				
+				meetingHub.on('update', update);
+
+				$http({
+					method: 'get',
+					url: '/UnitTest/Agenda'
+				}).success(update)
+				.error(function (data, status) {
+					// Some error occurred
+				});
+			}
+			]);
+			//////////////////////////////////
+			l10App.controller('RocksListController', ['$scope', function ($scope) { }]);
+			//////////////////////////////////
+		</script>
+	}
+	@Styles.Render("~/styles/L10")
+</head>
+<body>
+	<div ng-controller="L10Controller">
+		<div ng-repeat="agendaItem in AgendaItems | transform:this">
+			<div ng-controller="RocksListController">
+				<div class="rocks meeting-page">
+					<div class="row">
+						<div class="col-md-12">
+							<hgroup class="page-header">
+								<div class="pull-right">
+									[******]
+								</div>
+								<h2>@Html.Organization().Settings.RockName Review <small></small></h2>
+							</hgroup>
+							<div class="rocks-container">
+								<div class="component" ng-repeat="(key,value) in agendaItem.Rocks | groupBy: 'Owner.Name'">
+									<span class="owner"><b>{{key}}</b></span>
+									<div class="table-responsive">
+										<table style="width: 100%">
+											<tr>
+												<th style="width: 46px"></th>
+												<th style="width: 1px"></th>
+												<th></th>
+											</tr>
+											<tr ng-repeat="rock in value">
+												<td class="buttonHolder currentBlue">
+													<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
+													      data-meeting="{{MeetingId}}"
+													      data-recurrence="{{RecurrenceId}}"
+													      data-rock="{{rock.Id}}"
+													      data-method="CreateRockIssue"></span>
+													<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+													      data-meeting="{{MeetingId}}"
+													      data-recurrence="{{RecurrenceId}}"
+													      data-rock="{{rock.Id}}"
+													      data-method="CreateRockTodo">
+													</span>
+												</td>
+												<td class="">[*********]</td>
+												<td class="message">{{rock.Name}}</td>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<hr />
+		</div>
+		
+		<div ng-repeat="attendee in Attendees  | transform:this">
+			{{attendee.Name}}
+		</div>
+	</div>
+</body>
+</html>
+
+@*<div class="component">
+		@Html.Partial("_Picture", person.First().ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
+		<span class="owner">
+			@person.First().ForRock.AccountableUser.GetName()
+		</span>
+		<div>
+			<table style="width: 100%">
+				<tr>
+					<th style="width: 46px"></th>
+					<th style="width: 1px"></th>
+					<th></th>
+				</tr>
+				@foreach (var i in person)
+				{
+					<tr>
+						<td class="buttonHolder currentBlue">
+							<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
+								  data-meeting="@person.First().L10Meeting.Id"
+								  data-recurrence="@person.First().ForRecurrence.Id"
+								  data-rock="@(i.ForRock.Id)"
+								  data-method="CreateRockIssue"></span>
+							<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+								  data-meeting="@person.First().L10Meeting.Id"
+								  data-recurrence="@person.First().ForRecurrence.Id"
+								  data-rock="@(i.ForRock.Id)"
+								  data-method="CreateRockTodo">
+							</span>
+						</td>
+						<td class="">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
+						<td class="message">@i.ForRock.Rock</td>
+					</tr>
+				}
+			</table>
+		</div>
+	</div>*@

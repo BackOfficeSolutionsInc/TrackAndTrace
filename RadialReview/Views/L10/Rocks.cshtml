@@ -1,7 +1,4 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingVM
-
-
-
 <div class="rocks meeting-page">
 	<div class="row">
 		<div class="col-md-12">
@@ -12,6 +9,7 @@
 				<h2>@Html.Organization().Settings.RockName Review <small></small></h2>
 			</hgroup>
 			<div class="rocks-container">
+				
 				@foreach (var person in Model.Rocks.GroupBy(x => x.ForRock.ForUserId))
 				{
 					<div class="component">
@@ -50,6 +48,7 @@
 						</div>
 					</div>
 				}
+				
 			</div>
 		</div>
 	</div>

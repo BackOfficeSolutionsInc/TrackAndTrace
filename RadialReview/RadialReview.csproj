@@ -304,6 +304,7 @@
     <Compile Include="Controllers\AccountabilityController.cs" />
     <Compile Include="Controllers\CallbackController.cs" />
     <Compile Include="Controllers\CompanyValuesController.cs" />
+    <Compile Include="Controllers\DropDownController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\FaqController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
@@ -314,6 +315,7 @@
     <Compile Include="Controllers\L10DetailsController.cs" />
     <Compile Include="Controllers\L10SubPageController.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
+    <Compile Include="Controllers\MeetingController.cs" />
     <Compile Include="Controllers\OrganizationQuestionController.cs" />
     <Compile Include="Controllers\PeriodController.cs" />
     <Compile Include="Controllers\PermissionsController.cs" />
@@ -373,6 +375,15 @@
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
     <Compile Include="Hubs\MeetingHub.cs" />
+    <Compile Include="Models\Angular\Angular.cs" />
+    <Compile Include="Models\Angular\AngularAgendaItem.cs" />
+    <Compile Include="Models\Angular\AngularList.cs" />
+    <Compile Include="Models\Angular\AngularUpdate.cs" />
+    <Compile Include="Models\Angular\AngularMeeting.cs" />
+    <Compile Include="Models\Angular\AngularPointer.cs" />
+    <Compile Include="Models\Angular\AngularRock.cs" />
+    <Compile Include="Models\Angular\AngularUser.cs" />
+    <Compile Include="Models\Angular\IAngular.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Application\MailModel.cs" />
     <Compile Include="Models\Askables\AboutCompanyAskable.cs" />
@@ -419,6 +430,7 @@
     <Compile Include="Models\Issues\IssueVM.cs" />
     <Compile Include="Models\Issues\RockIssueVM.cs" />
     <Compile Include="Models\Issues\ScoreCardIssueVM.cs" />
+    <Compile Include="Models\L10VM\MeetingVM.cs" />
     <Compile Include="Models\L10\L10Note.cs" />
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
     <Compile Include="Models\Todo\ExternalTodoCreds.cs" />
@@ -498,6 +510,7 @@
     <Compile Include="Models\UserModels\PositionDuration.cs" />
     <Compile Include="Models\UserModels\TeamDuration.cs" />
     <Compile Include="Models\ViewModels\ProfileViewModel.cs" />
+    <Compile Include="Models\ViewModels\ScorecardRowVM.cs" />
     <Compile Include="Models\ViewModels\TemplateViewModel.cs" />
     <Compile Include="Models\ViewModels\UserOrganizationViewModel.cs" />
     <Compile Include="Models\ViewModels\ImageUploadViewModel.cs" />
@@ -615,7 +628,8 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Models\Enums\AccessLevel.cs" />
     <Compile Include="Utilities\AwsUtil.cs" />
-    <Compile Include="Utilities\Constants.cs" />
+    <Compile Include="Utilities\Cache\Cache.cs" />
+    <Compile Include="Utilities\Cache\CacheKeys.cs" />
     <Compile Include="Utilities\DataTypes\DateRange.cs" />
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
     <Compile Include="Utilities\Config.cs" />
@@ -627,6 +641,7 @@
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\RandomUtil.cs" />
+    <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
     <Compile Include="Utilities\Attributes\IconAttribute.cs" />
@@ -681,6 +696,7 @@
     <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\TimingUtility.cs" />
+    <Compile Include="Utilities\ViewUtility.cs" />
     <Compile Include="Views\Log\LogModel.cs" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />
@@ -999,6 +1015,10 @@
     <Content Include="Views\OrganizationQuestion\Modal.cshtml" />
     <Content Include="Views\L10\External.cshtml" />
     <Content Include="Views\Callback\PickList.cshtml" />
+    <Content Include="Views\L10\partial\ScorecardRow.cshtml" />
+    <Content Include="Views\L10\partial\RockGroup.cshtml" />
+    <Content Include="Views\L10\RocksNew.cshtml" />
+    <Content Include="Views\Meeting\Attend.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1246,6 +1266,7 @@
     <Content Include="Views\Shared\Survey\Feedback.cshtml" />
     <Content Include="Views\Todo\LinkToExternal.cshtml" />
     <Content Include="Views\UnitTest\Index.cshtml" />
+    <Content Include="Views\UnitTest\SinglePageL10.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1255,6 +1276,7 @@
     <Folder Include="Models\Rocks\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Data\" />
+    <Folder Include="Views\DropDown\" />
     <Folder Include="Views\Img\" />
     <Folder Include="Views\L10Data\" />
     <Folder Include="Views\L10Details\" />

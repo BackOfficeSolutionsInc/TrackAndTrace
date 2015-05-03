@@ -106,6 +106,29 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		public static List<ReviewModel> GetReviewForUser_SpecificAnswers(ISession s, PermissionsUtility perms, long userId, long reviewContainerId, List<long> askableIds)
+		{
+			perms.ViewUserOrganization(userId, true);
+
+			var user = s.Get<UserOrganizationModel>(userId);
+			var usersIds = user.UserIds;
+			var reviews = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null && x.ForReviewsId == reviewContainerId)
+								.WhereRestrictionOn(x => x.ForUserId).IsIn(usersIds)
+								.Future();
+
+			var allAnswers = s.QueryOver<AnswerModel>()
+				.Where(x => x.ForReviewContainerId == reviewContainerId && /*x.ByUserId == forUserId &&*/ x.DeleteTime == null)
+				.WhereRestrictionOn(x => x.ByUserId).IsIn(usersIds)
+				.WhereRestrictionOn(x=>x.Askable.Id).IsIn(askableIds)
+				.Future();
+
+			var reviewsResolved = reviews.ToList();
+			var allAnswersResolved = allAnswers.ToList();
+			for (int i = 0; i < reviewsResolved.Count; i++)
+				PopulateAnswers(/*s,*/ reviewsResolved[i], allAnswersResolved);
+			return reviewsResolved;
+		}
+
 		public static List<ReviewModel> GetReviewForUser(ISession s,PermissionsUtility perms, long userId, long reviewContainerId)
 		{
 			perms.ViewUserOrganization(userId, true);
@@ -115,16 +138,17 @@ namespace RadialReview.Accessors {
 
 			var reviews = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null && x.ForReviewsId == reviewContainerId)
 								.WhereRestrictionOn(x => x.ForUserId).IsIn(usersIds)
-								.List().ToList();
+								.Future();
 
 			var allAnswers = s.QueryOver<AnswerModel>()
-								.Where(x => x.ForReviewContainerId == reviewContainerId && /*x.ByUserId == forUserId &&*/ x.DeleteTime == null)
-								.WhereRestrictionOn(x => x.ByUserId).IsIn(usersIds)
-								.List().ToListAlive();
-
-			for (int i = 0; i < reviews.Count; i++)
-				PopulateAnswers(/*s,*/ reviews[i], allAnswers);
-			return reviews;
+				.Where(x => x.ForReviewContainerId == reviewContainerId && /*x.ByUserId == forUserId &&*/ x.DeleteTime == null)
+				.WhereRestrictionOn(x => x.ByUserId).IsIn(usersIds)
+				.Future();
+			var reviewsResolved = reviews.ToList();
+			var allAnswersResolved = allAnswers.ToList();
+			for (int i = 0; i < reviewsResolved.Count; i++)
+				PopulateAnswers(/*s,*/ reviewsResolved[i], allAnswersResolved);
+			return reviewsResolved;
 
 		}
 

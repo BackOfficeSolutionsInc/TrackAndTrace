@@ -68,7 +68,7 @@ namespace RadialReview.Models
 				Map(x => x.ForReviewContainerId).Column("ForReviewContainerId");
 				//References(x => x.ForReviewContainer).Column("ForReviewContainerId").LazyLoad().ReadOnly();
 
-				Map(x => x.ForReviewId).Column("ForReviewId");
+				Map(x => x.ForReviewId).Column("ForReviewId").Index("AnswerModel_Review_IDX");
 				//References(x => x.ForReview).Column("ForReviewId").LazyLoad().ReadOnly();
 			}
 		}

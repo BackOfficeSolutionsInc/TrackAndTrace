@@ -25,9 +25,9 @@ namespace RadialReview.Hubs
 
             var now = DateTime.UtcNow;
             var httpContext= Context.Request.GetHttpContext();
+	        var cache = new Cache(httpContext);
 
-
-            if (!httpContext.CacheContains(REGISTERED_KEY + username))
+			if (!cache.Contains(REGISTERED_KEY + username))
             {
 				using (var s = HibernateSession.GetCurrentSession())
 				{
@@ -35,23 +35,21 @@ namespace RadialReview.Hubs
 					{
 					    var userId = _UserAccessor.GetUserIdByUsername(s,username);
 						var userOrgs = _UserAccessor.GetUserOrganizations(s,userId, "");
-						httpContext.CacheAdd(REGISTERED_KEY + username, userOrgs, now.AddDays(1));
+						cache.Push(REGISTERED_KEY + username, userOrgs,LifeTime.AppDomain, now.AddDays(1));
 					}
 				}
              
             }
 
             var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-            foreach (var u in httpContext.CacheGet<List<UserOrganizationModel>>(REGISTERED_KEY + username))
+            foreach (var u in (List<UserOrganizationModel>)cache.Get(REGISTERED_KEY + username))
             {
                 try{
                     await hub.Groups.Add(Context.ConnectionId, "organization_" + u.Organization.Id);
-                    if (u.IsManager())
-                    {
+                    if (u.IsManager()){
                         await hub.Groups.Add(Context.ConnectionId, "manager_" + u.Organization.Id);
                     }
-                }catch (Exception e)
-                {
+                }catch (Exception e){
                     var a = 0;
                 }
             }

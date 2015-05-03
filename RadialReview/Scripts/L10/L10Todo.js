@@ -32,7 +32,7 @@ $(function () {
 			//"<span class='btn btn-default btn-xs createTodoButton todoModal'><span class='glyphicon glyphicon-unchecked todoButton'></span> Todo</span>"+
 			"</span>" +
 			"<span class='clearfix'></span>" +
-			"<span class='gray'>Assigned to:</span><span style='width:200px' class='assignee' data-accountable='"+accountable+"' data-todo='"+todo+"' ><span data-todo='"+todo+"' class='btn btn-link'>"+owner+"</span></span>" +
+			"<span class='gray'>Assigned to:</span><span style='width:250px;padding-left:10px;' class='assignee' data-accountable='"+accountable+"' data-todo='"+todo+"' ><span data-todo='"+todo+"' class='btn btn-link'>"+owner+"</span></span>" +
 			"</div>");
 	});
 		

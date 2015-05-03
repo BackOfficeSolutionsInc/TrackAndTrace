@@ -51,6 +51,18 @@ function initL10() {
 
 }
 
+function highlight(item) {
+	debugger;
+	if (!item.hasClass("editable-bg-transition")) {
+		item.addClass("editable-bg-transition");
+		setTimeout(function() {
+			item.css("background-color", "rgba(0,0,0,0)");
+			setTimeout(function() { item.removeClass("editable-bg-transition"); }, 1700);
+		}, 15);
+		item.css("background-color", "#FFFF80");
+	}
+}
+
 function replaceAll(find, replace, str) {
 	return str.split(find).join(replace);
 }

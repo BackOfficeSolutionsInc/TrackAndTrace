@@ -119,6 +119,8 @@ namespace RadialReview.Accessors
 				PeriodId = reviewContainer.PeriodId,
             };
 
+			new Cache().InvalidateForUser(forUser, CacheKeys.UNSTARTED_TASKS);
+
             dataInteraction.Save(reviewModel);
             reviewModel.ClientReview.ReviewId = reviewModel.Id;
 	        reviewModel.ClientReview.ReviewContainerId = reviewModel.ForReviewsId;

@@ -65,9 +65,10 @@ namespace RadialReview.Models.ViewModels
                 userOrg.Positions.ToListAlive().Sum(x => x.Position.Responsibilities.Count()) +
                 userOrg.Teams.ToListAlive().Sum(x => x.Team.Responsibilities.Count());*/
 
-			NumRocks	   = userOrg.NumRocks;
-			NumRoles	   = userOrg.NumRoles;
-			NumMeasurables = userOrg.NumMeasurables;
+	        throw new Exception("rocks roles measurables gone");
+	        //NumRocks	   = userOrg.NumRocks;
+	        //NumRoles	   = userOrg.NumRoles;
+	        //NumMeasurables = userOrg.NumMeasurables;
         }
 
 		public OrgMemberViewModel(UserLookup u)

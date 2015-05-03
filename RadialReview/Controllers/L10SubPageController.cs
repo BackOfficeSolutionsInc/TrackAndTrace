@@ -14,6 +14,7 @@ using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RestSharp.Validation;
 using MathNet.Numerics.Distributions;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -138,8 +139,10 @@ namespace RadialReview.Controllers
 		private PartialViewResult ScoreCard(L10MeetingVM model)
 		{
 			model.Scores = L10Accessor.GetScoresForRecurrence(GetUser(), model.Recurrence.Id);
-			var ordered = model.Scores.Select(x => x.DateDue).OrderBy(x => x);
-			model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
+			var sow = model.Recurrence.Organization.Settings.WeekStart;
+			model.Weeks = TimingUtility.GetWeeks(sow, DateTime.UtcNow, model.MeetingStart, model.Scores);
+			return PartialView("Scorecard", model);
+			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
 			model.EndDate = ordered.LastOrDefault().NotNull(x => DateTime.UtcNow).AddDays(7);
 
 			var s = model.StartDate.StartOfWeek(GetUser().Organization.Settings.WeekStart).AddDays(-7 * 4);
@@ -168,8 +171,8 @@ namespace RadialReview.Controllers
 				s = next;
 				if (s > e)
 					break;
-			}
-			return PartialView("Scorecard", model);
+			 }*/
+			
 		}
 		#endregion
 		

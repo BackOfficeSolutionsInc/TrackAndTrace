@@ -98,8 +98,9 @@ namespace RadialReview.Controllers
 
 	    [Access(AccessLevel.Manager)]
         public ActionResult Generate(int page = 0)
-        {
-            Session["Reports"] = "Create";
+	    {
+		    new Cache().Push(CacheKeys.REPORTS_PAGE, "Create");
+
             double pageSize = 10;
 
             var reviews = _ReviewAccessor.GetReviewsForOrganization(GetUser(), GetUser().Organization.Id, false,true,true, (int)pageSize, page,DateTime.MinValue);

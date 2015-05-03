@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.Prereview;
@@ -792,6 +793,21 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
+		public PermissionsUtility ViewMeasurable(long measurableId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var m = session.Get<MeasurableModel>(measurableId);
+			if (IsManagingOrganization(m.OrganizationId))
+				return this;
+			if (m.AccountableUserId == caller.Id)
+				return this;
+			if (m.AdminUserId == caller.Id)
+				return this;
+			return ManagesUserOrganization(m.AccountableUserId, false);
+		}
+
 		#endregion
 
 		#region L10
@@ -999,6 +1015,7 @@ namespace RadialReview.Utilities
 
 		}
 		#endregion
+
 		#region ForModel
 		public PermissionsUtility EditForModel(ForModel model)
 		{
@@ -1060,6 +1077,7 @@ namespace RadialReview.Utilities
 			return false;
 		}
 		#endregion
+
 		#region Overrides
 		protected PermissionsUtility TryWithOverrides(Func<PermissionsUtility, PermissionsUtility> p, params PermissionType[] types)
 		{
@@ -1237,8 +1255,7 @@ namespace RadialReview.Utilities
 		{
 			return this;
 		}
-
-
+		
 		public bool IsPermitted(Action<PermissionsUtility> ensurePermitted)
 		{
 			try
@@ -1251,5 +1268,7 @@ namespace RadialReview.Utilities
 				return false;
 			}
 		}
+
+		
 	}
 }

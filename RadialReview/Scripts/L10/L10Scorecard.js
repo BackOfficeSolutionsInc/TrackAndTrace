@@ -47,6 +47,22 @@ function updateServerScore(self) {
 	});
 }
 
+function addMeasurable(data) {
+	//var row = $("<tr></tr>");
+	//row.append("<td>")
+
+	$(".scorecard-table").append(data);
+}
+
+function updateMeasurable(id, name, text, value) {
+	var sel = $("[data-pk='" + id + "'][data-name='" + name + "']");
+
+	sel.html(text);
+	if (typeof value === 'undefined')
+		value = text;
+	sel.attr("data-value", value);
+	highlight(sel);
+}
 
 //pass in a .score input
 function updateScore(self) {

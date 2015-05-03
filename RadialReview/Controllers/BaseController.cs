@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using RadialReview.Exceptions;
 using System.Web.Routing;
+using RadialReview.Models.Angular;
 using RadialReview.Properties;
 using log4net;
 using System.Threading;
@@ -27,6 +28,8 @@ using System.Web.Security;
 using System.Security.Principal;
 using RadialReview.Utilities.Extensions;
 using Microsoft.VisualStudio.Profiler;
+using RadialReview.Utilities.Serializers;
+using System.Text;
 
 
 namespace RadialReview.Controllers
@@ -76,16 +79,13 @@ namespace RadialReview.Controllers
 			}
 		}
 
-		private static readonly string USER_KEY = "User";
-		private static readonly string USERORGANIZATION_KEY = "UserOrganization";
-
 		protected UserModel GetUserModel(ISession s)
 		{
-			return HttpContextUtility.Get(HttpContext, USER_KEY, x =>
-			{
+			return new Cache().GetOrGenerate(CacheKeys.USER, x =>{
+				x.LifeTime=LifeTime.Session;
 				var id = User.Identity.GetUserId();
 				return _UserAccessor.GetUserById(s, id);
-			}, false);
+			});
 		}
 
 		protected List<UserOrganizationModel> GetUserOrganizations(String redirectUrl) //Boolean full = false)
@@ -114,13 +114,16 @@ namespace RadialReview.Controllers
 
 		private UserOrganizationModel GetUserOrganization(ISession s, long userOrganizationId, String redirectUrl)//, Boolean full = false)
 		{
-			return HttpContextUtility.Get(HttpContext, USERORGANIZATION_KEY, x =>
+			var cache = new Cache();
+
+			return cache.GetOrGenerate(CacheKeys.USERORGANIZATION, x =>
 			{
 				var id = User.Identity.GetUserId();
-				var found = _UserAccessor.GetUserOrganizations(s, id, userOrganizationId, redirectUrl/*, full*/);
-				if (found!=null && found.User!=null && !HttpContext.CacheContains(USER_KEY)){
-					HttpContext.Push(USER_KEY, found.User);
+				var found = _UserAccessor.GetUserOrganizations(s, id, userOrganizationId, redirectUrl);
+				if (found != null && found.User != null && !cache.Contains(CacheKeys.USER)){
+					cache.Push(CacheKeys.USER, found.User, LifeTime.Session);
 				}
+				x.LifeTime= LifeTime.Session;
 				return found;
 			}, x => x.Id != userOrganizationId);
 		}
@@ -149,12 +152,16 @@ namespace RadialReview.Controllers
 					userOrganizationId = long.Parse(orgIdParam);
 			}
 
-			if (userOrganizationId == null && Session[Constants.SESSION_USERORGANIZATION_ID] != null){
-				userOrganizationId = (long)Session[Constants.SESSION_USERORGANIZATION_ID];
+			var cache = new Cache();
+
+			if (userOrganizationId == null && cache.Get(CacheKeys.USERORGANIZATION_ID) is long){
+				userOrganizationId = (long)cache.Get(CacheKeys.USERORGANIZATION_ID);
 			}
 
-			if ((UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION] != null && userOrganizationId == _CurrentUserOrganizationId)
-				return (UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION];
+
+
+			if (cache.Get(CacheKeys.USERORGANIZATION) is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION)).Id)
+				return (UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION);
 
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
@@ -164,8 +171,12 @@ namespace RadialReview.Controllers
 		}
 		public UserOrganizationModel GetUser(long userOrganizationId)
 		{
-			if ((UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION] != null && userOrganizationId == _CurrentUserOrganizationId)
-				return (UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION];
+			var cache = new Cache();
+
+			
+
+			if (cache.Get(CacheKeys.USERORGANIZATION) is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION)).Id)
+				return (UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION);
 
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
@@ -183,18 +194,21 @@ namespace RadialReview.Controllers
 				if (orgIdParam != null)
 					userOrganizationId = long.Parse(orgIdParam);
 			}
+			var cache=new Cache();
 
-			if (userOrganizationId == null && Session[Constants.SESSION_USERORGANIZATION_ID] != null)
+			if (userOrganizationId == null && cache.Get(CacheKeys.USERORGANIZATION_ID) != null)
 			{
-				userOrganizationId = (long)Session[Constants.SESSION_USERORGANIZATION_ID];
+				userOrganizationId = (long)cache.Get(CacheKeys.USERORGANIZATION_ID);
 			}
 			if (userOrganizationId == null){
 				userOrganizationId = GetUserModel(s).GetCurrentRole();
 			}
 
 
-			if ((UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION] != null && userOrganizationId == ((UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION]).Id)
-				return (UserOrganizationModel)Session[Constants.SESSION_USERORGANIZATION];
+			var user = cache.Get(CacheKeys.USERORGANIZATION);
+
+			if (user is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)user).Id)
+				return (UserOrganizationModel)user;
 
 			if (userOrganizationId == null){
 				var returnPath = Server.HtmlEncode(Request.Path);
@@ -206,8 +220,8 @@ namespace RadialReview.Controllers
 				{
 					var uo = found.First();
 					//_CurrentUserOrganizationId = uo.Id;
-					Session[Constants.SESSION_USERORGANIZATION] = uo;
-					Session[Constants.SESSION_USERORGANIZATION_ID] = _CurrentUserOrganizationId;
+					cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Session);
+					cache.Push(CacheKeys.USERORGANIZATION_ID, userOrganizationId.Value, LifeTime.Session);
 					return uo;
 				}
 				else
@@ -215,8 +229,8 @@ namespace RadialReview.Controllers
 			}else{
 				var uo=GetUserOrganization(s, userOrganizationId.Value, Request.Url.PathAndQuery);
 				//_CurrentUserOrganizationId = uo.Id;
-				Session[Constants.SESSION_USERORGANIZATION] = uo;
-				Session[Constants.SESSION_USERORGANIZATION_ID] = userOrganizationId.Value;
+				cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Session);
+				cache.Push(CacheKeys.USERORGANIZATION_ID, userOrganizationId.Value, LifeTime.Session);
 				return uo;
 
 			}
@@ -230,7 +244,7 @@ namespace RadialReview.Controllers
 
 		protected void SignOut()
 		{
-			Session[Constants.SESSION_USERORGANIZATION_ID] = null;
+			new Cache().Invalidate(CacheKeys.USERORGANIZATION_ID);
 			AuthenticationManager.SignOut();
 			FormsAuthentication.SignOut();
 			HttpContext.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
@@ -434,7 +448,7 @@ namespace RadialReview.Controllers
 
 							DataCollection.CommentMarkProfile(2, "ViewBagPop");
 							filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._64);
-							filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(oneUser, oneUser.Id, DateTime.UtcNow);
+							filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
 							//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
 							filterContext.Controller.ViewBag.UserName = name;
 							filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
@@ -510,5 +524,44 @@ namespace RadialReview.Controllers
 				return HttpContext.GetOwinContext().Authentication;
 			}
 		}
+
+		protected new JsonResult Json(object data)
+		{
+			if (data is IAngular)
+				return base.Json(AngularSerializer.Serialize((IAngular)data));
+			return base.Json(data);
+		}
+
+		protected new JsonResult Json(object data, JsonRequestBehavior behavior)
+		{
+			if (data is IAngular)
+				return base.Json(AngularSerializer.Serialize((IAngular)data), behavior);
+			return base.Json(data, behavior);
+		}
+		protected new JsonResult Json(object data, string contentType)
+		{
+			if (data is IAngular)
+				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType);
+			return base.Json(data, contentType);
+		}
+		protected new  JsonResult Json(object data, string contentType, JsonRequestBehavior behavior)
+		{
+			if (data is IAngular)
+				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, behavior);
+			return base.Json(data, contentType, behavior);
+		}
+		protected new JsonResult Json(object data, string contentType, Encoding encoding)
+		{
+			if (data is IAngular)
+				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, encoding);
+			return base.Json(data, contentType, encoding);
+		}
+		protected new JsonResult Json(object data, string contentType, Encoding encoding, JsonRequestBehavior behavior)
+		{
+			if (data is IAngular)
+				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, encoding, behavior);
+			return base.Json(data, contentType, encoding, behavior);
+		}
 	}
+
 }

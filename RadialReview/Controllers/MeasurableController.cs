@@ -35,9 +35,10 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Manager)]
-		public PartialViewResult BlankEditorRow()
+		public PartialViewResult BlankEditorRow(bool accountable=false)
 		{
 			ViewBag.AllMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToSelectList(x=>x.GetNameAndTitle(),x=>x.Id);
+			ViewBag.ShowAccountable = accountable;
 			return PartialView("_MeasurableRow", new MeasurableModel(GetUser().Organization));
 		}
 

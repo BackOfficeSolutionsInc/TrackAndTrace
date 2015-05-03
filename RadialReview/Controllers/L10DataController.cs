@@ -12,6 +12,7 @@ using RadialReview.Hubs;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
 
 namespace RadialReview.Controllers
@@ -47,31 +48,76 @@ namespace RadialReview.Controllers
 			public long RecurrenceId { get; set; }
 			public List<SelectListItem> AvailableMeasurables  { get; set; }
 			public long SelectedMeasurable { get; set; }
-			public List<SelectListItem> AvailableMembers { get; set; }
-			public long SelectedAccountableMember { get; set; }
-			public long SelectedAdminMember { get; set; }
+			/*public List<SelectListItem> AvailableMembers { get; set; }
+			public long SelectedAccountableMember { get; set; }*/
+			//public long SelectedAdminMember { get; set; }
+			public List<MeasurableModel> Measurables { get; set; }
 
 	    }
-		
+
 		// GET: L10Data
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult AddMeasurable(long id)
 		{
 			var recurrenceId = id;
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
-				
+
 			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
-			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+			//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
-			var addableMeasurables = allMeasurables.Except(recurrence._DefaultMeasurables.Select(x=>x.Measurable),x=>x.Id);
+			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+			var already = recurrence._DefaultMeasurables.Select(x => x.Measurable.Id).ToList();
 
-			var am = new AddMeasurableVm(){
-				AvailableMeasurables = addableMeasurables.ToSelectList(x=>x.Title,x=>x.Id),
-				AvailableMembers = allMembers.ToSelectList(x=>x.GetName(),x=>x.Id),
+			var addableMeasurables = allMeasurables
+				.Where(x => members.Contains(x.AccountableUserId) || members.Contains(x.AdminUserId))
+				.Where(x => !already.Contains(x.Id))
+				.ToList();
+
+			//var addableMeasurables = allMeasurables.Except(, x => x.Id);
+
+			var am = new AddMeasurableVm()
+			{
+				AvailableMeasurables = addableMeasurables.ToSelectList(x => x.Title+"("+x.AccountableUser.GetName()+")", x => x.Id),
+				//AvailableMembers = allMembers.ToSelectList(x => x.GetName(), x => x.Id),
 				RecurrenceId = recurrenceId,
 			};
 
+			am.AvailableMeasurables.Add(new SelectListItem(){Text = "<Create Measurable>", Value = "-3"});
+
 			return PartialView(am);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult AddMeasurable(AddMeasurableVm model)
+		{
+			ValidateValues(model,x=>x.RecurrenceId);
+			L10Accessor.CreateMeasurable(GetUser(), model.RecurrenceId, model);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateMeasurable(long pk,string name,string value)
+		{
+			var meeting_measureableId = pk;
+			
+			string title=null;
+			LessGreater? direction = null;
+			decimal? target = null;
+			long? adminId = null;
+			long? accountableId = null;
+			switch (name){
+				case "target":		target = value.ToDecimal(); break;
+				case "direction":	direction = (LessGreater)Enum.Parse(typeof(LessGreater), value); break;
+				case "title":		title = value; break;
+				case "admin":		adminId = value.ToLong(); break;
+				case "accountable": accountableId = value.ToLong(); break;
+				default: throw new ArgumentOutOfRangeException("name");
+			}
+
+			L10Accessor.UpdateMeasurable(GetUser(), meeting_measureableId, title, direction, target,accountableId,adminId);
+			return Json(ResultObject.SilentSuccess());
 		}
 		#endregion
 
@@ -190,8 +236,11 @@ namespace RadialReview.Controllers
 		[HttpPost]
 		public JsonResult EditNote(NoteVM model)
 		{
-			if (Session["LastSendNoteTime"]==null || model.SendTime > (long)Session["LastSendNoteTime"]){
-				Session["LastSendNoteTime"] = model.SendTime;
+			var cache =new Cache();
+			cache.Get(CacheKeys.LAST_SEND_NOTE_TIME);
+
+			if (cache.Get(CacheKeys.LAST_SEND_NOTE_TIME) == null || model.SendTime > (long)cache.Get(CacheKeys.LAST_SEND_NOTE_TIME)){
+				cache.Push(CacheKeys.LAST_SEND_NOTE_TIME,model.SendTime,LifeTime.Session);
 				L10Accessor.EditNote(GetUser(), model.NoteId, model.Contents, model.Name, model.ConnectionId);
 				return Json(ResultObject.SilentSuccess(model).NoRefresh());
 			}

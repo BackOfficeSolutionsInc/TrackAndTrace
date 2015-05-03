@@ -325,6 +325,9 @@
 	{
 		<script>
 			$(function () {
+				
+				var reviewChanges = false;
+
 				$(".changeable").change(function () {
 					reviewChanges = true;
 					console.log("change");
@@ -334,7 +337,6 @@
 					reviewChanges = true;
 					console.log("propertychange");
 				});
-
 				var onleaving = function () {
 					if (reviewChanges) {
 						var o;

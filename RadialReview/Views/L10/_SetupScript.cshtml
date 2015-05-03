@@ -4,7 +4,7 @@
 {
 	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 	<script>
-		$.fn.editable.defaults.mode = 'inline';
+		$.fn.editable.defaults.mode = 'popup';
 
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
@@ -23,8 +23,7 @@
 			@:var meetingStart = false;
 			@:var isLeader = false;
 		}
-
-		$(".inlineEdit").editable();
+		
 
 	</script>
 }

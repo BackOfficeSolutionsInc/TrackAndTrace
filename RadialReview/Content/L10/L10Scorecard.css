@@ -1,8 +1,11 @@
-﻿
+﻿.scorecard .component {
+	padding: 0px;	
+}
+
 .scorecard-table {
 	white-space: nowrap;
 	font-size: 17px;
-	min-height: 600px;
+	/*min-height: 600px;*/
 }
 
 	.scorecard-table tr.last {
@@ -13,6 +16,10 @@
 	
 	.scorecard-table .heading.who {
 		text-align: left;
+	}
+
+	.scorecard-table .heading.who.alignRight {
+		padding-left: 10px;
 	}
 
 	.scorecard-table .who .newLine {
@@ -49,8 +56,14 @@
 	}*/
 
 	.scorecard-table .target {
-		text-align: left;
+		text-align: center;
 	}
+	.scorecard-table .target.direction {
+		width: 1px;  
+		padding-right: 0px;
+		padding-left: 10px;
+	}
+
 
 	.scorecard-table .date {
 		/*padding-left: 20px;
@@ -82,7 +95,7 @@
 			border-right: 2px solid #2c77ba;
 		}
 
-		.scorecard-table tr:nth-last-child(2) .score.current {
+		.scorecard-table tr:nth-last-child(1) .score.current {
 			border-bottom: 2px solid #2c77ba;
 		}
 		
@@ -95,7 +108,7 @@
 			background-color: #2c77ba;
 			border-right: 2px solid  #2c77ba;
 		}
-		.scorecard-table  tr:nth-last-child(2) .buttonHolder {
+		.scorecard-table  tr:nth-last-child(1) .buttonHolder {
 			border-bottom: 2px solid  #2c77ba;
 		}
 		.scorecard-table  tr:nth-child(1) .buttonHolder {

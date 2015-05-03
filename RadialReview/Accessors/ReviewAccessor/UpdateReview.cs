@@ -124,6 +124,7 @@ namespace RadialReview.Accessors
 				r.ReviewingCompletion.NumRequired = counts.Select(x => x[1]).Distinct().Count();*/
 
 				s.Update(r);
+				new Cache().InvalidateForUser(r.ForUser, CacheKeys.UNSTARTED_TASKS);
 			}
 		}
 
@@ -303,7 +304,7 @@ namespace RadialReview.Accessors
 					var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == userOrganizationId && x.DeleteTime == null).SingleOrDefault();
 					review.DeleteTime = deleteTime;
 					s.Update(review);
-					review.DeleteTime = deleteTime;
+					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
 					var answers = s.QueryOver<AnswerModel>().Where(x => (x.AboutUserId == userOrganizationId || x.ByUserId == userOrganizationId) && x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null).List();
 
 					DeleteAnswers_Unsafe(s, answers, deleteTime);
@@ -467,10 +468,10 @@ namespace RadialReview.Accessors
 				output.Stats.ReviewsCompleted += 1;
 				output.Completion.Started -= 1;
 				output.Completion.Finished += 1;
+				new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
 			}
 
-			if (started && !review.Started)
-			{
+			if (started && !review.Started){
 				review.Started = true;
 				updated = true;
 				output.Completion.Started += 1;
@@ -485,6 +486,7 @@ namespace RadialReview.Accessors
 				output.Stats.ReviewsCompleted -= 1;
 				output.Completion.Finished -= 1;
 				output.Completion.Started += 1;
+				new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
 			}
 
 			output.Stats.QuestionsAnswered += additionalAnswered;
@@ -568,6 +570,7 @@ namespace RadialReview.Accessors
 
 					review.ClientReview.FeedbackIds.Add(new LongModel() { Value = answerId });
 					s.Update(review);
+					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
 					tx.Commit();
 					s.Flush();
 				}
@@ -592,6 +595,7 @@ namespace RadialReview.Accessors
 							id.DeleteTime = DateTime.UtcNow;
 					}
 					s.Update(review);
+					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
 					tx.Commit();
 					s.Flush();
 				}
@@ -632,6 +636,7 @@ namespace RadialReview.Accessors
 						{
 							r.DueDate = reviewDueDate;
 							s.Update(r);
+							new Cache().InvalidateForUser(r.ForUser, CacheKeys.UNSTARTED_TASKS);
 						}
 					}
 
@@ -666,6 +671,7 @@ namespace RadialReview.Accessors
 
 					review.DueDate = dueDate;
 					s.Update(review);
+					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
 					tx.Commit();
 					s.Flush();
 				}
@@ -687,10 +693,12 @@ namespace RadialReview.Accessors
 					s.Update(review);
 
 					var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).List().ToList();
+					var cache = new Cache();
 					foreach (var r in reviews)
 					{
 						r.Name = reviewName;
 						s.Update(r);
+						cache.InvalidateForUser(r.ForUser, CacheKeys.UNSTARTED_TASKS);
 					}
 
 					tx.Commit();

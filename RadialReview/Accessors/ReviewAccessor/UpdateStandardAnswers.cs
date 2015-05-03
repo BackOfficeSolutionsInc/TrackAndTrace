@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NHibernate;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
@@ -27,7 +28,16 @@ namespace RadialReview.Accessors
 				{
 					var user = caller;
 					var perms = PermissionsUtility.Create(s, caller);
-					var reviews = GetReviewForUser(s, perms, caller.Id, reviewId);
+					var askableIds =collection.AllKeys.SelectMany(k =>{
+						var args = k.Split('_');
+						if (args[0] == "question"){
+							return long.Parse(args[2]).AsList();
+						}
+						return new List<long>();
+					}).ToList();
+
+
+					var reviews = GetReviewForUser_SpecificAnswers(s, perms, caller.Id, reviewId, askableIds);
 
 					if (!reviews.All(x => user.UserIds.Any(y => y == x.ForUserId)))
 						throw new PermissionsException("You cannot take this review.");
@@ -54,6 +64,8 @@ namespace RadialReview.Accessors
 							var currentComplete = false;
 
 							var matchingQuestions = answers.Where(x => x.Askable.Id == askableId && x.AboutUserId == aboutUserId && x.ForReviewContainerId == forReviewContainerId);
+
+
 
 							foreach (var question in matchingQuestions)
 							{

@@ -1,1 +1,40 @@
 ﻿@model RadialReview.Controllers.L10Controller.AddMeasurableVm
+		   
+
+@Html.SecuredHiddenFor(x => x.RecurrenceId)
+	
+<div class="form-group">
+	@Html.LabelFor(x => x.SelectedMeasurable)
+	@Html.DropDownListFor(x => x.SelectedMeasurable,Model.AvailableMeasurables, new {id="measurableSelector", @class = "form-control", placeholder = "Select a measurable..." })
+</div>
+<div class="createNewMeasurable hidden">
+	<hr/>
+		<div class="contents spinner" style="min-height:40px;"></div>
+	<hr/>
+</div>
+
+
+<script>
+    function Update() {
+        if ($("#measurableSelector").val() == -3) {
+			$(".createNewMeasurable").removeClass("hidden");
+	        $.ajax({
+				url:"/Measurable/BlankEditorRow?accountable=true",
+				success:function(data) {
+					$(".createNewMeasurable .contents").html(data);
+				}
+	        });
+
+        } else {
+            $(".createNewMeasurable").addClass("hidden");
+            $(".createNewMeasurable .contents").html("");
+        }
+    }
+
+    $(function () {
+	    $("#measurableSelector").change(function() {
+		    Update();
+	    });
+        Update();
+    });
+</script>

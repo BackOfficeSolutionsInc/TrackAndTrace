@@ -74,7 +74,7 @@ namespace RadialReview.Controllers {
 				throw new RedirectException(ExceptionStrings.AlreadyMember);
 			var user = GetUserModel();
 
-			HttpContext.CacheInvalidate(AlertHub.REGISTERED_KEY + user.UserName);
+			new Cache().Invalidate(AlertHub.REGISTERED_KEY + user.UserName);
 
 			var orgId = int.Parse(nexus.GetArgs()[0]);
 			var placeholderUserId = long.Parse(nexus.GetArgs()[2]);
@@ -91,7 +91,8 @@ namespace RadialReview.Controllers {
 			}
 			catch (OrganizationIdException) {
 				//We want to hit this exception.
-				Session["OrganizationId"] = null;
+				new Cache().Invalidate(CacheKeys.ORGANIZATION_ID);
+				//Session["OrganizationId"] = null;
 				var org = _OrganizationAccessor.JoinOrganization(user, nexus.ByUserId, placeholderUserId);
 				_NexusAccessor.Execute(nexus);
 				return RedirectToAction("Index", "Home", new { message = String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name) });

@@ -24,6 +24,7 @@ using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scheduler;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
+using RadialReview.Models.ViewModels;
 using RadialReview.Properties;
 using RadialReview.Utilities;
 using NHibernate;
@@ -427,35 +428,40 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+		
 		public static List<ScoreModel> GetScoresForRecurrence(UserOrganizationModel caller, long recurrenceId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction())
-				{
-					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
-
-					var r = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
-					var measurables = r.Distinct(x => x.Measurable.Id).Select(x => x.Measurable.Id).ToList();
-
-					var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.MeasurableId).IsIn(measurables).List().ToList();
-
-					//Touch 
-					foreach (var a in scores)
-					{
-						var i = a.Measurable.Goal;
-						var u = a.Measurable.AccountableUser.GetName();
-						var v = a.Measurable.AccountableUser.ImageUrl();
-						var j = a.AccountableUser.GetName();
-						var k = a.AccountableUser.ImageUrl();
-						var u1 = a.Measurable.AdminUser.GetName();
-						var v1 = a.Measurable.AdminUser.ImageUrl();
-					}
-
-					return scores;
+				using (var tx = s.BeginTransaction()){
+					var perm=PermissionsUtility.Create(s, caller);//.ViewL10Recurrence(recurrenceId);
+					return GetScoresForRecurrence(s, perm, recurrenceId);
 				}
 
 			}
+		}
+		public static List<ScoreModel> GetScoresForRecurrence(ISession s,PermissionsUtility perm, long recurrenceId)
+		{
+			perm.ViewL10Recurrence(recurrenceId);
+
+			var r = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
+			var measurables = r.Distinct(x => x.Measurable.Id).Select(x => x.Measurable.Id).ToList();
+
+			var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.MeasurableId).IsIn(measurables).List().ToList();
+
+			//Touch 
+			foreach (var a in scores)
+			{
+				var i = a.Measurable.Goal;
+				var u = a.Measurable.AccountableUser.GetName();
+				var v = a.Measurable.AccountableUser.ImageUrl();
+				var j = a.AccountableUser.GetName();
+				var k = a.AccountableUser.ImageUrl();
+				var u1 = a.Measurable.AdminUser.GetName();
+				var v1 = a.Measurable.AdminUser.ImageUrl();
+			}
+
+			return scores;
 		}
 		public static List<L10Meeting> GetL10Meetings(UserOrganizationModel caller, long recurrenceId, bool load = false)
 		{
@@ -1170,9 +1176,7 @@ namespace RadialReview.Accessors
 		}
 
 		#endregion
-
-
-
+		
 
 		public static List<L10Meeting.L10Meeting_Rock> GetRocksForRecurrence(UserOrganizationModel caller, long recurrenceId, long meetingId)
 		{
@@ -1394,7 +1398,7 @@ namespace RadialReview.Accessors
 				{
 					var issue = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
 					if (issue == null)
-						throw new PermissionsException("Todo does not exist.");
+						throw new PermissionsException("Issue does not exist.");
 
 					var recurrenceId = issue.Recurrence.Id;
 					if (recurrenceId == 0)
@@ -1411,6 +1415,163 @@ namespace RadialReview.Accessors
 					if (details != null){
 						issue.Issue.Description = details;
 						group.updateIssueDetails(issueRecurrenceId, details);
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static void UpdateMeasurable(UserOrganizationModel caller, long meeting_measurableId,
+			string name=null, LessGreater? direction = null, decimal? target = null,
+			long? accountableId = null,long? adminId=null)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var measurable = s.Get<L10Meeting.L10Meeting_Measurable>(meeting_measurableId);
+					if (measurable == null)
+						throw new PermissionsException("Todo does not exist.");
+
+					var recurrenceId = measurable.L10Meeting.L10RecurrenceId;
+					if (recurrenceId == 0)
+						throw new PermissionsException("Meeting does not exist.");
+					var perms =PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
+
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+
+					if (name != null){
+						measurable.Measurable.Title = name;
+						group.updateMeasurable(meeting_measurableId, "title", name);
+					}
+					if (direction != null){
+						measurable.Measurable.GoalDirection = direction.Value;
+						group.updateMeasurable(meeting_measurableId, "direction", direction.Value.ToSymbol(), direction.Value.ToString());
+					}
+					if (target != null)
+					{
+						measurable.Measurable.Goal = target.Value;
+						group.updateMeasurable(meeting_measurableId, "target", target.Value.ToString("0.#####"));
+					}
+					if (accountableId != null){
+						perms.ViewUserOrganization(accountableId.Value, false);
+						var user =s.Get<UserOrganizationModel>(accountableId.Value);
+						user.UpdateCache(s);
+
+						measurable.Measurable.AccountableUserId = accountableId.Value;
+						group.updateMeasurable(meeting_measurableId, "accountable", user.GetName(), accountableId.Value);
+					}
+					if (adminId != null){
+						perms.ViewUserOrganization(adminId.Value, false);
+						var user = s.Get<UserOrganizationModel>(adminId.Value);
+						user.UpdateCache(s);
+						measurable.Measurable.AdminUserId = adminId.Value;
+						group.updateMeasurable(meeting_measurableId, "admin", user.GetName(), adminId.Value);
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static void CreateMeasurable(UserOrganizationModel caller, long recurrenceId, L10Controller.AddMeasurableVm model)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var perm=PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
+
+					var recur = s.Get<L10Recurrence>(recurrenceId);
+
+
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+
+					var now = DateTime.UtcNow;
+					MeasurableModel measurable;
+
+					var scores=new List<ScoreModel>();
+
+					if (model.SelectedMeasurable == -3){
+						//Create new
+						if (model.Measurables == null)
+							throw new PermissionsException("You must include a measurable to create.");
+						
+						measurable = model.Measurables.SingleOrDefault();
+						if (measurable == null)
+							throw new PermissionsException("You must include a measurable to create.");
+						
+						perm.ViewUserOrganization(measurable.AccountableUserId, false);
+						perm.ViewUserOrganization(measurable.AdminUserId, false);
+
+						measurable.OrganizationId = recur.OrganizationId;
+						measurable.CreateTime = now;
+
+						measurable.AccountableUser  = s.Load<UserOrganizationModel>(measurable.AccountableUserId);
+						measurable.AdminUser		= s.Load<UserOrganizationModel>(measurable.AdminUserId);
+
+						s.Save(measurable);
+						
+					}else{
+						//Find Existing
+						measurable = s.Get<MeasurableModel>(model.SelectedMeasurable);
+						if (measurable == null)
+							throw new PermissionsException("Measurable does not exist.");
+						perm.ViewMeasurable(measurable.Id);
+
+						scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.MeasurableId == measurable.Id).List().ToList();
+						//weekData = scores.Select(x => new{week = x.ForWeek.ToJavascriptMilliseconds(), value = x.Measured}).ToList();
+						
+					}
+
+					var rm=new L10Recurrence.L10Recurrence_Measurable(){
+						CreateTime = now,
+						L10Recurrence = recur,
+						Measurable = measurable,
+					};
+					s.Save(rm);
+
+					var current = _GetCurrentL10Meeting(s, caller, recurrenceId, true, false, false);
+					if (current != null){
+						var l10Scores =L10Accessor.GetScoresForRecurrence(s,perm, recurrenceId);
+
+						var mm = new L10Meeting.L10Meeting_Measurable(){
+							L10Meeting = current,
+							Measurable = measurable,
+						};
+						s.Save(mm);
+
+						//var serial=new{
+						//	id=measurable.Id,
+						//	accountableId=measurable.AccountableUserId,
+						//	accountableName=measurable.AccountableUser.GetName(),
+						//	adminName = measurable.AdminUser.GetName(),
+						//	title=measurable.Title,
+						//	direction = measurable.GoalDirection.ToString(),
+						//	directionName = measurable.GoalDirection.ToSymbol(),
+						//	target = measurable.Goal,
+						//	measurable.AdminUserId,
+						//	scores=weekData
+						//};
+
+						var sow = current.Organization.Settings.WeekStart;
+						var weeks =TimingUtility.GetWeeks(sow,now,current.StartTime,l10Scores);
+
+						var rowId = l10Scores.GroupBy(x => x.MeasurableId).Count();
+
+						var row = ViewUtility.RenderPartial("~/Views/L10/partial/ScorecardRow.cshtml", new ScorecardRowVM{
+							MeetingId = current.Id,
+							RecurrenceId = recurrenceId,
+							MeetingMeasurable = mm,
+							Scores = scores,
+							Weeks = weeks
+						});
+						row.ViewData["row"] = rowId;
+						group.addMeasurable(row.Execute());
 					}
 
 					tx.Commit();

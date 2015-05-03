@@ -179,5 +179,27 @@ namespace RadialReview.Accessors
 
         }
 
+	    public static bool ManagesUser(UserOrganizationModel caller, long managerId, long subordinateId)
+	    {
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller)
+						.ViewUserOrganization(managerId, false)
+						.ViewUserOrganization(subordinateId, false);
+					
+					var m=s.Get<UserOrganizationModel>(managerId);
+					var sub=s.Get<UserOrganizationModel>(subordinateId);
+					if (m.IsRadialAdmin)
+						return true;
+					if (m.ManagingOrganization && m.Organization.Id == sub.Organization.Id)
+						return true;
+
+					var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.ManagerId == managerId && x.SubordinateId == subordinateId && x.DeleteTime == null).Take(1).SingleOrDefault();
+
+					return found != null;
+				}
+			}
+	    }
     }
 }

@@ -265,3 +265,19 @@ h3 {
 	margin-top:20px;
 	margin-bottom: 0px;
 }
+
+.editable-input .form-control {
+	min-width: 80px;
+}
+
+
+.editable-click:not(:hover) {
+	border-bottom: none !important;
+}
+.editable-click {
+	cursor: pointer;
+}
+
+.has-error .help-block, .has-error .control-label {
+	font-size: 13px;
+}

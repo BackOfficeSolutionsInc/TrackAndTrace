@@ -44,10 +44,14 @@ namespace RadialReview
         {
             return int.Parse(s);
         }
-        public static double ToDouble(this String s)
-        {
-            return double.Parse(s);
-        }
+		public static double ToDouble(this String s)
+		{
+			return double.Parse(s);
+		}
+		public static decimal ToDecimal(this String s)
+		{
+			return decimal.Parse(s);
+		}
 
         public static bool ToBoolean(this String s)
         {

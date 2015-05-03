@@ -87,7 +87,7 @@ namespace RadialReview.Controllers
 					}
 
 
-					foreach (var r in s.QueryOver<UserOrganizationModel>().List())
+					/*foreach (var r in s.QueryOver<UserOrganizationModel>().List())
 					{
 						if (r.NumRocks == 0)
 						{
@@ -101,7 +101,7 @@ namespace RadialReview.Controllers
 							s.Update(r);
 							count++;
 						}
-					}
+					}*/
 
 					tx.Commit();
 					s.Flush();

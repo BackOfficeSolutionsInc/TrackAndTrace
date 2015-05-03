@@ -1,4 +1,6 @@
-﻿using RadialReview.Accessors;
+﻿using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
+using RadialReview.Accessors;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,7 @@ using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using RadialReview.Utilities.Serializers;
 
 namespace RadialReview
 {
@@ -20,18 +23,25 @@ namespace RadialReview
         {
             AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
 
-            AreaRegistration.RegisterAllAreas();
+            //AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             ServerUtility.RegisterCacheEntry();
             ServerUtility.Reschedule();
-
+			
+			//Add Angular serializer to SignalR
+			var serializerSettings = new JsonSerializerSettings();
+			serializerSettings.Converters.Add(new AngularSerialization());
+			var serializer = JsonSerializer.Create(serializerSettings);
+			GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), ()=>serializer);
+   
             new ApplicationAccessor().EnsureApplicationExists();
 
 
             
         }
+
     }
 }

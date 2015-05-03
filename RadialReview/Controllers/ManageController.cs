@@ -22,7 +22,10 @@ namespace RadialReview.Controllers
 		public ActionResult Index()
 		{
 			//Main page
-			var page = (string)Session["Manage"] ?? "Members";
+
+			;
+
+			var page = (string)new Cache().Get(CacheKeys.MANAGE_PAGE) ?? "Members";
 			return RedirectToAction(page);
 			/*
 			switch (page)
@@ -43,14 +46,14 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult UserDetails(long id)
 		{
-			var caller = GetUser().Hydrate().ManagingUsers(true).Execute();
+			//var caller = GetUser().Hydrate().ManagingUsers(true).Execute();
 			var details = _UserEngine.GetUserDetails(GetUser(), id);
-			details.User.PopulatePersonallyManaging(caller, caller.AllSubordinates);
+			//DeepSubordianteAccessor.ManagesUser(GetUser(), GetUser().Id, id);
+			//details.User.PopulatePersonallyManaging(GetUser(), caller.AllSubordinates);
 
 			details.ForceEditable = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditQuestionForUser(id));
 
-			var model = new ManageUserModel()
-			{
+			var model = new ManageUserModel(){
 				Details = details
 			};
 
@@ -60,7 +63,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public async Task<ActionResult> Positions()
 		{
-			Session["Manage"] = "Positions";
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Positions", LifeTime.Session);
 			var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
 
 			var positions = orgPos.Select(x =>
@@ -76,7 +79,8 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult Teams()
 		{
-			Session["Manage"] = "Teams";
+
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Session);
 			var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
 			var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = -1 }).ToList();
 
@@ -100,7 +104,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult Members()
 		{
-			Session["Manage"] = "Members";
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Members", LifeTime.Session);
 			//var user = GetUser().Hydrate().ManagingUsers(true).Execute();
 
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true);
@@ -128,7 +132,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult Reorganize()
 		{
-			Session["Manage"] = "Reorganize";
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Reorganize", LifeTime.Session);
 			var orgId = GetUser().Organization.Id;
 			var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), orgId, false, false);
 			var allManagers = _OrganizationAccessor.GetOrganizationManagerLinks(GetUser(), orgId).ToListAlive();

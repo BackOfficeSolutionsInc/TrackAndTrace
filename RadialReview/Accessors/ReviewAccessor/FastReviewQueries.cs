@@ -39,6 +39,8 @@ namespace RadialReview.Accessors
 
 		public static List<ReviewIncomplete> AnyUnansweredReviewQuestions(ISession s, IEnumerable<long> reviewIds)
 		{
+			s.Flush();
+
 			var query =
 @"select
 	a.ForReviewId,

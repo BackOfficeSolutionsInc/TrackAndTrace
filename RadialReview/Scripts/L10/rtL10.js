@@ -4,6 +4,7 @@ var typed = "";
 var selectionStarted = false;
 var meetingItemId = 0;
 var disconnected = false;
+var isUnloading = false;
 
 $(".rt").prop("disabled", true);
 $(function () {
@@ -64,6 +65,9 @@ $(function () {
 	meetingHub.client.createNote = createNote;
 	meetingHub.client.updateNoteName = updateNoteName;
 	meetingHub.client.updateNoteContents = updateNoteContents;
+
+	meetingHub.client.updateMeasurable = updateMeasurable;
+	meetingHub.client.addMeasurable = addMeasurable;
 	//meetingHub.client.setLeader = setLeader;
 
 	console.log("StartingHub ");
@@ -71,19 +75,21 @@ $(function () {
 	$.connection.hub.start().done(initConnection);
 
 	$.connection.hub.disconnected(function() {
-		clearAlerts();
-
-		setTimeout(function() {
-			showAlert("Connection lost. Reconnecting.");
-			disconnected = true;
+		if (!isUnloading) {
+			clearAlerts();
 			setTimeout(function() {
-				$.connection.hub.start().done(initConnection);
-			}, 5000); // Restart connection after 5 seconds.
-		}, 1000);
+				showAlert("Connection lost. Reconnecting.");
+				disconnected = true;
+				setTimeout(function() {
+					$.connection.hub.start().done(initConnection);
+				}, 5000); // Restart connection after 5 seconds.
+			}, 1000);
+		}
 	});
 
 	window.onbeforeunload = function (e) {
 		disconnected = false;
+		isUnloading = true;
 		$.connection.hub.stop();
 	};
 });

@@ -1,0 +1,55 @@
+﻿@model RadialReview.Models.ViewModels.ScorecardRowVM
+<tr>
+	<td class="who first1 alignRight">
+		@Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetName())
+	</td>
+	<td class="who first1 alignLeft">
+		<span class="newLine gray">/@Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName())</span>
+	</td>
+	<td class="measurable first1" title="@Model.MeetingMeasurable.Measurable.Title"><span class="inlineEdit" data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span></td>
+	<td class="target direction" data-measurable="@Model.MeetingMeasurable.Id"><span class="inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" data-title="Select target direction" data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
+	<td class="target value" data-measurable="@Model.MeetingMeasurable.Id"><span class="inlineEdit" data-type="number" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.#####")</span></td>
+
+	@if (true){ //|| i == 0){
+		var col = 0;
+		foreach (var r in Model.Weeks){
+			var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == Model.MeetingMeasurable.Measurable.Id);
+
+			<td class="score @(r.IsCurrentWeek ? "current" : "")">
+				<input data-goal="@(Model.MeetingMeasurable.Measurable.Goal)"
+						data-goal-dir="@(Model.MeetingMeasurable.Measurable.GoalDirection)"
+						data-row="@(ViewBag.Row)"
+						data-col="@(col)"
+						type="text"
+						placeholder="N/A"
+						value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+						class="grid rt"
+						data-scoreid="@(found.NotNull(x => x.Id))"
+						data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+						data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
+						id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />
+			</td>
+			if (r.IsCurrentWeek){
+				<td class="buttonHolder">
+					<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
+							data-meeting="@Model.MeetingId"
+							data-recurrence="@Model.RecurrenceId"
+							data-measurable="@found.NotNull(x=>x.Measurable.Id)"
+							data-score="@(found.NotNull(x => x.Id))"
+						@*data-message="@found.IssueMessage().EscapeHtml()"
+							data-details="@found.IssueDetails().EscapeHtml()"*@>
+					</span>
+					<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+							data-method="CreateScorecardTodo"
+							data-meeting="@Model.MeetingId"
+							data-recurrence="@Model.RecurrenceId"
+							data-measurable="@found.NotNull(x=>x.Measurable.Id)"
+							data-accountable="@found.NotNull(x=>x.AccountableUserId)"
+							data-score="@(found.NotNull(x => x.Id))">
+					</span>
+				</td>
+			}
+			col += 1;
+		}
+	}
+</tr>

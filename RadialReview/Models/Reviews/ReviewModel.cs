@@ -168,7 +168,7 @@ namespace RadialReview.Models
 			//Map(x => x.Completion);
 			//Map(x => x.FullyComplete);
 			Map(x => x.ForUserId)
-				.Column("ForUserId");
+				.Column("ForUserId").Index("Review_ForUserId_IDX");
 			References(x => x.ForUser)
 				.Column("ForUserId")
 				.Not.LazyLoad()

@@ -1,8 +1,12 @@
-﻿using RadialReview.Models;
+﻿using RadialReview.Exceptions;
+using RadialReview.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.L10;
+using RadialReview.Models.L10.VM;
+using RadialReview.Models.Scorecard;
 
 namespace RadialReview.Utilities
 {
@@ -38,6 +42,56 @@ namespace RadialReview.Utilities
                 return null;
             return minutes * (counted + skipped) / counted;
         }
+
+
+	   /* public class WeekRange
+		{
+			public DateTime StartTime { get; set; }
+			public DateTime EndTime { get; set; }
+
+			public List<Week> Weeks { get; set; }
+
+	    }*/
+
+
+
+		public static List<L10MeetingVM.WeekVM> GetWeeks(DayOfWeek weekStart, DateTime now, DateTime? meetingStart, List<ScoreModel> scores)
+	    {
+			var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
+			var StartDate = ordered.FirstOrDefault().NotNull(x => now);
+			var EndDate = ordered.LastOrDefault().NotNull(x => now).AddDays(7);
+
+			var s = StartDate.StartOfWeek(weekStart).AddDays(-7 * 4);
+			var e = EndDate.StartOfWeek(weekStart).AddDays(7 * 4);
+			e = Math2.Min(now, e);
+			if (StartDate >= EndDate)
+				throw new PermissionsException("Date ordering incorrect");
+			var weeks = new List<L10MeetingVM.WeekVM>();
+			while (true)
+			{
+				var currWeek = false;
+				var next = s.AddDays(7);
+				var s1 = s;
+				if (meetingStart.NotNull(x => s1 <= x.Value && x.Value < next))
+					currWeek = true;
+
+				
+				weeks.Add(new L10MeetingVM.WeekVM()
+				{
+					DisplayDate = s.StartOfWeek(weekStart),
+					ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
+					IsCurrentWeek = currWeek,
+				});
+
+				s = next;
+				if (s > e)
+					break;
+			}
+			return weeks;
+	    }
+
+
+
         /*
         public static double? ReviewDuration(List<AnswerModel> answers)
         {

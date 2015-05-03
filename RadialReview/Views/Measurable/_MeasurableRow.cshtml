@@ -1,7 +1,7 @@
 ﻿@using RadialReview.Models.Enums
 @model RadialReview.Models.Scorecard.MeasurableModel
 @{
-	var guid = Guid.NewGuid().ToString().Replace("-","");
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
 	var lockedClass = Model.FromTemplateItemId.HasValue ? "disable unlockMR-" + guid : " unlockMR-" + guid;
 }
 
@@ -17,26 +17,32 @@
 					<div class="col-sm-6"></div>
 				</div>
 				<div><b>Goal:</b></div>
-				<div class ="row">
+				<div class="row">
 					<div class="col-sm-6">@Html.EnumDropDownListFor(x => x.GoalDirection, new { @class = "form-control roleItem " + lockedClass })</div>
 					<div class="col-sm-6">
 						<input type="number" class="form-control roleItem  @lockedClass" name="@Html.NameFor(x=>x.Goal)" value="@((Model.Goal).ToString("0.#####"))" />
 					</div>
-				</div>		
-				<hr/>												
+				</div>
+				@if (ViewBag.ShowAccountable == true)
+				{
+					<div class="row">
+						<div class="col-sm-6"><b>Accountable User:</b>@Html.DropDownListFor(x => x.AccountableUserId, (IEnumerable<SelectListItem>)ViewBag.AllMembers, new { @class = "form-control roleItem " + lockedClass })</div>
+					</div>
+				}
+				<hr />
 				@Html.HiddenFor(x => x.DeleteTime)
 				@Html.HiddenFor(x => x.CreateTime)
 				@Html.HiddenFor(x => x.NextGeneration)
 				@Html.HiddenFor(x => x.DueDate)
 				@Html.HiddenFor(x => x.DueTime)
-				@Html.HiddenFor(x => x.FromTemplateItemId,new{@class="templateId "+lockedClass})
+				@Html.HiddenFor(x => x.FromTemplateItemId, new { @class = "templateId " + lockedClass })
 			</div>
 			<span style="padding-left:8px;top: -9px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>
 			@if (Model.FromTemplateItemId != null)
 			{
-				<span style="padding-left: 8px;top: -10px;position: relative;" 
-				      class="icon fontastic-icon-link-broken lock" 
-				      onclick="$('.unlockMR-@guid').removeClass('disable');$(this).remove();$('.templateId.unlockMR-@guid').prop('value',false);" 
+				<span style="padding-left: 8px;top: -10px;position: relative;"
+					  class="icon fontastic-icon-link-broken lock"
+					  onclick="$('.unlockMR-@guid').removeClass('disable');$(this).remove();$('.templateId.unlockMR-@guid').prop('value',false);"
 					  title="This measurable was created by a template. Click to disassociate."></span>
 			}
 

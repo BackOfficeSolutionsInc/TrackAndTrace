@@ -105,7 +105,7 @@ namespace RadialReview.Accessors
 					}else if (user != null && org == null){*/
 						perm.EditQuestionForUser(userId);
 						orgId = user.Organization.Id;
-						user.NumRocks = rocks.Count(x => x.DeleteTime == null);
+						//user.NumRocks = rocks.Count(x => x.DeleteTime == null);
 						s.SaveOrUpdate(user);
 						user.UpdateCache(s);
 					/*}else{

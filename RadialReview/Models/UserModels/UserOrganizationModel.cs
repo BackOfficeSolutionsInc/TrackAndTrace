@@ -1,9 +1,12 @@
 ﻿using System.Web;
 using FluentNHibernate.Mapping;
 using NHibernate;
+using NHibernate.Linq;
+using RadialReview.Accessors;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.Scorecard;
 using RadialReview.Models.UserModels;
 using RadialReview.Properties;
 using System;
@@ -62,9 +65,9 @@ namespace RadialReview.Models
 		
 		public virtual long? JobDescriptionFromTemplateId { get; set; }
 
-		public virtual int NumRocks { get; set; }
+		/*public virtual int NumRocks { get; set; }
 		public virtual int NumRoles { get; set; }
-		public virtual int NumMeasurables { get; set; }
+		public virtual int NumMeasurables { get; set; }*/
 
         public virtual OriginType GetOriginType()
         {
@@ -231,17 +234,25 @@ namespace RadialReview.Models
 			Cache.Positions = String.Join(", ", Positions.ToListAlive().Select(x => x.Position.CustomName));
 			Cache.Teams = String.Join(", ", Teams.ToListAlive().Select(x => x.Team.Name));
 			Cache.Name = this.GetName();
-			Cache.NumMeasurables = NumMeasurables;
-			Cache.NumRoles = NumRoles;
-			Cache.NumRocks = NumRocks;
+
+			var measurable=s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == Id).ToRowCountQuery().FutureValue<int>();
+			var role=s.QueryOver<RoleModel>().Where(x => x.DeleteTime == null && x.ForUserId == Id).ToRowCountQuery().FutureValue<int>();
+			var rock=s.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.ForUserId == Id).ToRowCountQuery().FutureValue<int>();
+
+			Cache.NumMeasurables = measurable.Value;
+			Cache.NumRoles = role.Value;
+			Cache.NumRocks = rock.Value;
+
 			Cache.UserId = Id;
+			
 			s.SaveOrUpdate(Cache);
 			try{
-				var id = HttpContext.Current.Session[Constants.SESSION_USERORGANIZATION_ID];
-				if (id != null && (long)id==Id){
-					//cache is dirty
-					HttpContext.Current.Session[Constants.SESSION_USERORGANIZATION]=null;
-				}
+				new Cache().InvalidateForUser(this,CacheKeys.USERORGANIZATION);
+				//var id = RadialReview.Cache.Get(CacheKeys.USERORGANIZATION_ID);
+				////var id = HttpContext.Current.Session[CacheKeys.USERORGANIZATION_ID];
+				//if (id is long && (long)id==Id){
+				//	//cache is dirty
+				//}
 
 			}catch (Exception e){
 				throw new Exception("Could not update Session",e);
@@ -265,9 +276,9 @@ namespace RadialReview.Models
             Map(x => x.DetachTime);
             Map(x => x.DeleteTime);
 	        Map(x => x.EmailAtOrganization);
-			Map(x => x.NumRocks);
+			/*Map(x => x.NumRocks);
 			Map(x => x.NumRoles);
-			Map(x => x.NumMeasurables);
+			Map(x => x.NumMeasurables);*/
 
 			Map(x => x.JobDescription).Length(65000);
 			Map(x => x.JobDescriptionFromTemplateId);
