@@ -25,6 +25,8 @@ namespace RadialReview.Models.Scorecard
 		public virtual DayOfWeek DueDate { get; set; }
 		public virtual TimeSpan DueTime { get; set; }
 
+		public virtual UnitType UnitType { get; set; }
+
 
 		public MeasurableModel(){
 		}
@@ -35,7 +37,10 @@ namespace RadialReview.Models.Scorecard
 			CreateTime = now;
 			NextGeneration =now- TimeSpan.FromDays(7);
 			DueDate = DayOfWeek.Friday;
-			DueTime = TimeSpan.FromHours(12).Add(TimeSpan.FromMinutes(-1*forOrganization.Settings.TimeZoneOffsetMinutes));
+
+			DueTime = forOrganization.ConvertToUTC(TimeSpan.FromHours(12));
+				
+			//	TimeSpan.FromHours(12).Add(TimeSpan.FromMinutes(-1*forOrganization.Settings.TimeZoneOffsetMinutes));
 			Organization = forOrganization;
 			OrganizationId = forOrganization.Id;
 		}
@@ -58,6 +63,8 @@ namespace RadialReview.Models.Scorecard
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
+
+				Map(x => x.UnitType);
 
 				Map(x => x.DueDate);
 				Map(x => x.DueTime);

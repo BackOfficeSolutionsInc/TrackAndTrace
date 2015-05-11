@@ -1,0 +1,55 @@
+﻿
+<div class="btn-group pull-right" style="padding: 5px 0px;">
+	<div class="btn btn-default btn-xs todoModal" data-method="CreateTodo" data-recurrence="{{meetingId}}"><span class="glyphicon glyphicon-unchecked"></span> New Todo</div>
+</div>
+
+
+<div ng-repeat="(key,value) in model.Todos | transform:this | groupBy: 'Owner.Name'">
+	<table width="100%" class="component" ng-show="(value | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)).length">
+		<tr ng-show="$first">
+			<td></td>
+			<td></td>
+			<th>Todo</th>
+			<th>Due Date</th>
+			<th></th>
+			<th>Completed</th>
+		</tr>
+		@*| orderBy: ['Complete','-CompleteTime','Name']*@
+		<tr 
+			ng-repeat-start="todo in value | orderBy: ['Complete','-CompleteTime'] | filter:filters.byRange('CompleteTime',date.startDate,date.endDate) " 
+			ng-class="{grayRow: todo.Complete}"
+			ng-hide="model.Selected==todo.Key"
+			class="clickable"
+			>
+			<td style="min-width: 25px;text-align: center;"><input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" /></td>
+			<td><profile-image user="todo.Owner"></profile-image></td>
+			<td style="width:100%" ng-click = "model.Selected = todo.Key">{{todo.Name}}</td>
+			<td class="alignCenter" style="min-width: 75px;">{{todo.DueDate | date:'MM/dd/yy'}}</td>
+			<td style="min-width: 15px;"></td>
+			<td class="alignCenter"  style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
+		</tr>
+		<tr ng-show="model.Selected==todo.Key" ng-class="{grayRow: todo.Complete}">
+			<td style="min-width: 25px;text-align: center;"><input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" /></td>
+			<td><profile-image user="todo.Owner"></profile-image></td>
+			<td style="width:100%">
+				<input ng-model-options="{debounce: 200}"  type="text" ng-model="todo.Name" class="fullWidth"  ng-change="functions.sendUpdate(todo)"/>
+			</td>
+			<td class="alignCenter" style="min-width: 75px;">{{todo.DueDate | date:'MM/dd/yy'}}</td>
+			<td style="min-width: 15px;"></td>
+			<td class="alignCenter"  style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
+		</tr>
+		<tr ng-repeat-end style="color:gray"  ng-show="model.Selected==todo.Key" ng-class="{grayRow: todo.Complete}">
+			<td></td>
+			<td></td>
+			<td><textarea ng-model-options="{debounce: 200}"  class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter todo details..." style="min-height: 100px;"  ng-change="functions.sendUpdate(todo)"></textarea></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+
+	</table>
+</div>
+
+<div class="gray" style="padding: 30px 15px;" ng-show="(model.Todos | transform:this | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)).length==0">
+	No todos fit your search criteria.
+</div>

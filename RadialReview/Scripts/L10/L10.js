@@ -67,15 +67,27 @@ function replaceAll(find, replace, str) {
 	return str.split(find).join(replace);
 }
 
+function setFollowLeader(val) {
+	followLeader = val;
+	resetClickables();
+}
+
 function resetClickables() {
 	console.log("resetClickables");
 	$(".agenda a").removeClass("clickable");
+	$(".agenda a").removeClass("lockedPointer");
+	$(".agenda a").prop("title", "");
 	$(".agenda a").prop("href", "#");
 	if (isLeader || !followLeader || !meetingStart) {
 		$(".agenda a").addClass("clickable");
 		$(".agenda a").each(function() {
 			$(this).prop("href", "#" + $(this).data("location"));
 		});
+	} else {
+		if (meetingStart) {
+			$(".agenda a").prop("title", "Unlock to change pages");
+			$(".agenda a").addClass("lockedPointer");
+		}
 	}
 }
 
@@ -181,6 +193,8 @@ function loadPage(location) {
 function loadPageForce(location) {
 	$(".issues-list").sortable("destroy");
 	$(".todo-list").sortable("destroy");
+	$(".issues-list").sortable("refresh");
+	$(".todo-list").sortable("refresh");
 	window.location.hash = location;
 	location = location.toLowerCase();
 	//if (location != myPage) {

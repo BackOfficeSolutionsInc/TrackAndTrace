@@ -1,6 +1,8 @@
 ﻿using FluentNHibernate.Utils;
+using Microsoft.AspNet.SignalR;
 using NHibernate.Hql.Ast.ANTLR;
 using RadialReview.Accessors;
+using RadialReview.Hubs;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -545,6 +547,14 @@ namespace RadialReview.Controllers
             var model = GetReviewDetails(review);
             return View(model);
         }
+
+	    [Access(AccessLevel.Radial)]
+	    public String SendMessage(long id, string message)
+	    {
+			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+			hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(id)).status(message);
+		    return "Sent: " + message;
+	    }
 
     }
 }

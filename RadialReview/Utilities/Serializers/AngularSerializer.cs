@@ -13,7 +13,10 @@ using System.Xml.Serialization;
 using Microsoft.AspNet.SignalR.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NHibernate;
+using NHibernate.Proxy;
 using RadialReview.Models.Angular;
+using RadialReview.Models.Angular.Base;
 
 namespace RadialReview.Utilities.Serializers
 {
@@ -67,55 +70,106 @@ namespace RadialReview.Utilities.Serializers
 
 		private static void _Serialize(object item, Dictionary<string, object> parent, Dictionary<string, object> lookup,DateTime now)
 		{
-			var properties = GetProperties(item);
-			foreach (var p in properties){
-				var name = p.Name;
-				var value = p.GetValue(item, null);
-				if (value is IAngularItem){
-					var sub = new Dictionary<string, object>();
-					var resolved = (IAngularItem) value;
-					_Serialize(value, sub, lookup, now);
-					Merge(lookup,resolved,sub);//lookup[resolved.GetKey()] = sub;
-					parent[name] = new AngularPointer(resolved, now, false);
-					if (value is Removed){
-						parent[name] = null;
-					}
-				}else if (value is IEnumerable && GenericImplementsType((IEnumerable) value, typeof (IAngularItem))){
-					var keyList = new List<AngularPointer>();
-					var resolved = value as IEnumerable;
-					foreach (var v in resolved){
-						var sub = new Dictionary<string, object>();
-						var vResolved = (IAngularItem) v;
-						_Serialize(v, sub, lookup,now);
-						Merge(lookup, vResolved, sub);//lookup[vResolved.GetKey()] = sub;
-						keyList.Add(new AngularPointer(vResolved, now, false));
-					}
-					parent[name] = keyList;
-				}else if (value is IDictionary && GenericImplementsValueType((IDictionary) value, typeof (IAngularItem))){
-					var keyList = new Dictionary<string,object>();
-					var resolved = value as IDictionary;
-					foreach (var vKey in resolved.Keys){
-						var v = resolved[vKey];
-						var sub = new Dictionary<string, object>();
-						var vResolved = (IAngularItem)v;
-						_Serialize(v, sub, lookup, now);
-						Merge(lookup, vResolved, sub);//lookup[vResolved.GetKey()] = sub;
-						keyList.Add(vResolved.GetKey(),new AngularPointer(vResolved, now, false));
-					}
-					if (!parent.ContainsKey(name))
-						parent[name] = keyList;
-					else if (parent[name] == null || parent[name] is IDictionary)
-						parent[name] = Merge(parent[name] as IDictionary, keyList);
-					else
-						throw new Exception("Property already exists and is not a dictionary: " + name);
-
-				}else{
-					if (value != null){
-						parent[name] = value;
+			/*if (item.GetType().GetInterfaces().Any(x =>x.IsGenericType &&x.GetGenericTypeDefinition() == typeof(IAngularizer<>))){
+				//var generic = item.GetType().GetInterface("IAngularizer`1").GetGenericArguments()[0];
+				//dynamic converted= Convert.ChangeType(item, generic);
+				dynamic converted = CastEntity(item);
+				var angularizer= Angularizer.Create(converted);
+				
+				converted.Angularize(angularizer);
+				foreach (var key in angularizer.ToSerialize.Keys){
+					var output = new Dictionary<string, object>();
+					parent[key] = _SerializeProperty(key, angularizer.ToSerialize[key], parent, lookup, now);
+				}
+			}else{*/
+				var properties = GetProperties(item);
+				foreach (var p in properties){
+					var name = p.Name;
+					var value = p.GetValue(item, null);
+					var serialized = _SerializeProperty(name,value,parent, lookup, now);
+					if (serialized != null){
+						parent[name] = serialized;
 					}
 				}
+			//}
+		}
+		protected static T CastEntity<T>(T entity)
+		{
+			var proxy = entity as INHibernateProxy;
+			if (proxy != null)
+			{
+				return (T)proxy.HibernateLazyInitializer.GetImplementation();
+			}
+			else
+			{
+				return (T)entity;
 			}
 		}
+
+		private static object _SerializeProperty(string name, object value, Dictionary<string, object> parent, Dictionary<string, object> lookup, DateTime now)
+		{
+			/*if (value != null && value.GetType().GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof (IAngularizer<>))){
+				var output = new Dictionary<string, object>();
+				_Serialize(value, output, lookup, now);
+				return output;
+			}
+			else*/
+			if (value is DateTime && (DateTime)value == Removed.Date()){
+				parent[name] = Removed.DELETED_KEY;
+				return parent[name];
+			}
+			if (value is Decimal && (Decimal)value == Removed.Decimal()){
+				parent[name] = Removed.DELETED_KEY;
+				return parent[name];
+			}
+				
+
+
+			if (value is IAngularItem){
+				var sub = new Dictionary<string, object>();
+				var resolved = (IAngularItem) value;
+				_Serialize(value, sub, lookup, now);
+				Merge(lookup, resolved, sub); //lookup[resolved.GetKey()] = sub;
+				var output = new AngularPointer(resolved, now, false);
+				if (value is Removed){
+					output = null;
+				}
+				return output;
+			}
+			else if (value is IEnumerable && GenericImplementsType((IEnumerable) value, typeof (IAngularItem))){
+				var keyList = new List<AngularPointer>();
+				var resolved = value as IEnumerable;
+				foreach (var v in resolved){
+					var sub = new Dictionary<string, object>();
+					var vResolved = (IAngularItem) v;
+					_Serialize(v, sub, lookup, now);
+					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
+					keyList.Add(new AngularPointer(vResolved, now, false));
+				}
+				return keyList;
+			}
+			else if (value is IDictionary && GenericImplementsValueType((IDictionary) value, typeof (IAngularItem))){
+				var keyList = new Dictionary<string, object>();
+				var resolved = value as IDictionary;
+				foreach (var vKey in resolved.Keys){
+					var v = resolved[vKey];
+					var sub = new Dictionary<string, object>();
+					var vResolved = (IAngularItem) v;
+					_Serialize(v, sub, lookup, now);
+					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
+					keyList.Add(vResolved.GetKey(), new AngularPointer(vResolved, now, false));
+				}
+				if (!parent.ContainsKey(name))
+					parent[name] = keyList;
+				else if (parent[name] == null || parent[name] is IDictionary)
+					return Merge(parent[name] as IDictionary, keyList);
+				else
+					throw new Exception("Property already exists and is not a dictionary: " + name);
+			}
+			//Well nothing to convert
+			return value;
+		}
+
 		private static  void CopyValues<T>(T target, T source)
 		{
 			var t = typeof(T);

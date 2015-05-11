@@ -7,6 +7,15 @@
 @using (Html.BeginStyles())
 {
 	@Styles.Render("~/styles/L10")
+	<link href="~/Content/bootstrap-switch.css" rel="stylesheet" />
+	<style>
+		.bootstrap-switch.bootstrap-switch-small {
+			min-width: 120px;
+		}
+		.bootstrap-switch > div > span.bootstrap-switch-default {
+		  color: #999;
+		}
+	</style>
 }
 @using (Html.BeginScripts())
 {
@@ -24,6 +33,7 @@
 	<script src="~/signalr/hubs"></script>
 	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
 	<script src="~/Scripts/jquery/jquery.scrollTo.js"></script>
+	<script src="~/Scripts/bootstrap-switch.js"></script>
 	@*<script src="~/Scripts/L10/L10.js"></script>
 	<script src="~/Scripts/L10/rtL10.js"></script>*@
 	@Scripts.Render("~/bundles/L10")
@@ -49,6 +59,13 @@
 				
 			}
 		}
+
+		$(function() {
+			$('.switch').bootstrapSwitch();
+			$('#Follow').on('switchChange', function(e, data) {
+				setFollowLeader(data.value);
+			});
+		});
 	</script>
 
 }
@@ -92,7 +109,27 @@
 				<div class="alignCenter">
 					<a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
 				</div>
-			</div>
+			</div>	
+			@if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId)
+			{
+				<br />
+				<div class="alignCenter">
+					<div style="color: #bbb;">Follow meeting leader:</div>
+					<input id="Follow"
+					       type="checkbox" 
+					       checked
+					       class="switch switch-large fullWidth"
+					       style="min-width: 138px;"
+					       data-on-color="default"
+					       data-off-color="info"
+					       data-on-text="Locked"
+					       data-off-text="Unlocked"
+					       data-size="small"
+					       data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
+
+				</div>
+				<br />
+			}
 		</div>
 
 	</div>

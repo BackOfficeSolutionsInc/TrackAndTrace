@@ -281,3 +281,52 @@ h3 {
 .has-error .help-block, .has-error .control-label {
 	font-size: 13px;
 }
+
+profile-image {
+	position: relative;
+}
+
+profile-image .picture-container {
+	width: 32px;
+	height: 32px;
+	border: 1px solid #DDD;
+	padding: 1px;
+	background-color: white;  
+	line-height: 25px;
+	text-align: center;
+	font-weight: bold;
+	color: #444444;
+}
+
+profile-image .picture {
+	display: inline-block;
+}
+
+.calendar-container {
+	position: relative;
+
+}
+
+.calendar-container .glyphicon-calendar {
+	position: absolute;
+	top: 9px;
+	left: 9px;
+	color: #444444;
+}
+.calendar-container .caret {
+	position: absolute;
+	top: 16px;
+	right: 9px;
+	color: #444444;
+}
+	.calendar-container input {
+		padding-left:27px;
+	}
+
+.meeting-review .component{
+	  margin: 5px 0;
+}
+
+.lockedPointer {
+	cursor: not-allowed !important;
+}

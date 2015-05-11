@@ -1,35 +1,117 @@
-﻿@{
-	ViewBag.Title = "Details";
+﻿@*@{
+		ViewBag.Title = "Details";
+		Layout = "~/Views/Shared/_Layout.cshtml";
+	}
+	<div style="height:28px"></div>
+	<ul class="nav nav-tabs tabs-up" id="friends">
+		<li><a href="/L10/Details/Todo" data-target="#Todo" class="media_node active span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
+		<li><a href="/L10/Details/Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
+		<li><a href="/L10/Details/Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
+		<li><a href="/L10/Details/Recent" data-target="#Recent" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Recent </a></li>
+	</ul>
+
+	<div class="tab-content">
+		<div id="Todo"			class="tab-pane active"></div>
+		<div id="Issues"		class="tab-pane"></div>
+		<div id="Scorecard"		class="tab-pane"></div>
+		<div id="Recent"		class="tab-pane"></div>
+	</div>
+
+	@using (Html.BeginScripts()){
+		<script>
+			$('[data-toggle="tabajax"]').click(function(e) {
+				var $this = $(this),
+					loadurl = $this.attr('href'),
+					targ = $this.attr('data-target');
+
+				$.get(loadurl, function(data) {
+					$(targ).html(data);
+				});
+
+				$this.tab('show');
+				return false;
+			});
+		</script>
+	}*@
+@model long
+@{
+	ViewBag.Title = "Meeting Details";
 	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.FullWidth = false;
+
 }
-<div style="height:28px"></div>
-<ul class="nav nav-tabs tabs-up" id="friends">
-	<li><a href="/L10/Details/Todo" data-target="#Todo" class="media_node active span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
-	<li><a href="/L10/Details/Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
-	<li><a href="/L10/Details/Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
-	<li><a href="/L10/Details/Recent" data-target="#Recent" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Recent </a></li>
-</ul>
-
-<div class="tab-content">
-	<div id="Todo"			class="tab-pane active"></div>
-	<div id="Issues"		class="tab-pane"></div>
-	<div id="Scorecard"		class="tab-pane"></div>
-	<div id="Recent"		class="tab-pane"></div>
-</div>
-
-@using (Html.BeginScripts()){
+@using (Html.BeginStyles())
+{
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
+	@Styles.Render("~/styles/L10")
+	@Styles.Render("~/styles/meeting")
+}
+@using (Html.BeginScripts())
+{
+	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+	@Scripts.Render("~/bundles/meeting")
+	
+	<script src="~/Scripts/L10/L10.js"></script>
 	<script>
-		$('[data-toggle="tabajax"]').click(function(e) {
-			var $this = $(this),
-				loadurl = $this.attr('href'),
-				targ = $this.attr('data-target');
-
-			$.get(loadurl, function(data) {
-				$(targ).html(data);
+		angular.module('L10App')
+			.value('meetingId', @Model)
+			.value('meetingDataUrlBase', '/L10/DetailsData/');
+		$('#pages a').click(function(e) {
+			e.preventDefault();
+			$(this).tab('show');
+		});
+		
+		$(function() {
+			$("body").on("click", ".issuesModal", function() {
+				var parm = $.param($(this).data());
+				var m = $(this).data("method");
+				if (!m)
+					m = "Modal";
+				showModal("Add an issue", "/Issues/" + m + "?" + parm, "/Issues/" + m);
 			});
 
-			$this.tab('show');
-			return false;
+			$("body").on("click", ".todoModal", function() {
+				var parm = $.param($(this).data());
+				var m = $(this).data("method");
+				if (!m)
+					m = "Modal";
+				showModal("Add a to-do", "/Todo/" + m + "?" + parm, "/Todo/" + m);
+			});
+			
+			$("body").on("click", ".measurableModal", function() {
+				var m = $(this).data("recurrence");
+				showModal('Add Measurable', '/L10/AddMeasurable/' + m, '/L10/AddMeasurable/');
+			});
+
 		});
 	</script>
 }
+<div ng-app="L10App" class="meeting-review ng-cloak">
+	<div  ng-controller="L10Controller">
+		<div class="pull-left"><h3 style="margin-top: 5px;">{{model.Name}}</h3></div>
+		<div class="calendar-container pull-right" style="width:240px;">
+			<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+			<input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="date" options="opts" required placeholder="Select a date range..." />
+			<b class="caret"></b>
+		</div>
+		<div style="height:90px"></div>
+	
+		<ul class="nav nav-tabs tabs-up" id="pages" style="clear:both">
+			<li class="active"><a @*href="/L10/Details/Scorecard"*@ data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
+
+			<li><a @*href="/L10/Details/Todo"*@ data-target="#Todo" class="media_node span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
+			<li><a @*href="/L10/Details/Issues"*@ data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
+			<li><a @*href="/L10/Details/Recent"*@ data-target="#Notes" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Notes </a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div id="Scorecard" class="tab-pane active">@Html.Partial("~/Views/L10/Details/scorecard.cshtml")</div>
+			<div id="Todo" class="tab-pane">@Html.Partial("~/Views/L10/Details/todo.cshtml")</div>
+			<div id="Issues" class="tab-pane">@Html.Partial("~/Views/L10/Details/issues.cshtml")</div>
+			<div id="Notes" class="tab-pane">@Html.Partial("~/Views/L10/Details/notes.cshtml")</div>
+		</div>
+	</div>
+</div>

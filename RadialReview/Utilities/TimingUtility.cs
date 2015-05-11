@@ -90,7 +90,16 @@ namespace RadialReview.Utilities
 			return weeks;
 	    }
 
+	    public static long GetWeekSinceEpoch(DateTime day)
+	    {
+			var span = day.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).StartOfWeek(DayOfWeek.Sunday));
+		    return (long)Math.Floor(span.TotalDays/7);
+	    }
 
+	    public static DateTime GetDateSinceEpoch(long week)
+	    {
+			return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).StartOfWeek(DayOfWeek.Sunday).AddDays(week * 7);
+	    }
 
         /*
         public static double? ReviewDuration(List<AnswerModel> answers)

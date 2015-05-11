@@ -19,7 +19,22 @@ namespace RadialReview.Models
 		public class OrganizationSettings
 		{
 			public virtual DayOfWeek WeekStart { get; set; }
-			public virtual int TimeZoneOffsetMinutes { get; set; }
+			/*public virtual int TimeZoneOffsetMinutes {
+				get
+				{
+					if (TimeZoneId != null){
+						var zone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
+						zone.IsDaylightSavingTime(hwTime) ? hwZone.DaylightName : hwZone.StandardName, 
+
+
+						return .BaseUtcOffset.Minutes;
+					}
+				}
+			}*/
+
+			
+
+			public virtual string TimeZoneId { get; set; }
 			public virtual bool EmployeesCanViewScorecard { get; set; }
 			public virtual bool ManagersCanViewScorecard { get; set; }
 			public virtual bool EmployeeCanCreateL10 { get; set; }
@@ -34,7 +49,7 @@ namespace RadialReview.Models
 
 			public OrganizationSettings()
 			{
-				TimeZoneOffsetMinutes = -360;
+				TimeZoneId = "Central Standard Time";
 				WeekStart= DayOfWeek.Sunday;
 
 				EmployeesCanViewScorecard = false;
@@ -58,7 +73,8 @@ namespace RadialReview.Models
 				public OrgSettingsVM()
 				{
 					Map(x => x.WeekStart);
-					Map(x => x.TimeZoneOffsetMinutes);
+					//Map(x => x.TimeZoneOffsetMinutes);
+					Map(x => x.TimeZoneId);
 
 					Map(x => x.EmployeesCanViewScorecard);
 					Map(x => x.ManagersCanViewScorecard);
@@ -79,9 +95,35 @@ namespace RadialReview.Models
 					Map(x => x.RockName);
 				}
 			}
+		}
 
 
+		public virtual DateTime ConvertFromUTC(DateTime utcTime){
+			var zone = Settings.TimeZoneId ?? "Central Standard Time";
+			var tz = TimeZoneInfo.FindSystemTimeZoneById(zone);
+			return TimeZoneInfo.ConvertTimeFromUtc(utcTime, tz); //your UTC date here
+		}
 
+		public virtual DateTime ConvertToUTC(DateTime localTime){
+			var zone = Settings.TimeZoneId ?? "Central Standard Time";
+			var tz = TimeZoneInfo.FindSystemTimeZoneById(zone);
+			return TimeZoneInfo.ConvertTimeToUtc(localTime, tz); //your UTC date here
+		}
+
+		public virtual TimeSpan ConvertToUTC(TimeSpan localTimeSpan)
+		{
+			//var localDate = ConvertFromUTC(DateTime.UtcNow.Date);
+			//var localDT = localDate.Add(localTimeSpan);
+			var zone = Settings.TimeZoneId ?? "Central Standard Time";
+			var now = DateTime.UtcNow;
+			return localTimeSpan - TimeZoneInfo.FindSystemTimeZoneById(zone).GetUtcOffset(now);
+			//return ConvertToUTC(localDT).Subtract(localDate);
+		}
+		public virtual TimeSpan ConvertFromUTC(TimeSpan localTimeSpan)
+		{
+			var zone = Settings.TimeZoneId ?? "Central Standard Time";
+			var now = DateTime.UtcNow;
+			return localTimeSpan + TimeZoneInfo.FindSystemTimeZoneById(zone).GetUtcOffset(now);
 		}
 
 

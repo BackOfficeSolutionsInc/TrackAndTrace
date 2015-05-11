@@ -13,17 +13,22 @@
 		<h3 class="panel-title">Link Todos</h3>
 	</div>
 	<div class="panel-body form-horizontal">
-		<table class="table table-condensed" style="width:100%">
-			<tr><th></th><th style="width:100px;">Service</th><th style="width:110px;">Account Name</th><th style="width:1px;"></th></tr>
-			@foreach (var t in Model){
-				<tr class="row_@(t.Id)">
-					<td>@t.ForRGM.GetNameExtended()</td>
-					<td>@t.GetServiceName()</td>
-					<td>@t.AccountName</td>
-					<td><span class="glyphicon glyphicon-trash clickable" onclick="deleteRow(@(t.Id))"></span></td>
-				</tr>
-			}
-		</table>
+		@if (Model.Any()){
+			<table class="table table-condensed" style="width: 100%">
+				<tr><th></th><th style="width: 100px;">Service</th><th style="width: 110px;">Account Name</th><th style="width: 1px;"></th></tr>
+				@foreach (var t in Model){
+					<tr class="row_@(t.Id)">
+						<td>@t.ForRGM.GetNameExtended()</td>
+						<td>@t.GetServiceName()</td>
+						<td>@t.AccountName</td>
+						<td><span class="glyphicon glyphicon-trash clickable" onclick=" deleteRow(@(t.Id)) "></span></td>
+					</tr>
+				}
+			</table>
+		}
+		else{
+			<div class="gray">No external services. Click Attach New Account to link to your meetings.</div>
+		}
 	</div>
 </div>
 
@@ -47,3 +52,8 @@
 		});
 	}
 </script>
+@using (Html.BeginScripts())
+{
+	@Scripts.Render("~/bundles/L10")
+
+}

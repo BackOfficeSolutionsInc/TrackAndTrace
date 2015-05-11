@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RadialReview.Models.Angular;
 
-namespace RadialReview.Models.Angular
+namespace RadialReview.Models.Angular.Base
 {
 	public interface IAngular{
 		
@@ -19,13 +19,9 @@ namespace RadialReview.Models.Angular
 	public interface IAngularUpdate : IAngular
 	{
 	}
-}
 
-namespace RadialReview
-{
 	public static class IAngularExtensions
 	{
 		public static string GetKey(this IAngularItem self){	return self.Type + "_" + self.Id;	}
 	}
-
 }

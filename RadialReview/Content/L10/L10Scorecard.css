@@ -188,3 +188,17 @@
 	#ScorecardTable_Over td, #ScorecardTable_Over th {
 		border-left: 1px solid #FFFFFF;
 	}
+	
+.direction_1:before{
+	content: "≥";
+}
+.direction_-1:before{
+	content: "<";
+}
+
+.modifiers.dollar:before {
+	content: "$";
+}
+.modifiers.percent:after {
+	content: "%";
+}

@@ -241,7 +241,7 @@ namespace RadialReview.Models.L10
 			public virtual UserOrganizationModel User { get; set; }
 			public virtual long L10MeetingId { get; set; }
 			public virtual L10Meeting L10Meeting { get; set; }
-			public virtual int? Rating { get; set; }
+			public virtual decimal? Rating { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
 
 			public class L10MeetingAttendeeMap : ClassMap<L10Meeting_Attendee>

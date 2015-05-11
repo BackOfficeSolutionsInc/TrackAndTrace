@@ -227,6 +227,7 @@ ul a {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	cursor: pointer;
 }
 
 .jumbotron {
@@ -1553,6 +1554,7 @@ select.disable{
   /*line-height: 0 !important;
   top: 6px !important;*/
   font-size: 19px;
+  left: -2px;
 }
 
 .spinner:empty {
@@ -1561,4 +1563,8 @@ select.disable{
     background-position: center;
 	min-height: 20px;
 	min-width: 20px;
+}
+
+.nav-tabs {
+	cursor: pointer;
 }

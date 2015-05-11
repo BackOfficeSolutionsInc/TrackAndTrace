@@ -421,7 +421,8 @@ namespace RadialReview.Accessors
 					{
 						PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrgId, false);
 						s.Update(tempUser);
-						found.UpdateCache(s);
+						if (found!=null)
+							found.UpdateCache(s);
 						tx.Commit();
 						s.Flush();
 					}
@@ -476,8 +477,10 @@ namespace RadialReview.Accessors
 								m.DeleteTime = deleteTime;
 								m.DeletedBy = caller.Id;
 								s.Update(m);
-								m.Subordinate.UpdateCache(s);
-								m.Manager.UpdateCache(s);
+								if (m.Subordinate!=null)
+									m.Subordinate.UpdateCache(s);
+								if(m.Manager!=null)
+									m.Manager.UpdateCache(s);
 							}
 							var subordinatesTeam = s.QueryOver<OrganizationTeamModel>()
 								.Where(x => x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId)
@@ -743,7 +746,8 @@ namespace RadialReview.Accessors
 
 					if (userOrg.UserOrganization != null){
 						foreach (var u in userOrg.UserOrganization){
-							u.UpdateCache(s);
+							if (u!=null)
+								u.UpdateCache(s);
 						}
 					}
 
@@ -816,7 +820,8 @@ namespace RadialReview.Accessors
 						sub.DeleteTime = now;
 						s.Update(sub);
 						//sub.Subordinate.UpdateCache(s);
-						sub.Manager.UpdateCache(s);
+						if (sub.Manager!=null)
+							sub.Manager.UpdateCache(s);
 					}
 					var subordinates = s.QueryOver<ManagerDuration>().Where(x => x.ManagerId == userId && x.DeleteTime == null).List().ToList();
 					foreach (var subordinate in subordinates)
@@ -824,7 +829,8 @@ namespace RadialReview.Accessors
 						subordinate.DeletedBy = caller.Id;
 						subordinate.DeleteTime = now;
 						s.Update(subordinate);
-						subordinate.Subordinate.UpdateCache(s);
+						if(subordinate.Subordinate!=null)
+							subordinate.Subordinate.UpdateCache(s);
 						//subordinate.Manager.UpdateCache(s);
 
 						warnings.Add(user.GetFirstName() + " no longer manages " + subordinate.Subordinate.GetNameAndTitle() + ".");

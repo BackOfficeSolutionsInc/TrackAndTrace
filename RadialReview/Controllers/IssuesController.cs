@@ -99,9 +99,10 @@ namespace RadialReview.Controllers
 		}
 
 	    [Access(AccessLevel.UserOrganization)]
-	    public ActionResult CreateIssue(long meeting, long recurrence)
+		public ActionResult CreateIssue(long recurrence, long meeting = -1)
 		{
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+			if(meeting!=-1)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 			var model = new IssueVM(){
 				ByUserId = GetUser().Id,
 				MeetingId = meeting,
@@ -115,7 +116,8 @@ namespace RadialReview.Controllers
 		public JsonResult CreateIssue(IssueVM model)
 	    {
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x=>x.RecurrenceId,x=>x.ForId);
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+			if (model.MeetingId!=-1)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, new IssueModel()
 			{

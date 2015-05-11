@@ -15,15 +15,21 @@
 						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
 						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
 					</div>*@
+					<div class="btn-group">
+						<div class="btn btn-default btn-xs" onclick="sortTodoByUser(recurrenceId,$('.todo-list'))">
+							<span class="icon fontastic-icon-sort-alpha-two"></span> Group
+						</div>
+					</div>
+
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
 				<h2>To-do List <small></small></h2>
 			</hgroup>
 			<div class="todo-container ">
 				<ol class="todo-list sortable init-@(guid)">
-					@foreach (var i in Model.Todos.OrderBy(x => x.Ordering))
-					{
-						@Html.Partial("~/Views/L10/partial/TodoRow.cshtml", i)
+					@foreach (var i in Model.Todos.OrderBy(x => x.Ordering)){
+						var vm = new ViewDataDictionary{{"MeetingId",Model.Meeting.Id}};
+						@Html.Partial("~/Views/L10/partial/TodoRow.cshtml", i, vm)
 					}
 				</ol>
 			</div>
@@ -62,9 +68,17 @@
 				_super(item);
 			}*/
 			onDrop: function($item, container, _super, event) {
-				_super($item, container);
-				updateTodoList(@Model.Recurrence.Id, $(".todo-list"));
-				refreshCurrentTodoDetails();
+				debugger;
+				if ($item.hasClass("issue-row")) {
+					debugger;
+					_super($item, container);
+					updateIssuesList(@Model.Recurrence.Id, $(".issues-list"));
+					refreshCurrentIssueDetails();
+				} else {
+					_super($item, container);
+					updateTodoList(@Model.Recurrence.Id, $(".todo-list"));
+					refreshCurrentTodoDetails();
+				}
 			}
 		});
 		oldTodoList = $(".todo-list").clone(true);

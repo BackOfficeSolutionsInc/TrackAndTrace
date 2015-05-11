@@ -5,6 +5,12 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Issues;
+using RadialReview.Models.Angular.Meeting;
+using RadialReview.Models.Angular.Scorecard;
+using RadialReview.Models.Angular.Todos;
+using RadialReview.Models.Json;
 
 namespace RadialReview.Controllers
 {
@@ -12,22 +18,56 @@ namespace RadialReview.Controllers
     {
 
 		[Access(AccessLevel.UserOrganization)]
-		public object Details(string id = null,bool complete=false)
+		public object Details(long id,bool complete=false)
 		{
-			if (id == null)
-				return View();
+			return View(id);
 
-			switch (id.ToLower())
-			{
-				case "todo": return DetailsTodo(complete);
-				case "issues": return DetailsIssues();
-				case "scorecard": return DetailsScorecard();
-				case "recent": return DetailsRecent();
-				default:throw new PermissionsException("Page does not exist");
-			}
+			//switch (id.ToLower())
+			//{
+			//	case "todo": return DetailsTodo(complete);
+			//	case "issues": return DetailsIssues();
+			//	case "scorecard": return DetailsScorecard();
+			//	case "recent": return DetailsRecent();
+			//	default:throw new PermissionsException("Page does not exist");
+			//}
 		}
 
-	    private PartialViewResult DetailsTodo(bool complete)
+	    [Access(AccessLevel.UserOrganization)]
+	    public JsonResult DetailsData(long id)
+	    {
+		    return Json(L10Accessor.GetAngularRecurrence(GetUser(), id), JsonRequestBehavior.AllowGet);
+	    }
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateAngularIssue(AngularIssue model, string connectionId = null)
+		{
+			L10Accessor.Update(GetUser(),model,connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateAngularTodo(AngularTodo model, string connectionId = null)
+		{
+			L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateAngularScore(AngularScore model, string connectionId = null)
+		{
+			L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateAngularMeetingNotes(AngularMeetingNotes model, string connectionId = null)
+		{
+			L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		/*
+	    private PartialViewResult DetailsTodo(long id,bool complete)
 	    {
 		    L10Accessor.GetVisibleTodos(GetUser(), new []{GetUser().Id}, complete);
 		    return null;
@@ -44,7 +84,7 @@ namespace RadialReview.Controllers
 		private PartialViewResult DetailsRecent()
 		{
 			return null;
-		}
+		}*/
 
     }
 }

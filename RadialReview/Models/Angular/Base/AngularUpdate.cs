@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Script.Serialization;
 
-namespace RadialReview.Models.Angular
+namespace RadialReview.Models.Angular.Base
 {
 	public class AngularUpdate : IAngularUpdate, IEnumerable
 	{

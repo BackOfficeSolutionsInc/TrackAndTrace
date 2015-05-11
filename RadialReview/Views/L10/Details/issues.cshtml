@@ -1,0 +1,65 @@
+﻿
+
+<div class="btn-group pull-right" style="padding: 5px 0px;">
+	<div class="btn btn-default btn-xs issuesModal" data-method="CreateIssue" data-recurrence="{{meetingId}}"><span class="glyphicon glyphicon-pushpin"></span> New Issue</div>
+</div>
+
+<table width="100%" class="component" ng-show="(model.Issues | transform:this | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)).length>0">
+	<tr>
+		<th></th>
+		<th>Issue</th>
+		<th></th>
+		<th></th>
+		<th>Completed</th>
+	</tr>
+	<tr ng-repeat-start="issue in model.Issues | transform:this | orderBy: ['Complete','Name']  | filter:filters.byRange('CompleteTime',date.startDate,date.endDate) "
+	    ng-class="{grayRow: issue.Complete}"
+	    ng-hide="model.Selected==issue.Key"
+	    class="clickable">
+		<td style="vertical-align: top;min-width: 25px;text-align: center">
+			<input type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />
+		</td>
+		<td style="width:100%" ng-click="model.Selected = issue.Key">
+			{{issue.Name}}
+			<table>
+				<tr ng-repeat="sub in issue.Children" class="gray">
+					<td style="width:20px;"></td>
+					<td>{{sub.Name}}</td>
+				</tr>
+			</table>
+		</td>
+		<td  class="alignCenter"  style="min-width: 75px;">{{issue.DueDate | date:'MM/dd/yy'}}</td>
+		<td style="min-width: 15px;"></td>
+		<td class="alignCenter"  style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
+	</tr>
+	<tr ng-show="model.Selected==issue.Key" ng-class="{grayRow: issue.Complete}">
+		<td style="vertical-align: top;min-width: 25px;text-align: center">
+			<input ng-model-options="{debounce: 200}"  type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />
+		</td>
+		<td style="width:100%">
+			<input ng-model-options="{debounce: 200}"  type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" />
+		</td>
+		<td  class="alignCenter"  style="min-width: 75px;">{{issue.DueDate | date:'MM/dd/yy'}}</td>
+		<td style="min-width: 15px;"></td>
+		<td  class="alignCenter"  style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
+	</tr>
+	<tr ng-repeat-end ng-show="model.Selected==issue.Key" ng-class="{grayRow: issue.Complete}" style="color:gray">
+		<td></td>
+		<td style="width:100%">
+			<textarea ng-model-options="{debounce: 200}"  ng-model="issue.Details" class="verticalOnly fullWidth" placeholder="Enter issue details..." style="min-height: 106px;" ng-change="functions.sendUpdate(issue)"></textarea>
+			<table>
+				<tr ng-repeat="sub in issue.Children" class="">
+					<td style="width:20px;"></td>
+					<td>{{sub.Name}}</td>
+				</tr>
+			</table>
+		</td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+
+<div class="gray" style="padding: 30px 15px;" ng-show="(model.Issues | transform:this | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)).length==0">
+	No issues fit your search criteria.
+</div>

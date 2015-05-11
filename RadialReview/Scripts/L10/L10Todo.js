@@ -56,7 +56,8 @@ $(function () {
 
 					for (var i = 0; i < data.Object.length; i++) {
 						var d = data.Object[i];
-						var selected = $(that).data("accountable")==d.id?"selected":"";
+						debugger;
+						var selected = $(that).attr("data-accountable")==d.id?"selected":"";
 						$(input).append("<option "+selected+" data-img='"+d.imageUrl+"' value='"+d.id+"'>"+d.name+"</option>");
 					}
 
@@ -67,11 +68,11 @@ $(function () {
 
 					$(that).html(input);
 
-					$(input).select2({
+					var item = $(input).select2({
 						templateResult: imageListFormat,
 						templateSelection: imageListFormat
 					});
-					$(input).css("width", "200px");
+					$(item).css("width", "250px");
 					$(input).select2("open");
 				}
 			}
@@ -118,7 +119,9 @@ function sendNewAccountable(self, id) {
 	var data = {
 		accountableUser: val
 	};
-	$(".todo .assignee[data-todo=" + id + "]").html("<span class='btn btn-link' data-todo='"+id+"'></span>");
+	var found =$(".todo .assignee[data-todo=" + id + "]");
+	found.html("<span class='btn btn-link' data-todo='"+id+"'></span>");
+	found.attr("data-accountable", val);
 	$.ajax({
 		method:"POST",
 		data:data,
@@ -171,6 +174,17 @@ function refreshCurrentTodoDetails() {
 		.closest(".todo-list>.todo-row").find(">.message")
 		.trigger("click");
 	$(".todo-row[data-todo=" + currentTodoDetailsId + "]").addClass("selected");
+}
+
+function sortTodoByUser(recurrenceId,todoList) {
+	$(todoList).find("li").sort(function(a, b) {
+		if ($(a).attr("data-name") < $(b).attr("data-name"))
+			return true;
+		return $(a).attr("data-message") < $(b).attr("data-message") ;
+	}).each(function() {
+		$(todoList).prepend(this);
+	});
+	updateTodoList(recurrenceId, todoList);
 }
 
 function constructTodoRow(todo) {

@@ -74,9 +74,20 @@
 				_super(item);
 			}*/
 			onDrop: function($item, container, _super, event) {
+				@*debugger;
 				_super($item, container);
 				updateIssuesList(@Model.Recurrence.Id, $(".issues-list"));
-				refreshCurrentIssueDetails();
+				refreshCurrentIssueDetails();*@
+				if ($item.hasClass("issue-row")) {
+					_super($item, container);
+					updateIssuesList(@Model.Recurrence.Id, $(".issues-list"));
+					refreshCurrentIssueDetails();
+				} else {
+					debugger;
+					_super($item, container);
+					updateTodoList(@Model.Recurrence.Id, $(".todo-list"));
+					refreshCurrentTodoDetails();
+				}
 			}
 		});
 		oldIssueList = $(".issues-list").clone(true);

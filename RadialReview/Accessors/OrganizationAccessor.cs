@@ -1,4 +1,5 @@
-﻿using Amazon.ElasticMapReduce.Model;
+﻿using System.Security;
+using Amazon.ElasticMapReduce.Model;
 using Amazon.ElasticTranscoder.Model;
 using RadialReview.Exceptions;
 using RadialReview.Models;
@@ -100,7 +101,8 @@ namespace RadialReview.Accessors
                     };
                     db.Save(managerTeam);
 
-					userOrgModel.UpdateCache(db);
+					if (userOrgModel!=null)
+						userOrgModel.UpdateCache(db);
                     tx.Commit();
                     //db.UserOrganizationModels.Add(userOrgModel);
                     //db.SaveChanges();
@@ -181,7 +183,7 @@ namespace RadialReview.Accessors
                     user.UserOrganization.Add(userOrg);
 	                user.UserOrganizationCount += 1;
 
-					var newArray = user.UserOrganizationIds.ToList();
+					var newArray = user.UserOrganizationIds.NotNull(x=>x.ToList())??new List<long>();
 					newArray.Add(userOrg.Id);
 					user.UserOrganizationIds = newArray.ToArray();
 
@@ -193,6 +195,7 @@ namespace RadialReview.Accessors
                     //organization.Members.Add(userOrg);
 					
                     db.SaveOrUpdate(user);
+					
 	                userOrg.UpdateCache(db);
 
                     tx.Commit();
@@ -365,14 +368,15 @@ namespace RadialReview.Accessors
 																			bool? managersCanRemoveUsers = null,
 																			bool? managersCanEditSelf = null,
 																			bool? employeesCanEditSelf = null,
-																			string rockName = null
+																			string rockName = null,
+																			string timeZoneId = null
 			)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-					PermissionsUtility.Create(s, caller).EditOrganization(organizationId).ManagingOrganization(caller.Organization.Id);
+					var perms=PermissionsUtility.Create(s, caller).EditOrganization(organizationId).ManagingOrganization(caller.Organization.Id);
                     var org = s.Get<OrganizationModel>(organizationId);
                     if (managersHaveAdmin != null && managersHaveAdmin.Value != org.ManagersCanEdit)
                     {
@@ -405,7 +409,18 @@ namespace RadialReview.Accessors
 					if (!String.IsNullOrWhiteSpace(rockName))
 						org.Settings.RockName = rockName;
 
+					if (!String.IsNullOrWhiteSpace(timeZoneId) && TimeZoneInfo.GetSystemTimeZones().Any(x=>x.Id==timeZoneId))
+						org.Settings.TimeZoneId = timeZoneId;
+
                     s.Update(org);
+
+	                var all=OrganizationAccessor.GetAllUserOrganizations(s, perms, organizationId);
+	                var cache = new Cache();
+	                foreach (var u in all){
+		                cache.InvalidateForUser(u,CacheKeys.USERORGANIZATION);
+	                }
+
+
                     tx.Commit();
                     s.Flush();
                 }
@@ -618,7 +633,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static List<long> GetAllUserOrganizations(ISession s, PermissionsUtility perm, long organizationId)
+		public static List<long> GetAllUserOrganizationIds(ISession s, PermissionsUtility perm, long organizationId)
 		{
 			perm.ViewOrganization(organizationId);
 
@@ -626,6 +641,14 @@ namespace RadialReview.Accessors
 				.Where(x => x.DeleteTime == null && x.Organization.Id == organizationId)
 				.Select(x => x.Id)
 				.List<long>().ToList();
+		}
+		[Obsolete("Dangerous")]
+		public static List<UserOrganizationModel> GetAllUserOrganizations(ISession s, PermissionsUtility perm, long organizationId)
+		{
+			perm.ViewOrganization(organizationId);
+			return s.QueryOver<UserOrganizationModel>()
+				.Where(x => x.DeleteTime == null && x.Organization.Id == organizationId)
+				.List().ToList();
 		}
 
 	    public void UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10)

@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Meeting;
+using RadialReview.Models.Scorecard;
+using RadialReview.Utilities;
+
+namespace RadialReview.Models.Angular.Scorecard
+{
+	public class AngularScorecard : BaseAngular
+	{
+		public AngularScorecard(DayOfWeek weekstart, IEnumerable<MeasurableModel> measurables, List<ScoreModel> scores) : this()
+		{
+			Weeks = TimingUtility.GetWeeks(weekstart, DateTime.UtcNow, null, scores).Select(x => new AngularWeek(x)).ToList();
+			Measurables = measurables.Select(x => new AngularMeasurable(x)).ToList();
+			Scores = scores.Select(x => new AngularScore(x)).ToList();
+		}
+
+		public AngularScorecard() :base(-1)
+		{
+			
+		}
+
+		public List<AngularMeasurable> Measurables { get; set; }
+		public List<AngularScore> Scores { get; set; }
+		public List<AngularWeek> Weeks { get; set; }
+	}
+
+}

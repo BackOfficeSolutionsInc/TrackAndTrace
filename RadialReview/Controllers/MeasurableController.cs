@@ -34,7 +34,7 @@ namespace RadialReview.Controllers
 			return PartialView(new MeasurableController.MeasurableVM { Measurables = rocks, UserId = id });
 		}
 
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult BlankEditorRow(bool accountable=false)
 		{
 			ViewBag.AllMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToSelectList(x=>x.GetNameAndTitle(),x=>x.Id);

@@ -62,7 +62,7 @@ namespace RadialReview.Controllers
 			var recurrenceId = id;
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
 
-			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
+			var allMeasurables = ScorecardAccessor.GetPotentialMeetingMeasurables(GetUser(), recurrenceId, true);
 			//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
 			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
@@ -136,7 +136,7 @@ namespace RadialReview.Controllers
 		public JsonResult UpdateIssueCompletion(long id, long issueId,bool @checked,string connectionId=null)
 		{
 			var recurrenceId = id;
-			L10Accessor.UpdateIssueCompletion(GetUser(), recurrenceId, issueId, @checked, connectionId);
+			L10Accessor.UpdateIssue(GetUser(), issueId, complete: @checked, connectionId: connectionId);
 			return Json(ResultObject.SilentSuccess(@checked));
 		}
 
@@ -173,7 +173,7 @@ namespace RadialReview.Controllers
 		public JsonResult UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null)
 		{
 			var recurrenceId = id;
-			L10Accessor.UpdateTodoCompletion(GetUser(), recurrenceId, todoId, @checked, connectionId);
+			L10Accessor.UpdateTodo(GetUser(), todoId, complete:@checked, connectionId:connectionId);
 			return Json(ResultObject.SilentSuccess(@checked));
 		}
 

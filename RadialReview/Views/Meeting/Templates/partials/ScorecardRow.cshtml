@@ -1,0 +1,70 @@
+﻿<tr ng-repeat="meetingMeasurable in agendaItem.Measurables | orderBy: 'Measurable.Owner.Name' ">
+	<td class="who first1 alignRight">
+		{{meetingMeasurable.Measurable.Owner.Name}}
+	</td>
+	<td class="who first1 alignLeft">
+		<span class="newLine gray">/{{meetingMeasurable.Measurable.Admin.Name}}</span>
+	</td>
+	<td class="measurable first1" title="{{meetingMeasurable.Measurable.Name}}"><span class="inlineEdit" data-type="text" data-name="title" data-measurable="{{meetingMeasurable.Measurable.Id}}" data-pk="{{meetingMeasurable.Id}}" data-url="/L10/UpdateMeasurable">{{meetingMeasurable.Measurable.Name}}</span></td>
+	<td class="target direction" data-measurable="{{meetingMeasurable.Id}}"><span class="inlineEdit" data-type="select" data-name="direction" data-measurable="{{meetingMeasurable.Measurable.Id}}" data-pk="{{meetingMeasurable.Id}}" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" data-title="Select target direction" data-value="{{meetingMeasurable.Measurable.Direction}}">{{meetingMeasurable.Measurable.Direction}}</span></td>
+	<td class="target value" data-measurable="{{meetingMeasurable.Id}}"><span class="inlineEdit" data-type="number" data-name="target" data-measurable="{{meetingMeasurable.Measurable.Id}}" data-pk="{{meetingMeasurable.Id}}" data-url="/L10/UpdateMeasurable">{{(meetingMeasurable.Measurable.Target | number:4)*1}}</span></td>
+	
+	<td ng-repeat="week in agendaItem.Weeks" class="score" ng-class="{current:week.IsCurrentWeek}">
+		<input data-goal="{{meetingMeasurable.Measurable.Target}}"
+						data-goal-dir="{{meetingMeasurable.Measurable.Direction}}"
+						data-row="{{$parent.$index}}"
+						data-col="{{$index}}"
+						type="text"
+						placeholder="N/A"
+						value="{{(agendaItem.Scores | filter: filters.lookupScore(week.ForWeek,meetingMeasurable.Measurable.Id) | first ).Measured}}"
+						class="grid rt"
+						data-scoreid="{{(agendaItem.Scores | first: 'Week==week.ForWeek').Id}}"
+						data-measurable="{{meetingMeasurable.Measurable.Id}}"
+						data-week="{{week.ForWeek}}"
+						@*id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />*@
+						id="sc_{{(agendaItem.Scores | first: 'Week==week.ForWeek').Id}}" />
+	</td>
+
+	@*@if (true){ //|| i == 0){
+		var col = 0;
+		foreach (var r in Model.Weeks){
+			var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == Model.MeetingMeasurable.Measurable.Id);
+
+			<td class="score @(r.IsCurrentWeek ? "current" : "")">
+				<input data-goal="@(Model.MeetingMeasurable.Measurable.Goal)"
+						data-goal-dir="@(Model.MeetingMeasurable.Measurable.GoalDirection)"
+						data-row="@(ViewBag.Row)"
+						data-col="@(col)"
+						type="text"
+						placeholder="N/A"
+						value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+						class="grid rt"
+						data-scoreid="@(found.NotNull(x => x.Id))"
+						data-measurable="{{meetingMeasurable.Measurable.Id"
+						data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
+						id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />
+			</td>
+			if (r.IsCurrentWeek){
+				<td class="buttonHolder">
+					<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
+							data-meeting="@Model.MeetingId"
+							data-recurrence="@Model.RecurrenceId"
+							data-measurable="@found.NotNull(x=>x.Measurable.Id)"
+							data-score="@(found.NotNull(x => x.Id))"
+						@*data-message="@found.IssueMessage().EscapeHtml()"
+							data-details="@found.IssueDetails().EscapeHtml()"*>
+					</span>
+					<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+							data-method="CreateScorecardTodo"
+							data-meeting="@Model.MeetingId"
+							data-recurrence="@Model.RecurrenceId"
+							data-measurable="@found.NotNull(x=>x.Measurable.Id)"
+							data-accountable="@found.NotNull(x=>x.AccountableUserId)"
+							data-score="@(found.NotNull(x => x.Id))">
+					</span>
+				</td>
+			}
+			col += 1;
+		}
+	}*@
+</tr>

@@ -63,7 +63,7 @@ namespace RadialReview.Accessors
 						throw new PermissionsException("What?");
 					}*/
 
-					var ar=SetUtility.AddRemove(OrganizationAccessor.GetAllUserOrganizations(s,perm,organizationId),rocks.Select(x=>x.ForUserId));
+					var ar=SetUtility.AddRemove(OrganizationAccessor.GetAllUserOrganizationIds(s,perm,organizationId),rocks.Select(x=>x.ForUserId));
 					if (ar.AddedValues.Any())
 						throw new PermissionsException("User does not belong to organization");
 

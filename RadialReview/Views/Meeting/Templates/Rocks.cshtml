@@ -1,0 +1,45 @@
+﻿<div class="rocks meeting-page">
+	<div class="row">
+		<div class="col-md-12">
+			<hgroup class="page-header">
+				<div class="pull-right">
+					@*@Html.Partial("partial/ButtonBar", Model)*@
+				</div>
+				<h2>@Html.Organization().Settings.RockName Review <small></small></h2>
+			</hgroup>
+			<div class="rocks-container">
+				<div class="component" ng-repeat="(key,value) in agendaItem.Rocks | groupBy: 'Rock.Owner.Id'">
+					<profile-image user="(value | first).Rock.Owner"></profile-image>
+					<span class="owner">{{(value | first).Rock.Owner.Name}}</span>
+					<div class="table-responsive">
+						<table style="width:100%">
+							<tr>
+								<th style="width: 46px"></th>
+								<th style="width: 1px"></th>
+								<th></th>
+							</tr>
+							<tr ng-repeat="rock in value">
+								<td class="buttonHolder currentBlue">
+									<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
+										  data-meeting="{{MeetingId}}"
+										  data-recurrence="{{RecurrenceId}}"
+										  data-rock="{{rock.Id}}"
+										  data-method="CreateRockIssue"></span>
+									<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+										  data-meeting="{{MeetingId}}"
+										  data-recurrence="{{RecurrenceId}}"
+										  data-rock="{{rock.Id}}"
+										  data-method="CreateRockTodo">
+									</span>
+								</td>
+								<td class="">[*********]</td>
+								<td class="message">{{rock.Rock.Name}}</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="~/Scripts/components/rockstate.js"></script>

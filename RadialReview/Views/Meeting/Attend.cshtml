@@ -1,13 +1,100 @@
-﻿
+﻿@model long
 @{
-    ViewBag.Title = "Attend";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-	
-}
+	ViewBag.Title = "Attend";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.FullWidth = true;
 
-@using (Html.BeginScripts()){
-	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
-	<script src="~/signalr/hubs"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
 }
+@using (Html.BeginStyles())
+{
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
+	@Styles.Render("~/styles/L10")
+}
+@using (Html.BeginScripts())
+{
+	<script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+	@Scripts.Render("~/bundles/meeting")
+	<script>
+		angular.module('L10App')
+			.value('meetingId', @Model)
+			.value('meetingDataUrlBase', '/Meeting/Data/');
+	</script>
+}
+<div ng-app="L10App">
+	<div ng-controller="L10Controller">
+		<div class="row full">
+			<div class="col-sm-3 col-md-2 full">
+				<div class="">
+					<div class="component">
+						<div class="current-time">
+							{{clock}}
+							@*<span class="centered" ng-controller="ClockController">
+								<span class=" hour big">{{currentTime | date:"H"}}</span>
+								<span class="colon big">:</span>
+								<span class="minute big">{{currentTime | date:"mm"}}</span>
+								<span class="second gray">{{currentTime | date:"ss"}}</span>
+							</span>*@
+						</div>
+						<div class="elapsed-time centered">
+							<span class="">
+								<timer maxtimeunit="hour" start-time="model.Start">
+									<span class="hour">{{hhours}}</span>
+									<span class="gray">h</span>
+									<span class="minute">{{mminutes}}</span>
+									<span class="gray">m</span>
+									<span class="second1">{{sseconds}}</span>
+								</timer>
+							</span>
+						</div>
+					</div>
+
+				</div>
+				<div class="agenda">
+					<div class="component">
+						<div class="title">Agenda</div>
+						<ol>
+							<li ng-repeat="agendaItem in model.AgendaItems | transform:this" @*class="page-item page-{{agendaItem.Id}}"*@>
+								<a ng-click="functions.setPage(agendaItem.Key)" data-location="{{agendaItem.BackendName}}" href="#">{{agendaItem.Name}}</a><span title="Spend {{agendaItem.Duration}} minutes on your {{agendaItem.Name}}" data-over="{{agendaItem.Duration}}" class="page-time"></span>
+							</li>
+						</ol>
+						<div class="alignCenter">
+							<a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<div class="col-sm-9 col-md-10  full">
+
+				<div class="main-window-container">
+					<div ng-repeat="agendaItem in model.AgendaItems | transform:this">
+						<div ng-if="agendaItem.Key == model.CurrentPage">
+							<div id="main-window" ng-include="'./../Template/'+agendaItem.BackendName"></div>
+						</div>
+					</div>
+					
+					@*<div class="component"></div>*@
+				</div>
+			</div>
+		</div>
+
+		<div class="notes" style="display: none;">
+			<div class="overlay"></div>
+			<div class="row">
+				<div class="col-xs-9 noPadLeft">
+					<div class="container main">
+						<textarea cols="9" class="verticalOnly"></textarea>
+					</div>
+				</div>
+				<div class="col-xs-3 noPadRight">
+					<div class="side tabs">
+						<div class="tab add"><span class="pull-right glyphicon glyphicon-plus-sign"></span> Add Page</div>
+						<div ng-repeat="note in model.Notes  | transform:this" data-id="{{note.Id}}" class="tab">{{note.Title}}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

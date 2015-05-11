@@ -104,16 +104,22 @@ namespace RadialReview
 		public V Push<V>(String key, V value,LifeTime lifetime=LifeTime.Request,DateTime? expires=null)
 		{
 			key = _key(key);
-			var toCache = new CacheItem(){Object = value, Expires = expires};
+			return _Push(key, value, lifetime, expires);
+		}
+
+		private V _Push<V>(String key, V value, LifeTime lifetime = LifeTime.Request, DateTime? expires = null)
+		{
+			var toCache = new CacheItem() { Object = value, Expires = expires };
 
 			//Remove invalidation key
-			var wasRemoved = Context.Cache.Remove(_invalidateKey(_currentUser(), key)) !=null;
+			var wasRemoved = Context.Cache.Remove(_invalidateKey(_currentUser(), key)) != null;
 
-			switch(lifetime){
+			switch (lifetime)
+			{
 				case LifeTime.Session: Context.Session[key] = toCache; goto case LifeTime.Request;
 				case LifeTime.AppDomain: Context.Cache.Add(key, toCache, null, expires ?? DateTime.MaxValue, System.Web.Caching.Cache.NoSlidingExpiration, CacheItemPriority.Default, null); goto case LifeTime.Request;
 				case LifeTime.Request: Context.Items[key] = toCache; break;
-				default:throw new ArgumentOutOfRangeException("lifetime");
+				default: throw new ArgumentOutOfRangeException("lifetime");
 			}
 			return value;
 		}
@@ -135,7 +141,7 @@ namespace RadialReview
 		public void InvalidateForUser(string userId, String key)
 		{
 			var ikey = _invalidateKey(userId, key);
-			Push(ikey, true, LifeTime.AppDomain, null);
+			_Push(ikey, true, LifeTime.AppDomain, null);
 		}
 		public void InvalidateForUser(UserOrganizationModel user, String key)
 		{
@@ -143,6 +149,7 @@ namespace RadialReview
 				InvalidateForUser(user.User.Id, key);
 			}
 		}
+		
 
 	}
 }

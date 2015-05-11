@@ -185,7 +185,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
 									onSuccess(data);
 								}
 								//$("#modal").modal("hide");
-							}else {
+							} else {
 								/*if (data.Error) {
 									//console.log(data.Trace);
 									//console.log(data.Message);
@@ -298,6 +298,8 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 	} catch (e) {
 		Console.log(e);
 	}
+	if (!data)
+		return false;
 	return !data.Error;
 }
 
@@ -395,24 +397,27 @@ $.fn.flash = function (ms, backgroundColor, borderColor, color) {
 /////////////////////////////////////////////////////////////////
 //Ajax Interceptors
 
-var interceptAjax = function(event, request, settings) {
+var interceptAjax = function (event, request, settings) {
 	console.log(event);
 	console.log(settings);
 	try {
 		var result = $.parseJSON(request.responseText);
-		if (result.Refresh) {
-			if (!result.Silent) {
-				result.Refresh = false;
-				StoreJsonAlert(result);
+		try {
+			if (result.Refresh) {
+				if (!result.Silent) {
+					result.Refresh = false;
+					StoreJsonAlert(result);
+				}
+				location.reload();
+			} else {
+				if (!result.Silent) {
+					showJsonAlert(result, true, true);
+				}
 			}
-			location.reload();
-		} else {
-			if (!result.Silent) {
-				showJsonAlert(result, true, true);
-			}
+		} catch (e) {
+			console.log(e);
 		}
 	} catch (e) {
-		console.log(e);
 	}
 };
 

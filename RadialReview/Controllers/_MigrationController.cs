@@ -515,5 +515,27 @@ namespace RadialReview.Controllers
 			}
 			return c + " "+d+" " +e+" "+f;
 		}
+
+		[Access(AccessLevel.Radial)]
+		public string M5_5_2015()
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					//Fix TempUser userIds
+					var cr = s.QueryOver<OrganizationModel>().List();
+					foreach (var o in cr){
+						if (o.Settings.TimeZoneId == null){
+							o.Settings.TimeZoneId = "Central Standard Time";
+							f++;
+							s.Update(o);
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return ""+f;
+		}
 	}
 }

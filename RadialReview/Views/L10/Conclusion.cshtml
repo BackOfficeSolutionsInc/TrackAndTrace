@@ -39,7 +39,7 @@
 											@Model.Meeting._MeetingAttendees[i].User.GetName()
 										</td>
 										<td style="width: 1px;">
-											@Html.TextBox("rating_"+(Model.Meeting._MeetingAttendees[i].User.Id),Model.Meeting._MeetingAttendees[i].Rating,new {ariaValuemax="10",ariaValuemin="1",type="number",style="width:60px", @class="rt"})
+											@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "any", type = "number", style = "width:60px", @class = "rt" })
 										</td>
 										<td></td>
 									</tr>

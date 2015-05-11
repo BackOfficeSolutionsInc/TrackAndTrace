@@ -22,6 +22,7 @@ namespace RadialReview.Models.L10
 		public virtual IList<L10Recurrence_Attendee> _DefaultAttendees { get; set; }
 		public virtual IList<L10Recurrence_Measurable> _DefaultMeasurables { get; set; }
 		public virtual IList<L10Recurrence_Rocks> _DefaultRocks { get; set; }
+		//public virtual IList<L10AgendaItem> _AgendaItems { get; set; }
 
 		public virtual List<L10Note> _MeetingNotes { get; set; }
 		public virtual long? MeetingInProgress { get; set; }
@@ -44,6 +45,29 @@ namespace RadialReview.Models.L10
 			}
 		}
 
+		/*public class L10AgendaItem : ILongIdentifiable, IDeletable, IOneToMany
+		{
+			
+			public virtual long Id { get; set; }
+			public virtual DateTime CreateTime { get; set; }
+			public virtual DateTime? DeleteTime { get; set; }
+			public virtual AgendaItemType ItemType { get; set; }
+			public virtual L10Recurrence Recurrence { get; set; }
+			public virtual object UniqueKey(){
+				return Tuple.Create(ItemType, Recurrence.Id, DeleteTime);
+			}
+			public class L10AgendaItemMap : ClassMap<L10AgendaItem>
+			{
+				public L10AgendaItemMap()
+				{
+					Id(x => x.Id);
+					Map(x => x.CreateTime);
+					Map(x => x.DeleteTime);
+					References(x => x.Recurrence).Column("L10RecurrenceId");//.LazyLoad().ReadOnly().Not.Nullable().Cascade.SaveUpdate();
+					Map(x => x.ItemType).Column("RockId");//.LazyLoad().ReadOnly().Not.Nullable().Cascade.SaveUpdate();
+				}
+			}
+		}*/
 		public class L10Recurrence_Rocks : ILongIdentifiable, IDeletable, IOneToMany
 		{
 			public virtual long Id { get; set; }

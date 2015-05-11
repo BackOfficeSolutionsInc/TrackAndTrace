@@ -6,8 +6,10 @@ using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Periods;
+using RadialReview.Models.Angular.Base;
+
 namespace RadialReview.Models.Askables {
-	public class RockModel :Askable {
+	public class RockModel :Askable/*, IAngularizer<RockModel>*/ {
 
 		public virtual String Rock { get; set; }
 
@@ -61,6 +63,11 @@ namespace RadialReview.Models.Askables {
 				Map(x => x.ForUserId).Column("ForUserId");
 				References(x => x.AccountableUser).Column("ForUserId").LazyLoad().ReadOnly();
 			}
+		}
+		public virtual void Angularize(Angularizer<RockModel> angularizer)
+		{
+			angularizer.Add("Name",x => x.Rock);
+			angularizer.Add("Owner",x => x.AccountableUser);
 		}
 	}
 }

@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity;
 using RadialReview.Exceptions;
 using System.Web.Routing;
 using RadialReview.Models.Angular;
+using RadialReview.Models.Angular.Base;
 using RadialReview.Properties;
 using log4net;
 using System.Threading;
@@ -27,7 +28,6 @@ using RadialReview.Utilities;
 using System.Web.Security;
 using System.Security.Principal;
 using RadialReview.Utilities.Extensions;
-using Microsoft.VisualStudio.Profiler;
 using RadialReview.Utilities.Serializers;
 using System.Text;
 
@@ -221,7 +221,7 @@ namespace RadialReview.Controllers
 					var uo = found.First();
 					//_CurrentUserOrganizationId = uo.Id;
 					cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Session);
-					cache.Push(CacheKeys.USERORGANIZATION_ID, userOrganizationId.Value, LifeTime.Session);
+					cache.Push(CacheKeys.USERORGANIZATION_ID, uo.Id, LifeTime.Session);
 					return uo;
 				}
 				else
@@ -336,7 +336,7 @@ namespace RadialReview.Controllers
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
-					DataCollection.CommentMarkProfile(2, "Validation");
+					//DataCollection.CommentMarkProfile(2, "Validation");
 					//Secure hidden fields
 					ValidationCollection = filterContext.RequestContext.HttpContext.Request.Form;
 					foreach (var f in ValidationCollection.AllKeys)
@@ -346,7 +346,7 @@ namespace RadialReview.Controllers
 							ToValidate.Add(f.Substring(0, f.Length - SecuredValueFieldNameComputer.NameSuffix.Length));
 						}
 					}
-					DataCollection.CommentMarkProfile(2, "Attribute");
+					//DataCollection.CommentMarkProfile(2, "Attribute");
 
 
 					//Access Level Filtering
@@ -401,7 +401,7 @@ namespace RadialReview.Controllers
 
 					filterContext.Controller.ViewBag.HasBaseController = true;
 
-					DataCollection.CommentMarkProfile(2, "ViewBag");
+					//DataCollection.CommentMarkProfile(2, "ViewBag");
 					if (IsLoggedIn())
 					{
 						var userOrgsCount = GetUserOrganizationCounts(s,Request.Url.PathAndQuery);
@@ -410,7 +410,6 @@ namespace RadialReview.Controllers
 						try
 						{
 							oneUser = GetUser(s);
-							hints = oneUser.User.Hints;
 						}
 						catch (OrganizationIdException)
 						{
@@ -425,7 +424,7 @@ namespace RadialReview.Controllers
 						filterContext.Controller.ViewBag.ShowL10 = false;
 						filterContext.Controller.ViewBag.ShowReview = false;
 						filterContext.Controller.ViewBag.Organizations = userOrgsCount;
-						filterContext.Controller.ViewBag.Hints = hints;
+						filterContext.Controller.ViewBag.Hints = true;
 						filterContext.Controller.ViewBag.ManagingOrganization = false;
 						filterContext.Controller.ViewBag.Organization = null;
 
@@ -445,8 +444,7 @@ namespace RadialReview.Controllers
 									log.Error(e);
 								}
 							}
-
-							DataCollection.CommentMarkProfile(2, "ViewBagPop");
+							//DataCollection.CommentMarkProfile(2, "ViewBagPop");
 							filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._64);
 							filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
 							//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
@@ -459,6 +457,7 @@ namespace RadialReview.Controllers
 							filterContext.Controller.ViewBag.UserId = oneUser.Id;
 							filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
 							filterContext.Controller.ViewBag.Organization = oneUser.Organization;
+							filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
 
 						}
 						else
@@ -472,7 +471,7 @@ namespace RadialReview.Controllers
 					}
 				}
 			}
-			DataCollection.CommentMarkProfile(2, "End");
+			//DataCollection.CommentMarkProfile(2, "End");
 			base.OnActionExecuting(filterContext);
 		}
 
@@ -527,38 +526,38 @@ namespace RadialReview.Controllers
 
 		protected new JsonResult Json(object data)
 		{
-			if (data is IAngular)
+			if (data is IAngular && Request.Params["transform"]==null)
 				return base.Json(AngularSerializer.Serialize((IAngular)data));
 			return base.Json(data);
 		}
 
 		protected new JsonResult Json(object data, JsonRequestBehavior behavior)
 		{
-			if (data is IAngular)
+			if (data is IAngular && Request.Params["transform"] == null)
 				return base.Json(AngularSerializer.Serialize((IAngular)data), behavior);
 			return base.Json(data, behavior);
 		}
 		protected new JsonResult Json(object data, string contentType)
 		{
-			if (data is IAngular)
+			if (data is IAngular && Request.Params["transform"] == null)
 				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType);
 			return base.Json(data, contentType);
 		}
 		protected new  JsonResult Json(object data, string contentType, JsonRequestBehavior behavior)
 		{
-			if (data is IAngular)
+			if (data is IAngular && Request.Params["transform"] == null)
 				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, behavior);
 			return base.Json(data, contentType, behavior);
 		}
 		protected new JsonResult Json(object data, string contentType, Encoding encoding)
 		{
-			if (data is IAngular)
+			if (data is IAngular && Request.Params["transform"] == null)
 				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, encoding);
 			return base.Json(data, contentType, encoding);
 		}
 		protected new JsonResult Json(object data, string contentType, Encoding encoding, JsonRequestBehavior behavior)
 		{
-			if (data is IAngular)
+			if (data is IAngular && Request.Params["transform"] == null)
 				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, encoding, behavior);
 			return base.Json(data, contentType, encoding, behavior);
 		}

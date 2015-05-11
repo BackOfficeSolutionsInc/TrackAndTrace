@@ -40,9 +40,10 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateTodo(long meeting, long recurrence)
+		public ActionResult CreateTodo(long recurrence, long meeting = -1)
 		{
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+			if (meeting!=-1)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 			
 			var model = new TodoVM()
@@ -66,7 +67,9 @@ namespace RadialReview.Controllers
 		public JsonResult CreateTodo(TodoVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId);
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+			if (model.MeetingId!=-1)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+		
 
 			TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
 			{
@@ -222,7 +225,8 @@ namespace RadialReview.Controllers
 		public JsonResult CreateTodoFromIssue(TodoFromIssueVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId,x=>x.IssueId);
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+			if (model.MeetingId!=-1)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 			TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
 			{

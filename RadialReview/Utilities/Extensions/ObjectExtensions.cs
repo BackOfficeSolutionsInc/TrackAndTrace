@@ -13,10 +13,10 @@ namespace RadialReview
 {
     public static class ObjectExtensions
 	{
-		public static int? TryParse(this string str)
+		public static decimal? TryParseDecimal(this string str)
 		{
-			int o;
-			if (int.TryParse(str, out o))
+			decimal o;
+			if (decimal.TryParse(str, out o))
 				return o;
 			return null;
 		}

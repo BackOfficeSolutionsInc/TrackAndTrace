@@ -1,0 +1,24 @@
+﻿<div class="btn-group pull-right" style="padding: 5px 0px;">
+	<div class="btn btn-default btn-xs" ng-click="functions.showModal('Add notes page','/L10/CreateNote?recurrence='+meetingId,'/L10/CreateNote')">
+		<span class="icon fontastic-icon-align-left-2"></span> Add Note
+	</div>
+</div>
+
+<div class="scorecard meeting-page" style="clear: both;">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="component" ng-repeat="note in model.Notes | transform:this" style="padding:5px 10px;">
+				<div ng-hide="model.Selected==note.Key">
+					<div ng-click="model.Selected = note.Key" class="clickable" style="padding: 5px 0 ;"><b>{{note.Title}}</b></div>
+				</div>
+				<div ng-show="model.Selected==note.Key">
+					<div style="padding: 5px 0;" class="pull-left"><b>{{note.Title}}</b></div>
+					@*<div style="padding: 5px 5px;"class="pull-right"><span class="glyphicon glyphicon-trash"></span></div>*@
+					<div>
+						<textarea ng-model-options="{debounce: 200}" ng-change="functions.sendUpdate(note)" ng-model="note.Contents" class="fullWidth verticalOnly" style="min-height: 200px"></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

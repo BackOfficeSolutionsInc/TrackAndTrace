@@ -58,7 +58,7 @@ namespace RadialReview.Utilities
 			switch (GetEnv())
 			{
 				case Env.local_sqlite:	return false;
-				case Env.local_mysql:	return true;
+				case Env.local_mysql:	return false;
 				case Env.production:	return true;
 				default: throw new ArgumentOutOfRangeException();
 			}

@@ -7,6 +7,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.Angular;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Meeting;
+using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10VM;
@@ -70,15 +73,9 @@ namespace RadialReview.Controllers
 			model.Name = meeting.L10Recurrence.Name;
 			model.Start = meeting.StartTime.Value;
 
-			model.Attendees= meeting._MeetingAttendees.Select(x=>new AngularUser(x.User.Id){Name = x.User.GetName()}).ToList();
-			var aRocks = rocks.Select(x => new AngularRock(x.Id){
-				Name = x.ForRock.Rock,
-				Owner = new AngularUser(x.ForRock.AccountableUser.Id){
-					Name = x.ForRock.AccountableUser.GetName()
-				}
-			}).ToList();
-
-		    var rockPage = new AngularAgendaItem_Rocks(1);
+			model.Attendees= meeting._MeetingAttendees.Select(x=>new AngularUser(x.User)).ToList();
+			var aRocks = rocks.Select(x => new AngularMeetingRock(x)).ToList();
+		    var rockPage = new AngularAgendaItem_Rocks(1,"Rock Review");
 		    rockPage.Rocks = aRocks;
 
 			model.AgendaItems = rockPage.AsList().Cast<AngularAgendaItem>().ToList();
@@ -124,20 +121,13 @@ namespace RadialReview.Controllers
 			var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
 			var rocks = L10Accessor.GetRocksForRecurrence(GetUser(), recurrenceId, meeting.Id);
 			
-			var aRocks = rocks.Select(x => new AngularRock(x.Id)
-			{
-				Name = x.ForRock.Rock,
-				Owner = new AngularUser(x.ForRock.AccountableUser.Id)
-				{
-					Name = x.ForRock.AccountableUser.GetName()
-				}
-			}).ToList();
+			var aRocks = rocks.Select(x => new AngularMeetingRock(x)).ToList();
 			
 			
 			var rock =aRocks.First();
 
-			rock.Name = "What?!";
-			rock.Owner = null;
+			rock.Rock.Name = "What?!";
+			rock.Rock.Owner= null;
 
 			var updates = new AngularUpdate();
 

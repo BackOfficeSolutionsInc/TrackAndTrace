@@ -6,6 +6,9 @@ using Microsoft.AspNet.SignalR;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Meeting;
+using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
@@ -32,7 +35,8 @@ namespace RadialReview.Accessors
 					if (todo.Id != 0)
 						throw new PermissionsException("Id was not zero");
 
-
+					if (todo.CreatedDuringMeetingId == -1)
+						todo.CreatedDuringMeetingId = null;
 					perms.ConfirmAndFix(todo,
 						x => x.CreatedDuringMeetingId,
 						x => x.CreatedDuringMeeting,
@@ -51,7 +55,7 @@ namespace RadialReview.Accessors
 					perms.ConfirmAndFix(todo,
 						x => x.CreatedById,
 						x => x.CreatedBy,
-						x => y => x.ManagesUserOrganization(y, false));
+						x => y => x.ViewUserOrganization(y, false));
 
 					perms.ConfirmAndFix(todo,
 						x => x.AccountableUserId,
@@ -68,6 +72,10 @@ namespace RadialReview.Accessors
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 					meetingHub.appendTodo(".todo-list", TodoData.FromTodo(todo));
+
+					var updates = new AngularRecurrence(recurrenceId);
+					updates.Todos=new List<AngularTodo>(){new AngularTodo(todo)};
+					meetingHub.update( updates );
 				}
 			}
 		}

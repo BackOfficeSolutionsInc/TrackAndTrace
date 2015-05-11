@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Amazon.ElasticTranscoder.Model;
-using ImageResizer.Configuration.Issues;
 using Microsoft.AspNet.SignalR;
 using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Angular.Issues;
+using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
@@ -31,6 +30,8 @@ namespace RadialReview.Accessors
 					if (issue.Id!=0)
 						throw new PermissionsException("Id was not zero");
 
+					if (issue.CreatedDuringMeetingId == -1)
+						issue.CreatedDuringMeetingId = null;
 
 					perms.ConfirmAndFix(issue,
 						x => x.CreatedDuringMeetingId,
@@ -45,7 +46,7 @@ namespace RadialReview.Accessors
 					perms.ConfirmAndFix(issue,
 						x => x.CreatedById,
 						x => x.CreatedBy,
-						x => y=>x.ManagesUserOrganization(y,false) );
+						x => y=>x.ViewUserOrganization(y,false) );
 					/*if (issue.CreatedDuringMeetingId != null)
 						issue.CreatedDuringMeeting = s.Get<L10Meeting>(issue.CreatedDuringMeetingId);
 					issue.MeetingRecurrence = s.Get<L10Recurrence>(issue.MeetingRecurrenceId);
@@ -67,6 +68,10 @@ namespace RadialReview.Accessors
 					var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 
 					meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur));
+					
+					var updates = new AngularRecurrence(recurrenceId);
+					updates.Issues = new List<AngularIssue>() { new AngularIssue(recur) };
+					meetingHub.update(updates);
 				}
 			}
 		}

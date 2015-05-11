@@ -18,7 +18,7 @@ using System.Threading;
 using System.Web;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities.NHibernate;
-using Microsoft.VisualStudio.Profiler;
+//using Microsoft.VisualStudio.Profiler;
 
 namespace RadialReview.Utilities
 {
@@ -124,7 +124,7 @@ namespace RadialReview.Utilities
                         default: throw new Exception("No database type");
                     }
                 }
-	            DataCollection.MarkProfile(1);
+	           // DataCollection.MarkProfile(1);
                 return factory;
             }
         }

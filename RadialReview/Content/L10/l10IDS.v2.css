@@ -136,8 +136,9 @@ line-height: 18px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	width: calc(100% - 48px);
+	width: calc(100% - 70px);
 	font-size: 18px;
+	min-height: 19px;
 }
 
 .issues-list > .issue-row > .message {
@@ -360,4 +361,24 @@ body.dragging, body.dragging * {
 
 .issueDetails {
 	position: relative;
+}
+
+
+/*.issues-list {
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}*/
+
+.issues-list {
+	
+	-webkit-touch-callout: text;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select:text ;
 }

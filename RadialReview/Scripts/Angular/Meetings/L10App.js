@@ -1,1 +1,1 @@
-﻿var l10App = angular.module('L10App', ['angular.filter']);
+﻿var l10App= angular.module('L10App', ['helpers','rockstate','buttonbar']);

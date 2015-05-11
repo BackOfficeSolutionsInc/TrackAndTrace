@@ -11,7 +11,8 @@
 }
 @using (Html.BeginForm())
 {
-	for(var d=0;d<Model.ScoreModels.Count;d++){
+	for (var d = 0; d < Model.ScoreModels.Count; d++)
+	{
 		var due = Model.ScoreModels[d];
 		<hgroup>
 			<h2>Edit Scorecard</h2>
@@ -22,24 +23,26 @@
 				<div class="col-md-6">
 					@for (var i = 0; i < due.Count; i++)
 					{
-					var s = due[i];
-					<div class="row">
-						<div class="col-md-6">
-							<div class="title">@s.Measurable.Title</div>
-							<div class="goal">
-								(Goal: @s.Measurable.Goal.ToString("0.#####"))
+						var s = due[i];
+						<div class="row">
+							<div class="col-md-6">
+								<div class="title">@s.Measurable.Title</div>
+								<div class="goal">
+									(Goal: @s.Measurable.Goal.ToString("0.#####"))
+								</div>
+							</div>
+							<div class="col-md-6">
+								<input type="number" name="@Html.NameFor(x => Model.ScoreModels[d][i].Measured)" step="any" class="form-control" value="@Model.ScoreModels[d][i].Measured.NotNull(x => x.Value.ToString("0.#####"))" />
+								@Html.HiddenFor(x => Model.ScoreModels[d][i].Id)
 							</div>
 						</div>
-						<div class="col-md-6">
-							<input type="number" name="@Html.NameFor(x => Model.ScoreModels[d][i].Measured)" class="form-control" value="@Model.ScoreModels[d][i].Measured.NotNull(x => x.Value.ToString("0.#####"))" />
-							@Html.HiddenFor(x => Model.ScoreModels[d][i].Id)
-						</div>
-					</div>
 					}
 				</div>
 			</div>
 		</div>
 	}
-
-	<input type="submit" class="btn btn-primary pull-right" name="Submit" />
+	<br />
+	<div class="alignCenter">
+		<input type="submit" class="btn btn-primary" name="Submit" />
+	</div>
 }

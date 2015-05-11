@@ -104,9 +104,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Profiler">
-      <HintPath>..\..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Team Tools\Performance Tools\Microsoft.VisualStudio.Profiler.dll</HintPath>
-    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -122,12 +119,6 @@
     </Reference>
     <Reference Include="OpenPop">
       <HintPath>..\packages\OpenPop.NET.2.0.4.369\lib\net20\OpenPop.dll</HintPath>
-    </Reference>
-    <Reference Include="Pechkin">
-      <HintPath>..\packages\Pechkin.0.5.8.1\lib\net40\Pechkin.dll</HintPath>
-    </Reference>
-    <Reference Include="Pechkin.Synchronized">
-      <HintPath>..\packages\Pechkin.Synchronized.0.5.8.1\lib\net40\Pechkin.Synchronized.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp">
       <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
@@ -316,6 +307,7 @@
     <Compile Include="Controllers\L10SubPageController.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
     <Compile Include="Controllers\MeetingController.cs" />
+    <Compile Include="Controllers\MeetingDataController.cs" />
     <Compile Include="Controllers\OrganizationQuestionController.cs" />
     <Compile Include="Controllers\PeriodController.cs" />
     <Compile Include="Controllers\PermissionsController.cs" />
@@ -375,15 +367,26 @@
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
     <Compile Include="Hubs\MeetingHub.cs" />
-    <Compile Include="Models\Angular\Angular.cs" />
-    <Compile Include="Models\Angular\AngularAgendaItem.cs" />
-    <Compile Include="Models\Angular\AngularList.cs" />
-    <Compile Include="Models\Angular\AngularUpdate.cs" />
-    <Compile Include="Models\Angular\AngularMeeting.cs" />
-    <Compile Include="Models\Angular\AngularPointer.cs" />
-    <Compile Include="Models\Angular\AngularRock.cs" />
-    <Compile Include="Models\Angular\AngularUser.cs" />
-    <Compile Include="Models\Angular\IAngular.cs" />
+    <Compile Include="Models\Angular\Base\Angularized.cs" />
+    <Compile Include="Models\Angular\Base\BaseAngular.cs" />
+    <Compile Include="Models\Angular\Base\IAngularize.cs" />
+    <Compile Include="Models\Angular\Issues\AngularIssue.cs" />
+    <Compile Include="Models\Angular\Meeting\AngularAgendaItems.cs" />
+    <Compile Include="Models\Angular\Base\AngularUpdate.cs" />
+    <Compile Include="Models\Angular\Meeting\AngularMeetingMeasurable.cs" />
+    <Compile Include="Models\Angular\Meeting\AngularMeeting.cs" />
+    <Compile Include="Models\Angular\Base\AngularPointer.cs" />
+    <Compile Include="Models\Angular\Meeting\AngularMeetingNotes.cs" />
+    <Compile Include="Models\Angular\Meeting\AngularMeetingRock.cs" />
+    <Compile Include="Models\Angular\Meeting\AngularRecurrence.cs" />
+    <Compile Include="Models\Angular\Meeting\AngularWeek.cs" />
+    <Compile Include="Models\Angular\Rocks\AngularRock.cs" />
+    <Compile Include="Models\Angular\Scorecard\AngularMeasurable.cs" />
+    <Compile Include="Models\Angular\Scorecard\AngularScore.cs" />
+    <Compile Include="Models\Angular\Scorecard\AngularScorecard.cs" />
+    <Compile Include="Models\Angular\Todos\AngularTodo.cs" />
+    <Compile Include="Models\Angular\Users\AngularUser.cs" />
+    <Compile Include="Models\Angular\Base\IAngular.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Application\MailModel.cs" />
     <Compile Include="Models\Askables\AboutCompanyAskable.cs" />
@@ -412,6 +415,7 @@
     <Compile Include="Models\Enums\FiveState.cs" />
     <Compile Include="Models\Enums\TaskType.cs" />
     <Compile Include="Models\Enums\Tristate.cs" />
+    <Compile Include="Models\Enums\UnitType.cs" />
     <Compile Include="Models\ExtraTab.cs" />
     <Compile Include="Models\Interfaces\ICompletable.cs" />
     <Compile Include="Models\Enums\AboutType.cs" />
@@ -431,6 +435,7 @@
     <Compile Include="Models\Issues\RockIssueVM.cs" />
     <Compile Include="Models\Issues\ScoreCardIssueVM.cs" />
     <Compile Include="Models\L10VM\MeetingVM.cs" />
+    <Compile Include="Models\L10\AgendaItemType.cs" />
     <Compile Include="Models\L10\L10Note.cs" />
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
     <Compile Include="Models\Todo\ExternalTodoCreds.cs" />
@@ -700,6 +705,7 @@
     <Compile Include="Views\Log\LogModel.cs" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />
+    <Content Include="Content\components\daterangepicker-bs3.css" />
     <Content Include="Content\components\fivestate.css" />
     <Content Include="Content\L10\L10Notes.css" />
     <Content Include="Content\ReportBuilder\ClientDetails.css" />
@@ -712,6 +718,18 @@
     <Content Include="mingwm10.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\Angular\Helpers\ClockController.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\ImageTemplates.js" />
+    <Content Include="Scripts\Angular\Helpers\angular-timer.min.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\ModalTemplates.js" />
+    <Content Include="Scripts\Angular\Helpers\Libraries\angular-daterangepicker.js" />
+    <Content Include="Scripts\Angular\Helpers\transform.js" />
+    <Content Include="Scripts\Angular\helpers.js" />
+    <Content Include="Scripts\Angular\Meetings\ButtonBar.js" />
+    <Content Include="Scripts\Angular\Meetings\L10App.js" />
+    <Content Include="Scripts\Angular\Meetings\L10Controller.js" />
+    <Content Include="Scripts\Angular\Helpers\signalR.js" />
+    <Content Include="Scripts\Angular\Meetings\RockState.js" />
     <Content Include="Scripts\components\fivestate.js" />
     <Content Include="Scripts\home\colResizable-1.5.min.js" />
     <Content Include="Scripts\home\resizeable-tables.js" />
@@ -1019,6 +1037,18 @@
     <Content Include="Views\L10\partial\RockGroup.cshtml" />
     <Content Include="Views\L10\RocksNew.cshtml" />
     <Content Include="Views\Meeting\Attend.cshtml" />
+    <Content Include="Views\Meeting\Templates\Rocks.cshtml" />
+    <Content Include="Views\Meeting\Templates\Scorecard.cshtml" />
+    <Content Include="Views\Meeting\Templates\Headlines.cshtml" />
+    <Content Include="Views\Meeting\Templates\Segue.cshtml" />
+    <Content Include="Views\Meeting\Templates\Conclusion.cshtml" />
+    <Content Include="Views\Meeting\Templates\IDS.cshtml" />
+    <Content Include="Views\Meeting\Templates\Todos.cshtml" />
+    <Content Include="Views\Meeting\Templates\partials\ScorecardRow.cshtml" />
+    <Content Include="Views\L10\Details\todo.cshtml" />
+    <Content Include="Views\L10\Details\issues.cshtml" />
+    <Content Include="Views\L10\Details\scorecard.cshtml" />
+    <Content Include="Views\L10\Details\notes.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1274,13 +1304,14 @@
     <Folder Include="Content\NewFolder1\" />
     <Folder Include="External\" />
     <Folder Include="Models\Rocks\" />
+    <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\Img\" />
     <Folder Include="Views\L10Data\" />
     <Folder Include="Views\L10Details\" />
-    <Folder Include="Views\L10\Details\" />
+    <Folder Include="Views\MeetingData\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
     <Folder Include="Views\Scheduler\" />

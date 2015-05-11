@@ -22,12 +22,11 @@
 				<thead>
 					<tr>
 						<th style="width:30px;padding:0"></th>
-						<th class="startHidden" style="padding:0">@*Meeting:*@</th>
+						<th class="startHidden" style="padding:0;width:40%;">@*Meeting:*@</th>
 						@*<th style="width: 100px; text-align: center">@RadialReview.Properties.DisplayNameStrings.due</th>
 						<th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>*@
-						<th class="alignRight" style="width:50%;padding:0">@*Attendees*@</th>
-						<th style="width:10px;padding:0"></th>
-						<th style="width:10px;padding:0"></th>
+						<th class="alignRight" style="width:40%;padding:0">@*Attendees*@</th>
+						<th style="width:110px;min-width:110px;padding:0"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -55,10 +54,11 @@
 								<a href="/L10/Edit/@meeting.Recurrence.Id"><span class="btn btn-default glyphicon glyphicon-cog" title="Archives"></span></a>
 							</td>*@
 							<td>
-								<a href="/L10/Edit/@meeting.Recurrence.Id" class="btn btn-default"><span style="top: 2px;" class="glyphicon glyphicon-cog" title="Edit meeting"></span></a>
-							</td>
-							<td>
-								<a href="/L10/External/@meeting.Recurrence.Id" class="btn btn-default"><span style="top: 2px;"  class="icon fontastic-icon-share-1" title="Link to external services"></span></a>
+								<div class="btn-group">
+									<a href="/L10/Details/@meeting.Recurrence.Id" class="btn btn-default btn-sm"><span style="top: 2px;"  class="icon fontastic-icon-archive-1" title="View meeting archive"></span></a>
+									<a href="/L10/External/@meeting.Recurrence.Id" class="btn btn-default btn-sm"><span style="top: 2px;"  class="icon fontastic-icon-share-1" title="Link to external services"></span></a>
+									<a href="/L10/Edit/@meeting.Recurrence.Id" class="btn btn-default btn-sm"><span style="top: 2px;" class="glyphicon glyphicon-cog" title="Edit meeting"></span></a>
+								</div>
 							</td>
 						</tr>
 					}

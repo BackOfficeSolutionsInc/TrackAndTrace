@@ -115,8 +115,7 @@ namespace RadialReview.Accessors
                     }
 
                     newUserId = newUser.Id;
-
-	                newUser.UpdateCache(db);
+					newUser.UpdateCache(db);
                     tx.Commit();
                 }
 
@@ -216,7 +215,9 @@ namespace RadialReview.Accessors
                 {
                     var result = CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
 
-					s.Get<UserOrganizationModel>(tempUser.UserOrganizationId).UpdateCache(s);
+	                var user = s.Get<UserOrganizationModel>(tempUser.UserOrganizationId);
+					if (user!=null)
+						user.UpdateCache(s);
 
                     tx.Commit();
                     s.Flush();

@@ -15,6 +15,9 @@
 		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>
 		<span class="inner icon fontastic-icon-primitive-square"></span>
 	</div>
+	<div class="btn-group pull-right">
+		<span class="glyphicon glyphicon-pushpin issuesModal issuesButton" data-method="issuefromtodo" data-todo="@Model.Id" data-recurrence="@Model.ForRecurrenceId" data-meeting="@ViewData["MeetingId"]"></span>
+	</div>
 	<span class="profile-image">@Html.Partial("_ProfilePicture", Model.AccountableUser)</span>
 	@*<div class="btn-group pull-right">
 			<span class='issuesModal issuesButton icon fontastic-icon-forward-1'
@@ -24,4 +27,5 @@
 		</div>*@
 	<div class="message" data-todo="@Model.Id">@Model.Message</div>
 	<div class="todo-details-container"><div class="todo-details" data-todo="@Model.Id">@Model.Details</div></div>
+	<div class="due-date @(Model.DueDate.Date>DateTime.UtcNow?"red":"")">@Model.DueDate.Date.ToShortDateString()</div>
 </li>

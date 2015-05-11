@@ -29,11 +29,13 @@
 		var start = Model.AllMeetings
 			.Select(x => x.StartTime)
 			.Where(x => x.HasValue)
-			.Select(x => new {v=x.Value.Minute/60.0 + x.Value.Hour,se="start"});
+			.Select(x => Html.Organization().ConvertFromUTC(x.Value))
+			.Select(x => new {v=x.Minute/60.0 + x.Hour,se="start"});
 		var end = Model.AllMeetings
 			.Select(x => x.CompleteTime)
 			.Where(x => x.HasValue)
-			.Select(x => new { v = x.Value.Minute / 60.0 + x.Value.Hour, se = "end" });
+			.Select(x => Html.Organization().ConvertFromUTC(x.Value))
+			.Select(x => new { v = x.Minute / 60.0 + x.Hour, se = "end" });
 		var startEnd = start.ToList();
 		startEnd.AddRange(end);
 		var sa = startEnd.Select(x=>x.v).Median();

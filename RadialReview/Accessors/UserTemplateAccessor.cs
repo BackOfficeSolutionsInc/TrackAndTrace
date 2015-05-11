@@ -311,8 +311,10 @@ namespace RadialReview.Accessors
 						{
 							var u = s.Get<UserOrganizationModel>(r.ForUserId);
 							//u.NumRocks -= 1;
-							s.Update(u);
-							u.UpdateCache(s);
+							if (u != null){
+								s.Update(u);
+								u.UpdateCache(s);
+							}
 						}
 						s.Update(r);
 					}
@@ -350,8 +352,10 @@ namespace RadialReview.Accessors
 						if (deleteTime.HasValue){
 							var u =s.Get<UserOrganizationModel>(r.ForUserId);
 							//u.NumRoles -= 1;
-							s.Update(u);
-							u.UpdateCache(s);
+							if (u != null){
+								s.Update(u);
+								u.UpdateCache(s);
+							}
 						}
 						s.Update(r);
 					}
@@ -395,8 +399,11 @@ namespace RadialReview.Accessors
 						{
 							var u = s.Get<UserOrganizationModel>(m.AccountableUserId);
 							//u.NumMeasurables -= 1;
-							s.Update(u);
-							u.UpdateCache(s);
+
+							if (u != null){
+								s.Update(u);
+								u.UpdateCache(s);
+							}
 						}
 						s.Update(m);
 					}

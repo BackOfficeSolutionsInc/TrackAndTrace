@@ -94,8 +94,10 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	width: calc(100% - 68px);
+	width: 70%;
+	width: calc(100% - 155px);
 	font-size: 18px;
+	min-height: 19px;
 }
 
 .todo-list > .todo-row > .message {
@@ -110,7 +112,8 @@
 }
 
 .todo-list .todo-row .btn-group .issuesButton {
-	color: gray;
+	color: #808080;
+	padding: 7px 2px 7px 5px;
 }
 	
 .todo-list  .placeholder{
@@ -128,6 +131,18 @@
 
 .todo-list .todo-details-container {
 	display: none;
+}
+
+.todo-list .due-date{
+  float: right;
+  width: 65px;
+  color: #808080;
+  font-size: 12px;
+  display: inline;
+  position: relative;
+  right: 0px;
+  text-align: right;
+  top: 8px;
 }
 
 

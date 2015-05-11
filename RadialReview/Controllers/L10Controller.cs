@@ -10,6 +10,7 @@ using RadialReview.Models.L10;
 using RadialReview.Accessors;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scorecard;
+using RadialReview.Models.Json;
 
 namespace RadialReview.Controllers
 {
@@ -70,7 +71,21 @@ namespace RadialReview.Controllers
 			return View("Edit", model);
 		}
 
-		[Access(AccessLevel.UserOrganization)]
+	    [Access(AccessLevel.UserOrganization)]
+	    public string Delete()
+	    {
+		    return "Are you sure you want to delete this meeting?";
+	    }
+
+		[HttpPost]
+	    [Access(AccessLevel.UserOrganization)]
+	    public JsonResult Delete(long id)
+		{
+			L10Accessor.DeleteL10(GetUser(),id);
+		    return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+	    }
+
+	    [Access(AccessLevel.UserOrganization)]
 		public ActionResult Edit(long id,string @return=null)
 		{
 			var recurrenceId = id;

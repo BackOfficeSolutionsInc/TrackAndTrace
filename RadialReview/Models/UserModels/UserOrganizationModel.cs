@@ -3,6 +3,7 @@ using FluentNHibernate.Mapping;
 using NHibernate;
 using NHibernate.Linq;
 using RadialReview.Accessors;
+using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
@@ -15,7 +16,7 @@ using System.Linq;
 
 namespace RadialReview.Models
 {
-    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable
+    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable/*, IAngularizer<UserOrganizationModel>*/
     {
         public static long ADMIN_ID = -7231398885982031L;
 
@@ -125,7 +126,21 @@ namespace RadialReview.Models
 			Cache=new UserLookup();
         }
 
-        public override string ToString()
+	   /* public virtual void Angularize(Angularizer<UserOrganizationModel> angularizer)
+		{
+			angularizer.Add("Name", GetName());
+			angularizer.Add("ImageUrl", this.ImageUrl(true));
+			var inits = new List<string>();
+			if (GetFirstName() != null && GetFirstName().Length > 0)
+				inits.Add(GetFirstName().Substring(0, 1));
+			if (GetLastName() != null && GetLastName().Length > 0)
+				inits.Add(GetLastName().Substring(0, 1));
+			var initials = string.Join(" ", inits).ToUpperInvariant();
+
+			angularizer.Add("Initials", initials);
+	    }*/
+
+	    public override string ToString()
         {
             return Organization.NotNull(x => x.Name) + " - " + this.GetNameAndTitle();
         }

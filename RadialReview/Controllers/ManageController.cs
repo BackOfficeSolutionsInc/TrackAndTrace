@@ -22,9 +22,6 @@ namespace RadialReview.Controllers
 		public ActionResult Index()
 		{
 			//Main page
-
-			;
-
 			var page = (string)new Cache().Get(CacheKeys.MANAGE_PAGE) ?? "Members";
 			return RedirectToAction(page);
 			/*
@@ -178,7 +175,8 @@ namespace RadialReview.Controllers
 				ManagersCanEditSelf = user.Organization.Settings.ManagersCanEditSelf,
 				EmployeesCanEditSelf = user.Organization.Settings.EmployeesCanEditSelf,
 				CompanyQuestions = companyQuestions,
-				RockName = user.Organization.Settings.RockName
+				RockName = user.Organization.Settings.RockName,
+				TimeZone = user.Organization.Settings.TimeZoneId,
 			};
 
 			return View(model);
@@ -199,7 +197,8 @@ namespace RadialReview.Controllers
 				model.ManagersCanRemoveUsers,
 				model.ManagersCanEditSelf,
 				model.EmployeesCanEditSelf,
-				model.RockName);
+				model.RockName,
+				model.TimeZone);
 			ViewBag.Success = "Successfully Saved.";
 
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)

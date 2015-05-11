@@ -4,7 +4,7 @@
 	@using (Html.BeginScripts())
 	{
 		<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
-		<script src="~/signalr/hubs"></script>
+		@*<script src="~/signalr/hubs"></script>*@
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
 
@@ -20,7 +20,7 @@
 							out.push(populate(item[k], scope));
 						}
 						return out;
-					}else if (item && item.Pointer) {
+					}else if (item && item._Pointer) {
 						var out = scope.Lookup[item.Key];
 						for (var k in out) {
 							out[k] = populate(out[k], scope);
@@ -138,7 +138,7 @@
 	@Styles.Render("~/styles/L10")
 </head>
 <body>
-	<div ng-controller="L10Controller">
+	<div ng-controller="L10Controller" ng-model="model">
 		<div ng-repeat="agendaItem in AgendaItems | transform:this">
 			<div ng-controller="RocksListController">
 				<div class="rocks meeting-page">
@@ -151,7 +151,7 @@
 								<h2>@Html.Organization().Settings.RockName Review <small></small></h2>
 							</hgroup>
 							<div class="rocks-container">
-								<div class="component" ng-repeat="(key,value) in agendaItem.Rocks | groupBy: 'Owner.Name'">
+								<div class="component" ng-repeat="(key,value) in agendaItem.Rocks | groupBy: 'Rock.Owner.Name'">
 									<span class="owner"><b>{{key}}</b></span>
 									<div class="table-responsive">
 										<table style="width: 100%">
@@ -175,7 +175,7 @@
 													</span>
 												</td>
 												<td class="">[*********]</td>
-												<td class="message">{{rock.Name}}</td>
+												<td class="message">{{rock.Rock.Name}}</td>
 											</tr>
 										</table>
 									</div>

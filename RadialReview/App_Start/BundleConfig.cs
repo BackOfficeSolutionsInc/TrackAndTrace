@@ -80,10 +80,7 @@ namespace RadialReview
 					"~/Scripts/d3/Scatter.v2.js",
 					"~/Scripts/review/translateSlider.js"
 				));
-
-
-
-
+			
 			bundles.Add(new StyleBundle("~/styles/L10").Include(
 					"~/Content/L10/L10.css",
 					"~/Content/L10/L10Todo.css",
@@ -105,6 +102,33 @@ namespace RadialReview
 					"~/Scripts/L10/sortable.js",
 					"~/Scripts/L10/rtL10.js"//Ensure last
 				));
+
+
+			var angularHelpers_Scripts = new[]{
+				"~/Scripts/Angular/Helpers/Libraries/angular-daterangepicker.js", 
+				"~/Scripts/Angular/Helpers/transform.js", 
+				"~/Scripts/Angular/Helpers/signalR.js",
+				"~/Scripts/Angular/Helpers/Directives/ImageTemplates.js",
+				"~/Scripts/Angular/Helpers/angular-timer.min.js",
+				"~/Scripts/Angular/helpers.js", 
+			};
+			var angularHelpers_Styles = new[]{
+				"~/Content/components/daterangepicker-bs3.css"
+			};
+
+
+			
+			bundles.Add(new ScriptBundle("~/bundles/meeting")
+				.Include(angularHelpers_Scripts)
+				.Include(
+					"~/Scripts/Angular/Meetings/RockState.js",
+					"~/Scripts/Angular/Meetings/ButtonBar.js",
+					"~/Scripts/Angular/Meetings/L10App.js",
+					"~/Scripts/Angular/Meetings/L10Controller.js"
+				));
+			bundles.Add(new StyleBundle("~/styles/meeting")
+				.Include(angularHelpers_Styles));
+
 
 			bundles.Add(new ScriptBundle("~/bundles/main").Include(
 					  "~/Scripts/Main/radial.js",

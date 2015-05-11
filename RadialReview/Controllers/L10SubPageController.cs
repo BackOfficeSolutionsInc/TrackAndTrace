@@ -139,7 +139,7 @@ namespace RadialReview.Controllers
 		private PartialViewResult ScoreCard(L10MeetingVM model)
 		{
 			model.Scores = L10Accessor.GetScoresForRecurrence(GetUser(), model.Recurrence.Id);
-			var sow = model.Recurrence.Organization.Settings.WeekStart;
+			var sow = GetUser().Organization.Settings.WeekStart;
 			model.Weeks = TimingUtility.GetWeeks(sow, DateTime.UtcNow, model.MeetingStart, model.Scores);
 			return PartialView("Scorecard", model);
 			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
@@ -221,7 +221,7 @@ namespace RadialReview.Controllers
 		{
 			ValidateValues(model, x => x.Recurrence.Id);
 
-			var ratingValues = new List<Tuple<long, int?>>();
+			var ratingValues = new List<Tuple<long, decimal?>>();
 
 			if (ModelState.IsValid)
 			{
@@ -231,7 +231,7 @@ namespace RadialReview.Controllers
 				var ratingKeys = form.AllKeys.Where(x => x.StartsWith("rating_"));
 				var ratingIds = ratingKeys.Select(x => long.Parse(x.Replace("rating_", ""))).ToList();
 
-				ratingValues = ratingIds.Select(x => Tuple.Create(x, form["rating_" + x].TryParse())).ToList();
+				ratingValues = ratingIds.Select(x => Tuple.Create(x, form["rating_" + x].TryParseDecimal())).ToList();
 				allMembers.Select(x => x.Id).EnsureContainsAll(ratingIds);
 
 				foreach (var r in ratingValues)
@@ -302,10 +302,10 @@ namespace RadialReview.Controllers
 						StartTime = latest.StartTime.Value.Date+TimeSpan.FromHours(9) + TimeSpan.FromMinutes(Normal.Sample(2.5, 4)) - TimeSpan.FromDays(x * 7),
 						CompleteTime = latest.StartTime.Value.Date + TimeSpan.FromHours(9) + TimeSpan.FromMinutes(Normal.Sample(3, 4) + 90) - TimeSpan.FromDays(x * 7),
 						_MeetingAttendees = Enumerable.Range(1,count).Select(y=>new L10Meeting.L10Meeting_Attendee(){
-							Rating = (int)Math2.Coerce(
+							Rating = (decimal)Math2.Coerce(
 							(double)Math.Round(
-								-1.0*maxAvg/(past*past*1.7777)*x*x+
-								maxAvg+Normal.Sample(0,(1-.35)/(past-1)*x+.35)
+								-1.0m*maxAvg/(past*past*1.7777m)*x*x+
+								maxAvg+(decimal)Normal.Sample(0,(1-.35)/(past-1)*x+.35)
 							),1,10)
 						}).ToList()
 
