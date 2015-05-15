@@ -228,10 +228,12 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 		hub.client.incomingCall = function (callingUser) {
 
 			console.log('incoming call from: ' + JSON.stringify(callingUser));
-			if (_mediaStream) {
+			hub.server.answerCall(true, callingUser);
+			viewModel.Mode = ('incall');
+			/*if (_mediaStream) { 
 				connectionManager.initiateOffer(callingUser, _mediaStream);
 				viewModel.Mode = ('incall');
-			}
+			}*/
 			// Ask if we want to talk
 			/*var e = window.confirm(callingUser.Username + ' is calling.  Do you want to chat?');
 			if (e) {
@@ -251,10 +253,13 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			console.log('call accepted from: ' + JSON.stringify(acceptingUser) + '.  Initiating WebRTC call and offering my stream up...');
 
 			// Callee accepted our call, let's send them an offer with our video stream
-			connectionManager.initiateOffer(acceptingUser.ConnectionId, _mediaStream);
-
+			if (_mediaStream) {
+				connectionManager.initiateOffer(acceptingUser.ConnectionId, _mediaStream);
+				viewModel.Mode = ('incall');
+			} else {
+				console.log("Error: _mediaStream empty");
+			}
 			// Set UI into call mode
-			viewModel.Mode = ('incall');
 		};
 
 		// Hub Callback: Call Declined
@@ -263,7 +268,6 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 
 			// Let the user know that the callee declined to talk
 			console.log(reason);
-
 			// Back to an idle UI
 			viewModel.Mode = ('idle');
 		};

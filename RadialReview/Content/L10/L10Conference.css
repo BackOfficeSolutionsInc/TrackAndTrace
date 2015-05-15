@@ -77,6 +77,17 @@
 	transition: opacity .15s ease;
 }
 
+/*@media (min-width:300px) {
+	.uncollapser {
+		position: fixed;
+		right: 0px;
+		width: 100%;
+		bottom: 0px;
+		height: 30px;
+	}                
+}*/
+
+
 .uncollapser {
 	position: fixed;
 	right: 0px;

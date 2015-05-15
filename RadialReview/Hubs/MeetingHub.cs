@@ -94,7 +94,7 @@ namespace RadialReview.Hubs
 					s.Save(newAVU);
 					tx.Commit();
 					s.Flush();
-					Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId)).incomingCall(Context.ConnectionId);
+					Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), Context.ConnectionId).incomingCall(Context.ConnectionId);
 				}
 			}
 		}
@@ -128,6 +128,21 @@ namespace RadialReview.Hubs
 			}
 		}
 
+		public void AnswerCall(bool acceptCall, string targetConnectionId)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					var callingUser = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.ConnectionId == Context.ConnectionId).SingleOrDefault();
+					var targetUser = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.ConnectionId == targetConnectionId).SingleOrDefault();
+					if (callingUser==null || targetUser==null)
+						return;
+					if (callingUser.RecurrenceId != targetUser.RecurrenceId)
+						return;
+
+					Clients.Client(targetConnectionId).callAccepted(new AudioVisualUserVM(callingUser));
+				}
+			}
+		}
 
 
 		public ResultObject UpdateUserFocus(long meetingId, string domId)
