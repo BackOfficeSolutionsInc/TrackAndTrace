@@ -32,8 +32,8 @@ namespace RadialReview.Models
 				}
 			}*/
 
+			public virtual BrandingType Branding { get; set; }
 			
-
 			public virtual string TimeZoneId { get; set; }
 			public virtual bool EmployeesCanViewScorecard { get; set; }
 			public virtual bool ManagersCanViewScorecard { get; set; }
@@ -93,6 +93,8 @@ namespace RadialReview.Models
 					Map(x => x.EnableReview);
 
 					Map(x => x.RockName);
+
+					Map(x => x.Branding).CustomType<BrandingType>();
 				}
 			}
 		}

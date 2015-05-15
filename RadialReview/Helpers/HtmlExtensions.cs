@@ -6,14 +6,24 @@ using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+using RadialReview.Utilities;
 
 
 namespace System.Web
 {
     public static class HtmlExtensions
-    {
-	    public static OrganizationModel Organization(this HtmlHelper html){
-		    return (OrganizationModel) html.ViewBag.Organization;
+	{
+		public static OrganizationModel Organization(this HtmlHelper html){
+			return (OrganizationModel)html.ViewBag.Organization;
+		}
+
+		public static string ProductName(this HtmlHelper html){
+			return Config.ProductName(html.Organization());
+		}
+
+	    public static string ReviewName(this HtmlHelper html)
+		{
+			return Config.ReviewName(html.Organization());
 	    }
 
         public static MvcHtmlString CollapseSection(this HtmlHelper html,String title,String viewName,object model,string checkboxClass=null)

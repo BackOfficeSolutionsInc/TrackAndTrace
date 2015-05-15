@@ -159,6 +159,20 @@
 			if($.trim(value) == '') {
 				return 'This field is required';
 			}
+		},
+		success:function(data) {
+
+			var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
+
+			if ($(this).data("name") == "direction") {
+				$(items).attr("data-goal-dir", $(this).attr("data-value"));
+			}else if ($(this).data("name") == "target") {
+				$(items).attr("data-goal", $(this).attr("data-value"));
+			}
+			$(items).each(function(d) {
+				updateScore(this);
+			});
+			debugger;
 		}
 	});
 

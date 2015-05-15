@@ -99,6 +99,8 @@ namespace RadialReview.Models.L10
 		}
 
 
+		
+
 		public class L10Recurrence_Attendee : ILongIdentifiable, IDeletable, IOneToMany
 		{
 			public virtual long Id { get; set; }

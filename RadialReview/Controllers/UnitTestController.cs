@@ -156,8 +156,11 @@ namespace RadialReview.Controllers
 			return Json(updates, JsonRequestBehavior.AllowGet);
 	    }
 
-
-
+	    [Access(AccessLevel.UserOrganization)]
+	    public ActionResult VideoChat(long id)
+	    {
+			return View(id);
+	    }
 
     }
 }

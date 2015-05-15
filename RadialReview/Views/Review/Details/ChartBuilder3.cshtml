@@ -24,7 +24,7 @@
 						</li>
 						<li>
 							<input name="separate" id="separateReview" class="update group" @((agg == "review-*" || agg == "") ? "checked" : "") type="radio" data-addclass="separateReview" data-class="review-*" value="review-*" />
-							<label for="separateReview">Review</label>
+							<label for="separateReview">@Html.ReviewName()</label>
 							<span class="info" title="The dot represents the aggregate average for this individual."></span>
 						</li>
 					</ul>

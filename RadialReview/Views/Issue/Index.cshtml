@@ -8,7 +8,7 @@
 @section top{
     <div class="jumbotron">
         <h1>
-            Reviews
+            @Html.ReviewName()s
         </h1>
     </div>
 }
@@ -19,16 +19,16 @@
 
 <div class="panel panel-primary">
     <div class="panel-heading">
-        Create a Review:
+        Create a @Html.ReviewName():
     </div>
     <div class="panel-body alignCenter">
 
         <form id="issueForm" method="post" action="/Issue/">
-            <h2 class="">Who is this review for?</h2>
+            <h2 class="">Who is this @Html.ReviewName().ToLower() for?</h2>
             <div class="row">
                 <div class="col-md-5 col-md-push-7">
                     <p class="well">
-                        As a supervisor of this organization you can issue reviews to teams you manage or to the organization as a whole.
+                        As a supervisor of this organization you can issue @Html.ReviewName().ToLower()s to teams you manage or to the organization as a whole.
                     </p>
                 </div>
                 <div class="col-md-7 col-md-pull-5" style="padding-top: 25px;">

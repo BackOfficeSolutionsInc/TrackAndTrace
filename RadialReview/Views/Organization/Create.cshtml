@@ -22,7 +22,7 @@
                     <div class="col-md-12">
 						<input type="text" class="form-control" name="name" placeholder="@RadialReview.Properties.DisplayNameStrings.organizationName" />
 	                    <label>Enable L10 Meeting Software:</label> 						@Html.CheckBox("enableL10")
-						<label>Enable Review Software:</label> @Html.CheckBox("enableReview")
+						<label>Enable @Html.ReviewName() Software:</label> @Html.CheckBox("enableReview")
                     </div>
                     @*<div class="col-md-12">
                         @Html.CheckBox("managersCanEdit")

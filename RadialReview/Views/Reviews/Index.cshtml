@@ -7,7 +7,7 @@
 
 @section top{
 	<div class="jumbotron">
-		<h1>Reviews</h1>
+		<h1>@Html.ReviewName()s</h1>
 	</div>
 }
 
@@ -22,13 +22,13 @@
 @if (ViewBag.IsManager ?? false)
 {
 	<div style="text-align: right;margin-bottom: 3px;">
-		<a class="btn btn-primary" href="/Issue/">Issue New Review</a>
+		<a class="btn btn-primary" href="/Issue/">Issue New @Html.ReviewName()</a>
 	</div>
 }
 
 <div class="panel panel-primary startHiddennGroup">
 	<div class="panel-heading">
-		<h3 class="panel-title">Your reviews:</h3>
+		<h3 class="panel-title">Your @Html.ReviewName().ToLower()s:</h3>
 	</div>
 	@if (Model.Reviews.Any())
 	{
@@ -37,7 +37,7 @@
 				<thead>
 					<tr>
 						<th style="width:1px;" data-title="Your Report">Your Report</th>
-						<th style="min-width: 120px">Review @RadialReview.Properties.DisplayNameStrings.name</th>
+						<th style="min-width: 120px">@Html.ReviewName() @RadialReview.Properties.DisplayNameStrings.name</th>
 						@*<th style="width:100px" class="alignCenter">Created</th>*@
 						<th style="width:100px" class="alignCenter">Due</th>
 						<th style="width:80px" class="alignCenter">Status</th>
@@ -54,7 +54,7 @@
 						}
 						@if (Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
 						{
-							<th style="width: 20px;" class="alignCenter" data-title="Edit the review"></th>
+							<th style="width: 20px;" class="alignCenter" data-title="Edit the @Html.ReviewName().ToLower()"></th>
 						}
 
 						@*if (ViewBag.ManagingOrganization ?? false)
@@ -187,14 +187,14 @@
 									<a href="/Reports/Index/@review.Review.Id#Stats"><span class="glyphicon glyphicon-stats" title="View review stats" ></span></a>
 								</td>*@
 								<td class="alignCenter">
-									<a href="/Reports/Index/@review.Review.Id"><span class="icon fontastic-icon-checklist" title="Manage this review"></span></a>
+									<a href="/Reports/Index/@review.Review.Id"><span class="icon fontastic-icon-checklist" title="Manage this @Html.ReviewName().ToLower()"></span></a>
 								</td>
 							}
 
 							@if (review.Editable && Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
 							{
 								<td class="alignCenter">
-									<a href="/Reviews/Edit/@review.Review.Id"><span class="glyphicon glyphicon-cog" title="Edit the review"></span></a>
+									<a href="/Reviews/Edit/@review.Review.Id"><span class="glyphicon glyphicon-cog" title="Edit the @Html.ReviewName().ToLower()"></span></a>
 								</td>
 							}
 							@*if (ViewBag.ManagingOrganization ?? false)
@@ -215,7 +215,7 @@
 	else
 	{
 		<div class="panel-body gray">
-			There are no reviews at this time.
+			There are no @Html.ReviewName().ToLower()s at this time.
 		</div>
 	}
 </div>

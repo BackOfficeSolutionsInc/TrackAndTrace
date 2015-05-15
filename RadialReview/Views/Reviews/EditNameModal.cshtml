@@ -3,7 +3,7 @@
 @Html.Hidden("IID",Model.Id)
 <div class="row smallBreak2">
 	<div class="col-sm-3">
-		<label class="control-label">Review name:</label>
+		<label class="control-label">@Html.ReviewName() name:</label>
 	</div>
 	<div class="col-sm-9">
 		@Html.TextBoxFor(x=>x.ReviewName)

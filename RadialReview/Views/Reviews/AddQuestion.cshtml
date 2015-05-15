@@ -5,7 +5,7 @@
 <div class="form-horizontal">
     <div class="form-group">
         <div class="row">
-            <label class="col-xs-3 control-label">Add question to review for:</label>
+            <label class="col-xs-3 control-label">Add question to @Html.ReviewName().ToLower() for:</label>
             <div class="col-xs-6">
                 @Html.DropDownList(Html.NameFor(x => x.SelectedUserId).ToHtmlString(), Model.Users, new { id = "userId", @class = "form-control", onchange = "changeUser()" })
             </div>

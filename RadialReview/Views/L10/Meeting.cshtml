@@ -3,6 +3,7 @@
 	ViewBag.Title = "Meeting";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	ViewBag.FullWidth = true;
+	ViewBag.VideoChatRoom = Model.Recurrence.Id;
 }
 @using (Html.BeginStyles())
 {
@@ -29,8 +30,8 @@
 
 		
 	</script>
-	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
-	<script src="~/signalr/hubs"></script>
+	@*<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+	<script src="~/signalr/hubs"></script>*@
 	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
 	<script src="~/Scripts/jquery/jquery.scrollTo.js"></script>
 	<script src="~/Scripts/bootstrap-switch.js"></script>

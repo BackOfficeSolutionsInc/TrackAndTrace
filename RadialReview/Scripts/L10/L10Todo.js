@@ -178,9 +178,16 @@ function refreshCurrentTodoDetails() {
 
 function sortTodoByUser(recurrenceId,todoList) {
 	$(todoList).find("li").sort(function(a, b) {
-		if ($(a).attr("data-name") < $(b).attr("data-name"))
+		//if ($(a).attr("data-name") == $(b).attr("data-name"))
+		//	return $(a).attr("data-message") < $(b).attr("data-message") ;
+		return ($(a).attr("data-name") <= $(b).attr("data-name"));
+	}).each(function() {
+		$(todoList).prepend(this);
+	});
+	$(todoList).find("li").sort(function(a, b) {
+		if ($(a).attr("data-name") != $(b).attr("data-name"))
 			return true;
-		return $(a).attr("data-message") < $(b).attr("data-message") ;
+		return ($(a).attr("data-message") <= $(b).attr("data-message"));
 	}).each(function() {
 		$(todoList).prepend(this);
 	});

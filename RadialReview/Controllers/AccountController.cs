@@ -69,7 +69,7 @@ namespace RadialReview.Controllers
                 await Emailer.SendEmail(
                         MailModel.To(user.Email)
                         .Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
-						.Body(EmailStrings.PasswordReset_Body, user.Name(), Config.BaseUrl() + "n/" + token, Config.BaseUrl() + "n/" + token, ProductStrings.ProductName)
+						.Body(EmailStrings.PasswordReset_Body, user.Name(), Config.BaseUrl(null) + "n/" + token, Config.BaseUrl(null) + "n/" + token, Config.ProductName(null))
                     );
 
             }

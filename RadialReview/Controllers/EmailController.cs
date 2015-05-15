@@ -80,7 +80,7 @@ namespace RadialReview.Controllers
 				.Where(x => ids.Contains(x.ForUserId))
 				.OrderByDescending(x=>x.DueDate);
 
-		    var url = Config.BaseUrl() + "Tasks";
+		    var url = Config.BaseUrl(review.ForOrganization) + "Tasks";
 
 		    //var users = _UserAccessor.GetUsersByIds(model.UserIds);
 			var organization = GetUser().Organization.GetName();
@@ -93,7 +93,7 @@ namespace RadialReview.Controllers
 					review.DueDate.AddDays(-1).ToShortDateString(),
 					url,
 					url,
-					ProductStrings.ProductName)
+					Config.ProductName(review.ForOrganization))
 			   ));
 
 			return Json(ResultObject.Create(result), JsonRequestBehavior.AllowGet);

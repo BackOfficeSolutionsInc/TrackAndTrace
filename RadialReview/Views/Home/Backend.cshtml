@@ -7,7 +7,7 @@
 
 @section top{
     <div class="jumbotron">
-        <h1>Radial Review</h1>
+        <h1>@Html.ProductName()</h1>
     </div>
 }
 @using (Html.BeginStyles())
@@ -42,19 +42,19 @@
         @if (Model.OutstandingReview != null)
         {
             <div class="review smallBreak2">
-                <h5 class ="alignCenter noMargin gray">Review:</h5>
+                <h5 class ="alignCenter noMargin gray">@Html.ReviewName():</h5>
                 <hgroup class="alignCenter"><h1 style="margin-top:0px;">@Model.OutstandingReview.Name</h1></hgroup>
                 @Html.Partial("_ReviewStats", Model.OutstandingReview.ReviewContainerId)
             </div>
         }
         <div class="review welcome" style="min-height:30px">
-            <h2 class="alignCenter">Welcome to Radial Review</h2>
+            <h2 class="alignCenter">Welcome to @Html.ProductName()</h2>
             <div id="lipsum">
                 @if (((int?)ViewBag.Organizations ?? 0) == 0)
                 {
                     <h4>Instructions to access your organization:</h4>
                     <p>
-                        Welcome to Radial Review, your 360 review provider.
+                        Welcome to @Html.ProductName()
 
                         You'll need to enter your access code to begin. You should have received a code in your inbox.
                         Enter it here to begin:
@@ -71,13 +71,13 @@
                 {
                     <h3>Instructions for employees:</h3>
                     <p>
-                        Welcome to Radial Review,
+                        Welcome to @Html.ProductName(),
 
                         To begin taking your review, click on the 'Task' button above or click <a href="@Url.Action("Index","Tasks")">here</a>.
-                        After your coworkers have completed their reviews, Radial Review will aggregate the results for you and your supervisor to discuss.
+                        After your coworkers have completed their @Html.ReviewName().ToLower(), @Html.ProductName() will aggregate the results for you and your supervisor to discuss.
                     </p>
                     <p>
-                        Your name and profile image are an important way for you to ensure you are accurately reviewed. You can edit your profile image by clicking 
+                        Your name and profile image are an important way for you to ensure you are accurately evaluated. You can edit your profile image by clicking 
                         <a href="@Url.Action("Manage","Account")">here.</a>
                     </p>
                     if (ViewBag.IsManager && false)
@@ -89,24 +89,18 @@
                         </p>
                         <p>
                             A company should have a set of goals that govern the actions of it's employees.
-                            Before reviews can be issued, you and your employees should construct a set of personal goals that align with your company's goals.
+                            Before @Html.ReviewName().ToLower()s can be issued, you and your employees should construct a set of personal goals that align with your company's goals.
                             A set of questions should be generated that gauge how well the employee is meeting their goals.
-                            The employee's co-workers will review the employee on these questions.
-                            There are four levels of granularity for questions:
-                            <ul>
-                                <li>Organization-wide</li>
-                                <li>Team</li>
-                                <li>Position</li>
-                                <li>Individual</li>
-                            </ul>
-                            Every user reviewing the employee will rate the person on how well they are meeting their responsibilities.
+                            The employee's co-workers will evaluate the employee on these questions.
+                           
+	                        Every user evaluating the employee will rate the person on how well they are meeting their responsibilities.
                         </p>
                         <p>
-                            Once all the questions are in place, you can issue a review and specify a due date.
+                            Once all the questions are in place, you can issue a @Html.ReviewName().ToLower() and specify a due date.
                             An e-mail will be sent to employees to let them know that they have a task to complete.
                         </p>
                         <p>
-                            After everyone's reviews are complete, you can view the results and create a report in the
+                            After everyone's @Html.ReviewName().ToLower()s are complete, you can view the results and create a report in the
                             <a href="@Url.Action("Index","Reports")">Reports</a> tab. Reports consist of charts and anonymous feedback, 
                             as well as historical changes. You can autorize your employees to view the report once they are authorized.
                         </p>

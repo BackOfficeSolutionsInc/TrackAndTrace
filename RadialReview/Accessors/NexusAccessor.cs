@@ -239,14 +239,14 @@ namespace RadialReview.Accessors
 			
             //Send Email
             //[OrganizationName,LinkUrl,LinkDisplay,ProductName]            
-            var url = "Account/Register?message=Please%20login%20to%20join%20" + caller.Organization.Name.Translate() + ".&returnUrl=%2FOrganization%2FJoin%2F" + id;
-            url = Config.BaseUrl() + url;
+            var url = "Account/Register?returnUrl=%2FOrganization%2FJoin%2F" + id;
+			url = Config.BaseUrl(caller.Organization) + url;
             //var body = String.Format(;
             //subject = ;
-
+			var productName = Config.ProductName(caller.Organization);
             return MailModel.To(emailAddress)
-                .Subject(EmailStrings.JoinOrganizationUnderManager_Subject,firstName, caller.Organization.Name.Translate(), ProductStrings.ProductName)
-                .Body(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, ProductStrings.ProductName, id.ToUpper());
+				.Subject(EmailStrings.JoinOrganizationUnderManager_Subject, firstName, caller.Organization.Name.Translate(), productName)
+				.Body(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, productName, id.ToUpper());
 
 
 

@@ -52,10 +52,10 @@
         <h1 class="noMargin alignCenter" style="color: #4E4D5F;">Frequently Asked Questions</h1>
         <br />
         <ul class="alignCenter noBullet">
-            <li><a href="#Reviews">Radial Reviews</a></li>
+            <li><a href="#Reviews">@Html.ProductName()s</a></li>
             <li><a href="#Questions">Questions</a></li>
-            <li><a href="#IssueReviews">Managing a review</a></li>
-            <li><a href="#ReviewSubordinates">Reviewing subordinates</a></li>
+            <li><a href="#IssueReviews">Managing a @Html.ReviewName()</a></li>
+            <li><a href="#ReviewSubordinates">Evaluating subordinates</a></li>
         </ul>
     </div>
 }
@@ -63,26 +63,26 @@
 
 <div class="header">
     <a id="Reviews" class="shiftByTitle"></a>
-    <div class="title">Radial Reviews</div>
+    <div class="title">@Html.ProductName()</div>
     <a href="#top" class="topLink">Top</a>
 </div>
 <div class="review">
 
     <article>
-        <h4>What are Radial Reviews?</h4>
+        <h4>What are @Html.ProductName()s?</h4>
         <p class="indent">
-            Radial Reviews are a mechanism for measuring the progress and direction of a company by collecting
+            @Html.ProductName()s are a mechanism for measuring the progress and direction of a company by collecting
             information from all employees about their perspective about their immediate coworkers. Immediate coworkers can include
-            teammates, subordinates, superiors, and themselves. The review is a snapshot of the company's health and can be used
+            teammates, subordinates, superiors, and themselves. The @Html.ReviewName().ToLower() is a snapshot of the company's health and can be used
             to alert managment of positive and negative changes within the company.
         </p>
 
-        <h4>Why issue reviews?</h4>
+        <h4>Why issue @Html.ReviewName().ToLower()s?</h4>
         <p class="indent">
             The health of a company is related to the psychological well-being of the employees that comprise it. A healthier company can lead to
             improved communication channels between employees and management which can be fostered to create efficient work channels giving your company
             an edge on the competition, reduce turnover, improve employee stamina and loyalty.
-            A review can be thought of as a snapshot of the company's health. By issuing reviews frequently, you can generate a moving picture of trends within
+            A @Html.ReviewName().ToLower() can be thought of as a snapshot of the company's health. By issuing @Html.ReviewName().ToLower()s frequently, you can generate a moving picture of trends within
             the company and quickly detect divergances between expectations and quickly make changes saving your company time and money.
         </p>
     </article>
@@ -102,7 +102,7 @@
             Every employee has responsibilities to their company. Questions are a method of determining if expectations are being met.
             These questions can cover anything the comapny would like to measure qualitativly.
             They may range from the individuals performance to their attitude but are not restricted to these things.
-            Before the review is issued, every employee should work with their supervisors to establish a set of questions that relate to their responsibilities to the company.
+            Before the @Html.ReviewName().ToLower() is issued, every employee should work with their supervisors to establish a set of questions that relate to their responsibilities to the company.
         </p>
         <div class="indent">
             Some examples of questions might be:
@@ -115,7 +115,7 @@
 
         <h4>How are questions used?</h4>
         <p class="indent">
-            When a review is issued, the employee's immediate coworkers are all asked questions of the employee.
+            When a @Html.ReviewName().ToLower() is issued, the employee's immediate coworkers are all asked questions of the employee.
             The answers are aggregated and presented to the employee's supervisors.
         </p>
     </article>
@@ -125,34 +125,34 @@
 
 <div class="header">
     <a id="IssueReviews" class="shiftByTitle"></a>
-    <div class="title">Managing a review</div>
+    <div class="title">Managing a @Html.ReviewName().ToLower()</div>
     <a href="#top" class="topLink">Top</a>
 </div>
 <div class="review">
     <article>
-        <h4>How do I issue a review?</h4>
+        <h4>How do I issue a @Html.ReviewName().ToLower()?</h4>
         <div class="indent">
-			Supervisor have the authority to issue a review. To do so, click "Reviews" tab in the main menu then click the "+" button. A dialog will appear with options for the review.
+			Supervisor have the authority to issue a @Html.ReviewName().ToLower(). To do so, click "@Html.ReviewName()" tab in the main menu then click the "+" button. A dialog will appear with options for the @Html.ReviewName().ToLower().
             <div class="indent">
                 <div class="indent">
                     <table class="boldFirst">
-                        <tr><td>Review Name:</td><td>Can be anything you want, but should be something easy to identify.</td></tr>
-                        <tr><td>For Team:</td><td>You may issue a review for the entire company or for any team (autogenerated or not) within the company.</td></tr>
-                        <tr><td>Due:</td><td>The date which the review can no longer be edited.</td></tr>
-                        <tr><td>Send emails:</td><td>Checking this box will send an email notification to all employees being reviewed</td></tr>
-                        <tr><td>Users will review Self:</td><td>Employees review themselves</td></tr>
-                        <tr><td>Users will review Peers:</td><td>Employees review all subordinates of their supervisor.</td></tr>
-                        <tr><td>Users will review Supervisors:</td><td>Employees review all of their supervisors.</td></tr>
-                        <tr><td>Users will review Direct Reports:</td><td>Employees review all of their direct reports.</td></tr>
+                        <tr><td> @Html.ReviewName() Name:</td><td>Can be anything you want, but should be something easy to identify.</td></tr>
+                        <tr><td>For Team:</td><td>You may issue a @Html.ReviewName().ToLower() for the entire company or for any team (autogenerated or not) within the company.</td></tr>
+                        <tr><td>Due:</td><td>The date which the @Html.ReviewName().ToLower() can no longer be edited.</td></tr>
+                        <tr><td>Send emails:</td><td>Checking this box will send an email notification to all employees being evaluated</td></tr>
+                        <tr><td>Users will evaluate Self:</td><td>Employees evaluate themselves</td></tr>
+                        <tr><td>Users will evaluate Peers:</td><td>Employees evaluate all subordinates of their supervisor.</td></tr>
+                        <tr><td>Users will evaluate Supervisors:</td><td>Employees evaluate all of their supervisors.</td></tr>
+                        <tr><td>Users will evaluate Direct Reports:</td><td>Employees evaluate all of their direct reports.</td></tr>
                     </table>
                 </div>
             </div>
         </div>
 
-        <h4>How do I change an existing review?</h4>
+        <h4>How do I change an existing @Html.ReviewName().ToLower()?</h4>
         <div class="indent">
-            You can update an outstanding review by clicking "Reviews" and then "Details" on the particular review. From here, you can add/remove questions and users from the review.
-            To add a question, you must first add the question to the employee, then add the question to the review.
+            You can update an outstanding @Html.ReviewName().ToLower() by clicking "@Html.ReviewName()s" and then "Details" on the particular @Html.ReviewName().ToLower(). From here, you can add/remove questions and users from the @Html.ReviewName().ToLower().
+            To add a question, you must first add the question to the employee, then add the question to the @Html.ReviewName().ToLower().
         </div>
     </article>
 </div>
@@ -160,7 +160,7 @@
 
 <div class="header">
     <a id="ReviewSubordinates" class="shiftByTitle"></a>
-    <div class="title">Reviewing direct reports</div>
+    <div class="title">Evaluating direct reports</div>
     <a href="#top" class="topLink">Top</a>
 </div>
 <div class="review">
@@ -168,13 +168,13 @@
 
         <h4>Discussing results with employees</h4>
         <p class="indent">
-            After everyone has completed their reviews, supervisors should take some time to sit down with their direct reports
-            to discuss feedback from coworkers and plan out changes for the next review cycle. If any abnormal changes occur between review cycles,
+            After everyone has completed their @Html.ReviewName().ToLower()s, supervisors should take some time to sit down with their direct reports
+            to discuss feedback from coworkers and plan out changes for the next cycle. If any abnormal changes occur between cycles,
             these should be discussed immediately to quickly fix any problems.
         </p>
-        <h4>How do I prepare a review?</h4>
+        <h4>How do I prepare a @Html.ReviewName().ToLower()?</h4>
         <p class="indent">
-            You can prepare reviews for employees by clicking "Reviews" then choosing the review then "View" for the chosen user.
+            You can prepare @Html.ReviewName().ToLower()s for employees by clicking "@Html.ReviewName()s" then choosing the @Html.ReviewName().ToLower() then "View" for the chosen user.
         </p>
         <p class="indent">
             From this view, you can prepare charts for the user, add/remove feedback from others, add/remove the employee's answers, add/remove supervisors' answers, add/remove aggregate answers

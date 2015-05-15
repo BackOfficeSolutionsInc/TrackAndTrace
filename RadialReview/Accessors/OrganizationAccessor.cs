@@ -651,23 +651,31 @@ namespace RadialReview.Accessors
 				.List().ToList();
 		}
 
-	    public void UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10)
+	    public void UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10,BrandingType branding)
 	    {
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
-					PermissionsUtility.Create(s, caller).ManagingOrganization(caller.Organization.Id);
+					var perms = PermissionsUtility.Create(s, caller).ManagingOrganization(caller.Organization.Id);
 
 					var org = s.Get<OrganizationModel>(caller.Organization.Id);
 
 					org.Settings.EnableL10 = enableL10;
 					org.Settings.EnableReview = enableReview;
+					org.Settings.Branding = branding;
 
 					
 					s.Update(org);
 
 					tx.Commit();
 					s.Flush();
+
+					var all = OrganizationAccessor.GetAllUserOrganizations(s, perms, caller.Organization.Id);
+					var cache = new Cache();
+					foreach (var u in all)
+					{
+						cache.InvalidateForUser(u, CacheKeys.USERORGANIZATION);
+					}
 				}
 			}
 	    }

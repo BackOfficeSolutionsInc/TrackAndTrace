@@ -1,0 +1,43 @@
+﻿@model long
+@{
+	ViewBag.Title = "VideoChat";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.VideoChatRoom = Model;
+}
+
+<h2>VideoChat</h2>
+@*
+@using (Html.BeginScripts())
+{
+	<script>
+		var MeetingId = @Model;
+	</script>
+
+	<script src="~/Scripts/L10/AV/adapter.js"></script>
+	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+	<script src="~/signalr/hubs"></script>
+
+	<script src="~/Scripts/L10/AV/viewModel.js"></script>
+	<script src="~/Scripts/L10/AV/connectionManager.js"></script>
+	<script src="~/Scripts/L10/AV/app.js"></script>
+}
+@using (Html.BeginStyles())
+{
+	<link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
+	<style>
+		#footer {
+			display: none;
+		}
+	</style>
+}
+
+
+
+
+<div class="video-overlay hidden1"><video src='' autoplay=""></video></div>
+
+<div class="uncollapser"><span class="clicker">Video Conference</span><span class="sendAudio icon fontastic-icon-mic-no"></span><span class="sendVideo icon fontastic-icon-eye-slash-close"></span></div>
+<div class="video-bar">
+	@*<div class="collapser">Hide</div>*
+	<div class="start-video btn btn-xs btn-success">Join Conference</div>
+</div>*@

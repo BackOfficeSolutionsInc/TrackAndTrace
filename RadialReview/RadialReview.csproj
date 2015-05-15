@@ -17,7 +17,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -367,6 +367,7 @@
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
     <Compile Include="Hubs\MeetingHub.cs" />
+    <Compile Include="Hubs\WebRtcHub.cs" />
     <Compile Include="Models\Angular\Base\Angularized.cs" />
     <Compile Include="Models\Angular\Base\BaseAngular.cs" />
     <Compile Include="Models\Angular\Base\IAngularize.cs" />
@@ -403,6 +404,7 @@
     <Compile Include="Models\Components\ForModel.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\AttachType.cs" />
+    <Compile Include="Models\Enums\BrandingType.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
     <Compile Include="Models\Enums\DateRangeType.cs" />
     <Compile Include="Models\Enums\Env.cs" />
@@ -437,6 +439,7 @@
     <Compile Include="Models\L10VM\MeetingVM.cs" />
     <Compile Include="Models\L10\AgendaItemType.cs" />
     <Compile Include="Models\L10\L10Note.cs" />
+    <Compile Include="Models\L10\AV\AudioVideoUser.cs" />
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
     <Compile Include="Models\Todo\ExternalTodoCreds.cs" />
     <Compile Include="Models\Todo\RockTodoVM.cs" />
@@ -707,6 +710,7 @@
     <Content Include="Content\bootstrap.vertical-tabs.css" />
     <Content Include="Content\components\daterangepicker-bs3.css" />
     <Content Include="Content\components\fivestate.css" />
+    <Content Include="Content\L10\L10Conference.css" />
     <Content Include="Content\L10\L10Notes.css" />
     <Content Include="Content\ReportBuilder\ClientDetails.css" />
     <Content Include="libeay32.dll">
@@ -733,6 +737,10 @@
     <Content Include="Scripts\components\fivestate.js" />
     <Content Include="Scripts\home\colResizable-1.5.min.js" />
     <Content Include="Scripts\home\resizeable-tables.js" />
+    <Content Include="Scripts\L10\AV\adapter.js" />
+    <Content Include="Scripts\L10\AV\app.js" />
+    <Content Include="Scripts\L10\AV\connectionManager.js" />
+    <Content Include="Scripts\L10\AV\viewModel.js" />
     <Content Include="Scripts\L10\L10Notes.js" />
     <Content Include="ssleay32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1297,6 +1305,8 @@
     <Content Include="Views\Todo\LinkToExternal.cshtml" />
     <Content Include="Views\UnitTest\Index.cshtml" />
     <Content Include="Views\UnitTest\SinglePageL10.cshtml" />
+    <Content Include="Views\UnitTest\VideoChat.cshtml" />
+    <Content Include="Views\Shared\Partial\_VideoChat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1375,6 +1385,7 @@
     <EmbeddedResource Include="Properties\MandrillStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MandrillStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

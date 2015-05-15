@@ -5,10 +5,10 @@
 }
 
 <div class="review">
-    <h3>That's the end of the review!</h3>
+    <h3>That's the end of the @Html.ReviewName().ToLower()!</h3>
     @if (Model.Possible.Count > 0)
     {
-        <h4>But you may optionally review more users:</h4>
+        <h4>But you may optionally evaluate more users:</h4>
         using (Html.BeginForm())
         {
             @Html.HiddenFor(x => x.Id)
@@ -16,7 +16,7 @@
             <p>
                 @Html.ListBoxFor(x => x.Users, Model.Possible.OrderBy(x => x.Text), new { @class = "select2", style = "max-width:600px;width:100%;", multiple ="",placeholder="Begin typing a name..."})
             </p>
-            <button class="btn btn-primary">Add to Review</button>
+            <button class="btn btn-primary">Add to @Html.ReviewName()</button>
             <a href="/" class="btn btn-default">Exit</a>
         }
     }

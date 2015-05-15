@@ -1,7 +1,7 @@
 ﻿@model RadialReview.Models.Reviews.CustomizeModel
 
 <hr />
-<h2>Who reviews who?</h2>
+<h2>Who evaluates who?</h2>
 
 @Html.Partial("_Customization",Model)
 
@@ -12,13 +12,13 @@
 <div class="row">
     <div class="col-md-5 col-md-push-7 ">
         <p class="well">
-            Almost finished. We just need to specify a name, when the review period will end, and whether or not to e-mail employees about the new review.
+            Almost finished. We just need to specify a name, when the @Html.ReviewName().ToLower() period will end, and whether or not to e-mail employees about the new @Html.ReviewName().ToLower().
         </p>
     </div>
     <div class="col-md-7 col-md-pull-5 ">
         <div class="row smallBreak2">
             <div class="col-md-6">
-                <label class="control-label">Review name:</label>
+                <label class="control-label">@Html.ReviewName() name:</label>
             </div>
             <div class="col-md-4">
                 @Html.TextBox("ReviewName", null, new { @class = "form-control datePicker", id = "ReviewName" })
@@ -27,7 +27,7 @@
         </div>
 	    <div class="row smallBreak2">
 		    <div class="col-md-6">
-			    <label class="control-label">Reviews are due:</label>
+			    <label class="control-label">@Html.ReviewName()s are due:</label>
 		    </div>
 		    <div class="col-md-4">
 			    <div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
@@ -54,7 +54,7 @@
 			</div>
 		</div>
 	    <div class="row smallBreak2">
-			<div class="col-md-6" title="Send an email notifying employees of the review.">
+			<div class="col-md-6" title="Send an email notifying employees of the @Html.ReviewName().ToLower().">
 				<label class="control-label">Email employees:</label>
 			</div>
 		    <div class="col-md-4">
@@ -73,7 +73,7 @@
 
 </div>
 <input name="review" value="issueReview" type="hidden">
-<button type="submit" id="submitButton" class="btn btn-primary">Issue Review</button>
+<button type="submit" id="submitButton" class="btn btn-primary">Issue @Html.ReviewName()</button>
 
 <script>
     function startCustomize() {
@@ -82,13 +82,13 @@
         $("form").submit(function (event) {
 	        $("#submitButton").prop("disabled", true);
             if ($(".customizeBoxes:checked").length == 0) {
-                alert("You haven't customized the review. You must ensure that some members review each other.");
+                alert("You haven't customized the @Html.ReviewName().ToLower(). You must ensure that some members evaluate each other.");
                 event.preventDefault();
                 $("#submitButton").prop("disabled", false);
                 return;
             }
             if ($("#ReviewName").val().trim() == "") {
-                alert("You must specify a review name.");
+                alert("You must specify a @Html.ReviewName().ToLower() name.");
                 event.preventDefault();
                 $("#submitButton").prop("disabled", false);
                 return;

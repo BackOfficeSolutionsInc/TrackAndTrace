@@ -6,16 +6,16 @@
 <div class="row">
 	<div class="col-md-5 col-md-push-7 ">
 		<p class="well">
-			Great! Managers will need some time to customize the reviews. During this pre-review period, supervisors will be able to customize who their direct reports review.
+			Great! Managers will need some time to customize the reviews. During this pre-@Html.ReviewName().ToLower() period, supervisors will be able to customize who their direct reports review.
 			Please specify when you want the prereview period to end. Afterwards, please specify when you want employees to be finished with their reviews.
 			<br />
-			The review will automatically be generated after the prereview deadline.
+			The @Html.ReviewName().ToLower() will automatically be generated after the pre-@Html.ReviewName().ToLower() deadline.
 		</p>
 	</div>
 	<div class="col-md-7 col-md-pull-5 ">
 		<div class="row smallBreak2">
 			<div class="col-md-6">
-				<label class="control-label">Review name:</label>
+				<label class="control-label">@Html.ReviewName() name:</label>
 			</div>
 			<div class="col-md-4">
 				@Html.TextBox("ReviewName", null, new { @class = "form-control datePicker", id = "ReviewName" })
@@ -24,7 +24,7 @@
 		</div>
 		<div class="row smallBreak2">
 			<div class="col-md-6">
-				<label class="control-label">Manager prereview due:</label>
+				<label class="control-label">Manager pre-@Html.ReviewName().ToLower() due:</label>
 			</div>
 			<div class="col-md-4">
 				<div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
@@ -38,7 +38,7 @@
 		</div>
 		<div class="row smallBreak2">
 			<div class="col-md-6">
-				<label class="control-label ">Reviews are due:</label>
+				<label class="control-label ">@Html.ReviewName().ToLower()s are due:</label>
 			</div>
 			<div class="col-md-4 alignCenter">
 				<div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
@@ -69,7 +69,7 @@
 		</div>
 		<div class="row smallBreak2">
 
-			<div class="col-md-6" title="Any reviews resulting from supervisors that do not customize their pre-review will automatically be populated with a default review group consisting of themselves and thier peers, supervisors, and teammates.">
+			<div class="col-md-6" title="Any @Html.ReviewName().ToLower()s resulting from supervisors that do not customize their pre-@Html.ReviewName().ToLower() will automatically be populated with a default @Html.ReviewName().ToLower() group consisting of themselves and thier peers, supervisors, and teammates.">
 				<label class="control-label">Ensure default:</label>
 			</div>
 			<div class="col-md-4">
@@ -95,7 +95,7 @@
 	</div>
 </div>
 <input name="review" value="issuePrereview" type="hidden">
-<button type="submit" id="submitButton" class="btn btn-primary">Begin Pre-Review</button>
+<button type="submit" id="submitButton" class="btn btn-primary">Begin Pre-@Html.ReviewName()</button>
 
 <img src="~/Content/img/blank.gif" onload="startIssueOrg()" />
 <script>
@@ -104,7 +104,7 @@
 		$("form").submit(function (event) {
 			$("#submitButton").prop("disabled", true);
 			if ($("#ReviewName").val().trim() == "") {
-				alert("You must specify a review name.");
+				alert("You must specify a @Html.ReviewName().ToLower() name.");
 				event.preventDefault();
 				$("#submitButton").prop("disabled", false);
 				return;

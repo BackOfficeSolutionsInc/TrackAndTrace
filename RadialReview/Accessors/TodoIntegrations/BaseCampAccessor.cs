@@ -23,7 +23,7 @@ namespace RadialReview.Accessors.TodoIntegrations
 		public static String AuthUrl(UserOrganizationModel caller, long recurrence, long userId)
 		{
 			new PermissionsAccessor().Permitted(caller, x => x.EditL10Recurrence(recurrence).ViewUserOrganization(userId, false));
-			return Config.Basecamp.GetService().GetRequestAuthorizationURL() + "&state=" + userId + "_" + recurrence;
+			return Config.Basecamp.GetService(caller.Organization).GetRequestAuthorizationURL() + "&state=" + userId + "_" + recurrence;
 		}
 		public class BasecampList
 		{
@@ -43,7 +43,7 @@ namespace RadialReview.Accessors.TodoIntegrations
 
 		public static BasecampTodoCreds Authorize(UserOrganizationModel caller, string tokenId,long recurrenceId, long userId)
 		{
-			var bc = Config.Basecamp.GetService();
+			var bc = Config.Basecamp.GetService(caller.Organization);
 			var accessToken = bc.GetAccessToken(tokenId);
 
 			var url = "https://launchpad.37signals.com/authorization.json";

@@ -24,6 +24,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
+using RadialReview.Models.L10.AV;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scheduler;
 using RadialReview.Models.Scorecard;
@@ -1121,7 +1122,7 @@ namespace RadialReview.Accessors
 
 								var mail = MailModel.To(email)
 									.Subject(EmailStrings.MeetingSummary_Subject, recurrence.Name)
-									.Body(EmailStrings.MeetingSummary_Body, user.GetName(), table.ToString(), ProductStrings.ProductName);
+									.Body(EmailStrings.MeetingSummary_Body, user.GetName(), table.ToString(), Config.ProductName(meeting.Organization));
 								unsent.Add(mail);
 							}
 
@@ -1138,10 +1139,16 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+
+		
+
 		public static L10Meeting.L10Meeting_Connection JoinL10Meeting(UserOrganizationModel caller, long recurrenceId, string connectionId)
 		{
 			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 			hub.Groups.Add(connectionId, MeetingHub.GenerateMeetingGroupId(recurrenceId));
+
+			//hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId)).updateUserList(Users);
+			
 			return null;
 			/*
 			//Should already check permissions here
@@ -1730,8 +1737,9 @@ namespace RadialReview.Accessors
 				var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 				var update = new AngularRecurrence(recurrenceId);
 				update.Scorecard = new AngularScorecard();
-				score.Measured = score.Measured ?? Removed.Decimal();
+				//score.Measured = score.Measured ?? Removed.Decimal();
 				var angularScore = new AngularScore(score);
+				angularScore.Measured = angularScore.Measured ?? Removed.Decimal();
 				angularScore.ForWeek = TimingUtility.GetWeekSinceEpoch(angularScore.Week);
 				update.Scorecard.Scores = new List<AngularScore>() { angularScore };
 				group.update(update);

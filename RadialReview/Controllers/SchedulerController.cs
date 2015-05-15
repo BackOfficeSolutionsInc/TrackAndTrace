@@ -30,7 +30,7 @@ namespace RadialReview.Controllers
                 {
                     try
                     {
-                        return _TaskAccessor.ExecuteTask(Config.BaseUrl(), task);
+                        return _TaskAccessor.ExecuteTask(Config.BaseUrl(null), task);
                     }
                     catch (Exception e)
                     {

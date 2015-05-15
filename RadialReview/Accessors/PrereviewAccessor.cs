@@ -160,11 +160,13 @@ namespace RadialReview.Accessors
                         if (sendEmails)
                         {
                             try{
-	                            var url = Config.BaseUrl() + "n/" + guid;
+
+								var url = Config.BaseUrl(caller.Organization) + "n/" + guid;
+	                            var productName = Config.ProductName(caller.Organization);
                                 unsentEmails.Add(
                                     MailModel.To(manager.GetEmail())
                                     .Subject(EmailStrings.Prereview_Subject,caller.Organization.GetName())
-									.Body(EmailStrings.Prereview_Body, manager.GetName(), reviewName, preReviewDue.Subtract(TimeSpan.FromDays(1)).ToShortDateString(),url, url, ProductStrings.ProductName)
+									.Body(EmailStrings.Prereview_Body, manager.GetName(), reviewName, preReviewDue.Subtract(TimeSpan.FromDays(1)).ToShortDateString(), url, url, productName)
                                     );
                             }
                             catch (Exception e)

@@ -17,7 +17,7 @@
 	{
 		<div class="alertBar progress">
 			<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
-				This review is past due. This screen is read-only, you won't be able to make changes to it.
+				This @Html.ReviewName().ToLower() is past due. This screen is read-only, you won't be able to make changes to it.
 			</div>
 		</div>
 	}
@@ -65,7 +65,7 @@
 							}
 						</ol>
 						<hr />
-						<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default reviewOthersButton" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Review Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
+						<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default reviewOthersButton" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Evaluate Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
 
 					</div>
 				</div>
@@ -86,9 +86,8 @@
 				</div>
 				<div class="panel-body">
 					<p class="alignCenter"><h4>Please answer all questions as accurately and honestly as possible.</h4></p>
-					<p>For each person you review, you're asked to evaluate whether the individual <i>Gets</i>, <i>Wants</i>, and <i>Has the Capacity</i> to perform each of their roles. You may add a comment to your response by clicking '<span class="glyphicon glyphicon-pencil" style="opacity:.7"></span>' icon in the square.</p>
+					<p>For each coworker, you're asked to evaluate whether the individual <i>Gets</i>, <i>Wants</i>, and <i>Has the Capacity</i> to perform each of their roles. You may add a comment to your response by clicking '<span class="glyphicon glyphicon-pencil" style="opacity:.7"></span>' icon in the square.</p>
 					<p>You're also asked to evaluate whether the individual <i>Almost Always</i>, <i>Sometimes</i>, or <i>Hardly Ever</i> exhibits company values. You may add a comment to your response by clicking "Add Comment" to the right.</p>
-
 				</div>
 			</div>
 		</div>
@@ -286,9 +285,9 @@
 			addTip($(".table-values .posneg").first(), "Evaluating Values", "You'll need to evaluate whether an individual exhibits Company Values. Choose between <i>Almost Always</i>, <i>Sometimes</i>, or <i>Hardly Ever</i>.");
 			var t = addTip($(".table-values .reason").first(), "Adding Comments", 'You can optionally add a comment by clicking here.');
 			t.position = { at: 'top center', my: 'bottom center' };
-			t = addTip($("#nameList").first(), "Who are you reviewing?", "The sidebar lists all the people you'll need to review. Red text indicates an incomplete review, while blue indicates that it is complete.");
+			t = addTip($("#nameList").first(), "Who are you evaluating?", "The sidebar lists all the people you'll need to evaluate. Red text indicates an incomplete evaluation, while blue indicates that it is complete.");
 			t.position = { at: 'center left', my: 'center right' };
-			t = addTip($(".reviewOthersButton").last(), "Review more people", "You may optionally add more people to review by clicking 'Review Others'.");
+			t = addTip($(".reviewOthersButton").last(), "Evaluate more people", "You may optionally add more people to evaluate by clicking 'Evaluate Others'.");
 			t.position = { at: 'center left', my: 'center right' };
 		}
 

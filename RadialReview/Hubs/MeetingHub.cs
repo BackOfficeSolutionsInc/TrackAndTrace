@@ -8,8 +8,10 @@ using Microsoft.AspNet.SignalR;
 using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Controllers;
+using RadialReview.Exceptions;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10;
+using RadialReview.Models.L10.AV;
 using RadialReview.Utilities;
 
 namespace RadialReview.Hubs
@@ -54,10 +56,79 @@ namespace RadialReview.Hubs
 		public void Join(long meetingId, string connectionId)
 		{
 			//var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), meetingId);
-			var conn= L10Accessor.JoinL10Meeting(GetUser(), meetingId, connectionId);
+			if (connectionId != Context.ConnectionId)
+				throw new PermissionsException("Ids do not match");
+
+			var conn = L10Accessor.JoinL10Meeting(GetUser(), meetingId, Context.ConnectionId);
 			//return new UserMeetingModel(conn);
+			//SendUserListUpdate();
 			return;
 		}
+
+		public void CallMeeting(long recurrenceId, bool audio = true, bool video = true)
+		{
+
+			// They are here, so tell them someone wants to talk
+
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					PermissionsUtility.Create(s, GetUser()).ViewVideoL10Recurrence(recurrenceId);
+					var found = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId && x.User.Id == GetUser().Id).SingleOrDefault();
+					var now = DateTime.UtcNow;
+					if (found != null)
+					{
+						found.DeleteTime = now;
+					}
+
+					var newAVU = new AudioVideoUser()
+					{
+						CreateTime = now,
+						Audio = audio,
+						Video = video,
+						ConnectionId = Context.ConnectionId,
+						RecurrenceId = recurrenceId,
+						User = GetUser(),
+					};
+					s.Save(newAVU);
+					tx.Commit();
+					s.Flush();
+					Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId)).incomingCall(Context.ConnectionId);
+				}
+			}
+		}
+
+		// WebRTC Signal Handler
+		public void SendSignal(string signal, string targetConnectionId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var callingUser = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.ConnectionId == Context.ConnectionId).SingleOrDefault();
+					var targetUser = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.ConnectionId == targetConnectionId).SingleOrDefault();
+
+					// Make sure both users are valid
+					if (callingUser == null || targetUser == null)
+					{
+						return;
+					}
+
+					//Not in the same recurrence
+					if (callingUser.RecurrenceId != targetUser.RecurrenceId)
+						return;
+
+					if (callingUser.RecurrenceId <= 0)
+						throw new PermissionsException("Should be positive");
+
+					// These folks are in a call together, let's let em talk WebRTC
+					Clients.Group(MeetingHub.GenerateMeetingGroupId(callingUser.RecurrenceId),Context.ConnectionId).receiveSignal(new AudioVisualUserVM(callingUser), signal);
+				}
+			}
+		}
+
+
 
 		public ResultObject UpdateUserFocus(long meetingId, string domId)
 		{
@@ -71,7 +142,7 @@ namespace RadialReview.Hubs
 					tx.Commit();
 					s.Flush();
 					Clients.OthersInGroup(GenerateMeetingGroupId(meetingId /*us.L10Meeting*/))
-						.UpdateUserFocus(domId, GetUser().Id/*us.User.Id*/);
+						.UpdateUserFocus(domId, GetUser().Id /*us.User.Id*/);
 					return ResultObject.SilentSuccess();
 				}
 			}
@@ -79,18 +150,19 @@ namespace RadialReview.Hubs
 
 		public ResultObject UpdateTextContents(long meetingId, string domId, string contents)
 		{
-			using(var s = HibernateSession.GetCurrentSession())
+			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using(var tx=s.BeginTransaction()){
+				using (var tx = s.BeginTransaction())
+				{
 					//var us = GetUserStatus(s,meetingId);
-					Clients.OthersInGroup(GenerateMeetingGroupId(/*us.L10Meeting*/meetingId))
-						.updateTextContents(domId,contents);
+					Clients.OthersInGroup(GenerateMeetingGroupId( /*us.L10Meeting*/meetingId))
+						.updateTextContents(domId, contents);
 					return ResultObject.SilentSuccess();
 				}
 			}
 		}
 
-		
+
 		//private L10Meeting.L10Meeting_Connection GetUserStatus(ISession s,long meetingId)
 		//{
 		//	return L10Accessor.GetConnection(s,GetUser(), meetingId);
@@ -103,6 +175,7 @@ namespace RadialReview.Hubs
 				throw new Exception();
 			return "L10MeetingRecurrence_" + recurrenceId;
 		}
+
 		public static string GenerateMeetingGroupId(L10Meeting meeting)
 		{
 			var id = meeting.L10Recurrence.NotNull(x => x.Id);
@@ -111,9 +184,72 @@ namespace RadialReview.Hubs
 			return GenerateMeetingGroupId(id);
 		}
 
+		private L10Recurrence GetUserCall(ISession s, AudioVideoUser user)
+		{
+			return s.Get<L10Recurrence>(user.RecurrenceId);
+		}
+
+		public void HangUp()
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					_HangUp(s, DateTime.UtcNow);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		private void _HangUp(ISession s, DateTime now)
+		{
+			var connectedAs = s.QueryOver<AudioVideoUser>().Where(x => x.ConnectionId == Context.ConnectionId && x.DeleteTime == null).List().ToList();
+
+			foreach (var callingUser in connectedAs)
+			{
+
+				var currentRecurrence = callingUser.RecurrenceId;
+
+				// Send a hang up message to each user in the call, if there is one
+				var g = Clients.Group(MeetingHub.GenerateMeetingGroupId(currentRecurrence), callingUser.ConnectionId);
+				g.callEnded(callingUser.ConnectionId, string.Format("{0} has hung up.", callingUser.User.GetName()));
+
+				// Remove the call from the list if there is only one (or none) person left.  This should
+				// always trigger now, but will be useful when we implement conferencing.
+
+				callingUser.DeleteTime = now;
+				s.Update(callingUser);
+
+
+				// Remove all offers initiating from the caller
+				//CallOffers.RemoveAll(c => c.Caller.ConnectionId == callingUser.ConnectionId);
+
+				//SendUserListUpdate();
+			}
+		}
+
+
 		public override Task OnDisconnected(bool stopCalled)
 		{
 			//L10Accessor.UpdatePage(GetUser(),GetUser().Id,);
+			// Hang up any calls the user is in
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					_HangUp(s, DateTime.UtcNow);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			// Gets the user from "Context" which is available in the whole hub
+
+			// Remove the user
+			//Users.RemoveAll(u => u.ConnectionId == Context.ConnectionId);
+
+			// Send down the new user list to all clients
+			//SendUserListUpdate();
 
 			return base.OnDisconnected(stopCalled);
 		}

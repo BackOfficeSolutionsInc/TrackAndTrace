@@ -1,0 +1,22 @@
+﻿@if (ViewBag.VideoChatRoom is long)
+{
+	<div class="video-overlay hidden1"><video src='' autoplay=""></video></div>
+
+	<div class="uncollapser"><span class="clicker">Video Conference</span><span class="sendAudio icon fontastic-icon-mic-no"></span><span class="sendVideo icon fontastic-icon-eye-slash-close"></span></div>
+	<div class="video-bar">
+		@*<div class="collapser">Hide</div>*@
+		<div class="start-conference start-video btn btn-xs btn-success">Join Conference</div>
+		@*<div class="start-conference start-screenshare btn btn-xs btn-default">Share Screen</div>*@
+		<a target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers" class="experimental">This experimental feature is built on WebRTC. It will only work on Chrome, Opera, and Firefox.</a>
+	</div>
+	using (Html.BeginScripts())
+	{
+		<script>
+ 			var VideoChatRoomId = @((long)ViewBag.VideoChatRoom);
+ 		</script>
+
+		<script src="~/Scripts/L10/AV/adapter.js"></script>
+		<script src="~/Scripts/L10/AV/connectionManager.js"></script>
+		<script src="~/Scripts/L10/AV/app.js"></script>
+	}
+}

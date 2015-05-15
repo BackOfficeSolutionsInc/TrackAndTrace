@@ -2,7 +2,7 @@
 
 <div class="form-horizontal">
     <div class="form-group">
-        <label class="col-xs-4 control-label">Review Name:</label>
+        <label class="col-xs-4 control-label">@Html.ReviewName() Name:</label>
         <div class="col-xs-6">
             @Html.TextBoxFor(x => x.Name, new { @class="form-control" })
         </div>
@@ -28,7 +28,7 @@
         </div>
     </div>
     <hr />
-    <h4>Users will review:</h4>
+    <h4>Employees will evaluate:</h4>
     <div class="form-group">
         <label class="col-xs-4 control-label noPad">Self:</label>
         <div class="col-xs-6">

@@ -39,7 +39,7 @@ namespace RadialReview.Utilities
                 try
                 {
                     WebClient client = new WebClient();
-					var output = await client.DownloadDataTaskAsync(Config.BaseUrl() + "/Scheduler/Reschedule");
+					var output = await client.DownloadDataTaskAsync(Config.BaseUrl(null) + "/Scheduler/Reschedule");
                     break;
                 }
                 catch (Exception e)

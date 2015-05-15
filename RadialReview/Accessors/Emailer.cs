@@ -62,7 +62,7 @@ namespace RadialReview.Accessors
         #region Helpers
         private static String EmailBodyWrapper(String htmlBody)
         {
-            var footer = String.Format(EmailStrings.Footer, ProductStrings.ProductName);
+            var footer = String.Format(EmailStrings.Footer, ProductStrings.CompanyName);
             return String.Format(EmailStrings.BodyWrapper, htmlBody, footer);
         }
 

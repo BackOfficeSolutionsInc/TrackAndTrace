@@ -1322,9 +1322,9 @@ namespace RadialReview.Utilities
 		}
 
 
-
-
-
-		
+		public PermissionsUtility ViewVideoL10Recurrence(long recurrenceId)
+		{
+			return ViewL10Recurrence(recurrenceId);
+		}
 	}
 }

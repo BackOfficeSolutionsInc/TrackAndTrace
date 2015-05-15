@@ -53,11 +53,12 @@ namespace RadialReview.Accessors {
                         ActionCode = NexusActions.TakeReview
                     };
                     NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
-
+					var org = reviewContainer.ForOrganization;
+					var productName = Config.ProductName(org);
                     unsentEmails.Add(
                             MailModel.To(user.GetEmail())
                             .Subject(EmailStrings.NewReview_Subject, organizationName)
-							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToShortDateString(), Config.BaseUrl() + "n/" + guid, Config.BaseUrl() + "n/" + guid, ProductStrings.ProductName, reviewContainer.ReviewName)
+							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToShortDateString(), Config.BaseUrl(org) + "n/" + guid, Config.BaseUrl(org) + "n/" + guid, productName, reviewContainer.ReviewName)
                         );
                 }
                 else {
@@ -238,7 +239,7 @@ namespace RadialReview.Accessors {
                         ActionCode = NexusActions.TakeReview
                     };
                     NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
-	                var url = Config.BaseUrl() + "n/" + guid;
+					var url = Config.BaseUrl(organization) + "n/" + guid;
                     unsentEmails.Add(MailModel
                         .To(beingReviewedUser.GetEmail())
                         .Subject(EmailStrings.NewReview_Subject, organization.Name.Translate())

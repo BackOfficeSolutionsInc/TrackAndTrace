@@ -121,6 +121,9 @@
     <value>http://review.radialreview.com/</value>
     <comment>http://localhost:2200/</comment>
   </data>
+  <data name="Company" xml:space="preserve">
+    <value>Radial</value>
+  </data>
   <data name="CompanyName" xml:space="preserve">
     <value>Radial Inc.</value>
   </data>
@@ -131,7 +134,7 @@
     <value>Radial Review</value>
   </data>
   <data name="PurchaseEmail" xml:space="preserve">
-    <value>Clay.Upton@gmail.com</value>
+    <value>clay.upton@radialreview.com</value>
   </data>
   <data name="PurchaseNumber" xml:space="preserve">
     <value>1-402-437-0099</value>

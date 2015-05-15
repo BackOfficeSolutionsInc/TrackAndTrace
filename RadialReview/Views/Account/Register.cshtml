@@ -74,7 +74,7 @@
 }
 
 <div id="regTitle" class="visible-md visible-lg">Radial</div>
-<div id="regSubtitle" class="visible-md visible-lg">Review</div>
+<div id="regSubtitle" class="visible-md visible-lg">@Html.ReviewName()</div>
 
 @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {

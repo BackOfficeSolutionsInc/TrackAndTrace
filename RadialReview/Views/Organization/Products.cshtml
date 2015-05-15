@@ -12,8 +12,12 @@
 	</div>
 	<div class="form-group">
 		@Html.LabelFor(x => x.Settings.EnableReview)
-		@Html.CheckBoxFor(x => x.Settings.EnableReview, new{@class = "checkbox"})
+		@Html.CheckBoxFor(x => x.Settings.EnableReview, new { @class = "checkbox" })
 	</div>
-	
+	<div class="form-group">
+		@Html.LabelFor(x => x.Settings.Branding)
+		@Html.EnumDropDownListFor(x => x.Settings.Branding, new { @class = "form-control" })
+	</div>
+
 	<input type="submit" class="btn btn-primary">
 }

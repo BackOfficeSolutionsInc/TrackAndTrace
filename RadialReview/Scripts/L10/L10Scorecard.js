@@ -66,8 +66,8 @@ function updateMeasurable(id, name, text, value) {
 
 //pass in a .score input
 function updateScore(self) {
-	var goal = $(self).data("goal");
-	var dir = $(self).data("goal-dir");
+	var goal = $(self).attr("data-goal");
+	var dir = $(self).attr("data-goal-dir");
 	var v = $(self).val();
 	//Empty?
 	$(self).removeClass("error");
