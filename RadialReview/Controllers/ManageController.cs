@@ -2,6 +2,7 @@
 using RadialReview.Engines;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.ViewModels;
 using System;
@@ -79,7 +80,7 @@ namespace RadialReview.Controllers
 
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Session);
 			var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
-			var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = -1 }).ToList();
+			var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = 0,TemplateId = x.TemplateId}).ToList();
 
 			for (int i = 0; i < orgTeams.Count(); i++)
 			{
@@ -105,7 +106,7 @@ namespace RadialReview.Controllers
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Members", LifeTime.Session);
 			//var user = GetUser().Hydrate().ManagingUsers(true).Execute();
 
-			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true);
+			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 			//var members = 
 
 			for (int i = 0; i < members.Count(); i++)

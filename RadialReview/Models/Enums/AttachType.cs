@@ -9,5 +9,6 @@ namespace RadialReview.Models.Enums
 	{
 		Invalid= 0,
 		Position = 1,
+		Team = 2,
 	}
 }

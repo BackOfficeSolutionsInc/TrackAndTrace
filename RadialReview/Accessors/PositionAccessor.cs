@@ -45,8 +45,10 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).ManagesUserOrganization(forUserId,false);
+					PermissionsUtility.Create(s, caller).Or(x => x.ManagesUserOrganization(forUserId, false), x => x.EditUserDetails(forUserId));
                     var position = s.Get<OrganizationPositionModel>(positionId);
+					if (position.Organization.Id!= caller.Organization.Id)
+						throw new PermissionsException("Position not available.");
 
                     var pd = new PositionDurationModel(position, caller.Id, forUserId);
 
@@ -72,7 +74,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var posDur=s.Get<PositionDurationModel>(positionDurationId);
-                    PermissionsUtility.Create(s, caller).ManagesUserOrganization(posDur.UserId, false);
+					PermissionsUtility.Create(s, caller).Or(x => x.ManagesUserOrganization(posDur.UserId, false), x => x.EditUserDetails(posDur.UserId));
                     if (posDur.DeleteTime != null)
                         throw new PermissionsException();
 

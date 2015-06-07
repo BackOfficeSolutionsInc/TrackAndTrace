@@ -20,6 +20,10 @@ namespace RadialReview.Accessors
 				case AttachType.Position: return new AttachModel(){
 					Name = s.Get<OrganizationPositionModel>(attachId).NotNull(x=>x.CustomName)
 				};
+				case AttachType.Team: return new AttachModel()
+				{
+					Name = s.Get<OrganizationTeamModel>(attachId).NotNull(x => x.Name)
+				};
 				default:throw new ArgumentOutOfRangeException("type");
 			}
 		}
@@ -29,12 +33,20 @@ namespace RadialReview.Accessors
 			switch (type)
 			{
 				case AttachType.Invalid:return;
-				case AttachType.Position:{
-					var p = s.Get<OrganizationPositionModel>(attachId);
-					p.TemplateId = templateId;
-					s.Update(p);
-					return;
-				}
+				case AttachType.Position:
+					{
+						var p = s.Get<OrganizationPositionModel>(attachId);
+						p.TemplateId = templateId;
+						s.Update(p);
+						return;
+					}
+				case AttachType.Team:
+					{
+						var p = s.Get<OrganizationTeamModel>(attachId);
+						p.TemplateId = templateId;
+						s.Update(p);
+						return;
+					}
 				default: throw new ArgumentOutOfRangeException("type");
 			}
 		}
@@ -46,6 +58,12 @@ namespace RadialReview.Accessors
 				case AttachType.Position:
 					{
 						return s.QueryOver<PositionDurationModel>().Where(x => x.DeleteTime == null && x.Position.Id == attachId)
+							.Select(x => x.UserId)
+							.List<long>().ToList();
+					}
+				case AttachType.Team:
+					{
+						return s.QueryOver<TeamDurationModel>().Where(x => x.DeleteTime == null && x.TeamId == attachId)
 							.Select(x => x.UserId)
 							.List<long>().ToList();
 					}

@@ -14,9 +14,12 @@ namespace RadialReview.Models.Permissions
 		Invalid = 0,
 
 		[Display(Name = "Edit Employee Details")]
-		EditEmployeeDetails = 1
-	}
+		EditEmployeeDetails = 1,
+		
+		/*[Display(Name = "Manage Employee")]
+		ManageEmployees =2*/
 
+	}
 
 	public class PermissionOverride : ILongIdentifiable,IDeletable
 	{

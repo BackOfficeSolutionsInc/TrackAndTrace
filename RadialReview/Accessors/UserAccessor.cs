@@ -795,17 +795,17 @@ namespace RadialReview.Accessors
 					var user = s.Get<UserOrganizationModel>(userId);
 					user.DetachTime = now;
 					user.DeleteTime = now;
-					
-					var newArray = user.User.UserOrganizationIds.ToList();
-					if (!newArray.Remove(userId))
-						throw new PermissionsException("User does not exist.");
 
-					user.User.UserOrganizationIds = newArray.ToArray();
-					
+					if (user.User != null){
+						var newArray = user.User.UserOrganizationIds.ToList();
+						if (!newArray.Remove(userId))
+							throw new PermissionsException("User does not exist.");
+						user.User.UserOrganizationIds = newArray.ToArray();
+					}
+
 
 					var tempUser = user.TempUser;
-					if (tempUser != null)
-					{
+					if (tempUser != null){
 						//s.Delete(tempUser);
 					}
 

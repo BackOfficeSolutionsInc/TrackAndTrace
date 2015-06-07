@@ -556,7 +556,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).EditTeam(teamId).ManagesUserOrganization(userOrgId, false);
+					PermissionsUtility.Create(s, caller).EditTeam(teamId).EditUserDetails(userOrgId);//ManagesUserOrganization(userOrgId,false);
 					var team = s.Get<OrganizationTeamModel>(teamId);
 
 					if (team.Type != TeamType.Standard)

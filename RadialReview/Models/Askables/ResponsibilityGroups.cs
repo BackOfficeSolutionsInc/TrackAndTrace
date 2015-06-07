@@ -96,7 +96,9 @@ namespace RadialReview.Models.Askables
         public virtual Boolean OnlyManagersEdit { get; set; }
         public virtual Boolean InterReview { get; set; }
         public virtual Boolean Secret { get; set; }
-        // public virtual IList<TeamMemberModel> Members { get; set; }
+	    public virtual  long? TemplateId { get; set; }
+
+	    // public virtual IList<TeamMemberModel> Members { get; set; }
         public OrganizationTeamModel() : base()
         {
             // Members = new List<TeamMemberModel>();
@@ -156,8 +158,9 @@ namespace RadialReview.Models.Askables
             Map(x => x.Secret);
             Map(x => x.Type);
             Map(x => x.ManagedBy);
-            Map(x => x.InterReview);
-            Map(x => x.OnlyManagersEdit);
+			Map(x => x.InterReview);
+			Map(x => x.OnlyManagersEdit);
+			Map(x => x.TemplateId);
             //HasMany(x => x.Members).Not.LazyLoad().Cascade.SaveUpdate();
         }
     }

@@ -461,7 +461,7 @@ namespace RadialReview.Controllers
 							filterContext.Controller.ViewBag.UserId = oneUser.Id;
 							filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
 							filterContext.Controller.ViewBag.Organization = oneUser.Organization;
-							filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
+							filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x=>x.Hints);
 
 						}
 						else

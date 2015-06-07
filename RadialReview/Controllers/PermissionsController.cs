@@ -77,7 +77,8 @@ namespace RadialReview.Controllers
 				CopyFrom = x.AsUser.Id,
 				ForUser =  x.ForUser.Id,
 				PermissionType = x.Permissions,
-				PossibleUsers = allUsers
+				PossibleUsers = allUsers,
+				Id = x.Id
 			}).ToList();
 
 			return View(ps);

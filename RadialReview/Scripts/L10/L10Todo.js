@@ -14,6 +14,8 @@ $(function () {
 		var details = $(todoRow).data("details");
 		//var issueId = $(todoRow).data("issue");
 		var todo = $(todoRow).data("todo");
+
+		var due =  new Date(new Date(duedate).toUTCString().substr(0,16));
 		//var recurrence_issue = $(todoRow).data("recurrence_issue");
 		var checked = $(todoRow).find(".issue-checkbox").prop("checked");
 
@@ -37,8 +39,8 @@ $(function () {
 				"<div >" +
 					"<span class='gray' style='width:75px;display:inline-block'>Due date:</span>" +
 					"<span style='width:250px;padding-left:10px;' class='duedate' data-accountable='" + accountable + "' data-todo='" + todo + "' >" +
-						"<span class='date' style='display:inline-block' data-date='" + new Date(duedate).toLocaleDateString() + "' data-date-format='dd-mm-yyyy'>" +
-							"<input type='text' data-todo='" + todo + "' class='form-control datePicker' value='" + new Date(duedate).toLocaleDateString() + "'/>" +
+						"<span class='date' style='display:inline-block' data-date='" + due.toLocaleDateString() + "' data-date-format='dd-mm-yyyy'>" +
+							"<input type='text' data-todo='" + todo + "' class='form-control datePicker' value='" + due.toLocaleDateString() + "'/>" +
 						"</span>" +
 					"</span>" +
 				"</div>" +

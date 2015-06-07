@@ -18,6 +18,7 @@ namespace RadialReview.Models.ViewModels
     {
         public OrganizationTeamModel Team {get;set;}
         public int Members { get; set; }
+		public long? TemplateId { get; set; }
     }
 
     public class OrganizationTeamCreateViewModel

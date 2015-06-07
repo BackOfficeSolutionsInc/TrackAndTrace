@@ -1,7 +1,11 @@
-﻿using NHibernate;
+﻿using System.Collections.Specialized;
+using FluentNHibernate.Utils;
+using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Permissions;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -44,13 +48,18 @@ namespace RadialReview.Accessors
                 if (found == null)
                     throw new PermissionsException("You don't have access to this user");
             }
+			//var allPermissions = s.QueryOver<PermissionOverride>().Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == PermissionType.ManageEmployees).Select(x => x.AsUser.Id).List<long>().ToList();
+			//allPermissions.Add(userId);
+			var allPermissions = new List<long>(){userId};
+
 
             UserOrganizationModel alias=null;
 
             var subordinates = s.QueryOver(()=>alias)
                                 .WithSubquery.WhereExists(
                                     QueryOver.Of<DeepSubordinateModel>()
-                                        .Where(e => e.DeleteTime==null && e.ManagerId == userId)
+                                        .Where(e => e.DeleteTime==null)
+										.WhereRestrictionOn(x=>x.ManagerId).IsIn(allPermissions)
                                         .Where(d => d.SubordinateId == alias.Id)
                                         .Select(d=>d.Id))
                                         .List().ToList();
@@ -62,20 +71,28 @@ namespace RadialReview.Accessors
             return subordinates;
         }
 
-        public static List<long> GetSubordinatesAndSelf(ISession s, UserOrganizationModel caller, long userId)
+        public static List<long> GetSubordinatesAndSelf(ISession s, UserOrganizationModel caller, long userId,PermissionType? type=null)
         {
-            if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller))
-            {
+
+            if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller)){
                 var found = s.QueryOver<DeepSubordinateModel>().Where(x => x.DeleteTime == null && x.ManagerId == caller.Id && x.SubordinateId == userId).SingleOrDefault();
                 if (found == null)
                     throw new PermissionsException("You don't have access to this user");
             }
+			var allPermitted = new List<long>() { userId };
+			if (type!=null)
+				allPermitted.AddRange(s.QueryOver<PermissionOverride>().Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == type).Select(x => x.AsUser.Id).List<long>().ToList());
+			
+			//allPermissions.Add(userId);
+
             var subordinates = s.QueryOver<DeepSubordinateModel>()
-                                    .Where(x => x.DeleteTime == null && x.ManagerId == userId)
+                                    .Where(x => x.DeleteTime == null)
+									.WhereRestrictionOn(x => x.ManagerId).IsIn(allPermitted)
                                     .Select(x=>x.SubordinateId)
                                     .List<long>()
                                     .ToList();
 			subordinates.Add(userId);
+
             return subordinates.Distinct().ToList();
         }
 

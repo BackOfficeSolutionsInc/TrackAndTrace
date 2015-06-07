@@ -1,9 +1,11 @@
-﻿using RadialReview.Accessors;
+﻿using FluentNHibernate;
+using RadialReview.Accessors;
 using RadialReview.Engines;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.ViewModels;
@@ -260,7 +262,12 @@ namespace RadialReview.Controllers
         public ActionResult Positions(long id)
         {
             var userId = id;
-            var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().PersonallyManaging(GetUser()).Execute();
+
+
+
+            var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
+			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
+			user.SetPersonallyManaging(members.Any(x => x.UserId == userId && x._PersonallyManaging));//.Hydrate().PersonallyManaging(GetUser()).Execute();
 
             return View(user);
         }
@@ -328,9 +335,11 @@ namespace RadialReview.Controllers
         {
             var userId = id;
             var teams = _TeamAccessor.GetUsersTeams(GetUser(), userId);
-            var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Execute();
+            var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();//.PersonallyManaging(GetUser());
 
-
+			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
+			user.SetPersonallyManaging(members.Any(x => x.UserId == userId && x._PersonallyManaging));//.Hydrate().PersonallyManaging(GetUser()).Execute();
+			
             return View(user);
         }
 

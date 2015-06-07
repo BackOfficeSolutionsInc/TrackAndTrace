@@ -6,6 +6,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Periods;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Utilities;
 using System;
@@ -477,7 +478,7 @@ namespace RadialReview.Accessors
                                         .List()
                                         .ToListAlive();
 
-                    var deep = DeepSubordianteAccessor.GetSubordinatesAndSelf(s,caller,caller.Id);
+					var deep = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
 
                     //var classes = "organizations".AsList("admin");
 
@@ -740,7 +741,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public List<UserLookup> GetOrganizationMembersLookup(UserOrganizationModel caller, long organizationId,bool populatePersonallyManaging)
+		public List<UserLookup> GetOrganizationMembersLookup(UserOrganizationModel caller, long organizationId,bool populatePersonallyManaging,PermissionType? type=null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -749,7 +750,10 @@ namespace RadialReview.Accessors
 					PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
 					var users = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
 					if (populatePersonallyManaging){
-						var subs=DeepSubordianteAccessor.GetSubordinatesAndSelf(s,caller,caller.Id);
+						var subs=DeepSubordianteAccessor.GetSubordinatesAndSelf(s,caller,caller.Id,type);
+
+
+
 						users.ForEach(u=>u._PersonallyManaging = subs.Contains(u.UserId));
 					}
 

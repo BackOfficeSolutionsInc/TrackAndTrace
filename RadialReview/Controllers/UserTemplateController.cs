@@ -14,11 +14,15 @@ namespace RadialReview.Controllers
     {
         // GET: UserTemplate
 		[Access(AccessLevel.Manager)]
-		public ActionResult Create(long id, AttachType type)
+		public ActionResult Create(long id, string type)
 		{
+			var ttype = AttachType.Invalid;
+
+			Enum.TryParse(type, true, out ttype);
+			
 			var ut = new UserTemplate(){
 				AttachId = id,
-				AttachType = AttachType.Position,
+				AttachType = ttype,
 				OrganizationId = GetUser().Organization.Id,
 			};
 
