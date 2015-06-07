@@ -13,6 +13,20 @@
 	{
 		<script>
  			var VideoChatRoomId = @((long)ViewBag.VideoChatRoom);
+ 			var ICE_SERVERS = null;
+
+ 			$.ajax({
+ 				url: "/WebRtc/getIceServers?room=" + VideoChatRoomId,
+ 				success: function(data) {
+ 					if (showJsonAlert(data)) {
+						 ICE_SERVERS = data.Object;
+					 }
+ 				},
+				error:function(data) {
+					ICE_SERVERS = [{ url: 'stun:74.125.142.127:19302' }];
+				}
+ 			});
+
  		</script>
 
 		<script src="~/Scripts/L10/AV/adapter.js"></script>

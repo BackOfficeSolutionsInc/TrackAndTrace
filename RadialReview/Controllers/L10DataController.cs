@@ -14,6 +14,8 @@ using RadialReview.Models.L10.VM;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
+using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Controllers
 {
@@ -96,6 +98,32 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess());
 		}
 
+	    [HttpPost]
+	    [Access(AccessLevel.UserOrganization)]
+	    public JsonResult UpdateArchiveMeasurable(string pk, string name, string value)
+		{
+			var measurableId = pk.Split('_')[0].ToLong();
+			var recurrenceId = pk.Split('_')[1].ToLong();
+			string title = null;
+			LessGreater? direction = null;
+			decimal? target = null;
+			long? adminId = null;
+			long? accountableId = null;
+			switch (name)
+			{
+				case "target": target = value.ToDecimal(); break;
+				case "direction": direction = (LessGreater)Enum.Parse(typeof(LessGreater), value); break;
+				case "title": title = value; break;
+				case "admin": adminId = value.ToLong(); break;
+				case "accountable": accountableId = value.ToLong(); break;
+				default: throw new ArgumentOutOfRangeException("name");
+			}
+
+			L10Accessor.UpdateArchiveMeasurable(GetUser(), measurableId, recurrenceId, title, direction, target, accountableId, adminId);
+			return Json(ResultObject.SilentSuccess());
+	    }
+
+
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult UpdateMeasurable(long pk,string name,string value)
@@ -118,6 +146,35 @@ namespace RadialReview.Controllers
 
 			L10Accessor.UpdateMeasurable(GetUser(), meeting_measureableId, title, direction, target,accountableId,adminId);
 			return Json(ResultObject.SilentSuccess());
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public FileContentResult ExportScorecard(long id,string type="csv")
+		{
+			var scores = L10Accessor.GetScoresForRecurrence(GetUser(),id);
+			var recur=L10Accessor.GetL10Recurrence(GetUser(), id, false);
+
+			switch(type.ToLower()){
+				case "csv":{
+					var csv = new Csv();
+					csv.SetTitle("Measurable");
+					foreach (var s in scores.GroupBy(x => x.MeasurableId)){
+						var ss = s.First();
+						csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.GetName());
+						csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.GetName());
+						csv.Add(ss.Measurable.Title, "Target", "" + ss.Measurable.Goal);
+						csv.Add(ss.Measurable.Title, "TargetDirection", "" + ss.Measurable.GoalDirection);
+					}
+					foreach (var s in scores.OrderBy(x=>x.ForWeek)){
+						csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(), s.Measured.NotNull(x => x.Value.ToString()) ?? "");
+					}
+					
+					return File(new System.Text.UTF8Encoding().GetBytes(csv.ToCsv()), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name +"_Scorecard.csv");
+					break;
+				}
+				default: throw new Exception("Unrecognized Type");
+			}
+		
 		}
 		#endregion
 
@@ -175,6 +232,16 @@ namespace RadialReview.Controllers
 			var recurrenceId = id;
 			L10Accessor.UpdateTodo(GetUser(), todoId, complete:@checked, connectionId:connectionId);
 			return Json(ResultObject.SilentSuccess(@checked));
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateTodoDate(long id, long date)
+		{
+			var todo = id;
+			var dateR = date.ToDateTime();
+			L10Accessor.UpdateTodo(GetUser(), id, dueDate: dateR);
+			return Json(ResultObject.SilentSuccess(date.ToString()));
 		}
 
 		[Access(AccessLevel.UserOrganization)]

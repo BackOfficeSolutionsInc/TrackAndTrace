@@ -36,6 +36,7 @@
 		<td style="vertical-align: top;min-width: 25px;text-align: center">
 			<input ng-model-options="{debounce: 200}"  type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />
 		</td>
+		<td><profile-image user="issue.Owner"></profile-image></td>
 		<td style="width:100%">
 			<input ng-model-options="{debounce: 200}"  type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" />
 		</td>

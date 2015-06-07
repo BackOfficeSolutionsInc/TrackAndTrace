@@ -3,11 +3,16 @@
 @{
     ViewBag.Title = "Teams - " + Model.GetName();
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Members";
+    ViewBag.Page = "Teams";
 }
 
 @section header{
     @Html.Partial("Partial/manageheader")
+}
+@section top{
+    <div class="jumbotron">
+        <h1>Manage</h1>
+    </div>
 }
 
 <div class="panel panel-primary">
@@ -35,7 +40,7 @@
             <th class="alignCenter rightButton">End</th>
             <th style="width:10px;"></th>
         </tr>
-        @foreach (var p in Model.Teams.OrderBy(x => x.DeleteTime).ThenBy(x => x.Team.Type != RadialReview.Models.Enums.TeamType.Standard).ThenBy(x => x.Team.Name))
+        @foreach (var p in Model.Teams.OrderBy(x => x.DeleteTime).ThenBy(x => x.Team.Type != RadialReview.Models.Enums.TeamType.Standard).ThenBy(x => x.Team.Name).Where(x=>x.DeleteTime==null))
         {
             <tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
                 <td class="">

@@ -21,12 +21,25 @@
 		<h3 class="panel-title">Company Values:</h3>
 	</div>
 	<div class="panel-body numbers">
-		@if (Model.CompanyValues.Any()){
-			<ol>
+		@if (Model.CompanyValues.Any())
+		{
+			int i = 1;
+			<table>
 				@foreach (var r in Model.CompanyValues){
-					<li class="font-size:19px;">@r</li>
+					<tr class="font-size:19px;vertical-align:top;">
+						<td style="vertical-align:top;">@(i).</td>
+						<td><b>@r.CompanyValue</b></td>
+					</tr>
+					if (!String.IsNullOrWhiteSpace(r.CompanyValueDetails))
+					{
+						<tr class="font-size:14px;">
+							<td></td>
+							<td>@r.CompanyValueDetails</td>
+						</tr>
+					}
+					i++;
 				}
-			</ol>
+			</table>
 		}
 		else{
 			<span class="gray">No Company Values. Click edit to add some.</span>
@@ -186,6 +199,13 @@
 					</div>
 					<div class="col-sm-4">
 						@Html.DropDownListFor(x => x.TimeZone,Model.TimeZones, new { @class = "form-control" })
+					</div>
+				</div>	<div class="row">
+					<div class="col-sm-3">
+						<label class="control-label">Week start:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.EnumDropDownListFor(x => x.WeekStart, new { @class = "form-control" })
 					</div>
 				</div>
 				<br />

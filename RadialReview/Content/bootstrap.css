@@ -6007,7 +6007,8 @@ button.close {
     .modal-dialog {
         right: auto;
         left: 50%;
-        width: 600px;
+        width: 50%;
+	    min-width: 600px;
         padding-top: 30px;
         padding-bottom: 30px;
     }

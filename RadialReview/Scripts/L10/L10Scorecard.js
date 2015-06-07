@@ -1,22 +1,36 @@
 ﻿var mode = "scan";
 
-$(function() {
+$(function () {
 
-	$(".main-window-container").on("change", ".score input", function(e, d) {
+	/*window.onbeforeunload = function(e) {
+		return 'dialog';
+		if (window.onbeforeunload) {
+			debugger;
+			console.log("unload exists");
+			window.onbeforeunload();
+		}
+		if ($(":focus").length) {
+			$(":focus").blur();
+		}
+
+
+	};*/
+
+	$(".main-window-container").on("change", ".score input", function (e, d) {
 		updateScore(this);
 		if (!d) {
 			updateServerScore(this);
 		}
 	});
 	$('.main-window-container').on('keydown', ".grid", changeInput);
-	$('.main-window-container').on('click', ".grid", function(e, d) { if (!d)mode = "scan"; });
-	$('.main-window-container').on('change', ".grid", function(e, d) { if (!d) mode = "type"; });
-	$('.main-window-container').on('scroll', ".grid", function(e) {
+	$('.main-window-container').on('click', ".grid", function (e, d) { if (!d) mode = "scan"; });
+	$('.main-window-container').on('change', ".grid", function (e, d) { if (!d) mode = "type"; });
+	$('.main-window-container').on('scroll', ".grid", function (e) {
 		if (mode == "type") {
 			e.preventDefault();
 		}
 	});
-	
+
 	/*$("body").on("click", ".scorecard-table .target.direction", function(e, d) {
 		$(this).html("<select><option>");
 	});*/
@@ -31,7 +45,7 @@ function updateServerScore(self) {
 	var val = $(self).val();
 	var dom = $(self).attr("id");
 	$.ajax({
-		url: "/l10/UpdateScore/" + MeetingId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val+"&dom="+dom,
+		url: "/l10/UpdateScore/" + MeetingId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val + "&dom=" + dom,
 		success: function (data) {
 
 			if (data.Error) {
@@ -47,11 +61,22 @@ function updateServerScore(self) {
 	});
 }
 
-function addMeasurable(data) {
+function addMeasurable(data,smallTable) {
 	//var row = $("<tr></tr>");
 	//row.append("<td>")
+	$("#ScorecardTable").append(data);
+	$("#ScorecardTable_Over").append(smallTable);
+	updateScore($("#ScorecardTable").find(".score input").last());
+}
 
-	$(".scorecard-table").append(data);
+function updateArchiveMeasurable(id, name, text, value) {
+	var sel = $("[data-measurable='" + id + "'][data-name='" + name + "']");
+
+	sel.html(text);
+	if (typeof value === 'undefined')
+		value = text;
+	sel.attr("data-value", value);
+	highlight(sel);
 }
 
 function updateMeasurable(id, name, text, value) {
@@ -65,10 +90,15 @@ function updateMeasurable(id, name, text, value) {
 }
 
 //pass in a .score input
-function updateScore(self) {
+function updateScore(self,skipChart) {
+	
 	var goal = $(self).attr("data-goal");
 	var dir = $(self).attr("data-goal-dir");
 	var v = $(self).val();
+	var id = $(self).attr("data-measurable");
+
+	var r1 = "";
+	var r2 = "";
 	//Empty?
 	$(self).removeClass("error");
 	$(self).removeClass("success");
@@ -92,12 +122,94 @@ function updateScore(self) {
 	} else {
 		$(self).addClass("error");
 	}
+	var arr = [];
+	var row = $("tr[data-measurable=" + id + "]");
+	var min = goal;
+	var max = goal;
+	row.find("td.score").each(function (i) {
+		var v = parseFloat($(this).find("input").val());
+		if (Number.isNaN(v))
+			arr.push(null);
+		else {
+			min = Math.min(min, v);
+			max = Math.max(max, v);
+
+			if (dir == "GreaterThan") {
+				if (+v >= +goal)
+					arr.push(v);
+				else
+					arr.push(v);
+			} else {
+				if (+v < +goal)
+					arr.push(v);
+				else
+					arr.push(v);
+			}
+		}
+	});
+
+	var range;
+	var green = 'rgb(92 ,184,92)';
+	var red = 'rgb(217 ,83, 79)';
+	if (dir == "GreaterThan") {
+		var d = {};
+		d[(":" + goal)] = red;
+		d[(goal + ":")] = green;
+		range = $.range_map(d);
+	} else {
+		var d = {};
+		d[(goal + ":")] = red;
+		d[(":"+goal)] =green;
+		range = $.range_map(d);
+	}
+
+	if (goal < 150) {
+		min = Math.min(0,min);
+	}
+
+	var delta = (max - min);
+
+	if (!skipChart) {
+		row.find(".inlinesparkline").sparkline(arr, {
+			type: 'bar',
+			nullColor: 'rgb(230,230,230)',
+			zeroAxis: true,
+			colorMap: range,
+			disableTooltips: true,
+			chartRangeMin: min - delta * .1,
+			chartRangeMax: max + delta * .1,
+			barWidth: 3
+		});
+	}
 }
+
+//var functionLock = false;
+//var functionCallbacks = [];
+//var lockingFunction = function(callback) {
+//	if (functionLock) {
+//		functionCallbacks.push(callback);
+//	} else {
+//		functionCallbacks.push(callback);
+//		while (functionCallbacks.length) {
+//			var thisCallback = functionCallbacks.pop();
+//			thisCallback();
+//		}
+//	}
+//};
+////function changeInput() {
+//	var that = this;
+//	lockingFunction(function() {
+//		changeInput_lock.apply(that);
+//	});
+//}
+
+var curColumn = -1;
+var curRow = -1;
 
 function changeInput() {
 	var found;
 	var goingLeft = false;
-	var goingRight=false;
+	var goingRight = false;
 	if (mode == "scan" ||
 		event.which == 38 ||	//pressing up
 		event.which == 40 ||	//pressing down
@@ -107,14 +219,18 @@ function changeInput() {
 		) {
 		if (event.which == 37) { //left
 			found = $(".grid[data-col=" + (+$(this).data("col") - 1) + "][data-row=" + $(this).data("row") + "]");
+			//found = $(".grid[data-col=" + (curColumn - 1) + "][data-row=" + curRow + "]");
 			goingLeft = true;
 		} else if (event.which == 38) { //up
 			found = $(".grid[data-row=" + (+$(this).data("row") - 1) + "][data-col=" + $(this).data("col") + "]");
+			//found = $(".grid[data-row=" + (curRow - 1) + "][data-col=" + curColumn + "]");
 		} else if (event.which == 39) { //right
 			found = $(".grid[data-col=" + (+$(this).data("col") + 1) + "][data-row=" + $(this).data("row") + "]");
+			//found = $(".grid[data-col=" + (curColumn + 1) + "][data-row=" + curRow + "]");
 			goingRight = true;
-		} else if (event.which == 40 || event.which==13) { //down
+		} else if (event.which == 40 || event.which == 13) { //down
 			found = $(".grid[data-row=" + (+$(this).data("row") + 1) + "][data-col=" + $(this).data("col") + "]");
+			//found = $(".grid[data-row=" + (curRow + 1) + "][data-col=" + curColumn + "]");
 		}
 		var keycode = event.which;
 		var validPrintable =
@@ -137,9 +253,12 @@ function changeInput() {
 	}
 
 	var input = this;
-	setTimeout(function () {
-		updateScore(input);
-	}, 1);
+	var noop = [38, 40, 13, 37, 39];
+	if (noop.indexOf(event.which) == -1) {
+		setTimeout(function() {
+			updateScore(input);
+		}, 1);
+	}
 
 
 	if (found) {
@@ -154,7 +273,8 @@ function changeInput() {
 			var scale = parent.find("table").width() / parentWidth;
 
 			$(found).focus();
-
+			curColumn = $(found).data("col");
+			curRow = $(found).data("row");
 
 			setTimeout(function () {
 				$(found).select();

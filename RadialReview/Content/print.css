@@ -156,7 +156,7 @@
 
 .table-io.companyValues .fill:after {
 	/*color: black !important;*/
-	padding-top: 13px;
+	padding-top: 4px;
 }
 
 .table-io.companyValues .fill:not(.hasReason):not(.score):not(.Indeterminate):after {
@@ -266,15 +266,15 @@ svg .legend {
 
 .companyValues .fill:before {
 	content: "";
-	border: 25px solid;
+	border: 16px solid;
 	font-weight: bold;
 	position: absolute;
 	top: -4px !important;
 	left: -4px !important;
-	-moz-border-radius: 25px;
-	-webkit-border-radius: 25px;
-	-ms-border-radius: 25px;
-	border-radius: 25px;
+	-moz-border-radius: 18px;
+	-webkit-border-radius: 18px;
+	-ms-border-radius: 18px;
+	border-radius: 18px;
 }
 
 .valueTable .fill:before {
@@ -358,7 +358,11 @@ svg .legend {
 	}
 
 .zoom8 .fixedWidth:after {
-	width: 160px;
+	max-width: 160px;
+}
+
+.fixed-width {
+	max-width: 100px;
 }
 
 .zoom8 .companyValues-client .fill:after {
@@ -493,7 +497,7 @@ svg .legend {
 }
 
 .companyValues .fixedWidth:after {
-	width: 100px;
+	width: 80px;
 }
 
 .axis {
@@ -588,4 +592,45 @@ font-size: 9px;
 	min-height: 400px;
 	overflow-y: visible !important;
 	height: inherit !important;
+}
+
+.table-io.companyValues .fill {
+	width: 32px;
+	height: 32px;
+	-moz-border-radius: 32px;
+	-webkit-border-radius: 32px;
+	-ms-border-radius: 32px;
+	border-radius: 32px;
+}
+
+.employee-name {
+	padding-bottom: 35px;
+	border-bottom: 1px solid #D0D0D0;
+}
+
+
+.table-header-rotated th.rotate-45{
+  height: 80px;
+  width: 35px;
+  min-width: 35px;
+  max-width: 35px;
+  position: relative;
+  vertical-align: bottom;
+  padding: 0;
+  font-size: 12px;
+  line-height: 0.8;
+}
+
+.table-header-rotated th.rotate-45 span {
+  -ms-transform: skew(45deg,0deg) rotate(315deg);
+  -moz-transform: skew(45deg,0deg) rotate(315deg);
+  -webkit-transform: skew(45deg,0deg) rotate(315deg);
+  -o-transform: skew(45deg,0deg) rotate(315deg);
+  transform: skew(45deg,0deg) rotate(315deg);
+  position: absolute;
+  bottom: 30px;
+  left: -29px;
+  display: inline-block;
+  width: 85px;
+  text-align: left;
 }

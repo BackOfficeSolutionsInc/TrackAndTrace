@@ -122,5 +122,14 @@ namespace RadialReview.Properties {
                 return ResourceManager.GetString("PurchaseNumber", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to support@radialreview.com.
+        /// </summary>
+        public static string SupportEmail {
+            get {
+                return ResourceManager.GetString("SupportEmail", resourceCulture);
+            }
+        }
     }
 }

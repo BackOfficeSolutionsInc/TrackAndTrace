@@ -1,74 +1,82 @@
-﻿
-@using RadialReview.Models.Enums
+﻿@using RadialReview.Models.Enums
 @model RadialReview.Models.ViewModels.OrganizationTeamsViewModel
 
 @{
-    ViewBag.Title = "Teams";
-    ViewBag.Page = "Teams";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Teams";
+	ViewBag.Page = "Teams";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section top{
-    <div class="jumbotron">
-        <h1>Manage</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>Manage</h1>
+	</div>
 }
 
 @section header{
-    @Html.Partial("Partial/manageheader")
+	@Html.Partial("Partial/manageheader")
 }
 @section hints{
-    @Html.AlertBoxDismissable("The next step is adding teams to your organization. To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
+	@Html.AlertBoxDismissable("The next step is adding teams to your organization. To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
 }
 <div class="panel panel-primary">
-    <div class="panel-heading-button">
-        <button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal?refresh=true")">Add</button>
-    </div>
-    <div class="panel-heading">
-        <h3 class="panel-title">Manage Teams</h3>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-condensed">
-            <tr>
-                <th style="width:25px;"></th>
-                <th>Name</th>
-                <th style="width:10px" class=""></th>
-                <th style="width:10px" class="">Members</th>
-                @*<th style="width:10px" class="">Questions</th>*@
-            </tr>
-            @foreach (var p in Model.Teams.Alive().OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
-            {
-                <tr class="team @p.Team.Type">
-                    <td class="">
-                        @*@((p.Team.Type != RadialReview.Models.Enums.TeamType.Standard).GetIcon("glyphicon-flash  darkGray ", "glyphicon glyphicon-list-alt darkGray ", "Auto-generated", "Custom team"))*@
-                        @((p.Team.InterReview).GetIcon("glyphicon glyphicon-random darkGray", "glyphicon glyphicon-question-sign darkGray", "Members review each other.", "Members share questions"))
+	<div class="panel-heading-button">
+		<button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal?refresh=true")">Add</button>
+	</div>
+	<div class="panel-heading">
+		<h3 class="panel-title">Manage Teams</h3>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-condensed">
+			<tr>
+				<th style="width:25px;"></th>
+				<th>Name</th>
+				<th style="width:10px" class=""></th>
+				<th colspan="1" style="width:10px" class="">Members</th>
+				<th></th>
+				@*<th style="width:10px" class="">Questions</th>*@
+			</tr>
+			@foreach (var p in Model.Teams.Alive().OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
+			{
+				<tr class="team @p.Team.Type">
+					<td class="">
+						@*@((p.Team.Type != RadialReview.Models.Enums.TeamType.Standard).GetIcon("glyphicon-flash  darkGray ", "glyphicon glyphicon-list-alt darkGray ", "Auto-generated", "Custom team"))*@
+						@((p.Team.InterReview).GetIcon("glyphicon glyphicon-random darkGray", "glyphicon glyphicon-question-sign darkGray", "Members review each other.", "Members share questions"))
 
-                    </td>
-                    <td>
-                        @p.Team.Name
+					</td>
+					<td>
+						@p.Team.Name
+					</td>
+					<td style="width:10px" class="alignCenter"></td>
+					<td style="width:10px">
+						<a href="@Url.Action("Edit", "Team", new { id = p.Team.Id })" class="fullWidth">
+							@if (p.Members == -1)
+							{
+								@:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NA
+												}
+							else
+							{
+								@Html.ViewOrEdit(p.Team.GetEditable() && p.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
+								@p.Members
+							}
+						</a>
+
+					</td>
+					@*<td class="alignCenter"  style="width:30px">
+
+						</td>*@
+					<td style="width:10px">
 						@if (p.Team.GetEditable())
 						{
-							<div onclick="@Html.ShowModal("Edit Team", "/Team/Modal/" + p.Team.Id, "/Team/Modal")" class="editButton"></div>
+							<div class="btn-link" onclick="@Html.ShowModal("Edit Team", "/Team/Modal/" + p.Team.Id, "/Team/Modal")">edit</div>
 						}
-                    </td>
-                    <td style="width:10px" class="alignCenter"></td>
-                    <td class=" ">
-	                    <a href="@Url.Action("Edit", "Team", new { id = p.Team.Id })" class="fullWidth">
-		                    @if (p.Members == -1){
-								@:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NA
-		                    }
-		                    else{
-			                    @Html.ViewOrEdit(p.Team.GetEditable() && p.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
-			                    @p.Members
-		                    }
-	                    </a>
-                    </td>
-                    @*<td class=" ">
-						<a href="@Url.Action("Edit", "Responsibilities", new { id = p.Team.Id })" class="fullWidth">
-						@Html.ViewOrEdit(p.Team.GetEditable()) @p.Team.Responsibilities.Count()
-						</a>
-					</td>*@
-                </tr>
-            }
-        </table>
-    </div>
+					</td>
+					@*<td class=" ">
+							<a href="@Url.Action("Edit", "Responsibilities", new { id = p.Team.Id })" class="fullWidth">
+							@Html.ViewOrEdit(p.Team.GetEditable()) @p.Team.Responsibilities.Count()
+							</a>
+						</td>*@
+				</tr>
+			}
+		</table>
+	</div>
 </div>

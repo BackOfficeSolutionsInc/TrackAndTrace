@@ -40,10 +40,15 @@ line-height: 18px;
 }*/
 
 .issues-list > .issue-row {
-	border: 1px solid #CCC;
+	/*border: 1px solid #CCC;
 	background: #EEE;
 	padding: 4px;
-	margin: 6px;
+	margin: 6px;*/
+	border: 1px solid #DDD;
+	padding: 0 5px;
+	margin: 5px;
+	border: 1px solid #CCC;
+	background: #EEE;
 }
 /*.issues-list > .issue-row >.fill{
 	/*display: flex;
@@ -70,7 +75,7 @@ line-height: 18px;
 }
 .issues-list > .issue-row.selected > .message {
 	font-weight: bold;
-	top: 2px;
+	top: -4px;
 	position: relative;
 	color: #3B70CB !important;
 }
@@ -83,9 +88,14 @@ line-height: 18px;
 	display: none;
 }
 .issues-list > .issue-row > .issue-checkbox {
+	/*display: inline-block;
+	position: relative;
+	left: -24px;*/
+
 	display: inline-block;
 	position: relative;
 	left: -24px;
+	top: -5px;
 }
 
 
@@ -104,10 +114,16 @@ line-height: 18px;
 	cursor: move;
 }
 .issues-list .move-icon {
-	display: inline-block;
+	/*display: inline-block;
 	position: relative;
 	left: -16px;
 	top: -2px;
+	cursor: move;*/
+	color: #8E8E8E;  
+	display: inline-block;
+	position: relative;
+	left: -16px;
+	top: -8px;
 	cursor: move;
 	color: #8E8E8E;
 }
@@ -131,12 +147,12 @@ line-height: 18px;
 .issues-list .message {
 	display: inline-block;
 	position: relative;
-	top: 1px;
+	top: -4px;
 	left: -16px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	width: calc(100% - 70px);
+	width: calc(100% - 103px);
 	font-size: 18px;
 	min-height: 19px;
 }
@@ -150,6 +166,7 @@ line-height: 18px;
 }
 .issues-list > .issue-row > .btn-group {
 	display: inline-block;
+	padding-top: 6px;
 }
 
 .issues-list .issue-row .btn-group .issuesButton {
@@ -189,9 +206,13 @@ line-height: 18px;
 }
 
 .issues-list > .issue-row > ol {
-	padding-left: 35px;
+	padding-left: 35px; 
 }
 
+
+.issues-list > .issue-row > ol:not(:empty) {
+	padding-top: 5px;
+}
 .detailsBtn {
 	/*height: 18px;
 	width: 23px;
@@ -381,4 +402,38 @@ body.dragging, body.dragging * {
     -moz-user-select: text;
     -ms-user-select: text;
     user-select:text ;
+}
+
+.ids .profile-image{
+  position: relative;
+}
+.ids .picture-container {
+  position: relative;
+  top: 1px;
+  left: -16px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #DDD;
+  padding: 1px;
+  background-color: #FFF;
+}
+.ids .picture {
+  display: inline-block;
+}
+
+.issues-list > .issue-row ol .profile-image {
+  display: none;
+}
+
+.issueDetails .dd-list .profile-image {
+  display: none;
+}
+
+.issueDetails .message-input {
+	width: 90%;
+	width: calc(100% - 20px);
+}
+
+.issueDetails .issue-details {
+	 white-space: pre;
 }

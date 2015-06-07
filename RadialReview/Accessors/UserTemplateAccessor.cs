@@ -165,6 +165,7 @@ namespace RadialReview.Accessors
 						});
 						//user.NumMeasurables += 1;
 						s.Update(user);
+						s.Flush();
 						user.UpdateCache(s);
 					}
 
@@ -211,6 +212,7 @@ namespace RadialReview.Accessors
 						});
 						//user.NumRoles += 1;
 						s.Update(user);
+						s.Flush();
 						user.UpdateCache(s);
 					}
 
@@ -268,6 +270,7 @@ namespace RadialReview.Accessors
 
 						//user.NumRocks += 1;
 						s.Update(user);
+						s.Flush();
 						user.UpdateCache(s);
 					}
 
@@ -307,16 +310,17 @@ namespace RadialReview.Accessors
 						r.PeriodId = periodId;
 						r.Period = period;
 						r.DeleteTime = deleteTime;
+						s.Update(r);
 						if (deleteTime.HasValue)
 						{
 							var u = s.Get<UserOrganizationModel>(r.ForUserId);
 							//u.NumRocks -= 1;
 							if (u != null){
 								s.Update(u);
+								s.Flush();
 								u.UpdateCache(s);
 							}
 						}
-						s.Update(r);
 					}
 
 					tx.Commit();
@@ -349,15 +353,16 @@ namespace RadialReview.Accessors
 					{
 						r.Role = role;
 						r.DeleteTime = deleteTime;
+						s.Update(r);
 						if (deleteTime.HasValue){
 							var u =s.Get<UserOrganizationModel>(r.ForUserId);
 							//u.NumRoles -= 1;
 							if (u != null){
 								s.Update(u);
+								s.Flush();
 								u.UpdateCache(s);
 							}
 						}
-						s.Update(r);
 					}
 
 
@@ -395,6 +400,7 @@ namespace RadialReview.Accessors
 						m.Goal = goal;
 						m.GoalDirection= goalDirection;
 						m.DeleteTime = deleteTime;
+						s.Update(m);
 						if (deleteTime.HasValue)
 						{
 							var u = s.Get<UserOrganizationModel>(m.AccountableUserId);
@@ -402,10 +408,10 @@ namespace RadialReview.Accessors
 
 							if (u != null){
 								s.Update(u);
+								s.Flush();
 								u.UpdateCache(s);
 							}
 						}
-						s.Update(m);
 					}
 					tx.Commit();
 					s.Flush();
@@ -472,6 +478,7 @@ namespace RadialReview.Accessors
 			{
 				s.Save(new RockModel()
 				{
+					OnlyAsk = AboutType.Self,
 					ForUserId = user.Id,
 					OrganizationId = organization.Id,
 					FromTemplateItemId = a.Id,
@@ -521,6 +528,7 @@ namespace RadialReview.Accessors
 			};
 			s.Save(utUser);
 			s.Update(user);
+			s.Flush();
 			user.UpdateCache(s);
 		}
 		public static void _RemoveUserToTemplateUnsafe(ISession s, long templateId, long userId)
@@ -575,6 +583,7 @@ namespace RadialReview.Accessors
 					user.JobDescriptionFromTemplateId = null;
 					s.Update(user);
 				}
+				s.Flush();
 				user.UpdateCache(s);
 			}
 		}
@@ -610,6 +619,7 @@ namespace RadialReview.Accessors
 						u.JobDescription = template.JobDescription;
 						u.JobDescriptionFromTemplateId = templateId;
 						s.Update(u);
+						s.Flush();
 						u.UpdateCache(s);
 					}
 					

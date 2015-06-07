@@ -1,5 +1,6 @@
 ﻿@model Tuple<List<RadialReview.Models.CompanyValueAnswer>, bool>
 
+@using RadialReview.Models.Askables
 @using RadialReview.Models.Enums
 
 @if (Model.Item1.Any())
@@ -29,7 +30,7 @@
 				@for (var i = 0; i < questions.Count(); i++)
 				{
 					<tr>
-						<td style="width:50%"><h4 class="question alignRight" style="padding-right:15px;">@questions[i].Askable.GetQuestion()</h4></td>
+						<td style="width:50%"><div class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;"><h4>@questions[i].Askable.GetQuestion()</h4><h5>@(((CompanyValueModel)questions[i].Askable).CompanyValueDetails)</h5></div></td>
 						<td>
 							@if (Model.Item2){
 								@Html.EditorFor(x => questions[i].Exhibits, new{name = "question_" + RadialReview.Models.Enums.QuestionType.CompanyValue + "_" + questions[i].Identifier})

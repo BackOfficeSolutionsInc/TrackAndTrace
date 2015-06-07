@@ -50,8 +50,10 @@ Where a.ForReviewId in (:reviewIds) and Required=true and Complete=false and Del
 group by a.ForReviewId";
 
 			var result = s.CreateSQLQuery(query).SetParameterList("reviewIds", reviewIds).List<object[]>();
-			var o = result.Select(x => new ReviewIncomplete { reviewId = (long)x[0], numberIncomplete = (long)x[1] }).ToList();
-			return o;
+
+			var output = reviewIds.Select(x => new ReviewIncomplete{reviewId = (long) x, numberIncomplete = result.SingleOrDefault(y=>(long)y[0]==x).NotNull(y=>(long)y[1])}).ToList();
+			//var o = result.Select(x => new ReviewIncomplete { reviewId = (long)x[0], numberIncomplete = (long)x[1] }).ToList();
+			return output;
 		}
 
 

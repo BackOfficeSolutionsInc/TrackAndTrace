@@ -10,6 +10,7 @@ namespace RadialReview.Models.Askables
 	public class CompanyValueModel : Askable
 	{
 
+		public virtual string CompanyValueDetails { get; set; }
 		public virtual string CompanyValue { get; set; }
 		public virtual long OrganizationId { get; set; }
 
@@ -26,7 +27,8 @@ namespace RadialReview.Models.Askables
 		{
 			public CompanyValueModelMap()
 			{
-				Map(x => x.CompanyValue);
+				Map(x => x.CompanyValue).Length(512);
+				Map(x => x.CompanyValueDetails).Length(14000);
 				Map(x => x.OrganizationId);
 			}
 		}

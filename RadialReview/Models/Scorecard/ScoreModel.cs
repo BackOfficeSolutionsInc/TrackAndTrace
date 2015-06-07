@@ -52,7 +52,7 @@ namespace RadialReview.Models.Scorecard
 
 		public virtual string GetIssueDetails()
 		{
-			var week = ForWeek.ToString("d");
+			var week = ForWeek.AddDays(-7).ToString("d");
 			var accountable = Measurable.AccountableUser.GetName();
 			var admin = Measurable.AdminUser.GetName();
 			if (admin != accountable){
@@ -96,7 +96,7 @@ namespace RadialReview.Models.Scorecard
 
 		public virtual string GetTodoDetails()
 		{
-			var week = ForWeek.ToString("d");
+			var week = ForWeek.AddDays(-7).ToString("d");
 			var accountable = Measurable.AccountableUser.GetName();
 			var admin = Measurable.AdminUser.GetName();
 			if (admin != accountable)

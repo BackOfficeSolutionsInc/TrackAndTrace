@@ -21,7 +21,7 @@ namespace RadialReview.Models.Issues
 		public virtual long? CreatedDuringMeetingId { get; set; }
 		public virtual L10Meeting CreatedDuringMeeting { get; set; }
 		public virtual List<L10Recurrence> _MeetingRecurrences { get; set; }
-		public virtual int? _Order { get; set; }
+		public virtual long? _Order { get; set; }
 
 		public virtual String ForModel { get; set; }
 		public virtual long ForModelId { get; set; }
@@ -46,7 +46,8 @@ namespace RadialReview.Models.Issues
 
 		public IssueModel()
 		{
-			CreateTime = DateTime.UtcNow;
+			CreateTime = DateTime.UtcNow; 
+			_Order = -CreateTime.Ticks;
 		}
 
 		public class IssueMap : ClassMap<IssueModel>
@@ -86,17 +87,19 @@ namespace RadialReview.Models.Issues
 			public virtual DateTime CreateTime { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual DateTime? CloseTime { get; set; }
+			public virtual UserOrganizationModel Owner { get; set; }
 			public virtual UserOrganizationModel CreatedBy { get; set; }
 			public virtual IssueModel_Recurrence CopiedFrom { get; set; }
 			public virtual IssueModel Issue { get; set; }
 			public virtual L10Recurrence Recurrence { get; set; }
 			public virtual List<IssueModel.IssueModel_Recurrence> _ChildIssues { get; set; }
 			public virtual IssueModel_Recurrence ParentRecurrenceIssue { get; set; }
-			public virtual int? Ordering { get; set; }
+			public virtual long? Ordering { get; set; }
 
 			public IssueModel_Recurrence()
 			{
-				Ordering = 0;
+				CreateTime = DateTime.UtcNow;
+				Ordering = -CreateTime.Ticks;
 			}
 
 			public class IssueModel_RecurrenceMap : ClassMap<IssueModel_Recurrence>
@@ -110,6 +113,8 @@ namespace RadialReview.Models.Issues
 					Map(x => x.Ordering);
 					References(x => x.CreatedBy).Column("CreatedById");
 					References(x => x.CopiedFrom).Column("CopiedFromId").Nullable();
+					References(x => x.Owner).Column("OwnerId").Nullable();
+
 					References(x => x.Issue).Column("IssueId");
 					References(x => x.Recurrence).Column("RecurrenceId");
 

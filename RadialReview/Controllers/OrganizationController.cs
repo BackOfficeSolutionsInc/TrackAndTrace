@@ -196,7 +196,7 @@ namespace RadialReview.Controllers {
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
 
-			_UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, model.LastSent);
+			_UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, DateTime.UtcNow);
 			model.Id = TempId;
 			var result = await Emailer.SendEmail(_NexusAccessor.CreateJoinEmailToGuid(GetUser(), model));
 			var prefix = "Resent";

@@ -1,5 +1,5 @@
 ﻿@model RadialReview.Models.ViewModels.ScorecardRowVM
-<tr>
+<tr data-measurable="@Model.MeetingMeasurable.Measurable.Id">
 	<td class="who first1 alignRight">
 		@Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetName())
 	</td>
@@ -9,8 +9,9 @@
 	<td class="measurable first1" title="@Model.MeetingMeasurable.Measurable.Title"><span class="inlineEdit" data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span></td>
 	<td class="target direction" data-measurable="@Model.MeetingMeasurable.Id"><span class="inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" data-title="Select target direction" data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
 	<td class="target value" data-measurable="@Model.MeetingMeasurable.Id"><span class="inlineEdit" data-type="number" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.#####")</span></td>
+	<td class="" data-measurable="@Model.MeetingMeasurable.Measurable.Id"><span class="inlinesparkline"></span></td>
 
-	@if (true){ //|| i == 0){
+	@if (ViewBag.ShowRow == null || ViewBag.ShowRow==true){
 		var col = 0;
 		foreach (var r in Model.Weeks){
 			var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == Model.MeetingMeasurable.Measurable.Id);

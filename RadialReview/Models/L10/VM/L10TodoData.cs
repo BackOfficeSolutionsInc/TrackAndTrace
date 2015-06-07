@@ -17,7 +17,7 @@ namespace RadialReview.Models.L10.VM
 		public string details { get; set; }
 		public bool @checked { get; set; }
 		public long createtime { get; set; }
-
+		public long duedate { get; set; }
 		public static TodoData FromTodo(TodoModel todo)
 		{
 			return new TodoData()
@@ -29,7 +29,8 @@ namespace RadialReview.Models.L10.VM
 				imageurl = todo.AccountableUser.ImageUrl(true,ImageSize._32),
 				accountableUser = todo.AccountableUser.GetName(),
 				accountableUserId = todo.AccountableUserId,
-				todo = todo.Id
+				todo = todo.Id,
+				duedate = todo.DueDate.ToJavascriptMilliseconds()
 			};
 		}
 	}

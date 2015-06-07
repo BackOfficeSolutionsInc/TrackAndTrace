@@ -5,6 +5,7 @@ var selectionStarted = false;
 var meetingItemId = 0;
 var disconnected = false;
 var isUnloading = false;
+var skipBeforeUnload = false;
 
 $(".rt").prop("disabled", true);
 $(function () {
@@ -65,9 +66,12 @@ $(function () {
 	meetingHub.client.createNote = createNote;
 	meetingHub.client.updateNoteName = updateNoteName;
 	meetingHub.client.updateNoteContents = updateNoteContents;
-
+	
 	meetingHub.client.updateMeasurable = updateMeasurable;
+	meetingHub.client.updateArchiveMeasurable = updateArchiveMeasurable;
 	meetingHub.client.addMeasurable = addMeasurable;
+
+	meetingHub.client.updateTodoDueDate = updateTodoDueDate;
 	//meetingHub.client.setLeader = setLeader;
 
 	console.log("StartingHub ");
@@ -88,6 +92,24 @@ $(function () {
 	});
 
 	window.onbeforeunload = function (e) {
+		
+		if ($(":focus").length) {
+			$(":focus").blur();
+		}
+		if (isLeader && meetingStart && !skipBeforeUnload) {
+			return 'You have not concluded the meeting.';
+		}
+		disconnected = false;
+		isUnloading = true;
+		$.connection.hub.stop();
+
+	};
+	window.onunload = function() {
+		
+		if ($(":focus").length) {
+			$(":focus").blur();
+		}
+
 		disconnected = false;
 		isUnloading = true;
 		$.connection.hub.stop();

@@ -319,9 +319,13 @@ namespace RadialReview.Controllers
 				filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
 				filterContext.ExceptionHandled = true;
 				filterContext.HttpContext.Response.Clear();
-			}
-			else
+			}else if (filterContext.Exception is HttpAntiForgeryException)
 			{
+				log.Info("AntiForgery: [" + Request.Url.PathAndQuery + "] --> []");
+				filterContext.Result = RedirectToAction("Login", "Account", new { message = filterContext.Exception.Message });
+				filterContext.ExceptionHandled = true;
+				filterContext.HttpContext.Response.Clear();
+			}else{
 				log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);
 				base.OnException(filterContext);
 			}

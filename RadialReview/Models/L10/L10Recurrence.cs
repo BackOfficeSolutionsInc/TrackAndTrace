@@ -27,6 +27,34 @@ namespace RadialReview.Models.L10
 		public virtual List<L10Note> _MeetingNotes { get; set; }
 		public virtual long? MeetingInProgress { get; set; }
 
+		[Range(typeof(decimal), "0", "500"),DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:0.##}")]
+		public virtual decimal SegueMinutes { get; set; }
+		[Range(typeof(decimal), "0", "500"),DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:0.##}")]
+		public virtual decimal ScorecardMinutes { get; set; }
+		[Range(typeof(decimal), "0", "500"),DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:0.##}")]
+		public virtual decimal RockReviewMinutes { get; set; }
+		[Range(typeof(decimal), "0", "500"),DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:0.##}")]
+		public virtual decimal HeadlinesMinutes { get; set; }
+		[Range(typeof(decimal), "0", "500"),DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:0.##}")]
+		public virtual decimal TodoListMinutes { get; set; }
+		[Range(typeof(decimal), "0", "500"),DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:0.##}")]
+		public virtual decimal IDSMinutes { get; set; }
+		[Range(typeof(decimal), "0", "500"),DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:0.##}")]
+		public virtual decimal ConclusionMinutes { get; set; }
+
+		public virtual long CreatedById { get; set; }
+
+		public L10Recurrence()
+		{
+			SegueMinutes		= 5;
+			ScorecardMinutes	= 5;
+			RockReviewMinutes	= 5;
+			HeadlinesMinutes	= 5;
+			TodoListMinutes		= 5;
+			IDSMinutes			= 60;
+			ConclusionMinutes	= 5;
+		}
+
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>
 		{
 			public L10RecurrenceMap()
@@ -36,6 +64,16 @@ namespace RadialReview.Models.L10
 				Map(x => x.CreateTime);
 				Map(x => x.MeetingInProgress);
 				Map(x => x.DeleteTime);
+
+				Map(x => x.CreatedById);
+
+				Map(x => x.SegueMinutes);
+				Map(x => x.ScorecardMinutes);
+				Map(x => x.RockReviewMinutes);
+				Map(x => x.HeadlinesMinutes);
+				Map(x => x.TodoListMinutes);
+				Map(x => x.IDSMinutes);
+				Map(x => x.ConclusionMinutes);
 
 				Map(x => x.OrganizationId).Column("OrganizationId");
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();

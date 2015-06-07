@@ -45,6 +45,18 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
 	@Styles.Render("~/styles/L10")
 	@Styles.Render("~/styles/meeting")
+	<style>
+		input.due-date {
+			border: none;
+			width: 75px;
+			text-decoration: underline;
+			color: #767F99;
+			text-align: center;
+			background-color: rgba(0, 0, 0, 0);
+			cursor: pointer;
+		}
+	</style>
+
 }
 @using (Html.BeginScripts())
 {
@@ -53,7 +65,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 	@Scripts.Render("~/bundles/meeting")
-	
+
 	<script src="~/Scripts/L10/L10.js"></script>
 	<script>
 		angular.module('L10App')
@@ -63,7 +75,7 @@
 			e.preventDefault();
 			$(this).tab('show');
 		});
-		
+
 		$(function() {
 			$("body").on("click", ".issuesModal", function() {
 				var parm = $.param($(this).data());
@@ -80,17 +92,43 @@
 					m = "Modal";
 				showModal("Add a to-do", "/Todo/" + m + "?" + parm, "/Todo/" + m);
 			});
-			
+
 			$("body").on("click", ".measurableModal", function() {
 				var m = $(this).data("recurrence");
 				showModal('Add Measurable', '/L10/AddMeasurable/' + m, '/L10/AddMeasurable/');
 			});
 
+			$("body").on('click', "input.due-date", function () {
+				if (!$(this).attr("init")) {
+					var now = new Date();
+					var todo = $(this).data("todo");
+					$(this).datepicker({
+						format: 'mm/dd/yyyy',
+						todayBtn:true
+					}).on('changeDate', function (ev) {
+						var data = { date: ev.date.valueOf() };
+						$.ajax({
+							method: "POST",
+							data: data,
+							url: "/L10/UpdateTodoDate/" + todo,
+							success: function (dd) {
+								showJsonAlert(dd);
+							}
+						});
+					});
+					$(this).attr("init", 1);
+					$(this).blur();
+					var that = this;
+					setTimeout(function () {
+						$(that).datepicker("show");
+					}, 10);
+				}
+			});
 		});
 	</script>
 }
 <div ng-app="L10App" class="meeting-review ng-cloak">
-	<div  ng-controller="L10Controller">
+	<div ng-controller="L10Controller">
 		<div class="pull-left"><h3 style="margin-top: 5px;">{{model.Name}}</h3></div>
 		<div class="calendar-container pull-right" style="width:240px;">
 			<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
@@ -98,7 +136,7 @@
 			<b class="caret"></b>
 		</div>
 		<div style="height:90px"></div>
-	
+
 		<ul class="nav nav-tabs tabs-up" id="pages" style="clear:both">
 			<li class="active"><a @*href="/L10/Details/Scorecard"*@ data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
 

@@ -32,6 +32,22 @@ namespace RadialReview.Controllers
             public List<string> SideEffects { get; set; }
         }
 
+		[Access(AccessLevel.UserOrganization)]
+	    public JsonResult UpdateCache(long id)
+	    {
+		    var u = GetUser();
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, u).ViewUserOrganization(id, false);
+					var f=s.Get<UserOrganizationModel>(id).UpdateCache(s);
+					tx.Commit();
+					s.Flush();
+					return Json(f.Cache,JsonRequestBehavior.AllowGet);
+				}
+			}
+	    }
+
         #region User
         public class SaveUserModel
         {
@@ -253,7 +269,7 @@ namespace RadialReview.Controllers
         public JsonResult RemovePosition(long id)
         {
             _PositionAccessor.RemovePositionFromUser(GetUser(), id);
-            return Json(ResultObject.Success("Removed position."), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Success("Removed position.").ForceRefresh(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]
@@ -285,6 +301,7 @@ namespace RadialReview.Controllers
                 CustomPosition = null
             };
 
+
             return PartialView(model);
         }
 
@@ -300,7 +317,7 @@ namespace RadialReview.Controllers
 
             _PositionAccessor.AddPositionToUser(GetUser(), model.UserId, model.PositionId);
 
-            return Json(ResultObject.Success("Added position."));
+			return Json(ResultObject.Success("Added position.").ForceRefresh());
         }
 
         #endregion
@@ -321,7 +338,7 @@ namespace RadialReview.Controllers
         public JsonResult RemoveTeam(long id)
         {
             _TeamAccessor.RemoveMember(GetUser(), id);
-            return Json(ResultObject.Success("Removed team."), JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success("Removed team.").ForceRefresh(), JsonRequestBehavior.AllowGet);
         }
 
         public class UserTeamViewModel
@@ -376,7 +393,7 @@ namespace RadialReview.Controllers
 
             _TeamAccessor.AddMember(GetUser(), model.TeamId, model.UserId);
 
-            return Json(ResultObject.Success("Added to team."));
+            return Json(ResultObject.Success("Added to team.").ForceRefresh());
         }
         #endregion
 
@@ -422,7 +439,7 @@ namespace RadialReview.Controllers
         public JsonResult DeleteManager(long id)
         {
             _UserAccessor.RemoveManager(GetUser(), id,DateTime.UtcNow);
-            return Json(ResultObject.Success("Removed manager."));
+			return Json(ResultObject.Success("Removed manager.").ForceRefresh());
         }
 
         [Access(AccessLevel.Manager)]
@@ -430,7 +447,7 @@ namespace RadialReview.Controllers
         public JsonResult RemoveManager(long managerId,long userId)
         {
             _UserAccessor.RemoveManager(GetUser(), managerId, userId, DateTime.UtcNow);
-            return Json(ResultObject.Success("Removed manager."));
+			return Json(ResultObject.Success("Removed manager."));
         }
 
         [Access(AccessLevel.Manager)]

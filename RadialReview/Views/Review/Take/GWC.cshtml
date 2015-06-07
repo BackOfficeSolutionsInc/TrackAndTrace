@@ -25,7 +25,7 @@
 				{
 					var id = QuestionType.GWC+"_"+questions[i].Identifier;
 					<tr>
-						<td style="width:50%"><h4 class="question alignRight" style="padding-right:15px;">@questions[i].Askable.GetQuestion()</h4></td>
+						<td style="width:50%"><h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4></td>
 						<td>
 							@if (Model.Item2){
 								@Html.EditorFor(x => questions[i].GetIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt"})

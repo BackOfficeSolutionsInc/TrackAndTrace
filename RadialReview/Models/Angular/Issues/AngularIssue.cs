@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Issues;
 
 namespace RadialReview.Models.Angular.Issues
@@ -20,13 +21,15 @@ namespace RadialReview.Models.Angular.Issues
 				x.Select(y => new AngularIssue(y)).ToList()
 			)?? new List<AngularIssue>();
 			Complete = recurrenceIssue.CloseTime != null;
+			if (recurrenceIssue.Owner!=null)
+				Owner = new AngularUser(recurrenceIssue.Owner);
 		}
 		public AngularIssue()
 		{
 			
 		}
 
-
+		public AngularUser Owner { get; set; }
 		public String Name { get; set; }
 		public String Details { get; set; }
 		public List<AngularIssue> Children { get; set; }

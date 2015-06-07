@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Accessors;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.UserTemplate;
 
@@ -33,7 +34,11 @@ namespace RadialReview.Controllers
 		{
 			RockModel rock;
 			if (id == 0)
-				rock = new RockModel(){CreateTime = DateTime.UtcNow};
+				rock = new RockModel()
+				{
+					CreateTime = DateTime.UtcNow,
+					OnlyAsk = AboutType.Self,
+				};
 			else{
 				rock = _RockAccessor.GetRock(GetUser(), id);
 			}
@@ -56,6 +61,7 @@ namespace RadialReview.Controllers
 			return PartialView("_RockRow", new RockModel(){
 				CreateTime = DateTime.UtcNow,
 				CompanyRock = companyRock,
+				OnlyAsk = AboutType.Self,
 			});
 		}
 

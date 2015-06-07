@@ -34,25 +34,28 @@ function initL10() {
 	});
 
 	$("body").on("click", ".issuesModal", function () {
-		var parm = $.param($(this).data());
+		var dat = $(this).data();
+		var parm = $.param(dat);
 		var m=$(this).data("method");
 		if (!m)
 			m = "Modal";
-		showModal("Add an issue", "/Issues/"+m+"?" + parm, "/Issues/"+m);
+		var title = dat.title || "Add an issue";
+		showModal(title, "/Issues/"+m+"?" + parm, "/Issues/"+m);
 	});
 
 	$("body").on("click", ".todoModal", function () {
-		var parm = $.param($(this).data());
+		var dat = $(this).data();
+		var parm = $.param(dat);
 		var m=$(this).data("method");
 		if (!m)
 			m = "Modal";
-		showModal("Add a to-do", "/Todo/"+m+"?" + parm, "/Todo/"+m);
+		var title = dat.title || "Add a to-do";
+		showModal(title, "/Todo/"+m+"?" + parm, "/Todo/"+m);
 	});
 
 }
 
 function highlight(item) {
-	debugger;
 	if (!item.hasClass("editable-bg-transition")) {
 		item.addClass("editable-bg-transition");
 		setTimeout(function() {
@@ -253,3 +256,69 @@ function replaceMainWindow(html) {
 
 	});
 }
+
+$(document).on("click", ".arrowkey", function() {
+	var that = this;
+	setTimeout(function() {
+			if($(that).position().top < $(window).scrollTop() || $(that).position().top + $(that).height() > $(window).scrollTop() + (window.innerHeight || document.documentElement.clientHeight)){
+				//scroll up
+				var scr= $(that).offset().top - (window.innerHeight || document.documentElement.clientHeight) / 2.0;
+				$('html, body').scrollTop(scr);
+			}else if(false){
+				//scroll down
+				$('html, body').scrollTop($(that).position().top - (window.innerHeight || document.documentElement.clientHeight) + $(that).height() + 15);
+			}
+	}, 1);
+});
+
+$(document).keydown(function(event) {
+	if (event.which == 27) {
+		$(":focus").blur();
+		$(".modal").modal('hide');
+	}
+	
+
+	if ($(':focus').length || $(".modal.in").length || event.ctrlKey || event.metaKey || event.altKey) {
+		return;
+	}
+	
+	if (event.which == 73 && event.shiftKey) {
+		$(".button-bar .issuesModal").click();
+		return;
+	}
+	if (event.which == 84 && event.shiftKey) {
+		$(".button-bar .todoModal").click();
+		return;
+	}
+
+	var f1 = $(".arrowkey.selected,.arrowkey.selected");
+	if (event.which == 38) {
+		if (f1.length>0) {
+			f1.prev(".arrowkey").click();
+		} else {
+			$(".arrowkey").last().click();
+		}
+	}else if (event.which == 40) {
+		if (f1.length >0) {
+			f1.next(".arrowkey").click();
+		}else {
+			$(".arrowkey").first().click();
+		}
+	} else if (event.which == 32||event.which == 13) {
+		$(f1).find(".todo-checkbox,.issue-checkbox").click();
+		return false;
+	}else if (event.which == 73) {
+		$(f1).find(".issuesModal").click();
+	} else if (event.which == 84) {
+		$(f1).find(".todoModal").click();
+	}/*else if (event.which == 67) {
+		$(f1).find(".todoModal").click();
+	}*/else if (event.which == 9) {
+		$(".message-holder .message").click();
+		event.preventDefault();
+	}else if (event.which == 33) {
+		$(".page-item.current").prev().find("a").click();
+	}else if (event.which == 34) {
+		$(".page-item.current").next().find("a").click();
+	}
+});

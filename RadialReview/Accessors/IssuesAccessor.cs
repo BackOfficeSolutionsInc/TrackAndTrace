@@ -18,7 +18,7 @@ namespace RadialReview.Accessors
 	public class IssuesAccessor
 	{
 
-		public static void CreateIssue(UserOrganizationModel caller,long recurrenceId, IssueModel issue)
+		public static void CreateIssue(UserOrganizationModel caller,long recurrenceId,long ownerId, IssueModel issue)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -29,6 +29,8 @@ namespace RadialReview.Accessors
 
 					if (issue.Id!=0)
 						throw new PermissionsException("Id was not zero");
+
+					perms.ViewUserOrganization(ownerId, false);
 
 					if (issue.CreatedDuringMeetingId == -1)
 						issue.CreatedDuringMeetingId = null;
@@ -59,6 +61,7 @@ namespace RadialReview.Accessors
 						CreatedBy = issue.CreatedBy,
 						Recurrence = s.Load<L10Recurrence>(recurrenceId),
 						CreateTime = issue.CreateTime,
+						Owner = s.Load<UserOrganizationModel>(ownerId)
 					};
 					s.Save(recur);
 
@@ -150,6 +153,7 @@ namespace RadialReview.Accessors
 						CreatedBy = caller,
 						Issue = s.Load<IssueModel>(parent.Issue.Id),
 						Recurrence = s.Load<L10Recurrence>(childRecurrenceId),
+						Owner = parent.Owner
 					};
 					s.Save(issue_recur);
 					var viewModel = IssuesData.FromIssueRecurrence(issue_recur);
@@ -181,6 +185,7 @@ namespace RadialReview.Accessors
 					CreatedBy = caller,
 					Issue = s.Load<IssueModel>(child.Issue.Id),
 					Recurrence = s.Load<L10Recurrence>(parent.Recurrence.Id),
+					Owner = s.Load<UserOrganizationModel>(parent.Owner.Id)
 				};
 				s.Save(issue_recur);
 				var childVM = IssuesData.FromIssueRecurrence(issue_recur);

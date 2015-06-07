@@ -30,6 +30,7 @@ namespace RadialReview.Models.Askables {
 		public RockModel()
 		{
 			CreateTime = DateTime.UtcNow;
+			OnlyAsk = AboutType.Self;
 		}
 
 		public override string GetQuestion()

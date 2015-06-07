@@ -61,9 +61,13 @@ namespace RadialReview.Utilities
 			var StartDate = ordered.FirstOrDefault().NotNull(x => now);
 			var EndDate = ordered.LastOrDefault().NotNull(x => now).AddDays(7);
 
-			var s = StartDate.StartOfWeek(weekStart).AddDays(-7 * 4);
-			var e = EndDate.StartOfWeek(weekStart).AddDays(7 * 4);
-			e = Math2.Min(now, e);
+			//var s = StartDate.StartOfWeek(weekStart).AddDays(-7 * 4);
+			//var e = EndDate.StartOfWeek(weekStart).AddDays(7 * 4);
+
+			var s = (meetingStart ?? now).StartOfWeek(weekStart).AddDays(-7*13);
+			var e = (meetingStart ?? now).StartOfWeek(weekStart);
+
+			e = Math2.Max(now.StartOfWeek(weekStart), e);
 			if (StartDate >= EndDate)
 				throw new PermissionsException("Date ordering incorrect");
 			var weeks = new List<L10MeetingVM.WeekVM>();
@@ -74,12 +78,12 @@ namespace RadialReview.Utilities
 				var s1 = s;
 				if (meetingStart.NotNull(x => s1 <= x.Value && x.Value < next))
 					currWeek = true;
-
+				//var j = s.AddDays(-7);
 				
 				weeks.Add(new L10MeetingVM.WeekVM()
 				{
 					DisplayDate = s.StartOfWeek(weekStart),
-					ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
+					ForWeek = s.AddDays(7).StartOfWeek(DayOfWeek.Sunday),
 					IsCurrentWeek = currWeek,
 				});
 

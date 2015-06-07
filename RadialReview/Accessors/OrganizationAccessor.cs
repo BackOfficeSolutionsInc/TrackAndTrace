@@ -1,6 +1,7 @@
 ﻿using System.Security;
 using Amazon.ElasticMapReduce.Model;
 using Amazon.ElasticTranscoder.Model;
+using FluentNHibernate.Utils;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
@@ -298,6 +299,7 @@ namespace RadialReview.Accessors
 		                    throw new PermissionsException();
 
                         orgPos = new OrganizationPositionModel() { Organization = org, CreatedBy = caller.Id };
+	                    s.Save(orgPos);
                     }
                     else
                     {
@@ -312,9 +314,14 @@ namespace RadialReview.Accessors
                     }
 					*/
 
-                    if (customName != null)
+                    if (customName != null && orgPos.CustomName!=customName)
                     {
                         orgPos.CustomName = customName;
+
+						var aa = s.QueryOver<PositionDurationModel>().Where(x => x.Position.Id == orgPos.Id && x.DeleteTime == null).Select(x=>x.UserId).List<long>().ToList();
+	                    var all=s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(aa).List().ToList();
+						foreach (var a in all)
+							a.UpdateCache(s);
                     }
 
 
@@ -369,7 +376,8 @@ namespace RadialReview.Accessors
 																			bool? managersCanEditSelf = null,
 																			bool? employeesCanEditSelf = null,
 																			string rockName = null,
-																			string timeZoneId = null
+																			string timeZoneId = null,
+																			DayOfWeek? weekStart=null
 			)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -411,6 +419,10 @@ namespace RadialReview.Accessors
 
 					if (!String.IsNullOrWhiteSpace(timeZoneId) && TimeZoneInfo.GetSystemTimeZones().Any(x=>x.Id==timeZoneId))
 						org.Settings.TimeZoneId = timeZoneId;
+
+					if (weekStart != null)
+						org.Settings.WeekStart = weekStart.Value;
+
 
                     s.Update(org);
 
@@ -613,6 +625,9 @@ namespace RadialReview.Accessors
 					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
 
 					foreach (var r in companyValues){
+						if (r.OrganizationId!=organizationId)
+							throw new PermissionsException("You do not have access to this value.");
+
 						r.Category = category;
 						s.SaveOrUpdate(r);
 					}

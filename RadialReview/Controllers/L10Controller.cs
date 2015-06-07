@@ -76,7 +76,7 @@ namespace RadialReview.Controllers
 	    {
 		    return "Are you sure you want to delete this meeting?";
 	    }
-
+		
 		[HttpPost]
 	    [Access(AccessLevel.UserOrganization)]
 	    public JsonResult Delete(long id)
@@ -142,6 +142,8 @@ namespace RadialReview.Controllers
 						ForRock = x
 					}).ToList();
 
+				
+
 				L10Accessor.EditL10Recurrence(GetUser(),model.Recurrence);
 
 				if (model.Return == "meeting")
@@ -158,6 +160,7 @@ namespace RadialReview.Controllers
 			model.SelectedMembers = model.SelectedMembers ?? new long[0];
 			model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
 			
+
 
 			return View("Edit",model);
 		}

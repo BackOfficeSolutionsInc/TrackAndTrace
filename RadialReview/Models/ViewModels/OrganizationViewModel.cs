@@ -19,7 +19,7 @@ namespace RadialReview.Models.ViewModels
 		public String ImageUrl { get; set; }
 		public Boolean ManagersCanEditSelf { get; set; }
 		public Boolean EmployeesCanEditSelf { get; set; }
-
+		public DayOfWeek WeekStart { get; set; }
 		public string TimeZone { get; set; }
 		public List<SelectListItem> TimeZones
 		{
@@ -31,7 +31,7 @@ namespace RadialReview.Models.ViewModels
 			}
 		}
 
-		public List<String> CompanyValues { get; set; }
+		public List<CompanyValueModel> CompanyValues { get; set; }
 		public List<RockModel> CompanyRocks { get; set; }
 		public List<AboutCompanyAskable> CompanyQuestions { get; set; }
 		public String RockName { get; set; }

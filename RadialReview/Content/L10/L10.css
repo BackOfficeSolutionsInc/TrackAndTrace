@@ -330,3 +330,27 @@ profile-image .picture {
 .lockedPointer {
 	cursor: not-allowed !important;
 }
+.editable-text {
+	border-bottom: 2px solid transparent;
+}
+.editable-text:hover {
+	border-bottom: 2px solid #ddd;
+}
+.editable-text:after {
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	font-family: 'Glyphicons Halflings';
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	font-size: 75%;
+	-moz-osx-font-smoothing: grayscale;
+	color:#bbb;
+}
+
+.editable-text:hover:after {
+	  content: "\270f";
+	  width: 0px;
+}

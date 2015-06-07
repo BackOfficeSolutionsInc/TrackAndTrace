@@ -140,6 +140,9 @@ namespace RadialReview.Controllers
 		{
 			model.Scores = L10Accessor.GetScoresForRecurrence(GetUser(), model.Recurrence.Id);
 			var sow = GetUser().Organization.Settings.WeekStart;
+
+			
+
 			model.Weeks = TimingUtility.GetWeeks(sow, DateTime.UtcNow, model.MeetingStart, model.Scores);
 			return PartialView("Scorecard", model);
 			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);

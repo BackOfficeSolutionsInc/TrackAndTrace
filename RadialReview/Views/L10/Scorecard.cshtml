@@ -12,27 +12,32 @@
 			<hgroup class="page-header">
 				<div class="pull-right">
 					<div class="btn-group">
-						<div class="btn btn-default btn-xs" onclick="@Html.ShowModal("Add Measurable", "/L10/AddMeasurable/"+Model.Recurrence.Id, "/L10/AddMeasurable/")">
+						<div class="btn btn-default btn-xs" onclick="@Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/")">
 							<span class="icon fontastic-icon-science-laboratory"></span> Add Measurable
 						</div>
 					</div>
-					@Html.Partial("partial/ButtonBar", Model)
+					@Html.Partial("partial/ButtonBar", Model, new ViewDataDictionary(){{"Links",new Dictionary<string,string>{
+						{"href","/L10/ExportScorecard/"+Model.Recurrence.Id+"?type=csv"},
+						{"text","Export Scorecard (.csv)"},
+						{"class","glyphicon glyphicon-save"}
+					}.AsList()}})
 				</div>
 				<h2>Scorecard<small></small></h2>
 			</hgroup>
 			<div class="component" >
 				<div class="clearfix"></div>
 				<div style="position: relative;">
-					@for (var i = 0; i < 1; i++)
+					@for (var i = 0; i < 2; i++)
 					{
 						if (i == 0)
 						{
-							@:<div class="table-responsive" style="min-height: 600px;">
+							@:<div class="table-responsive scroll-right" style="min-height: 600px;">
 						}
 
-						<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm hidden-md" : "")" >
+						<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm" : "")" >
 							<thead>
 								<tr>
+									<th>&nbsp;</th>
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
@@ -43,7 +48,7 @@
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-												@r.DisplayDate.AddDays(-6).ToString("MM/dd")
+												@r.DisplayDate.AddDays(0).ToString("MM/dd")
 											</th>
 										@*if (r.IsCurrentWeek){
 											<th class="date current buttonColumn"></th>
@@ -56,12 +61,13 @@
 									<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
 									<th class="heading measurable">Measurable</th>
 									<th class="heading target" colspan="2">Target</th>
+									<th class="heading"></th>
 									@if (i == 0)
 									{
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-												@r.DisplayDate.ToString("MM/dd")
+												@r.DisplayDate.AddDays(6).ToString("MM/dd")
 											</th>
 										@*if (r.IsCurrentWeek){
 											<th class="date current buttonColumn"></th>
@@ -82,7 +88,7 @@
 										RecurrenceId = m.L10Meeting.L10RecurrenceId,
 										Scores = Model.Scores,
 										Weeks = Model.Weeks,
-									})
+									},new ViewDataDictionary(){{"ShowRow",(i==0)},{"Row",row}})
 									@*<tr>
 										<td class="who first1 alignRight">
 											@m.Measurable.AccountableUser.NotNull(x => x.GetName())
@@ -152,7 +158,7 @@
 	</div>
 </div>
 <script>
-	$(".score input").each(function () { updateScore(this); });
+	$(".score input").each(function() { updateScore(this,true); });
 	$(".inlineEdit").editable({
 		savenochange:true,
 		validate: function(value) {
@@ -175,6 +181,11 @@
 			debugger;
 		}
 	});
+
+	setTimeout(function() {
+		$(".score.current input").each(function() { updateScore(this); });
+		$(".scroll-right").scrollLeft(4000);
+	}, 200);
 
 	var Weeks = [@(String.Join(",",Model.Weeks.Select(x=>x.ForWeek.ToJavascriptMilliseconds())))];
 	//debugger;

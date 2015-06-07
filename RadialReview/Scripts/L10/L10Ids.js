@@ -2,8 +2,8 @@
 var currentIssuesDetailsId;
 $(function () {
 
-	$("body").on("click", ".issues-list>.issue-row>.message", function () {
-		var issueRow = $(this).closest(".issue-row");
+	$("body").on("click", ".issues-list>.issue-row", function () {
+		var issueRow = $(this);//.closest(".issue-row");
 		$(".issue-row.selected").removeClass("selected");
 		$(issueRow).addClass("selected");
 		currentIssuesDetailsId = $(issueRow).data("recurrence_issue");
@@ -23,7 +23,7 @@ $(function () {
 			"</span>");
 		$("#issueDetails").append("<div class='createTime'>" + new Date(createtime).toLocaleDateString() + "</div>");
 
-		$("#issueDetails").append("<div class='heading'><h4 class='message-holder clickable' data-recurrence_issue='" + recurrence_issue + "'><span class='message' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
+		$("#issueDetails").append("<div class='heading'><h4 class='message-holder clickable' data-recurrence_issue='" + recurrence_issue + "'><span class='message editable-text' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
 		$("#issueDetails").append(detailsList);
 		$("#issueDetails").append("<textarea class='details issue-details' data-recurrence_issue='" + recurrence_issue + "'>" + details + "</textarea>");
 		$("#issueDetails").append("<div class='button-bar'>" +
@@ -39,7 +39,7 @@ $(function () {
 	});
 
 	$("body").on("click", ".issueDetails .message-holder .message", function() {
-		var input = $("<input value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html())+ "' onblur='sendIssueMessage(this," + $(this).parent().data("recurrence_issue") + ")'/>");
+		var input = $("<input class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html())+ "' onblur='sendIssueMessage(this," + $(this).parent().data("recurrence_issue") + ")'/>");
 		$(this).parent().html(input);
 		input.focusTextToEnd();
 	});
@@ -101,7 +101,7 @@ function deserializeIssues(selector, issueList) {
 }
 function appendIssue(selector, issue) {
 	var li = $(constructRow(issue));
-	$(selector).append(li);
+	$(selector).prepend(li);
 	$(li).flash();
 	refreshCurrentIssueDetails();
 }
@@ -117,13 +117,20 @@ function constructRow(issue) {
 	if (issue.details)
 		details = issue.details;
 
-	return '<li class="issue-row dd-item" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '">'
+	return '<li class="issue-row dd-item arrowkey" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '">'
 		+ '	<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>'
 		+ '	<div class="move-icon noselect dd-handle">'
 		+ '		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>'
 		+ '		<span class="inner icon fontastic-icon-primitive-square"></span>'
 		+ '	</div>'
 		+ '<div class="btn-group pull-right"><span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + recurrenceId + '" data-recurrence_issue="' + issue.issue + '" data-method="copymodal"></span></div>'
+		+ '	<span class="profile-image">'
+		+ '		<span class="profile-picture">' 
+		+	'			<span class="picture-container" title="' + issue.owner + '">' 
+		+	'				<span class="picture" style="background: url(' + issue.imageUrl + ') no-repeat center center;"></span>' 
+		+	'			</span>' 
+		+	'		</span>'
+		+	'	</span>' 
 		+ '	<div class="message" data-recurrence_issue='+issue.issue+'>' + issue.message + '</div>'
 		+ '	<div class="issue-details-container"><div class="issue-details" data-recurrence_issue='+issue.issue+'>' + details + '</div></div>'
 		+ '<ol class="dd-list">'
@@ -205,7 +212,7 @@ function sendIssueDetails(self,id) {
 function sendIssueMessage(self,id) {
 	var val = $(self).val();
 	if (val.trim() == "") {
-		$(".issueDetails .message-holder[data-recurrence_issue="+id+"]").html("<span data-recurrence_issue='"+id+"' class='message'>"+$(self).data("old")+"</span>");
+		$(".issueDetails .message-holder[data-recurrence_issue="+id+"]").html("<span data-recurrence_issue='"+id+"' class='message editable-text'>"+$(self).data("old")+"</span>");
 		return;
 	}
 	

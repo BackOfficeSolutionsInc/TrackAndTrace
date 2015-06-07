@@ -10,10 +10,14 @@ of the app.
 WebRTC API has been normalized using 'adapter.js'
 
 ************************************************/
+var DefaultIceServers= [{ url: 'stun:74.125.142.127:19302' }];
+
+
 WebRtcDemo.ConnectionManager = (function () {
+
 	var _signaler,
         _connections = {},
-        _iceServers = [{ url: 'stun:74.125.142.127:19302' }], // stun.l.google.com - Firefox does not support DNS names.
+       // _iceServers =  ICE_SERVERS || DefaultIceServers, // stun.l.google.com - Firefox does not support DNS names.
 
 	     onicecandidateQueue = {},
 	     onicecandidateAllowed = [],
@@ -36,9 +40,9 @@ WebRtcDemo.ConnectionManager = (function () {
         // Create a new WebRTC Peer Connection with the given partner
         _createConnection = function (partnerClientId) {
         	console.log('WebRTC: creating connection...');
-
+			
         	// Create a new PeerConnection
-        	var connection = new RTCPeerConnection({ iceServers: _iceServers });
+        	var connection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
 
 
 

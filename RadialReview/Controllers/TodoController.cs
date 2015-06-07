@@ -81,7 +81,8 @@ namespace RadialReview.Controllers
 				ForModel = "TodoModel",
 				ForModelId = -1,
 				Organization = GetUser().Organization,
-				AccountableUserId = model.AccountabilityId
+				AccountableUserId = model.AccountabilityId,
+				DueDate = model.DueDate
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
@@ -132,7 +133,8 @@ namespace RadialReview.Controllers
 				ForModel = "MeasurableModel",
 				ForModelId = model.MeasurableId,
 				Organization = GetUser().Organization,
-				AccountableUserId = model.AccountabilityId
+				AccountableUserId = model.AccountabilityId,
+				DueDate = model.DueDate
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);
@@ -183,7 +185,8 @@ namespace RadialReview.Controllers
 				ForModel = "RockModel",
 				ForModelId = model.RockId,
 				Organization = GetUser().Organization,
-				AccountableUserId = model.AccountabilityId
+				AccountableUserId = model.AccountabilityId,
+				DueDate = model.DueDate
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);
@@ -238,7 +241,8 @@ namespace RadialReview.Controllers
 				ForModel = "IssueModel",
 				ForModelId = model.IssueId,
 				Organization = GetUser().Organization,
-				AccountableUserId = model.AccountabilityId
+				AccountableUserId = model.AccountabilityId,
+				DueDate = model.DueDate
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}

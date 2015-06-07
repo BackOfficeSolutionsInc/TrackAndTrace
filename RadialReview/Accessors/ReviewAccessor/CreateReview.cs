@@ -33,7 +33,9 @@ namespace RadialReview.Accessors {
             var unsentEmails = new List<MailModel>();
 	        var nw = DateTime.UtcNow;
 			var range = new DateRange(nw,nw);
-            foreach (var reviewerId in whoReviewsWho.Select(x => x.Item1).Distinct()) {
+	        var reviewerIds = whoReviewsWho.Select(x => x.Item1).Distinct().ToList();
+
+            foreach (var reviewerId in reviewerIds) {
                 //Create review for user
 				var revieweeIds = whoReviewsWho.Where(x => x.Item1 == reviewerId).Distinct().Select(x => x.Item2);
                 var user = dataInteraction.Get<UserOrganizationModel>(reviewerId);
@@ -64,7 +66,20 @@ namespace RadialReview.Accessors {
                 else {
                 }
             }
-            return unsentEmails;
+
+	        foreach (var revieweeId in whoReviewsWho.Select(x => x.Item2).Distinct().Where(x => !reviewerIds.Contains(x))){
+		        try{
+			        var user = dataInteraction.Get<UserOrganizationModel>(revieweeId);
+			        if (user != null){
+				        QuestionAccessor.GenerateReviewForUser(dataInteraction, perms, caller, user, reviewContainer, new List<AskableAbout>());
+			        }
+		        }
+		        catch (Exception e){
+
+		        }
+	        }
+
+	        return unsentEmails;
         }
 
 

@@ -17,6 +17,15 @@ namespace RadialReview.Models.Angular.Users
 			Initials = string.Join(" ",inits).ToUpperInvariant();
 		}
 
+		public static AngularUser NoUser()
+		{
+			return new AngularUser(-1){
+				Name ="n/a",
+				ImageUrl = null,
+				Initials = "n/a"
+			};
+		}
+
 		public AngularUser(long id) : base(id) { }
 
 		public AngularUser() { }

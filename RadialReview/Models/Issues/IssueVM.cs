@@ -21,5 +21,16 @@ namespace RadialReview.Models.Issues
 
 		public long RecurrenceId { get; set; }
 		public long ForId { get; set; }
+
+		[Display(Name = "Issue Owner")]
+		public long OwnerId { get; set; }
+		public List<AccountableUserVM> PossibleUsers { get; set; }
+
+		public class AccountableUserVM
+		{
+			public long id { get; set; }
+			public string name { get; set; }
+			public string imageUrl { get; set; }
+		}
 	}
 }

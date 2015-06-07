@@ -887,9 +887,13 @@ namespace RadialReview.Utilities
 				throw new PermissionsException("Meeting does not exist.");
 			}else{
 				var recur = session.Get<L10Recurrence>(recurrenceId);
+				if (recur.CreatedById == caller.Id)
+					return this;
+
 				if (IsManagingOrganization(recur.OrganizationId))
 					return this;
 				var availUserIds = new[] { caller.Id };
+
 				if (caller.Organization.Settings.ManagersCanEditSubordinateL10)
 				{
 					availUserIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(session, caller, caller.Id).ToArray();

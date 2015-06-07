@@ -7,14 +7,13 @@ using RadialReview.Models.Todo;
 
 namespace RadialReview.Models.Issues
 {
-	public class ScoreCardTodoVM
+	public class ScoreCardTodoVM : TodoVM
 	{
-		[Required]
-		public long MeetingId { get; set; }
-
 		[Required]
 		public long MeasurableId { get; set; }
 
+		/*[Required]
+		public long MeetingId { get; set; }
 		[Required]
 		public long ByUserId { get; set; }
 
@@ -30,6 +29,6 @@ namespace RadialReview.Models.Issues
 		[Display(Name = "Who's Accountable")]
 		public long AccountabilityId { get; set; }
 
-		public List<AccountableUserVM> PossibleUsers { get; set; }
+		public List<AccountableUserVM> PossibleUsers { get; set; }*/
 	}
 }

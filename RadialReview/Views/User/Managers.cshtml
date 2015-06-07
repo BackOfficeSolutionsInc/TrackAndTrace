@@ -1,68 +1,75 @@
 ﻿@model RadialReview.Models.UserOrganizationModel
 
 @{
-    ViewBag.Title = "Managers - " + Model.GetName();
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    
-    ViewBag.Page = "Managers";
-    ViewBag.ExtraTabs = ExtraTab.Create("Managers", "/User/Managers/" + Model.Id);    
+	ViewBag.Title = "Managers - " + Model.GetName();
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+	ViewBag.Page = "Managers";
+	ViewBag.ExtraTabs = ExtraTab.Create("Managers", "/User/Managers/" + Model.Id);
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>Manage</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>Manage</h1>
+	</div>
 }
 
 @section header{
-@Html.Partial("Partial/manageheader")
+	@Html.Partial("Partial/manageheader")
 }
 
 <div class="panel panel-primary">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            @Html.ViewOrEdit(Model.GetPersonallyManaging(),false) supervisors for <i>@Model.GetNameAndTitle()</i>
-        </h3>
-    </div>
-    <table class="table table-condensed">
-        <tr>
-            <th>Position</th>
-            <th style="width: 150px;" class="alignCenter">Start</th>
-            <th style="width: 150px;" class="alignCenter">End</th>
-            @if (Model.GetPersonallyManaging())
-            {
-                <th style="width:100px;">
-                    <a class="btn btn-default fullWidth"
-                       onclick="@Html.ShowModal(
-							"Add Supervisor",
-                            Url.Action("ManagerModal", "User", new {id=Model.Id}),
-							Url.Action("AddManager", "User", new { refresh = true })
-                        )">+</a>
-                </th>
-            }
-        </tr>
-        @foreach (var p in Model.ManagedBy.OrderBy(x => x.DeleteTime).ThenByDescending(x => x.Start))
-        {
-            <tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
-                <td class="position">@p.Manager.GetNameAndTitle()</td>
-                <td class="alignCenter">@p.Start.ToShortDateString()</td>
-                <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
-                @if (Model.GetPersonallyManaging())
-                {
-                    <td class="deleteButton">
-                        @if (p.DeleteTime == null)
-                        {
-                            <a onclick="Delete(@p.Id)" class="btn btn-danger fullWidth">Delete</a>
-                        }
-                        else
-                        {
-                            <div class="fullWidth alignCenter" style="color: #929292">Deleted</div>
-                        }
-                    </td>
-                }
-            </tr>
-        }
-    </table>
+	@if (Model.GetPersonallyManaging())
+	{
+		<div class="panel-heading-button">
+			<a class="btn btn-default fullWidth plus"
+			   onclick="@Html.ShowModal(
+				                  "Add Supervisor",
+				                  Url.Action("ManagerModal", "User", new {id=Model.Id}),
+				                  Url.Action("AddManager", "User", new { refresh = true })
+				                  )">Add</a>
+
+		</div>
+	}
+
+	<div class="panel-heading">
+
+		<h3 class="panel-title">
+			@Html.ViewOrEdit(Model.GetPersonallyManaging(), false) supervisors for <i>@Model.GetNameAndTitle()</i>
+		</h3>
+	</div>
+	<table class="table table-condensed">
+		<tr>
+			<th>Position</th>
+			<th style="width: 100px;" class="alignCenter">Start</th>
+			<th style="width: 100px;" class="alignCenter">End</th>
+			@if (Model.GetPersonallyManaging())
+			{
+				<th style="width: 10px;"></th>
+			}
+		</tr>
+		@foreach (var p in Model.ManagedBy.OrderBy(x => x.DeleteTime).ThenByDescending(x => x.Start).Where(x => x.DeleteTime == null))
+		{
+			<tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
+				<td class="position">@p.Manager.GetNameAndTitle()</td>
+				<td class="alignCenter">@p.Start.ToShortDateString()</td>
+				<td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
+				@if (Model.GetPersonallyManaging())
+				{
+					<td class="deleteButton">
+						@if (p.DeleteTime == null)
+						{
+							<span onclick="Delete(@p.Id)" class="glyphicon glyphicon-trash clickable"></span>
+						}
+						else
+						{
+							<span style="color: #929292" class="glyphicon glyphicon-trash"></span>
+						}
+					</td>
+				}
+			</tr>
+		}
+	</table>
 </div>
 
 
@@ -70,26 +77,26 @@
 
 @using (var s = Html.BeginScripts())
 {
-    <script>
-        function Delete(id) {
-            $.ajax({
-                url: "/User/DeleteManager/" + id,
-                method:"POST",
-                success: function (data) {
-                    $("#row_" + id).addClass("danger");
-                    $("#row_" + id + " .deleteButton").html('<div class="fullWidth alignCenter" style="color: #929292">Deleted</div>');
-                    $("#row_" + id + " .endTime").html("Just now");
-                }
-            })
-        }
-    </script>
+	<script>
+		function Delete(id) {
+			$.ajax({
+				url: "/User/DeleteManager/" + id,
+				method: "POST",
+				success: function (data) {
+					$("#row_" + id).addClass("danger");
+					$("#row_" + id + " .deleteButton").html('<div class="fullWidth alignCenter" style="color: #929292">Deleted</div>');
+					$("#row_" + id + " .endTime").html("Just now");
+				}
+			})
+		}
+	</script>
 }
 
 @using (var s = Html.BeginStyles())
 {
-    <style>
-        tr.danger .position {
-            text-decoration: line-through;
-        }
-    </style>
+	<style>
+		tr.danger .position {
+			text-decoration: line-through;
+		}
+	</style>
 }

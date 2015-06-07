@@ -46,40 +46,7 @@ namespace RadialReview
 			public DateTime? Expires { get; set; }
 			public object Object { get; set; }
 		}
-
-		private string _key(string key){
-			return  "__k_" + key;
-		}
-		private string _invalidateKey(string userId, string key)
-		{
-			return key + "__i_" + userId;
-		}
-		private string _currentUser(){
-			return Context.User.Identity.GetUserId();
-		}
-		private void _performInvalidate(string userId, String key){
-			var ikey = _invalidateKey(userId, key);
-			var found = (CacheItem)Context.Cache[ikey];
-			if (found != null && found.Object is bool && ((bool)found.Object)){
-				Invalidate(key);
-				Invalidate(ikey);
-			}
-		}
-		private object _get(string userId,String key){
-			_performInvalidate(userId, key);
-
-			key = _key(key);
-			var found = ((CacheItem)Context.Items[key]);
-			if (found == null)
-				found = ((CacheItem)Context.Cache[key]);
-			if (found == null)
-				found = ((CacheItem)Context.Session[key]);
-
-			if (found != null && (found.Expires == null || found.Expires >= DateTime.UtcNow))
-				return found.Object;
-			return null;
-		}
-
+		
 		public object Get(String key){
 			return _get(_currentUser(), key);
 		}
@@ -150,6 +117,39 @@ namespace RadialReview
 			}
 		}
 		
+		#region Private
+		private string _key(string key){
+			return  "__k_" + key;
+		}
+		private string _invalidateKey(string userId, string key)
+		{
+			return key + "__i_" + userId;
+		}
+		private string _currentUser(){
+			return Context.User.Identity.GetUserId();
+		}
+		private void _performInvalidate(string userId, String key){
+			var ikey = _invalidateKey(userId, key);
+			var found = (CacheItem)Context.Cache[ikey];
+			if (found != null && found.Object is bool && ((bool)found.Object)){
+				Invalidate(key);
+				Invalidate(ikey);
+			}
+		}
+		private object _get(string userId,String key){
+			_performInvalidate(userId, key);
 
+			key = _key(key);
+			var found = ((CacheItem)Context.Items[key]);
+			if (found == null)
+				found = ((CacheItem)Context.Cache[key]);
+			if (found == null)
+				found = ((CacheItem)Context.Session[key]);
+
+			if (found != null && (found.Expires == null || found.Expires >= DateTime.UtcNow))
+				return found.Object;
+			return null;
+		}
+		#endregion
 	}
 }

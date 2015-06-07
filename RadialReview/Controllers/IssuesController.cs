@@ -25,6 +25,15 @@ namespace RadialReview.Controllers
 			);
 
 			var todoModel = TodoAccessor.GetTodo(GetUser(), todo);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var possible = recur._DefaultAttendees
+				.Select(x => x.User)
+				.Select(x => new IssueVM.AccountableUserVM(){
+					id = x.Id,
+					imageUrl = x.ImageUrl(true, ImageSize._32),
+					name = x.GetName()
+				}).ToList();
+
 			var model = new IssueVM()
 			{
 				//IssueId = i.Issue.Id,
@@ -34,6 +43,8 @@ namespace RadialReview.Controllers
 				ByUserId = GetUser().Id,
 				MeetingId = meeting,
 				ForId = todo,
+				PossibleUsers = possible,
+				OwnerId = GetUser().Id,
 			};
 			return PartialView("CreateIssueModal", model);
 		}
@@ -48,7 +59,7 @@ namespace RadialReview.Controllers
 			);
 
 
-			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, new IssueModel(){
+			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId,model.OwnerId, new IssueModel(){
 				CreatedById = GetUser().Id,
 				//MeetingRecurrenceId = model.RecurrenceId,
 				CreatedDuringMeetingId = model.MeetingId,
@@ -103,10 +114,23 @@ namespace RadialReview.Controllers
 		{
 			if(meeting!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var possible = recur._DefaultAttendees
+				.Select(x => x.User)
+				.Select(x => new IssueVM.AccountableUserVM(){
+					id = x.Id,
+					imageUrl = x.ImageUrl(true, ImageSize._32),
+					name = x.GetName()
+				}).ToList();
+
+
 			var model = new IssueVM(){
 				ByUserId = GetUser().Id,
 				MeetingId = meeting,
-				RecurrenceId = recurrence
+				RecurrenceId = recurrence,
+				PossibleUsers = possible,
+				OwnerId = GetUser().Id
 		    };
 			return PartialView("CreateIssueModal", model);
 	    }
@@ -119,7 +143,7 @@ namespace RadialReview.Controllers
 			if (model.MeetingId!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, new IssueModel()
+			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId,model.OwnerId, new IssueModel()
 			{
 				CreatedById = GetUser().Id,
 				//MeetingRecurrenceId = model.RecurrenceId,
@@ -128,7 +152,8 @@ namespace RadialReview.Controllers
 				Description = model.Details??"",
 				ForModel = "IssueModel",
 				ForModelId = -1,
-				Organization = GetUser().Organization
+				Organization = GetUser().Organization,
+				
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 	    }
@@ -140,6 +165,16 @@ namespace RadialReview.Controllers
 
 			var s =ScorecardAccessor.GetScoreInMeeting(GetUser(), score,recurrence);
 
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+			var possible = recur._DefaultAttendees
+				.Select(x => x.User)
+				.Select(x => new IssueVM.AccountableUserVM()
+				{
+					id = x.Id,
+					imageUrl = x.ImageUrl(true, ImageSize._32),
+					name = x.GetName()
+				}).ToList();
+
 			var model = new ScoreCardIssueVM()
 			{
 				ByUserId = GetUser().Id,
@@ -147,7 +182,9 @@ namespace RadialReview.Controllers
 				Details = s.GetIssueDetails(),
 				MeasurableId = measurable,
 				MeetingId = meeting,
-				RecurrenceId = recurrence
+				RecurrenceId = recurrence,
+				PossibleUsers = possible,
+				OwnerId = s.AccountableUserId
 			};
 			return PartialView("ScorecardIssueModal", model);
 		}
@@ -158,7 +195,7 @@ namespace RadialReview.Controllers
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			IssuesAccessor.CreateIssue(GetUser(),model.RecurrenceId, new IssueModel(){
+			IssuesAccessor.CreateIssue(GetUser(),model.RecurrenceId,model.OwnerId, new IssueModel(){
 				CreatedById = GetUser().Id,
 				//MeetingRecurrenceId = model.RecurrenceId,
 				CreatedDuringMeetingId = model.MeetingId,
@@ -178,6 +215,16 @@ namespace RadialReview.Controllers
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
 			var s = RockAccessor.GetRockInMeeting(GetUser(), rock, meeting);
+			var recur = L10Accessor.GetCurrentL10RecurrenceFromMeeting(GetUser(), meeting);
+			var possible = recur._DefaultAttendees
+				.Select(x => x.User)
+				.Select(x => new IssueVM.AccountableUserVM()
+				{
+					id = x.Id,
+					imageUrl = x.ImageUrl(true, ImageSize._32),
+					name = x.GetName()
+				}).ToList();
+
 
 			var model = new RockIssueVM()
 			{
@@ -186,7 +233,9 @@ namespace RadialReview.Controllers
 				Details = s.GetIssueDetails(),
 				MeetingId = meeting,
 				RockId = rock,
-				RecurrenceId =  s.ForRecurrence.Id
+				RecurrenceId =  s.ForRecurrence.Id,
+				PossibleUsers = possible,
+				OwnerId =s.ForRock.ForUserId
 			};
 			return PartialView("RockIssueModal", model);
 		}
@@ -197,7 +246,7 @@ namespace RadialReview.Controllers
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RockId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, new IssueModel()
+			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId,model.OwnerId, new IssueModel()
 			{
 				CreatedById = GetUser().Id,
 				//MeetingRecurrenceId = model.RecurrenceId,

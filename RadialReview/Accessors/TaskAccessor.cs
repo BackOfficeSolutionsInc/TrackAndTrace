@@ -137,8 +137,8 @@ namespace RadialReview.Accessors
 				var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
 				var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
 				var nowPlus = now.Add(TimeSpan.FromDays(1));
-				var scorecardCount = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == forUserId && x.DateDue < nowPlus && x.DateEntered == null).Select(Projections.RowCount()).FutureValue<int>();
-				var total = reviewCount.Value + prereviewCount.Value + scorecardCount.Value + profileImage;
+				//var scorecardCount = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == forUserId && x.DateDue < nowPlus && x.DateEntered == null).Select(Projections.RowCount()).FutureValue<int>();
+				var total = reviewCount.Value + prereviewCount.Value /*+ scorecardCount.Value */+ profileImage;
 				return total;
 			});
 		}
@@ -194,7 +194,7 @@ namespace RadialReview.Accessors
 					tasks.AddRange(prereviewTasks);
 
 					//Scorecard
-					var scores = s.QueryOver<ScoreModel>()
+					/*var scores = s.QueryOver<ScoreModel>()
 						.Where(x => x.AccountableUserId == forUserId && x.DateDue < now.AddDays(1) && x.DateEntered == null)
 						.List().ToList();
 
@@ -205,7 +205,7 @@ namespace RadialReview.Accessors
 						Name = "Enter Scorecard Metrics",
 						Type = TaskType.Scorecard
 					});
-					tasks.AddRange(scoreTasks);
+					tasks.AddRange(scoreTasks);*/
 
 					try
 					{

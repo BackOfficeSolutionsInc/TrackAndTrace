@@ -10,21 +10,13 @@ namespace RadialReview
 
 		public static DateTime Min(DateTime d1, params DateTime[] dates)
 		{
-			var min = d1.Ticks;
-			foreach (var d in dates)
-			{
-				min = Math.Min(min, d.Ticks);
-			}
+			var min = dates.Select(d => d.Ticks).Concat(new[]{d1.Ticks}).Min();
 			return new DateTime(min);
 		}
 		public static DateTime Max(DateTime d1, params DateTime[] dates)
 		{
-			var min = d1.Ticks;
-			foreach (var d in dates)
-			{
-				min = Math.Min(min, d.Ticks);
-			}
-			return new DateTime(min);
+			var max = dates.Select(d => d.Ticks).Concat(new[]{d1.Ticks}).Max();
+			return new DateTime(max);
 		}
 
 

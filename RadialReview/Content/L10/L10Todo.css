@@ -353,3 +353,24 @@ body.dragging, body.dragging * {
 	/*width: 20px;
 	height:20px;*/
 }
+
+.todoDetails .date input{
+	border: 0px;
+	-webkit-box-shadow: none;
+	-box-shadow: none;
+	color:#767F99;
+	cursor: pointer;
+}
+
+.todoDetails .date input:hover {
+	text-decoration: underline;
+}
+
+.todoDetails .message-input {
+	width: 100%;
+}
+
+.todo .due-date.red {
+	color: red;
+	font-weight: bold;
+}

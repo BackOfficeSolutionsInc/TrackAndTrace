@@ -246,7 +246,7 @@ namespace RadialReview.Accessors
 				week = week.StartOfWeek(DayOfWeek.Sunday);
 
 				//See if we can find it given week.
-				score = existingScores.SingleOrDefault(x => (x.ForWeek == week));
+				score = existingScores.OrderBy(x=>x.Id).FirstOrDefault(x => (x.ForWeek == week));
 
 				if (score != null)
 				{

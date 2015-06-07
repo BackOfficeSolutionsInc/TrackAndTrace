@@ -116,10 +116,11 @@
 					<div class="col-xs-12 alignCenter pull-left">
 						@if (!String.IsNullOrWhiteSpace(Model.Review.ForUser.GetTitles()))
 						{
-							<div class="pull-left reviewPosition" style="">@Model.Review.ForUser.GetTitles()</div>
+							<div style="padding-top:43px;" class="pull-left reviewPosition">@Model.Review.ForUser.GetTitles()</div>
 						}
-						@Model.Review.ForUser.GetName()
-						<div class="pull-right reviewName" style="">@Model.Review.Name</div>
+						<div style="padding-top:43px;" class="pull-right reviewName">@Model.Review.Name</div>
+						
+						<div class="employee-name" >@Model.Review.ForUser.GetName()</div>
 					</div>
 				</div>
 			</div>
@@ -127,7 +128,7 @@
 		@* JOB DESCRIPTION HERE*@
 		@if (!String.IsNullOrWhiteSpace(Model.JobDescription))
 		{
-			<div class="row smallBreak2 zoom8">
+			<div class="row  zoom8">
 				<div class="col-xs-3 jobDescriptionHeading alignRight ">
 					<a id="jobDescription" class="shiftByTitle"></a>
 					<b>Job Description:</b>

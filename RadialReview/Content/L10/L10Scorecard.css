@@ -189,10 +189,10 @@
 		border-left: 1px solid #FFFFFF;
 	}
 	
-.direction_1:before{
+.direction_1:empty:before{
 	content: "≥";
 }
-.direction_-1:before{
+.direction_-1:empty:before{
 	content: "<";
 }
 

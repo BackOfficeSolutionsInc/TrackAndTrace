@@ -52,7 +52,8 @@ namespace RadialReview.Accessors
 
                     var forUser=s.Get<UserOrganizationModel>(forUserId);
                     forUser.Positions.Add(pd);
-                    s.Update(forUser);
+					s.Update(forUser);
+					forUser.UpdateCache(s);
 
 	                var template=UserTemplateAccessor._GetAttachedUserTemplateUnsafe(s, positionId, AttachType.Position);
 					if (template!=null)
@@ -78,6 +79,9 @@ namespace RadialReview.Accessors
                     posDur.DeleteTime = DateTime.UtcNow;
                     posDur.DeletedBy = caller.Id;
                     s.Update(posDur);
+
+					s.Get<UserOrganizationModel>(posDur.UserId)
+						.UpdateCache(s);
 
 					var template = UserTemplateAccessor._GetAttachedUserTemplateUnsafe(s, posDur.Position.Id, AttachType.Position);
 

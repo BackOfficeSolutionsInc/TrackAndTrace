@@ -1,4 +1,16 @@
-﻿@model RadialReview.Models.UserOrganizationModel
+﻿@using RadialReview.Models
+@model object
+
+@{
+	var M = Model as UserOrganizationModel;
+	var url = "/i/placeholder";
+	var title = "n/a";
+	if (M != null){
+		url = M.ImageUrl(true, ImageSize._32);
+		title = M.GetName();
+	}
+}		   
+
 <span class="profile-picture">
-	@Html.Partial("_Picture", Model.ImageUrl(true,ImageSize._32), new ViewDataDictionary() { { "ImageTitle", Model.GetName() } })
+	@Html.Partial("_Picture", url, new ViewDataDictionary() { { "ImageTitle", title } })
 </span>

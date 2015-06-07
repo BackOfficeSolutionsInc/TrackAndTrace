@@ -174,7 +174,7 @@
 						</td>
 						<td class="alignCenter noselect noPadLeft">
 
-							@if (p.Verified || !p.Managing) {
+							@if (p.Verified || (!p.Managing && !Model.ManagingOrganization)) {
 								if (p.Verified) {
 									<span title="Joined." class="glyphicon glyphicon-ok-sign strokeGray gray" data-sort="4"></span>
 								}

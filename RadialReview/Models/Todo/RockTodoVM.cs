@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RadialReview.Models.Todo
 {
-	public class RockTodoVM
+	public class RockTodoVM : TodoVM
 	{
 		[Required]
-		public long MeetingId { get; set; }
-
-		[Required]
 		public long RockId { get; set; }
+		/*
+		[Required]
+		public long MeetingId { get; set; }
 
 		[Required]
 		public long ByUserId { get; set; }
@@ -27,6 +27,6 @@ namespace RadialReview.Models.Todo
 		[Display(Name = "Who's Accountable")]
 		public long AccountabilityId { get; set; }
 
-		public List<AccountableUserVM> PossibleUsers { get; set; }
+		public List<AccountableUserVM> PossibleUsers { get; set; }*/
 	}
 }

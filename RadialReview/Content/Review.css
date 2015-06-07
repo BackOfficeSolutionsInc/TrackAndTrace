@@ -193,8 +193,8 @@ input[type="range"] {
 
 .reasonButton {
 	position: absolute;
-	top: 2px;
-	right: 3px;
+	top: 5px;
+	right: 6px;
 	z-index: 2;
 	color: white;
 	-ms-opacity: .5;

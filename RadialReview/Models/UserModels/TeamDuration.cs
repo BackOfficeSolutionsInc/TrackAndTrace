@@ -33,10 +33,10 @@ namespace RadialReview.Models.UserModels
         {
             TeamId = team.Id;
             UserId = forUser.Id;
-            //Team = team;
+            Team = team;
             AddedBy = addedBy;
             Start = DateTime.UtcNow;
-            //User = forUser;
+            User = forUser;
         }
     }
 

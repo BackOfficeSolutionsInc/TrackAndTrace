@@ -99,6 +99,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Manager)]
+		[OutputCache(NoStore = true,Duration = 0)]
 		public ActionResult Members()
 		{
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Members", LifeTime.Session);
@@ -156,7 +157,7 @@ namespace RadialReview.Controllers
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 
 			var companyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
-				.Select(x => x.CompanyValue)
+				//.Select(x => x.CompanyValue)
 				.ToList();
 			var companyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 			var companyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
@@ -177,6 +178,7 @@ namespace RadialReview.Controllers
 				CompanyQuestions = companyQuestions,
 				RockName = user.Organization.Settings.RockName,
 				TimeZone = user.Organization.Settings.TimeZoneId,
+				WeekStart = user.Organization.Settings.WeekStart
 			};
 
 			return View(model);
@@ -198,11 +200,12 @@ namespace RadialReview.Controllers
 				model.ManagersCanEditSelf,
 				model.EmployeesCanEditSelf,
 				model.RockName,
-				model.TimeZone);
+				model.TimeZone,
+				model.WeekStart);
 			ViewBag.Success = "Successfully Saved.";
 
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
-				.Select(x => x.CompanyValue)
+				//.Select(x => x.CompanyValue)
 				.ToList();
 
 			model.CompanyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();

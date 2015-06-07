@@ -167,7 +167,7 @@ namespace RadialReview
 				return ConstantStrings.AmazonS3Location + s + suffix;
 			}
 			return "/i/" + self.User.ImageGuid;*/
-			return ImageUrl(self.User, awsFaster, size);
+			return ImageUrl(self.NotNull(x=>x.User), awsFaster, size);
 		}
 		public static String ImageUrl(this UserModel self,bool awsFaster = false, ImageSize size = ImageSize._64)
 		{

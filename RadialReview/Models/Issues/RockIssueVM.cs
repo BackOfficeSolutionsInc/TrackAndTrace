@@ -6,12 +6,13 @@ using System.Web;
 
 namespace RadialReview.Models.Issues
 {
-	public class RockIssueVM
+	public class RockIssueVM : IssueVM
 	{
 		[Required]
-		public long MeetingId { get; set; }
-		[Required]
 		public long RockId { get; set; }
+		/*
+		[Required]
+		public long MeetingId { get; set; }
 		[Required]
 		public long ByUserId { get; set; }
 		[Required]
@@ -21,6 +22,6 @@ namespace RadialReview.Models.Issues
 		[Display(Name = "Issue Details")]
 		public string Details { get; set; }
 
-		public long RecurrenceId { get; set; }
+		public long RecurrenceId { get; set; }*/
 	}
 }

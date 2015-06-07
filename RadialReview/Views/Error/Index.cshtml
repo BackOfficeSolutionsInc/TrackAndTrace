@@ -1,7 +1,11 @@
-﻿@model Exception
+﻿@using RadialReview.Properties
+@using RestSharp.Extensions
+@model Exception
 @{
 	ViewBag.Title = RadialReview.Properties.ExceptionStrings.AnErrorOccured;
 	Layout = "~/Views/Shared/_Layout.cshtml";
+	var subject=((string)ViewBag.Message).NotNull(x => x.ToString().UrlEncode());
+	var body = Model.NotNull(x => x.StackTrace.UrlEncode());
 }
 
 
@@ -18,6 +22,8 @@
 			<div class="review">
 				@Model.NotNull(x => x.StackTrace)
 			</div>
+			<a href="mailto:@ProductStrings.SupportEmail?subject=Error:+@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(body)">Email Support</a>
 		}
+		
 	</div>
 </div>

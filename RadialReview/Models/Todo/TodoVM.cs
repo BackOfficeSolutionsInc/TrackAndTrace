@@ -26,6 +26,13 @@ namespace RadialReview.Models.Todo
 		[Display(Name = "Who's Accountable")]
 		public long AccountabilityId { get; set; }
 		public List<AccountableUserVM> PossibleUsers { get; set; }
+
+		public DateTime DueDate { get; set; }
+
+		public TodoVM()
+		{
+			DueDate = DateTime.UtcNow.AddDays(7);
+		}
 	}
 
 	public class AccountableUserVM

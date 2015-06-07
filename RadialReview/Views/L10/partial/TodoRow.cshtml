@@ -1,7 +1,8 @@
 ﻿@model RadialReview.Models.Todo.TodoModel
 
-<li class="todo-row dd-item"
+<li class="todo-row dd-item arrowkey"
 	data-createtime="@(Model.CreateTime.ToJavascriptMilliseconds())"
+	data-duedate="@(Model.DueDate.ToJavascriptMilliseconds())"
 	data-checked="@(Model.CompleteTime==null?"False":"True")"
 	data-todo="@Model.Id"
 	data-message="@Model.Message.EscapeHtml()"
@@ -27,5 +28,5 @@
 		</div>*@
 	<div class="message" data-todo="@Model.Id">@Model.Message</div>
 	<div class="todo-details-container"><div class="todo-details" data-todo="@Model.Id">@Model.Details</div></div>
-	<div class="due-date @(Model.DueDate.Date>DateTime.UtcNow?"red":"")">@Model.DueDate.Date.ToShortDateString()</div>
+	<div class="due-date @(Model.DueDate.Date<DateTime.UtcNow?"red":"")">@Model.DueDate.Date.ToShortDateString()</div>
 </li>

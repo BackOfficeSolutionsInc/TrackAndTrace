@@ -27,7 +27,7 @@
 								@foreach (var i in person)
 								{
 									<tr>
-										<td class="buttonHolder currentBlue" style="min-width: 45px;">
+										<td class="buttonHolder currentBlue" style="min-width: 45px;border-radius: 6px;height: 30px;margin: 1px;padding: 4px;">
 											<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
 											      data-meeting="@Model.Meeting.Id"
 											      data-recurrence="@Model.Recurrence.Id"
@@ -37,7 +37,8 @@
 											      data-meeting="@Model.Meeting.Id"
 											      data-recurrence="@Model.Recurrence.Id"
 											      data-rock="@(i.ForRock.Id)"
-											      data-method="CreateRockTodo">
+											      data-method="CreateRockTodo"
+												  data-accountable="@i.ForRock.ForUserId">
 											</span>
 										</td>
 										<td class="">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>

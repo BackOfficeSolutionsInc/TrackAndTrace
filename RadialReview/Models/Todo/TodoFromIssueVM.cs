@@ -7,8 +7,10 @@ using System.Web.Mvc;
 
 namespace RadialReview.Models.Todo
 {
-	public class TodoFromIssueVM
-	{
+	public class TodoFromIssueVM : TodoVM
+	{	[Required]
+		public long IssueId { get; set; }
+		/*
 		[Required]
 		public long MeetingId { get; set; }
 		[Required]
@@ -21,11 +23,10 @@ namespace RadialReview.Models.Todo
 		public string Details { get; set; }
 
 		public long RecurrenceId { get; set; }
-		[Required]
-		public long IssueId { get; set; }
+	
 		[Required]
 		[Display(Name = "Who's Accountable")]
 		public long AccountabilityId { get; set; }
-		public List<AccountableUserVM> PossibleUsers { get; set; }
+		public List<AccountableUserVM> PossibleUsers { get; set; }*/
 	}
 }

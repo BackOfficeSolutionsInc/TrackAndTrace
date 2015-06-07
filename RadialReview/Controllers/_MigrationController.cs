@@ -520,12 +520,16 @@ namespace RadialReview.Controllers
 		public string M5_5_2015()
 		{
 			var f = 0;
-			using (var s = HibernateSession.GetCurrentSession()){
-				using (var tx = s.BeginTransaction()){
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
 					//Fix TempUser userIds
 					var cr = s.QueryOver<OrganizationModel>().List();
-					foreach (var o in cr){
-						if (o.Settings.TimeZoneId == null){
+					foreach (var o in cr)
+					{
+						if (o.Settings.TimeZoneId == null)
+						{
 							o.Settings.TimeZoneId = "Central Standard Time";
 							f++;
 							s.Update(o);
@@ -535,7 +539,73 @@ namespace RadialReview.Controllers
 					s.Flush();
 				}
 			}
-			return ""+f;
+			return "" + f;
+		}
+
+		[Access(AccessLevel.Radial)]
+		public string M6_1_2015()
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+					var cr = s.QueryOver<L10Recurrence>().List();
+					foreach (var o in cr)
+					{
+						if (  
+							o.SegueMinutes	==0 && 
+							o.ScorecardMinutes==0 && 
+							o.RockReviewMinutes==0 && 
+							o.HeadlinesMinutes==0 && 
+							o.TodoListMinutes	==0 &&
+							o.IDSMinutes == 0 && 
+							o.ConclusionMinutes == 0
+							) 
+						{
+							o.SegueMinutes	=5;
+							o.ScorecardMinutes=5;
+							o.RockReviewMinutes=5;
+							o.HeadlinesMinutes=5;
+							o.TodoListMinutes=5;
+							o.IDSMinutes=60;
+							o.ConclusionMinutes = 5;
+							f++;
+							s.Update(o);
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "" + f;
+		}
+
+
+		[Access(AccessLevel.Radial)]
+		public string M6_3_2015()
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+					var cr = s.QueryOver<RockModel>().List();
+					foreach (var o in cr)
+					{
+						if (o.OnlyAsk== (AboutType)long.MaxValue){
+							o.OnlyAsk = AboutType.Self;
+							f++;
+							s.Update(o);
+						}
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "" + f;
 		}
 	}
 }

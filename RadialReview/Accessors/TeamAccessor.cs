@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Amazon.IdentityManagement.Model;
+using FluentNHibernate.Utils;
 using NHibernate;
 using NHibernate.Mapping;
 using RadialReview.Exceptions;
@@ -506,14 +507,22 @@ namespace RadialReview.Accessors
 						{
 							CreatedBy = caller.Id,
 							Organization = caller.Organization,
-							OnlyManagersEdit = onlyManagerCanEdit.Value
+							OnlyManagersEdit = onlyManagerCanEdit.Value,
+							ManagedBy = managerId.Value,
 						};
+
+						s.SaveOrUpdate(team);
 					}
 
 
-					if (name != null && team.Type == TeamType.Standard)
+					if (name != null && team.Type == TeamType.Standard && team.Name!=name)
 					{
 						team.Name = name;
+
+						var all =s.QueryOver<TeamDurationModel>().Where(x => x.Team.Id == team.Id && x.DeleteTime == null).List().ToList();
+						foreach(var a in all)
+							a.User.UpdateCache(s);
+
 					}
 
 					if (onlyManagerCanEdit != null && onlyManagerCanEdit.Value != team.OnlyManagersEdit)
@@ -529,7 +538,11 @@ namespace RadialReview.Accessors
 						team.InterReview = interReview.Value;
 					}
 
-					s.SaveOrUpdate(team);
+					if (managerId != null){
+						team.ManagedBy = managerId.Value;
+					}
+
+					s.Update(team);
 					tx.Commit();
 					s.Flush();
 					return team;
@@ -592,6 +605,9 @@ namespace RadialReview.Accessors
 					teamDuration.DeletedBy = caller.Id;
 
 					s.Update(teamDuration);
+
+					teamDuration.User.UpdateCache(s);
+
 					tx.Commit();
 					s.Flush();
 					return true;

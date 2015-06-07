@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Positions - " + Model.GetName();
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Members";
+    ViewBag.Page = "Positions";
 }
 @section header{
 	@Html.Partial("Partial/manageheader")
@@ -24,7 +24,7 @@
 	}
 
 	<div class="panel-heading">
-		<h3 class="panel-title">@Html.ViewOrEdit(Model.GetPersonallyManaging()) positions: <i>@Model.GetNameAndTitle()</i></h3>
+		<h3 class="panel-title">@Html.ViewOrEdit(Model.GetPersonallyManaging()) Positions: <i>@Model.GetNameAndTitle()</i></h3>
 	</div>
 
 	<table class="table">

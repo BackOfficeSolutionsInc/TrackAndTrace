@@ -25,7 +25,7 @@ namespace RadialReview.Models.Todo
 		public virtual L10Recurrence ForRecurrence { get; set; }
 		public virtual long AccountableUserId { get; set; }
 		public virtual UserOrganizationModel AccountableUser { get; set; }
-		public virtual int Ordering { get; set; }
+		public virtual long Ordering { get; set; }
 
 		public virtual String ForModel { get; set; }
 		public virtual long ForModelId { get; set; }
@@ -36,6 +36,7 @@ namespace RadialReview.Models.Todo
 		{
 			CreateTime = DateTime.UtcNow;
 			DueDate = CreateTime.AddDays(7);
+			Ordering = -CreateTime.Ticks;
 		}
 
 		public class IssueMap : ClassMap<TodoModel>

@@ -99,13 +99,13 @@
 			<div class="component">
 				<div class="title">Agenda</div>
 				<ol>
-					<li class="page-item page-segue"><a data-location="Segue" href="#Segue">Segue</a><span title="Spend 5 minutes on your Segue" data-over="5" class="page-time"></span></li>
-					<li class="page-item page-scorecard"><a data-location="Scorecard" href="#Scorecard">Scorecard</a><span data-over="5" title="Spend 5 minutes on your Scorecard" class="page-time"></span></li>
-					<li class="page-item page-rocks"><a data-location="Rocks" href="#Rocks">@Html.Organization().Settings.RockName Review</a><span data-over="5" title="Spend 5 minutes on your @Html.Organization().Settings.RockName Review" class="page-time"></span></li>
-					<li class="page-item page-headlines"><a data-location="Headlines" href="#Headlines">Headlines</a><span data-over="5" title="Spend 5 minutes on Headlines" class="page-time"></span></li>
-					<li class="page-item page-todo"><a data-location="Todo" href="#Todo">Todo List</a><span title="Spend 5 minutes on your Todo List" data-over="5" class="page-time"></span></li>
-					<li class="page-item page-ids"><a data-location="IDS" href="#IDS">IDS</a><span data-over="60" title="Spend 60 minutes on IDS" class="page-time"></span></li>
-					<li><a data-location="Conclusion" href="#Conclusion">Conclusion</a></li>
+					<li class="page-item page-segue">		<a data-location="Segue" href="#Segue">Segue</a><span title="Spend @String.Format("{0:0.##}",Model.Recurrence.SegueMinutes) minutes on your Segue" data-over="@Model.Recurrence.SegueMinutes" class="page-time"></span></li>
+					<li class="page-item page-scorecard">	<a data-location="Scorecard" href="#Scorecard">Scorecard</a><span data-over="@Model.Recurrence.ScorecardMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ScorecardMinutes) minutes on your Scorecard" class="page-time"></span></li>
+					<li class="page-item page-rocks">		<a data-location="Rocks" href="#Rocks">@Html.Organization().Settings.RockName Review</a><span data-over="@Model.Recurrence.RockReviewMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.RockReviewMinutes) minutes on your @Html.Organization().Settings.RockName Review" class="page-time"></span></li>
+					<li class="page-item page-headlines">	<a data-location="Headlines" href="#Headlines">Headlines</a><span data-over="@Model.Recurrence.HeadlinesMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.HeadlinesMinutes) minutes on Headlines" class="page-time"></span></li>
+					<li class="page-item page-todo">		<a data-location="Todo" href="#Todo">Todo List</a><span title="Spend @String.Format("{0:0.##}",Model.Recurrence.TodoListMinutes) minutes on your Todo List" data-over="@Model.Recurrence.TodoListMinutes" class="page-time"></span></li>
+					<li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"></span></li>
+					<li class="page-item page-conclusion">	<a data-location="Conclusion" href="#Conclusion">Conclusion</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"></span></li>
 				</ol>
 				<div class="alignCenter">
 					<a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>

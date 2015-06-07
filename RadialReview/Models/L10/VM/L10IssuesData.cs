@@ -15,6 +15,8 @@ namespace RadialReview.Models.L10.VM
 		public String message { get; set; }
 		public String details { get; set; }
 		public bool @checked { get; set; }
+		public String owner { get; set; }
+		public String imageUrl{ get; set; }
 
 		public static IssuesData FromIssueRecurrence(IssueModel.IssueModel_Recurrence recur)
 		{
@@ -24,7 +26,9 @@ namespace RadialReview.Models.L10.VM
 				details = recur.Issue.Description,
 				message = recur.Issue.Message,
 				recurrence_issue = recur.Id,
-				issue = recur.Issue.Id
+				issue = recur.Issue.Id,
+				owner = recur.Owner.NotNull(x=>x.GetName()),
+				imageUrl	= recur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._32))??"/i/placeholder"
 			};
 		}
 	}

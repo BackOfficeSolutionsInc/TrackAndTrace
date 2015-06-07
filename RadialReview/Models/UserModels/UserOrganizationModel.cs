@@ -230,11 +230,11 @@ namespace RadialReview.Models
         }
 
 
-		public virtual void UpdateCache(ISession s)
+		public virtual UserOrganizationModel UpdateCache(ISession s)
 		{
 			if (Cache==null)
 				Cache=new UserLookup();
-
+			
 			Cache.OrganizationId = Organization.Id;
 			Cache._ImageUrlSuffix = this.ImageUrl(true, ImageSize._suffix);
 			Cache.AttachTime = AttachTime;
@@ -272,6 +272,7 @@ namespace RadialReview.Models
 			}catch (Exception e){
 				throw new Exception("Could not update Session",e);
 			}
+			return this;
 
 		}
 	}

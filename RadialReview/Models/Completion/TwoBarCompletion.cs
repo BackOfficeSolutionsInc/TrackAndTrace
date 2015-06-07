@@ -139,6 +139,8 @@ namespace RadialReview.Models
 
 		public decimal GetPercentage()
 		{
+			if (RequiredCompleted == 0 && (decimal) TotalRequired == 0)
+				return 1m;
 			return RequiredCompleted / (decimal)TotalRequired;
 		}
 	}

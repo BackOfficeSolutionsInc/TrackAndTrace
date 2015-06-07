@@ -10,7 +10,7 @@
 			<td></td>
 			<td></td>
 			<th>Todo</th>
-			<th>Due Date</th>
+			<th class="alignCenter">Due Date</th>
 			<th></th>
 			<th>Completed</th>
 		</tr>
@@ -24,17 +24,18 @@
 			<td style="min-width: 25px;text-align: center;"><input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" /></td>
 			<td><profile-image user="todo.Owner"></profile-image></td>
 			<td style="width:100%" ng-click = "model.Selected = todo.Key">{{todo.Name}}</td>
-			<td class="alignCenter" style="min-width: 75px;">{{todo.DueDate | date:'MM/dd/yy'}}</td>
+			<td class="alignCenter" style="min-width: 75px;"><input class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
 			<td style="min-width: 15px;"></td>
 			<td class="alignCenter"  style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
 		</tr>
+
 		<tr ng-show="model.Selected==todo.Key" ng-class="{grayRow: todo.Complete}">
 			<td style="min-width: 25px;text-align: center;"><input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" /></td>
 			<td><profile-image user="todo.Owner"></profile-image></td>
 			<td style="width:100%">
 				<input ng-model-options="{debounce: 200}"  type="text" ng-model="todo.Name" class="fullWidth"  ng-change="functions.sendUpdate(todo)"/>
 			</td>
-			<td class="alignCenter" style="min-width: 75px;">{{todo.DueDate | date:'MM/dd/yy'}}</td>
+			<td class="alignCenter" style="min-width: 75px;"><input class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
 			<td style="min-width: 15px;"></td>
 			<td class="alignCenter"  style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
 		</tr>

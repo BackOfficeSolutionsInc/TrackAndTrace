@@ -44,7 +44,7 @@ namespace RadialReview.Controllers
         {
             var user = GetUser();
             var team = _TeamAccessor.EditTeam(user, model.TeamId,model.TeamName,model.InterReview,true,model.ManagerId);
-            return Json(ResultObject.Success("Team has been updated."));
+			return Json(ResultObject.Success("Team has been updated.").ForceRefresh());
         }
         /*
         public ActionResult Responsibilities(long id)
@@ -123,7 +123,7 @@ namespace RadialReview.Controllers
             if (model.SelectedUserId == 0)
                 return Json(new ResultObject(true, "Id of zero is not allowed."));
             _TeamAccessor.AddMember(GetUser(), model.TeamId, model.SelectedUserId);
-            return Json(ResultObject.Success("Added member."));
+            return Json(ResultObject.Success("Added member.").ForceRefresh());
         }
         /*
         [HttpPost]
@@ -139,7 +139,7 @@ namespace RadialReview.Controllers
         {
             var user=GetUser();
             _TeamAccessor.AddMember(user,teamId,userId);
-            return Json(ResultObject.Success("Added member."), JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.Success("Added member.").ForceRefresh(), JsonRequestBehavior.AllowGet);
         }
 
 	}

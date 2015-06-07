@@ -741,6 +741,7 @@
     <Content Include="Scripts\L10\AV\app.js" />
     <Content Include="Scripts\L10\AV\connectionManager.js" />
     <Content Include="Scripts\L10\AV\viewModel.js" />
+    <Content Include="Scripts\L10\charts\sparklines.min.js" />
     <Content Include="Scripts\L10\L10Notes.js" />
     <Content Include="ssleay32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

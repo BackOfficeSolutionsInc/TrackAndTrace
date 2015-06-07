@@ -19,11 +19,17 @@ namespace RadialReview.Models.L10.VM
 		public long[] SelectedMeasurables { get; set; }
 		public long[] SelectedRocks { get; set; }
 
+
+		
+
 		public L10EditVM()
 		{
 			SelectedMembers = new long[0] { };
 			SelectedMeasurables = new long[0] { };
 			SelectedRocks=new long[0]{};
+
+	
+
 		}
 
 		public string Return { get; set; }

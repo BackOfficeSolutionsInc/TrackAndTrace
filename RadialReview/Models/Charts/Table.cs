@@ -28,6 +28,9 @@ namespace RadialReview.Models.Charts
 
 		public void Set(String row, String column, HtmlString data)
 		{
+			row = row ?? "";
+			column = column ?? "";
+
 			if (!Values.ContainsKey(row))
 				Values[row] = new Dictionary<string, HtmlString>();
 

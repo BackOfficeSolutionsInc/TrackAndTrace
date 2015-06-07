@@ -1,26 +1,39 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingVM
-<div class="btn-group">
-	<div class="btn btn-default btn-xs notesButton" >
-		<span class="icon fontastic-icon-align-left-2"></span> Notes
+<span class="button-bar">
+	<div class="btn-group">
+		<div class="btn btn-default btn-xs notesButton">
+			<span class="icon fontastic-icon-align-left-2"></span> Notes
+		</div>
 	</div>
-</div>
-<div class="btn-group">
-	<div class="btn btn-default btn-xs issuesModal"
-	     data-method="createissue"
-	     data-meeting="@Model.Meeting.Id"
-	     data-recurrence="@Model.Recurrence.Id">
-		<span class="glyphicon glyphicon-pushpin"></span> New Issue
+	<div class="btn-group">
+		<div class="btn btn-default btn-xs issuesModal"
+			 data-method="createissue"
+			 data-meeting="@Model.Meeting.Id"
+			 data-recurrence="@Model.Recurrence.Id">
+			<span class="glyphicon glyphicon-pushpin"></span> New Issue
+		</div>
+		<div class="btn btn-default btn-xs todoModal"
+			 data-method="createtodo"
+			 data-meeting="@Model.Meeting.Id"
+			 data-recurrence="@Model.Recurrence.Id">
+			<span class="glyphicon glyphicon-unchecked"></span> New Todo
+		</div>
 	</div>
-	<div class="btn btn-default btn-xs todoModal"
-	     data-method="createtodo"
-	     data-meeting="@Model.Meeting.Id"
-	     data-recurrence="@Model.Recurrence.Id">
-		<span class="glyphicon glyphicon-unchecked"></span> New Todo
-	</div>
-</div>
 
-<div class="btn-group">
-	<a class="btn btn-default btn-xs" href="@Url.Action("Edit",new { id=Model.Recurrence.Id, @return="meeting" })" >
-		<span class="glyphicon glyphicon-cog"></span>
-	</a>
-</div>
+	<div class="btn-group">
+		<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			<span class="glyphicon glyphicon-cog"></span>
+		</a> 
+		<ul class="dropdown-menu pull-right" role="menu">
+			@if (ViewBag.Links != null){
+				foreach (var link in ViewBag.Links){
+					 <li><a href="@(link["href"])" target="_blank"><span class="@(link["class"])"></span> @(link["text"])</a></li>
+				 }
+			}
+
+			<li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})"  target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
+			<li class="divider"></li>
+			<li><a href="@Url.Action("Edit",new { id=Model.Recurrence.Id, @return="meeting" })" onclick="skipBeforeUnload=true" ><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+		</ul>
+	</div>
+</span>

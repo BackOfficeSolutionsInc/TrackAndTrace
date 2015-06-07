@@ -139,4 +139,7 @@
   <data name="PurchaseNumber" xml:space="preserve">
     <value>1-402-437-0099</value>
   </data>
+  <data name="SupportEmail" xml:space="preserve">
+    <value>support@radialreview.com</value>
+  </data>
 </root>
