@@ -25,12 +25,12 @@ namespace RadialReview.Models.Angular.Meeting
 		}
 
 		public string Name { get; set; }
-		public List<AngularUser> Attendees { get; set; }
+		public IEnumerable<AngularUser> Attendees { get; set; }
 		public AngularScorecard Scorecard { get; set; }
-		public List<AngularMeetingNotes> Notes { get; set; }
-		public List<AngularRock> Rocks { get; set; }
-		public List<AngularTodo> Todos { get; set; }
-		public List<AngularIssue> Issues { get; set; } 
+		public IEnumerable<AngularMeetingNotes> Notes { get; set; }
+		public IEnumerable<AngularRock> Rocks { get; set; }
+		public IEnumerable<AngularTodo> Todos { get; set; }
+		public IEnumerable<AngularIssue> Issues { get; set; } 
 	}
 
 	

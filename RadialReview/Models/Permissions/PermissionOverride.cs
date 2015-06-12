@@ -18,6 +18,8 @@ namespace RadialReview.Models.Permissions
 		
 		/*[Display(Name = "Manage Employee")]
 		ManageEmployees =2*/
+		[Display(Name = "Delete Employees")]
+		DeleteEmployees =3
 
 	}
 

@@ -1,0 +1,12 @@
+﻿@model List<RadialReview.Models.UserOrganizationModel>
+@{
+    ViewBag.Title = "Handbook";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@foreach (var p in Model){
+	@Html.Partial("_ProfilePicture",p)
+	
+}

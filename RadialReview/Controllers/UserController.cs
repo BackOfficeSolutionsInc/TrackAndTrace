@@ -118,7 +118,8 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Remove(long id)
         {
-            var user=_UserAccessor.GetUserOrganization(GetUser(),id,true,true);
+
+            var user=_UserAccessor.GetUserOrganization(GetUser(),id,true,true, PermissionType.DeleteEmployees);
             var sideeffect = _UserAccessor.SideEffectRemove(GetUser(),id);
             
             var model = new RemoveUserVM(){

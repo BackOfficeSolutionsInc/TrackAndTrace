@@ -36,7 +36,7 @@ namespace RadialReview.Utilities.DataTypes
 	    }
 
 
-        public String ToCsv()
+        public String ToCsv(bool showRowTitle = true)
         {
             var sb = new StringBuilder();
             var cols=Columns.ToList();
@@ -53,13 +53,18 @@ namespace RadialReview.Utilities.DataTypes
                 var row = rows.IndexOf(item.Row);
 				items[row][col] = CsvQuote(item.Value);
             }
-	        var cc = new List<String>{CsvQuote(Title)};
-	        cc.AddRange(cols.Select(CsvQuote));
+			var cc = new List<String>();
+	        if (showRowTitle)
+				cc.Add(CsvQuote(Title));
 
+	        cc.AddRange(cols.Select(CsvQuote));
 			sb.AppendLine(String.Join(",", cc));
 
             for(var i=0;i<rows.Count;i++){
-	            var rr = new List<String>{CsvQuote(rows[i])};
+	            var rr = new List<String>();
+				if (showRowTitle)
+					rr.Add(CsvQuote(rows[i]));
+
 	            rr.AddRange(items[i]);
                 sb.AppendLine(String.Join(",",rr));
             }
@@ -74,6 +79,7 @@ namespace RadialReview.Utilities.DataTypes
 
 			var containsQuote = false;
 			var containsComma = false;
+			var containsReturn = false;
 			var len = cell.Length;
 			for (var i = 0; i < len && (containsComma == false || containsQuote == false); i++){
 				var ch = cell[i];
@@ -81,10 +87,12 @@ namespace RadialReview.Utilities.DataTypes
 					containsQuote = true;
 				}else if (ch == ','){
 					containsComma = true;
+				}else if (ch == '\n'){
+					containsReturn = true;
 				}
 			}
 
-			var mustQuote = containsComma || containsQuote;
+			var mustQuote = containsComma || containsQuote || containsReturn;
 
 			if (containsQuote){
 				cell = cell.Replace("\"", "\"\"");

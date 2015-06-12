@@ -83,7 +83,7 @@ namespace RadialReview.Utilities
 
 			public CacheChecker(String key, PermissionsUtility p)
 			{
-				this.key = key;
+				this.key = p.caller.Id+"~"+key;
 				this.p = p;
 			}
 
@@ -152,42 +152,49 @@ namespace RadialReview.Utilities
 
 			throw new PermissionsException("You don't manage this user.");*/
 		}
-		public PermissionsUtility ViewUserOrganization(long userOrganizationId, Boolean sensitive)
+
+		public PermissionsUtility ViewUserOrganization(long userOrganizationId, Boolean sensitive, params PermissionType[] alsoCheck)
 		{
-			return CheckCacheFirst("ViewUserOrganization", userOrganizationId, sensitive.ToLong()).Execute(() =>
+			return TryWithOverrides(p =>
+			{
+				return CheckCacheFirst("ViewUserOrganization", userOrganizationId, sensitive.ToLong()).Execute(() =>
+				{
+					if (IsRadialAdmin(caller))
+						return this;
+					var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
+
+					if (IsManagingOrganization(userOrg.Organization.Id))
+						return this;
+
+					if (sensitive)
+					{
+						/*if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
+							return this;*/
+						return ManagesUserOrganization(userOrganizationId, false);
+						/*if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
+							return this;*/
+					}
+					else
+					{
+						if (userOrg.Organization.Id == caller.Organization.Id)
+							return this;
+					}
+
+					throw new PermissionsException();
+				});
+			}, alsoCheck);
+		}
+		public PermissionsUtility ManagesUserOrganization(long userOrganizationId, bool disableIfSelf, params PermissionType[] alsoCheck)
+		{
+			return TryWithOverrides(p =>
 			{
 				if (IsRadialAdmin(caller))
 					return this;
-				var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
-
-				if (IsManagingOrganization(userOrg.Organization.Id))
-					return this;
-
-				if (sensitive)
+				//Confirm allowed if we manage organization.. was below
+				//return TryWithOverrides(y =>
+				//{
+				if (caller.ManagingOrganization)
 				{
-					/*if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
-						return this;*/
-					return ManagesUserOrganization(userOrganizationId, false);
-					/*if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
-						return this;*/
-				}
-				else
-				{
-					if (userOrg.Organization.Id == caller.Organization.Id)
-						return this;
-				}
-
-				throw new PermissionsException();
-			});
-		}
-		public PermissionsUtility ManagesUserOrganization(long userOrganizationId, bool disableIfSelf)
-		{
-			if (IsRadialAdmin(caller))
-				return this;
-			//Confirm allowed if we manage organization.. was below
-			//return TryWithOverrides(y =>
-			//{
-				if (caller.ManagingOrganization){
 					var subordinate = session.Get<UserOrganizationModel>(userOrganizationId);
 					if (subordinate != null && subordinate.Organization.Id == caller.Organization.Id)
 						return this;
@@ -203,6 +210,7 @@ namespace RadialReview.Utilities
 					return this;
 				throw new PermissionsException();
 
+			}, alsoCheck);
 			//}, PermissionType.ManageEmployees);
 		}
 
@@ -215,7 +223,8 @@ namespace RadialReview.Utilities
 
 		public PermissionsUtility RemoveUser(long userId)
 		{
-			return TryWithOverrides(y =>{
+			return TryWithOverrides(y =>
+			{
 				var found = session.Get<UserOrganizationModel>(userId);
 				if (caller.ManagingOrganization || caller.Organization.Id == found.Organization.Id)
 					return this;

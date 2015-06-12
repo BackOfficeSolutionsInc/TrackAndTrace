@@ -7,20 +7,28 @@
 <table width="100%" class="component" ng-show="(model.Issues | transform:this | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)).length>0">
 	<tr>
 		<th></th>
+		<th></th>
 		<th>Issue</th>
-		<th></th>
-		<th></th>
+		@*<th></th>
+		<th></th>*@
 		<th>Completed</th>
 	</tr>
 	<tr ng-repeat-start="issue in model.Issues | transform:this | orderBy: ['Complete','Name']  | filter:filters.byRange('CompleteTime',date.startDate,date.endDate) "
-	    ng-class="{grayRow: issue.Complete}"
-	    ng-hide="model.Selected==issue.Key"
-	    class="clickable">
+		ng-class="{grayRow: issue.Complete}"
+		ng-hide="model.Selected==issue.Key"
+		class="clickable">
 		<td style="vertical-align: top;min-width: 25px;text-align: center">
 			<input type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />
 		</td>
+		<td style="vertical-align: top">
+			<a href="#" data-display="false" data-value="{{issue.Owner.Id}}" class="inlineEdit" data-type="select" data-pk="{{issue.Id}}" data-url="/L10/XUpdateIssue" data-name="owner" data-source="/Dropdown/MeetingMembers/{{model.Id}}?userId=true">
+				<profile-image user="issue.Owner"></profile-image>
+			</a>
+		</td>
+
+
 		<td style="width:100%" ng-click="model.Selected = issue.Key">
-			{{issue.Name}}
+			<div style="height: 32px;padding-top: 6px;">{{issue.Name}}</div>
 			<table>
 				<tr ng-repeat="sub in issue.Children" class="gray">
 					<td style="width:20px;"></td>
@@ -28,26 +36,30 @@
 				</tr>
 			</table>
 		</td>
-		<td  class="alignCenter"  style="min-width: 75px;">{{issue.DueDate | date:'MM/dd/yy'}}</td>
-		<td style="min-width: 15px;"></td>
-		<td class="alignCenter"  style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
+		@*<td class="alignCenter" style="min-width: 75px;">{{issue.DueDate | date:'MM/dd/yy'}}</td>
+		<td style="min-width: 15px;"></td>*@
+		<td class="alignCenter" style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
 	</tr>
 	<tr ng-show="model.Selected==issue.Key" ng-class="{grayRow: issue.Complete}">
 		<td style="vertical-align: top;min-width: 25px;text-align: center">
-			<input ng-model-options="{debounce: 200}"  type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />
+			<input ng-model-options="{debounce: 200}" type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />
 		</td>
-		<td><profile-image user="issue.Owner"></profile-image></td>
+		<td style="width:1px;">
+			<a  data-value="{{issue.Owner.Id}}" href="#" data-display="false" class="inlineEdit" data-type="select" data-pk="{{issue.Id}}" data-url="/L10/XUpdateIssue" data-name="owner" data-source="/Dropdown/MeetingMembers/{{model.Id}}?userId=true">
+				      <profile-image user="issue.Owner"></profile-image>
+			</a>
+		</td>
 		<td style="width:100%">
-			<input ng-model-options="{debounce: 200}"  type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" />
+			<input ng-model-options="{debounce: 200}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" />
 		</td>
-		<td  class="alignCenter"  style="min-width: 75px;">{{issue.DueDate | date:'MM/dd/yy'}}</td>
-		<td style="min-width: 15px;"></td>
-		<td  class="alignCenter"  style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
+		@*<td class="alignCenter" style="min-width: 75px;">{{issue.DueDate | date:'MM/dd/yy'}}</td>
+		<td style="min-width: 15px;"></td>*@
+		<td class="alignCenter" style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
 	</tr>
 	<tr ng-repeat-end ng-show="model.Selected==issue.Key" ng-class="{grayRow: issue.Complete}" style="color:gray">
 		<td></td>
-		<td style="width:100%">
-			<textarea ng-model-options="{debounce: 200}"  ng-model="issue.Details" class="verticalOnly fullWidth" placeholder="Enter issue details..." style="min-height: 106px;" ng-change="functions.sendUpdate(issue)"></textarea>
+		<td colspan="2" style="width:100%">
+			<textarea ng-model-options="{debounce: 200}" ng-model="issue.Details" class="verticalOnly fullWidth" placeholder="Enter issue details..." style="min-height: 106px;" ng-change="functions.sendUpdate(issue)"></textarea>
 			<table>
 				<tr ng-repeat="sub in issue.Children" class="">
 					<td style="width:20px;"></td>
@@ -56,8 +68,8 @@
 			</table>
 		</td>
 		<td></td>
-		<td></td>
-		<td></td>
+		@*<td></td>
+		<td></td>*@
 	</tr>
 </table>
 

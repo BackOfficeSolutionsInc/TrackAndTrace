@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Ajax.Utilities;
+using NHibernate.Proxy;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,12 @@ namespace RadialReview
 		}
 
         //NotNull
-        public static R NotNull<T, R>(this T obj, Func<T, R> f) 
+        public static R NotNull<T, R>(this T obj, Func<T, R> f)
         {
-            return obj != null ? f(obj) : default(R);
+	        var proxy = obj as INHibernateProxy;
+			if (proxy == null || !proxy.HibernateLazyInitializer.IsUninitialized || (proxy.HibernateLazyInitializer.Session != null && proxy.HibernateLazyInitializer.Session.IsOpen))
+				return obj != null ? f(obj) : default(R);
+			return default(R);
         }
 
         public static int ToInt(this Boolean b)

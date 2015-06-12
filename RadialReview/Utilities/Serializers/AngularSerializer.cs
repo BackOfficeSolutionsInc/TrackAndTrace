@@ -139,12 +139,17 @@ namespace RadialReview.Utilities.Serializers
 			else if (value is IEnumerable && GenericImplementsType((IEnumerable) value, typeof (IAngularItem))){
 				var keyList = new List<AngularPointer>();
 				var resolved = value as IEnumerable;
+				
 				foreach (var v in resolved){
 					var sub = new Dictionary<string, object>();
 					var vResolved = (IAngularItem) v;
 					_Serialize(v, sub, lookup, now);
 					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
 					keyList.Add(new AngularPointer(vResolved, now, false));
+				}
+
+				if (value is IAngularList){
+					return new {UpdateMethod = ((IAngularList) value).UpdateMethod.ToString(), AngularList = keyList};
 				}
 				return keyList;
 			}

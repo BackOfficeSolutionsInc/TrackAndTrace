@@ -437,3 +437,12 @@ body.dragging, body.dragging * {
 .issueDetails .issue-details {
 	 white-space: pre;
 }
+
+.ids .fixed-pos {  
+	position: relative;
+	width: 100%;
+}
+
+.ids .issueDetails textarea {
+	max-height: 600px;
+}

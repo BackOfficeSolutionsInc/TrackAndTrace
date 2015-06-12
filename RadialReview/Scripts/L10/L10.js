@@ -253,9 +253,19 @@ function replaceMainWindow(html) {
 	$("#main-window").fadeOut(200, function () {
 		$("#main-window").html(html);
 		$("#main-window").fadeIn(200);
-
 	});
 }
+
+function fixSidebar() {
+	if ($(document).width() < 991) {
+		$(".fixed-pos").css("top", 0);
+	} else {
+		$(".fixed-pos").css("top", $(document).scrollTop());
+	}
+}
+
+$(document).scroll(fixSidebar);
+$(document).resize(fixSidebar);
 
 $(document).on("click", ".arrowkey", function() {
 	var that = this;

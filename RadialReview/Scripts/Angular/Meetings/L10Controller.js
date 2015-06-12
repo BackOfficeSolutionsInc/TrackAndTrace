@@ -43,15 +43,26 @@
 			for (var j = 0, jj = keys.length; j < jj; j++) {
 				var key = keys[j];
 				var src = obj[key];
-
 				if (deep && angular.isObject(src)) {
-					if (!angular.isObject(dst[key]))
-						dst[key] = angular.isArray(src) ? [] : {};
-					if (angular.isArray(dst[key])) {
-
-						dst[key] = dst[key].concat(src);
+					if (src.AngularList) {
+						//Special AngularList Object
+						if (src.UpdateMethod == "Add") {
+							dst[key] = dst[key].concat(src.AngularList);
+						}else if (src.UpdateMethod == "ReplaceAll") {
+							dst[key] = src.AngularList;
+						}
 					} else {
-						baseExtend(dst[key], [src], true);
+						if (!angular.isObject(dst[key]))
+							dst[key] = angular.isArray(src) ? [] : {};
+
+						if (angular.isArray(dst[key])) {
+							dst[key] = dst[key].concat(src);
+						} else {
+							if (dst[key].Key == src.Key)
+								baseExtend(dst[key], [src], true);
+							else
+								dst[key] = src;
+						}
 					}
 				} else {
 					dst[key] = src;
@@ -196,7 +207,7 @@
 	//var sevenMin = moment().subtract('days', 6).toDate();
 	//var sevenMax = moment().add('days', 2).toDate();
 
-	var sevenMin = moment().subtract('days',27).toDate();
+	var sevenMin = moment().subtract('days', 27).toDate();
 	var sevenMax = moment().add('days', 2).toDate();
 
 	$scope.date = { startDate: sevenMin, endDate: sevenMax };

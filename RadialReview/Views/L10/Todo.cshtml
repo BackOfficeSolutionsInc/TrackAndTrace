@@ -12,9 +12,9 @@
 			<hgroup class="page-header">
 				<div class="pull-right">
 					@*<div class="btn-group ">
-						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
-						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
-					</div>*@
+							<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
+							<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
+						</div>*@
 					<div class="btn-group">
 						<div class="btn btn-default btn-xs" onclick="sortTodoByUser(recurrenceId,$('.todo-list'))">
 							<span class="icon fontastic-icon-sort-alpha-two"></span> Group
@@ -27,8 +27,9 @@
 			</hgroup>
 			<div class="todo-container ">
 				<ol class="todo-list sortable init-@(guid)">
-					@foreach (var i in Model.Todos.OrderBy(x => x.Ordering)){
-						var vm = new ViewDataDictionary{{"MeetingId",Model.Meeting.Id}};
+					@foreach (var i in Model.Todos.OrderBy(x => x.Ordering))
+					{
+						var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id } };
 						@Html.Partial("~/Views/L10/partial/TodoRow.cshtml", i, vm)
 					}
 				</ol>
@@ -36,10 +37,14 @@
 		</div>
 		<div class="col-md-4">
 			<div class="hidden-lg hidden-md" style="height: 25px;"></div>
-			<hgroup class="page-header details">
-				<h4>Details</h4>
-			</hgroup>
-			<div class="component todoDetails" id="todoDetails"></div>
+			<div style="">
+				<div class="fixed-pos">
+					<hgroup class="page-header details">
+						<h4>Details</h4>
+					</hgroup>
+					<div class="component todoDetails" id="todoDetails"></div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

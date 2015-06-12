@@ -71,6 +71,8 @@ $(function () {
 	meetingHub.client.updateArchiveMeasurable = updateArchiveMeasurable;
 	meetingHub.client.addMeasurable = addMeasurable;
 
+	meetingHub.client.updateIssueOwner = updateIssueOwner;
+
 	meetingHub.client.updateTodoDueDate = updateTodoDueDate;
 	//meetingHub.client.setLeader = setLeader;
 

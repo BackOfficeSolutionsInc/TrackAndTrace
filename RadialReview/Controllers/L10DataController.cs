@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Ionic.Zip;
 using Microsoft.AspNet.SignalR;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
@@ -151,31 +153,47 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public FileContentResult ExportScorecard(long id,string type="csv")
 		{
-			var scores = L10Accessor.GetScoresForRecurrence(GetUser(),id);
-			var recur=L10Accessor.GetL10Recurrence(GetUser(), id, false);
-
-			switch(type.ToLower()){
-				case "csv":{
-					var csv = new Csv();
-					csv.SetTitle("Measurable");
-					foreach (var s in scores.GroupBy(x => x.MeasurableId)){
-						var ss = s.First();
-						csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.GetName());
-						csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.GetName());
-						csv.Add(ss.Measurable.Title, "Target", "" + ss.Measurable.Goal);
-						csv.Add(ss.Measurable.Title, "TargetDirection", "" + ss.Measurable.GoalDirection);
-					}
-					foreach (var s in scores.OrderBy(x=>x.ForWeek)){
-						csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(), s.Measured.NotNull(x => x.Value.ToString()) ?? "");
-					}
-					
-					return File(new System.Text.UTF8Encoding().GetBytes(csv.ToCsv()), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name +"_Scorecard.csv");
-					break;
-				}
-				default: throw new Exception("Unrecognized Type");
-			}
-		
+			var csv = ExportAccessor.Scorecard(GetUser(), id, type);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+			return File(csv, "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name + "_Scorecard.csv");
 		}
+
+
+	    [Access(AccessLevel.UserOrganization)]
+	    public FileStreamResult ExportAll(long id)
+	    {
+			/*Response.Clear();
+			Response.BufferOutput = false; // false = stream immediately
+			System.Web.HttpContext c = System.Web.HttpContext.Current;
+
+			Response.ContentType = "application/zip";
+			Response.AddHeader("content-disposition", "filename=" + archiveName);*/
+
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
+		    var time = DateTime.UtcNow.ToJavascriptMilliseconds();
+
+			var memoryStream = new MemoryStream();
+			using (var zip = new ZipFile())
+			{
+				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id));
+				zip.AddEntry(String.Format("Todo.csv", time, recur.Name), ExportAccessor.TodoList(GetUser(), id));
+				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), ExportAccessor.IssuesList(GetUser(), id));
+				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
+				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));
+
+				foreach (var note in ExportAccessor.Notes(GetUser(), id))
+					zip.AddEntry(String.Format("{2}", time, recur.Name, note.Item1), note.Item2);
+
+				zip.Save(memoryStream);
+				memoryStream.Seek(0, SeekOrigin.Begin);
+				var archiveName = String.Format("{0}_{1}.zip", time, recur.Name);
+				return File(memoryStream, "application/gzip", archiveName);
+			}
+
+		
+
+	    }
+
 		#endregion
 
 		#region Issues
@@ -199,9 +217,9 @@ namespace RadialReview.Controllers
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult UpdateIssue(long id, string message, string details)
+		public JsonResult UpdateIssue(long id, string message = null, string details = null, long? owner = null)
 		{
-			L10Accessor.UpdateIssue(GetUser(), id, message, details);
+			L10Accessor.UpdateIssue(GetUser(), id, message, details,owner:owner);
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -223,6 +241,33 @@ namespace RadialReview.Controllers
 		{
 			L10Accessor.UpdateTodo(GetUser(), id, message, details, dueDate, accountableUser);
 			return Json(ResultObject.SilentSuccess());
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult XUpdateTodo(string pk, string name, string value)
+		{
+			var todoId = pk.ToLong();
+			switch (name)
+			{
+				case "accountable": return UpdateTodo(todoId, null, null, null, value.ToLong());
+				case "title": return UpdateTodo(todoId, value, null, null, null);
+				case "details": return UpdateTodo(todoId, null, value, null, null);
+				case "duedate": return UpdateTodo(todoId, null, null, value.ToLong().ToDateTime(), null);
+				default: throw new ArgumentOutOfRangeException("name");
+			}
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult XUpdateIssue(string pk, string name, string value)
+		{
+			var issueId = pk.ToLong();
+			switch (name){
+				case "title":		return UpdateIssue(issueId, value, null, null);
+				case "details":		return UpdateIssue(issueId, null, value, null);
+				case "owner":		return UpdateIssue(issueId, null, null,  value.ToLong());
+				default: throw new ArgumentOutOfRangeException("name");
+			}
 		}
 		
 		[Access(AccessLevel.UserOrganization)]

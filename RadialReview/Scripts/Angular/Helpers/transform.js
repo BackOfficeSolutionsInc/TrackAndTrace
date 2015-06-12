@@ -9,6 +9,7 @@
 				return out;
 			} else if (item && item._Pointer) {
 				var out = scope.model.Lookup[item.Key];
+
 				for (var k in out) {
 					out[k] = populate(out[k], scope);
 				}

@@ -34,6 +34,8 @@
 			<li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})"  target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
 			<li class="divider"></li>
 			<li><a href="@Url.Action("Edit",new { id=Model.Recurrence.Id, @return="meeting" })" onclick="skipBeforeUnload=true" ><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+			<li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank" ><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+
 		</ul>
 	</div>
 </span>

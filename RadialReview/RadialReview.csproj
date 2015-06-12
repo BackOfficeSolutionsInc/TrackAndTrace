@@ -71,6 +71,9 @@
     <Reference Include="ImageResizer">
       <HintPath>..\packages\ImageResizer.3.4.1\lib\ImageResizer.dll</HintPath>
     </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\packages\DotNetZip.1.9.3\lib\net20\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.2\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -243,6 +246,7 @@
     <Compile Include="Accessors\DbWrapper.cs" />
     <Compile Include="Accessors\DeepSubordianteAccessor.cs" />
     <Compile Include="Accessors\Emailer.cs" />
+    <Compile Include="Accessors\ExportAccessor.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
@@ -297,6 +301,7 @@
     <Compile Include="Controllers\CompanyValuesController.cs" />
     <Compile Include="Controllers\DropDownController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
+    <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\FaqController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\IssuesController.cs" />
@@ -369,6 +374,7 @@
     <Compile Include="Hubs\MeetingHub.cs" />
     <Compile Include="Hubs\WebRtcHub.cs" />
     <Compile Include="Models\Angular\Base\Angularized.cs" />
+    <Compile Include="Models\Angular\Base\AngularList.cs" />
     <Compile Include="Models\Angular\Base\BaseAngular.cs" />
     <Compile Include="Models\Angular\Base\IAngularize.cs" />
     <Compile Include="Models\Angular\Issues\AngularIssue.cs" />
@@ -1058,6 +1064,7 @@
     <Content Include="Views\L10\Details\issues.cshtml" />
     <Content Include="Views\L10\Details\scorecard.cshtml" />
     <Content Include="Views\L10\Details\notes.cshtml" />
+    <Content Include="Views\Employee\Handbook.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

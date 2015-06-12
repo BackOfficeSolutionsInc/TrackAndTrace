@@ -16,20 +16,27 @@ namespace RadialReview.Models.L10.VM
 		public String details { get; set; }
 		public bool @checked { get; set; }
 		public String owner { get; set; }
+		public long? accountable { get; set; }
 		public String imageUrl{ get; set; }
+		public long? createdDuringMeetingId { get; set; }
 
 		public static IssuesData FromIssueRecurrence(IssueModel.IssueModel_Recurrence recur)
 		{
-			return new IssuesData(){
+			var issue = new IssuesData(){
 				@checked = recur.CloseTime != null,
 				createtime = recur.CreateTime.NotNull(x=>x.ToJavascriptMilliseconds()),
 				details = recur.Issue.Description,
 				message = recur.Issue.Message,
 				recurrence_issue = recur.Id,
 				issue = recur.Issue.Id,
-				owner = recur.Owner.NotNull(x=>x.GetName()),
-				imageUrl	= recur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._32))??"/i/placeholder"
+				owner = recur.Owner.NotNull(x => x.GetName()),
+				imageUrl	= recur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._32))??"/i/placeholder",
+				createdDuringMeetingId = recur.Issue.CreatedDuringMeetingId
 			};
+			if (recur.Owner!=null){
+				issue.accountable = recur.Owner.Id;
+			}
+			return issue;
 		}
 	}
 

@@ -16,7 +16,7 @@
 						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
 						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
 					</div>
-					@Html.Partial("partial/ButtonBar",Model)
+					@Html.Partial("partial/ButtonBar", Model)
 				</div>
 				<h2>IDS <small>Identify. Discuss. Solve.</small></h2>
 			</hgroup>
@@ -29,18 +29,25 @@
 					</ol>
 				</div>*@
 			<div class="issues-container ">
-				<ol class="issues-list sortable init-@(guid)">@foreach (var i in Model.Issues.OrderBy(x => x.Ordering)){@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)}</ol>
-			</div>
-
+				<ol class="issues-list sortable init-@(guid)">
+					@foreach (var i in Model.Issues.OrderBy(x => x.Ordering))
+					{@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)}
+			</ol>
 		</div>
-		<div class="col-md-4">
-			<div class="hidden-lg hidden-md" style="height: 25px;"></div>
-			<hgroup class="page-header details">
-				<h4>Details</h4>
-			</hgroup>
-			<div class="component issueDetails" id="issueDetails"></div>
+
+	</div>
+	<div class="col-md-4">
+		<div style="">
+			<div class="fixed-pos">
+				<div class="hidden-lg hidden-md" style="height: 25px;"></div>
+				<hgroup class="page-header details">
+					<h4>Details</h4>
+				</hgroup>
+				<div class="component issueDetails" id="issueDetails"></div>
+			</div>
 		</div>
 	</div>
+</div>
 </div>
 <script>
 	@*$('.dd').nestable({

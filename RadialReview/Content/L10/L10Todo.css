@@ -374,3 +374,8 @@ body.dragging, body.dragging * {
 	color: red;
 	font-weight: bold;
 }
+
+.todo .fixed-pos {  
+	position: relative;
+	width: 100%;
+}

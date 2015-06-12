@@ -1,5 +1,4 @@
-﻿@using RadialReview.Models
-@model RadialReview.Models.Issues.IssueModel.IssueModel_Recurrence
+﻿@model RadialReview.Models.Issues.IssueModel.IssueModel_Recurrence
 
 <li class="issue-row dd-item arrowkey"
     data-createtime="@(Model.CreateTime.ToJavascriptMilliseconds())" 
@@ -9,6 +8,8 @@
     data-message="@Model.Issue.Message.EscapeHtml()" 
     data-details="@Model.Issue.Description.EscapeHtml()"
     data-imageurl="@Model.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._32))"
+    data-owner="@Model.Owner.NotNull(x=>x.GetName())" 
+    data-accountable="@Model.Owner.NotNull(x => x.Id)" 
 >
 	<input data-recurrence_issue="@Model.Id" class="issue-checkbox" type="checkbox" @(Model.CloseTime==null?"":"checked")/>
 	<div class="move-icon noselect dd-handle">

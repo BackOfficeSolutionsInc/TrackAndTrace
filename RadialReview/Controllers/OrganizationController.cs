@@ -68,7 +68,11 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Any)]
-		public ActionResult Join(String id) {
+		public ActionResult Join(String id=null) {
+			if (String.IsNullOrWhiteSpace(id))
+				throw new PermissionsException("Id cannot be empty.");
+
+
 			var nexus = _NexusAccessor.Get(id);
 			if (nexus.DateExecuted != null)
 				throw new RedirectException(ExceptionStrings.AlreadyMember);
@@ -79,23 +83,23 @@ namespace RadialReview.Controllers {
 			var orgId = int.Parse(nexus.GetArgs()[0]);
 			var placeholderUserId = long.Parse(nexus.GetArgs()[2]);
 			if (user == null)
-				return RedirectToAction("Login", "Account", new { returnUrl = "Organization/Join/" + id });
-			try {
+				return RedirectToAction("Login", "Account", new{returnUrl = "Organization/Join/" + id});
+			try{
 				var userOrg = GetUser(placeholderUserId);
-				if (!user.IsRadialAdmin) {
+				if (!user.IsRadialAdmin){
 					throw new RedirectException(ExceptionStrings.AlreadyMember);
 				}
-				else {
+				else{
 					throw new OrganizationIdException();
 				}
 			}
-			catch (OrganizationIdException) {
+			catch (OrganizationIdException){
 				//We want to hit this exception.
 				new Cache().Invalidate(CacheKeys.ORGANIZATION_ID);
 				//Session["OrganizationId"] = null;
 				var org = _OrganizationAccessor.JoinOrganization(user, nexus.ByUserId, placeholderUserId);
 				_NexusAccessor.Execute(nexus);
-				return RedirectToAction("Index", "Home", new { message = String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name) });
+				return RedirectToAction("Index", "Home", new{message = String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name)});
 			}
 		}
 		/*

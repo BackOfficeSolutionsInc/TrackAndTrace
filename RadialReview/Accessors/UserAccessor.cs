@@ -9,6 +9,7 @@ using System.Linq;
 using System.Web;
 using RadialReview.Exceptions;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.ViewModels;
 using RadialReview.Properties;
 using RadialReview.Utilities;
@@ -115,26 +116,26 @@ namespace RadialReview.Accessors
 		}
 
 
-		public UserOrganizationModel GetUserOrganization(UserOrganizationModel caller, long userOrganizationId, bool asManager, bool sensitive)
+		public UserOrganizationModel GetUserOrganization(UserOrganizationModel caller, long userOrganizationId, bool asManager, bool sensitive,params PermissionType[] alsoCheck)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetUserOrganization(s.ToQueryProvider(true), perms, caller, userOrganizationId, asManager, sensitive);
+					return GetUserOrganization(s.ToQueryProvider(true), perms, caller, userOrganizationId, asManager, sensitive, alsoCheck);
 				}
 			}
 		}
 
-		public static UserOrganizationModel GetUserOrganization(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long userOrganizationId, bool asManager, bool sensitive)
+		public static UserOrganizationModel GetUserOrganization(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long userOrganizationId, bool asManager, bool sensitive, params PermissionType[] alsoCheck)
 		{
-			perms.ViewUserOrganization(userOrganizationId, sensitive);
-			if (asManager)
-			{
-				perms.ManagesUserOrganization(userOrganizationId, false);
+			perms.ViewUserOrganization(userOrganizationId, sensitive, alsoCheck);
+			if (asManager){
+				perms.ManagesUserOrganization(userOrganizationId, false, alsoCheck);
 			}
 			return s.Get<UserOrganizationModel>(userOrganizationId);
+
 		}
 
 		public List<UserOrganizationModel> GetUserOrganizations(ISession s,String userId, String redirectUrl, Boolean full = false)

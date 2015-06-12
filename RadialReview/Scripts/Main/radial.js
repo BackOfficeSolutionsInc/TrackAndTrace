@@ -42,14 +42,14 @@ function escapeString(str) {
 			return elem.name || "";
 		}).join(",");
 	};
-	$.fn.asString = function () {
+	$.fn.asString = function() {
 		if (Object.prototype.toString.call(this) === '[object Array]') {
-			return $.map(this, function (elem) {
+			return $.map(this, function(elem) {
 				return elem || "";
 			}).join(",");
 		}
 		return this;
-	}
+	};
 
 })(jQuery);
 
@@ -217,7 +217,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
 				} else {
 					$('#modal input:not([type=hidden]):not(.disable):first').focus();
 				}
-			}, 550);
+			}, 50);
 		}
 	});
 }
@@ -296,7 +296,7 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 
 		}
 	} catch (e) {
-		Console.log(e);
+		console.log(e);
 	}
 	if (!data)
 		return false;

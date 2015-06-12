@@ -35,10 +35,13 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult MeetingMembers(long id)
+		public JsonResult MeetingMembers(long id,bool userId=false)
 		{
 			var recurrenceId = id;
-			var result =L10Accessor.GetCurrentL10Meeting(GetUser(), id, true, true, false)._MeetingAttendees.Select(x=>new DropDownItem(){text = x.User.GetName(),value = ""+x.Id});
+			var result =L10Accessor.GetCurrentL10Meeting(GetUser(), id, true, true, false)._MeetingAttendees.Select(x=>new DropDownItem(){
+				text = x.User.GetName(),
+				value = userId?""+x.User.Id:""+x.Id
+			});
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
     }

@@ -26,6 +26,8 @@ namespace RadialReview.Models.Angular.Base
 		}
 
 		public string Key { get { return this.GetKey(); } }
+
+		public bool CreateOnly { get; set; }
 	}
 
 	public class Removed

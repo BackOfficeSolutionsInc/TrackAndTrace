@@ -13,6 +13,8 @@ $(function () {
 		var issueId = $(issueRow).data("issue");
 		var recurrence_issue = $(issueRow).data("recurrence_issue");
 		var checked = $(issueRow).find(".issue-checkbox").prop("checked");
+		var accountable = $(issueRow).attr("data-accountable");
+		var owner = $(issueRow).attr("data-owner");
 
 		var detailsList = $(issueRow).find(">.dd-list").clone();
 		$("#issueDetails").html("");
@@ -35,6 +37,13 @@ $(function () {
 			"<span class='btn btn-default btn-xs createTodoButton todoModal' data-method='CreateTodoFromIssue' data-meeting='"+meetingId+"' data-issue='"+issueId+"' data-recurrence='"+MeetingId+"' ><span class='glyphicon glyphicon-unchecked todoButton'></span> Todo</span>" +
 			"</span>" +
 			"<span class='clearfix'></span>" +
+			"<span class='gray' style='width:75px;display:inline-block'>Assigned to:</span>"+
+			"<span>"+
+				"<span style='width:250px;padding-left:10px;' class='assignee' data-accountable='" + accountable + "' data-recurrence_issue='" + recurrence_issue + "'  >"+
+					"<span data-recurrence_issue='" + recurrence_issue + "' class='btn btn-link owner'>" + owner + "</span>"+
+				"</span>" +
+			"</span>" +
+
 			"</div>");
 	});
 
@@ -86,6 +95,60 @@ $(function () {
 	});
 });
 
+$("body").on("click", ".issueDetails .assignee .btn", function () {
+		var that = $(this).parent();
+		$.ajax({
+			method: "POST",
+			url: "/L10/Members/" + recurrenceId,
+			success: function (data) {
+				if (showJsonAlert(data)) {
+
+					var input = $("<select data-recurrence_issue='" + $(that).data("recurrence_issue") + "'/>");
+
+					for (var i = 0; i < data.Object.length; i++) {
+						var d = data.Object[i];
+						var selected = $(that).attr("data-accountable") == d.id ? "selected" : "";
+						$(input).append("<option " + selected + " data-img='" + d.imageUrl + "' value='" + d.id + "'>" + d.name + "</option>");
+					}
+
+					$(input).on('change', function () {
+						sendNewIssueAccountable(this, $(this).data("recurrence_issue"));
+					});
+
+					$(that).html(input);
+
+					var item = $(input).select2({
+						templateResult: imageListFormat,
+						templateSelection: imageListFormat
+					});
+					$(item).parent().find(".select2").css("width", "inherit");
+					//$(item).parent().find("span").css(
+					  /* right: 6px; */
+					$(input).select2("open");
+				}
+			}
+		});
+	});
+
+function sendNewIssueAccountable(self, id) {
+	var val = $(self).val();
+	var data = {
+		owner: val
+	};
+	var found = $(".ids .assignee[data-recurrence_issue=" + id + "]");
+	found.html("<span class='btn btn-link' data-recurrence_issue='" + id + "'></span>");
+	found.attr("data-accountable", val);
+	$.ajax({
+		method: "POST",
+		data: data,
+		url: "/L10/UpdateIssue/" + id,
+		success: function (data) {
+			if (showJsonAlert(data, false, true)) {
+			}
+		}
+	});
+}
+
 function updateIssueCompletion(issueId, complete) {
 	var selector = ".issue-checkbox[data-recurrence_issue='" + issueId + "']";
 	$(selector).prop("checked", complete);
@@ -117,13 +180,17 @@ function constructRow(issue) {
 	if (issue.details)
 		details = issue.details;
 
-	return '<li class="issue-row dd-item arrowkey" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '">'
+	return '<li class="issue-row dd-item arrowkey" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="'+issue.owner+'" data-accountable="'+issue.accountable+'">'
 		+ '	<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>'
 		+ '	<div class="move-icon noselect dd-handle">'
 		+ '		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>'
 		+ '		<span class="inner icon fontastic-icon-primitive-square"></span>'
 		+ '	</div>'
-		+ '<div class="btn-group pull-right"><span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + recurrenceId + '" data-recurrence_issue="' + issue.issue + '" data-method="copymodal"></span></div>'
+		+ '<div class="btn-group pull-right">'
+		+ ' <span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + recurrenceId + '" data-recurrence_issue="' + issue.issue + '" data-method="copymodal" style="padding-right: 5px"></span> '	
+		+ ' <span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" data-issue="'+issue.issue+'" data-meeting="'+issue.createdDuringMeetingId+'" data-recurrence="'+recurrenceId+'" data-method="CreateTodoFromIssue"></span>'
+		+ '</div>'
+	
 		+ '	<span class="profile-image">'
 		+ '		<span class="profile-picture">' 
 		+	'			<span class="picture-container" title="' + issue.owner + '">' 
@@ -236,3 +303,14 @@ function sendIssueMessage(self,id) {
 $("body").on("blur", ".issueDetails .details", function() {
 	sendIssueDetails(this,$(this).data("recurrence_issue"));
 });
+
+
+function updateIssueOwner(id, userId, name, image) {
+	$(".ids [data-recurrence_issue=" + id + "] .picture-container").prop("title", name);
+	$(".ids [data-recurrence_issue=" + id + "] .picture").css("background", "url(" + image + ") no-repeat center center");
+	$(".ids .assignee .btn[data-recurrence_issue=" + id + "]").html(name);
+	var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
+	$(row).attr("data-owner", name);
+	$(row).attr("data-accountable", userId);
+	$(row).attr("data-imageurl", image);
+}
