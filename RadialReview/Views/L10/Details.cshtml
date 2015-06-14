@@ -61,7 +61,7 @@
 @using (Html.BeginScripts())
 {
 	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
-	<script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+	<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 	@Scripts.Render("~/bundles/meeting")
@@ -70,6 +70,7 @@
 	<script>
 		angular.module('L10App')
 			.value('meetingId', @Model)
+			.value('date-range',"today")
 			.value('meetingDataUrlBase', '/L10/DetailsData/');
 		$('#pages a').click(function(e) {
 			e.preventDefault();
@@ -77,6 +78,10 @@
 		});
 
 		$(function() {
+
+		
+			
+
 			$("body").on("click", ".issuesModal", function() {
 				var parm = $.param($(this).data());
 				var m = $(this).data("method");

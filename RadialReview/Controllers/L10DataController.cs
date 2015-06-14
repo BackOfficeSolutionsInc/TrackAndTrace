@@ -137,16 +137,18 @@ namespace RadialReview.Controllers
 			decimal? target = null;
 			long? adminId = null;
 			long? accountableId = null;
-			switch (name){
-				case "target":		target = value.ToDecimal(); break;
+			UnitType? unitType = null;
+			switch (name.ToLower()){
+				case "target": target = value.ToDecimal(); break;
 				case "direction":	direction = (LessGreater)Enum.Parse(typeof(LessGreater), value); break;
+				case "unittype": unitType = (UnitType)Enum.Parse(typeof(UnitType), value); break;
 				case "title":		title = value; break;
 				case "admin":		adminId = value.ToLong(); break;
 				case "accountable": accountableId = value.ToLong(); break;
 				default: throw new ArgumentOutOfRangeException("name");
 			}
 
-			L10Accessor.UpdateMeasurable(GetUser(), meeting_measureableId, title, direction, target,accountableId,adminId);
+			L10Accessor.UpdateMeasurable(GetUser(), meeting_measureableId, title, direction, target, accountableId, adminId, unitType);
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -192,6 +194,20 @@ namespace RadialReview.Controllers
 
 		
 
+	    }
+
+	    public class MeasurableOrdering
+	    {
+		    public long[] ordering { get; set; }
+			public long recurrenceId { get; set; }
+	    }
+
+		[HttpPost]
+	    [Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateMeasurableOrdering(MeasurableOrdering model)
+	    {
+			L10Accessor.SetMeasurableOrdering(GetUser(), model.recurrenceId, model.ordering.ToList());
+		    return Json(ResultObject.SilentSuccess());
 	    }
 
 		#endregion

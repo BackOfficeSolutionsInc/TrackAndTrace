@@ -281,16 +281,17 @@ namespace RadialReview.Accessors
 
         private static EmailMessage CreateMandrillMessage(EmailModel email)
         {
+	        var toAddress = Config.IsLocal() ? "clay.upton+test_" + email.ToAddress.Replace("@","_at_") + "@radialreview.com" : email.ToAddress;
+
             return new EmailMessage()
             {
                 from_email = MandrillStrings.FromAddress,
                 from_name = MandrillStrings.FromName,
                 html = email.Body,
                 subject = email.Subject,
-                to = new EmailAddress(email.ToAddress).AsList(),
+                to = new EmailAddress(toAddress).AsList(),
                 track_opens = true,
-                track_clicks = true
-
+                track_clicks = true,
             };
         }
 
@@ -327,9 +328,14 @@ namespace RadialReview.Accessors
                     case EmailResultStatus.Sent:
                         {
                             result.Sent += 1;
-                            var found = emails.First(x => x.ToAddress.ToLower() == r.Email.ToLower());
-                            found.Sent = true;
-                            found.CompleteTime = now;
+	                        try{
+		                        var found = emails.First(x => x.ToAddress.ToLower() == r.Email.ToLower());
+		                        found.Sent = true;
+		                        found.CompleteTime = now;
+	                        }
+	                        catch (Exception e){
+		                        int a = 0;
+	                        }
                         } break;
                     default: break;
                 }
@@ -338,17 +344,6 @@ namespace RadialReview.Accessors
             return 1;
         }
 
-
-        /*
-        public static async Task SendMandrill(EmailModel emails, EmailResult result)
-        {
-            MandrillApi api = new MandrillApi(ConstantStrings.MandrillApiKey,true);
-
-            api.SendMessageAsync(
-
-
-        }
-*/
         public static async Task<EmailResult> SendEmail(MailModel email)
         {
             return await SendEmails(email.AsList());
@@ -362,8 +357,8 @@ namespace RadialReview.Accessors
         private static async Task<EmailResult> SendEmailsWrapped(IEnumerable<MailModel> emails)
         {
             //Register emails
-            List<EmailModel> unsentEmails = new List<EmailModel>();
-            DateTime now = DateTime.UtcNow;
+            var unsentEmails = new List<EmailModel>();
+            var now = DateTime.UtcNow;
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
@@ -387,7 +382,7 @@ namespace RadialReview.Accessors
                 }
             }
 
-            EmailResult result = new EmailResult() { Total = unsentEmails.Count };
+            var result = new EmailResult() { Total = unsentEmails.Count };
             //Now send everything
             var startSending = DateTime.UtcNow;
 

@@ -22,7 +22,7 @@
 			<div class="review">
 				@Model.NotNull(x => x.StackTrace)
 			</div>
-			<a href="mailto:@ProductStrings.SupportEmail?subject=Error:+@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(body)">Email Support</a>
+			<a target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Error:+@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(body)">Email Support</a>
 		}
 		
 	</div>

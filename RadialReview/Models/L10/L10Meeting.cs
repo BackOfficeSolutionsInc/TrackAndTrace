@@ -146,13 +146,14 @@ namespace RadialReview.Models.L10
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual L10Meeting L10Meeting { get; set; }
 			public virtual MeasurableModel Measurable { get; set; }
-
+			public virtual int _Ordering { get; set; }
 			public class L10Meeting_MeasurableMap : ClassMap<L10Meeting_Measurable>
 			{
 				public L10Meeting_MeasurableMap()
 				{
 					Id(x => x.Id);
 					Map(x => x.DeleteTime);
+					Map(x => x._Ordering);
 					References(x => x.Measurable).Column("MeasurableId");//.Not.LazyLoad().ReadOnly();
 					References(x => x.L10Meeting).Column("L10MeetingId");//.LazyLoad().ReadOnly();
 					//Map(x => x.UserId).Column("UserId");

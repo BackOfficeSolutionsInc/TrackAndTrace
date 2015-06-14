@@ -3,10 +3,12 @@ using Amazon.IdentityManagement.Model;
 using FluentNHibernate.Utils;
 using NHibernate;
 using NHibernate.Mapping;
+using NHibernate.Util;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
@@ -60,22 +62,38 @@ namespace RadialReview.Accessors
 
 
 
-		public List<OrganizationTeamModel> GetTeamsDirectlyManaged(UserOrganizationModel caller, long userOrganizationId)
+		public List<OrganizationTeamModel> GetTeamsDirectlyManaged(UserOrganizationModel caller1, long userOrganizationId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).OwnedBelowOrEqual(x => x.Id == userOrganizationId);
-					var directlyManaging = s.QueryOver<OrganizationTeamModel>()
-							.Where(x => x.ManagedBy == userOrganizationId)
-							.List().ToList();
-					var user = s.Get<UserOrganizationModel>(userOrganizationId);
-					if (user.ManagingOrganization)
-					{
-						directlyManaging.AddRange(s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == user.Organization.Id && x.Type != TeamType.Standard).List().ToList());
+					PermissionsUtility.Create(s, caller1).OwnedBelowOrEqual(x => x.Id == userOrganizationId);
+					var asUsers = s.QueryOver<PermissionOverride>()
+						.Where(x => x.DeleteTime == null && x.ForUser.Id == userOrganizationId && x.Permissions == PermissionType.IssueReview)
+						.Select(x => x.AsUser)
+						.List<UserOrganizationModel>().ToList();
+					asUsers.Add(s.Get<UserOrganizationModel>(userOrganizationId));
+					var managingTeams = new List<OrganizationTeamModel>();
+					foreach (var caller in asUsers){
+						try{
+							PermissionsUtility.Create(s, caller).OwnedBelowOrEqual(x => x.Id == userOrganizationId);
+							var directlyManaging = s.QueryOver<OrganizationTeamModel>()
+								.Where(x => x.ManagedBy == userOrganizationId)
+								.List().ToList();
+							var user = s.Get<UserOrganizationModel>(userOrganizationId);
+							if (caller.ManagingOrganization){
+								var orgId = caller.Organization.Id;
+								directlyManaging.AddRange(s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId && x.Type != TeamType.Standard).List().ToList());
+							}
+							managingTeams.AddRange(directlyManaging);
+						}
+						catch (Exception e){
+							
+						}
 					}
-					return directlyManaging;
+					managingTeams=managingTeams.Distinct(x => x.Id).ToList();
+					return managingTeams;
 				}
 			}
 		}

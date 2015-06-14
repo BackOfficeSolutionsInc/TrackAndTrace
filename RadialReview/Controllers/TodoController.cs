@@ -7,6 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Accessors;
 using RadialReview.Accessors.TodoIntegrations;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Json;
@@ -298,5 +300,26 @@ namespace RadialReview.Controllers
 			ExternalTodoAccessor.DetatchLink(GetUser(),id);
 			return Json(ResultObject.SilentSuccess(true), JsonRequestBehavior.AllowGet);
 		}
+
+
+	    [Access(AccessLevel.UserOrganization)]
+	    public ActionResult List()
+	    {
+			//Views\L10\Details\todo.cshtml
+		    return View();
+	    }
+
+		public class ListDataVM : BaseAngular
+	    {
+			public IEnumerable<AngularTodo> Todos { get; set; }
+		    public ListDataVM(long id):base(id){}
+	    }
+
+		[Access(AccessLevel.UserOrganization)]
+	    public JsonResult ListData()
+	    {
+		    var todos =TodoAccessor.GetTodosForUser(GetUser(), GetUser().Id).Select(x => new AngularTodo(x));
+			return Json(new ListDataVM(GetUser().Id){ Todos = todos }, JsonRequestBehavior.AllowGet);
+	    }
 	}
 }

@@ -1,4 +1,5 @@
-﻿using RadialReview.Exceptions;
+﻿using RadialReview.Accessors;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.ViewModels;
 using System;
@@ -24,11 +25,15 @@ namespace RadialReview.Controllers
 			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
 			var acceptedReviews = new List<ReviewModel>();
+		    var managesTeam = new PermissionsAccessor().IsPermitted(GetUser(), x => x.ManagingTeam(reviewContainer.ForTeamId));
 			foreach (var r in reviewContainer.Reviews)
 			{
 				var add = false;
 				r.ForUser.PopulateDirectlyManaging(user, directSubs);
-				if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id)
+
+				if ((managesTeam) ||
+					(user.ManagingOrganization && user.Organization.Id == reviewContainer.ForOrganizationId) ||
+					(r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id))
 				{
 					r.ForUser.SetPersonallyManaging(true);
 					add = true;
@@ -46,7 +51,11 @@ namespace RadialReview.Controllers
 			
 			var model = new ReviewsViewModel(reviewContainer);
 
-		    var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.ForOrganizationId).Or(y => y.EditReviewContainer(reviewContainerId)));
+		    var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.ForOrganizationId)
+				.Or(
+					y => y.EditReviewContainer(reviewContainerId),
+					y => y.ManagingTeam(reviewContainer.ForTeamId)
+				));
 		    if (viewSurvey){
 			    model.SurveyAnswers = reviewContainer.Reviews.SelectMany(x => x.Answers.Where(y => y.AboutUserId == reviewContainer.ForOrganizationId)).ToList();
 		    }

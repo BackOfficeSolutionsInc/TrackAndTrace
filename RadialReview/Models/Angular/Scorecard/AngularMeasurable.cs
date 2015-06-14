@@ -37,5 +37,7 @@ namespace RadialReview.Models.Angular.Scorecard
 		public LessGreater? Direction { get; set; }
 		
 		public UnitType? Modifiers { get; set; }
+
+		public int? Ordering { get; set; }
 	}
 }

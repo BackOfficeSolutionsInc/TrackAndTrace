@@ -30,7 +30,7 @@ namespace RadialReview.Models.L10.VM
 				recurrence_issue = recur.Id,
 				issue = recur.Issue.Id,
 				owner = recur.Owner.NotNull(x => x.GetName()),
-				imageUrl	= recur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._32))??"/i/placeholder",
+				imageUrl	= recur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._64))??"/i/placeholder",
 				createdDuringMeetingId = recur.Issue.CreatedDuringMeetingId
 			};
 			if (recur.Owner!=null){

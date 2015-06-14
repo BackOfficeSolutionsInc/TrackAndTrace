@@ -128,7 +128,8 @@ namespace RadialReview.Accessors {
                 }
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-                    perms.ManagingTeam(forTeamId);
+					
+                    perms.IssueForTeam(forTeamId);
 
                     var organization = caller.Organization;
                     OrganizationTeamModel team;

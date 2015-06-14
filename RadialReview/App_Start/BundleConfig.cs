@@ -90,8 +90,9 @@ namespace RadialReview
 					"~/Content/L10/L10Scorecard.css",
 					"~/Content/L10/L10Notes.css"
 				));
-			
+
 			bundles.Add(new ScriptBundle("~/bundles/L10").Include(
+					"~/Scripts/jquery/jquery.ui.sortable.js",
 					"~/Scripts/L10/charts/sparklines.min.js",
 					"~/Scripts/home/resizeable-tables.js",
 					"~/Scripts/L10/L10.js",

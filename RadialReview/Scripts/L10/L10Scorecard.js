@@ -61,11 +61,39 @@ function updateServerScore(self) {
 	});
 }
 
-function addMeasurable(data,smallTable) {
+function makeXEditable_Scorecard(selector) {
+	$(selector).editable({
+		savenochange: true,
+		validate: function (value) {
+			if ($.trim(value) == '') {
+				return 'This field is required';
+			}
+		},
+		success: function (data) {
+
+			var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
+
+			if ($(this).data("name") == "direction") {
+				$(items).attr("data-goal-dir", $(this).attr("data-value"));
+			} else if ($(this).data("name") == "target") {
+				$(items).attr("data-goal", $(this).attr("data-value"));
+			}
+			$(items).each(function (d) {
+				updateScore(this);
+			});
+		}
+	});
+}
+
+function addMeasurable(data, smallTable) {
 	//var row = $("<tr></tr>");
 	//row.append("<td>")
 	$("#ScorecardTable").append(data);
 	$("#ScorecardTable_Over").append(smallTable);
+
+	makeXEditable_Scorecard("#ScorecardTable .inlineEdit:not(.editable)");
+	makeXEditable_Scorecard("#ScorecardTable_Over .inlineEdit:not(.editable)");
+
 	updateScore($("#ScorecardTable").find(".score input").last());
 }
 
@@ -90,8 +118,8 @@ function updateMeasurable(id, name, text, value) {
 }
 
 //pass in a .score input
-function updateScore(self,skipChart) {
-	
+function updateScore(self, skipChart) {
+
 	var goal = $(self).attr("data-goal");
 	var dir = $(self).attr("data-goal-dir");
 	var v = $(self).val();
@@ -159,12 +187,12 @@ function updateScore(self,skipChart) {
 	} else {
 		var d = {};
 		d[(goal + ":")] = red;
-		d[(":"+goal)] =green;
+		d[(":" + goal)] = green;
 		range = $.range_map(d);
 	}
 
 	if (goal < 150) {
-		min = Math.min(0,min);
+		min = Math.min(0, min);
 	}
 
 	var delta = (max - min);
@@ -255,7 +283,7 @@ function changeInput() {
 	var input = this;
 	var noop = [38, 40, 13, 37, 39];
 	if (noop.indexOf(event.which) == -1) {
-		setTimeout(function() {
+		setTimeout(function () {
 			updateScore(input);
 		}, 1);
 	}
@@ -359,3 +387,13 @@ function isElementInViewport(el) {
     );
 }
 
+function reorderMeasurables(order) {
+	for (var i = 0; i < order.length; i++) {
+		$("tr[data-meetingmeasurable='" + order[i] + "']").attr("data-order", i);
+	}
+	$(".scorecard-table").each(function() {
+		$(this).find("tbody").children("tr").detach().sort(function(a, b) {
+			return $(a).attr("data-order")-$(b).attr("data-order");
+		}).appendTo($(this));
+	});
+}

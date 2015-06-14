@@ -25,14 +25,14 @@ namespace RadialReview.Utilities
 						return "http://localhost:2200/";
 					case Env.production:
 						if (organization==null)
-							return "http://review.radialreview.com/";
+							return "https://review.radialreview.com/";
 
 						switch (organization.Settings.Branding)
 						{
 							case BrandingType.RadialReview:
-								return "http://review.radialreview.com/";
+								return "https://review.radialreview.com/";
 							case BrandingType.RoundTable:
-								return "http://radialroundtable.com/";
+								return "https://radialroundtable.com/";
 							default:
 								throw new ArgumentOutOfRangeException();
 						}

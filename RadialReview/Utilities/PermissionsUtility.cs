@@ -170,6 +170,9 @@ namespace RadialReview.Utilities
 					{
 						/*if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
 							return this;*/
+						if (userOrganizationId == caller.Id)
+							return this;
+
 						return ManagesUserOrganization(userOrganizationId, false);
 						/*if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
 							return this;*/
@@ -584,6 +587,14 @@ namespace RadialReview.Utilities
 
 			throw new PermissionsException();
 		}
+		
+		public PermissionsUtility IssueForTeam(long forTeamId)
+		{
+			return TryWithOverrides(p => {
+				return ManagingTeam(forTeamId);
+			}, PermissionType.IssueReview);
+		}
+
 		public PermissionsUtility ManagingTeam(long teamId)
 		{
 			if (IsRadialAdmin(caller))
@@ -591,7 +602,6 @@ namespace RadialReview.Utilities
 
 			//if (teamId == -5 && caller.IsManager())
 			//    return this;
-
 			var team = session.Get<OrganizationTeamModel>(teamId);
 
 			if (IsManagingOrganization(team.Organization.Id, true))
@@ -1412,5 +1422,15 @@ namespace RadialReview.Utilities
 		{
 			return ViewL10Recurrence(recurrenceId);
 		}
+
+		public PermissionsUtility Self(long userId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+			if (userId == caller.Id)
+				return this;
+			throw new PermissionsException();
+		}
+
 	}
 }

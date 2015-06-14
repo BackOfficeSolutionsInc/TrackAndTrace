@@ -39,6 +39,9 @@ namespace RadialReview.Controllers
 
 			var selectedPrereivew = _PrereviewAccessor.GetCustomMatches(GetUser(), prereviewId);
 			customization.Selected = selectedPrereivew;
+
+			customization.AllReviewees.Add(GetUser().Organization);
+
 			return customization;
 	    }
 

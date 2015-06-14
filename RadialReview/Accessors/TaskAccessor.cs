@@ -47,7 +47,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					var all = s.QueryOver<ScheduledTask>().List().ToList();
+					//var all = s.QueryOver<ScheduledTask>().List().ToList();
 					return s.QueryOver<ScheduledTask>().Where(x => x.Executed == null && x.Started == null && now.AddMinutes(2) > x.Fire && x.DeleteTime == null && x.ExceptionCount <= 11).List().ToList();
 				}
 			}
@@ -102,8 +102,9 @@ namespace RadialReview.Accessors
 			}
 		}*/
 
-		public async Task ExecuteTask(String server, ScheduledTask task)
+		public async Task<List<ScheduledTask>>  ExecuteTask(String server, ScheduledTask task)
 		{
+			var newTasks = new List<ScheduledTask>();
 			if (task != null)
 			{
 				try
@@ -115,14 +116,41 @@ namespace RadialReview.Accessors
 					}
 					log.Debug("Scheduled task was executed. " + task.Id);
 					task.Executed = DateTime.UtcNow;
+					if (task.NextSchedule != null){
+						newTasks.Add(new ScheduledTask()
+						{
+							FirstFire = (task.FirstFire ?? task.Fire).Add(task.NextSchedule.Value),
+							Fire = (task.FirstFire??task.Fire).Add(task.NextSchedule.Value),
+							NextSchedule = task.NextSchedule,
+							Url = task.Url,
+							TaskName = task.TaskName,
+							MaxException = task.MaxException,
+						});
+					}
 				}
 				catch (Exception e)
 				{
 					log.Error("Scheduled task error. " + task.Id, e);
 					task.ExceptionCount++;
+
+					if (task.MaxException != null && task.ExceptionCount >= task.MaxException){
+						if (task.NextSchedule != null){
+							newTasks.Add(new ScheduledTask(){
+								FirstFire = (task.FirstFire ?? task.Fire).Add(task.NextSchedule.Value),
+								Fire = (task.FirstFire ?? task.Fire).Add(task.NextSchedule.Value),
+								NextSchedule = task.NextSchedule,
+								Url = task.Url,
+								MaxException = task.MaxException,
+								TaskName = task.TaskName
+							});
+							task.Executed = DateTime.MaxValue;
+						}
+					}
+
 					task.Fire = DateTime.UtcNow + TimeSpan.FromMinutes(Math.Pow(2, task.ExceptionCount + 1));
 				}
 			}
+			return newTasks;
 		}
 
 		public int GetUnstartedTaskCountForUser(ISession s, long forUserId, DateTime now)

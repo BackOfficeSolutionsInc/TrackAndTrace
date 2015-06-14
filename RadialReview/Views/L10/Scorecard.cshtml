@@ -43,6 +43,7 @@
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
+									<th>&nbsp;</th>
 									@if (i == 0)
 									{
 										foreach (var r in Model.Weeks)
@@ -57,6 +58,7 @@
 									}
 								</tr>
 								<tr>
+									<th>&nbsp;</th>
 									<th class="heading who alignRight">Accountable</th>
 									<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
 									<th class="heading measurable">Measurable</th>
@@ -80,7 +82,7 @@
 								@{
 									var row = 0;
 								}
-								@foreach (var m in Model.Meeting._MeetingMeasurables){
+								@foreach (var m in Model.Meeting._MeetingMeasurables.OrderBy(x=>x._Ordering).ThenBy(x=>x.Measurable.AccountableUser.GetName())){
 									ViewBag.Row = row;
 									@Html.Partial("partial/ScorecardRow", new ScorecardRowVM(){
 										MeetingMeasurable = m,
@@ -158,29 +160,48 @@
 	</div>
 </div>
 <script>
-	$(".score input").each(function() { updateScore(this,true); });
-	$(".inlineEdit").editable({
-		savenochange:true,
-		validate: function(value) {
-			if($.trim(value) == '') {
-				return 'This field is required';
-			}
-		},
-		success:function(data) {
+	$(".score input").each(function() { updateScore(this, true); });
 
-			var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
-
-			if ($(this).data("name") == "direction") {
-				$(items).attr("data-goal-dir", $(this).attr("data-value"));
-			}else if ($(this).data("name") == "target") {
-				$(items).attr("data-goal", $(this).attr("data-value"));
-			}
-			$(items).each(function(d) {
-				updateScore(this);
+	$(function() {
+		var fixHelperModified = function(e, tr) {
+			var $originals = tr.children();
+			var $helper = tr.clone();
+			$helper.children().each(function(index) {
+				$(this).width($originals.eq(index).width())
 			});
+			return $helper;
+		};
+
+		var updateIndex = function(e, ui) {
+			var order = [];
+			var i = 0;
+			$('tr', ui.item.parent()).each(function(i) {
+				order.push(+$(this).attr("data-meetingmeasurable"));
+			});
+
+			var data = {
+				ordering: order,
+				recurrenceId: @(Model.Recurrence.Id)
+			};
 			debugger;
-		}
-	});
+			$.ajax({
+				url: "/L10/UpdateMeasurableOrdering",
+				method: "POST",
+				data: $.param(data,true),
+				success:function(d){showJsonAlert(d);}
+			});
+		};
+
+		$(".scorecard-table tbody").xsortable({
+			handle:".handle",
+			helper: fixHelperModified,
+			stop: updateIndex,
+			placeholder:"xsortable-placeholder"
+		}).disableSelection();
+    });
+
+
+	makeXEditable_Scorecard(".inlineEdit");
 
 	setTimeout(function() {
 		$(".score.current input").each(function() { updateScore(this); });

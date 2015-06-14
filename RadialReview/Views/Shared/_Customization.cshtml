@@ -121,7 +121,7 @@
 				@foreach (var firstUser in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
 				{
 					<div id="second_@firstUser.Id" class="col-xs-6 noPad alignLeft customize hideable @(first ? "selected" : "hide")">
-						@foreach (var secondUser in Model.AllReviewees.OrderBy(x => x.GetName()))
+						@foreach (var secondUser in Model.AllReviewees.OrderBy(x=>x.GetGroupType()).ThenBy(x => x.GetName()))
 						{
 							var classes = new HashSet<String>();
 							foreach (var s in Model.Selectors)
@@ -162,40 +162,42 @@
 	}
 
 	function start_Customize() {
-		$(".quickSelect a").hover(function () {
-			var parent = $(this).parent().get(0);
-			var clss = $(parent).data("checkclass");
-			$("." + clss + " label").addClass("hovered");
-			if ($(this).hasClass("select")) {
-				$("." + clss + " label").addClass("select");
-			}
-			if ($(this).hasClass("deselect")) {
-				$("." + clss + " label").addClass("deselect");
-			}
-		}, function () {
-			var parent = $(this).parent().get(0);
-			var clss = $(parent).data("checkclass");
-			var value = $(this).hasClass("select");
-			$("." + clss + " label").removeClass("hovered");
-			$("." + clss + " label").removeClass("deselect");
-			$("." + clss + " label").removeClass("select");
+		setTimeout(function() {
+			$(".quickSelect a").hover(function() {
+				var parent = $(this).parent().get(0);
+				var clss = $(parent).data("checkclass");
+				$("." + clss + " label").addClass("hovered");
+				if ($(this).hasClass("select")) {
+					$("." + clss + " label").addClass("select");
+				}
+				if ($(this).hasClass("deselect")) {
+					$("." + clss + " label").addClass("deselect");
+				}
+			}, function() {
+				var parent = $(this).parent().get(0);
+				var clss = $(parent).data("checkclass");
+				var value = $(this).hasClass("select");
+				$("." + clss + " label").removeClass("hovered");
+				$("." + clss + " label").removeClass("deselect");
+				$("." + clss + " label").removeClass("select");
 
-		})
+			})
 
-		$(".customizeBoxes").change(function () {
-			var parent = $(this).data("parent");
-			updateCount(parent);
-		});
+			$(".customizeBoxes").change(function() {
+				var parent = $(this).data("parent");
+				updateCount(parent);
+			});
 
-		$(".quickSelect a").click(function (item) {
-			var parent = $(this).parent().get(0);
+			$(".quickSelect a").click(function(item) {
+				var parent = $(this).parent().get(0);
 
-			var clss = $(parent).data("checkclass");
-			var value = $(this).hasClass("select");
-			$("." + clss + " input").prop("checked", value);
+				var clss = $(parent).data("checkclass");
+				var value = $(this).hasClass("select");
+				$("." + clss + " input").prop("checked", value);
+				updateAll();
+			});
 			updateAll();
-		});
-		updateAll();
+		}, 100);
 	}
 
 	function unhide(id) {
@@ -205,12 +207,12 @@
 		// $(".hideable.selected").addClass("animateHide");
 		var toHide = $(".hideable.selected");
 		toHide.removeClass("selected");
-		setTimeout(function () {
+		setTimeout(function() {
 			toHide.addClass("hide");
 			$("#second_" + id).removeClass("hide");
 			$("#second_" + id).addClass("selected");
 
-		}, 400)
+		}, 400);
 		//$("#second_" + id).removeClass("animateHide");
 		/*$(".hideable.show").animate({ opacity: 0, left: "50" }, spd, function (){
 			var oldPage = $(this);

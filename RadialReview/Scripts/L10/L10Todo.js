@@ -28,7 +28,7 @@ $(function () {
 		$("#todoDetails").append(
 			"<div class='button-bar'>" +
 				"<span class='btn-group pull-right'>" +
-					"<span class='btn btn-default btn-xs doneButton'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Done</span>" +
+					"<span class='btn btn-default btn-xs doneButton'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Complete</span>" +
 				"</span>" +
 				"<span class='expandContract btn-group'>" +
 				"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='issuefromtodo' data-todo='" + todo + "' data-recurrence='" + recurrenceId + "' data-meeting='" + meetingId + "'><span class='glyphicon glyphicon-pushpin'></span> New Issue</span>" +
@@ -159,8 +159,13 @@ function updateTodoDueDate(todo, duedate) {
 	row.attr("data-duedate", duedate);
 	var d = new Date(duedate);
 	var a=d.toISOString().substr(0, 10).split("-");
-	row.find(".due-date").html(new Date(a[0],a[1]-1,a[2]).toLocaleDateString());
+	var dispDate = new Date(a[0], a[1] - 1, a[2]);
+	var nowDateStr = new Date().toISOString().substr(0, 10).split("-");
+	var nowDate = new Date(nowDateStr[0], nowDateStr[1] - 1, nowDateStr[2]);
 
+	var found = row.find(".due-date");
+	$(found).toggleClass("red", dispDate < nowDate);
+	found.html(dispDate.toLocaleDateString());
 	$("input[data-todo=" + todo + "]").val(new Date(duedate).toLocaleDateString());
 }
 
@@ -227,6 +232,14 @@ function refreshCurrentTodoDetails() {
 }
 
 function sortTodoByUser(recurrenceId, todoList) {
+	
+	$(todoList).children().detach().sort(function(a, b) {
+		if ($(a).attr("data-name")===$(b).attr("data-name"))
+			return $(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
+		return $(a).attr("data-name").localeCompare($(b).attr("data-name"));
+	}).appendTo($(todoList));
+
+	/*
 	$(todoList).find("li").sort(function (a, b) {
 		//if ($(a).attr("data-name") == $(b).attr("data-name"))
 		//	return $(a).attr("data-message") < $(b).attr("data-message") ;
@@ -240,7 +253,7 @@ function sortTodoByUser(recurrenceId, todoList) {
 		return ($(a).attr("data-message") <= $(b).attr("data-message"));
 	}).each(function () {
 		$(todoList).prepend(this);
-	});
+	});*/
 	updateTodoList(recurrenceId, todoList);
 }
 

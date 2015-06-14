@@ -181,6 +181,8 @@ namespace RadialReview.Models.L10
 			public virtual MeasurableModel Measurable { get; set; }
 			public virtual L10Recurrence L10Recurrence { get; set; }
 
+			public virtual int _Ordering { get; set; }
+
 			public L10Recurrence_Measurable()
 			{
 				CreateTime = DateTime.UtcNow;
@@ -192,6 +194,7 @@ namespace RadialReview.Models.L10
 					Id(x => x.Id);
 					Map(x => x.CreateTime);
 					Map(x => x.DeleteTime);
+					Map(x => x._Ordering);
 					//Map(x => x.L10RecurrenceId).Column("L10RecurrenceId");
 					References(x => x.L10Recurrence, "L10RecurrenceId");
 

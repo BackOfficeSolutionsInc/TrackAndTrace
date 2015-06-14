@@ -59,9 +59,11 @@ $(function () {
 	meetingHub.client.updateTodoMessage = updateTodoMessage;
 	meetingHub.client.updateTodoDetails = updateTodoDetails;
 	meetingHub.client.updateTodoAccountableUser = updateTodoAccountableUser;
+	meetingHub.client.updateTodoDueDate = updateTodoDueDate;
 
 	meetingHub.client.updateIssueMessage = updateIssueMessage;
 	meetingHub.client.updateIssueDetails = updateIssueDetails;
+	meetingHub.client.updateIssueOwner = updateIssueOwner;
 
 	meetingHub.client.createNote = createNote;
 	meetingHub.client.updateNoteName = updateNoteName;
@@ -70,10 +72,9 @@ $(function () {
 	meetingHub.client.updateMeasurable = updateMeasurable;
 	meetingHub.client.updateArchiveMeasurable = updateArchiveMeasurable;
 	meetingHub.client.addMeasurable = addMeasurable;
+	meetingHub.client.reorderMeasurables = reorderMeasurables;
 
-	meetingHub.client.updateIssueOwner = updateIssueOwner;
 
-	meetingHub.client.updateTodoDueDate = updateTodoDueDate;
 	//meetingHub.client.setLeader = setLeader;
 
 	console.log("StartingHub ");

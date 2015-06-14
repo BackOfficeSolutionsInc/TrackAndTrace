@@ -1,9 +1,12 @@
-﻿using NHibernate;
+﻿using Moq;
+using NHibernate;
+using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Models.Tasks;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Query;
 using System;
@@ -167,6 +170,13 @@ namespace RadialReview.Accessors
                     s.Flush();
                 }
 
+				using (var tx = s.BeginTransaction()){
+					ConstructApplicationTasks(s);
+					tx.Commit();
+					s.Flush();
+
+	            }
+
                 using (var tx = s.BeginTransaction())
                 {
                     var application = s.Get<ApplicationWideModel>(APPLICATION_ID);
@@ -179,9 +189,30 @@ namespace RadialReview.Accessors
                     }
                     return false;
                 }
+	           
+
             }
         }
-        /*
+
+		public const string DAILY_EMAIL_TODO_TASK = "DAILY_EMAIL_TODO_TASK";
+
+	    public void ConstructApplicationTasks(ISession s)
+	    {
+		    var found =s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == DAILY_EMAIL_TODO_TASK).List().ToList();
+		    if (!found.Any()){
+			    var b = DateTime.UtcNow.Date.AddHours(10).AddMinutes(3);
+			    s.Save(new ScheduledTask(){
+					MaxException = 1,
+				    Url = "/Scheduler/EmailTodos/",
+					NextSchedule = TimeSpan.FromDays(1),
+					Fire = b,
+					FirstFire =b,
+				    TaskName = DAILY_EMAIL_TODO_TASK,
+			    });
+		    }
+	    }
+
+	    /*
         private static void Temp(ISession session)
         {
             var all = session.QueryOver<LocalizedStringModel>().List();

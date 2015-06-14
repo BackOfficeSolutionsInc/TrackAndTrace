@@ -16,6 +16,10 @@ $(function () {
 		var accountable = $(issueRow).attr("data-accountable");
 		var owner = $(issueRow).attr("data-owner");
 
+		var ownerStr = owner;
+		if (!owner || owner.trim() === "")
+			ownerStr = "(unassigned)";
+
 		var detailsList = $(issueRow).find(">.dd-list").clone();
 		$("#issueDetails").html("");
 		$("#issueDetails").append(
@@ -30,7 +34,7 @@ $(function () {
 		$("#issueDetails").append("<textarea class='details issue-details' data-recurrence_issue='" + recurrence_issue + "'>" + details + "</textarea>");
 		$("#issueDetails").append("<div class='button-bar'>" +
 			"<span class='btn-group pull-right'>" +
-				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Done</span>" +
+				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Resolved</span>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
 			"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + MeetingId + "'><span class='icon fontastic-icon-forward-1'></span> Copy To</span>" +
@@ -40,7 +44,7 @@ $(function () {
 			"<span class='gray' style='width:75px;display:inline-block'>Assigned to:</span>"+
 			"<span>"+
 				"<span style='width:250px;padding-left:10px;' class='assignee' data-accountable='" + accountable + "' data-recurrence_issue='" + recurrence_issue + "'  >"+
-					"<span data-recurrence_issue='" + recurrence_issue + "' class='btn btn-link owner'>" + owner + "</span>"+
+					"<span data-recurrence_issue='" + recurrence_issue + "' class='btn btn-link owner'>" + ownerStr + "</span>"+
 				"</span>" +
 			"</span>" +
 

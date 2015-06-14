@@ -22,11 +22,15 @@ namespace RadialReview.Controllers
 		public JsonResult Type(string id)
 		{
 			var result = new List<DropDownItem>();
-			switch (id)
+			switch (id.ToLower())
 			{
 				case "lessgreater":
 					foreach (var i in Enum.GetValues(typeof(LessGreater)))
 						result.Add(new DropDownItem() { text = ((LessGreater)i).ToSymbol(), value = i.ToString() });
+					break;
+				case "unittype":
+					foreach (var i in Enum.GetValues(typeof(UnitType)))
+						result.Add(new DropDownItem() { text = ((UnitType)i).ToTypeString(), value = i.ToString() });
 					break;
 				default: throw new ArgumentOutOfRangeException(id);
 			}

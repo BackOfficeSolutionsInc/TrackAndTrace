@@ -61,7 +61,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://review.radialreview.com/.
+        ///   Looks up a localized string similar to https://review.radialreview.com/.
         /// </summary>
         public static string BaseUrl2 {
             get {
@@ -129,6 +129,15 @@ namespace RadialReview.Properties {
         public static string SupportEmail {
             get {
                 return ResourceManager.GetString("SupportEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to clay.upton+test@radialreview.com.
+        /// </summary>
+        public static string TestEmail {
+            get {
+                return ResourceManager.GetString("TestEmail", resourceCulture);
             }
         }
     }

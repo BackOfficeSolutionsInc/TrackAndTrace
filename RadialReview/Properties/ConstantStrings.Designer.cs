@@ -61,7 +61,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://s3.amazonaws.com/Radial/.
+        ///   Looks up a localized string similar to https://s3.amazonaws.com/Radial/.
         /// </summary>
         public static string AmazonS3Location {
             get {

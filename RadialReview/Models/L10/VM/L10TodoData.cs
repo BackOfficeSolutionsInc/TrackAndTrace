@@ -26,7 +26,7 @@ namespace RadialReview.Models.L10.VM
 				createtime = todo.CreateTime.NotNull(x => x.ToJavascriptMilliseconds()),
 				details = todo.Details,
 				message = todo.Message,
-				imageurl = todo.AccountableUser.ImageUrl(true,ImageSize._32),
+				imageurl = todo.AccountableUser.ImageUrl(true,ImageSize._64),
 				accountableUser = todo.AccountableUser.GetName(),
 				accountableUserId = todo.AccountableUserId,
 				todo = todo.Id,

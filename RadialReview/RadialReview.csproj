@@ -1065,6 +1065,7 @@
     <Content Include="Views\L10\Details\scorecard.cshtml" />
     <Content Include="Views\L10\Details\notes.cshtml" />
     <Content Include="Views\Employee\Handbook.cshtml" />
+    <Content Include="Scripts\jquery\jquery.ui.sortable.js" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1315,6 +1316,7 @@
     <Content Include="Views\UnitTest\SinglePageL10.cshtml" />
     <Content Include="Views\UnitTest\VideoChat.cshtml" />
     <Content Include="Views\Shared\Partial\_VideoChat.cshtml" />
+    <Content Include="Views\Todo\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

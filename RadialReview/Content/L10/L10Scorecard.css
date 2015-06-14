@@ -55,10 +55,8 @@
 		padding-right: 0px;
 	}*/
 
-	.scorecard-table .target {
-		text-align: center;
-	}
 	.scorecard-table .target.direction {
+		text-align: center;
 		width: 1px;  
 		padding-right: 0px;
 		padding-left: 10px;
@@ -200,5 +198,27 @@
 	content: "$";
 }
 .modifiers.percent:after {
+	content: "%";
+}
+	.scorecard-table .handle {
+		color: #CCC !important;
+		cursor: move;
+		top: 1px;
+		position: relative;
+	}
+
+	.scorecard-table .xsortable-placeholder {
+		border: 1px dotted #444;
+		margin: 2px;
+	}
+
+	
+.modifiers-0:before {
+	content: "units";
+}
+.modifiers-1:after {
+	content: "dollars";
+}
+.modifiers-2:after {
 	content: "%";
 }

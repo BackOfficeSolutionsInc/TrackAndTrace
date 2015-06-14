@@ -1,4 +1,5 @@
-﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId', function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
+﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId', 
+function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
 	if (meetingId == null)
 		throw Error("MeetingId was empty");
 	$scope.disconnected = false;
@@ -211,6 +212,8 @@
 	var sevenMax = moment().add('days', 2).toDate();
 
 	$scope.date = { startDate: sevenMin, endDate: sevenMax };
+
+	$scope.now = moment();
 
 	$scope.opts = {
 		ranges: {

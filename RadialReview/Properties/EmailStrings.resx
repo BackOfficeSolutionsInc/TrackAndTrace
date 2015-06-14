@@ -260,4 +260,19 @@ The {2} Team</value>
     <value>Meeting Summary - {0}</value>
     <comment>[meetingName]</comment>
   </data>
+  <data name="TodoReminder_Body" xml:space="preserve">
+    <value>&lt;p&gt;{0},&lt;/p&gt;
+&lt;p&gt;Here are your to-dos that are due soon:&lt;/p&gt;
+{1}
+&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+&lt;br /&gt;
+&lt;br /&gt;
+Sincerely,&lt;br/&gt;
+The {2} Team</value>
+    <comment>[Name,todosTable,ProductName]</comment>
+  </data>
+  <data name="TodoReminder_Subject" xml:space="preserve">
+    <value>{0}</value>
+    <comment>[subject]</comment>
+  </data>
 </root>

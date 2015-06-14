@@ -77,7 +77,7 @@ namespace RadialReview.Accessors
 					if (organizationId!=found.OrganizationId)
 						throw new PermissionsException("Period is not part of this organization.");
 					
-					PermissionsUtility.Create(s, caller).EditOrganization(found.OrganizationId);
+					PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id,found.OrganizationId);
 
 					found.Name = name;
 					found.StartTime = start;

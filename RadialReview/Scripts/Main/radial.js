@@ -287,8 +287,9 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 				message = "";
 			console.log(data.Trace);
 			console.log(data.Message);
-			if (data.MessageType != "Success" || showSuccess) {
-				showAlert(message, "alert-" + data.MessageType.toLowerCase(), data.Heading);
+			if (data.MessageType!==undefined  && data.MessageType != "Success" || showSuccess) {
+				var mType = data.MessageType || "danger";
+				showAlert(message, "alert-" + mType.toLowerCase(), data.Heading);
 			}
 			if (data.Error) {
 				debugger;
@@ -296,7 +297,7 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 
 		}
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 	}
 	if (!data)
 		return false;
@@ -404,13 +405,13 @@ var interceptAjax = function (event, request, settings) {
 		var result = $.parseJSON(request.responseText);
 		try {
 			if (result.Refresh) {
-				if (!result.Silent) {
+				if (result.Silent!==undefined && !result.Silent) {
 					result.Refresh = false;
 					StoreJsonAlert(result);
 				}
 				location.reload();
 			} else {
-				if (!result.Silent) {
+				if (result.Silent!==undefined && !result.Silent) {
 					showJsonAlert(result, true, true);
 				}
 			}

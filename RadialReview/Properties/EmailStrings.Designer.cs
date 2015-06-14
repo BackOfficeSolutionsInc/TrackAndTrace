@@ -242,5 +242,30 @@ namespace RadialReview.Properties {
                 return ResourceManager.GetString("RemindReview_Body", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
+        ///&lt;p&gt;Here are your to-dos that are due soon:&lt;/p&gt;
+        ///{1}
+        ///&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+        ///&lt;br /&gt;
+        ///&lt;br /&gt;
+        ///Sincerely,&lt;br/&gt;
+        ///The {2} Team.
+        /// </summary>
+        public static string TodoReminder_Body {
+            get {
+                return ResourceManager.GetString("TodoReminder_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}.
+        /// </summary>
+        public static string TodoReminder_Subject {
+            get {
+                return ResourceManager.GetString("TodoReminder_Subject", resourceCulture);
+            }
+        }
     }
 }

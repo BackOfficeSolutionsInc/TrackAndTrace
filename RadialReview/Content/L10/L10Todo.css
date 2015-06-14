@@ -263,6 +263,7 @@ body.dragging, body.dragging * {
 .todoDetails h4 {
 	margin-top: 0px;
 	margin-bottom: 10px;
+	min-height: 48px;
 }
 
 .todoDetails:empty { 
@@ -299,7 +300,7 @@ body.dragging, body.dragging * {
 	color: #ccc;
 	text-align: right;
 	position: absolute;
-	top: -24px;
+	top: -36px;
 	right: 0px;
 }
 
@@ -312,7 +313,7 @@ body.dragging, body.dragging * {
 	background-color: #FcFcFc;
 	width: 100%;
 	resize: vertical;
-	height: 100px;
+	height: 116px;
 }
 
 .todoDetails > .dd-list {
@@ -370,9 +371,15 @@ body.dragging, body.dragging * {
 	width: 100%;
 }
 
-.todo .due-date.red {
-	color: red;
+.todo .due-date.red,.todo-pane .due-date.red {
+	color: #E23737;
+	text-decoration: none;
 	font-weight: bold;
+}
+
+.todo .due-date.green,.todo-pane .due-date.green {
+	color: green;
+	text-decoration: none;
 }
 
 .todo .fixed-pos {  

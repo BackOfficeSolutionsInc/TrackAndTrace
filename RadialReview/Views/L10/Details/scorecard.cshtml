@@ -37,7 +37,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Owner.Id']">
+								<tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
 									<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>
 									<td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
 									<td class="measurable first1" title="{{measurable.Name}}">
@@ -61,11 +61,13 @@
 									</td>
 									<td class="target value" data-measurable="{{measurable.Id}}">
 										<span class="inlineEdit modifiers {{measurable.Modifiers}}"
-											  data-type="number"
-											  data-name="target"
-											  data-measurable="{{measurable.Id}}"
-											  data-pk="{{measurable.Id}}_{{meetingId}}"
-											  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+										      data-type="number"
+										      data-name="target"
+										      data-measurable="{{measurable.Id}}"
+										      data-pk="{{measurable.Id}}_{{meetingId}}"
+										      data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+										<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
+
 									</td>
 
 
@@ -106,7 +108,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Owner.Id']">
+							<tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
 								<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>
 								<td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
 								<td class="measurable first1" title="{{measurable.Name}}">
@@ -130,11 +132,13 @@
 								</td>
 								<td class="target value" data-measurable="{{measurable.Id}}">
 									<span class="inlineEdit modifiers {{measurable.Modifiers}}"
-										  data-type="number"
-										  data-name="target"
-										  data-measurable="{{measurable.Id}}"
-										  data-pk="{{measurable.Id}}_{{meetingId}}"
-										  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+									      data-type="number"
+									      data-name="target"
+									      data-measurable="{{measurable.Id}}"
+									      data-pk="{{measurable.Id}}_{{meetingId}}"
+									      data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+									<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
+
 								</td>
 						</tbody>
 					</table>
