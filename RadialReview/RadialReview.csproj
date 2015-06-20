@@ -1064,7 +1064,7 @@
     <Content Include="Views\L10\Details\issues.cshtml" />
     <Content Include="Views\L10\Details\scorecard.cshtml" />
     <Content Include="Views\L10\Details\notes.cshtml" />
-    <Content Include="Views\Employee\Handbook.cshtml" />
+    <Content Include="Views\Employee\Listing.cshtml" />
     <Content Include="Scripts\jquery\jquery.ui.sortable.js" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">

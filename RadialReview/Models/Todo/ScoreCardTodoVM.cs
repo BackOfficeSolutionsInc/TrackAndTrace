@@ -9,6 +9,10 @@ namespace RadialReview.Models.Issues
 {
 	public class ScoreCardTodoVM : TodoVM
 	{
+		public ScoreCardTodoVM(long accountableUserId) : base(accountableUserId)
+		{
+		}
+
 		[Required]
 		public long MeasurableId { get; set; }
 

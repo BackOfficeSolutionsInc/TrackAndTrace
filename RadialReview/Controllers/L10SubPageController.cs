@@ -215,6 +215,8 @@ namespace RadialReview.Controllers
 		#region Conclusion
 		private PartialViewResult Conclusion(L10MeetingVM model, FormCollection form, bool start)
 		{
+			model.SendEmail = true;
+
 			return PartialView("Conclusion", model);
 		}
 

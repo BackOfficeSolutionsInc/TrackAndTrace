@@ -41,6 +41,7 @@ namespace RadialReview.Models.L10
 		public virtual decimal IDSMinutes { get; set; }
 		[Range(typeof(decimal), "0", "500"),DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:0.##}")]
 		public virtual decimal ConclusionMinutes { get; set; }
+		public virtual long DefaultTodoOwner { get; set; }
 
 		public virtual long CreatedById { get; set; }
 
@@ -74,6 +75,8 @@ namespace RadialReview.Models.L10
 				Map(x => x.TodoListMinutes);
 				Map(x => x.IDSMinutes);
 				Map(x => x.ConclusionMinutes);
+
+				Map(x => x.DefaultTodoOwner);
 
 				Map(x => x.OrganizationId).Column("OrganizationId");
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();

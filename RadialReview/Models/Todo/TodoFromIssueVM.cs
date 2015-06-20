@@ -8,7 +8,12 @@ using System.Web.Mvc;
 namespace RadialReview.Models.Todo
 {
 	public class TodoFromIssueVM : TodoVM
-	{	[Required]
+	{
+		public TodoFromIssueVM(long accountableUserId) : base(accountableUserId)
+		{
+		}
+
+		[Required]
 		public long IssueId { get; set; }
 		/*
 		[Required]

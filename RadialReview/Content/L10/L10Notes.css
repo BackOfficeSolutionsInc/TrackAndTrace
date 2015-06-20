@@ -6,87 +6,91 @@
 	min-width: 300px;
 }
 
-.notes .overlay {
-	background-color: rgba(0, 0, 0, .4);
-	position: fixed;
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
-}
+	.notes .overlay {
+		background-color: rgba(0, 0, 0, .4);
+		position: fixed;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
 
-.notes .container {
-	margin: 5px 0px;
-	background-color: #FFF;
-	padding: 5px 5px;
-	border: 1px solid #AAA;
-	box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24);
-	
-}
+	.notes .container {
+		margin: 5px 0px;
+		background-color: #FFF;
+		padding: 5px 5px;
+		border: 1px solid #AAA;
+		box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24);
+		margin-right: 0px;
+		margin-left: auto;
+	}
 
-.notes .row {
-	z-index: 100;
-}
+	.notes .row {
+		z-index: 100;
+	}
 
-.notes .main {
-	position: relative;
-	z-index: 100;
-	min-height: 200px;
-	padding: 0px;
-}
+	.notes .main {
+		position: relative;
+		z-index: 100;
+		min-height: 200px;
+		padding: 0px;
+	}
 
-.notes .main.container {
-	
-}
+		.notes .main.container {
+		}
 
-.notes .main .verticalOnly{
-	min-height: 200px;
-	width: 100%;
-}
-.notes .side{
-	position: relative;
-	z-index: 101;
-	height: 20px;
-	top: 10px;
-	left: -1px;
-}
+		.notes .main .verticalOnly {
+			min-height: 200px;
+			width: 100%;
+		}
 
-.notes .tab {
-	position: relative;
-	padding-left: 20px;
-	background-color: #FFF;
-	border: 1px solid #AAA;
-	border-left: 1px solid #AAA;
-	border-top-right-radius: 6px;
-	border-bottom-right-radius: 6px;
-	transition: all .2s ease;
-	cursor: pointer;
-	background-color: #DDD;
+	.notes .side {
+		position: relative;
+		z-index: 101;
+		height: 20px;
+		top: 10px;
+		left: -1px;
+	}
 
-	-webkit-user-select: none;  /* Chrome all / Safari all */
-	-moz-user-select: none;     /* Firefox all */
-	-ms-user-select: none;      /* IE 10+ */
-	/* No support for these yet, use at own risk */
-	-o-user-select: none;
-	user-select: none; 
-	color: #444;
-}
-.notes .tab.add {
-	color: #999;
-}
-.notes .tab.active, .notes .tab:hover {
-	border-left: 1px solid #fff;
-	background-color: #fff;
-	color: #444;
-}
-.notes .tab .glyphicon-plus-sign {
-	/*margin-left: -15px;*/
-	margin-right: 4px;
-	top: 2px;
-}
+	.notes .tab {
+		position: relative;
+		padding-left: 20px;
+		background-color: #FFF;
+		border: 1px solid #AAA;
+		border-left: 1px solid #AAA;
+		border-top-right-radius: 6px;
+		border-bottom-right-radius: 6px;
+		transition: all .2s ease;
+		cursor: pointer;
+		background-color: #DDD;
+		-webkit-user-select: none; /* Chrome all / Safari all */
+		-moz-user-select: none; /* Firefox all */
+		-ms-user-select: none; /* IE 10+ */
+		/* No support for these yet, use at own risk */
+		-o-user-select: none;
+		user-select: none;
+		color: #444;
+	}
 
-.notes textarea {
-	padding:2px 5px;
-	border: transparent;
-	outline: none !important;
-}
+		.notes .tab.add {
+			color: #999;
+		}
+
+		.notes .tab.active, .notes .tab:hover {
+			border-left: 1px solid #fff;
+			background-color: #fff;
+			color: #444;
+		}
+
+		.notes .tab .glyphicon-plus-sign {
+			/*margin-left: -15px;*/
+			margin-right: 4px;
+			top: 2px;
+		}
+
+	.notes textarea {
+		padding: 2px 5px;
+		border: transparent;
+		outline: none !important;
+		font-size: 18px;
+	}

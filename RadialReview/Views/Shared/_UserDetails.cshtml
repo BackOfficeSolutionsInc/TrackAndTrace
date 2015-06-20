@@ -12,12 +12,22 @@
 	var edit = Model.Editable;//Model.User.GetPersonallyManaging() || Model.ManagingOrganization;
 }
 
+
+
 <div class="revieww">
 	<div class="row">
 		<div class="col-sm-3">
 			@Html.Partial("_User", Model.User)
 			<div class="smallBreak"></div>
 			<div class="smallBreak"></div>
+			@if (edit)
+			{
+				<hr/>
+				<div class="alignCenter">
+					<a class="btn btn-link alignCenter" href="/Todo/List/@Model.User.Id">View Todos</a>
+				</div>
+				<div class="smallBreak2"></div>
+			}
 		</div>
 		<div class="col-sm-9">
 			<div class="panel panel-default">
@@ -111,7 +121,7 @@
 								<li class="font-size:19px;">
 									@r.Role
 									@if (r.FromTemplateItemId.HasValue){
-											<span class="icon fontastic-icon-link-2 template-link" title="This role was created by a template."></span>
+										<span class="icon fontastic-icon-link-2 template-link" title="This role was created by a template."></span>
 									}
 								</li>
 							}
@@ -160,7 +170,7 @@
 										<td>
 											@r.Title
 											@if (r.FromTemplateItemId.HasValue){
-												 <span class="icon fontastic-icon-link-2 template-link" title="This measurable was created by a template."></span>
+												<span class="icon fontastic-icon-link-2 template-link" title="This measurable was created by a template."></span>
 											}
 										</td>
 										<td class="alignCenter">@r.GoalDirection.GetDisplayName() @r.Goal.ToString("0.#####")</td>

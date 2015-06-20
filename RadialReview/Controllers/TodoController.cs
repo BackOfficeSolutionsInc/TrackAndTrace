@@ -12,6 +12,7 @@ using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Json;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.Todo;
 
 namespace RadialReview.Controllers
@@ -47,8 +48,8 @@ namespace RadialReview.Controllers
 			if (meeting!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
-			
-			var model = new TodoVM()
+
+			var model = new TodoVM(recur.DefaultTodoOwner)
 			{
 				ByUserId = GetUser().Id,
 				MeetingId = meeting,
@@ -97,7 +98,7 @@ namespace RadialReview.Controllers
 			var s = ScorecardAccessor.GetScoreInMeeting(GetUser(), score, recurrence);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 
-			var model = new ScoreCardTodoVM()
+			var model = new ScoreCardTodoVM(recur.DefaultTodoOwner)
 			{
 				ByUserId = GetUser().Id,
 				Message = s.GetTodoMessage(),
@@ -105,7 +106,7 @@ namespace RadialReview.Controllers
 				MeasurableId = measurable,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
-				AccountabilityId = accountable ?? 0,
+				AccountabilityId = accountable ?? recur.DefaultTodoOwner,
 				PossibleUsers = recur._DefaultAttendees
 					.Select(x => x.User)
 					.Select(x => new AccountableUserVM()
@@ -149,7 +150,7 @@ namespace RadialReview.Controllers
 			var s = RockAccessor.GetRockInMeeting(GetUser(), rock, meeting);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 
-			var model = new RockTodoVM()
+			var model = new RockTodoVM(recur.DefaultTodoOwner)
 			{
 				ByUserId = GetUser().Id,
 				Message = s.GetTodoMessage(),
@@ -157,7 +158,7 @@ namespace RadialReview.Controllers
 				RockId = rock,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
-				AccountabilityId = accountable ?? 0,
+				AccountabilityId = accountable ?? recur.DefaultTodoOwner,
 				PossibleUsers = recur._DefaultAttendees
 					.Select(x => x.User)
 					.Select(x => new AccountableUserVM()
@@ -202,9 +203,9 @@ namespace RadialReview.Controllers
 			var i = IssuesAccessor.GetIssue(GetUser(), issue);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence,true);
 
-			
 
-			var model = new TodoFromIssueVM()
+
+			var model = new TodoFromIssueVM(recur.DefaultTodoOwner)
 			{
 				Message = i.GetTodoMessage(),
 				Details = i.GetTodoDetails(),
@@ -212,7 +213,7 @@ namespace RadialReview.Controllers
 				MeetingId = meeting,
 				IssueId = issue,
 				RecurrenceId = recurrence,
-				AccountabilityId = L10Accessor.GuessUserId(i),
+				AccountabilityId = L10Accessor.GuessUserId(i, recur.DefaultTodoOwner),
 				PossibleUsers = recur._DefaultAttendees
 					.Select(x => x.User)
 					.Select(x => new AccountableUserVM()
@@ -303,23 +304,30 @@ namespace RadialReview.Controllers
 
 
 	    [Access(AccessLevel.UserOrganization)]
-	    public ActionResult List()
+	    public ActionResult List(long? id=null)
 	    {
 			//Views\L10\Details\todo.cshtml
-		    return View();
+		   // 
+
+		    return View(id??GetUser().Id);
 	    }
 
 		public class ListDataVM : BaseAngular
 	    {
+			public string Name { get; set; }
 			public IEnumerable<AngularTodo> Todos { get; set; }
 		    public ListDataVM(long id):base(id){}
 	    }
 
 		[Access(AccessLevel.UserOrganization)]
-	    public JsonResult ListData()
+	    public JsonResult ListData(long id)
 	    {
-		    var todos =TodoAccessor.GetTodosForUser(GetUser(), GetUser().Id).Select(x => new AngularTodo(x));
-			return Json(new ListDataVM(GetUser().Id){ Todos = todos }, JsonRequestBehavior.AllowGet);
+			var todos = TodoAccessor.GetTodosForUser(GetUser(), id).Select(x => new AngularTodo(x));
+			var m=_UserAccessor.GetUserOrganization(GetUser(),id,false,true,PermissionType.ViewTodos);
+			return Json(new ListDataVM(id){
+				Todos = todos,
+				Name = "All to-dos for "+m.GetName()
+			}, JsonRequestBehavior.AllowGet);
 	    }
 	}
 }

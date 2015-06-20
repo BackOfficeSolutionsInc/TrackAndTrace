@@ -556,5 +556,18 @@ namespace RadialReview.Controllers
 		    return "Sent: " + message;
 	    }
 
+		[Access(AccessLevel.Radial)]
+		public String UpdateCache(long id)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var org =s.Get<UserOrganizationModel>(id).UpdateCache(s);
+					tx.Commit();
+					s.Flush();
+					return "Updated: " + org.GetName();
+				}
+			}
+		}
     }
 }

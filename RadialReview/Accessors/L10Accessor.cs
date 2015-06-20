@@ -1355,7 +1355,7 @@ namespace RadialReview.Accessors
 			return null;
 		}
 
-		public static long GuessUserId(IssueModel issueModel)
+		public static long GuessUserId(IssueModel issueModel,long deflt=0)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -1363,11 +1363,11 @@ namespace RadialReview.Accessors
 				{
 
 					if (issueModel.ForModel.ToLower() == "issuemodel" && issueModel.Id == issueModel.ForModelId)
-						return 0;
+						return deflt;
 
 					var found = GetModel_Unsafe(s, issueModel.ForModel, issueModel.ForModelId);
 					if (found == null)
-						return 0;
+						return deflt;
 
 					if (found is MeasurableModel)
 					{
@@ -1379,9 +1379,9 @@ namespace RadialReview.Accessors
 					}
 					if (found is IssueModel)
 					{
-						return GuessUserId((IssueModel)found);
+						return GuessUserId((IssueModel)found, deflt);
 					}
-					return 0;
+					return deflt;
 				}
 			}
 		}
@@ -1708,7 +1708,7 @@ namespace RadialReview.Accessors
 			else
 			{
 				var ordered = existingScores.OrderBy(x => x.DateDue);
-				var minDate = ordered.FirstOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
+				var minDate = ordered.FirstOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now.AddDays(-7*13);
 				var maxDate = ordered.LastOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
 
 				minDate = minDate.StartOfWeek(DayOfWeek.Sunday);

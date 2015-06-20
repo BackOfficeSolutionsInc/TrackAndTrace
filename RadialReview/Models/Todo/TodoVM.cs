@@ -29,8 +29,9 @@ namespace RadialReview.Models.Todo
 
 		public DateTime DueDate { get; set; }
 
-		public TodoVM()
+		public TodoVM(long accountableUserId)
 		{
+			AccountabilityId = accountableUserId;
 			DueDate = DateTime.UtcNow.AddDays(7);
 		}
 	}

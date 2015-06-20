@@ -194,7 +194,7 @@ function constructRow(issue) {
 		+ ' <span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + recurrenceId + '" data-recurrence_issue="' + issue.issue + '" data-method="copymodal" style="padding-right: 5px"></span> '	
 		+ ' <span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" data-issue="'+issue.issue+'" data-meeting="'+issue.createdDuringMeetingId+'" data-recurrence="'+recurrenceId+'" data-method="CreateTodoFromIssue"></span>'
 		+ '</div>'
-	
+		+ ' <span class="number"></span>'
 		+ '	<span class="profile-image">'
 		+ '		<span class="profile-picture">' 
 		+	'			<span class="picture-container" title="' + issue.owner + '">' 
@@ -251,6 +251,11 @@ function refreshCurrentIssueDetails() {
 		.closest(".issues-list>.issue-row").find(">.message")
 		.trigger("click");
 	$(".issue-row[data-recurrence_issue=" + currentIssuesDetailsId + "]").addClass("selected");
+
+
+	$(".issues-list > .issue-row > .number").each(function(i) {
+		$(this).html(i+1);
+	});
 }
 
 function updateIssueMessage(id, message) {

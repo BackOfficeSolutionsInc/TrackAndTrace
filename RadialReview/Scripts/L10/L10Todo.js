@@ -231,6 +231,18 @@ function refreshCurrentTodoDetails() {
 	$(".todo-row[data-todo=" + currentTodoDetailsId + "]").addClass("selected");
 }
 
+function sortTodoBy(recurrenceId, todoList,sortBy,title,mult) {
+	mult = mult || 1;
+
+	$(".sort-button").html("Sort by " + title);
+
+	$(todoList).children().detach().sort(function(a, b) {
+		if ($(a).attr(sortBy)===$(b).attr(sortBy))
+			return mult*$(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
+		return mult*$(a).attr(sortBy).localeCompare($(b).attr(sortBy));
+	}).appendTo($(todoList));
+	updateTodoList(recurrenceId, todoList);
+}
 function sortTodoByUser(recurrenceId, todoList) {
 	
 	$(todoList).children().detach().sort(function(a, b) {

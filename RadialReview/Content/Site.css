@@ -1424,12 +1424,27 @@ textarea.reason {
 }
 
 .picture {
-	-ms-background-size: contain !important;
-	background-size: contain !important;
+	-ms-background-size: cover  !important;
+	background-size: cover  !important;
 	width: 100%;
 	height: 100%;
 	display: inline-block;
+	position: relative;
+	background-position-y: 15% !important;
 }
+
+	.picture .initials {
+		position: absolute;
+		left: 0;
+		right: 0;
+		text-align: center;
+		top: 0;
+		bottom: 0;
+		top: calc(50% - 10px);
+		font-weight: bold;
+		/* vertical-align: middle; */
+		/* display: table-cell; */
+	}
 
 .body-full-width .navbar {
 	height: 30px;
@@ -1530,7 +1545,7 @@ textarea.reason {
 
 input.disable,
 textarea.disable,
-select.disable{
+select.disable {
 	pointer-events: none;
 	background-color: #ddd;
 }
@@ -1547,20 +1562,20 @@ select.disable{
 
 .template-link {
 	color: #777;
-	padding: 0 3px ;
+	padding: 0 3px;
 }
 
 .fontastic-icon-checklist:before {
-  /*line-height: 0 !important;
+	/*line-height: 0 !important;
   top: 6px !important;*/
-  font-size: 19px;
-  left: -2px;
+	font-size: 19px;
+	left: -2px;
 }
 
 .spinner:empty {
 	background-image: url("/Content/img/ajax-loader.gif");
-    background-repeat: no-repeat;
-    background-position: center;
+	background-repeat: no-repeat;
+	background-position: center;
 	min-height: 20px;
 	min-width: 20px;
 }

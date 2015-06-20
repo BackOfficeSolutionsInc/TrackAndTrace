@@ -154,6 +154,29 @@ namespace RadialReview
 			else
 				return self.EmailAtOrganization;
 		}
+
+		public static String GetInitials(this UserOrganizationModel user)
+		{
+			var inits = new List<string>();
+			if (user.GetFirstName() != null && user.GetFirstName().Length > 0)
+				inits.Add(user.GetFirstName().Substring(0, 1));
+			if (user.GetLastName() != null && user.GetLastName().Length > 0)
+				inits.Add(user.GetLastName().Substring(0, 1));
+			return string.Join(" ", inits).ToUpperInvariant();
+		}
+		public static int GeUserHashCode(this UserOrganizationModel user)
+		{
+			var hash = 0;
+			var str = user.GetName();
+			if (str.Length!= 0){
+				foreach (var chr in str){
+					hash = ((hash << 5) - hash) + chr;
+					hash |= 0; // Convert to 32bit integer
+				}
+			}
+			hash = hash % 360;
+			return hash;
+		}
 	
 		public static String ImageUrl(this UserOrganizationModel self, bool awsFaster = false, ImageSize size = ImageSize._64)
 		{

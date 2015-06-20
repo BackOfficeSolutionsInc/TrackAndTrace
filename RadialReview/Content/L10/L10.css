@@ -1,4 +1,9 @@
 ﻿
+.alert {
+	position: relative;
+	z-index: 100;
+}
+
 html {
 	overflow: auto;
 }

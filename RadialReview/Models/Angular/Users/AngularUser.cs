@@ -9,12 +9,8 @@ namespace RadialReview.Models.Angular.Users
 		{
 			Name = user.GetName();
 			ImageUrl = user.ImageUrl(true, imageSize);
-			var inits = new List<string>();
-			if (user.GetFirstName() != null && user.GetFirstName().Length > 0)
-				inits.Add(user.GetFirstName().Substring(0, 1));
-			if (user.GetLastName() != null && user.GetLastName().Length > 0)
-				inits.Add(user.GetLastName().Substring(0,1));
-			Initials = string.Join(" ",inits).ToUpperInvariant();
+			Initials = user.GetInitials();
+			
 		}
 
 		public static AngularUser NoUser()

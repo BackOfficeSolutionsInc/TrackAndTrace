@@ -13,7 +13,7 @@ namespace RadialReview.Controllers
     {
         // GET: Employee
 		[Access(AccessLevel.UserOrganization)]
-        public ActionResult Handbook()
+        public ActionResult Listing()
 		{
 			var user = GetUser();
 			using (var s = HibernateSession.GetCurrentSession())

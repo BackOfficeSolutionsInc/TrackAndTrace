@@ -155,6 +155,8 @@ namespace RadialReview.Accessors
                         OrganizationId = organization.Id,
                     });
                     newUserId = userOrgModel.Id;
+	                
+					userOrgModel.UpdateCache(db);
 
                     tx.Commit();
                     db.Flush();

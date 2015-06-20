@@ -4,7 +4,7 @@
 		$(".notes .active").removeClass("active");
 		
 		$(".notes textarea").data("id", "");
-		$(".notes textarea").prop("disable", true);
+		$(".notes textarea").attr("disabled", true);
 		$(".notes textarea").animate({"background-color":"#ddd","color":"transparent"},150,function() {
 			$(".notes textarea").val("");
 		});
@@ -18,7 +18,7 @@
 					$(".notes textarea").data("id", data.Object.NoteId);
 					$(".notes textarea").data("name", data.Object.Name);
 					$(that).addClass("active");
-					$(".notes textarea").prop("disable", false);
+					$(".notes textarea").attr("disabled", false);
 					$(".notes textarea").stop().animate({"background-color":"#fff","color":"black"},150);
 					$(".notes textarea");
 					$(".notes textarea").val(data.Object.Contents);
@@ -41,7 +41,13 @@
 		$(".notes").css({ right: 10, top: 40 });
 		$(".notes").fadeIn();
 
-		$(".notes .tab:not(.add):first").trigger("click");
+		var found = $(".notes .tab:not(.add):first");
+		
+		if ($(found).length == 0) {
+			$(".notes textarea").attr("disabled", true);
+		} else {
+			$(found).trigger("click");
+		}
 	});
 
 
@@ -84,6 +90,8 @@ function createNote(id, name) {
 	$(".notes textarea").val("");
 	$(".notes textarea").data("id", id);
 	$(".notes textarea").data("name", name);
+	$(".notes textarea").attr("disabled", false);
+
 }
 function updateNoteName(id, name) {
 	$(".notes .tab[data-id='" + id + "']").html(name);

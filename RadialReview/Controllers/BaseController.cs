@@ -449,7 +449,12 @@ namespace RadialReview.Controllers
 								}
 							}
 							//DataCollection.CommentMarkProfile(2, "ViewBagPop");
-							filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._64);
+							filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._128);
+							filterContext.Controller.ViewBag.UserInitials = oneUser.GetInitials();
+							filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
+							filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
+							
+
 							filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
 							//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
 							filterContext.Controller.ViewBag.UserName = name;

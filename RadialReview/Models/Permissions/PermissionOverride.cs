@@ -10,19 +10,20 @@ namespace RadialReview.Models.Permissions
 {
 	public enum PermissionType
 	{
-		[Display(Name="<Select a permission...>")]
+		[Display(Name = "<Select a permission...>")]
 		Invalid = 0,
 
 		[Display(Name = "Edit Employee Details")]
 		EditEmployeeDetails = 1,
-		
+
 		/*[Display(Name = "Manage Employee")]
 		ManageEmployees =2*/
 		[Display(Name = "Delete Employees")]
 		DeleteEmployees = 3,
 
 		[Display(Name = "Issue Review")]
-		IssueReview = 4
+		IssueReview = 4,
+		ViewTodos
 
 	}
 

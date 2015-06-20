@@ -30,7 +30,7 @@
 									<th class="heading who alignRight">Accountable</th>
 									<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
 									<th class="heading measurable">Measurable</th>
-									<th class="heading target" colspan="2">Target</th>
+									<th class="heading target" colspan="2">Goal</th>
 									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate)" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
 										{{functions.subtractDays(week.DisplayDate,-6) | date:'MM/dd'}}
 									</th>
@@ -104,7 +104,7 @@
 								<th class="heading who alignRight">Accountable</th>
 								<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
 								<th class="heading measurable">Measurable</th>
-								<th class="heading target" colspan="2">Target</th>
+								<th class="heading target" colspan="2">Goal</th>
 							</tr>
 						</thead>
 						<tbody>

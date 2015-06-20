@@ -1,0 +1,28 @@
+﻿@using RadialReview.Models
+@model List<RadialReview.Models.UserOrganizationModel>
+@{
+    ViewBag.Title = "Employee Listing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+	var org = ViewBag.Organization as OrganizationModel;
+	var orgName = org.NotNull(x => x.GetName());
+	
+}
+<hgroup>
+	<h2>@orgName</h2>
+	<h2><small>Employee Listing</small></h2>
+</hgroup>
+@foreach (var p in Model.OrderBy(x=>x.GetName()))
+{
+	<a href="/User/Details/@p.Id">@Html.Partial("_ProfilePicture", p, new ViewDataDictionary() { { "Size", 128 } })</a>
+
+}
+
+@using (Html.BeginStyles()){
+	
+	<style>
+		.picture-container {
+			width: 64px;
+			height: 64px;
+		}
+	</style>
+}

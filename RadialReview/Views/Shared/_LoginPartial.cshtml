@@ -8,7 +8,11 @@
     {
         @Html.AntiForgeryToken()
 
-		@Html.Partial("_Picture", (string)ViewBag.UserImage)
+		@Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
+			{ "ImageTitle", ((string)ViewBag.UsersName) }, 
+			{ "Initials", ViewBag.UserInitials }, 
+			{ "Color", ViewBag.UserColor }
+		})
         <ul class="nav navbar-nav navbar-right">
             <li>
 	            <div class="btn-group heading" style="padding:8px;">

@@ -1,4 +1,4 @@
-﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId', 
+﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId',
 function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
 	if (meetingId == null)
 		throw Error("MeetingId was empty");
@@ -49,7 +49,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
 						//Special AngularList Object
 						if (src.UpdateMethod == "Add") {
 							dst[key] = dst[key].concat(src.AngularList);
-						}else if (src.UpdateMethod == "ReplaceAll") {
+						} else if (src.UpdateMethod == "ReplaceAll") {
 							dst[key] = src.AngularList;
 						}
 					} else {
@@ -78,28 +78,33 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
 		return dst;
 	}
 
+	function convertDates(obj) {
+		var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
+		//var dateRegex2 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
+		var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
+		for (var key in obj) {
+			var value = obj[key];
+			var type = typeof (value);
+			if (type == 'string' && dateRegex1.test(value)) {
+				obj[key] = moment(parseInt(value.substr(6)));
+			} else if (type == 'string' && dateRegex2.test(value)) {
+				obj[key] = moment(obj[key]);
+			} else if (obj[key].getDate!==undefined) {
+				obj[key] =new Date(obj[key].getTime() + obj[key].getTimezoneOffset() * 60000);
+			} else if (type == 'object') {
+				convertDates(value);
+			}
+		}
+	};
+
 	function update(data, status) {
 
 		console.log("update:");
 		console.log(data);
 		//angular.merge($scope.model, data);
 		baseExtend($scope.model, [data], true);
-		var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
-		//var dateRegex2 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
-		var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
-		var convertDates = function (obj) {
-			for (var key in obj) {
-				var value = obj[key];
-				var type = typeof (value);
-				if (type == 'string' && dateRegex1.test(value)) {
-					obj[key] = new Date(parseInt(value.substr(6)));
-				} else if (type == 'string' && dateRegex2.test(value)) {
-					obj[key] = new Date(obj[key]);
-				} else if (type == 'object') {
-					convertDates(value);
-				}
-			}
-		};
+		
+
 		convertDates($scope.model);
 		removeDeleted($scope.model);
 	}
@@ -116,6 +121,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
 
 	$http({ method: 'get', url: meetingDataUrlBase + $scope.meetingId })
 	.success(function (data, status) {
+		convertDates(data);
 		$scope.model = data;
 		//update(data, status);
 	}).error(function (data, status) {

@@ -86,6 +86,10 @@
 				<label class="col-sm-3 control-label">Conclusion duration (minutes):</label>
 				<div class="col-sm-9">@Html.TextBox(Html.NameFor(x => x.Recurrence.ConclusionMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes), new { @class = "select2 form-control", type = "number", min = "0", step = "any", max = "500" })</div>
 			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Default Todo Owner:</label>
+				<div class="col-sm-9"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list"></select></div>
+			</div>
 
 
 			@Html.SecuredHiddenFor(x => x.Recurrence.Id)
@@ -109,6 +113,26 @@
 {
 	<script>
 
+		var selectedTodoList = @Model.Recurrence.DefaultTodoOwner;
+
+		function updateTodoList() {
+			$(".default-todo-list").html("");
+			$(".attendee").find('option:selected').each(function(){
+				var selected = $(this).val() == selectedTodoList ? "selected" : "";
+				$(".default-todo-list").append("<option value='" + $(this).val() + "' " + selected + ">"+$(this).text()+"</option>");
+			});;
+		}
+
+		
+		$(".default-todo-list").on("change", function() {
+			selectedTodoList = $(this).val();
+		});
+
+		$(".attendee").on("change", function() {
+			updateTodoList();
+		});
+
+		
 		function goL10() {
 			window.location = "/L10";
 		}
@@ -144,6 +168,10 @@
 				}
 				return false;
 			}*/
+		});
+
+		$(function() {
+			updateTodoList();
 		});
 
 		//$(".measurables, .attendee").fadeIn();

@@ -32,7 +32,7 @@ namespace RadialReview.Accessors
 			{
 
 				table.Append(@"<table width=""100%""  border=""0"" cellpadding=""0"" cellspacing=""0"">");
-				table.Append(@"<tr><th colspan=""3"" align=""left"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;"">"+title+@"</th><th align=""right"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;"">Due Date</th></tr>");
+				table.Append(@"<tr><th colspan=""3"" align=""left"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;"">" + title + @"</th><th align=""right"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;width: 80px;"">Due Date</th></tr>");
 				var i = 1;
 				if (todos.Any()){
 					var org = todos.FirstOrDefault().NotNull(x => x.Organization);
@@ -40,7 +40,7 @@ namespace RadialReview.Accessors
 					foreach (var todo in todos.OrderBy(x => x.DueDate.Date).ThenBy(x => x.Message)){
 						var color = todo.DueDate.Date <= now ? "color:#F22659;" : "color: #34AD00;";
 
-						table.Append(@"<tr><td width=""8px""></td><td width=""1px""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
+						table.Append(@"<tr><td width=""8px""></td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
 							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
 							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" style=""" + color + @""">")
 							.Append(todo.DueDate.ToShortDateString()).Append("</td></tr>");
@@ -139,7 +139,7 @@ namespace RadialReview.Accessors
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
-					PermissionsUtility.Create(s, caller).Self(userId);
+					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId,false);
 
 					var found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId).List().ToList();
 					foreach (var f in found)
@@ -147,7 +147,7 @@ namespace RadialReview.Accessors
 						var a = f.ForRecurrence.Id;
 						var b = f.AccountableUser.GetName();
 						var c = f.AccountableUser.ImageUrl(true,ImageSize._32);
-						var d = f.CreatedDuringMeeting.Id;
+						var d = f.CreatedDuringMeeting.NotNull(x=>x.Id);
 					}
 					return found;
 				}

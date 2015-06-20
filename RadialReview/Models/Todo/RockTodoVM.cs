@@ -6,6 +6,10 @@ namespace RadialReview.Models.Todo
 {
 	public class RockTodoVM : TodoVM
 	{
+		public RockTodoVM(long accountableUserId) : base(accountableUserId)
+		{
+		}
+
 		[Required]
 		public long RockId { get; set; }
 		/*

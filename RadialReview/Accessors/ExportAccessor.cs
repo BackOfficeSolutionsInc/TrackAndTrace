@@ -30,8 +30,8 @@ namespace RadialReview.Accessors
 							var ss = s.First();
 							csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.GetName());
 							csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.GetName());
-							csv.Add(ss.Measurable.Title, "Target", "" + ss.Measurable.Goal);
-							csv.Add(ss.Measurable.Title, "TargetDirection", "" + ss.Measurable.GoalDirection);
+							csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal);
+							csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
 						}
 						foreach (var s in scores.OrderBy(x => x.ForWeek))
 						{

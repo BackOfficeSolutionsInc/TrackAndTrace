@@ -3,6 +3,13 @@
 	margin: 5px 0;
 }
 
+.todo .page-header.listing {
+	margin-top: -20px;
+	padding-top: 26px;
+	background-color: #F7F7F7;
+	z-index: 11;
+	box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
+}
 .todo h2 {
 	margin-top: 0px;
 	margin-bottom: 0px;

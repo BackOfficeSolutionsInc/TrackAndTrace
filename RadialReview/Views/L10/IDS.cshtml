@@ -10,7 +10,7 @@
 <div class="meeting-page ids">
 	<div class="row">
 		<div class="col-md-8">
-			<hgroup class="page-header">
+			<hgroup class="page-header  listing fixed-pos">
 				<div class="pull-right">
 					<div class="btn-group ">
 						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
@@ -64,6 +64,8 @@
 	var oldIssueList;
 
 	$(function() {
+		refreshCurrentIssueDetails();
+
 		$(".issues-list").sortable({
 			group: 'nested',
 			handle: '.move-icon',

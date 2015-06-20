@@ -389,11 +389,14 @@ function isElementInViewport(el) {
 
 function reorderMeasurables(order) {
 	for (var i = 0; i < order.length; i++) {
-		$("tr[data-meetingmeasurable='" + order[i] + "']").attr("data-order", i);
+		var found = $("tr[data-meetingmeasurable='" + order[i] + "']");
+		$(found).attr("data-order", i);
+		$(found).find(".grid").attr("data-row", i);
 	}
 	$(".scorecard-table").each(function() {
 		$(this).find("tbody").children("tr").detach().sort(function(a, b) {
 			return $(a).attr("data-order")-$(b).attr("data-order");
 		}).appendTo($(this));
 	});
+
 }

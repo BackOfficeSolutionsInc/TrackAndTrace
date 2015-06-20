@@ -245,7 +245,7 @@ namespace RadialReview.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
-        ///&lt;p&gt;Here are your to-dos that are due soon:&lt;/p&gt;
+        ///&lt;p&gt;Here are your to-dos. To view your to-dos, click &lt;a href=&apos;{3}&apos;&gt;here&lt;/a&gt;.&lt;/p&gt;
         ///{1}
         ///&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
         ///&lt;br /&gt;

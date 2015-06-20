@@ -45,11 +45,13 @@ namespace RadialReview.Controllers
 					var tomorrow = nowUtc.Date.AddDays(2).AddTicks(-1);
 					var rangeLow = nowUtc.Date.AddDays(-1);
 					var rangeHigh = nowUtc.Date.AddDays(4).AddTicks(-1);
+					var nextWeek = nowUtc.Date.AddDays(7);
 					if (nowUtc.DayOfWeek == DayOfWeek.Friday)
 						rangeHigh=rangeHigh.AddDays(1);
 
 
-					var todos = s.QueryOver<TodoModel>().Where(x => ((rangeLow <= x.DueDate  && x.DueDate <= rangeHigh) || (x.CompleteTime == null && x.DueDate <= nowUtc)) && x.DeleteTime == null).List().ToList();
+
+					var todos = s.QueryOver<TodoModel>().Where(x => ((rangeLow <= x.DueDate && x.DueDate <= rangeHigh) || (x.CompleteTime == null && x.DueDate <= nextWeek)) && x.DeleteTime == null).List().ToList();
 
 					var dictionary = new Dictionary<string, List<TodoModel>>();
 					
@@ -59,30 +61,30 @@ namespace RadialReview.Controllers
 						}
 					}
 
-					foreach (var e in dictionary){
+					foreach (var userTodos in dictionary){
 						string subject = null;
-						var nowLocal = e.Value.First().Organization.ConvertFromUTC(nowUtc).Date;
+						var nowLocal = userTodos.Value.First().Organization.ConvertFromUTC(nowUtc).Date;
 
-						var overDue = e.Value.Count(x => x.DueDate.Date <= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
+						var overDue = userTodos.Value.Count(x => x.DueDate.Date <= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
 						if (overDue == 1)
 							subject = "You have an overdue task";
 						else if (overDue > 1)
 							subject = "You have " + overDue + " overdue tasks";
 						else{
-							var dueToday = e.Value.Count(x => x.DueDate.Date == nowLocal.Date && x.CompleteTime == null);
+							var dueToday = userTodos.Value.Count(x => x.DueDate.Date == nowLocal.Date && x.CompleteTime == null);
 
 							if (dueToday == 1)
 								subject = "You have a task due today";
 							else if (dueToday > 1)
 								subject = "You have " + dueToday + " tasks due today";
 							else{
-								var dueTomorrow = e.Value.Count(x => x.DueDate.Date == nowLocal.AddDays(1).Date && x.CompleteTime == null);
+								var dueTomorrow = userTodos.Value.Count(x => x.DueDate.Date == nowLocal.AddDays(1).Date && x.CompleteTime == null);
 								if (dueTomorrow == 1)
 									subject = "You have a task due tomorrow";
 								else if (dueTomorrow > 1)
 									subject = "You have " + dueTomorrow + " tasks due tomorrow";
 								else{
-									var dueSoon = e.Value.Count(x => x.DueDate.Date > nowLocal.AddDays(1).Date && x.CompleteTime == null);
+									var dueSoon = userTodos.Value.Count(x => x.DueDate.Date > nowLocal.AddDays(1).Date && x.CompleteTime == null);
 									if (dueSoon == 1)
 										subject = "You have a task due soon";
 									else if (dueSoon > 1)
@@ -92,24 +94,29 @@ namespace RadialReview.Controllers
 						}
 
 
-						var shouldSend = e.Value.Count(x => x.DueDate.Date >= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
+						var shouldSend = userTodos.Value.Count(x => x.DueDate.Date >= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
 
 						if (subject != null && shouldSend>0)
 						{
 
 							try{
-								var user = e.Value.First().AccountableUser;
+								var user = userTodos.Value.First().AccountableUser;
 								var email = user.GetEmail();
 
 								var builder = new StringBuilder();
-								foreach (var t in e.Value.GroupBy(x => x.ForRecurrenceId)){
+								foreach (var t in userTodos.Value.GroupBy(x => x.ForRecurrenceId)){
 									builder.Append(TodoAccessor.BuildTodoTable(t.ToList(), t.First().ForRecurrence.NotNull(x => x.Name + " To-do")));
 									builder.Append("<br/>");
 								}
 								
 								var mail = MailModel.To(email)
 									.Subject(EmailStrings.TodoReminder_Subject, subject)
-									.Body(EmailStrings.TodoReminder_Body, user.GetName(), builder.ToString(), Config.ProductName(user.Organization));
+									.Body(EmailStrings.TodoReminder_Body, 
+										user.GetName(), 
+										builder.ToString(), 
+										Config.ProductName(user.Organization),
+										Config.BaseUrl(user.Organization)+"Todo/List"
+										);
 
 								unsent.Add(mail);
 							}catch (Exception ex){

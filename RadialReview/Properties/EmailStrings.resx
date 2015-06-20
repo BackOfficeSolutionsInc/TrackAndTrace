@@ -262,14 +262,14 @@ The {2} Team</value>
   </data>
   <data name="TodoReminder_Body" xml:space="preserve">
     <value>&lt;p&gt;{0},&lt;/p&gt;
-&lt;p&gt;Here are your to-dos that are due soon:&lt;/p&gt;
+&lt;p&gt;Here are your to-dos. To view your to-dos, click &lt;a href='{3}'&gt;here&lt;/a&gt;.&lt;/p&gt;
 {1}
 &lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
 &lt;br /&gt;
 &lt;br /&gt;
 Sincerely,&lt;br/&gt;
 The {2} Team</value>
-    <comment>[Name,todosTable,ProductName]</comment>
+    <comment>[Name,todosTable,ProductName,url]</comment>
   </data>
   <data name="TodoReminder_Subject" xml:space="preserve">
     <value>{0}</value>
