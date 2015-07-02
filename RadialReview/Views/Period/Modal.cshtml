@@ -53,7 +53,7 @@
 		var nowTemp = new Date();
 		var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
 
-		var checkin = $('#StartDate').datepicker({
+		var checkin = $('#StartDate').datepickerX({
 			format: 'mm-dd-yyyy',
 			//onRender: function (date) { return date.valueOf() < now.valueOf() ? 'disabled' : ''; }
 		}).on('changeDate', function (ev) {
@@ -66,7 +66,7 @@
 			$('#EndDate')[0].focus();
 		}).data('datepicker');
 
-		var checkout = $('#EndDate').datepicker({
+		var checkout = $('#EndDate').datepickerX({
 			format: 'mm-dd-yyyy',
 			//onRender: function (date) {return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';}
 		}).on('changeDate', function (ev) {

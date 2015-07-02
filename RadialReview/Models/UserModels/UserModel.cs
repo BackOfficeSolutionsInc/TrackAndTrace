@@ -1,4 +1,5 @@
-﻿using FluentNHibernate.Mapping;
+﻿using System.Diagnostics;
+using FluentNHibernate.Mapping;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using RadialReview.Models;
@@ -16,6 +17,7 @@ using System.Web;
 
 namespace RadialReview.Models
 {
+	[DebuggerDisplay("{FirstName} {LastName}")]
     public class UserModel : IdentityUser, IDeletable, IStringIdentifiable
     {
         //[Key]

@@ -3,13 +3,18 @@
 @using (Html.BeginScripts())
 {
 	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<script>
+		// _SetupScript.cshtml
+
 		$.fn.editable.defaults.mode = 'popup';
 
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
 		}
-
+		
+		var recurrenceId = @Model.Recurrence.Id;
+		var meetingId = -1;
 
 		@if (Model.Meeting != null){
 			@:var isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
@@ -17,19 +22,23 @@
 			@:var currentPageStartTime = @Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds());
 			@:var currentPageBaseMinutes = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0);
 			@:meetingStart = true;
+			
+			var meetingId = @Model.Meeting.Id;
 		}
 		else{
 
 			@:var meetingStart = false;
 			@:var isLeader = false;
 		}
-		
+
 
 	</script>
 }
 @using (Html.BeginStyles())
 {
 	<link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
 }
 
 @*<script>

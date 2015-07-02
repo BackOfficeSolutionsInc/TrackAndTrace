@@ -59,7 +59,7 @@
 
 	var now = new Date();
 	now = Date.UTC(now.getYear()+1900, now.getMonth(), now.getDate(),0,0,0);
-	$('#TodoDueDate').datepicker({
+	$('#TodoDueDate').datepickerX({
 		format: 'mm-dd-yyyy',
 		onRender: function(date) {
 			return date.valueOf() < now.valueOf() ? 'disabled' : '';

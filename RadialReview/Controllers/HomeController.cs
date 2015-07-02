@@ -11,6 +11,7 @@ namespace RadialReview.Controllers
     {
         public UserViewModel User {get;set;}
         public OutstandingReviewViewModel OutstandingReview { get; set; }
+		public bool IncludeTodos { get; set; }
     }
 
     public class OutstandingReviewViewModel
@@ -37,16 +38,21 @@ namespace RadialReview.Controllers
                     if (user.IsManager())
                     {
                         var recentReview = _ReviewAccessor.GetMostRecentReviewContainer(GetUser(), GetUser().Id);
-                        model.OutstandingReview = new OutstandingReviewViewModel()
-                        {
-                            Name = recentReview.ReviewName,
-                            ReviewContainerId = recentReview.Id,
-
-                        };
+	                    if (recentReview != null){
+		                    model.OutstandingReview = new OutstandingReviewViewModel(){
+			                    Name = recentReview.ReviewName,
+			                    ReviewContainerId = recentReview.Id,
+		                    };
+	                    }
                     }
+	                model.IncludeTodos = GetUser().Organization.Settings.EnableL10;
+
                 }catch(Exception){
 	                model.User = new UserViewModel(){User = GetUserModel()};
                 }
+
+
+
                 return View("Backend", model);
             }
             return RedirectToAction("Login","Account");

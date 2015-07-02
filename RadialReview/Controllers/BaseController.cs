@@ -424,6 +424,8 @@ namespace RadialReview.Controllers
 
 						filterContext.Controller.ViewBag.UserName = MessageStrings.User;
 						filterContext.Controller.ViewBag.UserImage = "/img/placeholder";
+						filterContext.Controller.ViewBag.UserInitials = "";
+						filterContext.Controller.ViewBag.UserColor = 0;
 						filterContext.Controller.ViewBag.IsManager = false;
 						filterContext.Controller.ViewBag.ShowL10 = false;
 						filterContext.Controller.ViewBag.ShowReview = false;
@@ -431,10 +433,11 @@ namespace RadialReview.Controllers
 						filterContext.Controller.ViewBag.Hints = true;
 						filterContext.Controller.ViewBag.ManagingOrganization = false;
 						filterContext.Controller.ViewBag.Organization = null;
+						filterContext.Controller.ViewBag.UserId = 0L;
 
 						if (oneUser != null)
 						{
-							HtmlString name = new HtmlString(oneUser.GetName());
+							var name = new HtmlString(oneUser.GetName());
 
 							if (userOrgsCount > 1)
 							{
@@ -474,6 +477,7 @@ namespace RadialReview.Controllers
 							var user = GetUserModel(s);
 							filterContext.Controller.ViewBag.Hints = user.Hints;
 							filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
+							filterContext.Controller.ViewBag.UserColor = user.GetUserHashCode();
 						}
 
 						// ViewBag.OrganizationId = Session["OrganizationId"];

@@ -85,7 +85,8 @@ namespace RadialReview
 
 		public static bool GetPersonallyManaging(this UserOrganizationModel self)
 		{
-			return bool.Parse(self.GetSingle("_managing"));
+			var found = self.GetSingle("_managing");
+			return bool.Parse(found);
 		}
 
 		public static bool PopulateDirectlyManaging(this UserOrganizationModel sub, UserOrganizationModel caller, List<UserOrganizationModel> directSubordinates)
@@ -134,7 +135,7 @@ namespace RadialReview
 
 		public static String GetSingle(this UserOrganizationModel self, String key)
 		{
-			if (self.Properties.ContainsKey(key))
+			if (self!=null && self.Properties.ContainsKey(key))
 				return self.Properties[key].NotNull(x => x.FirstOrDefault());
 			return null;
 		}
@@ -168,8 +169,25 @@ namespace RadialReview
 		{
 			var hash = 0;
 			var str = user.GetName();
-			if (str.Length!= 0){
-				foreach (var chr in str){
+			if (str.Length != 0)
+			{
+				foreach (var chr in str)
+				{
+					hash = ((hash << 5) - hash) + chr;
+					hash |= 0; // Convert to 32bit integer
+				}
+			}
+			hash = hash % 360;
+			return hash;
+		}
+		public static int GetUserHashCode(this UserModel user)
+		{
+			var hash = 0;
+			var str = user.Name();
+			if (str.Length != 0)
+			{
+				foreach (var chr in str)
+				{
 					hash = ((hash << 5) - hash) + chr;
 					hash |= 0; // Convert to 32bit integer
 				}
@@ -190,7 +208,11 @@ namespace RadialReview
 				return ConstantStrings.AmazonS3Location + s + suffix;
 			}
 			return "/i/" + self.User.ImageGuid;*/
-			return ImageUrl(self.NotNull(x=>x.User), awsFaster, size);
+			var user = self.NotNull(x => x.User);
+			if (user == null)
+				return self.Cache.NotNull(x => x.ImageUrl(size)) ?? "/i/userplaceholder";
+			else
+				return ImageUrl(user, awsFaster, size);
 		}
 		public static String ImageUrl(this UserModel self,bool awsFaster = false, ImageSize size = ImageSize._64)
 		{

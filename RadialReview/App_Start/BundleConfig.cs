@@ -92,6 +92,7 @@ namespace RadialReview
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/L10").Include(
+					"~/Scripts/L10/resize-columns.js",
 					"~/Scripts/jquery/jquery.ui.sortable.js",
 					"~/Scripts/L10/charts/sparklines.min.js",
 					"~/Scripts/home/resizeable-tables.js",

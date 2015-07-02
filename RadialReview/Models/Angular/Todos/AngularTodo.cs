@@ -15,7 +15,7 @@ namespace RadialReview.Models.Angular.Todos
 			Name = todo.Message;
 			Details = todo.Details;
 			DueDate = todo.DueDate;
-			Owner = new AngularUser(todo.AccountableUser);
+			Owner = AngularUser.CreateUser(todo.AccountableUser);
 			CompleteTime = todo.CompleteTime;
 			CreateTime = todo.CreateTime;
 			Complete = todo.CompleteTime != null;

@@ -435,3 +435,11 @@ $(document).ajaxError(interceptAjax);
 		return this;
 	};
 }(jQuery));
+
+
+function dateFormatter(date){
+    /*if(Date.parse('2/6/2009')=== 1233896400000){
+        return [date.getMonth()+1, date.getDate(), date.getFullYear()].join('/');
+    }*/
+    return [date.getMonth()+1,date.getDate(), date.getFullYear()].join('/');
+}

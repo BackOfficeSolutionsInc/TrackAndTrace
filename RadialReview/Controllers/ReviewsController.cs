@@ -307,7 +307,7 @@ namespace RadialReview.Controllers
                     ResultObject output;
                     try
                     {
-                        output = await _ReviewAccessor.AddUserToReviewContainer(user, model.ReviewId, model.SelectedUserId,model.SendEmail);
+						output = await _ReviewAccessor.AddUserToReviewContainer(System.Web.HttpContext.Current,user, model.ReviewId, model.SelectedUserId, model.SendEmail);
                     }
                     catch (Exception e)
                     {
@@ -427,7 +427,7 @@ namespace RadialReview.Controllers
 	        var review = _ReviewAccessor.GetReviewContainer(GetUser(), reviewId, false, false, false);
 
 	        var range = new DateRange(review.DateCreated,DateTime.UtcNow);
-			var answers = _AskableAccessor.GetAskablesForUser(GetUser(), userId, period.Id, range).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
+			var answers = _AskableAccessor.GetAskablesForUser(GetUser(), userId, period.NotNull(x=>x.Id), range).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
 
             return Json(answers.ToSelectList(x => x.GetQuestion(), x => x.Id), JsonRequestBehavior.AllowGet);
 

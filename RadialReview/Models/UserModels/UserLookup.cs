@@ -35,7 +35,9 @@ namespace RadialReview.Models.UserModels
 		public virtual string ImageUrl(ImageSize size = ImageSize._32)
 		{
 			var s = size.ToString().Substring(1);
-			return ConstantStrings.AmazonS3Location + s + _ImageUrlSuffix;
+			if (_ImageUrlSuffix != null && !_ImageUrlSuffix.EndsWith("/i/userplaceholder"))
+				return ConstantStrings.AmazonS3Location + s + _ImageUrlSuffix;
+			return "/i/userplaceholder";
 		}
 
 		public class UserLookupMap : ClassMap<UserLookup>

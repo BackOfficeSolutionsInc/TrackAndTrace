@@ -101,8 +101,8 @@ namespace RadialReview.Controllers
 			var model = new ScoreCardTodoVM(recur.DefaultTodoOwner)
 			{
 				ByUserId = GetUser().Id,
-				Message = s.GetTodoMessage(),
-				Details = s.GetTodoDetails(),
+				Message = s.NotNull(x=>x.GetTodoMessage()),
+				Details = s.NotNull(x=>x.GetTodoDetails()),
 				MeasurableId = measurable,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
@@ -153,8 +153,8 @@ namespace RadialReview.Controllers
 			var model = new RockTodoVM(recur.DefaultTodoOwner)
 			{
 				ByUserId = GetUser().Id,
-				Message = s.GetTodoMessage(),
-				Details = s.GetTodoDetails(),
+				Message = s.NotNull(x=>x.GetTodoMessage()),
+				Details = s.NotNull(x=>x.GetTodoDetails()),
 				RockId = rock,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
@@ -197,7 +197,7 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateTodoFromIssue(long meeting, long recurrence,long issue)
+		public ActionResult CreateTodoFromIssue(long recurrence, long issue, long meeting)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 			var i = IssuesAccessor.GetIssue(GetUser(), issue);
@@ -207,8 +207,8 @@ namespace RadialReview.Controllers
 
 			var model = new TodoFromIssueVM(recur.DefaultTodoOwner)
 			{
-				Message = i.GetTodoMessage(),
-				Details = i.GetTodoDetails(),
+				Message = i.NotNull(x=>x.GetTodoMessage()),
+				Details = i.NotNull(x=>x.GetTodoDetails()),
 				ByUserId = GetUser().Id,
 				MeetingId = meeting,
 				IssueId = issue,
@@ -311,6 +311,13 @@ namespace RadialReview.Controllers
 
 		    return View(id??GetUser().Id);
 	    }
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult AjaxList(long? id = null)
+		{
+			return PartialView("~/Views/Todo/Partial/list.cshtml",id ?? GetUser().Id);
+		}
+
 
 		public class ListDataVM : BaseAngular
 	    {

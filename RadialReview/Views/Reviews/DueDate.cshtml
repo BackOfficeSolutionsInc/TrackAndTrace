@@ -57,7 +57,7 @@
         var nowTemp = new Date();
         var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
 
-        var checkin = $('#ReviewDueDate').datepicker({
+        var checkin = $('#ReviewDueDate').datepickerX({
             format: 'mm-dd-yyyy',
             onRender: function (date) {return date.valueOf() < now.valueOf() ? 'disabled' : '';}
         }).on('changeDate', function (ev) {
@@ -70,7 +70,7 @@
             $('#ReportDueDate')[0].focus();
         }).data('datepicker');
 
-        var checkout = $('#ReportDueDate').datepicker({
+        var checkout = $('#ReportDueDate').datepickerX({
             format: 'mm-dd-yyyy',
             onRender: function (date) {
                 return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
@@ -80,7 +80,7 @@
         }).data('datepicker');
 
 
-        var checkout2 = $('#PrereviewDueDate').datepicker({
+        var checkout2 = $('#PrereviewDueDate').datepickerX({
             format: 'mm-dd-yyyy',
             onRender: function (date) { return date.valueOf() < now.valueOf() ? 'disabled' : ''; }
         }).on('changeDate', function (ev) {

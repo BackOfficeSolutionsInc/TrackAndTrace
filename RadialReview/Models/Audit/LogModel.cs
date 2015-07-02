@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using FluentNHibernate.Mapping;
-using RadialReview.Exceptions;
-using RadialReview.Models;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
 
-namespace RadialReview.Views.Log
+namespace RadialReview.Models.Audit
 {
 	public enum LogType
 	{
 		Unspecified = 0,
 		ChangeProducts = 1,
+
 
 	}
 

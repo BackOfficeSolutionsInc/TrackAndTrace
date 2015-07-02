@@ -1,4 +1,5 @@
-﻿using RadialReview.Accessors;
+﻿using Microsoft.Ajax.Utilities;
+using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
@@ -84,15 +85,19 @@ namespace RadialReview.Controllers
                         };
                     case NexusActions.CreateReview:
                         {
-                            await _ReviewEngine.CreateReviewFromPrereview(nexus);
-                            return RedirectToAction("Index", "Home");
+							var sent = await _ReviewEngine.CreateReviewFromPrereview(System.Web.HttpContext.Current, nexus);
+							NexusAccessor.Execute(nexus);
+                            return Content("Sent:"+ sent);
                         };
                 }
             }
-            catch (Exception)
-            {
-                ViewBag.Message = "There was an error in your request.";
-                return RedirectToAction("Index", "Home");
+            catch (Exception e){
+				log.Error("Error executing nexus", e);
+	            throw;
+				/*log.Error("Error executing nexus",e);
+				ViewBag.Message = "There was an error in your request.";
+				ViewBag.AlertType = "alert-danger";
+                return Con("Index", "Home");*/
             }
             log.Fatal("Nexus fall-through");
             return View();
@@ -154,8 +159,18 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public async Task<JsonResult> SendAllEmails()
         {
-            var count = await NexusAccessor.SendAllJoinEmails(GetUser(), GetUser().Organization.Id);
-            return Json(ResultObject.Create(true, "Sent " + count + " email".Pluralize(count) + "."), JsonRequestBehavior.AllowGet);
+            var output = await NexusAccessor.SendAllJoinEmails(GetUser(), GetUser().Organization.Id);
+
+	        var errors = output.Errors.Select(x => x.Message).GroupBy(x => x).Select(x =>{
+		        var r = x.First();
+		        if (x.Count() > 1)
+			        r += " (x" + x.Count() + ")";
+		        return r;
+	        });
+
+	        var sent = "Sent " + output.Sent + " email".Pluralize(output.Sent) + ".";
+
+            return Json(ResultObject.Create(true, String.Join("<br/>",sent,errors)), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]

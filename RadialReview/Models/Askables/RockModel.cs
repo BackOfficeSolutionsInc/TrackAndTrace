@@ -23,7 +23,7 @@ namespace RadialReview.Models.Askables {
 
 		public virtual long? PeriodId { get; set; }
 		public virtual PeriodModel Period { get; set; }
-		public virtual DateTime CreateTime { get; set; }
+		//public new virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? CompleteTime { get; set; }
 		public virtual UserOrganizationModel AccountableUser { get; set; }
 
@@ -57,7 +57,7 @@ namespace RadialReview.Models.Askables {
 				Map(x => x.OrganizationId);
 				Map(x => x.FromTemplateItemId);
 				Map(x => x.CompanyRock);
-				Map(x => x.CreateTime);
+				//Map(x => x.CreateTime);
 				Map(x => x.CompleteTime);
 				Map(x => x.PeriodId).Column("PeriodId");
 				References(x => x.Period).Column("PeriodId").Not.LazyLoad().ReadOnly();

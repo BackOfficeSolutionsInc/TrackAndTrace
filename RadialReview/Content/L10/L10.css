@@ -319,6 +319,7 @@ profile-image .picture {
 	color: #444444;
 }
 .calendar-container .caret {
+	pointer-events: none;
 	position: absolute;
 	top: 16px;
 	right: 9px;
@@ -359,3 +360,11 @@ profile-image .picture {
 	  content: "\270f";
 	  width: 0px;
 }
+
+
+/*.Flipped, .Flipped .Content
+{
+    transform:rotateX(180deg);
+    -ms-transform:rotateX(180deg); /* IE 9 *
+    -webkit-transform:rotateX(180deg); /* Safari and Chrome *
+}*/

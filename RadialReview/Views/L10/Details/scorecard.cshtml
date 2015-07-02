@@ -37,7 +37,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
+								<tr  ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
 									<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>
 									<td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
 									<td class="measurable first1" title="{{measurable.Name}}">

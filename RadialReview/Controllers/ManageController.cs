@@ -23,7 +23,7 @@ namespace RadialReview.Controllers
 		public ActionResult Index()
 		{
 			//Main page
-			var page = (string)new Cache().Get(CacheKeys.MANAGE_PAGE) ?? "Members";
+			var page = "Members";//(string)new Cache().Get(CacheKeys.MANAGE_PAGE) ?? "Members";
 			return RedirectToAction(page);
 			/*
 			switch (page)

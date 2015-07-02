@@ -28,8 +28,8 @@ namespace RadialReview.Accessors
 						foreach (var s in scores.GroupBy(x => x.MeasurableId))
 						{
 							var ss = s.First();
-							csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.GetName());
-							csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.GetName());
+							csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.NotNull(x=>x.GetName()));
+							csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.NotNull(x=>x.GetName()));
 							csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal);
 							csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
 						}
@@ -54,14 +54,14 @@ namespace RadialReview.Accessors
 					var csv = new Csv();
 					foreach (var t in todos)
 					{
-						csv.Add("" + t.Id, "Owner", t.AccountableUser.GetName());
+						csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x=>x.GetName()));
 						csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
 						csv.Add("" + t.Id, "Due Date", t.DueDate.ToShortDateString());
 						var time = "";
 						if (t.CompleteTime != null)
 							time = t.CompleteTime.Value.ToShortDateString();
 						csv.Add("" + t.Id, "Completed", time);
-						csv.Add("" + t.Id, "Todo", "" + t.Message);
+						csv.Add("" + t.Id, "To-Do", "" + t.Message);
 						csv.Add("" + t.Id, "Details", "" + t.Details);
 					}
 

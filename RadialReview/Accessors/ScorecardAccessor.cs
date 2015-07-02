@@ -337,6 +337,8 @@ namespace RadialReview.Accessors
 			}
 			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 			hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).updateTextContents(dom, value);
+
+			Audit.L10Log(s, perms.GetCaller(), recurrenceId, "UpdateScoreInMeeting", score.NotNull(x => x.Measurable.NotNull(y => y.Title)) + " updated to " + value);
 			return score;
 		}
 		
@@ -348,7 +350,7 @@ namespace RadialReview.Accessors
 
 					var perms = PermissionsUtility.Create(s, caller);
 					var output = UpdateScoreInMeeting(s, perms, recurrenceId, scoreId, week, measurableId, value, dom);
-					
+
 					tx.Commit();
 					s.Flush();
 					return output;

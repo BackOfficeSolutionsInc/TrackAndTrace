@@ -38,9 +38,10 @@ namespace RadialReview.Controllers
 					if (nowUtc.DayOfWeek == DayOfWeek.Saturday || nowUtc.DayOfWeek == DayOfWeek.Sunday)
 						return "No fire on weekend.";
 
-					var started = s.QueryOver<ScheduledTask>().Where(x => x.TaskName == ApplicationAccessor.DAILY_EMAIL_TODO_TASK && x.Started != null).List().Any();
-					if (!started)
+					var started = s.QueryOver<ScheduledTask>().Where(x => x.TaskName == ApplicationAccessor.DAILY_EMAIL_TODO_TASK && x.Started != null).List().ToList();
+					if (!started.Any())
 						throw new PermissionsException("Task not started");
+
 
 					var tomorrow = nowUtc.Date.AddDays(2).AddTicks(-1);
 					var rangeLow = nowUtc.Date.AddDays(-1);
@@ -104,7 +105,7 @@ namespace RadialReview.Controllers
 								var email = user.GetEmail();
 
 								var builder = new StringBuilder();
-								foreach (var t in userTodos.Value.GroupBy(x => x.ForRecurrenceId)){
+								foreach (var t in userTodos.Value.Where(x=>x.CompleteTime==null || x.DueDate.Date>nowUtc.Date).GroupBy(x => x.ForRecurrenceId)){
 									builder.Append(TodoAccessor.BuildTodoTable(t.ToList(), t.First().ForRecurrence.NotNull(x => x.Name + " To-do")));
 									builder.Append("<br/>");
 								}

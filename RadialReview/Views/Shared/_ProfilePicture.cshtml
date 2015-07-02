@@ -11,7 +11,7 @@
 			case 128: size = ImageSize._128; break;
 		}
 	}
-	var url = M.NotNull(x => x.ImageUrl(true,size)) ?? "/i/placeholder";
+	var url = M.NotNull(x => x.ImageUrl(true,size)) ?? "/i/userplaceholder";
 	
 	var title = M.NotNull(x => x.GetName()) ?? "n/a";
 	var initials = M.NotNull(x => x.GetInitials()) ?? "n/a";

@@ -27,7 +27,7 @@
 				<label class="control-label">Manager pre-@Html.ReviewName().ToLower() due:</label>
 			</div>
 			<div class="col-md-4">
-				<div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
+				<div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">
 					<div class="">
 						@Html.TextBox("PrereviewDate", null, new { @class = "form-control datePicker", id = "PrereviewDate" })
 						<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
@@ -41,7 +41,7 @@
 				<label class="control-label ">@Html.ReviewName()s are due:</label>
 			</div>
 			<div class="col-md-4 alignCenter">
-				<div class="date" data-date="@DateTime.Now.ToString("dd-MM-yyyy")" data-date-format="dd-mm-yyyy">
+				<div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">
 					<div class="">
 						@Html.TextBox("DueDate", null, new { @class = "form-control datePicker", id = "DueDate" })
 						<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
@@ -162,7 +162,7 @@
 		var nowTemp = new Date();
 		var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
 
-		var checkin = $('#PrereviewDate').datepicker({
+		var checkin = $('#PrereviewDate').datepickerX({
 			format: 'mm-dd-yyyy',
 			onRender: function (date) {
 				return date.valueOf() < now.valueOf() ? 'disabled' : '';
@@ -177,7 +177,7 @@
 			$('#DueDate')[0].focus();
 		}).data('datepicker');
 
-		var checkout = $('#DueDate').datepicker({
+		var checkout = $('#DueDate').datepickerX({
 			format: 'mm-dd-yyyy',
 			onRender: function (date) {
 				return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';

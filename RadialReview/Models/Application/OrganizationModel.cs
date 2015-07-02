@@ -99,6 +99,16 @@ namespace RadialReview.Models
 			}
 		}
 
+		/// <summary>
+		/// In minutes
+		/// </summary>
+		/// <returns></returns>
+		public virtual int GetTimezoneOffset()
+		{
+			var zone = Settings.TimeZoneId ?? "Central Standard Time";
+			var ts = TimeZoneInfo.FindSystemTimeZoneById(zone);
+			return (int)ts.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
+		}
 
 		public virtual DateTime ConvertFromUTC(DateTime utcTime){
 			var zone = Settings.TimeZoneId ?? "Central Standard Time";

@@ -53,10 +53,12 @@
 	pointer-events: none;
 	cursor: pointer;  
 	z-index: 10000;
+	display: none;
 }
 .video-overlay:not(.hidden1) {
 	opacity: 1;
 	pointer-events: all;
+	display: inherit;
 }
 
 .video-overlay:not(.fade1) video {

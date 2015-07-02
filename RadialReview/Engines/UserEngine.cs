@@ -23,6 +23,9 @@ namespace RadialReview.Engines
         public UserOrganizationDetails GetUserDetails(UserOrganizationModel caller,long id)
         {
              var foundUser = _UserAccessor.GetUserOrganization(caller, id, false, false);
+
+	        foundUser.SetPersonallyManaging(DeepSubordianteAccessor.ManagesUser(caller, caller.Id, id));
+
             var responsibilities = new List<String>();
 
             var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(caller, id);

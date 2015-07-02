@@ -7,9 +7,10 @@ namespace RadialReview.Models.Enums
 {
 	public enum TaskType
 	{
-		Review = 1,
-		Prereview = 2,
-		Scorecard=3,
-		Profile = 4,
+		Todo = 1,
+		Review = 2,
+		Prereview = 3,
+		Scorecard = 4,
+		Profile = 5,
 	}
 }

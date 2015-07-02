@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Diagnostics;
+using System.Web;
 using FluentNHibernate.Mapping;
 using NHibernate;
 using NHibernate.Linq;
@@ -16,6 +17,7 @@ using System.Linq;
 
 namespace RadialReview.Models
 {
+	[DebuggerDisplay("{User}")]
     public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable/*, IAngularizer<UserOrganizationModel>*/
     {
         public static long ADMIN_ID = -7231398885982031L;
@@ -173,13 +175,16 @@ namespace RadialReview.Models
 		}
         public override string GetName()
         {
-            if (this.User != null)
-                return this.User.Name();
+	        var user = this.NotNull(x => x.User);
 
-            if (TempUser != null)
-                return this.TempUser.Name();
+			if (user != null)
+				return user.Name();
+			var tempUser = this.NotNull(x => x.TempUser);
 
-            return this.EmailAtOrganization;
+			if (tempUser != null)
+				return tempUser.Name();
+
+            return this.Cache.NotNull(x=>x.Name) ?? this.EmailAtOrganization;
         }
 		public virtual string GetFirstName() {
 			if (this.User != null && !String.IsNullOrWhiteSpace(this.User.FirstName))

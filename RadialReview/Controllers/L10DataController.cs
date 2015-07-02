@@ -178,7 +178,7 @@ namespace RadialReview.Controllers
 			using (var zip = new ZipFile())
 			{
 				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id));
-				zip.AddEntry(String.Format("Todo.csv", time, recur.Name), ExportAccessor.TodoList(GetUser(), id));
+				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), ExportAccessor.TodoList(GetUser(), id));
 				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), ExportAccessor.IssuesList(GetUser(), id));
 				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));

@@ -1,0 +1,134 @@
+﻿.vto {
+	border: 1px solid gray;
+	padding: 20px;
+	background-color: white;
+}
+
+	.vto .title {
+		font-weight: bold;
+	}
+
+	.vto .details {
+	}
+
+	.vto .boxed {
+		border: 1px solid black;
+		margin: 1px;
+		height: 100%;
+		overflow: auto;
+		-moz-box-sizing: border-box;
+	}
+
+	.vto .heading .organzation-name {
+		border: 1px solid black;
+		padding: 6px 12px;
+	}
+
+	.vto .heading .icon {
+		height: 64px;
+		width: 64px;
+		display: inline-block;
+		float: left;
+	}
+
+	.vto .heading .organzation-name {
+	}
+
+	.vto .heading .page-title {
+		text-decoration: underline;
+		text-align: center;
+		font-size: 20px;
+		padding: 10px;
+		font-weight: bold;
+	}
+
+	.vto [class*="col-"] {
+		padding-left: 0px;
+		padding-right: 0px;
+	}
+
+	.vto .row {
+		margin-left: 0px;
+		margin-right: 0px;
+	}
+
+	.vto .heading .vto-title {
+		font-size: 32px;
+		text-align: center;
+		font-weight: bold;
+	}
+
+	.vto .core-focus .title .boxed,
+	.vto .core-values .title .boxed,
+	.vto .ten-year-target .title .boxed,
+	.vto .marketing-strategy .title .boxed,
+	.vto .three-year-picture .title.boxed {
+		text-align: center;
+		padding: 5px;
+		background-color: #ddd;
+	}
+
+	.vto .boxed.content {
+		padding: 5px;
+	}
+
+	.vto .core-focus .purpose,
+	.vto .core-focus .niche {
+		padding: 10px 0px;
+	}
+
+	.vto .marketing-strategy .target-market,
+	.vto .marketing-strategy .three-uniques,
+	.vto .marketing-strategy .proven-process,
+	.vto .marketing-strategy .guarantee {
+		padding: 10px 0px;
+	}
+
+	.vto .marketing-strategy .boxed.content {
+		padding: 5px;
+	}
+
+	.vto ol {
+		margin-bottom: 0px;
+	}
+
+	.vto .boxed {
+		min-height: 40px;
+	}
+
+.tm:after {
+	content: "™";
+	position: relative;
+	top: -1px;
+	left: -2px;
+}
+
+@media (min-width: 1200px) {
+	.vto .core-focus .boxed,
+	.vto .core-values .boxed {
+		min-height: 100px;
+		height: calc(21vh - 47px);
+		/* VH% x (topOffset+bottomOffset)  */
+		/*190+33*/
+		padding: 5px;
+	}
+
+	.vto .ten-year-target .boxed {
+		min-height: 50px;
+		height: calc(10vh - 22px);
+	}
+
+	.vto .marketing-strategy .boxed {
+		min-height: 200px;
+		height: calc(47vh - 105px);
+	}
+
+	.vto .three-year-picture .boxed.content {
+		min-height: 405px;
+		height: calc(100vh - 276px);
+	}
+}
+
+#main {
+	padding-bottom: 0px !important;
+}

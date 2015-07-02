@@ -1,0 +1,25 @@
+﻿
+@model RadialReview.Models.Survey.SurveyRespondentModel
+
+<div class="roleRow">
+	@using (Html.BeginCollectionItem("RespondentGroup._Respondents"))
+	{
+		<div class="roww">
+			<div style="width:calc( 100% - 25px );display:inline-block">
+				@Html.HiddenFor(x => x.Id)
+				@Html.HiddenFor(x => x.Locked)
+				@Html.HiddenFor(x => x.CopiedFrom)
+				@Html.HiddenFor(x => x.CreateTime)
+				@Html.HiddenFor(x => x.DeleteTime)
+				<div class="row smallBreak2">
+					<div class="col-sm-12"><b>Email:</b>@Html.TextBoxFor(x => x.Email, new { @class = "form-control roleItem verticalOnly" })</div>
+					@*<div class="col-sm-6"><b>Measurable Admin:</b>@Html.DropDownListFor(x => x.AdminUserId, (IEnumerable<SelectListItem>)ViewBag.AllMembers, new { @class = "form-control roleItem" })</div>*@
+					@*<div class="col-sm-6"></div>*@
+				</div>
+			</div>
+			<span style="padding-left:8px;top: 1px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
+		</div>
+	}
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
+</div>

@@ -15,10 +15,11 @@ namespace RadialReview.Controllers
         {
             switch (task.Type)
             {
-				case RadialReview.Models.Enums.TaskType.Review:    return "/Review/Take/" + task.Id;
-				case RadialReview.Models.Enums.TaskType.Prereview: return "/Prereview/Customize/" + task.Id;
-				case RadialReview.Models.Enums.TaskType.Scorecard: return "/Scorecard/Edit/";
-                case RadialReview.Models.Enums.TaskType.Profile:   return "/Account/Manage";
+				case RadialReview.Models.Enums.TaskType.Review:		return "/Review/Take/" + task.Id;
+				case RadialReview.Models.Enums.TaskType.Prereview:	return "/Prereview/Customize/" + task.Id;
+				case RadialReview.Models.Enums.TaskType.Scorecard:	return "/Scorecard/Edit/";
+				case RadialReview.Models.Enums.TaskType.Profile:	return "/Account/Manage";
+				case RadialReview.Models.Enums.TaskType.Todo:		return "/Todo/List?todo="+task.Id;
                 default: throw new ArgumentOutOfRangeException("TaskType is unknown (" + task.Type + ")");
             }
         }

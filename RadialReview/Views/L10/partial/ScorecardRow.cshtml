@@ -1,17 +1,24 @@
 ﻿@model RadialReview.Models.ViewModels.ScorecardRowVM
+@{
+	var inlineEdit = "inlineEdit";
+	if (Model.MeetingMeasurable.Measurable._Editable == false){
+		inlineEdit = "";
+	}
+}	   
+
 <tr data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-meetingmeasurable="@Model.MeetingMeasurable.Id">
 	<td><span class="icon fontastic-icon-three-bars icon-rotate handle"></span></td>
 	<td class="who first1 alignRight">
-		@Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetName())
+		@(Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetName())??"Auto-generated")
 	</td>
 	<td class="who first1 alignLeft">
-		<span class="newLine gray">/@Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName())</span>
+		<span class="newLine gray">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName())??"Auto-generated")</span>
 	</td>
-	<td class="measurable first1" title="@Model.MeetingMeasurable.Measurable.Title"><span class="inlineEdit" data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span></td>
-	<td class="target direction" data-measurable="@Model.MeetingMeasurable.Id"><span class="inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" data-title="Select target direction" data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
+	<td class="measurable first1" title="@Model.MeetingMeasurable.Measurable.Title"><span class="@inlineEdit" data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span></td>
+	<td class="target direction" data-measurable="@Model.MeetingMeasurable.Id"><span class="@inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" data-title="Select goal direction" data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
 	<td class="target value" data-measurable="@Model.MeetingMeasurable.Id">
-		<span class="inlineEdit" data-type="number" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.#####")</span>
-		<span class="inlineEdit gray" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.UnitType.ToTypeString()</span>
+		<span class="@inlineEdit" data-type="number" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.#####")</span>
+		<span class="@inlineEdit gray unit" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.UnitType.ToTypeString()</span>
 	</td>
 	<td class="" data-measurable="@Model.MeetingMeasurable.Measurable.Id"><span class="inlinesparkline"></span></td>
 
@@ -23,7 +30,9 @@
 			var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == Model.MeetingMeasurable.Measurable.Id);
 
 			<td class="score @(r.IsCurrentWeek ? "current" : "")">
-				<input data-goal="@(Model.MeetingMeasurable.Measurable.Goal)"
+				<input 
+						@(inlineEdit=="" ?"disabled":"")
+					   data-goal="@(Model.MeetingMeasurable.Measurable.Goal)"
 					   data-goal-dir="@(Model.MeetingMeasurable.Measurable.GoalDirection)"
 					   data-row="@(ViewBag.Row)"
 					   data-col="@(col)"

@@ -14,7 +14,10 @@ namespace RadialReview.Models.Angular.Scorecard
 		{
 			Week = DateTime.SpecifyKind(score.ForWeek,DateTimeKind.Utc);
 			ForWeek = TimingUtility.GetWeekSinceEpoch(Week);
-			
+			if (Id == 0)
+				Id = score.MeasurableId - ForWeek;
+
+
 			Measurable = new AngularMeasurable(score.Measurable);
 			Measured = score.Measured;
 			DateEntered = score.DateEntered;

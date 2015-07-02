@@ -1,5 +1,6 @@
 ﻿using NHibernate.Engine;
 using RadialReview.Accessors;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
@@ -151,39 +152,47 @@ namespace RadialReview.Engines
             return model;
         }
 
-        public async Task CreateReviewFromPrereview(NexusModel nexus)
+        public async Task<int> CreateReviewFromPrereview(HttpContext context,NexusModel nexus)
         {
-            await Task.Run(async () =>
-            {
-                var now = DateTime.UtcNow;
-                var admin = UserOrganizationModel.ADMIN;
-                var reviewContainerId = nexus.GetArgs()[0].ToLong();
-                
-                //var prereview = _PrereviewAccessor.GetPrereview(admin, prereviewId);
-                var reviewContainer = _ReviewAccessor.GetReviewContainer(admin, reviewContainerId, false, false);
-                admin.Organization = new OrganizationModel() { Id = reviewContainer.ForOrganizationId };
+	        try{
+		        return await Task.Run(async () =>{
+			        var now = DateTime.UtcNow;
+			        var admin = UserOrganizationModel.ADMIN;
+			        var reviewContainerId = nexus.GetArgs()[0].ToLong();
+
+			        //var prereview = _PrereviewAccessor.GetPrereview(admin, prereviewId);
+			        var reviewContainer = _ReviewAccessor.GetReviewContainer(admin, reviewContainerId, false, false);
+			        admin.Organization = new OrganizationModel(){Id = reviewContainer.ForOrganizationId};
 
 
-                var defaultCustomize = GetCustomizeModel(admin, reviewContainer.ForTeamId,true).Selectors.Where(x=>x.UniqueId==DEFAULT).SelectMany(x=>x.Pairs).ToList();
+			        var defaultCustomize = GetCustomizeModel(admin, reviewContainer.ForTeamId, true).Selectors.Where(x => x.UniqueId == DEFAULT).SelectMany(x => x.Pairs).ToList();
 
-                var whoReviewsWho = _PrereviewAccessor.GetAllMatchesForReview(admin, reviewContainerId, defaultCustomize);
-                var organization = _OrganizationAccessor.GetOrganization(admin, reviewContainer.ForOrganizationId);
-                var unsentEmail = new List<MailModel>();
-                using (var s = HibernateSession.GetCurrentSession())
-                {
-                    using (var tx = s.BeginTransaction())
-                    {
-                        var perm = PermissionsUtility.Create(s, admin);
-                        unsentEmail=_ReviewAccessor.CreateReviewFromPrereview(s.ToDataInteraction(true), perm, admin, reviewContainer, organization.GetName(), whoReviewsWho);
-                        _PrereviewAccessor.UnsafeExecuteAllPrereviews(s, reviewContainerId, now);
-                        //Keep these:
-                        tx.Commit();
-                        s.Flush();
-                    }
-                }
+			        var whoReviewsWho = _PrereviewAccessor.GetAllMatchesForReview(admin, reviewContainerId, defaultCustomize);
+			        var organization = _OrganizationAccessor.GetOrganization(admin, reviewContainer.ForOrganizationId);
+			        var unsentEmail = new List<MailModel>();
 
-                await Emailer.SendEmails(unsentEmail);
-            });
+
+
+			        using (var s = HibernateSession.GetCurrentSession()){
+				        using (var tx = s.BeginTransaction()){
+							var datainteraction = ReviewAccessor.GetReviewDataInteraction(s,reviewContainer.ForOrganizationId);
+
+					        var perm = PermissionsUtility.Create(s, admin);
+							unsentEmail = _ReviewAccessor.CreateReviewFromPrereview(context, datainteraction, perm, admin, reviewContainer, organization.GetName(), whoReviewsWho);
+					        _PrereviewAccessor.UnsafeExecuteAllPrereviews(s, reviewContainerId, now);
+					       //Keep these:
+					        tx.Commit();
+					        s.Flush();
+				        }
+			        }
+
+			        var result = await Emailer.SendEmails(unsentEmail);
+			        return result.Sent;
+		        });
+	        }
+	        catch (Exception e){
+		        throw;// new PermissionsException(e.Message);
+	        }
         }
     }
 }

@@ -45,7 +45,7 @@ namespace RadialReview.Models.Angular.Meeting
 	}
 	public class AngularAgendaItem_Todos : AngularAgendaItem
 	{
-		public AngularAgendaItem_Todos(long id,  string name = "Todo List") : base(id, name, "todo") { }
+		public AngularAgendaItem_Todos(long id,  string name = "To-Do List") : base(id, name, "todo") { }
 
 	}
 	public class AngularAgendaItem_IDS : AngularAgendaItem

@@ -1,3 +1,6 @@
+using System.Net.Http;
+using System.Web;
+using log4net.Repository.Hierarchy;
 using Microsoft.AspNet.SignalR;
 using NHibernate;
 using RadialReview.Exceptions;
@@ -24,6 +27,7 @@ namespace RadialReview.Accessors {
 		
         #region Create
         public List<MailModel> CreateReviewFromPrereview(
+			HttpContext context,
             DataInteraction dataInteraction, PermissionsUtility perms,
             UserOrganizationModel caller, ReviewsModel reviewContainer,
             string organizationName, List<Tuple<long, long>> whoReviewsWho,
@@ -43,7 +47,7 @@ namespace RadialReview.Accessors {
 	            var allAskables=GetAskables(caller, perms, dataInteraction, revieweeIds, reviewerId,reviewContainer.PeriodId,range);
 				
 				if (allAskables.Any()) {
-                    QuestionAccessor.GenerateReviewForUser(dataInteraction, perms, caller, user, reviewContainer, allAskables);
+					QuestionAccessor.GenerateReviewForUser(context,dataInteraction, perms, caller, user, reviewContainer, allAskables);
                     if (hub != null) {
                         hub.Clients.User(userId).status("Added " + count + " user".Pluralize(count) + " out of " + total + ".");
                     }
@@ -61,9 +65,11 @@ namespace RadialReview.Accessors {
                             MailModel.To(user.GetEmail())
                             .Subject(EmailStrings.NewReview_Subject, organizationName)
 							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToShortDateString(), Config.BaseUrl(org) + "n/" + guid, Config.BaseUrl(org) + "n/" + guid, productName, reviewContainer.ReviewName)
-                        );
+						);
+					log.Info("CreateReview user=" + reviewerId + " for review=" + reviewContainer.Id);
                 }
                 else {
+					log.Info("NO ASKABLES, Skipping CreateReview user=" + reviewerId + " review=" + reviewContainer.Id);
                 }
             }
 
@@ -71,11 +77,11 @@ namespace RadialReview.Accessors {
 		        try{
 			        var user = dataInteraction.Get<UserOrganizationModel>(revieweeId);
 			        if (user != null){
-				        QuestionAccessor.GenerateReviewForUser(dataInteraction, perms, caller, user, reviewContainer, new List<AskableAbout>());
+						QuestionAccessor.GenerateReviewForUser(context,dataInteraction, perms, caller, user, reviewContainer, new List<AskableAbout>());
 			        }
 		        }
 		        catch (Exception e){
-
+					log.Error("Error in creating review from prereview",e);
 		        }
 	        }
 
@@ -84,6 +90,7 @@ namespace RadialReview.Accessors {
 
 
 		public async Task<ResultObject> CreateReviewFromCustom(
+			HttpContext context,
 			UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, bool anonFeedback,
 			List<Tuple<long, long>> whoReviewsWho, long periodId, long nextPeriodId)
 		{
@@ -153,7 +160,7 @@ namespace RadialReview.Accessors {
 
 					////////////////////////////////////////////
 					//HEAVY LIFTING HERE:
-	                var clientReviews = CreateReviewFromPrereview(dataInteraction, perms, caller, reviewContainer, orgName, whoReviewsWho, hub, userId, usersToReview.Count());
+					var clientReviews = CreateReviewFromPrereview(context,dataInteraction, perms, caller, reviewContainer, orgName, whoReviewsWho, hub, userId, usersToReview.Count());
 					////////////////////////////////////////////
                     unsentEmails.AddRange(clientReviews);
 
@@ -226,12 +233,15 @@ namespace RadialReview.Accessors {
 
 	            reviewContainer.CreatedById = caller.Id;
                 reviewContainer.ForOrganizationId = caller.Organization.Id;
+	            reviewContainer.ForOrganization = caller.Organization;
+
                 s.SaveOrUpdate(reviewContainer);
                 tx.Commit();
             }
         }
 
         private static List<MailModel> AddUserToReview(
+			HttpContext context,
             UserOrganizationModel caller,
             bool updateOthers, DateTime dueDate,
             ReviewParameters parameters, DataInteraction dataInteraction, ReviewsModel reviewContainer, PermissionsUtility perms,
@@ -247,7 +257,7 @@ namespace RadialReview.Accessors {
 
                 //Create the Review
                 if (askables.Askables.Any()) {
-                    var review = QuestionAccessor.GenerateReviewForUser(dataInteraction, perms, caller, beingReviewedUser, reviewContainer, askables.Askables);
+					var review = QuestionAccessor.GenerateReviewForUser(context,dataInteraction, perms, caller, beingReviewedUser, reviewContainer, askables.Askables);
                     //Generate Review Nexus
                     var guid = Guid.NewGuid();
                     var nexus = new NexusModel(guid) {

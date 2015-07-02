@@ -117,7 +117,13 @@ namespace RadialReview.Accessors
 				{
 					var found = s.Get<ReviewsModel>(reviewContainerId);
 					PermissionsUtility.Create(s, caller).ViewReviews(reviewContainerId, false);
-					return found.Period;
+					if (found.Period != null){
+						var f = s.Get<PeriodModel>(found.Period.Id);
+						var a = f.Id;
+						var b = f.Name;
+						return f;
+					}
+					return null;
 				}
 			}
 		}

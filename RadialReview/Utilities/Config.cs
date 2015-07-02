@@ -44,9 +44,10 @@ namespace RadialReview.Utilities
 
 		public static string ProductName(OrganizationModel organization = null)
 		{
-			if (organization != null)
+			var org = organization.NotNull(x => x);
+			if (org != null)
 			{
-				switch (organization.Settings.Branding)
+				switch (org.Settings.Branding)
 				{
 					case BrandingType.RadialReview:
 						return GetAppSetting("ProductName_Review", "Radial Review");
@@ -187,6 +188,17 @@ namespace RadialReview.Utilities
 						throw new ArgumentOutOfRangeException();
 				}
 				return new BCXAPI.Service(key, secret, redirect, GetUserAgent());
+			}
+		}
+
+		public static bool SendEmails()
+		{
+			switch (GetEnv())
+			{
+				case Env.local_mysql:	return false;
+				case Env.local_sqlite:	return false;
+				case Env.production:	return true;
+				default:				throw new ArgumentOutOfRangeException();
 			}
 		}
 	}

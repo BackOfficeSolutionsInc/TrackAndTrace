@@ -17,8 +17,8 @@ namespace RadialReview.Models.Angular.Scorecard
 	{
 		public AngularMeasurable(MeasurableModel measurable):base(measurable.Id)
 		{
-			Owner = new AngularUser(measurable.AccountableUser);
-			Admin = new AngularUser(measurable.AdminUser);
+			Owner = AngularUser.CreateUser(measurable.AccountableUser);
+			Admin = AngularUser.CreateUser(measurable.AdminUser);
 			Name = measurable.Title;
 			Target = measurable.Goal;
 			Direction = measurable.GoalDirection;

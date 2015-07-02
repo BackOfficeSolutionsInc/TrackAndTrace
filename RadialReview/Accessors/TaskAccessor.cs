@@ -6,6 +6,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Prereview;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Tasks;
+using RadialReview.Models.Todo;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
@@ -117,15 +118,21 @@ namespace RadialReview.Accessors
 					log.Debug("Scheduled task was executed. " + task.Id);
 					task.Executed = DateTime.UtcNow;
 					if (task.NextSchedule != null){
-						newTasks.Add(new ScheduledTask()
-						{
+						var nt = new ScheduledTask(){
 							FirstFire = (task.FirstFire ?? task.Fire).Add(task.NextSchedule.Value),
-							Fire = (task.FirstFire??task.Fire).Add(task.NextSchedule.Value),
+							Fire = (task.FirstFire ?? task.Fire).Add(task.NextSchedule.Value),
 							NextSchedule = task.NextSchedule,
 							Url = task.Url,
 							TaskName = task.TaskName,
 							MaxException = task.MaxException,
-						});
+						};
+
+						while (nt.Fire < DateTime.UtcNow){
+							nt.Fire += task.NextSchedule.Value;
+							nt.FirstFire += task.NextSchedule.Value;
+						}
+
+						newTasks.Add(nt);
 					}
 				}
 				catch (Exception e)
@@ -165,8 +172,9 @@ namespace RadialReview.Accessors
 				var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
 				var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
 				var nowPlus = now.Add(TimeSpan.FromDays(1));
+				var todoCount = s.QueryOver<TodoModel>().Where(x => x.AccountableUserId == forUserId && x.DueDate < nowPlus && x.CompleteTime==null && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
 				//var scorecardCount = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == forUserId && x.DateDue < nowPlus && x.DateEntered == null).Select(Projections.RowCount()).FutureValue<int>();
-				var total = reviewCount.Value + prereviewCount.Value /*+ scorecardCount.Value */+ profileImage;
+				var total = reviewCount.Value + prereviewCount.Value /*+ scorecardCount.Value */+ profileImage + todoCount.Value;
 				return total;
 			});
 		}
@@ -220,6 +228,20 @@ namespace RadialReview.Accessors
 						Name = reviewContainers[x.ReviewContainerId]
 					});
 					tasks.AddRange(prereviewTasks);
+					var todos = TodoAccessor.GetTodosForUser(caller, caller.Id).Where(x=>
+						x.DeleteTime==null && 
+						(x.CompleteTime==null && x.DueDate < DateTime.UtcNow.AddDays(7)) //|| 
+						//(x.DueDate > DateTime.UtcNow.AddDays(-1) && x.DueDate< DateTime.UtcNow.AddDays(1))
+					).ToList();
+
+					var todoTasks = todos.Select(x => new TaskModel()
+					{
+						Id = x.Id,
+						Type = TaskType.Todo,
+						DueDate = x.DueDate,
+						Name = x.Message,
+					});
+					tasks.AddRange(todoTasks);
 
 					//Scorecard
 					/*var scores = s.QueryOver<ScoreModel>()

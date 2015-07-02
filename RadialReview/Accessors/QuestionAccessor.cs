@@ -102,7 +102,7 @@ namespace RadialReview.Accessors
             }
         }*/
 
-        public static ReviewModel GenerateReviewForUser(DataInteraction dataInteraction, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
+        public static ReviewModel GenerateReviewForUser(HttpContext context ,DataInteraction dataInteraction, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
         {
             //var questions = GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
             //var responsibilities =
@@ -118,8 +118,11 @@ namespace RadialReview.Accessors
                 Name = reviewContainer.ReviewName,
 				PeriodId = reviewContainer.PeriodId,
             };
-
-			new Cache().InvalidateForUser(forUser, CacheKeys.UNSTARTED_TASKS);
+			if (context!=null)
+				new Cache(new HttpContextWrapper(context)).InvalidateForUser(forUser, CacheKeys.UNSTARTED_TASKS);
+			else{
+				log.Info("Context was null, could not invalidate unstarted tasks");
+			}
 
             dataInteraction.Save(reviewModel);
             reviewModel.ClientReview.ReviewId = reviewModel.Id;

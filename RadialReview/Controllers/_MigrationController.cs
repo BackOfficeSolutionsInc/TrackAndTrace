@@ -607,5 +607,64 @@ namespace RadialReview.Controllers
 			}
 			return "" + f;
 		}
+
+
+		[Access(AccessLevel.Radial)]
+		public string M6_22_2015(long reviewId)
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+					var review=s.Get<ReviewsModel>(reviewId);
+					if (review == null)
+						return "Review not exist";
+					if (review.PeriodId == null)
+						return "Period is null";
+
+
+					var cr = s.QueryOver<RockModel>().Where(x=>x.DeleteTime==null && x.PeriodId==review.PeriodId).List().ToList();
+					var ar = s.QueryOver<RockAnswer>().Where(x=>x.DeleteTime==null && x.ForReviewContainerId==reviewId).List().ToList();
+					var rrs = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null && x.ForReviewContainer.Id == reviewId).List().ToList();
+					foreach (var o in cr)
+					{
+						if (!ar.Any(x => x.Askable.Id == o.Id)){
+							var rr = rrs.FirstOrDefault(x => x.ForUserId == o.ForUserId);
+
+							if (rr==null)
+								continue;
+							var rid = rr.Id;
+
+							var rock = new RockAnswer()
+							{
+								Anonymous = review.AnonymousByDefault,
+								Complete = false,
+								Finished = Tristate.Indeterminate,
+								ManagerOverride = RockState.Indeterminate,
+								Completion = RockState.Indeterminate,
+								Reason = null,
+								Askable = o,
+								Required = true,
+								ForReviewId = rid,
+								ByUserId = o.ForUserId,
+								AboutUserId = o.ForUserId,
+								AboutUser = s.Load<ResponsibilityGroupModel>(o.ForUserId),
+								ForReviewContainerId = review.Id,
+								AboutType = AboutType.Self
+							};
+							s.Save(rock);
+							f++;
+						}
+
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "" + f;
+		}
+
 	}
 }

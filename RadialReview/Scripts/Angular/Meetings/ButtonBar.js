@@ -22,7 +22,7 @@
 				" data-method=\"createtodo\""+
 				" data-meeting=\"{{meeting}}\""+
 				" data-recurrence=\"{{recurrence}}\">"+
-					"<span class=\"glyphicon glyphicon-unchecked\"><\/span> New Todo"+
+					"<span class=\"glyphicon glyphicon-unchecked\"><\/span> New To-Do"+
 				"<\/div>"+
 			"<\/div>"+
 			""+

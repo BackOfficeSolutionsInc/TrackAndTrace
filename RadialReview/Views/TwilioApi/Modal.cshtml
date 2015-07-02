@@ -1,0 +1,9 @@
+﻿@model RadialReview.Controllers.TwilioApiController.PhoneVM
+<div class="form">
+	<div class="">
+		<div class="row">
+			<div class="col-xs-4">Texting this number:</div><div class="col-xs-8">@Html.DropDownListFor(x=>x.SelectedAction,Model.PossibleActions)</div>
+			<div class="col-xs-4">Will:</div><div class="col-xs-8">@Html.DropDownListFor(x=>x.SelectedAction,Model.PossibleActions)</div>
+		</div>
+	</div>
+</div>

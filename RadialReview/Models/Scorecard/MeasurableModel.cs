@@ -26,12 +26,15 @@ namespace RadialReview.Models.Scorecard
 		public virtual TimeSpan DueTime { get; set; }
 
 		public virtual UnitType UnitType { get; set; }
+		public virtual bool _Editable { get; set; }
 
 
-		public MeasurableModel(){
+		public MeasurableModel()
+		{
+			_Editable = true;
 		}
 
-		public MeasurableModel(OrganizationModel forOrganization)
+		public MeasurableModel(OrganizationModel forOrganization):this()
 		{
 			var now = DateTime.UtcNow;
 			CreateTime = now;
@@ -76,5 +79,6 @@ namespace RadialReview.Models.Scorecard
 		public virtual string ToSymbolString(){
 			return GoalDirection.ToSymbol()+" "+Goal.ToString("0.#####");
 		}
+
 	}
 }

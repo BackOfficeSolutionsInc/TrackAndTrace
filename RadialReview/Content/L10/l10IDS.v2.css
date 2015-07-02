@@ -264,6 +264,9 @@ body.dragging, body.dragging * {
 	padding-left: 5px;
 }
 
+.issueDetails .number {
+    display: none;
+}
 
 .issueDetails h4 {
 	margin-top: 0px;
@@ -470,4 +473,5 @@ body.dragging, body.dragging * {
 
 .ids .issueDetails textarea {
 	max-height: 600px;
+	white-space: pre-line;
 }

@@ -9,7 +9,7 @@ namespace RadialReview.Models.Angular.Meeting
 		public AngularRock(RockModel rock) : base(rock.Id)
 		{
 			Name = rock.Rock;
-			Owner = new AngularUser(rock.AccountableUser);
+			Owner = AngularUser.CreateUser(rock.AccountableUser);
 		}
 		public string Name { get; set; }
 		public AngularUser Owner { get; set; }

@@ -9,6 +9,11 @@ namespace RadialReview.Models.Todo
 {
 	public class TodoFromIssueVM : TodoVM
 	{
+		[Obsolete("Use other constructor",false)]
+		public TodoFromIssueVM()
+		{
+			
+		}
 		public TodoFromIssueVM(long accountableUserId) : base(accountableUserId)
 		{
 		}

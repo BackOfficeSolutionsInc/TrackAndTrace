@@ -9,6 +9,10 @@ namespace RadialReview.Models.Issues
 {
 	public class ScoreCardTodoVM : TodoVM
 	{
+		[Obsolete("Use other constructor",false)]
+		public ScoreCardTodoVM(){
+			
+		}
 		public ScoreCardTodoVM(long accountableUserId) : base(accountableUserId)
 		{
 		}

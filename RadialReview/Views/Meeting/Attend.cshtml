@@ -19,7 +19,8 @@
 	<script>
 		angular.module('L10App')
 			.value('meetingId', @Model)
-			.value('meetingDataUrlBase', '/Meeting/Data/');
+			.value('meetingDataUrlBase', '/Meeting/Data/')
+			.value("meetingCallback",false);
 	</script>
 }
 <div ng-app="L10App">

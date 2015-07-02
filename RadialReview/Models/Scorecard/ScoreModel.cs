@@ -23,8 +23,13 @@ namespace RadialReview.Models.Scorecard
 
 		public virtual DateTime? DeleteTime { get; set; }
 
+
+		public virtual bool _Editable { get; set; }
+
+
 		public ScoreModel()
 		{
+			_Editable = true;
 		}
 
 		public virtual string GetIssueMessage()

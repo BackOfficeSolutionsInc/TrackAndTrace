@@ -23,8 +23,15 @@ namespace RadialReview
 			{
 				diff += 7;
 			}
+			if (dt == DateTime.MinValue)
+				return dt;
 
-			return dt.AddDays(-1 * diff).Date;
+			try{
+				return dt.AddDays(-1*diff).Date;
+			}
+			catch (ArgumentOutOfRangeException){
+				return dt;
+			}
 		}
 
 	    public static DateTime EndOfWeek(this DateTime dt, DayOfWeek startOfWeek)

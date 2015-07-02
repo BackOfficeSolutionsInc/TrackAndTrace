@@ -22,7 +22,7 @@ namespace RadialReview.Models.Angular.Issues
 			)?? new List<AngularIssue>();
 			Complete = recurrenceIssue.CloseTime != null;
 			if (recurrenceIssue.Owner!=null)
-				Owner = new AngularUser(recurrenceIssue.Owner);
+				Owner = AngularUser.CreateUser(recurrenceIssue.Owner);
 		}
 		public AngularIssue()
 		{

@@ -75,6 +75,7 @@ namespace RadialReview.Accessors
 					var updates = new AngularRecurrence(recurrenceId);
 					updates.Issues = new List<AngularIssue>() { new AngularIssue(recur) };
 					meetingHub.update(updates);
+					Audit.L10Log(s, caller, recurrenceId, "CreateIssue", issue.NotNull(x => x.Message));
 				}
 			}
 		}
@@ -165,6 +166,8 @@ namespace RadialReview.Accessors
 					var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
 
 					meetingHub.appendIssue(".issues-list", viewModel);
+					var issue = s.Get<IssueModel>(parent.Issue.Id);
+					Audit.L10Log(s, caller, parent.Recurrence.Id, "CopyIssue", issue.NotNull(x => x.Message) +" copied into "+ childRecur.NotNull(x=>x.Name));
 					
 				}
 			}

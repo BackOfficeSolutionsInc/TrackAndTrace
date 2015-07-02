@@ -38,8 +38,8 @@ namespace RadialReview.Controllers
 			{
 				//IssueId = i.Issue.Id,
 				RecurrenceId = recurrence,
-				Message = todoModel.GetIssueMessage(),
-				Details = todoModel.GetIssueDetails(),
+				Message = todoModel.NotNull(x=>x.GetIssueMessage()),
+				Details = todoModel.NotNull(x=>x.GetIssueDetails()),
 				ByUserId = GetUser().Id,
 				MeetingId = meeting,
 				ForId = todo,
@@ -178,13 +178,13 @@ namespace RadialReview.Controllers
 			var model = new ScoreCardIssueVM()
 			{
 				ByUserId = GetUser().Id,
-				Message = s.GetIssueMessage(),
-				Details = s.GetIssueDetails(),
+				Message = s.NotNull(x=>x.GetIssueMessage()),
+				Details = s.NotNull(x=>x.GetIssueDetails()),
 				MeasurableId = measurable,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
 				PossibleUsers = possible,
-				OwnerId = s.AccountableUserId
+				OwnerId = s.NotNull(x=>x.AccountableUserId)
 			};
 			return PartialView("ScorecardIssueModal", model);
 		}
@@ -229,8 +229,8 @@ namespace RadialReview.Controllers
 			var model = new RockIssueVM()
 			{
 				ByUserId = GetUser().Id,
-				Message = s.GetIssueMessage(),
-				Details = s.GetIssueDetails(),
+				Message = s.NotNull(x=>x.GetIssueMessage()),
+				Details = s.NotNull(x=>x.GetIssueDetails()),
 				MeetingId = meeting,
 				RockId = rock,
 				RecurrenceId =  s.ForRecurrence.Id,

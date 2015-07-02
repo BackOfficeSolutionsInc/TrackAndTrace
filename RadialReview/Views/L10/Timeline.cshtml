@@ -1,0 +1,79 @@
+﻿@model List<RadialReview.Controllers.L10Controller.TimelineItem>
+@{
+	ViewBag.Title = "Timeline";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	var first = true;
+}
+<div class="clearfix">
+	<h2 style="float:left">Timeline</h2>
+	<h2 style="min-width: 200px;"><input class="form-control" type="text" id="input-filter" style="width: 250px;float:right;" placeholder="Search..." /></h2>
+</div>
+
+@foreach (var meeting in Model.OrderByDescending(x => x.Meeting.StartTime))
+{
+	<div class="panel-group smallBreak2" id="accordion" role="tablist" aria-multiselectable="true">
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="heading_@(meeting.Meeting.Id)">
+				<h4 class="panel-title">
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse_@(meeting.Meeting.Id)" aria-expanded="true" aria-controls="collapse_@(meeting.Meeting.Id)">
+						<div class="clearfix">
+							<span class="pull-left">
+								<b>Meeting:</b>
+								<span style="width:100px;text-align: center">@meeting.Meeting.CreateTime.ToShortDateString()</span>
+							</span>
+							<span class="pull-right">
+								<span style="width:75px;text-align: right">@meeting.Meeting.CreateTime.ToShortTimeString()</span>
+								<span> - </span>
+								<span style="width:75px">@(meeting.Meeting.CompleteTime.NotNull(x => x.Value.ToShortTimeString()) ?? "On-going")</span>
+							</span>
+							&nbsp;
+						</div>
+					</a>
+				</h4>
+			</div>
+			<div id="collapse_@(meeting.Meeting.Id)" class="panel-collapse collapse @(first?"in":"")" role="tabpanel" aria-labelledby="headingOne">
+				<div class="panel-body">
+					@if (meeting.Audits.Any())
+					{
+						<table class="fullWidth table table-condensed tablefilter">
+							<thead>
+								<tr>
+									<th style="width: 1px">Date</th>
+									<th style="width: 1px">User</th>
+									<th style="width: 1px">Action</th>
+									<th>Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var f in meeting.Audits)
+								{
+									<tr>
+										<td style="white-space: nowrap">@f.CreateTime.ToShortDateString() @f.CreateTime.ToShortTimeString()</td>
+										<td style="white-space: nowrap">@f.UserOrganization.NotNull(x => x.GetName())</td>
+										<td>@f.Action</td>
+										<td style="white-space: pre-line">@f.Notes</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					}
+					else
+					{
+						<div class="gray">No timeline information.</div>
+					}
+					@{
+						first = false;
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+@using (Html.BeginScripts())
+{
+	<script src="/Scripts/jquery/jquery.filtertable.min.js"></script>
+	<script>
+		$(".tablefilter").filterTable({ inputSelector: '#input-filter' });
+	</script>
+}

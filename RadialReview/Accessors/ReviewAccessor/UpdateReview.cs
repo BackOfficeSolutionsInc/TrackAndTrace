@@ -1,3 +1,4 @@
+using System.Web;
 using Amazon.IdentityManagement.Model;
 using Antlr.Runtime.Misc;
 using Microsoft.AspNet.SignalR;
@@ -230,6 +231,9 @@ namespace RadialReview.Accessors
 			var queryProvider = GetReviewQueryProvider(s, orgId, reviewContainerId);
 			queryProvider.AddData(reviewContainer.AsList());
 
+			queryProvider.AddData(s.Get<ResponsibilityGroupModel>(userId).AsList());
+
+
 			var dataInteration = new DataInteraction(queryProvider, s.ToUpdateProvider());
 
 			var team = dataInteration.Get<OrganizationTeamModel>(reviewContainer.ForTeamId);
@@ -318,7 +322,7 @@ namespace RadialReview.Accessors
 		}
 
 		#region Update
-		public async Task<ResultObject> AddUserToReviewContainer(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId, bool sendEmails)
+		public async Task<ResultObject> AddUserToReviewContainer(HttpContext context,UserOrganizationModel caller, long reviewContainerId, long userOrganizationId, bool sendEmails)
 		{
 			var unsent = new List<MailModel>();
 			String userBeingReviewed = null;
@@ -393,7 +397,7 @@ namespace RadialReview.Accessors
 						var range = new DateRange(now, now);
 
 						//TODO Populate a query provider structure here..
-						var toEmail = AddUserToReview(caller, true, dueDate, reviewContainer.GetParameters(), new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team, ref exceptions, beingReviewedUser, accessibleUsers, range);
+						var toEmail = AddUserToReview(context,caller, true, dueDate, reviewContainer.GetParameters(), new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team, ref exceptions, beingReviewedUser, accessibleUsers, range);
 						unsent.AddRange(toEmail);
 						userBeingReviewed = beingReviewedUser.GetName();
 						tx.Commit();

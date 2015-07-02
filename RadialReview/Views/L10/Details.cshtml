@@ -48,7 +48,7 @@
 	<style>
 		input.due-date {
 			border: none;
-			width: 75px;
+			width: 80px;
 			text-decoration: underline;
 			color: #767F99;
 			text-align: center;
@@ -71,7 +71,8 @@
 		angular.module('L10App')
 			.value('meetingId', @Model)
 			.value('date-range',"today")
-			.value('meetingDataUrlBase', '/L10/DetailsData/');
+			.value('meetingDataUrlBase', '/L10/DetailsData/')
+			.value("meetingCallback",false);
 		$('#pages a').click(function(e) {
 			e.preventDefault();
 			$(this).tab('show');
@@ -107,11 +108,11 @@
 				if (!$(this).attr("init")) {
 					var now = new Date();
 					var todo = $(this).data("todo");
-					$(this).datepicker({
+					$(this).datepickerX({
 						format: 'mm/dd/yyyy',
 						todayBtn:true
 					}).on('changeDate', function (ev) {
-						var data = { date: ev.date.valueOf() };
+						var data = { date: (ev.date- ev.date.getTimezoneOffset() * 60000).valueOf() };
 						$.ajax({
 							method: "POST",
 							data: data,
@@ -125,7 +126,7 @@
 					$(this).blur();
 					var that = this;
 					setTimeout(function () {
-						$(that).datepicker("show");
+						$(that).datepickerX("show");
 					}, 10);
 				}
 			});

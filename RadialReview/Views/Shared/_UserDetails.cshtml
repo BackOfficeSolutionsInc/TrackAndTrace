@@ -24,44 +24,23 @@
 			{
 				<hr/>
 				<div class="alignCenter">
-					<a class="btn btn-link alignCenter" href="/Todo/List/@Model.User.Id">View Todos</a>
+					<a class="btn btn-link alignCenter" href="/Todo/List/@Model.User.Id">View To-Dos</a>
 				</div>
 				<div class="smallBreak2"></div>
 			}
 		</div>
 		<div class="col-sm-9">
 			<div class="panel panel-default">
-				@if (edit)
-				{
+				@if (edit){
 					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/Modal/" + Model.User.Id, "/JobDescription/Modal?refresh=true&silent=true")">Edit</a>
-				}
-				<div class="panel-heading">
-					<h3 class="panel-title">Job Description</h3>
-				</div>
-				<div class="panel-body">
-					@if (String.IsNullOrWhiteSpace(Model.User.JobDescription))
-					{
-						<span class="gray">
-							None entered.
-							@if (edit)
-							{
+				}<div class="panel-heading"><h3 class="panel-title">Job Description</h3></div>
+				<div class="panel-body" style="white-space: pre-line;">@if (String.IsNullOrWhiteSpace(Model.User.JobDescription)){
+						<span class="gray">None entered.@if (edit){
 								@:Click 'Edit' to add a job description.
 							}
 						</span>
-					}
-					else
-					{
-						if (Model.User.JobDescriptionFromTemplateId.HasValue)
-						{
-							<span class="icon fontastic-icon-link-2 template-link" title="This job description was created by a template."></span>
-						}
-						@Model.User.JobDescription
-					}
-				</div>
+					}else{if (Model.User.JobDescriptionFromTemplateId.HasValue){<span class="icon fontastic-icon-link-2 template-link" title="This job description was created by a template."></span>}@Model.User.JobDescription}</div>
 			</div>
-
-
-
 			<div class="panel panel-default">
 				@if (edit)
 				{

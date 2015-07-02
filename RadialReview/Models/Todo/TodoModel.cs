@@ -1,4 +1,5 @@
-﻿using FluentNHibernate.Mapping;
+﻿using System.Diagnostics;
+using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using RadialReview.Models.L10;
 
 namespace RadialReview.Models.Todo
 {
+	[DebuggerDisplay("Message = {Message}, Owner={AccountableUser}")]
 	public class TodoModel : IDeletable, ILongIdentifiable, IIssue
 	{
 		public virtual long Id { get; set; }
@@ -28,7 +30,7 @@ namespace RadialReview.Models.Todo
 		public virtual long Ordering { get; set; }
 
 		public virtual String ForModel { get; set; }
-		public virtual long ForModelId { get; set; }
+		public virtual long ForModelId { get; set; } // -2 if from text message.
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
 

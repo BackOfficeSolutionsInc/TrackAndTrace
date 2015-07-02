@@ -182,7 +182,7 @@ namespace RadialReview.Accessors
             return await Emailer.SendEmails(unsentEmails);
         }
 
-        public async Task<int> SendAllJoinEmails(UserOrganizationModel caller, long organizationId)
+        public async Task<EmailResult> SendAllJoinEmails(UserOrganizationModel caller, long organizationId)
         {
             var unsent = new List<MailModel>();
             using (var s = HibernateSession.GetCurrentSession())
@@ -193,18 +193,24 @@ namespace RadialReview.Accessors
 
                     var toSend = s.QueryOver<TempUserModel>().Where(x => x.OrganizationId == organizationId && x.LastSent == null).List().ToList();
                     
-                    foreach (var tempUser in toSend){
-                        unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
-                    }
+                 
 	                var toUpdate = s.QueryOver<UserOrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(toSend.Select(x => x.UserOrganizationId).ToArray()).List().ToList();
 	                foreach (var user in toUpdate){
-		                user.UpdateCache(s);
+		                if (user.DeleteTime != null)
+			                toSend.RemoveAll(x => x.UserOrganizationId == user.Id);
+
 	                }
 
-
+					foreach (var tempUser in toSend){
+                        unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
+                    }
+					var output = ((await Emailer.SendEmails(unsent)));
+					foreach (var user in toUpdate){
+						user.UpdateCache(s);
+					}
+	                return output;
                 }
             }
-            return ((await Emailer.SendEmails(unsent)).Sent);
         }
         
         public MailModel CreateJoinEmailToGuid(UserOrganizationModel caller, TempUserModel tempUser)

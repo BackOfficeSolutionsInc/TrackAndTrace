@@ -1,112 +1,129 @@
 ﻿@model RadialReview.Controllers.BackendViewModel
 
 @{
-    ViewBag.Title = "Home";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Home";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>@Html.ProductName()</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>@Html.ProductName()</h1>
+	</div>
 }
 @using (Html.BeginStyles())
 {
-    <style>
-        .welcome a {
-            color: #4A79FF;
-        }
-        h3 {
-            color: #6D6D6D;
-        }
-    </style>
+	<style>
+		.welcome a {
+			color: #4A79FF;
+		}
+
+		h3 {
+			color: #6D6D6D;
+		}
+	</style>
 }
-
 <div class="row">
-    <div class="col-md-3 col-sm-4 alignCenter hidden-xs">
-        <div class="" onclick="window.location='@Url.Action("Manage","Account")'">
-            <div>
-                @Html.Partial("_UserModel", Model.User.User)
-            </div>
-            @if (!Model.User.GetCompletion().FullyComplete)
-            {
-                <div class="clickable" onclick="window.location='@Url.Action("Manage", "Account")'">
-                    <h4>Profile Completion</h4>
-                    @Html.Partial("_Completion", Model.User)
-                </div>
-            }
-        </div>
-        <div class="smallBreak hidden-md"></div>
-    </div>
-    <div class="col-md-9 col-sm-8">
-        @if (Model.OutstandingReview != null)
-        {
-            <div class="review smallBreak2">
-                <h5 class ="alignCenter noMargin gray">@Html.ReviewName():</h5>
-                <hgroup class="alignCenter"><h1 style="margin-top:0px;">@Model.OutstandingReview.Name</h1></hgroup>
-                @Html.Partial("_ReviewStats", Model.OutstandingReview.ReviewContainerId)
-            </div>
-        }
-        <div class="review welcome" style="min-height:30px">
-            <h2 class="alignCenter">Welcome to @Html.ProductName()</h2>
-            <div id="lipsum">
-                @if (((int?)ViewBag.Organizations ?? 0) == 0)
-                {
-                    <h4>Instructions to access your organization:</h4>
-                    <p>
-                        Welcome to @Html.ProductName()
+	<div class="col-md-3 alignCenter hidden-sm">
+		<div class="" onclick="window.location='@Url.Action("Manage","Account")'">
+			<div>
+				@Html.Partial("_UserModel", Model.User.User)
+			</div>
+			@if (!Model.User.GetCompletion().FullyComplete)
+			{
+				<div class="clickable" onclick="window.location='@Url.Action("Manage", "Account")'">
+					<h4>Profile Completion</h4>
+					@Html.Partial("_Completion", Model.User)
+				</div>
+			}
+		</div>
+		<div class="smallBreak hidden-md"></div>
+	</div>
+	<div class="col-md-9 col-sm-12">
+		@if (Model.IncludeTodos && ViewBag.UserId != null)
+		{
+			<div class="review smallBreak2 loading" style="min-height:30px">@Html.Partial("~/Views/Todo/Partial/list.cshtml")</div>
+			@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml", (long)ViewBag.UserId)
+		}
+		@if (Model.OutstandingReview != null)
+		{
+			<div class="review smallBreak2">
+				<h5 class="alignCenter noMargin gray">@Html.ReviewName():</h5>
+				<hgroup class="alignCenter"><h1 style="margin-top:0px;">@Model.OutstandingReview.Name</h1></hgroup>
+				@Html.Partial("_ReviewStats", Model.OutstandingReview.ReviewContainerId)
+			</div>
+		}
+		<div class="review welcome" style="min-height:30px">
+			<h2 class="alignCenter">Welcome to @Html.ProductName()</h2>
+			<div id="lipsum">
+				@if (((int?)ViewBag.Organizations ?? 0) == 0)
+				{
+					<h4>Instructions to access your organization:</h4>
+					<p>
+						Welcome to @Html.ProductName()
 
-                        You'll need to enter your access code to begin. You should have received a code in your inbox.
-                        Enter it here to begin:
-                    </p>
-                    <form class="form-group" method="post" action="/Organization/Join">
-                        <input class="form-control smallBreak2" type="text" name="id" value="" placeholder="Access code" />
+						You'll need to enter your access code to begin. You should have received a code in your inbox.
+						Enter it here to begin:
+					</p>
+					<form class="form-group" method="post" action="/Organization/Join">
+						<input class="form-control smallBreak2" type="text" name="id" value="" placeholder="Access code" />
 
-                        <div class="row">
-                            <button class="btn btn-primary col-md-2 col-md-offset-5" type="submit">Submit</button>
-                        </div>
-                    </form>
-                }
-                @if (((int?)ViewBag.Organizations ?? 0) != 0)
-                {
-                    <h3>Instructions for employees:</h3>
-                    <p>
-                        Welcome to @Html.ProductName(),
+						<div class="row">
+							<button class="btn btn-primary col-md-2 col-md-offset-5" type="submit">Submit</button>
+						</div>
+					</form>
+				}
+				@if (((int?)ViewBag.Organizations ?? 0) != 0)
+				{
+					<h3>Instructions:</h3>
+					<p>
+						Welcome to @Html.ProductName(),
 
-                        To begin taking your review, click on the 'Task' button above or click <a href="@Url.Action("Index","Tasks")">here</a>.
-                        After your coworkers have completed their @Html.ReviewName().ToLower(), @Html.ProductName() will aggregate the results for you and your supervisor to discuss.
-                    </p>
-                    <p>
-                        Your name and profile image are an important way for you to ensure you are accurately evaluated. You can edit your profile image by clicking 
-                        <a href="@Url.Action("Manage","Account")">here.</a>
-                    </p>
-                    if (ViewBag.IsManager && false)
-                    {
-                        <h3>Instructions for management:</h3>
-                        <p>
-                            As a supervisor you can manage the organization from the 'Manage' tab, or by clicking <a href="@Url.Action("Index","Manage")">here</a>.
-                            From the manage menu, you can add direct reports, job descriptions, questions, and teams for the organization.
-                        </p>
-                        <p>
-                            A company should have a set of goals that govern the actions of it's employees.
-                            Before @Html.ReviewName().ToLower()s can be issued, you and your employees should construct a set of personal goals that align with your company's goals.
-                            A set of questions should be generated that gauge how well the employee is meeting their goals.
-                            The employee's co-workers will evaluate the employee on these questions.
-                           
-	                        Every user evaluating the employee will rate the person on how well they are meeting their responsibilities.
-                        </p>
-                        <p>
-                            Once all the questions are in place, you can issue a @Html.ReviewName().ToLower() and specify a due date.
-                            An e-mail will be sent to employees to let them know that they have a task to complete.
-                        </p>
-                        <p>
-                            After everyone's @Html.ReviewName().ToLower()s are complete, you can view the results and create a report in the
-                            <a href="@Url.Action("Index","Reports")">Reports</a> tab. Reports consist of charts and anonymous feedback, 
-                            as well as historical changes. You can autorize your employees to view the report once they are authorized.
-                        </p>
-                    }
-                }
-            </div>
-        </div>
-    </div>
+						To begin taking your review, click on the 'Task' button above or click <a href="@Url.Action("Index","Tasks")">here</a>.
+						After your coworkers have completed their @Html.ReviewName().ToLower(), @Html.ProductName() will aggregate the results for you and your supervisor to discuss.
+					</p>
+					<p>
+						Your name and profile image are an important way for you to ensure you are accurately evaluated. You can edit your profile image by clicking
+						<a href="@Url.Action("Manage","Account")">here.</a>
+					</p>
+					if (ViewBag.IsManager && false)
+					{
+						<h3>Instructions for management:</h3>
+						<p>
+							As a supervisor you can manage the organization from the 'Manage' tab, or by clicking <a href="@Url.Action("Index","Manage")">here</a>.
+							From the manage menu, you can add direct reports, job descriptions, questions, and teams for the organization.
+						</p>
+						<p>
+							A company should have a set of goals that govern the actions of it's employees.
+							Before @Html.ReviewName().ToLower()s can be issued, you and your employees should construct a set of personal goals that align with your company's goals.
+							A set of questions should be generated that gauge how well the employee is meeting their goals.
+							The employee's co-workers will evaluate the employee on these questions.
+
+							Every user evaluating the employee will rate the person on how well they are meeting their responsibilities.
+						</p>
+						<p>
+							Once all the questions are in place, you can issue a @Html.ReviewName().ToLower() and specify a due date.
+							An e-mail will be sent to employees to let them know that they have a task to complete.
+						</p>
+						<p>
+							After everyone's @Html.ReviewName().ToLower()s are complete, you can view the results and create a report in the
+							<a href="@Url.Action("Index","Reports")">Reports</a> tab. Reports consist of charts and anonymous feedback,
+							as well as historical changes. You can autorize your employees to view the report once they are authorized.
+						</p>
+					}
+				}
+			</div>
+		</div>
+	</div>
 </div>
+
+@using (Html.BeginStyles()){
+	<style>
+		.todo-pane {
+			max-height: 360px;
+			overflow: auto;
+			width: 100%;
+		}
+
+
+	</style>
+}

@@ -41,7 +41,7 @@ namespace RadialReview.Accessors
 						var color = todo.DueDate.Date <= now ? "color:#F22659;" : "color: #34AD00;";
 
 						table.Append(@"<tr><td width=""8px""></td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
-							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
+							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List?todo="+todo.Id+@""">")
 							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" style=""" + color + @""">")
 							.Append(todo.DueDate.ToShortDateString()).Append("</td></tr>");
 						if (!String.IsNullOrWhiteSpace(todo.Details)){
@@ -112,6 +112,9 @@ namespace RadialReview.Accessors
 					var updates = new AngularRecurrence(recurrenceId);
 					updates.Todos = new List<AngularTodo>() { new AngularTodo(todo) };
 					meetingHub.update(updates);
+
+					Audit.L10Log(s, caller, recurrenceId, "CreateTodo", todo.NotNull(x => x.Message));
+
 				}
 			}
 		}
@@ -126,8 +129,8 @@ namespace RadialReview.Accessors
 					var found = s.Get<TodoModel>(todoId);
 					var a = found.AccountableUser.GetName();
 					var b = found.AccountableUser.ImageUrl(true);
-					var c = found.GetIssueMessage();
-					var d = found.GetIssueDetails();
+					var c = found.NotNull(x=>x.GetIssueMessage());
+					var d = found.NotNull(x=>x.GetIssueDetails());
 
 					return found;
 				}
@@ -139,7 +142,7 @@ namespace RadialReview.Accessors
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
-					PermissionsUtility.Create(s, caller).ManagesUserOrganization(userId,false);
+					PermissionsUtility.Create(s, caller).ManagesUserOrganizationOrSelf(userId);
 
 					var found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId).List().ToList();
 					foreach (var f in found)

@@ -27,19 +27,21 @@ $(function () {
 				"<span class='btn btn-default btn-xs contractButton' title='Hide details'><span class='glyphicon glyphicon-resize-small'></span></span>" +
 				"<span class='btn btn-default btn-xs expandButton'  title='Show details'><span class='glyphicon glyphicon-resize-full'></span></span>" +
 			"</span>");
-		$("#issueDetails").append("<div class='createTime'>" + new Date(createtime).toLocaleDateString() + "</div>");
+		$("#issueDetails").append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
 
 		$("#issueDetails").append("<div class='heading'><h4 class='message-holder clickable' data-recurrence_issue='" + recurrence_issue + "'><span class='message editable-text' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
 		$("#issueDetails").append(detailsList);
 		$("#issueDetails").append("<textarea class='details issue-details' data-recurrence_issue='" + recurrence_issue + "'>" + details + "</textarea>");
 		$("#issueDetails").append("<div class='button-bar'>" +
+			"<div style='height:28px;'>"+
 			"<span class='btn-group pull-right'>" +
 				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Resolved</span>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
 			"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + MeetingId + "'><span class='icon fontastic-icon-forward-1'></span> Copy To</span>" +
-			"<span class='btn btn-default btn-xs createTodoButton todoModal' data-method='CreateTodoFromIssue' data-meeting='"+meetingId+"' data-issue='"+issueId+"' data-recurrence='"+MeetingId+"' ><span class='glyphicon glyphicon-unchecked todoButton'></span> Todo</span>" +
+			"<span class='btn btn-default btn-xs createTodoButton todoModal' data-method='CreateTodoFromIssue' data-meeting='"+meetingId+"' data-issue='"+issueId+"' data-recurrence='"+MeetingId+"' ><span class='glyphicon glyphicon-unchecked todoButton'></span> To-Do</span>" +
 			"</span>" +
+			"</div>"+
 			"<span class='clearfix'></span>" +
 			"<span class='gray' style='width:75px;display:inline-block'>Assigned to:</span>"+
 			"<span>"+
@@ -151,6 +153,21 @@ function sendNewIssueAccountable(self, id) {
 			}
 		}
 	});
+}
+
+function sortIssueBy(recurrenceId, issueList,sortBy,title,mult) {
+	mult = mult || 1;
+
+	$(".sort-button").html("Sort by " + title);
+
+	$(issueList).children().detach().sort(function(a, b) {
+		if ($(a).attr(sortBy)===$(b).attr(sortBy))
+			return mult*$(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
+		return mult*$(a).attr(sortBy).localeCompare($(b).attr(sortBy));
+	}).appendTo($(issueList));
+	updateIssuesList(recurrenceId, issueList);
+	refreshCurrentIssueDetails();
+
 }
 
 function updateIssueCompletion(issueId, complete) {

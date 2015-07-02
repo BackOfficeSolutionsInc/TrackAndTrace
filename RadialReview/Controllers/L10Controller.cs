@@ -6,11 +6,13 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Models;
+using RadialReview.Models.Audit;
 using RadialReview.Models.L10;
 using RadialReview.Accessors;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Json;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -40,6 +42,7 @@ namespace RadialReview.Controllers
 				Recurrence = recurrence,
 				Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(),recurrenceId,true,loadLogs:true)
 			};
+
 
 			return View(model);
 		}
@@ -108,6 +111,7 @@ namespace RadialReview.Controllers
 				SelectedRocks = r._DefaultRocks.Select(x => x.ForRock.Id).ToArray(),
 				Return = @return
 			};
+
 			return View("Edit", model);
 		}
 	
@@ -115,7 +119,7 @@ namespace RadialReview.Controllers
 	    [Access(AccessLevel.UserOrganization)]
 	    public ActionResult Edit(L10EditVM model)
 	    {
-			ValidateValues(model,x=>x.Recurrence.Id,x=>x.Recurrence.CreateTime,x=>x.Recurrence.OrganizationId);
+			ValidateValues(model, x => x.Recurrence.Id, x => x.Recurrence.CreateTime, x => x.Recurrence.OrganizationId, x => x.Recurrence.MeetingInProgress, x => x.Recurrence.CreatedById);
 
 			if (String.IsNullOrWhiteSpace(model.Recurrence.Name)){
 				ModelState.AddModelError("Name","Meeting name is required");
@@ -142,9 +146,10 @@ namespace RadialReview.Controllers
 						ForRock = x
 					}).ToList();
 
-				
 
-				L10Accessor.EditL10Recurrence(GetUser(),model.Recurrence);
+
+				L10Accessor.EditL10Recurrence(GetUser(), model.Recurrence);
+
 
 				if (model.Return == "meeting")
 					return RedirectToAction("meeting", new{id = model.Recurrence.Id});
@@ -165,14 +170,36 @@ namespace RadialReview.Controllers
 			return View("Edit",model);
 		}
 
-	    [Access(AccessLevel.UserOrganization)]
-	    public ActionResult External(long id)
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult External(long id)
+		{
+			var recurrence = id;
+			var links = L10Accessor.GetExternalLinksForRecurrence(GetUser(), id);
+			ViewBag.Recurrence = recurrence;
+			return View(links);
+		}
+
+	    public class TimelineItem
 	    {
-		    var recurrence = id;
-		    var links = L10Accessor.GetExternalLinksForRecurrence(GetUser(), id);
-		    ViewBag.Recurrence = recurrence;
-		    return View(links);
+		    public List<L10AuditModel> Audits { get; set; } 
+			public L10Meeting Meeting { get; set; }
 	    }
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Timeline(long id)
+		{
+			var recurrence = id;
+			var audits = L10Accessor.GetL10Audit(GetUser(), id);
+			var meetings = L10Accessor.GetL10Meetings(GetUser(), id, false);
+			var list = new List<TimelineItem>();
+			foreach (var m in meetings){
+				list.Add(new TimelineItem(){
+					Meeting = m,
+					Audits =  audits.Where(x=>m.CreateTime<=x.CreateTime && (m.CompleteTime==null || x.CreateTime<=m.CompleteTime)).ToList()
+				});
+			}
+			return View(list);
+		}
 
 
 		#region Error

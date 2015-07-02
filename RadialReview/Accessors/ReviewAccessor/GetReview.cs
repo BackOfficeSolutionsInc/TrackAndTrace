@@ -869,6 +869,7 @@ namespace RadialReview.Accessors {
 					if (reviewContainer.NextPeriodId != null)
 						reviewContainer.NextPeriod = s.Get<PeriodModel>(reviewContainer.NextPeriodId);
 
+					var a=reviewContainer.ForOrganization.Settings.Branding;
 
 					if (sensitive)
 						perms.ViewReviews(reviewContainerId, false);

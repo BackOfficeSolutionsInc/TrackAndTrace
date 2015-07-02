@@ -1,0 +1,144 @@
+﻿@model RadialReview.Models.Survey.SurveyContainerModel
+@{
+	ViewBag.Title = "Edit";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Survey</h2>
+
+
+@using (Html.BeginForm())
+{
+
+	@Html.SecuredHiddenFor(x => x.Id)
+	@Html.SecuredHiddenFor(x => x.Organization.Id)
+	@Html.SecuredHiddenFor(x => x.Creator.Id)
+	@Html.SecuredHiddenFor(x => x.CreateTime)
+	@Html.SecuredHiddenFor(x => x.DeleteTime)
+
+	@Html.ValidationSummary()
+
+	<div class="row smallBreak2">
+		<div class="col-sm-8"><b>Name:</b>@Html.TextBoxFor(x => x.Name, new { @class = "form-control", style = "max-width:350px" })</div>
+		<div class="col-sm-4"><input type="submit" value="Save" class="btn btn-primary" /></div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			@Html.HiddenFor(x => x.QuestionGroup.CopiedFrom)
+			@Html.HiddenFor(x => x.QuestionGroup.CreateTime)
+			@Html.HiddenFor(x => x.QuestionGroup.DeleteTime)
+			@Html.HiddenFor(x => x.QuestionGroup.Id)
+			@Html.HiddenFor(x => x.QuestionGroup.Locked)
+
+			@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+			}
+
+
+			<div class="form">
+				<div class="">
+					<div class=""><div class="btn btn-default clickable " onclick="addRow_@(guid)();">Add Question</div></div>
+					<hr />
+					<div class="row">
+						<div class="col-sm-12" id="allRows_@(guid)">
+							<div style="width:calc( 100% - 25px );display:inline-block">
+								@*<div class="row">
+										<div class="col-sm-6"><u>Measurable</u></div>
+										<div class="col-sm-6 alignCenter"><u>Weekly Goal</u></div>
+									</div>*@
+							</div>
+							@foreach (var item in Model.QuestionGroup._Questions)
+							{
+								Html.RenderPartial("~/Views/Survey/_SurveyQuestionRow.cshtml", item);
+							}
+						</div>
+					</div>
+
+				</div>
+			</div>
+			@using (Html.BeginScripts())
+			{
+				<script>
+					function addRow_@(guid)() {
+						$.ajax({
+							url: "/Survey/BlankQuestionEditorRow",
+							cache: false,
+							success: function (html) {
+								$("#allRows_@(guid)").append(html);
+							}
+						});
+						return false;
+					}
+
+					$(function () {
+						$(document).on("click", "span.deleteRow", function () {
+							$(this).parents("div.roleRow:first").hide();
+							$(this).parents("div.roleRow:first").find("[name*='DeleteTime']").val("@DateTime.UtcNow");
+							return false;
+						});
+					});
+				</script>
+			}
+
+
+		</div>
+		<div class="col-sm-6">
+			@Html.HiddenFor(x => x.RespondentGroup.CopiedFrom)
+			@Html.HiddenFor(x => x.RespondentGroup.CreateTime)
+			@Html.HiddenFor(x => x.RespondentGroup.DeleteTime)
+			@Html.HiddenFor(x => x.RespondentGroup.Id)
+			@Html.HiddenFor(x => x.RespondentGroup.Locked)
+
+			@{
+				var guid2 = Guid.NewGuid().ToString().Replace("-", "");
+			}
+
+
+			<div class="form">
+				<div class="">
+					<div class="btn btn-default clickable" onclick="addRow_@(guid2)();">Add Respondent</div>
+					
+					<hr />
+					<div class="row">
+						<div class="col-sm-12" id="allRows_@(guid2)">
+							<div style="width:calc( 100% - 25px );display:inline-block">
+							</div>
+							@foreach (var item in Model.RespondentGroup._Respondents)
+							{
+								Html.RenderPartial("~/Views/Survey/_SurveyRespondentRow.cshtml", item);
+							}
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			@using (Html.BeginScripts())
+			{
+				<script>
+					function addRow_@(guid2)() {
+						$.ajax({
+							url: "/Survey/BlankRespondentEditorRow",
+							cache: false,
+							success: function (html) {
+								$("#allRows_@(guid2)").append(html);
+							}
+						});
+						return false;
+					}
+
+					$(function () {
+						$(document).on("click", "span.deleteRow", function () {
+							$(this).parent().parents("div.roleRow:first").hide();
+							$(this).parent().parents("div.roleRow:first").find("[name*='DeleteTime']").val("@DateTime.UtcNow");
+							return false;
+						});
+					});
+				</script>
+			}
+
+		</div>
+	</div>
+	<hr />
+}
+

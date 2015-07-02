@@ -1,16 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RadialReview.Models.Angular.Users
 {
 	public class AngularUser : Base.BaseAngular
-	{
-		public AngularUser(UserOrganizationModel user,ImageSize imageSize = ImageSize._64) : base(user.Id)
+	{		
+		[Obsolete("User Static constructor",false)]
+		public AngularUser(long id) : base(id)
 		{
-			Name = user.GetName();
-			ImageUrl = user.ImageUrl(true, imageSize);
-			Initials = user.GetInitials();
 			
+		}
+
+		public static AngularUser CreateUser(UserOrganizationModel user,ImageSize imageSize = ImageSize._64)
+		{
+			if (user == null)
+				return NoUser();
+
+			return new AngularUser(user.Id){
+				Name = user.NotNull(x => x.GetName()),
+				ImageUrl = user.NotNull(x => x.ImageUrl(true, imageSize)),
+				Initials = user.NotNull(x => x.GetInitials()),
+			};
+
 		}
 
 		public static AngularUser NoUser()
@@ -21,9 +33,7 @@ namespace RadialReview.Models.Angular.Users
 				Initials = "n/a"
 			};
 		}
-
-		public AngularUser(long id) : base(id) { }
-
+		
 		public AngularUser() { }
 
 		public string Name { get; set; }

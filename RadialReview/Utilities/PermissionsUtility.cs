@@ -21,10 +21,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Models.Scorecard;
+using RadialReview.Models.Survey;
 using RadialReview.Models.Todo;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.Prereview;
 using RadialReview.Models.UserTemplate;
+using RadialReview.Models.VTO;
 
 namespace RadialReview.Utilities
 {
@@ -907,6 +909,20 @@ namespace RadialReview.Utilities
 
 		#endregion
 
+		#region VTO
+		public PermissionsUtility ViewVTO(long vtoId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var vto = session.Get<VtoModel>(vtoId);
+			if (IsManagingOrganization(vto.Organization.Id))
+				return this;
+			throw new PermissionsException("Cannot view V/TO");
+
+		}
+		#endregion
+
 		#region L10
 
 		public PermissionsUtility CreateL10Recurrence(long organizationId)
@@ -1097,6 +1113,39 @@ namespace RadialReview.Utilities
 				throw new PermissionsException("Note does not exist");
 
 			return ViewL10Recurrence(note.Recurrence.Id);
+		}
+		#endregion
+
+		#region Survey
+		public PermissionsUtility ViewSurveyContainer(long surveyId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var survey = session.Get<SurveyContainerModel>(surveyId);
+
+			if (IsManagingOrganization(survey.Organization.Id))
+				return this;
+			if (survey.Creator.Id == caller.Id)
+				return this;
+			throw new PermissionsException("Cannot view this survey");
+		}
+
+		public PermissionsUtility EditSurvey(long surveyId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			if (surveyId == 0 && IsManagingOrganization(caller.Organization.Id))
+				return this;
+
+			var survey = session.Get<SurveyContainerModel>(surveyId);
+
+			if (IsManagingOrganization(survey.Organization.Id))
+				return this;
+			if (survey.Creator.Id == caller.Id)
+				return this;
+			throw new PermissionsException("Cannot view this survey");
 		}
 		#endregion
 
@@ -1432,5 +1481,13 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
+
+		public UserOrganizationModel GetCaller()
+		{
+			return caller;
+		}
+
+
+		
 	}
 }

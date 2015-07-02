@@ -55,7 +55,7 @@ namespace RadialReview.Utilities
 
 
 
-		public static List<L10MeetingVM.WeekVM> GetWeeks(DayOfWeek weekStart, DateTime now, DateTime? meetingStart, List<ScoreModel> scores)
+		public static List<L10MeetingVM.WeekVM> GetWeeks(DayOfWeek weekStart,int timezoneOffset, DateTime now, DateTime? meetingStart, List<ScoreModel> scores,bool includeNextWeek)
 	    {
 			var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
 			var StartDate = ordered.FirstOrDefault().NotNull(x => now);
@@ -64,10 +64,16 @@ namespace RadialReview.Utilities
 			//var s = StartDate.StartOfWeek(weekStart).AddDays(-7 * 4);
 			//var e = EndDate.StartOfWeek(weekStart).AddDays(7 * 4);
 
-			var s = (meetingStart ?? now).StartOfWeek(weekStart).AddDays(-7*13);
-			var e = (meetingStart ?? now).StartOfWeek(weekStart);
+			var s = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday).AddDays(-7*13);
+			var e = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday);
 
-			e = Math2.Max(now.StartOfWeek(weekStart), e);
+			DateTime arg;
+			
+			arg = now.StartOfWeek(DayOfWeek.Sunday);
+			if (includeNextWeek)
+				arg = arg.AddDays(7);
+
+			e = Math2.Max(arg, e);
 			if (StartDate >= EndDate)
 				throw new PermissionsException("Date ordering incorrect");
 			var weeks = new List<L10MeetingVM.WeekVM>();
@@ -82,8 +88,8 @@ namespace RadialReview.Utilities
 				
 				weeks.Add(new L10MeetingVM.WeekVM()
 				{
-					DisplayDate = s.StartOfWeek(weekStart),
-					ForWeek = s.AddDays(7).StartOfWeek(DayOfWeek.Sunday),
+					DisplayDate = s.AddDays(-7).AddDays(6).StartOfWeek(weekStart).AddMinutes(-timezoneOffset),
+					ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
 					IsCurrentWeek = currWeek,
 				});
 

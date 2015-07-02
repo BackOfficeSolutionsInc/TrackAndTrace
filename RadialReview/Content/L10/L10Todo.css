@@ -278,7 +278,7 @@ body.dragging, body.dragging * {
 }
 
 .todoDetails:empty:after {
-	content: "Click a todo to see its details.";
+	content: "Click a To-Do to see its details.";
 }
 
 .todoDetails .move-icon {

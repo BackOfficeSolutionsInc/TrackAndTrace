@@ -36,7 +36,16 @@ $(function () {
 	});*/
 
 });
-
+var zoomLevel = 1;
+function zoomIn() {
+	zoomLevel *= 1.10;
+	$(".zoomable").css("zoom", ""+(zoomLevel*100)+"%");
+	
+}
+function zoomOut() {
+	zoomLevel /= 1.10;
+	$(".zoomable").css("zoom", ""+(zoomLevel*100)+"%");
+}
 
 function updateServerScore(self) {
 	var m = $(self).data("measurable");
@@ -117,6 +126,10 @@ function updateMeasurable(id, name, text, value) {
 	highlight(sel);
 }
 
+function myIsNaN(o) {
+	return o !== o;
+}
+
 //pass in a .score input
 function updateScore(self, skipChart) {
 
@@ -156,7 +169,7 @@ function updateScore(self, skipChart) {
 	var max = goal;
 	row.find("td.score").each(function (i) {
 		var v = parseFloat($(this).find("input").val());
-		if (Number.isNaN(v))
+		if (myIsNaN(v))
 			arr.push(null);
 		else {
 			min = Math.min(min, v);

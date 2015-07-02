@@ -1,5 +1,5 @@
-﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId',
-function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
+﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId',"meetingCallback",
+function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetingCallback) {
 	if (meetingId == null)
 		throw Error("MeetingId was empty");
 	$scope.disconnected = false;
@@ -85,12 +85,14 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
 		for (var key in obj) {
 			var value = obj[key];
 			var type = typeof (value);
-			if (type == 'string' && dateRegex1.test(value)) {
-				obj[key] = moment(parseInt(value.substr(6)));
+			if (obj[key]==null) {
+				//Do nothing
+			}else if (type == 'string' && dateRegex1.test(value)) {
+				obj[key] = new Date(parseInt(value.substr(6)));
 			} else if (type == 'string' && dateRegex2.test(value)) {
-				obj[key] = moment(obj[key]);
+				obj[key] = new Date(obj[key]);
 			} else if (obj[key].getDate!==undefined) {
-				obj[key] =new Date(obj[key].getTime() + obj[key].getTimezoneOffset() * 60000);
+				obj[key] =new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
 			} else if (type == 'object') {
 				convertDates(value);
 			}
@@ -123,6 +125,12 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
 	.success(function (data, status) {
 		convertDates(data);
 		$scope.model = data;
+		if (meetingCallback) {
+			setTimeout(function(){
+				meetingCallback();
+			},1);
+		}
+
 		//update(data, status);
 	}).error(function (data, status) {
 		//$scope.model = {};
@@ -214,8 +222,8 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId) {
 	//var sevenMin = moment().subtract('days', 6).toDate();
 	//var sevenMax = moment().add('days', 2).toDate();
 
-	var sevenMin = moment().subtract('days', 27).toDate();
-	var sevenMax = moment().add('days', 2).toDate();
+	var sevenMin = moment().subtract('days', 6).toDate();
+	var sevenMax = moment().add('days', 9).toDate();
 
 	$scope.date = { startDate: sevenMin, endDate: sevenMax };
 

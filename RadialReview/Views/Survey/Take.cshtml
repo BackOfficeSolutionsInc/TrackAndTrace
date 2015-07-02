@@ -1,0 +1,81 @@
+﻿@model RadialReview.Models.Survey.SurveyTake
+@{
+	ViewBag.
+}
+	  
+
+		
+<h1>@Model.Container.Name</h1>
+<hr />
+
+@for(var i=0;i<Model._Answers.Count;i++){
+	
+	<div class="row">
+		<div class="col-md-8">
+			<h4>@Model._Answers[i].Question.Question</h4>
+		</div>
+		<div class="col-md-4">
+			<table class="answerTable">
+				<tr>
+					<td>N/A</td>
+					<th>1</th>
+					<th>2</th>
+					<th>3</th>
+					<th>4</th>
+					<th>5</th>
+				</tr>
+				<tr>
+					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == null ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value=""/></td>
+					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 1 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="1" /></td>
+					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 2 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="2"/></td>
+					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 3 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="3"/></td>
+					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 4 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="4"/></td>
+					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 5 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="5"/></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<hr />
+}
+
+@using (Html.BeginScripts()){
+	<script>
+		
+		$(".answer").on("change",function() {
+			var name = $(this).prop("name").substr(7);
+			var old = $(this).val();					
+			debugger;
+			$.ajax({
+				url: "/Survey/Set/"+name+"?value="+$(this).val(),
+				success:function(data) {
+					debugger;
+					showJsonAlert(data);
+				},
+				error:function(d) {
+					debugger;
+					var $radios = $('input:radio[name='+name+']');
+					if($radios.is(':checked') === false) {
+						$radios.filter('[value='+old+']').prop('checked', true);
+					}
+				}
+			});
+		});
+
+
+	</script>
+}
+
+@using (Html.BeginStyles()){
+	<style>
+		.answerTable {
+			width:170px;
+			text-align: center;
+			position: relative;
+			top: -15px;
+		}
+
+		.answerTable th,.answerTable td {
+			text-align: center;
+		}
+	</style>
+}

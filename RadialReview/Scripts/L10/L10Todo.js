@@ -7,7 +7,7 @@ $(function () {
 		$(todoRow).addClass("selected");
 		currentTodoDetailsId = $(todoRow).data("todo");
 		var createtime = $(todoRow).data("createtime");
-		var duedate = $(todoRow).data("duedate");
+		var duedate = +$(todoRow).attr("data-duedate");
 		var accountable = $(todoRow).data("accountable");
 		var owner = $(todoRow).data("name");
 		var message = $(todoRow).data("message");
@@ -21,12 +21,13 @@ $(function () {
 
 		$("#todoDetails").html("");
 		$("#todoDetails").append("<span class='expandContract btn-group pull-right'></span>");
-		$("#todoDetails").append("<div class='createTime'>" + new Date(createtime).toLocaleDateString() + "</div>");
+		$("#todoDetails").append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
 
 		$("#todoDetails").append("<div class='heading'><h4 class='message-holder clickable' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message editable-text'>" + message + "</span></h4></div>");
 		$("#todoDetails").append("<textarea id='todoDetailsField' class='details todo-details' data-todo='" + todo + "'>" + details + "</textarea>");
 		$("#todoDetails").append(
 			"<div class='button-bar'>" +
+				"<div style='height:28px'>"+
 				"<span class='btn-group pull-right'>" +
 					"<span class='btn btn-default btn-xs doneButton'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Complete</span>" +
 				"</span>" +
@@ -34,13 +35,14 @@ $(function () {
 				"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='issuefromtodo' data-todo='" + todo + "' data-recurrence='" + recurrenceId + "' data-meeting='" + meetingId + "'><span class='glyphicon glyphicon-pushpin'></span> New Issue</span>" +
 				//"<span class='btn btn-default btn-xs createTodoButton todoModal'><span class='glyphicon glyphicon-unchecked todoButton'></span> Todo</span>"+
 				"</span>" +
+				"</div>"+
 				"<span class='clearfix'></span>" +
 				"<span class='gray' style='width:75px;display:inline-block'>Assigned to:</span><span style='width:250px;padding-left:10px;' class='assignee' data-accountable='" + accountable + "' data-todo='" + todo + "'  ><span data-todo='" + todo + "' class='btn btn-link owner'>" + owner + "</span></span>" +
 				"<div >" +
 					"<span class='gray' style='width:75px;display:inline-block'>Due date:</span>" +
 					"<span style='width:250px;padding-left:10px;' class='duedate' data-accountable='" + accountable + "' data-todo='" + todo + "' >" +
-						"<span class='date' style='display:inline-block' data-date='" + due.toLocaleDateString() + "' data-date-format='dd-mm-yyyy'>" +
-							"<input type='text' data-todo='" + todo + "' class='form-control datePicker' value='" + due.toLocaleDateString() + "'/>" +
+						"<span class='date' style='display:inline-block' data-date='" + dateFormatter(due) + "' data-date-format='m-d-yyyy'>" +
+							"<input type='text' data-todo='" + todo + "' class='form-control datePicker' value='" + dateFormatter(due) + "'/>" +
 						"</span>" +
 					"</span>" +
 				"</div>" +
@@ -58,11 +60,11 @@ $(function () {
 		if (!$(this).attr("init")) {
 			var now = new Date();
 			var todo = $(this).data("todo");
-			$(this).datepicker({
+			$(this).datepickerX({
 				format: 'm/d/yyyy',
 				todayBtn:true
 			}).on('changeDate', function (ev) {
-				var data = { date: ev.date.valueOf() };
+				var data = { date: (ev.date).valueOf() };
 				$.ajax({
 					method: "POST",
 					data: data,
@@ -76,7 +78,7 @@ $(function () {
 			$(this).blur();
 			var that = this;
 			setTimeout(function () {
-				$(that).datepicker("show");
+				$(that).datepickerX("show");
 			}, 10);
 		}
 	});
@@ -165,8 +167,10 @@ function updateTodoDueDate(todo, duedate) {
 
 	var found = row.find(".due-date");
 	$(found).toggleClass("red", dispDate < nowDate);
-	found.html(dispDate.toLocaleDateString());
-	$("input[data-todo=" + todo + "]").val(new Date(duedate).toLocaleDateString());
+	found.html(dateFormatter(dispDate));
+	//$("input[data-todo=" + todo + "]").val(dateFormatter(new Date(duedate)));
+	$("input[data-todo=" + todo + "]").val(dateFormatter(dispDate));
+	
 }
 
 function sendNewAccountable(self, id) {
@@ -303,7 +307,7 @@ function constructTodoRow(todo) {
 			'	</span>' +
 			'	<div class="message" data-todo=' + todo.todo + '>' + todo.message + '</div>' +
 			'	<div class="todo-details-container"><div class="todo-details" data-todo=' + todo.todo + '>' + todo.details + '</div></div>' +
-			'	<div class="due-date '+red+'">'+date.toLocaleDateString()+'</div>'+
+			'	<div class="due-date '+red+'">'+dateFormatter(date)+'</div>'+
 			'</li>';
 }
 

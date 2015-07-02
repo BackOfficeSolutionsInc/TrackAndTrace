@@ -15,6 +15,7 @@ using RadialReview.Models.L10.VM;
 using RestSharp.Validation;
 using MathNet.Numerics.Distributions;
 using RadialReview.Utilities;
+using WebGrease.Css.Extensions;
 
 namespace RadialReview.Controllers
 {
@@ -25,7 +26,7 @@ namespace RadialReview.Controllers
 		public ActionResult Load(long id, string connection, string page = null)
 		{
 			var recurrenceId = id;
-			page = page.ToLower();
+			page = page.NotNull(x=>x.ToLower());
 			if (!String.IsNullOrEmpty(page))
 				L10Accessor.UpdatePage(GetUser(), GetUser().Id, recurrenceId, page, connection);
 
@@ -139,11 +140,11 @@ namespace RadialReview.Controllers
 		private PartialViewResult ScoreCard(L10MeetingVM model)
 		{
 			model.Scores = L10Accessor.GetScoresForRecurrence(GetUser(), model.Recurrence.Id);
+
 			var sow = GetUser().Organization.Settings.WeekStart;
+			var offset = GetUser().Organization.GetTimezoneOffset();
 
-			
-
-			model.Weeks = TimingUtility.GetWeeks(sow, DateTime.UtcNow, model.MeetingStart, model.Scores);
+			model.Weeks = TimingUtility.GetWeeks(sow,offset, DateTime.UtcNow, model.MeetingStart, model.Scores,false);
 			return PartialView("Scorecard", model);
 			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
 			model.EndDate = ordered.LastOrDefault().NotNull(x => DateTime.UtcNow).AddDays(7);
@@ -217,6 +218,9 @@ namespace RadialReview.Controllers
 		{
 			model.SendEmail = true;
 
+			model.Meeting._MeetingAttendees.ForEach(x=>x.Rating=x.Rating??10);
+
+
 			return PartialView("Conclusion", model);
 		}
 
@@ -234,7 +238,7 @@ namespace RadialReview.Controllers
 				//var attendees = allMembers.Where(x => model.Attendees.Contains(x.Id)).ToList();
 
 				var ratingKeys = form.AllKeys.Where(x => x.StartsWith("rating_"));
-				var ratingIds = ratingKeys.Select(x => long.Parse(x.Replace("rating_", ""))).ToList();
+				var ratingIds = ratingKeys.Where(x => form[x].TryParseDecimal()!=null).Select(x => long.Parse(x.Replace("rating_", ""))).ToList();
 
 				ratingValues = ratingIds.Select(x => Tuple.Create(x, form["rating_" + x].TryParseDecimal())).ToList();
 				allMembers.Select(x => x.Id).EnsureContainsAll(ratingIds);

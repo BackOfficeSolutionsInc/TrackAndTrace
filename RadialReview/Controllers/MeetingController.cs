@@ -49,7 +49,12 @@ namespace RadialReview.Controllers
 			    var scorecard = new AngularAgendaItem_Scorecard(-2);
 			    var scores =L10Accessor.GetScoresForRecurrence(GetUser(), id);
 				scorecard.Measurables = current._MeetingMeasurables.Select(x => new AngularMeetingMeasurable(x)).ToList();
-			    scorecard.Weeks = TimingUtility.GetWeeks(GetUser().Organization.Settings.WeekStart, DateTime.UtcNow, current.StartTime, scores).Select(x=>new AngularWeek(x)).ToList();
+
+
+				var sow = GetUser().Organization.Settings.WeekStart;
+				var offset = GetUser().Organization.GetTimezoneOffset();
+
+			    scorecard.Weeks = TimingUtility.GetWeeks(sow,offset, DateTime.UtcNow, current.StartTime, scores,true).Select(x=>new AngularWeek(x)).ToList();
 			    scorecard.Scores = scores.Select(x => new AngularScore(x)).ToList();
 
 				model.AgendaItems.Add(scorecard);
@@ -68,10 +73,10 @@ namespace RadialReview.Controllers
 			    model.Notes = recurrence._MeetingNotes.Select(x => new AngularMeetingNotes(x)).ToList();
 
 			    model.Start = current.StartTime;
-			    model.Attendees = current._MeetingAttendees.Select(x => new AngularUser(x.User)).ToList();
+				model.Attendees = current._MeetingAttendees.Select(x => AngularUser.CreateUser(x.User)).ToList();
 			    model.Name = recurrence.Name;
 			    model.MeetingId = current.Id;
-				model.Leader= new AngularUser(current.MeetingLeader);
+				model.Leader = AngularUser.CreateUser(current.MeetingLeader);
 			    model.CurrentPage = current._MeetingLeaderCurrentPage;
 
 				return Json(model,JsonRequestBehavior.AllowGet);

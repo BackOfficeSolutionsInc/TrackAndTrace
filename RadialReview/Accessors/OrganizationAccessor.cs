@@ -749,14 +749,14 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+					var perms = PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
 					var users = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
 					if (populatePersonallyManaging){
 						var subs=DeepSubordianteAccessor.GetSubordinatesAndSelf(s,caller,caller.Id,type);
 
+						var isRadialAdmin = perms.IsPermitted(x => x.RadialAdmin());
 
-
-						users.ForEach(u=>u._PersonallyManaging = subs.Contains(u.UserId));
+						users.ForEach(u => u._PersonallyManaging = isRadialAdmin || subs.Contains(u.UserId));
 					}
 
 					return users;

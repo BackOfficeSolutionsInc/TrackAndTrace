@@ -1,0 +1,112 @@
+ERROR 2015-06-30 04:09:57,804 [1] SchemaUpdate           - could not complete schema update
+NHibernate.MappingException: Could not determine type for: RadialReview.Models.Survey.SurveyContainerModel, RadialReview, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, for columns: NHibernate.Mapping.Column(ContainerId)
+   at NHibernate.Mapping.SimpleValue.get_Type()
+   at NHibernate.Mapping.Column.GetSqlTypeCode(IMapping mapping)
+   at NHibernate.Mapping.Column.GetDialectTypeName(Dialect dialect, IMapping mapping)
+   at NHibernate.Mapping.Table.SqlAlterStrings(Dialect dialect, IMapping p, ITableMetadata tableInfo, String defaultCatalog, String defaultSchema)
+   at NHibernate.Cfg.Configuration.GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+ERROR 2015-06-30 04:11:20,429 [1] SchemaUpdate           - could not complete schema update
+NHibernate.MappingException: Could not determine type for: RadialReview.Models.Survey.SurveyContainerModel, RadialReview, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, for columns: NHibernate.Mapping.Column(ContainerId)
+   at NHibernate.Mapping.SimpleValue.get_Type()
+   at NHibernate.Mapping.Column.GetSqlTypeCode(IMapping mapping)
+   at NHibernate.Mapping.Column.GetDialectTypeName(Dialect dialect, IMapping mapping)
+   at NHibernate.Mapping.Table.SqlAlterStrings(Dialect dialect, IMapping p, ITableMetadata tableInfo, String defaultCatalog, String defaultSchema)
+   at NHibernate.Cfg.Configuration.GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+ERROR 2015-06-30 04:13:14,531 [1] SchemaUpdate           - could not complete schema update
+NHibernate.MappingException: Could not determine type for: RadialReview.Models.Survey.SurveyContainerModel, RadialReview, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, for columns: NHibernate.Mapping.Column(ContainerId)
+   at NHibernate.Mapping.SimpleValue.get_Type()
+   at NHibernate.Mapping.Column.GetSqlTypeCode(IMapping mapping)
+   at NHibernate.Mapping.Column.GetDialectTypeName(Dialect dialect, IMapping mapping)
+   at NHibernate.Mapping.Table.SqlAlterStrings(Dialect dialect, IMapping p, ITableMetadata tableInfo, String defaultCatalog, String defaultSchema)
+   at NHibernate.Cfg.Configuration.GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+ERROR 2015-06-30 04:13:35,421 [1] SchemaUpdate           - could not complete schema update
+NHibernate.MappingException: Could not determine type for: RadialReview.Models.Survey.SurveyContainerModel, RadialReview, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, for columns: NHibernate.Mapping.Column(ContainerId)
+   at NHibernate.Mapping.SimpleValue.get_Type()
+   at NHibernate.Mapping.Column.GetSqlTypeCode(IMapping mapping)
+   at NHibernate.Mapping.Column.GetDialectTypeName(Dialect dialect, IMapping mapping)
+   at NHibernate.Mapping.Table.SqlAlterStrings(Dialect dialect, IMapping p, ITableMetadata tableInfo, String defaultCatalog, String defaultSchema)
+   at NHibernate.Cfg.Configuration.GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+ERROR 2015-06-30 04:13:49,877 [11] SchemaUpdate           - could not complete schema update
+NHibernate.MappingException: Could not determine type for: RadialReview.Models.Survey.SurveyContainerModel, RadialReview, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, for columns: NHibernate.Mapping.Column(ContainerId)
+   at NHibernate.Mapping.SimpleValue.get_Type()
+   at NHibernate.Mapping.Column.GetSqlTypeCode(IMapping mapping)
+   at NHibernate.Mapping.Column.GetDialectTypeName(Dialect dialect, IMapping mapping)
+   at NHibernate.Mapping.Table.SqlAlterStrings(Dialect dialect, IMapping p, ITableMetadata tableInfo, String defaultCatalog, String defaultSchema)
+   at NHibernate.Cfg.Configuration.GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+ERROR 2015-06-30 04:13:49,910 [11] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+>>
+FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+ ---> NHibernate.MappingException: Could not determine type for: RadialReview.Models.Survey.SurveyContainerModel, RadialReview, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, for columns: NHibernate.Mapping.Column(ContainerId)
+   at NHibernate.Mapping.SimpleValue.get_Type()
+   at NHibernate.Mapping.SimpleValue.IsValid(IMapping mapping)
+   at NHibernate.Mapping.PersistentClass.Validate(IMapping mapping)
+   at NHibernate.Mapping.RootClass.Validate(IMapping mapping)
+   at NHibernate.Cfg.Configuration.ValidateEntities()
+   at NHibernate.Cfg.Configuration.Validate()
+   at NHibernate.Cfg.Configuration.BuildSessionFactory()
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   --- End of inner exception stack trace ---
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   at RadialReview.Utilities.HibernateSession.GetDatabaseSessionFactory() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 90
+   at RadialReview.Utilities.HibernateSession.GetCurrentSession() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 134
+   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 340
+   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
+
+
+ERROR 2015-06-30 04:14:06,377 [1] SchemaUpdate           - could not complete schema update
+NHibernate.MappingException: Could not determine type for: RadialReview.Models.Survey.SurveyContainerModel, RadialReview, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, for columns: NHibernate.Mapping.Column(ContainerId)
+   at NHibernate.Mapping.SimpleValue.get_Type()
+   at NHibernate.Mapping.Column.GetSqlTypeCode(IMapping mapping)
+   at NHibernate.Mapping.Column.GetDialectTypeName(Dialect dialect, IMapping mapping)
+   at NHibernate.Mapping.Table.SqlAlterStrings(Dialect dialect, IMapping p, ITableMetadata tableInfo, String defaultCatalog, String defaultSchema)
+   at NHibernate.Cfg.Configuration.GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+ERROR 2015-06-30 04:14:20,162 [10] SchemaUpdate           - could not complete schema update
+NHibernate.MappingException: Could not determine type for: RadialReview.Models.Survey.SurveyContainerModel, RadialReview, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, for columns: NHibernate.Mapping.Column(ContainerId)
+   at NHibernate.Mapping.SimpleValue.get_Type()
+   at NHibernate.Mapping.Column.GetSqlTypeCode(IMapping mapping)
+   at NHibernate.Mapping.Column.GetDialectTypeName(Dialect dialect, IMapping mapping)
+   at NHibernate.Mapping.Table.SqlAlterStrings(Dialect dialect, IMapping p, ITableMetadata tableInfo, String defaultCatalog, String defaultSchema)
+   at NHibernate.Cfg.Configuration.GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+ERROR 2015-06-30 04:14:20,214 [10] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+>>
+FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+ ---> NHibernate.MappingException: Could not determine type for: RadialReview.Models.Survey.SurveyContainerModel, RadialReview, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null, for columns: NHibernate.Mapping.Column(ContainerId)
+   at NHibernate.Mapping.SimpleValue.get_Type()
+   at NHibernate.Mapping.SimpleValue.IsValid(IMapping mapping)
+   at NHibernate.Mapping.PersistentClass.Validate(IMapping mapping)
+   at NHibernate.Mapping.RootClass.Validate(IMapping mapping)
+   at NHibernate.Cfg.Configuration.ValidateEntities()
+   at NHibernate.Cfg.Configuration.Validate()
+   at NHibernate.Cfg.Configuration.BuildSessionFactory()
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   --- End of inner exception stack trace ---
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   at RadialReview.Utilities.HibernateSession.GetDatabaseSessionFactory() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 90
+   at RadialReview.Utilities.HibernateSession.GetCurrentSession() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 134
+   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 340
+   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
+
+
