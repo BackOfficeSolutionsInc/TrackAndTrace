@@ -64,6 +64,7 @@
 										<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;"  class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>
 										<li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank" ><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
 										<li><a href="/L10/Edit/@meeting.Recurrence.Id"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span> Settings</a></li>
+										<li><a href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone"></span> Texting Actions</a></li>
 									  </ul>
 									</div>
 								</div>

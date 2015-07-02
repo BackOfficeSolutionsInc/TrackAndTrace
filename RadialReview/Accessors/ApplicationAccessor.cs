@@ -176,7 +176,13 @@ namespace RadialReview.Accessors
 					s.Flush();
 
 	            }
+				using (var tx = s.BeginTransaction())
+				{
+					ConstructPhoneNumbers(s);
+					tx.Commit();
+					s.Flush();
 
+				}
                 using (var tx = s.BeginTransaction())
                 {
                     var application = s.Get<ApplicationWideModel>(APPLICATION_ID);
@@ -212,6 +218,25 @@ namespace RadialReview.Accessors
 		    }
 	    }
 
+		public List<long> AllowedPhoneNumbers = new List<long>() { 6467599497, 6467599498, 6467599499 };
+		public void ConstructPhoneNumbers(ISession s)
+		{
+			var found = s.QueryOver<CallablePhoneNumber>().Where(x => x.DeleteTime == null).List().ToList();
+			var set = SetUtility.AddRemove(found.Select(x => x.Number), AllowedPhoneNumbers);
+			var now = DateTime.UtcNow;
+			foreach(var a in set.AddedValues){
+				s.Save(new CallablePhoneNumber(){
+					CreateTime = now,
+					Number = a
+				});
+			}
+
+			foreach (var a in set.RemovedValues){
+				var b=found.First(x => x.Number == a);
+				b.DeleteTime = now;
+				s.Update(b);
+			}
+		}
 	    /*
         private static void Temp(ISession session)
         {

@@ -1,7 +1,7 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingVM
 @{
     Layout = null;
-	ViewBag.MeetingId = Model.Meeting.Id;
+	ViewBag.MeetingId = Model.NotNull(x=>x.Meeting.NotNull(y=>y.Id));
 }
 @RenderBody()
 

@@ -1350,6 +1350,7 @@
     <Content Include="Views\Survey\Take.cshtml" />
     <Content Include="Views\TwilioApi\Modal.cshtml" />
     <Content Include="Views\TwilioApi\_PhoneRow.cshtml" />
+    <Content Include="Views\TwilioApi\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

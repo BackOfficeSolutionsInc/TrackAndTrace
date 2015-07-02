@@ -13,11 +13,11 @@ namespace RadialReview.Models
 	{
 		public virtual long Id { get; set; }
 
-		public DateTime CreateTime { get; set; }
+		public virtual DateTime CreateTime { get; set; }
 
-		public DateTime? DeleteTime { get; set; }
+		public virtual DateTime? DeleteTime { get; set; }
 
-		public long Number { get; set; }
+		public virtual long Number { get; set; }
 
 		public CallablePhoneNumber()
 		{
@@ -65,15 +65,18 @@ namespace RadialReview.Models
 	{
 		public virtual long Id { get; set; }
 
-		public DateTime CreateTime { get; set; }
+		public virtual DateTime CreateTime { get; set; }
 
-		public DateTime? DeleteTime{ get; set; }
+		public virtual DateTime? DeleteTime { get; set; }
 
-		public UserOrganizationModel Caller { get; set; }
-		public String Action { get; set; }
-		public long ForId { get; set; }
-		public long CallerNumber { get; set; }
-		public long SystemNumber { get; set; }
+		public virtual long CallerId { get; set; }
+		public virtual UserOrganizationModel Caller { get; set; }
+		public virtual String Action { get; set; }
+		public virtual long ForId { get; set; }
+		public virtual long CallerNumber { get; set; }
+		public virtual long SystemNumber { get; set; }
+
+		public virtual string Placeholder { get; set; }
 
 		public PhoneActionMap()
 		{
@@ -91,7 +94,9 @@ namespace RadialReview.Models
 				Map(x => x.DeleteTime);
 				Map(x => x.CallerNumber);
 				Map(x => x.SystemNumber);
-				References(x => x.Caller).Not.LazyLoad().Not.Nullable().ReadOnly();
+				Map(x => x.Placeholder);
+				Map(x => x.CallerId).Column("Caller_id");
+				References(x => x.Caller).Column("Caller_id").Not.LazyLoad().Not.Nullable().ReadOnly();
 			}
 
 		}

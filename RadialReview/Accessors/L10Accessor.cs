@@ -1576,7 +1576,7 @@ namespace RadialReview.Accessors
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
-				{a
+				{
 					var todo = s.Get<TodoModel>(todoId);
 					if (todo == null)
 						throw new PermissionsException("To-do does not exist.");

@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Json;
 using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
@@ -13,11 +14,12 @@ namespace RadialReview.Controllers
     public class TwilioApiController : BaseController
     {
 		// GET: TwilioApi
+		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Index()
 		{
-			PhoneAccessor.GetAllPhoneActionsForUser(GetUser(),GetUser().Id);
+			var actions=PhoneAccessor.GetAllPhoneActionsForUser(GetUser(),GetUser().Id);
 
-			return View();
+			return View(actions);
 		}
 
 	    public class PhoneVM 
@@ -25,9 +27,12 @@ namespace RadialReview.Controllers
 		    public List<SelectListItem> PossibleNumbers {get;set;}
 			public List<SelectListItem> PossibleActions { get; set; }
 			public string SelectedAction { get; set; }
+			public string SelectedNumber { get; set; }
 			public long RecurrenceId { get; set; }
 
 	    }
+
+	    protected static List<SelectListItem> PossibleActions = new List<SelectListItem>(){new SelectListItem(){Text = "Add an Issue", Value = "issue"}, new SelectListItem(){Text = "Add a To-Do", Value = "todo"}};
 
 		[Access(AccessLevel.UserOrganization)]
 	    public ActionResult Modal(long recurrenceId)
@@ -36,18 +41,33 @@ namespace RadialReview.Controllers
 
 		    var model = new PhoneVM(){
 				RecurrenceId = recurrenceId,
-				PossibleActions = new List<SelectListItem>() { new SelectListItem() { Text = "Add Issue", Value = "issue" }, new SelectListItem() { Text = "Add To-Do", Value = "todo" } },
-				PossibleNumbers = PhoneAccessor.GetUnusedCallablePhoneNumbersForUser(GetUser(),GetUser().Id).ToSelectList(x=>x.Number,x=>x.Id)
+				PossibleActions = PossibleActions,
+				PossibleNumbers = PhoneAccessor.GetUnusedCallablePhoneNumbersForUser(GetUser(),GetUser().Id).ToSelectList(x=>x.Number.ToPhoneNumber(),x=>x.Id)
 		    };
 			
-
 			return PartialView(model);
 	    }
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult Modal(PhoneVM model)
+		{
+			ValidateValues(model,x=>x.RecurrenceId);
+			new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(model.RecurrenceId));
+			if(PossibleActions.All(x => x.Value != model.SelectedAction))
+				throw new PermissionsException("Action does not exist.");
+			var code = PhoneAccessor.AddAction(GetUser(),GetUser().Id, model.SelectedAction, model.SelectedNumber.ToLong(),model.RecurrenceId);
+			var phone = code.PhoneNumber.ToPhoneNumber();
+			return Json(ResultObject.Success("Text '" + code.Code + "' to " + phone+" to activate."));
+		}
+
+
 
 		[Access(AccessLevel.UserOrganization)]
 	    public JsonResult Delete(long id)
 	    {
 		    PhoneAccessor.DeleteAction(GetUser(), id);
+			return Json(ResultObject.SilentSuccess());
 	    }
 
 	
@@ -64,8 +84,10 @@ namespace RadialReview.Controllers
 			catch (PhoneException e){
 				return PhoneContent(e.Message);
 			}
-			catch (Exception){
-				return Content("<Response><Sms>We're sorry, this service is unavailable at this time.</Sms></Response>");
+			catch (Exception e){
+				var error = "We're sorry, this service is unavailable at this time.";
+				error += e.Message;
+				return Content("<Response><Sms>"+e+"</Sms></Response>");
 			}
 		}
 

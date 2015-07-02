@@ -19,7 +19,7 @@ namespace RadialReview.Exceptions
 
 	    public override String ToString()
 	    {
-		    return "<Response><Sms>"+Message+"</Sms></Response>";}
+		    return "<Response><Sms>"+Message+"</Sms></Response>";
 	    }
     }
 }

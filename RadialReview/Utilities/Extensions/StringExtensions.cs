@@ -37,6 +37,9 @@ namespace RadialReview
 
 	    public static String EscapeHtml(this string self)
 	    {
+		    if (self == null)
+			    return null;
+
 			return self.Replace("'", "&#39;").Replace("\"", "&#34;");//.Replace("\n", "&#13;");
 	    }
 

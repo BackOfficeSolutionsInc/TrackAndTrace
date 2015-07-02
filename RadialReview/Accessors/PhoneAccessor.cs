@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Amazon.IdentityManagement.Model;
+using NHibernate;
 using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Models;
@@ -15,23 +16,26 @@ namespace RadialReview.Accessors
 	public class PhoneAccessor : BaseAccessor
 	{
 
-		public static void RegisterPhone(UserOrganizationModel caller, long number)
+		public static List<CallablePhoneNumber> GetUnusedCallablePhoneNumbersForUser(ISession s,PermissionsUtility perms, long userId)
 		{
-			
+			perms.Self(userId);
+
+			var numbers = s.QueryOver<CallablePhoneNumber>().Where(x => x.DeleteTime == null).List().ToList();
+			var used = s.QueryOver<PhoneActionMap>().Where(x => x.DeleteTime == null && x.Caller.Id == userId).List().ToList();
+
+			return numbers.Where(x => used.All(y => y.SystemNumber != x.Number)).ToList();
 		}
 
 		public static List<CallablePhoneNumber> GetUnusedCallablePhoneNumbersForUser(UserOrganizationModel caller, long userId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction())
-				{
-					var numbers = s.QueryOver<CallablePhoneNumber>().Where(x => x.DeleteTime == null).List().ToList();
-					var used = s.QueryOver<PhoneActionMap>().Where(x => x.DeleteTime == null && x.Caller.Id == userId).List().ToList();
-
-					return numbers.Where(x => used.All(y => y.SystemNumber != x.Number)).ToList();
+				using (var tx = s.BeginTransaction()){
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetUnusedCallablePhoneNumbersForUser(s, perms, userId);
 				}
 			}
+		
 		}
 
 		public static string ReceiveText(long fromNumber, string body, long systemNumber)
@@ -54,10 +58,29 @@ namespace RadialReview.Accessors
 
 					CallablePhoneNumber alias = null;
 
-					found = s.QueryOver<PhoneActionMap>().Where(x => x.DeleteTime == null && x.SystemNumber == systemNumber && x.CallerNumber == fromNumber).List().FirstOrDefault();
 
-					if (found == null)
+					found = s.QueryOver<PhoneActionMap>().Where(x => x.DeleteTime == null && (x.SystemNumber == systemNumber || x.SystemNumber == systemNumber - 10000000000 || x.SystemNumber == systemNumber + 10000000000) &&(x.CallerNumber == fromNumber || x.CallerNumber == fromNumber - 10000000000 || x.CallerNumber == fromNumber + 10000000000)).List().FirstOrDefault();
+
+					if (found == null){
+						//Try to register the phone
+						var p = body.ToLower();
+						var found2 = s.QueryOver<PhoneActionMap>().Where(x => x.DeleteTime != null && x.Placeholder == p).OrderBy(x => x.DeleteTime).Desc.List().FirstOrDefault();
+						if (found2 != null){
+							if (found2.DeleteTime < DateTime.UtcNow){
+								throw new PhoneException("This code has expired. Please try again.");
+							}
+
+							found2.DeleteTime = null;
+							found2.CallerNumber = fromNumber;
+							s.Update(found2);
+							tx.Commit();
+							s.Flush();
+							return "Your phone has been registered. Add this number to your contacts to add "+found2.Action+"s via text message.";
+						}
 						throw new PhoneException("This number is not set up yet.");
+					}
+
+					found.Caller = s.Get<UserOrganizationModel>(found.Caller.Id);
 
 					text.FromUser = found.Caller;
 					s.Update(text);
@@ -87,15 +110,16 @@ namespace RadialReview.Accessors
 					Organization = found.Caller.Organization,
 					OrganizationId = found.Caller.Organization.Id,
 					DueDate = now.AddDays(7),
+					Details = "",
 					ForModel = "TodoModel",
 					ForModelId = -2,
 				});
 				return "Added todo.";
 				case "issue": IssuesAccessor.CreateIssue(found.Caller, found.ForId, found.Caller.Id, new IssueModel(){
 					CreatedById = found.Caller.Id,
-					//MeetingRecurrenceId = model.RecurrenceId,
-					CreatedDuringMeetingId = 0,
+					CreatedDuringMeetingId = null,
 					Message = body,
+					Description = "",
 					ForModel = "IssueModel",
 					ForModelId = -2,
 					Organization = found.Caller.Organization,
@@ -136,8 +160,64 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction()){
 					PermissionsUtility.Create(s, caller).Self(userId);
+
+					return s.QueryOver<PhoneActionMap>().Where(x => x.Caller.Id == userId && x.DeleteTime == null)
+						.List().ToList();
+				}
+			}
+		}
+
+		public class PhoneCode
+		{
+			public string Code { get; set; }
+			public long PhoneNumber { get; set; }
+		}
+
+		public static PhoneCode AddAction(UserOrganizationModel caller, long userId, string action, long callableId, long recurrenceId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId).Self(userId);
+
+					var unused = GetUnusedCallablePhoneNumbersForUser(s, perms, userId);
+					var found = unused.FirstOrDefault(x => x.Id == callableId);
+					if (found==null)
+						throw new PermissionsException("Phone number is unavailable.");
+
+					var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+					var random = new Random();
+					var result = new string(
+						Enumerable.Repeat(chars, 6)
+								  .Select(x => x[random.Next(x.Length)])
+								  .ToArray()).ToLower();
+
+					
+
+					var a = new PhoneActionMap(){
+						Action = action,
+						Caller = s.Load<UserOrganizationModel>(userId),
+						CallerId = userId,
+						CallerNumber = -1,
+						Placeholder = result,
+						SystemNumber = found.Number,
+						CreateTime = DateTime.UtcNow,
+						ForId = recurrenceId,
+						DeleteTime =  DateTime.UtcNow.AddMinutes(5)
+					};
+
+					s.Save(a);
+					a.Placeholder += a.Id;
+					s.Update(a);
+
+
 					tx.Commit();
 					s.Flush();
+
+					return new PhoneCode(){
+						Code = a.Placeholder,
+						PhoneNumber = found.Number
+					};
 				}
 			}
 		}

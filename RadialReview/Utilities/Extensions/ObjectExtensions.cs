@@ -40,6 +40,13 @@ namespace RadialReview
 			return b ? 1 : 0;
 		}
 
+	    public static string ToPhoneNumber(this long s )
+	    {
+		    string input=s.ToString();
+		   
+			var phone = "(" + input.Substring(0, 3) + ") " + input.Substring(3, 3) + "-" + input.Substring(6, 4);
+		    return phone;
+	    }
         public static long ToLong(this String s)
         {
             return long.Parse(s);
