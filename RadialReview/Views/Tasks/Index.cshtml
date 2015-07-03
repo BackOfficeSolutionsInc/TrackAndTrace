@@ -83,7 +83,7 @@
 								}
 								@if (type != TaskType.Profile)
 								{
-									<td class="alignCenter" style="width: 120px;">@t.DueDate.Subtract(TimeSpan.FromDays(1)).ToShortDateString()</td>
+									<td class="alignCenter" style="width: 120px;">@t.DueDate.SafeSubtract(TimeSpan.FromDays(1)).ToShortDateString()</td>
 								}
 
 							</tr>

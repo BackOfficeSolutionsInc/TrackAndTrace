@@ -39,5 +39,10 @@ namespace RadialReview
 		    return dt.StartOfWeek(startOfWeek).AddDays(6).Date;
 	    }
 
+	    public static DateTime SafeSubtract(this DateTime dt, TimeSpan ts)
+	    {
+		    return Math2.Max(dt, new DateTime(ts.Ticks)).Subtract(ts);
+	    }
+
     }
 }

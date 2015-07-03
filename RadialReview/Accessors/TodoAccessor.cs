@@ -147,9 +147,9 @@ namespace RadialReview.Accessors
 					var found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId).List().ToList();
 					foreach (var f in found)
 					{
-						var a = f.ForRecurrence.Id;
-						var b = f.AccountableUser.GetName();
-						var c = f.AccountableUser.ImageUrl(true,ImageSize._32);
+						var a = f.ForRecurrence.NotNull(x=>x.Id);
+						var b = f.AccountableUser.NotNull(x=>x.GetName());
+						var c = f.AccountableUser.NotNull(x=>x.ImageUrl(true,ImageSize._32));
 						var d = f.CreatedDuringMeeting.NotNull(x=>x.Id);
 					}
 					return found;
