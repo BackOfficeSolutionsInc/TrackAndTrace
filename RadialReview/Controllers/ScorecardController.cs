@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Accessors;
 using RadialReview.Models.Scorecard;
+using RadialReview.Models.Angular.Scorecard;
 
 namespace RadialReview.Controllers
 {
@@ -29,6 +30,7 @@ namespace RadialReview.Controllers
 		    var model = new ScoreVM();
 		    return View();
 	    }*/
+		
 		// GET: Scorecard
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Edit(long? start = null, long? end = null)

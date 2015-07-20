@@ -224,18 +224,20 @@ namespace RadialReview.Controllers
 		
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult UpdateIssueCompletion(long id, long issueId,bool @checked,string connectionId=null)
-		{
+        public JsonResult UpdateIssueCompletion(long id, long issueId, bool @checked, DateTime? time = null, string connectionId = null)
+        {
+            time = time ?? DateTime.UtcNow;
 			var recurrenceId = id;
-			L10Accessor.UpdateIssue(GetUser(), issueId, complete: @checked, connectionId: connectionId);
+            L10Accessor.UpdateIssue(GetUser(), issueId, time.Value, complete: @checked, connectionId: connectionId);
 			return Json(ResultObject.SilentSuccess(@checked));
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult UpdateIssue(long id, string message = null, string details = null, long? owner = null)
+		public JsonResult UpdateIssue(long id, DateTime? time=null, string message = null, string details = null, long? owner = null,int? priority=null)
 		{
-			L10Accessor.UpdateIssue(GetUser(), id, message, details,owner:owner);
+            time = time ?? DateTime.UtcNow;
+			L10Accessor.UpdateIssue(GetUser(), id,time.Value, message, details,owner:owner,priority: priority);
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -279,9 +281,9 @@ namespace RadialReview.Controllers
 		{
 			var issueId = pk.ToLong();
 			switch (name){
-				case "title":		return UpdateIssue(issueId, value, null, null);
-				case "details":		return UpdateIssue(issueId, null, value, null);
-				case "owner":		return UpdateIssue(issueId, null, null,  value.ToLong());
+				case "title":		return UpdateIssue(issueId,DateTime.UtcNow, value, null, null);
+                case "details":     return UpdateIssue(issueId, DateTime.UtcNow, null, value, null);
+                case "owner":       return UpdateIssue(issueId, DateTime.UtcNow, null, null, value.ToLong());
 				default: throw new ArgumentOutOfRangeException("name");
 			}
 		}

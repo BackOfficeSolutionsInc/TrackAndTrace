@@ -222,7 +222,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	//var sevenMin = moment().subtract('days', 6).toDate();
 	//var sevenMax = moment().add('days', 2).toDate();
 
-	var sevenMin = moment().subtract('days', 6).toDate();
+	var sevenMin = moment().subtract('days',89).toDate();
 	var sevenMax = moment().add('days', 9).toDate();
 
 	$scope.date = { startDate: sevenMin, endDate: sevenMax };
@@ -233,11 +233,11 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 		ranges: {
 			'Incomplete': [moment().add('days', 1), moment().add('days', 1)],
 			'Today': [moment().subtract('days', 1), moment().add('days', 1)],
-			'Last 7 Days': [sevenMin, sevenMax],
+			'Last 7 Days': [moment().subtract('days', 6), moment().add('days',1)],
 			'Last 14 Days': [moment().subtract('days', 13), moment().add('days', 1)],
 			'Last 30 Days': [moment().subtract('days', 29), moment().add('days', 1)],
 			//'Last 60 Days': [moment().subtract('days', 59), moment().add('days',1)],
-			'Last 90 Days': [moment().subtract('days', 89), moment().add('days', 1)]
+			'Last 90 Days': [sevenMin, sevenMax]
 		},
 		separator: '  to  ',
 		showDropdowns: true,
@@ -246,9 +246,10 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	};
 
 
-	$scope.filters.byRange = function (fieldName, minValue, maxValue) {
+	$scope.filters.byRange = function (fieldName, minValue, maxValue, forceMin) {
 		if (minValue === undefined) minValue = Number.MIN_VALUE;
 		if (maxValue === undefined) maxValue = Number.MAX_VALUE;
+		if (forceMin === undefined) minValue = Math.min(minValue, maxValue - 13 * 7 * 24 * 60 * 60 * 1000);
 
 		return function predicateFunc(item) {
 			var d = item[fieldName];

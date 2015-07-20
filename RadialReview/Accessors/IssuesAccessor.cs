@@ -111,6 +111,9 @@ namespace RadialReview.Accessors
 			}
 		}
 
+
+
+
 		public static void CopyIssue(UserOrganizationModel caller, long parentIssue_RecurrenceId, long childRecurrenceId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())

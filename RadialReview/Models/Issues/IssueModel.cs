@@ -83,7 +83,9 @@ namespace RadialReview.Models.Issues
 
 		public class IssueModel_Recurrence : ILongIdentifiable, IDeletable
 		{
-			public virtual long Id { get; set; }
+            public virtual long Id { get; set; }
+            public virtual int Priority { get; set; }
+            public virtual DateTime LastUpdate_Priority { get; set; }
 			public virtual DateTime CreateTime { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual DateTime? CloseTime { get; set; }
@@ -107,9 +109,11 @@ namespace RadialReview.Models.Issues
 				public IssueModel_RecurrenceMap()
 				{
 					Id(x => x.Id);
-					Map(x => x.CreateTime);
-					Map(x => x.DeleteTime);
+                    Map(x => x.CreateTime);
+                    Map(x => x.DeleteTime);
+                    Map(x => x.LastUpdate_Priority);
 					Map(x => x.CloseTime);
+					Map(x => x.Priority);
 					Map(x => x.Ordering);
 					References(x => x.CreatedBy).Column("CreatedById");
 					References(x => x.CopiedFrom).Column("CopiedFromId").Nullable();
@@ -124,9 +128,5 @@ namespace RadialReview.Models.Issues
 			}
 
 		}
-
-
-
-
 	}
 }

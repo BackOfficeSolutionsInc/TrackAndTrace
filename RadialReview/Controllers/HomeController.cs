@@ -11,7 +11,9 @@ namespace RadialReview.Controllers
     {
         public UserViewModel User {get;set;}
         public OutstandingReviewViewModel OutstandingReview { get; set; }
-		public bool IncludeTodos { get; set; }
+        public bool IncludeTodos { get; set; }
+        public bool IncludeScorecard { get; set; }
+        public bool IncludeRocks { get; set; }
     }
 
     public class OutstandingReviewViewModel
@@ -45,7 +47,9 @@ namespace RadialReview.Controllers
 		                    };
 	                    }
                     }
-	                model.IncludeTodos = GetUser().Organization.Settings.EnableL10;
+                    model.IncludeTodos      = GetUser().Organization.Settings.EnableL10;
+                    model.IncludeScorecard  = GetUser().Organization.Settings.EnableL10;
+                    model.IncludeRocks      = GetUser().Organization.Settings.EnableL10;
 
                 }catch(Exception){
 	                model.User = new UserViewModel(){User = GetUserModel()};

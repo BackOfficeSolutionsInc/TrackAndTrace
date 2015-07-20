@@ -1,64 +1,60 @@
-ERROR 2015-06-30 04:30:59,821 [18] AbstractBatcher        - Could not execute query: INSERT INTO `SurveyTake` (UserAgent, IPAddress, CreateTime, DeleteTime, ContainerId, RespondentId) VALUES (?p0, ?p1, ?p2, ?p3, ?p4, ?p5);SELECT LAST_INSERT_ID()
-MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`surveytake`, CONSTRAINT `FK8C6F7371EE66DE13` FOREIGN KEY (`Respondent_id`) REFERENCES `surveyrespondentmodel` (`Id`))
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-06-30 04:30:59,921 [18] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`surveytake`, CONSTRAINT `FK8C6F7371EE66DE13` FOREIGN KEY (`Respondent_id`) REFERENCES `surveyrespondentmodel` (`Id`))
-ERROR 2015-06-30 04:31:06,923 [18] BaseController         - Error: [/Survey/take/27193cc4821443e0acb0dc12019d0975]<<could not insert: [RadialReview.Models.Survey.SurveyTake][SQL: INSERT INTO `SurveyTake` (UserAgent, IPAddress, CreateTime, DeleteTime, ContainerId, RespondentId) VALUES (?, ?, ?, ?, ?, ?);SELECT LAST_INSERT_ID()]>>
-NHibernate.Exceptions.GenericADOException: could not insert: [RadialReview.Models.Survey.SurveyTake][SQL: INSERT INTO `SurveyTake` (UserAgent, IPAddress, CreateTime, DeleteTime, ContainerId, RespondentId) VALUES (?, ?, ?, ?, ?, ?);SELECT LAST_INSERT_ID()] ---> MySql.Data.MySqlClient.MySqlException: Cannot add or update a child row: a foreign key constraint fails (`radial`.`surveytake`, CONSTRAINT `FK8C6F7371EE66DE13` FOREIGN KEY (`Respondent_id`) REFERENCES `surveyrespondentmodel` (`Id`))
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-   at NHibernate.Id.IdentityGenerator.InsertSelectDelegate.ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
-   at NHibernate.Id.Insert.AbstractReturningDelegate.PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
-   --- End of inner exception stack trace ---
-   at NHibernate.Id.Insert.AbstractReturningDelegate.PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object[] fields, Boolean[] notNull, SqlCommandInfo sql, Object obj, ISessionImplementor session)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object[] fields, Object obj, ISessionImplementor session)
-   at NHibernate.Action.EntityIdentityInsertAction.Execute()
-   at NHibernate.Engine.ActionQueue.Execute(IExecutable executable)
-   at NHibernate.Event.Default.AbstractSaveEventListener.PerformSaveOrReplicate(Object entity, EntityKey key, IEntityPersister persister, Boolean useIdentityColumn, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
-   at NHibernate.Event.Default.AbstractSaveEventListener.PerformSave(Object entity, Object id, IEntityPersister persister, Boolean useIdentityColumn, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
-   at NHibernate.Event.Default.AbstractSaveEventListener.SaveWithGeneratedId(Object entity, String entityName, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
-   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent event)
-   at NHibernate.Event.Default.DefaultSaveEventListener.SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent event)
-   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.EntityIsTransient(SaveOrUpdateEvent event)
-   at NHibernate.Event.Default.DefaultSaveEventListener.PerformSaveOrUpdate(SaveOrUpdateEvent event)
-   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.OnSaveOrUpdate(SaveOrUpdateEvent event)
-   at NHibernate.Impl.SessionImpl.FireSave(SaveOrUpdateEvent event)
-   at NHibernate.Impl.SessionImpl.Save(Object obj)
-   at RadialReview.Accessors.SurveyAccessor.LoadSurvey(String id, String userAgent, String IPAddress) in c:\repos\Radial\RadialReview\RadialReview\Accessors\SurveyAccessor.cs:line 78
-   at RadialReview.Controllers.SurveyController.Take(String id) in c:\repos\Radial\RadialReview\RadialReview\Controllers\SurveyController.cs:line 55
+ERROR 2015-07-05 03:47:16,090 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Reviews, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Reviews, no session or session was closed
+ERROR 2015-07-05 03:47:16,422 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Teams, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Teams, no session or session was closed
+ERROR 2015-07-05 03:47:17,279 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagedBy, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagedBy, no session or session was closed
+ERROR 2015-07-05 03:47:17,543 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingGroups, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingGroups, no session or session was closed
+ERROR 2015-07-05 03:47:17,800 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingUsers, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingUsers, no session or session was closed
+ERROR 2015-07-05 03:47:18,285 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Reviews, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Reviews, no session or session was closed
+ERROR 2015-07-05 03:47:18,511 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Teams, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Teams, no session or session was closed
+ERROR 2015-07-05 03:47:19,270 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagedBy, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagedBy, no session or session was closed
+ERROR 2015-07-05 03:47:19,517 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingGroups, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingGroups, no session or session was closed
+ERROR 2015-07-05 03:47:19,723 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingUsers, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingUsers, no session or session was closed
+ERROR 2015-07-05 03:47:20,108 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Reviews, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Reviews, no session or session was closed
+ERROR 2015-07-05 03:47:20,255 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Teams, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Teams, no session or session was closed
+ERROR 2015-07-05 03:47:30,547 [11] BaseController         - Error: [/L10/StartMeeting]<<null id in RadialReview.Models.Audit.L10AuditModel entry (don't flush the Session after an exception occurs)>>
+NHibernate.AssertionFailure: null id in RadialReview.Models.Audit.L10AuditModel entry (don't flush the Session after an exception occurs)
+   at NHibernate.Event.Default.DefaultFlushEntityEventListener.CheckId(Object obj, IEntityPersister persister, Object id, EntityMode entityMode)
+   at NHibernate.Event.Default.DefaultFlushEntityEventListener.GetValues(Object entity, EntityEntry entry, EntityMode entityMode, Boolean mightBeDirty, ISessionImplementor session)
+   at NHibernate.Event.Default.DefaultFlushEntityEventListener.OnFlushEntity(FlushEntityEvent event)
+   at NHibernate.Event.Default.AbstractFlushingEventListener.FlushEntities(FlushEvent event)
+   at NHibernate.Event.Default.AbstractFlushingEventListener.FlushEverythingToExecutions(FlushEvent event)
+   at NHibernate.Event.Default.DefaultFlushEventListener.OnFlush(FlushEvent event)
+   at NHibernate.Impl.SessionImpl.Flush()
+   at NHibernate.Transaction.AdoTransaction.Commit()
+   at RadialReview.Accessors.L10Accessor.StartMeeting(UserOrganizationModel caller, UserOrganizationModel meetingLeader, Int64 recurrenceId, List`1 attendees) in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\L10Accessor.cs:line 1192
+   at RadialReview.Controllers.L10Controller.StartMeeting(L10MeetingVM model) in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Controllers\L10SubPageController.cs:line 121
    at lambda_method(Closure , ControllerBase , Object[] )
    at System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
    at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
    at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.ActionInvocation.InvokeSynchronousActionMethod()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<BeginInvokeSynchronousActionMethod>b__36(IAsyncResult asyncResult, ActionInvocation innerInvokeState)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
-ERROR 2015-06-30 04:31:09,707 [10] AbstractBatcher        - Could not execute query: INSERT INTO `SurveyTake` (UserAgent, IPAddress, CreateTime, DeleteTime, ContainerId, RespondentId) VALUES (?p0, ?p1, ?p2, ?p3, ?p4, ?p5);SELECT LAST_INSERT_ID()
-MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`surveytake`, CONSTRAINT `FK8C6F7371EE66DE13` FOREIGN KEY (`Respondent_id`) REFERENCES `surveyrespondentmodel` (`Id`))
+ERROR 2015-07-05 03:47:35,116 [23] AbstractBatcher        - Could not execute query: INSERT INTO `AuditModel` (CreateTime, DeleteTime, Path, Query, Data, Method, UserAgent, UserId, UserOrganizationId) VALUES (?p0, ?p1, ?p2, ?p3, ?p4, ?p5, ?p6, ?p7, ?p8);SELECT LAST_INSERT_ID()
+MySql.Data.MySqlClient.MySqlException (0x80004005): Table 'radial.auditmodel' doesn't exist
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
@@ -68,44 +64,3 @@ MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
    at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
    at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-06-30 04:31:09,738 [10] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`surveytake`, CONSTRAINT `FK8C6F7371EE66DE13` FOREIGN KEY (`Respondent_id`) REFERENCES `surveyrespondentmodel` (`Id`))
-ERROR 2015-06-30 14:36:09,001 [10] BaseController         - Error: [/Survey/take/27193cc4821443e0acb0dc12019d0975]<<Fatal error encountered during command execution.>>
-MySql.Data.MySqlClient.MySqlException (0x80004005): Fatal error encountered during command execution. ---> System.IO.IOException: Unable to write data to the transport connection: An established connection was aborted by the software in your host machine. ---> System.Net.Sockets.SocketException: An established connection was aborted by the software in your host machine
-   at System.Net.Sockets.Socket.Send(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
-   at System.Net.Sockets.NetworkStream.Write(Byte[] buffer, Int32 offset, Int32 size)
-   --- End of inner exception stack trace ---
-   at MySql.Data.Common.MyNetworkStream.HandleOrRethrowException(Exception e)
-   at MySql.Data.Common.MyNetworkStream.Write(Byte[] buffer, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.TimedStream.Write(Byte[] buffer, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.SendPacket(MySqlPacket packet)
-   at MySql.Data.MySqlClient.NativeDriver.ExecutePacket(MySqlPacket packetToExecute)
-   at MySql.Data.MySqlClient.NativeDriver.SendQuery(MySqlPacket queryPacket)
-   at MySql.Data.MySqlClient.Driver.SendQuery(MySqlPacket p)
-   at MySql.Data.MySqlClient.Statement.ExecuteNext()
-   at MySql.Data.MySqlClient.PreparableStatement.ExecuteNext()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
-   at MySql.Data.MySqlClient.MySqlTransaction.Rollback()
-   at MySql.Data.MySqlClient.MySqlTransaction.Dispose()
-   at NHibernate.Transaction.AdoTransaction.Dispose(Boolean isDisposing)
-   at NHibernate.Transaction.AdoTransaction.Dispose()
-   at RadialReview.Accessors.SurveyAccessor.LoadSurvey(String id, String userAgent, String IPAddress) in c:\repos\Radial\RadialReview\RadialReview\Accessors\SurveyAccessor.cs:line 99
-   at RadialReview.Controllers.SurveyController.Take(String id) in c:\repos\Radial\RadialReview\RadialReview\Controllers\SurveyController.cs:line 55
-   at lambda_method(Closure , ControllerBase , Object[] )
-   at System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
-   at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<BeginInvokeSynchronousActionMethod>b__36(IAsyncResult asyncResult, ActionInvocation innerInvokeState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)

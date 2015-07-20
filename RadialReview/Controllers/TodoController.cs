@@ -317,24 +317,5 @@ namespace RadialReview.Controllers
 		{
 			return PartialView("~/Views/Todo/Partial/list.cshtml",id ?? GetUser().Id);
 		}
-
-
-		public class ListDataVM : BaseAngular
-	    {
-			public string Name { get; set; }
-			public IEnumerable<AngularTodo> Todos { get; set; }
-		    public ListDataVM(long id):base(id){}
-	    }
-
-		[Access(AccessLevel.UserOrganization)]
-	    public JsonResult ListData(long id)
-	    {
-			var todos = TodoAccessor.GetTodosForUser(GetUser(), id).Select(x => new AngularTodo(x));
-			var m=_UserAccessor.GetUserOrganization(GetUser(),id,false,true,PermissionType.ViewTodos);
-			return Json(new ListDataVM(id){
-				Todos = todos,
-				Name = "All to-dos for "+m.GetName()
-			}, JsonRequestBehavior.AllowGet);
-	    }
 	}
 }

@@ -18,11 +18,13 @@ namespace RadialReview.Models.L10.VM
 		public String owner { get; set; }
 		public long? accountable { get; set; }
 		public String imageUrl{ get; set; }
-		public long? createdDuringMeetingId { get; set; }
+        public long? createdDuringMeetingId { get; set; }
+        public int priority { get; set; }
 
 		public static IssuesData FromIssueRecurrence(IssueModel.IssueModel_Recurrence recur)
 		{
 			var issue = new IssuesData(){
+                priority = recur.Priority,
 				@checked = recur.CloseTime != null,
 				createtime = recur.CreateTime.NotNull(x=>x.ToJavascriptMilliseconds()),
 				details = recur.Issue.Description,

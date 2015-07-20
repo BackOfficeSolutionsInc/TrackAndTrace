@@ -2,6 +2,7 @@
 var currentIssuesDetailsId;
 $(function () {
 
+    refreshCurrentIssueDetails();
 	$("body").on("click", ".issues-list>.issue-row", function () {
 		var issueRow = $(this);//.closest(".issue-row");
 		$(".issue-row.selected").removeClass("selected");
@@ -155,10 +156,25 @@ function sendNewIssueAccountable(self, id) {
 	});
 }
 
+function changeMode(type) {
+    $(".ids .issues-container").removeClass("columns");
+    $(".ids .issues-container").removeClass("double");
+    $(".ids .issues-container").removeClass("triple");
+    $(".ids .issues-container").removeClass("quadruple");
+
+    if (type == "Prioritize") {
+        $(".ids .issues-container").addClass("columns");
+        $(".ids .issues-container").addClass("triple");
+    } else if (type == "Reorder") {
+
+    }
+    refreshCurrentIssueDetails();
+}
+
 function sortIssueBy(recurrenceId, issueList,sortBy,title,mult) {
 	mult = mult || 1;
 
-	$(".sort-button").html("Sort by " + title);
+	//$(".sort-button").html("Sort by " + title);
 
 	$(issueList).children().detach().sort(function(a, b) {
 		if ($(a).attr(sortBy)===$(b).attr(sortBy))
@@ -201,7 +217,7 @@ function constructRow(issue) {
 	if (issue.details)
 		details = issue.details;
 
-	return '<li class="issue-row dd-item arrowkey" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="'+issue.owner+'" data-accountable="'+issue.accountable+'">'
+	return '<li class="issue-row dd-item arrowkey" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '">'
 		+ '	<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>'
 		+ '	<div class="move-icon noselect dd-handle">'
 		+ '		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>'
@@ -212,6 +228,7 @@ function constructRow(issue) {
 		+ ' <span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" data-issue="'+issue.issue+'" data-meeting="'+issue.createdDuringMeetingId+'" data-recurrence="'+recurrenceId+'" data-method="CreateTodoFromIssue"></span>'
 		+ '</div>'
 		+ ' <span class="number"></span>'
+        + ' <span class="priority" data-priority="'+issue.priority+'"></span>'
 		+ '	<span class="profile-image">'
 		+ '		<span class="profile-picture">' 
 		+	'			<span class="picture-container" title="' + issue.owner + '">' 
@@ -270,8 +287,37 @@ function refreshCurrentIssueDetails() {
 	$(".issue-row[data-recurrence_issue=" + currentIssuesDetailsId + "]").addClass("selected");
 
 
-	$(".issues-list > .issue-row > .number").each(function(i) {
-		$(this).html(i+1);
+	$(".issues-list > .issue-row > .number-priority > .number").each(function (i) {
+	    $(this).html(i + 1);
+	});
+
+	$(".issues-list > .issue-row > .number-priority > .priority").each(function (i) {
+	    var p = $(this).attr("data-priority");
+	    $(this).removeClass("multiple");
+	    $(this).removeClass("none");
+	    $(this).removeClass("single");
+	    $(this).removeClass("single-1");
+	    $(this).removeClass("single-2");
+	    $(this).removeClass("single-3");
+
+	    $(this).parents(".issue-row").toggleClass("prioritize", p > 0);
+
+	    if (p > 3) {
+	        $(this).addClass("multiple");
+	        $(this).html("<span class='icon fontastic-icon-star-3'></span> x" +p);
+	    } else if (p > 0 && p<=3) {
+	        $(this).addClass("single");
+	        $(this).addClass("single-"+p);
+	        var str = "";
+	        for (var i = 0; i < p; i++) {
+	            str += "<span class='icon fontastic-icon-star-3'></span>";
+	        }
+	        $(this).html(str);
+	    } else if (p == 0) {
+	        $(this).addClass("none");
+	        $(this).html("<span class='icon fontastic-icon-star-empty'></span>");
+	    }
+
 	});
 }
 
@@ -332,11 +378,49 @@ $("body").on("blur", ".issueDetails .details", function() {
 
 
 function updateIssueOwner(id, userId, name, image) {
-	$(".ids [data-recurrence_issue=" + id + "] .picture-container").prop("title", name);
-	$(".ids [data-recurrence_issue=" + id + "] .picture").css("background", "url(" + image + ") no-repeat center center");
-	$(".ids .assignee .btn[data-recurrence_issue=" + id + "]").html(name);
-	var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
-	$(row).attr("data-owner", name);
-	$(row).attr("data-accountable", userId);
-	$(row).attr("data-imageurl", image);
+    $(".ids [data-recurrence_issue=" + id + "] .picture-container").prop("title", name);
+    $(".ids [data-recurrence_issue=" + id + "] .picture").css("background", "url(" + image + ") no-repeat center center");
+    $(".ids .assignee .btn[data-recurrence_issue=" + id + "]").html(name);
+    var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
+    $(row).attr("data-owner", name);
+    $(row).attr("data-accountable", userId);
+    $(row).attr("data-imageurl", image);
 }
+
+function updateIssuePriority(id, priority) {
+    $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .priority").attr("data-priority", priority)
+    var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
+    $(row).attr("data-priority", priority);
+}
+
+$("body").on("contextmenu", ".issue-row .priority", function (e) {
+    e.preventDefault();
+    return false;
+});
+$("body").on("mousedown", ".issue-row .priority", function (e) {
+    debugger;
+    var p = +$(this).attr("data-priority");
+    if (e.button==0){
+        p += 1;
+    }else if (e.button==2){
+        p -= 1;
+        p = Math.max(0, p);
+    }else {
+        return false;
+    }
+    $(this).attr("data-priority", p);
+    var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
+    updateIssuePriority(id,p);
+    refreshCurrentIssueDetails();
+    var d = { priority: p,time:new DateTime().getTime() };
+    $.ajax({
+        url: "/L10/UpdateIssue/" + id,
+        data: d,
+        method: "POST",
+        success: function (d) {
+            showJsonAlert(d);
+        }
+    });
+    e.preventDefault();
+    return false;
+});

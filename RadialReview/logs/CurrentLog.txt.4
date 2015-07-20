@@ -1,97 +1,44 @@
-ERROR 2015-06-30 15:16:32,488 [89] BaseController         - Error: [/Survey/Set/function%20sub()%20%7B%20%5Bnative%20code%5D%20%7D]<<Expected {0xdddddddd, etc}.>>
-System.FormatException: Expected {0xdddddddd, etc}.
-   at System.Guid.GuidResult.SetFailure(ParseFailureKind failure, String failureMessageID, Object failureMessageFormatArgument, String failureArgumentName, Exception innerException)
-   at System.Guid.TryParseGuidWithHexPrefix(String guidString, GuidResult& result)
-   at System.Guid.TryParseGuid(String g, GuidStyles flags, GuidResult& result)
-   at System.Guid.Parse(String input)
-   at RadialReview.Accessors.SurveyAccessor.SetValue(String id, Nullable`1 value) in c:\repos\Radial\RadialReview\RadialReview\Accessors\SurveyAccessor.cs:line 55
-   at RadialReview.Controllers.SurveyController.Set(String id, Nullable`1 value) in c:\repos\Radial\RadialReview\RadialReview\Controllers\SurveyController.cs:line 64
-   at lambda_method(Closure , ControllerBase , Object[] )
-   at System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
-   at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<BeginInvokeSynchronousActionMethod>b__36(IAsyncResult asyncResult, ActionInvocation innerInvokeState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
-INFO  2015-06-30 15:17:00,152 [21] BaseController         - Permissions: [/Survey/Set/4bee624f-e285-4afd-90a6-a4c700fbb700] --> []
-INFO  2015-06-30 15:17:37,129 [47] BaseController         - Permissions: [/Survey/Set/07603531-cbd1-4480-8241-a4c700fbb700] --> []
-INFO  2015-06-30 15:19:23,652 [47] BaseController         - Permissions: [/Survey/Set/e1b7b96e-7c39-417f-abc1-a4c700fc794f?value=4] --> []
-INFO  2015-06-30 15:19:24,349 [21] BaseController         - Permissions: [/Survey/Set/252e8320-46a4-4837-8ac8-a4c700fc794f?value=3] --> []
-INFO  2015-06-30 15:19:33,175 [47] BaseController         - Permissions: [/Survey/Set/e15f6b21-0edf-4e6b-a235-a4c700fc8690?value=4] --> []
-INFO  2015-06-30 15:19:59,251 [66] BaseController         - Permissions: [/Survey/Set/d7e50360-6799-4c03-bbef-a4c700fc8690?value=3] --> []
-INFO  2015-06-30 15:21:37,852 [66] BaseController         - Permissions: [/Survey/Set/9f613a75-2aed-45f2-8db8-a4c700fd18ef?value=4] --> []
-INFO  2015-06-30 15:21:38,547 [75] BaseController         - Permissions: [/Survey/Set/1efd064d-65af-416d-98d8-a4c700fd18f0?value=3] --> []
-INFO  2015-06-30 15:22:13,283 [21] BaseController         - Permissions: [/Survey/Take] --> []
-INFO  2015-06-30 15:22:31,425 [66] BaseController         - Permissions: [/Survey/Set/9f613a75-2aed-45f2-8db8-a4c700fd18ef?value=3] --> []
-INFO  2015-06-30 15:26:48,353 [96] BaseController         - Permissions: [/Survey/Set/761b652c-05b0-4b11-a153-a4c700fe3ec0?value=4] --> []
-INFO  2015-06-30 15:27:06,706 [75] BaseController         - Permissions: [/Survey/Set/bcdfcd53-0af2-4818-b98e-a4c700fe9d3a?value=2] --> []
-ERROR 2015-06-30 15:33:22,634 [98] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
-MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-12 08:37:01,735 [15] ADOExceptionReporter   - Deadlock found when trying to get lock; try restarting transaction
+ERROR 2015-07-12 08:37:02,058 [15] tFlushingEventListener - Could not synchronize database state with session
+NHibernate.Exceptions.GenericADOException: could not update: [RadialReview.Models.Scorecard.MeasurableModel#1][SQL: UPDATE `MeasurableModel` SET Title = ?, NextGeneration = ?, AccountableUserId = ?, AdminUserId = ?, Goal = ?, GoalDirection = ?, OrganizationId = ?, CreateTime = ?, DeleteTime = ?, UnitType = ?, DueDate = ?, DueTime = ?, FromTemplateItemId = ? WHERE Id = ?] ---> MySql.Data.MySqlClient.MySqlException: Deadlock found when trying to get lock; try restarting transaction
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
    at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
-ERROR 2015-06-30 15:33:22,739 [98] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
-ERROR 2015-06-30 15:33:27,626 [10] AbstractBatcher        - Could not execute command: INSERT INTO `SurveyTakeAnswer` (CreateTime, DeleteTime, Answer, Id) VALUES (?p0, ?p1, ?p2, ?p3)
-MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`surveytakeanswer`, CONSTRAINT `FK7161296C1845EE10` FOREIGN KEY (`SurveyTake_id`) REFERENCES `surveytake` (`Id`))
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
-ERROR 2015-06-30 15:33:27,692 [10] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`surveytakeanswer`, CONSTRAINT `FK7161296C1845EE10` FOREIGN KEY (`SurveyTake_id`) REFERENCES `surveytake` (`Id`))
-ERROR 2015-06-30 15:33:27,724 [10] tFlushingEventListener - Could not synchronize database state with session
-NHibernate.Exceptions.GenericADOException: could not insert: [RadialReview.Models.Survey.SurveyTakeAnswer#0330ad6b-063c-4243-8134-a4c7010061b9][SQL: INSERT INTO `SurveyTakeAnswer` (CreateTime, DeleteTime, Answer, Id) VALUES (?, ?, ?, ?)] ---> MySql.Data.MySqlClient.MySqlException: Cannot add or update a child row: a foreign key constraint fails (`radial`.`surveytakeanswer`, CONSTRAINT `FK7161296C1845EE10` FOREIGN KEY (`SurveyTake_id`) REFERENCES `surveytake` (`Id`))
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
    at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
    at NHibernate.AdoNet.NonBatchingBatcher.AddToBatch(IExpectation expectation)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object id, Object[] fields, Boolean[] notNull, Int32 j, SqlCommandInfo sql, Object obj, ISessionImplementor session)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
    --- End of inner exception stack trace ---
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object id, Object[] fields, Boolean[] notNull, Int32 j, SqlCommandInfo sql, Object obj, ISessionImplementor session)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object id, Object[] fields, Object obj, ISessionImplementor session)
-   at NHibernate.Action.EntityInsertAction.Execute()
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.UpdateOrInsert(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Int32[] dirtyFields, Boolean hasDirtyCollection, Object[] oldFields, Object oldVersion, Object obj, Object rowId, ISessionImplementor session)
+   at NHibernate.Action.EntityUpdateAction.Execute()
    at NHibernate.Engine.ActionQueue.Execute(IExecutable executable)
    at NHibernate.Engine.ActionQueue.ExecuteActions(IList list)
    at NHibernate.Engine.ActionQueue.ExecuteActions()
    at NHibernate.Event.Default.AbstractFlushingEventListener.PerformExecutions(IEventSource session)
-ERROR 2015-06-30 15:36:01,252 [10] BaseController         - Error: [/Survey/take/27193cc4821443e0acb0dc12019d0975]<<could not insert: [RadialReview.Models.Survey.SurveyTakeAnswer#0330ad6b-063c-4243-8134-a4c7010061b9][SQL: INSERT INTO `SurveyTakeAnswer` (CreateTime, DeleteTime, Answer, Id) VALUES (?, ?, ?, ?)]>>
-NHibernate.Exceptions.GenericADOException: could not insert: [RadialReview.Models.Survey.SurveyTakeAnswer#0330ad6b-063c-4243-8134-a4c7010061b9][SQL: INSERT INTO `SurveyTakeAnswer` (CreateTime, DeleteTime, Answer, Id) VALUES (?, ?, ?, ?)] ---> MySql.Data.MySqlClient.MySqlException: Cannot add or update a child row: a foreign key constraint fails (`radial`.`surveytakeanswer`, CONSTRAINT `FK7161296C1845EE10` FOREIGN KEY (`SurveyTake_id`) REFERENCES `surveytake` (`Id`))
+ERROR 2015-07-12 08:37:02,584 [15] BaseController         - Error: [/Scheduler/Reschedule]<<could not update: [RadialReview.Models.Scorecard.MeasurableModel#1][SQL: UPDATE `MeasurableModel` SET Title = ?, NextGeneration = ?, AccountableUserId = ?, AdminUserId = ?, Goal = ?, GoalDirection = ?, OrganizationId = ?, CreateTime = ?, DeleteTime = ?, UnitType = ?, DueDate = ?, DueTime = ?, FromTemplateItemId = ? WHERE Id = ?]>>
+NHibernate.Exceptions.GenericADOException: could not update: [RadialReview.Models.Scorecard.MeasurableModel#1][SQL: UPDATE `MeasurableModel` SET Title = ?, NextGeneration = ?, AccountableUserId = ?, AdminUserId = ?, Goal = ?, GoalDirection = ?, OrganizationId = ?, CreateTime = ?, DeleteTime = ?, UnitType = ?, DueDate = ?, DueTime = ?, FromTemplateItemId = ? WHERE Id = ?] ---> MySql.Data.MySqlClient.MySqlException: Deadlock found when trying to get lock; try restarting transaction
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
    at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
    at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
    at NHibernate.AdoNet.NonBatchingBatcher.AddToBatch(IExpectation expectation)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object id, Object[] fields, Boolean[] notNull, Int32 j, SqlCommandInfo sql, Object obj, ISessionImplementor session)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
    --- End of inner exception stack trace ---
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object id, Object[] fields, Boolean[] notNull, Int32 j, SqlCommandInfo sql, Object obj, ISessionImplementor session)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object id, Object[] fields, Object obj, ISessionImplementor session)
-   at NHibernate.Action.EntityInsertAction.Execute()
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.UpdateOrInsert(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Int32[] dirtyFields, Boolean hasDirtyCollection, Object[] oldFields, Object oldVersion, Object obj, Object rowId, ISessionImplementor session)
+   at NHibernate.Action.EntityUpdateAction.Execute()
    at NHibernate.Engine.ActionQueue.Execute(IExecutable executable)
    at NHibernate.Engine.ActionQueue.ExecuteActions(IList list)
    at NHibernate.Engine.ActionQueue.ExecuteActions()
@@ -99,21 +46,39 @@ NHibernate.Exceptions.GenericADOException: could not insert: [RadialReview.Model
    at NHibernate.Event.Default.DefaultFlushEventListener.OnFlush(FlushEvent event)
    at NHibernate.Impl.SessionImpl.Flush()
    at NHibernate.Transaction.AdoTransaction.Commit()
-   at RadialReview.Accessors.SurveyAccessor.LoadSurvey(String id, String userAgent, String IPAddress) in c:\repos\Radial\RadialReview\RadialReview\Accessors\SurveyAccessor.cs:line 115
-   at RadialReview.Controllers.SurveyController.Take(String id) in c:\repos\Radial\RadialReview\RadialReview\Controllers\SurveyController.cs:line 56
-   at lambda_method(Closure , ControllerBase , Object[] )
-   at System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
-   at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<BeginInvokeSynchronousActionMethod>b__36(IAsyncResult asyncResult, ActionInvocation innerInvokeState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult)
+   at RadialReview.Accessors.TaskAccessor.UpdateScorecard(DateTime now) in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 334
+   at RadialReview.Controllers.SchedulerController.<Reschedule>d__24.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 184
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.GetResult()
+   at lambda_method(Closure , Task )
+   at System.Threading.Tasks.TaskHelpersExtensions.ThrowIfFaulted(Task task)
+   at System.Web.Mvc.Async.TaskAsyncActionDescriptor.EndExecute(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass34.<BeginInvokeAsynchronousActionMethod>b__33(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+INFO  2015-07-12 08:37:48,011 [9] BaseController         - AntiForgery: [/Account/Login] --> []
+ERROR 2015-07-12 08:38:07,734 [16] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-12 08:38:07,809 [16] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))

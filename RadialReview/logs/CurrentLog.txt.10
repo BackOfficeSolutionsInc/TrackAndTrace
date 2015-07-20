@@ -1,79 +1,69 @@
-ERROR 2015-06-30 04:07:47,947 [151] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id72_0_, this_.Title as Title72_0_, this_.NextGeneration as NextGene3_72_0_, this_.AccountableUserId as Accounta4_72_0_, this_.AdminUserId as AdminUse5_72_0_, this_.Goal as Goal72_0_, this_.GoalDirection as GoalDire7_72_0_, this_.OrganizationId as Organiza8_72_0_, this_.CreateTime as CreateTime72_0_, this_.DeleteTime as DeleteTime72_0_, this_.UnitType as UnitType72_0_, this_.DueDate as DueDate72_0_, this_.DueTime as DueTime72_0_, this_.FromTemplateItemId as FromTem14_72_0_ FROM `MeasurableModel` this_ WHERE (this_.DeleteTime is null and this_.NextGeneration <= ?p0)
-MySql.Data.MySqlClient.MySqlException (0x80004005): Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.TimeoutException: Timeout in IO operation
-   at MySql.Data.MySqlClient.TimedStream.StopTimer()
-   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
-   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+ERROR 2015-07-02 03:52:33,717 [16] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
    at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.ExceptionInterceptor.Throw(Exception exception)
-   at MySql.Data.MySqlClient.MySqlConnection.Throw(Exception ex)
-   at MySql.Data.MySqlClient.MySqlConnection.HandleTimeoutOrThreadAbort(Exception ex)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-06-30 04:07:47,966 [151] ADOExceptionReporter   - Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
-ERROR 2015-06-30 04:07:47,967 [151] ADOExceptionReporter   - Timeout in IO operation
-ERROR 2015-06-30 04:07:47,968 [151] ADOExceptionReporter   - Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
-ERROR 2015-06-30 04:07:47,969 [151] ADOExceptionReporter   - Timeout in IO operation
-ERROR 2015-06-30 04:07:47,969 [151] ADOExceptionReporter   - Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
-ERROR 2015-06-30 04:07:47,970 [151] ADOExceptionReporter   - Timeout in IO operation
-ERROR 2015-06-30 04:07:47,971 [151] BaseController         - Error: [/Scheduler/Reschedule]<<could not execute query
-[ SELECT this_.Id as Id72_0_, this_.Title as Title72_0_, this_.NextGeneration as NextGene3_72_0_, this_.AccountableUserId as Accounta4_72_0_, this_.AdminUserId as AdminUse5_72_0_, this_.Goal as Goal72_0_, this_.GoalDirection as GoalDire7_72_0_, this_.OrganizationId as Organiza8_72_0_, this_.CreateTime as CreateTime72_0_, this_.DeleteTime as DeleteTime72_0_, this_.UnitType as UnitType72_0_, this_.DueDate as DueDate72_0_, this_.DueTime as DueTime72_0_, this_.FromTemplateItemId as FromTem14_72_0_ FROM `MeasurableModel` this_ WHERE (this_.DeleteTime is null and this_.NextGeneration <= ?p0) ]
-  Name:cp0 - Value:6/30/2015 9:06:48 AM
-[SQL: SELECT this_.Id as Id72_0_, this_.Title as Title72_0_, this_.NextGeneration as NextGene3_72_0_, this_.AccountableUserId as Accounta4_72_0_, this_.AdminUserId as AdminUse5_72_0_, this_.Goal as Goal72_0_, this_.GoalDirection as GoalDire7_72_0_, this_.OrganizationId as Organiza8_72_0_, this_.CreateTime as CreateTime72_0_, this_.DeleteTime as DeleteTime72_0_, this_.UnitType as UnitType72_0_, this_.DueDate as DueDate72_0_, this_.DueTime as DueTime72_0_, this_.FromTemplateItemId as FromTem14_72_0_ FROM `MeasurableModel` this_ WHERE (this_.DeleteTime is null and this_.NextGeneration <= ?p0)]>>
-NHibernate.Exceptions.GenericADOException: could not execute query
-[ SELECT this_.Id as Id72_0_, this_.Title as Title72_0_, this_.NextGeneration as NextGene3_72_0_, this_.AccountableUserId as Accounta4_72_0_, this_.AdminUserId as AdminUse5_72_0_, this_.Goal as Goal72_0_, this_.GoalDirection as GoalDire7_72_0_, this_.OrganizationId as Organiza8_72_0_, this_.CreateTime as CreateTime72_0_, this_.DeleteTime as DeleteTime72_0_, this_.UnitType as UnitType72_0_, this_.DueDate as DueDate72_0_, this_.DueTime as DueTime72_0_, this_.FromTemplateItemId as FromTem14_72_0_ FROM `MeasurableModel` this_ WHERE (this_.DeleteTime is null and this_.NextGeneration <= ?p0) ]
-  Name:cp0 - Value:6/30/2015 9:06:48 AM
-[SQL: SELECT this_.Id as Id72_0_, this_.Title as Title72_0_, this_.NextGeneration as NextGene3_72_0_, this_.AccountableUserId as Accounta4_72_0_, this_.AdminUserId as AdminUse5_72_0_, this_.Goal as Goal72_0_, this_.GoalDirection as GoalDire7_72_0_, this_.OrganizationId as Organiza8_72_0_, this_.CreateTime as CreateTime72_0_, this_.DeleteTime as DeleteTime72_0_, this_.UnitType as UnitType72_0_, this_.DueDate as DueDate72_0_, this_.DueTime as DueTime72_0_, this_.FromTemplateItemId as FromTem14_72_0_ FROM `MeasurableModel` this_ WHERE (this_.DeleteTime is null and this_.NextGeneration <= ?p0)] ---> MySql.Data.MySqlClient.MySqlException: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.TimeoutException: Timeout in IO operation
-   at MySql.Data.MySqlClient.TimedStream.StopTimer()
-   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
-   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-02 03:52:33,767 [16] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-02 03:52:34,469 [13] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
    at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   --- End of inner exception stack trace ---
-   at MySql.Data.MySqlClient.ExceptionInterceptor.Throw(Exception exception)
-   at MySql.Data.MySqlClient.MySqlConnection.Throw(Exception ex)
-   at MySql.Data.MySqlClient.MySqlConnection.HandleTimeoutOrThreadAbort(Exception ex)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-02 03:52:34,496 [13] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-02 04:04:41,310 [44] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-02 04:04:41,375 [44] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-02 04:05:08,379 [25] AbstractBatcher        - Could not execute query: INSERT INTO `PhoneActionMap` (ForId, Action, CreateTime, DeleteTime, CallerNumber, SystemNumber, Placeholder) VALUES (?p0, ?p1, ?p2, ?p3, ?p4, ?p5, ?p6);SELECT LAST_INSERT_ID()
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`phoneactionmap`, CONSTRAINT `FK389C9CFDEB87CB47` FOREIGN KEY (`Caller_id`) REFERENCES `userorganizationmodel` (`ResponsibilityGroupModel_id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
    at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
    at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-   at NHibernate.Loader.Loader.GetResultSet(IDbCommand st, Boolean autoDiscoverTypes, Boolean callable, RowSelection selection, ISessionImplementor session)
-   at NHibernate.Loader.Loader.DoQuery(ISessionImplementor session, QueryParameters queryParameters, Boolean returnProxies)
-   at NHibernate.Loader.Loader.DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, Boolean returnProxies)
-   at NHibernate.Loader.Loader.DoList(ISessionImplementor session, QueryParameters queryParameters)
-   --- End of inner exception stack trace ---
-   at NHibernate.Loader.Loader.DoList(ISessionImplementor session, QueryParameters queryParameters)
-   at NHibernate.Loader.Loader.ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)
-   at NHibernate.Loader.Loader.List(ISessionImplementor session, QueryParameters queryParameters, ISet`1 querySpaces, IType[] resultTypes)
-   at NHibernate.Impl.SessionImpl.List(CriteriaImpl criteria, IList results)
-   at NHibernate.Impl.CriteriaImpl.List(IList results)
-   at NHibernate.Impl.CriteriaImpl.List[T]()
-   at NHibernate.Criterion.QueryOver`1.List()
-   at NHibernate.Criterion.QueryOver`1.NHibernate.IQueryOver<TRoot>.List()
-   at RadialReview.Accessors.TaskAccessor.UpdateScorecard(DateTime now) in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 310
-   at RadialReview.Controllers.SchedulerController.<Reschedule>d__24.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 184
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at lambda_method(Closure , Task )
-   at System.Threading.Tasks.TaskHelpersExtensions.ThrowIfFaulted(Task task)
-   at System.Web.Mvc.Async.TaskAsyncActionDescriptor.EndExecute(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass34.<BeginInvokeAsynchronousActionMethod>b__33(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+ERROR 2015-07-02 04:05:08,417 [25] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`phoneactionmap`, CONSTRAINT `FK389C9CFDEB87CB47` FOREIGN KEY (`Caller_id`) REFERENCES `userorganizationmodel` (`ResponsibilityGroupModel_id`))
+ERROR 2015-07-02 04:16:49,524 [16] BaseController         - Error: [/TwilioApi/Modal?recurrenceId=4]<<Index and length must refer to a location within the string.
+Parameter name: length>>
+System.ArgumentOutOfRangeException: Index and length must refer to a location within the string.
+Parameter name: length
+   at System.String.Substring(Int32 startIndex, Int32 length)
+   at RadialReview.ObjectExtensions.ToPhoneNumber(Int64 s) in c:\repos\Radial\RadialReview\RadialReview\Utilities\Extensions\ObjectExtensions.cs:line 47
+   at RadialReview.Controllers.TwilioApiController.<Modal>b__2(CallablePhoneNumber x) in c:\repos\Radial\RadialReview\RadialReview\Controllers\TwilioApiController.cs:line 44
+   at RadialReview.EnumerableExtensions.<>c__DisplayClass6`3.<ToSelectList>b__3(T x, Int32 i) in c:\repos\Radial\RadialReview\RadialReview\Utilities\Extensions\EnumerableExtensions.cs:line 89
+   at System.Linq.Enumerable.<SelectIterator>d__1`2.MoveNext()
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at RadialReview.EnumerableExtensions.ToSelectList[T,TText,TId](IEnumerable`1 self, Func`2 textSelector, Func`2 idSelector, TId selected) in c:\repos\Radial\RadialReview\RadialReview\Utilities\Extensions\EnumerableExtensions.cs:line 86
+   at RadialReview.Controllers.TwilioApiController.Modal(Int64 recurrenceId) in c:\repos\Radial\RadialReview\RadialReview\Controllers\TwilioApiController.cs:line 41
+   at lambda_method(Closure , ControllerBase , Object[] )
+   at System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<BeginInvokeSynchronousActionMethod>b__36(IAsyncResult asyncResult, ActionInvocation innerInvokeState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
@@ -84,3 +74,14 @@ NHibernate.Exceptions.GenericADOException: could not execute query
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+ERROR 2015-07-02 04:17:01,178 [15] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-02 04:17:01,187 [15] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))

@@ -8,11 +8,11 @@
 
 <tr data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-meetingmeasurable="@Model.MeetingMeasurable.Id">
 	<td><span class="icon fontastic-icon-three-bars icon-rotate handle"></span></td>
-	<td class="who first1 alignRight">
-		@(Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetName())??"Auto-generated")
+	<td class="who first1 alignRight" title="">
+		@(Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetInitials())??"Auto")
 	</td>
 	<td class="who first1 alignLeft">
-		<span class="newLine gray">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName())??"Auto-generated")</span>
+        <span class="newLine gray" title="@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName()) ?? "Auto-Generated")">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetInitials()) ?? "Auto")</span>
 	</td>
 	<td class="measurable first1" title="@Model.MeetingMeasurable.Measurable.Title"><span class="@inlineEdit" data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span></td>
 	<td class="target direction" data-measurable="@Model.MeetingMeasurable.Id"><span class="@inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" data-title="Select goal direction" data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>

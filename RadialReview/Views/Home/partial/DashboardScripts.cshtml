@@ -1,0 +1,72 @@
+﻿@model long
+
+@using (Html.BeginStyles())
+{
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
+    @Styles.Render("~/styles/L10")
+    @Styles.Render("~/styles/meeting")
+    <style>
+        input.due-date {
+            border: none;
+            width: 75px;
+            text-decoration: none;
+            color: #767F99;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0);
+            cursor: pointer;
+        }
+    </style>
+}
+
+@using (Html.BeginScripts())
+{
+    <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+    @Scripts.Render("~/bundles/meeting")
+
+    <script src="~/Scripts/L10/L10.js"></script>
+    <script src="~/Scripts/L10/L10Scorecard.js"></script>
+    
+    <script>
+		angular.module('L10App')
+			.value('meetingId',-3)
+			.value('meetingDataUrlBase', '/Todo/ListData/@Model?')
+			.value('meetingCallback', meetingCallback_Todo);
+		$('#pages a').click(function (e) {
+			e.preventDefault();
+			$(this).tab('show');
+		});
+
+		angular.module('L10App')
+			.value('meetingId', -3)
+			.value('meetingDataUrlBase', '/Scorecard/ListData/@Model?')
+			.value('meetingCallback', meetingCallback_Todo);
+		$('#pages a').click(function (e) {
+		    e.preventDefault();
+		    $(this).tab('show');
+		});
+
+		function meetingCallback_Todo() {
+			location.queryString = {};
+			location.search.substr(1).split("&").forEach(function (pair) {
+				if (pair === "") return;
+				var parts = pair.split("=");
+				location.queryString[parts[0]] = parts[1] &&
+					decodeURIComponent(parts[1].replace(/\+/g, " "));
+			});
+			if (location.queryString.todo) {
+				$('html, body').animate({
+					scrollTop: $("#todo_"+location.queryString.todo).offset().top - $(".navbar").height()-16
+				}, 500);
+
+				$("#todo_" + location.queryString.todo).css({
+					"background-color": "#FFFFE8",
+					"border-top": "1px solid #E8E8A8",
+					"border-bottom": "1px solid #E8E8A8"
+				});
+			}
+		}
+    </script>
+}

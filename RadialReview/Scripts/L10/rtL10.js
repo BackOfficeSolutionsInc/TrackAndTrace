@@ -61,9 +61,10 @@ $(function () {
 	meetingHub.client.updateTodoAccountableUser = updateTodoAccountableUser;
 	meetingHub.client.updateTodoDueDate = updateTodoDueDate;
 
-	meetingHub.client.updateIssueMessage = updateIssueMessage;
-	meetingHub.client.updateIssueDetails = updateIssueDetails;
-	meetingHub.client.updateIssueOwner = updateIssueOwner;
+	meetingHub.client.updateIssueMessage  = updateIssueMessage;
+	meetingHub.client.updateIssueDetails  = updateIssueDetails;
+	meetingHub.client.updateIssueOwner    = updateIssueOwner;
+	meetingHub.client.updateIssuePriority = updateIssuePriority;
 
 	meetingHub.client.createNote = createNote;
 	meetingHub.client.updateNoteName = updateNoteName;

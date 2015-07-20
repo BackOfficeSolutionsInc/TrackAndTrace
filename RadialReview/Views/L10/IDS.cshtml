@@ -12,11 +12,21 @@
 		<div class="col-md-8">
 			<hgroup class="page-header  listing fixed-pos">
 				<div class="pull-right">
+                    <div class="btn-group">
+                        <a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <span class="icon fontastic-icon-thumbnails-1"></span> <span class="mode-button">Mode </span>
+                        </a>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            <li><a class="clickable " onclick="changeMode('Prioritize')"><span class="icon fontastic-icon-star-3"></span> Prioritize</a></li>
+                            <li><a class="clickable " onclick="changeMode('Reorder')"><span class="icon fontastic-icon-align-right"></span> Reorder</a></li>
+                        </ul>
+                    </div>
 					<div class="btn-group">
 						<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 							<span class="icon fontastic-icon-sort-alpha-two"></span> <span class="sort-button">Sort </span>
 						</a> 
 						<ul class="dropdown-menu pull-right" role="menu">
+                            <li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-priority','Priority',-1)"> By Priority</a></li>
 							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-message','Issue')"> By Issue</a></li>
 							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-owner','Owner')"> By Owner</a></li>
 							@*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-duedate','Due Date',-1)"> By Due Date</a></li>*@
@@ -41,7 +51,7 @@
 						}
 					</ol>
 				</div>*@
-			<div class="issues-container ">
+			<div class="issues-container">
 				<ol class="issues-list sortable init-@(guid)">
 					@foreach (var i in Model.Issues.OrderBy(x => x.Ordering))
 					{@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)}

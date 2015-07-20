@@ -1687,12 +1687,14 @@ namespace RadialReview.Accessors
 			}
 		}*/
 
-		public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, string message = null, string details = null, bool? complete = null, string connectionId = null,long? owner=null)
+		public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId,DateTime updateTime,string message = null, string details = null, bool? complete = null, string connectionId = null,long? owner=null,int? priority=null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
+                    updateTime = Math2.Min(DateTime.UtcNow.AddSeconds(3), updateTime);
+
 					var issue = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
 					if (issue == null)
 						throw new PermissionsException("Issue does not exist.");
@@ -1726,7 +1728,15 @@ namespace RadialReview.Accessors
 						issue.Owner = s.Get<UserOrganizationModel>(owner);
 						group.updateIssueOwner(issueRecurrenceId, owner, issue.Owner.GetName(), issue.Owner.ImageUrl(true, ImageSize._32));
 						updatesText.Add("Owner: " + issue.Owner.GetName());
-					}
+                    }
+                    if (priority != null && priority != issue.Priority && issue.LastUpdate_Priority<updateTime)
+                    {
+                        issue.LastUpdate_Priority = updateTime;
+                        var old = issue.Priority;
+                        issue.Priority = priority.Value;
+                        group.updateIssuePriority(issueRecurrenceId, issue.Priority);
+                        updatesText.Add("Priority from "+old+" to " + issue.Priority);
+                    }
 					var now = DateTime.UtcNow;
 					if (complete != null)
 					{
@@ -2355,7 +2365,7 @@ namespace RadialReview.Accessors
 			{
 				var m = (AngularIssue)model;
 				//UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
-				UpdateIssue(caller, m.Id, m.Name ?? "", m.Details ?? "", m.Complete, connectionId);
+				UpdateIssue(caller, m.Id,DateTime.UtcNow, m.Name ?? "", m.Details ?? "", m.Complete, connectionId);
 			}
 			else if (model.Type == typeof(AngularTodo).Name)
 			{

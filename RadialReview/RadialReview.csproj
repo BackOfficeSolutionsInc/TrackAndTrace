@@ -306,6 +306,7 @@
     <Compile Include="Controllers\AccountabilityController.cs" />
     <Compile Include="Controllers\CallbackController.cs" />
     <Compile Include="Controllers\CompanyValuesController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DropDownController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
@@ -1086,6 +1087,7 @@
     <Content Include="Scripts\jquery\jquery.ui.sortable.js" />
     <Content Include="Scripts\L10\resize-columns.js" />
     <Content Include="Views\L10\Timeline.cshtml" />
+    <Content Include="Views\Home\partial\DashboardScripts.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1351,6 +1353,8 @@
     <Content Include="Views\TwilioApi\Modal.cshtml" />
     <Content Include="Views\TwilioApi\_PhoneRow.cshtml" />
     <Content Include="Views\TwilioApi\Index.cshtml" />
+    <Content Include="Views\Scorecard\partial\list.cshtml" />
+    <Content Include="Views\Scorecard\partial\listscripts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1360,6 +1364,7 @@
     <Folder Include="Models\Rocks\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Views\Admin\" />
+    <Folder Include="Views\Dashboard\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\Img\" />
