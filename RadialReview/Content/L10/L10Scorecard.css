@@ -12,7 +12,7 @@
 		height: 26px;
 	}
 
-#ScorecardTable_Over tr:last-child td {
+#ScorecardTable_Over tr:not(.ui-sortable-helper):last-child td {
 	border-bottom: 3px solid white;
 }
 

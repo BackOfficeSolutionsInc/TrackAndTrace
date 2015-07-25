@@ -1,4 +1,8 @@
-﻿<div class="btn-group pull-right" style="padding: 5px 3px;">
+﻿@{
+	var forceMin =  (ViewBag.ForceMin == null || ((bool)ViewBag.ForceMin) == true)?",true":"";
+}
+
+<div class="btn-group pull-right" style="padding: 5px 3px;">
 	<a class="btn btn-default btn-xs" href="/L10/ExportScorecard/{{meetingId}}?type=csv" target="_blank"><span class="glyphicon glyphicon-save"></span> Export (.csv)</a>
 </div>
 <div class="btn-group pull-right" style="padding: 5px 0px;">
@@ -21,7 +25,7 @@
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
-									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate)" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
+									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
 										{{functions.subtractDays(week.DisplayDate,0) | date:'MM/dd'}}
 									</th>
 
@@ -31,7 +35,7 @@
 									<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
 									<th class="heading measurable">Measurable</th>
 									<th class="heading target" colspan="2">Goal</th>
-									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate)" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
+									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
 										{{functions.subtractDays(week.DisplayDate,-6) | date:'MM/dd'}}
 									</th>
 								</tr>
@@ -71,7 +75,7 @@
 									</td>
 
 
-									<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate)" class="score" ng-class="{current:week.IsCurrentWeek}">
+									<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate@(forceMin))" class="score" ng-class="{current:week.IsCurrentWeek}">
 										<input data-goal="{{measurable.Target}}"
 											   data-goal-dir="{{measurable.Direction}}"
 											   data-row="{{$parent.$index}}"

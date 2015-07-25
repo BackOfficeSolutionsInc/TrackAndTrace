@@ -249,11 +249,11 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	$scope.filters.byRange = function (fieldName, minValue, maxValue, forceMin) {
 		if (minValue === undefined) minValue = Number.MIN_VALUE;
 		if (maxValue === undefined) maxValue = Number.MAX_VALUE;
-		if (forceMin === undefined) minValue = Math.min(minValue, maxValue - 13 * 7 * 24 * 60 * 60 * 1000);
+		if (forceMin !== undefined) minValue = Math.min(minValue, maxValue - 13 * 7 * 24 * 60 * 60 * 1000);
 
 		return function predicateFunc(item) {
 			var d = item[fieldName];
-			if (!d) d = moment().add('days', 1).toDate();
+			if (!d) return true;//d = moment().add('days', 1).toDate();
 			if (d instanceof Date) d = d.getTime();
 			if (minValue instanceof Date) minValue = minValue.getTime();
 			if (maxValue instanceof Date) maxValue = maxValue.getTime();

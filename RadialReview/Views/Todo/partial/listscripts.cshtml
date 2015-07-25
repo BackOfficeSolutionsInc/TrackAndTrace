@@ -2,7 +2,7 @@
 		   
 @{
 	var includeComplete = (ViewBag.IncludeComplete as bool? != null ? "completed="+((bool) ViewBag.IncludeComplete) + "&":"");
-	
+	var name = (ViewBag.SetName as string != null ? "name=" + ((string)ViewBag.SetName) + "&" : "");
 }
 
 @using (Html.BeginStyles())
@@ -35,7 +35,7 @@
 	<script>
     angular.module('L10App')
         .value('meetingId', -3)
-        .value('meetingDataUrlBase', '/Dashboard/Data/@Model?@(includeComplete)')
+        .value('meetingDataUrlBase', '/Dashboard/Data/@Model?@(includeComplete)@(name)')
         .value('meetingCallback', meetingCallback);
     @*/*angular.module('L10App')
 			.value('meetingId',-3)

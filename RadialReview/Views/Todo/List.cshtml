@@ -2,9 +2,11 @@
 @{
 	ViewBag.Title = "To-do List";
 	Layout = "~/Views/Shared/_Layout.cshtml";
+	var dict = new ViewDataDictionary(ViewBag);
+	dict.Add(new KeyValuePair<string, object>("SetName","All To-Dos"));
 }
 @Html.Partial("~/Views/Todo/Partial/list.cshtml")
-@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml",Model,new ViewDataDictionary(ViewBag))
+@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml",Model,dict)
 
 @using (Html.BeginStyles()){
 	<style>

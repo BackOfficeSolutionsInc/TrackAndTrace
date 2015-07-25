@@ -30,7 +30,7 @@ namespace RadialReview.Controllers
         //
         // GET: /Dashboard/
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult Data(long id,bool completed=true)
+        public JsonResult Data(long id,bool completed=true,string name =null)
         {
             var userId = id;
             //Todos
@@ -60,6 +60,7 @@ namespace RadialReview.Controllers
 
             return Json(new ListDataVM(id)
             {
+				Name = name,
                 Todos = todos,
                 Scorecard=sc,
 				Rocks = rocks,

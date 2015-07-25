@@ -152,3 +152,7 @@ body {
 .dashboard .rock-list-container {
 	padding: 5px 0;
 }
+
+.dashboard .members-pane tr:hover {
+	background-color: #ECECEC;	
+}

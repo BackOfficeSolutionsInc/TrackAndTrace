@@ -16,7 +16,7 @@
 			}
             <div id="Todo" class="tab-pane todo-pane scrollbox">
                 <div></div>
-                <div ng-repeat="(key,value) in model.Todos | transform:this | groupBy: 'Owner.Name'">
+                <div ng-repeat="(key,value) in model.Todos | transform:this | groupBy: 'Owner.Name' ">
                     <table width="100%" class="component" ng-show="(value | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)).length">
                         <tr ng-show="$first">
                             <td></td>
@@ -30,7 +30,7 @@
 							}
                         </tr>
                         @*| orderBy: ['Complete','-CompleteTime','Name']*@
-                        <tr id="todo_{{todo.Id}}" ng-repeat-start="todo in value | orderBy: ['Complete','-CompleteTime','DueDate'] | filter:filters.byRange('CompleteTime',date.startDate,date.endDate) "
+                        <tr id="todo_{{todo.Id}}" ng-repeat-start="todo in value | orderBy: ['Complete','-CompleteTime','DueDate'] | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)"
                             ng-class="{grayRow: todo.Complete}"
                             ng-hide="model.Selected==todo.Key"
                             class="clickable">
