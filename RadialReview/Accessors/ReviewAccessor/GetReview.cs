@@ -888,16 +888,19 @@ namespace RadialReview.Accessors {
 		#endregion
 
 
-		public ReviewsModel GetMostRecentReviewContainer(UserOrganizationModel caller, long userId) {
+		public List<ReviewsModel> GetMostRecentReviewContainer(UserOrganizationModel caller, long userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
 					var user = s.Get<UserOrganizationModel>(userId);
 					var orgId = user.Organization.Id;
-					var review = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == userId && x.DeleteTime == null).OrderBy(x => x.DueDate).Desc.Take(1).SingleOrDefault();
-					if (review == null)
+					var review = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == userId && x.DeleteTime == null).OrderBy(x => x.DueDate).Desc.Select(x=>x.ForReviewsId).List<long>().Distinct().ToList();
+					//review.Distinct();
+					return s.QueryOver<ReviewsModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(review).List().ToList();
+
+					/*if (review.Any())
 						return null;
-					return s.Get<ReviewsModel>(review.ForReviewsId);
+					return s.Get<ReviewsModel>(review.ForReviewsId);*/
 				}
 			}
 		}

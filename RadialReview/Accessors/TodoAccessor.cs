@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using FluentNHibernate.Utils;
 using Microsoft.AspNet.SignalR;
+using NHibernate.Hql.Ast.ANTLR;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
@@ -137,14 +138,18 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static List<TodoModel> GetTodosForUser(UserOrganizationModel caller, long userId)
+		public static List<TodoModel> GetTodosForUser(UserOrganizationModel caller, long userId,bool excludeComplete =false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
 					PermissionsUtility.Create(s, caller).ManagesUserOrganizationOrSelf(userId);
+					List<TodoModel> found;
+					if (!excludeComplete)
+						found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId).List().ToList();
+					else
+						found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId && x.CompleteTime==null).List().ToList();
 
-					var found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId).List().ToList();
 					foreach (var f in found)
 					{
 						var a = f.ForRecurrence.NotNull(x=>x.Id);

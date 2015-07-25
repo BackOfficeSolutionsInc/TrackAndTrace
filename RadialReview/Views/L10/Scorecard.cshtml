@@ -52,6 +52,7 @@
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
+									<th>&nbsp;</th>
 									@if (i == 0)
 									{
 										foreach (var r in Model.Weeks)
@@ -67,8 +68,9 @@
 								</tr>
 								<tr>
 									<th>&nbsp;</th>
-									<th class="heading who alignRight">Accountable</th>
-									<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
+									<th>&nbsp;</th>
+									<th class="heading who alignRight">@*Accountable*@</th>
+									<th class="heading who alignLeft "><span class="newLine gray">@*/Admin*@</span></th>
 									<th class="heading measurable">Measurable</th>
 									<th class="heading target" colspan="2">Goal</th>
 									<th class="heading"></th>
@@ -90,7 +92,7 @@
 								@{
 						var row = 0;
 								}
-								@foreach (var m in Model.Meeting._MeetingMeasurables.OrderBy(x => x._Ordering).ThenBy(x => x.Measurable.AccountableUser.NotNull(y=>y.GetName())))
+								@foreach (var m in Model.Meeting._MeetingMeasurables.OrderBy(x => x._Ordering).ThenBy(x => x.Measurable.AccountableUser.NotNull(y=>y.GetName())).ThenByDescending(x=>x.Measurable.Id))
 								{
 									ViewBag.Row = row;
 									@Html.Partial("partial/ScorecardRow", new ScorecardRowVM()
@@ -220,6 +222,7 @@
 		};
 
 		$(".scorecard-table tbody").xsortable({
+			items:">.reorderable",
 			handle:".handle",
 			helper: fixHelperModified,
 			stop: updateIndex,
@@ -235,8 +238,10 @@
 	}
 
 	setTimeout(function() {
+		updateScorecardNumbers();
 		$(".score.current input").each(function() { updateScore(this); });
 		$(".scroll-right").scrollLeft(4000);
+		
 
 		$("#ScorecardTable_Over").resizable({
 			handles: 'e',

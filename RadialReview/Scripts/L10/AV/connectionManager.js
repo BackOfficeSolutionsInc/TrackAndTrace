@@ -12,6 +12,7 @@ WebRTC API has been normalized using 'adapter.js'
 ************************************************/
 var DefaultIceServers= [{ url: 'stun:74.125.142.127:19302' }];
 
+var previous_offers = [];
 
 WebRtcDemo.ConnectionManager = (function () {
 
@@ -35,6 +36,7 @@ WebRtcDemo.ConnectionManager = (function () {
         	_onStreamRemovedCallback = onStreamRemoved || _onStreamRemovedCallback;
         },
 		my_onicecandiate = function (connection,candidate,partnerClientId) {
+			console.log("my_onicecandiate");
         	_getConnection(partnerClientId).addIceCandidate(new RTCIceCandidate(candidate));
 		},
         // Create a new WebRTC Peer Connection with the given partner
@@ -121,7 +123,10 @@ WebRtcDemo.ConnectionManager = (function () {
                     function (error) { console.log('Error creating session description: ' + error); });
         		} else if (connection.remoteDescription.type == "answer") {
         			console.log('WebRTC: received answer');
-        		}
+					//If we havent initiated an offer, do so now.
+			        //_initiateOffer(partnerClientId);
+
+		        }
         	});
         },
 
@@ -190,17 +195,27 @@ WebRtcDemo.ConnectionManager = (function () {
         	// Get a connection for the given partner
         	var connection = _getConnection(partnerClientId);
 
-        	// Add our audio/video stream
-        	connection.addStream(stream);
+	        if (previous_offers.indexOf(partnerClientId) == -1) {
 
-        	console.log('stream added on my end');
+		        // Add our audio/video stream
+		        if (stream) {
+			        connection.addStream(stream);
+			        console.log('stream added on my end');
+					previous_offers.push(partnerClientId);
+		        } else {
+			        console.log('stream NOT added on my end: stream was null');
+		        }
 
-        	// Send an offer for a connection
-        	connection.createOffer(function (desc) {
-        		connection.setLocalDescription(desc, function () {
-        			_signaler.sendSignal(JSON.stringify({ "sdp": connection.localDescription }), partnerClientId);
-        		});
-        	}, function (error) { console.log('Error creating session description: ' + error); });
+		        // Send an offer for a connection
+		        connection.createOffer(function(desc) {
+			        connection.setLocalDescription(desc, function() {
+				        _signaler.sendSignal(JSON.stringify({ "sdp": connection.localDescription }), partnerClientId);
+			        });
+		        }, function(error) { console.log('Error creating session description: ' + error); });
+		        
+	        } else {
+		        console.log("already offered to "+partnerClientId);
+	        }
         };
 
 	// Return our exposed API

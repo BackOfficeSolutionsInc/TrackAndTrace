@@ -5,6 +5,9 @@
 //  cleanup: promises to clear up some of the async chaining
 //  feature: multiple chat partners
 
+var connected = false;
+var webRtc_NameLookup = {};
+
 WebRtcDemo.App = (function (viewModel, connectionManager) {
 	var viewModel = {};
 	var _mediaStream,
@@ -23,6 +26,13 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 					hub.server.join(VideoChatRoomId, _hub.connection.id);
 
 					if (onSuccess) {
+						if (!connected) {
+							console.log("~calling in");
+							viewModel.Mode = ('calling');
+							hub.server.callMeeting(VideoChatRoomId, true, true);
+							connected = true;
+						}
+
 						onSuccess(hub);
 					}
 				})
@@ -69,7 +79,8 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 				console.log('playing my local video feed');
 				//var videoElement = document.querySelector('.video.mine');
 
-				var container = $("<div class='video-container mine streamid_" + viewModel.MyConnectionId + "'><video muted src='' height='116px' autoplay/></div>");
+				var container = $("<div class='video-container mine streamid_" + viewModel.MyConnectionId + "'><video muted src='' height='116px' autoplay/><div class='video-name'>You</div></div>");
+
 				$(".video-bar").prepend(container);
 				var videoElement = $(".video-container.streamid_" + viewModel.MyConnectionId + " video")[0];
 				attachMediaStream(videoElement, _mediaStream);
@@ -147,12 +158,12 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 		});
 		$('body').on('click', '.start-screenshare', function () {
 			_tryGetMedia(true, {
-					mandatory: {
-                      	chromeMediaSource: 'screen',
-                      	maxWidth: 1280,
-                      	maxHeight: 720
-                  	},
-                  	optional: []
+				mandatory: {
+					chromeMediaSource: 'screen',
+					maxWidth: 1280,
+					maxHeight: 720
+				},
+				optional: []
 			}, function () {
 				$(".start-conference").addClass("hidden");
 			}, function () {
@@ -162,11 +173,12 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 
 
 
-		var connected = false;
+		//var connected = false;
 
-		$('body').on('click', '.uncollapser .clicker', function () {
+	$('body').on('click', '.uncollapser .clicker', function () {
 			if (!connected) {
 				console.log("calling in");
+				viewModel.Mode = ('calling');
 				_hub.server.callMeeting(VideoChatRoomId, true, true);
 				connected = true;
 			}
@@ -228,11 +240,14 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 		hub.client.incomingCall = function (callingUser) {
 
 			console.log('incoming call from: ' + JSON.stringify(callingUser));
-			hub.server.answerCall(true, callingUser);
+			webRtc_NameLookup[callingUser.ConnectionId] = callingUser.Name;
+
+			hub.server.answerCall(true, callingUser.ConnectionId);
 			viewModel.Mode = ('incall');
-			/*if (_mediaStream) { 
-				connectionManager.initiateOffer(callingUser, _mediaStream);
-				viewModel.Mode = ('incall');
+			/*if (_mediaStream) {
+				console.log("responding with steam..");
+				connectionManager.initiateOffer(callingUser.ConnectionId, _mediaStream);
+				//viewModel.Mode = ('incall');
 			}*/
 			// Ask if we want to talk
 			/*var e = window.confirm(callingUser.Username + ' is calling.  Do you want to chat?');
@@ -248,9 +263,17 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			}*/
 		};
 
+		hub.client.offerTo = function(acceptingUser) {
+			console.log('offering stream to: ' + JSON.stringify(acceptingUser));
+			webRtc_NameLookup[acceptingUser.ConnectionId] = acceptingUser.Name;
+			connectionManager.initiateOffer(acceptingUser.ConnectionId, _mediaStream);
+		};
+
 		// Hub Callback: Call Accepted
 		hub.client.callAccepted = function (acceptingUser) {
 			console.log('call accepted from: ' + JSON.stringify(acceptingUser) + '.  Initiating WebRTC call and offering my stream up...');
+
+			webRtc_NameLookup[acceptingUser.ConnectionId] = acceptingUser.Name;
 
 			// Callee accepted our call, let's send them an offer with our video stream
 			if (_mediaStream) {
@@ -258,6 +281,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 				viewModel.Mode = ('incall');
 			} else {
 				console.log("Error: _mediaStream empty");
+				hub.server.promptInitiate();
 			}
 			// Set UI into call mode
 		};
@@ -292,6 +316,12 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 		// Hub Callback: WebRTC Signal Received
 		hub.client.receiveSignal = function (callingUser, data) {
 			connectionManager.newSignal(callingUser.ConnectionId, data);
+			var d = JSON.parse(data);
+			if (d.sdp && d.sdp.type == "answer") {
+				//hacky. answer happens all the time.
+				//connectionManager.initiateOffer(callingUser.ConnectionId,_mediaStream);
+			}
+
 		};
 	},
 
@@ -308,7 +338,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			console.log('binding remote stream to the partner window');
 			// Bind the remote stream to the partner window
 			//var otherVideo = document.querySelector('.video.partner');
-			var container = $("<div class='video-container streamid_" + streamId + "'><video src='' height='116px' autoplay/></div>");
+			var container = $("<div class='video-container streamid_" + streamId + "'><video src='' height='116px' autoplay/><div class='video-name'>"+webRtc_NameLookup[streamId]+"</div></div>");
 			$(".video-bar").append(container);
 
 			var otherVideo = $(".video-container.streamid_" + streamId + " video")[0];

@@ -10,6 +10,7 @@ namespace RadialReview.Models.UserModels
 {
 	public class UserLookup : ILongIdentifiable, IHistorical
 	{
+		[Obsolete("Use UserId instead")]
 		public virtual long Id { get; set; }
 		public virtual long UserId { get; set; }
 		public virtual DateTime AttachTime { get; set; }
@@ -38,6 +39,12 @@ namespace RadialReview.Models.UserModels
 			if (_ImageUrlSuffix != null && !_ImageUrlSuffix.EndsWith("/i/userplaceholder"))
 				return ConstantStrings.AmazonS3Location + s + _ImageUrlSuffix;
 			return "/i/userplaceholder";
+		}
+
+		public virtual string GetInitials()
+		{
+			var inits = (Name ?? "").Split(' ').Select(x => x.Trim()).Where(x => !String.IsNullOrEmpty(x)).Select(x => x.Substring(0, 1).ToUpperInvariant());
+			return string.Join(" ", inits).ToUpperInvariant();
 		}
 
 		public class UserLookupMap : ClassMap<UserLookup>

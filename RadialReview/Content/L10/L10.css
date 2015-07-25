@@ -1,4 +1,4 @@
-﻿
+
 .alert {
 	position: relative;
 	z-index: 100;
@@ -9,11 +9,11 @@ html {
 }
 
 .component {
-	margin: 5px 10px;
+	/* margin: 5px 10px; */
 	background-color: white;
 	padding: 5px 5px;
-	border: 1px solid #E8E8E8;
-	border-left: 1px solid #E8E8E8;
+	/* border: 1px solid #E8E8E8; */
+	/* border-left: 1px solid #E8E8E8; */
 }
 
 	.component.flash {
@@ -330,7 +330,7 @@ profile-image .picture {
 	}
 
 .meeting-review .component{
-	  margin: 5px 0;
+	  /* margin: 5px 0; */
 }
 
 .lockedPointer {

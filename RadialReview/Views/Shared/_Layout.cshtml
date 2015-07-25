@@ -24,7 +24,7 @@
 {
 	throw new Exception("You must extend from the base controller.");
 }
-<body class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width")">
+<body class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width") @(ViewBag.LayoutClass??"")">
 	@if (ViewBag.IsLocal ?? false)
 	{
 		<div id="local"></div>

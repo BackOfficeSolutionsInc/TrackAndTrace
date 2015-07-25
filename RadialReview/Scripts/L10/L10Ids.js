@@ -162,9 +162,15 @@ function changeMode(type) {
     $(".ids .issues-container").removeClass("triple");
     $(".ids .issues-container").removeClass("quadruple");
 
-    if (type == "Prioritize") {
+    if (type == "Prioritize (3 Columns)") {
         $(".ids .issues-container").addClass("columns");
         $(".ids .issues-container").addClass("triple");
+    }else if (type == "Prioritize (2 Columns)") {
+        $(".ids .issues-container").addClass("columns");
+        $(".ids .issues-container").addClass("double");
+    }else if (type == "Prioritize (4 Columns)") {
+        $(".ids .issues-container").addClass("columns");
+        $(".ids .issues-container").addClass("quadruple");
     } else if (type == "Reorder") {
 
     }
@@ -312,6 +318,8 @@ function refreshCurrentIssueDetails() {
 	        for (var i = 0; i < p; i++) {
 	            str += "<span class='icon fontastic-icon-star-3'></span>";
 	        }
+		    if (p == 1)
+			    str += "<span class='hoverable'>+</span>";
 	        $(this).html(str);
 	    } else if (p == 0) {
 	        $(this).addClass("none");
@@ -412,7 +420,7 @@ $("body").on("mousedown", ".issue-row .priority", function (e) {
     var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
     updateIssuePriority(id,p);
     refreshCurrentIssueDetails();
-    var d = { priority: p,time:new DateTime().getTime() };
+    var d = { priority: p,time:new Date().getTime() };
     $.ajax({
         url: "/L10/UpdateIssue/" + id,
         data: d,

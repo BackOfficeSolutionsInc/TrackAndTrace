@@ -9,5 +9,10 @@ namespace RadialReview.Models.L10.VM
 	{
 		public List<L10Meeting> AllMeetings { get; set; }
 
+		public int IssuesSolved { get; set; }
+
+		public int TodoComplete { get; set; }
+
+
 	}
 }

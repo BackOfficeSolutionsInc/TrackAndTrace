@@ -3,23 +3,23 @@
 	left: 0px;
 	right: 0px;
 	bottom: -128px;
-	height:128px;
+	height: 128px;
 	background: #0F0F0F;
 	overflow-x: auto;
 	overflow-y: hidden;
 	white-space: nowrap;
-
-	-webkit-transition: bottom 0.25s ;
-	transition: bottom 0.25s ;
+	-webkit-transition: bottom 0.25s;
+	transition: bottom 0.25s;
 	z-index: 10000;
 	border-top: 1px solid #444;
 }
-.video-bar.shifted {
-	bottom: 0px;
-}
+
+	.video-bar.shifted {
+		bottom: 0px;
+	}
 
 .video-container {
-	height:121px;
+	height: 121px;
 	width: 194px;
 	margin: 4px;
 	padding: 1px;
@@ -28,15 +28,17 @@
 	display: inline-block;
 	cursor: pointer;
 	border: 2px solid black;
+	position: relative;
 }
 
-.video-container video {
-	  max-width: 100%;
-}
-.video-container video:empty {
-	content: 'Loading';
-	color: white;
-}
+	.video-container video {
+		max-width: 100%;
+	}
+
+		.video-container video:empty {
+			content: 'Loading';
+			color: white;
+		}
 
 
 .video-overlay {
@@ -51,19 +53,20 @@
 	opacity: 0;
 	transition: opacity .25s ease;
 	pointer-events: none;
-	cursor: pointer;  
+	cursor: pointer;
 	z-index: 10000;
 	display: none;
 }
-.video-overlay:not(.hidden1) {
-	opacity: 1;
-	pointer-events: all;
-	display: inherit;
-}
 
-.video-overlay:not(.fade1) video {
-	opacity: 1;
-}
+	.video-overlay:not(.hidden1) {
+		opacity: 1;
+		pointer-events: all;
+		display: inherit;
+	}
+
+	.video-overlay:not(.fade1) video {
+		opacity: 1;
+	}
 
 .video-container.mine {
 	border: 2px solid rgba(3, 197, 255, 0.91);
@@ -104,18 +107,20 @@
 	border-color: #444;
 	border-width: 1px 0px 0px 1px;
 	border-style: solid;
-	-webkit-transition: bottom 0.25s ;
-	transition: bottom 0.25s ;
+	-webkit-transition: bottom 0.25s;
+	transition: bottom 0.25s;
 	z-index: 10001;
 }
-.uncollapser.shifted {
-	bottom: 127px;
-	background: #0F0F0F;
 
-}
+	.uncollapser.shifted {
+		bottom: 127px;
+		background: #0F0F0F;
+	}
+
 .start-conference {
 	width: 102px;
 }
+
 .start-screenshare {
 	position: absolute;
 	top: 65px;
@@ -123,7 +128,8 @@
 	margin: 10px;
 	padding: 2px 8px;
 }
-.start-video {	
+
+.start-video {
 	position: absolute;
 	top: 35px;
 	right: 0px;
@@ -133,12 +139,13 @@
 }
 
 .uncollapser .clicker {
-	  padding: 0px 10px 0 5px;
+	padding: 0px 10px 0 5px;
 }
 
 .sendAudio.fontastic-icon-mic, .sendVideo.fontastic-icon-eye-2 {
 	color: #6CAE6C;
 }
+
 .sendAudio.fontastic-icon-mic-no, .sendVideo.fontastic-icon-eye-slash-close {
 	/*color: #E86363;*/
 }
@@ -157,6 +164,21 @@
 }
 
 
-.video-bar .experimental:hover {
-	color: #444;
+	.video-bar .experimental:hover {
+		color: #444;
+	}
+
+.video-container:hover .video-name {
+	color: #ffffff;
+	color: rgba(255,255,255,.8);
+}
+
+.video-name {
+	position: absolute;
+	left: 2px;
+	bottom: -2px;
+	color: #ffffff;
+	color: rgba(255,255,255,.3);
+	font-size: 12px;
+	transition: color .2s;
 }

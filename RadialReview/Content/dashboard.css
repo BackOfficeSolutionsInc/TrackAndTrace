@@ -1,0 +1,154 @@
+body {
+}
+
+.tiny {
+	/* color: red !important; */
+	padding: 0px;
+}
+
+
+
+.tiny *::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+}
+ 
+/* Track */
+.tiny *::-webkit-scrollbar-track {
+    background-color:rgba(0,0,0,.05);
+    border:6px solid transparent;
+    background-clip: padding-box;
+    -webkit-border-radius:2px;
+    border-radius:2px;
+}
+ 
+/* Handle */
+.tiny *::-webkit-scrollbar-thumb {
+    -webkit-border-radius:9px;
+    border-radius:9px;
+    background: #f3f3f3; 
+    border:3px solid transparent;
+    background-clip: padding-box;
+    margin:2px;
+	-webkit-transition: background .2s ease-in-out;
+}
+
+.tiny *:hover::-webkit-scrollbar-thumb {
+    background: #d6d6d6;    
+	-webkit-border-radius:9px;
+    border-radius:9px;
+    border:3px solid transparent;
+    background-clip: padding-box;
+    margin:2px;
+}
+
+.dashboard .todo-pane {
+	overflow-x: hidden;
+}
+
+.todo-list-container {
+	text-align: left; 
+}
+.todo-list-container .name {
+	display:none;
+}
+
+.todo-list-container .height-placeholder {
+    display: none;
+}
+
+.todo-list-container .picture-column {
+	display: none;
+
+}
+
+.dashboard .container.body-content {
+	max-width: 100% !important;
+}
+.dashboard .container.body-navbar {
+	max-width: 95% !important;
+	max-width: calc(100% - 70px) !important;
+}
+
+.dashboard .review-container {
+	max-width: 500px;
+	margin: 0px;
+	display: inline-block;
+}
+
+.dashboard .meeting-review .component {
+	border: none;
+}
+
+
+
+.dashboard .scorecard .row {
+	margin-bottom: 0px;
+}
+
+.dashboard .scorecard .component {
+	margin: 0px;
+}
+
+.dashboard .scorecard .table-responsive {
+	margin-bottom: 0px;
+	min-height: 0px !important;
+}
+
+.dashboard .scorecard-table {
+	display: block !important;
+}
+
+.dashboard .todo-pane {
+	max-height: 360px;
+	max-height: calc(50vh - 250px);
+	/* min-height: 150px; */
+}
+
+@media (max-width: 992px) {
+	.todo-pane {
+		max-height: 100% !important;
+	}
+}
+
+.dashboard .thumbnail {
+	border-radius: 0px;
+}
+
+.dashboard .rock-list-container .picture-column {
+	display: none;
+}
+
+.dashboard .rock-list-container {
+	text-align: left;
+}
+
+.dashboard .todo-checkbox-container {
+	vertical-align: top;
+}
+
+.dashboard .no-todos {
+	padding: 30px 15px 6px 15px !important;
+}
+
+.dashboard .click-column {
+	padding: 0px 6px;
+	color: #2A6496;
+	cursor: pointer;
+}
+
+.dashboard .review {
+	background-color: white;
+}
+
+.dashboard .scorecard {
+	max-height: calc(50vh - 80px);
+}
+
+.dashboard .members-pane {
+	max-height: calc(50vh - 80px);
+}
+
+.dashboard .rock-list-container {
+	padding: 5px 0;
+}

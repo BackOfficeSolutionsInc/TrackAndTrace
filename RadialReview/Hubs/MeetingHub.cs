@@ -36,6 +36,12 @@ namespace RadialReview.Hubs
 			return meeting.Id.ToString();
 		}*/
 
+		public  void PushLog(string method,params string[] args)
+		{
+			var a = string.Join("\t", args);
+			System.Diagnostics.Debug.WriteLine(String.Format("WebRTC\t{0}\t{1}\t{2}\t{3}",DateTime.UtcNow.ToString(), method, Context.ConnectionId, a));
+		}
+
 		public class UserMeetingModel
 		{
 			public long UserId { get; set; }
@@ -75,11 +81,11 @@ namespace RadialReview.Hubs
 				using (var tx = s.BeginTransaction())
 				{
 					PermissionsUtility.Create(s, GetUser()).ViewVideoL10Recurrence(recurrenceId);
-					var found = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId && x.User.Id == GetUser().Id).SingleOrDefault();
+					var found = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId && /*x.User.Id == GetUser().Id*/ x.ConnectionId==Context.ConnectionId).SingleOrDefault();
 					var now = DateTime.UtcNow;
-					if (found != null)
-					{
+					if (found != null){
 						found.DeleteTime = now;
+						s.Update(found);
 					}
 
 					var newAVU = new AudioVideoUser()
@@ -91,10 +97,35 @@ namespace RadialReview.Hubs
 						RecurrenceId = recurrenceId,
 						User = GetUser(),
 					};
+
 					s.Save(newAVU);
+					PushLog("CallMeeting", found.NotNull(x => x.ConnectionId));
 					tx.Commit();
 					s.Flush();
-					Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), Context.ConnectionId).incomingCall(Context.ConnectionId);
+					Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), Context.ConnectionId).incomingCall(new AudioVisualUserVM(newAVU));
+				}
+			}
+		}
+
+		public void PromptInitiate()
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var callingUser = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.ConnectionId == Context.ConnectionId).SingleOrDefault();
+
+					PushLog("PromptInitiate", callingUser.NotNull(x => x.ConnectionId));
+					// Make sure both users are valid
+					if (callingUser == null){
+						return;
+					}
+
+					if (callingUser.RecurrenceId <= 0)
+						throw new PermissionsException("Should be positive");
+
+					// These folks are in a call together, let's let em talk WebRTC
+					Clients.Group(MeetingHub.GenerateMeetingGroupId(callingUser.RecurrenceId), Context.ConnectionId).offerTo(new AudioVisualUserVM(callingUser));
 				}
 			}
 		}
@@ -109,6 +140,7 @@ namespace RadialReview.Hubs
 					var callingUser = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.ConnectionId == Context.ConnectionId).SingleOrDefault();
 					var targetUser = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.ConnectionId == targetConnectionId).SingleOrDefault();
 
+					PushLog("SendSignal", callingUser.NotNull(x=>x.ConnectionId), targetUser.NotNull(x=>x.ConnectionId));
 					// Make sure both users are valid
 					if (callingUser == null || targetUser == null)
 					{
@@ -134,6 +166,8 @@ namespace RadialReview.Hubs
 				using (var tx = s.BeginTransaction()){
 					var callingUser = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.ConnectionId == Context.ConnectionId).SingleOrDefault();
 					var targetUser = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.ConnectionId == targetConnectionId).SingleOrDefault();
+
+					PushLog("AnswerCall", callingUser.NotNull(x => x.ConnectionId), targetUser.NotNull(x => x.ConnectionId));
 					if (callingUser==null || targetUser==null)
 						return;
 					if (callingUser.RecurrenceId != targetUser.RecurrenceId)
@@ -225,6 +259,8 @@ namespace RadialReview.Hubs
 			{
 
 				var currentRecurrence = callingUser.RecurrenceId;
+
+				PushLog("_HangUp");
 
 				// Send a hang up message to each user in the call, if there is one
 				var g = Clients.Group(MeetingHub.GenerateMeetingGroupId(currentRecurrence), callingUser.ConnectionId);

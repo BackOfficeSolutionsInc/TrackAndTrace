@@ -7,13 +7,17 @@
         margin-top: -20px;
         padding-top: 26px;
         background-color: #F7F7F7;
-        z-index: 11;
         box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
+	    z-index: 1;
     }
+	
+	.ids .notesButton {
+		 z-index: 11;
+	}
 
 
 .ids .number-priority {
-    top: 7px;
+    top: 1px;
     width: 31px;
     position: relative;
     display: inline-block;
@@ -32,7 +36,7 @@
 
 .ids .number {
     width: 31px;
-    height: 16px;
+    height: 14px;
     display: inline-block;
     /*top: -12px;*/
     position: relative;
@@ -47,7 +51,7 @@
 
 .ids .priority {
     width: 31px;
-    height: 19px;
+    height: 14px;
     display: inline-block;
     /*top: 10px;*/
     position: relative;
@@ -64,8 +68,20 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-
 }
+
+.ids .priority .hoverable {
+	opacity: .5;
+}
+.ids .priority:hover .hoverable {
+	opacity: 1;
+	font-weight: bold;
+}
+
+.ids .issues-list li{
+	line-height: 14px;
+}
+
 .ids .issues-list > .issue-row.prioritize{
     background-color: rgb(247, 239, 213);
     border-color: rgb(207, 200, 156);
@@ -85,7 +101,7 @@
 }
 
 .ids .priority .icon {
-    font-size:12px;
+    font-size:11px;
     line-height:10px;    
     color:rgb(205, 140, 0);
 }
@@ -121,7 +137,7 @@
 ol.sortable:not(.dragged) {
     list-style-type: none;
     padding: 0;
-    margin: 7px 0 9px 15px;
+    margin: 7px 0 9px 18px;
     list-style: decimal;
 }
 
@@ -149,7 +165,7 @@ ol.sortable li {
 	margin: 6px;*/
     border: 1px solid #DDD;
     padding: 0 5px;
-    margin: 5px;
+    margin: 2px;
     border: 1px solid #CCC;
     background: #EEE;
 }
@@ -178,7 +194,7 @@ ol.sortable li {
 
         .issues-list > .issue-row.selected > .message {
             font-weight: bold;
-            top: -4px;
+            top: -3px;
             position: relative;
             color: #3B70CB !important;
         }
@@ -257,7 +273,7 @@ ol.sortable li {
 .issues-list .message {
     display: inline-block;
     position: relative;
-    top: -4px;
+    top: -3px;
     left: -16px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -277,7 +293,7 @@ ol.sortable li {
 
 .issues-list > .issue-row > .btn-group {
     display: inline-block;
-    padding-top: 6px;
+    padding-top: 5px;
 }
 
 .issues-list .issue-row .btn-group .issuesButton {
@@ -287,8 +303,8 @@ ol.sortable li {
 .issues-list .placeholder {
     min-height: 10px;
     border: 1px dotted gray;
-    margin: 5px;
-    margin-left: -20px;
+    margin: 1px;
+    margin-left: 0px;
 }
 
 .issues-list > .placeholder {
@@ -531,13 +547,14 @@ body.dragging, body.dragging * {
 
 .ids .picture-container {
     position: relative;
-    top: 1px;
+    top: 0px;
     left: -16px;
     width: 32px;
     height: 32px;
     border: 1px solid #DDD;
     padding: 1px;
     background-color: #FFF;
+	line-height: 21px;
 }
 
 .ids .picture {
@@ -616,4 +633,51 @@ body.dragging, body.dragging * {
 
 .page-header small {
     white-space: nowrap;
+}
+
+.single-1 {
+	  margin-left: 2px;
+}
+
+.columns.triple .message {
+  font-size: 12px;
+  word-wrap: normal;
+  white-space: pre-line;
+  height: 34px;
+  line-height: 11px;
+  top: 1px;
+  overflow-wrap: inherit;
+  display: -webkit-inline-box;
+  /* overflow: hidden; */
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.columns.triple .issues-list > .issue-row.selected > .message {
+  top: 1px;
+}
+
+.columns.quadruple .message {
+  font-size: 12px;
+  word-wrap: normal;
+  white-space: pre-line;
+  height: 34px;
+  line-height: 11px;
+  top: 1px;
+  overflow-wrap: inherit;
+  display: -webkit-inline-box;
+  /* overflow: hidden; */
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.columns.quadruple .issues-list > .issue-row.selected > .message {
+  top: 1px;
+}
+
+.ids .columns.quadruple .number-priority,
+.ids .columns.triple .number-priority {
+	top: -2px;
 }

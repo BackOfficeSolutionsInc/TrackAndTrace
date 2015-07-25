@@ -330,6 +330,7 @@
     <Compile Include="Controllers\TwilioApiController.cs" />
     <Compile Include="Controllers\UserTemplateController.cs" />
     <Compile Include="Controllers\VTOController.cs" />
+    <Compile Include="Controllers\WebRtcController.cs" />
     <Compile Include="Controllers\_MigrationController.cs" />
     <Compile Include="Controllers\PrereviewController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
@@ -733,6 +734,7 @@
     <Content Include="Content\bootstrap.vertical-tabs.css" />
     <Content Include="Content\components\daterangepicker-bs3.css" />
     <Content Include="Content\components\fivestate.css" />
+    <Content Include="Content\dashboard.css" />
     <Content Include="Content\L10\L10Conference.css" />
     <Content Include="Content\L10\L10Notes.css" />
     <Content Include="Content\ReportBuilder\ClientDetails.css" />
@@ -1088,6 +1090,7 @@
     <Content Include="Scripts\L10\resize-columns.js" />
     <Content Include="Views\L10\Timeline.cshtml" />
     <Content Include="Views\Home\partial\DashboardScripts.cshtml" />
+    <Content Include="Views\Manage\partial\members.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1355,6 +1358,7 @@
     <Content Include="Views\TwilioApi\Index.cshtml" />
     <Content Include="Views\Scorecard\partial\list.cshtml" />
     <Content Include="Views\Scorecard\partial\listscripts.cshtml" />
+    <Content Include="Views\Rocks\partial\list.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1377,6 +1381,7 @@
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
     <Folder Include="Views\Url\" />
+    <Folder Include="Views\WebRtc\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -1,82 +1,88 @@
-INFO  2015-07-05 03:44:51,696 [18] BaseAccessor           - CreateReview user=604 for review=149
-INFO  2015-07-05 03:44:53,053 [18] BaseAccessor           - CreateReview user=600 for review=149
-INFO  2015-07-05 03:44:53,656 [18] BaseAccessor           - CreateReview user=651 for review=149
-INFO  2015-07-05 03:44:54,094 [18] BaseAccessor           - CreateReview user=618 for review=149
-INFO  2015-07-05 03:44:54,889 [18] BaseAccessor           - CreateReview user=643 for review=149
-INFO  2015-07-05 03:44:55,321 [18] BaseAccessor           - CreateReview user=629 for review=149
-INFO  2015-07-05 03:44:55,610 [18] BaseAccessor           - CreateReview user=640 for review=149
-INFO  2015-07-05 03:44:55,883 [18] BaseAccessor           - CreateReview user=641 for review=149
-INFO  2015-07-05 03:44:56,235 [18] BaseAccessor           - CreateReview user=646 for review=149
-INFO  2015-07-05 03:44:56,548 [18] BaseAccessor           - CreateReview user=648 for review=149
-INFO  2015-07-05 03:44:56,792 [18] BaseAccessor           - CreateReview user=1151 for review=149
-INFO  2015-07-05 03:44:56,957 [18] BaseAccessor           - CreateReview user=621 for review=149
-INFO  2015-07-05 03:44:57,179 [18] BaseAccessor           - CreateReview user=625 for review=149
-INFO  2015-07-05 03:44:57,737 [18] BaseAccessor           - CreateReview user=656 for review=149
-INFO  2015-07-05 03:44:58,216 [18] BaseAccessor           - CreateReview user=657 for review=149
-INFO  2015-07-05 03:44:58,799 [18] BaseAccessor           - CreateReview user=623 for review=149
-INFO  2015-07-05 03:44:59,277 [18] BaseAccessor           - CreateReview user=627 for review=149
-INFO  2015-07-05 03:44:59,690 [18] BaseAccessor           - CreateReview user=632 for review=149
-INFO  2015-07-05 03:45:00,081 [18] BaseAccessor           - CreateReview user=637 for review=149
-INFO  2015-07-05 03:45:00,583 [18] BaseAccessor           - CreateReview user=634 for review=149
-INFO  2015-07-05 03:45:01,056 [18] BaseAccessor           - CreateReview user=635 for review=149
-INFO  2015-07-05 03:45:01,524 [18] BaseAccessor           - CreateReview user=638 for review=149
-INFO  2015-07-05 03:45:01,861 [18] BaseAccessor           - CreateReview user=697 for review=149
-INFO  2015-07-05 03:45:02,303 [18] BaseAccessor           - CreateReview user=698 for review=149
-INFO  2015-07-05 03:45:02,965 [18] BaseAccessor           - CreateReview user=615 for review=149
-INFO  2015-07-05 03:45:03,536 [18] BaseAccessor           - CreateReview user=610 for review=149
-INFO  2015-07-05 03:45:04,045 [18] BaseAccessor           - CreateReview user=606 for review=149
-INFO  2015-07-05 03:45:04,442 [18] BaseAccessor           - CreateReview user=614 for review=149
-INFO  2015-07-05 03:45:04,830 [18] BaseAccessor           - CreateReview user=616 for review=149
-INFO  2015-07-05 03:45:05,283 [18] BaseAccessor           - CreateReview user=654 for review=149
-INFO  2015-07-05 03:45:05,671 [18] BaseAccessor           - CreateReview user=662 for review=149
-INFO  2015-07-05 03:45:06,009 [18] BaseAccessor           - CreateReview user=664 for review=149
-INFO  2015-07-05 03:45:06,447 [18] BaseAccessor           - CreateReview user=665 for review=149
-INFO  2015-07-05 03:45:06,994 [18] BaseAccessor           - CreateReview user=669 for review=149
-INFO  2015-07-05 03:45:07,672 [18] BaseAccessor           - CreateReview user=671 for review=149
-INFO  2015-07-05 03:45:08,229 [18] BaseAccessor           - CreateReview user=659 for review=149
-INFO  2015-07-05 03:45:08,956 [18] BaseAccessor           - CreateReview user=663 for review=149
-INFO  2015-07-05 03:45:09,371 [18] BaseAccessor           - CreateReview user=667 for review=149
-INFO  2015-07-05 03:45:09,979 [18] BaseAccessor           - CreateReview user=668 for review=149
-INFO  2015-07-05 03:45:10,442 [18] BaseAccessor           - CreateReview user=670 for review=149
-ERROR 2015-07-05 03:45:42,458 [23] AbstractBatcher        - Could not execute query: INSERT INTO `AuditModel` (CreateTime, DeleteTime, Path, Query, Data, Method, UserAgent, UserId, UserOrganizationId) VALUES (?p0, ?p1, ?p2, ?p3, ?p4, ?p5, ?p6, ?p7, ?p8);SELECT LAST_INSERT_ID()
-MySql.Data.MySqlClient.MySqlException (0x80004005): Table 'radial.auditmodel' doesn't exist
+ERROR 2015-07-24 21:52:37,151 [143] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-24 21:56:53,998 [169] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
    at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-07-05 03:45:42,581 [23] ADOExceptionReporter   - Table 'radial.auditmodel' doesn't exist
-ERROR 2015-07-05 03:46:32,267 [11] AbstractBatcher        - Could not execute query: INSERT INTO `AuditModel` (CreateTime, DeleteTime, Path, Query, Data, Method, UserAgent, UserId, UserOrganizationId) VALUES (?p0, ?p1, ?p2, ?p3, ?p4, ?p5, ?p6, ?p7, ?p8);SELECT LAST_INSERT_ID()
-MySql.Data.MySqlClient.MySqlException (0x80004005): Table 'radial.auditmodel' doesn't exist
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-24 21:56:54,021 [169] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-24 21:57:00,623 [7] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
    at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-07-05 03:46:32,448 [11] ADOExceptionReporter   - Table 'radial.auditmodel' doesn't exist
-ERROR 2015-07-05 03:46:32,676 [11] AssertionFailure       - An AssertionFailure occurred - this may indicate a bug in NHibernate or in your custom types.
-NHibernate.AssertionFailure: null id in RadialReview.Models.Audit.L10AuditModel entry (don't flush the Session after an exception occurs)
-ERROR 2015-07-05 03:47:10,779 [11] nitializationException - Initializing[RadialReview.Models.UserModels.UserLookup#24]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserModels.UserLookup#24]-Could not initialize proxy - no Session.
-ERROR 2015-07-05 03:47:11,048 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-ERROR 2015-07-05 03:47:11,249 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-ERROR 2015-07-05 03:47:11,644 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-ERROR 2015-07-05 03:47:12,084 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-ERROR 2015-07-05 03:47:14,999 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagedBy, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagedBy, no session or session was closed
-ERROR 2015-07-05 03:47:15,275 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingGroups, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingGroups, no session or session was closed
-ERROR 2015-07-05 03:47:15,528 [11] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingUsers, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.ManagingUsers, no session or session was closed
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-24 21:57:00,651 [7] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-24 21:57:41,132 [152] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-24 21:57:41,163 [152] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-24 21:57:59,331 [46] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-24 21:57:59,354 [46] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-24 21:58:33,009 [59] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-24 21:58:33,034 [59] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-24 21:58:38,572 [21] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-24 21:58:38,598 [21] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-24 22:00:17,812 [150] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
+ERROR 2015-07-24 22:00:17,835 [150] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-24 22:05:47,251 [146] AbstractBatcher        - Could not execute command: INSERT INTO `L10AuditModel` (Action, Notes, RecurrenceId, AuditModel_id) VALUES (?p0, ?p1, ?p2, ?p3)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)

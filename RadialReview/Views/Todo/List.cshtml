@@ -4,5 +4,16 @@
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @Html.Partial("~/Views/Todo/Partial/list.cshtml")
-@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml",Model)
+@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml",Model,new ViewDataDictionary(ViewBag))
 
+@using (Html.BeginStyles()){
+	<style>
+		.height-placeholder {
+			min-height: 60px;
+		}
+
+		.component {
+			margin: 0px;
+		}
+	</style>
+}

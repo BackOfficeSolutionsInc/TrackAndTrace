@@ -1,4 +1,9 @@
 ﻿@model long
+		   
+@{
+	var includeComplete = (ViewBag.IncludeComplete as bool? != null ? "completed="+((bool) ViewBag.IncludeComplete) + "&":"");
+	
+}
 
 @using (Html.BeginStyles())
 {
@@ -30,7 +35,7 @@
 	<script>
     angular.module('L10App')
         .value('meetingId', -3)
-        .value('meetingDataUrlBase', '/Dashboard/Data/@Model?')
+        .value('meetingDataUrlBase', '/Dashboard/Data/@Model?@(includeComplete)')
         .value('meetingCallback', meetingCallback);
     @*/*angular.module('L10App')
 			.value('meetingId',-3)
@@ -61,17 +66,25 @@
                 "border-top": "1px solid #E8E8A8",
                 "border-bottom": "1px solid #E8E8A8"
             });
-        }
+        }   
+		setTimeout(function() {
+		    $(".scroll-right").scrollLeft(4000);
+	    }, 200);
+
     }
 
     $(function () {
         setTimeout(function () {
             var $element = $('#daterange3');
-            var scope = angular.element($element).scope();
-            scope.date = {
-                startDate: moment().subtract('days', 1).toDate(),
-                endDate: moment().add('days', 2).toDate()
-            };
+            if ($element.length){
+				var scope = angular.element($element).scope();
+				scope.date = {
+					startDate: moment().subtract('days', 1).toDate(),
+					endDate: moment().add('days', 2).toDate()
+				};
+			}
+
+	     
         }, 1);
 
         $("body").on("click", ".issuesModal", function () {

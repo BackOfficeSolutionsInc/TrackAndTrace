@@ -1,4 +1,4 @@
-﻿.todo .page-header {
+.todo .page-header {
 	margin-top: 0px;
 	margin: 5px 0;
 }
@@ -23,10 +23,11 @@
 .todo-list > .todo-row {
 	border: 1px solid #ddd;
 	padding: 0 5px;
-	margin: 5px;
+	margin: 2px;
 	border: 1px solid #CCC;
 	background: #EEE;
 	/*position: relative;*/
+	line-height: 14px;
 }
 
 .todo-list > .todo-row.selected {
@@ -36,7 +37,7 @@
 }
 .todo-list > .todo-row.selected > .message {
 	font-weight: bold;
-	top: -4px;
+	top: -2px;
 	position: relative;
 	color: #3B70CB !important;
 }
@@ -96,7 +97,7 @@
 .todo-list .message {
 	display: inline-block;
 	position: relative;
-	top: -4px;
+	top: -2px;
 	left: -16px;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -149,7 +150,7 @@
   position: relative;
   right: 0px;
   text-align: right;
-  top: 8px;
+  top: 10px;
 }
 
 
@@ -348,7 +349,7 @@ body.dragging, body.dragging * {
 }
 .todo .picture-container {
 	position: relative;
-	top: 1px;
+	top: 0px;
 	left: -16px;
 	width: 32px;
 	height: 32px;

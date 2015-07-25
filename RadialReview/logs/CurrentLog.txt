@@ -1,1 +1,1 @@
-ERROR 2015-07-13 21:39:55,526 [149] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))
+ERROR 2015-07-24 23:46:26,440 [5] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`l10auditmodel`, CONSTRAINT `FK622A0683A30AB2A7` FOREIGN KEY (`RecurrenceId`) REFERENCES `l10recurrence` (`Id`))

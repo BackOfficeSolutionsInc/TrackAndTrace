@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Helpers;
 using Amazon.EC2.Model;
 using ImageResizer.Configuration.Issues;
+using MathNet.Numerics;
 using Microsoft.AspNet.SignalR;
 using NHibernate.Linq;
 using NHibernate.Transform;
@@ -51,8 +52,19 @@ namespace RadialReview.Accessors
 				Goal = 90,
 				GoalDirection = LessGreater.GreaterThan,
 				UnitType = UnitType.Percent,
-			};
+		};
 
+		public static MeasurableModel GenerateTodoMeasureable(UserOrganizationModel forUser)
+		{
+			return new MeasurableModel(){
+				Id = -10001-forUser.Id,
+				Title = "To-Do Completion "+forUser.GetName(),
+				_Editable = false,
+				Goal = 90,
+				GoalDirection = LessGreater.GreaterThan,
+				UnitType = UnitType.Percent,
+			};
+		}
 
 		#region Load Members
 		public static void _LoadMeetingLogs(ISession s, params L10Meeting[] meetings)
@@ -111,13 +123,14 @@ namespace RadialReview.Accessors
 					.WhereRestrictionOn(x => x.L10Meeting.Id).IsIn(meetingIds)
 					.List().ToList();
 
-				foreach(var m in meetings)
-				allMeasurables.Add(new L10Meeting.L10Meeting_Measurable(){
-					_Ordering = -1,
-					Id = -1,
-					L10Meeting = m,
-					Measurable = TodoMeasurable
-				});
+				foreach (var m in meetings){
+					allMeasurables.Add(new L10Meeting.L10Meeting_Measurable(){
+						_Ordering = -1,
+						Id = -1,
+						L10Meeting = m,
+						Measurable = TodoMeasurable
+					});
+				}
 
 				foreach (var m in meetings.Where(x => x != null))
 				{
@@ -138,6 +151,16 @@ namespace RadialReview.Accessors
 					}
 					if (loadMeasurables)
 					{
+						foreach (var u in m._MeetingAttendees){
+							m._MeetingMeasurables.Add(new L10Meeting.L10Meeting_Measurable()
+							{
+								_Ordering = -1,
+								Id = -1,
+								L10Meeting = m,
+								Measurable = GenerateTodoMeasureable(u.User)
+							});
+						}
+
 						foreach (var u in m._MeetingMeasurables)
 						{
 							try{
@@ -590,8 +613,42 @@ namespace RadialReview.Accessors
 					return new List<ScoreModel>();
 				}
 			});
-
 			scores.AddRange(todoScores);
+
+			var individualTodoScores = scores.GroupBy(x => x.ForWeek).SelectMany(ww =>{
+				return ww.GroupBy(x => x.AccountableUserId).SelectMany(w =>{
+					var a = w.First().AccountableUser;
+					try{
+						var ss = todoCompletion.Where(x => ww.Key.AddDays(-7) <= x.DueDate.StartOfWeek(DayOfWeek.Sunday) && x.DueDate.StartOfWeek(DayOfWeek.Sunday) < ww.Key && x.AccountableUserId==a.Id).Select(x =>{
+							if (x.CompleteTime == null)
+								return 0;
+							if (x.CompleteTime.Value <= x.DueDate)
+								return 1;
+							return 0;
+						}).ToList();
+						decimal? percent = null;
+						if (ss.Any()){
+							percent = Math.Round(ss.Average(x => (decimal) x)*100m, 1);
+						}
+
+						var mm = GenerateTodoMeasureable(a);
+
+						return new ScoreModel(){
+							_Editable = false,
+							AccountableUserId = a.Id,
+							ForWeek = ww.Key,
+							Measurable = mm,
+							Measured = percent,
+							MeasurableId = mm.Id,
+
+						}.AsList();
+					}
+					catch (Exception e){
+						return new List<ScoreModel>();
+					}
+				});
+			});
+			scores.AddRange(individualTodoScores);
 
 			var userQueries = scores.SelectMany(x =>{
 				var o = new List<long>(){

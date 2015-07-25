@@ -104,6 +104,8 @@ function addMeasurable(data, smallTable) {
 	makeXEditable_Scorecard("#ScorecardTable_Over .inlineEdit:not(.editable)");
 
 	updateScore($("#ScorecardTable").find(".score input").last());
+
+	updateScorecardNumbers();
 }
 
 function updateArchiveMeasurable(id, name, text, value) {
@@ -163,10 +165,12 @@ function updateScore(self, skipChart) {
 	} else {
 		$(self).addClass("error");
 	}
+
 	var arr = [];
 	var row = $("tr[data-measurable=" + id + "]");
 	var min = goal;
 	var max = goal;
+
 	row.find("td.score").each(function (i) {
 		var v = parseFloat($(this).find("input").val());
 		if (myIsNaN(v))
@@ -408,8 +412,19 @@ function reorderMeasurables(order) {
 	}
 	$(".scorecard-table").each(function() {
 		$(this).find("tbody").children("tr").detach().sort(function(a, b) {
+			if ($(a).attr("data-order") == $(b).attr("data-order"))
+				return $(b).attr("data-measurable") - $(a).attr("data-measurable");
+
 			return $(a).attr("data-order")-$(b).attr("data-order");
 		}).appendTo($(this));
 	});
+	updateScorecardNumbers();
+}
 
+function updateScorecardNumbers() {
+	$(".scorecard-table").each(function() {
+		$(this).find("tbody").find("tr").each(function(i) {
+			$(this).find(".number").html(i + 1);
+		});
+	});
 }

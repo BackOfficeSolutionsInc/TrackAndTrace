@@ -1,0 +1,32 @@
+﻿@{
+	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+	var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
+}
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak members-list-container">
+	<div @(headers ? "ng-controller=L10Controller" : "")>
+		<div id="Members" class="tab-pane members-pane scrollbox">
+			<div></div>
+			<table width="100%" class="component" ng-hide="(model.Members | transform:this).length==0">
+				<tr ng-show="$first">
+					<td></td>
+					<td class="picture-column"></td>
+					<th>Name</th>
+					<th></th>
+					<th></th>
+				</tr>
+				<tr id="member_{{member.Id}}" ng-repeat="member in model.Members | transform:this | orderBy: 'Name'" class="">
+					<td style="min-width: 5px;"></td>
+					<td class="picture-column"><profile-image user="member"></profile-image></td>
+					<td style="width:100%"><a href="/User/Details/{{member.Id}}">{{member.Name}}</a></td>
+					<td class="rocks-column click-column" ng-click="functions.showModal('Edit Roles: '+ member.Name,'/Roles/Modal/'+member.Id,'/Roles/Modal?refresh=false&silent=true')">Roles</td>
+					<td class="rocks-column click-column" ng-click="functions.showModal('Edit @(rockName): '+ member.Name,'/Rocks/Modal/'+member.Id,'/Rocks/Modal?refresh=false&silent=true')">@(rockName)</td>
+					<td class="measurables-column click-column" ng-click="functions.showModal('Edit Measurables: '+ member.Name,'/Measurable/Modal/'+member.Id,'/Measurable/Modal?refresh=false&silent=true')">Measurables</td>
+					<td style="min-width: 15px;"></td>
+				</tr>
+			</table>
+			<div class="gray" style="padding: 30px 15px;" ng-show="(model.Members | transform:this).length==0">
+				No members fit criteria.
+			</div>
+		</div>
+	</div>
+</div>

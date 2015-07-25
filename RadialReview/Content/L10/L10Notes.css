@@ -1,9 +1,10 @@
-﻿.notes {
-	position: absolute;
+.notes {
+	position: fixed;
 	right: 10px;
 	top: 50px;
 	width: 75vw;
 	min-width: 300px;
+	z-index: 20;
 }
 
 	.notes .overlay {
@@ -13,7 +14,7 @@
 		right: 0;
 		top: 0;
 		bottom: 0;
-	}
+}
 
 	.notes .container {
 		margin: 5px 0px;

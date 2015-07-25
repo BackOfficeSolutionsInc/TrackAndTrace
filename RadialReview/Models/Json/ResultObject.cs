@@ -90,6 +90,8 @@ namespace RadialReview.Models.Json
 					var requestRefresh = System.Web.HttpContext.Current.Request.Params["refresh"];
 					if (requestRefresh != null && requestRefresh.ToLower() == "true")
 						return true;
+					if (requestRefresh != null && requestRefresh.ToLower() == "false")
+						return false;
 				}
 				catch (Exception e){
 					var ops = true;
@@ -112,9 +114,10 @@ namespace RadialReview.Models.Json
 
 					//If Url says not to silence, then show..
 					if (requestSilent != null){
-						if (requestSilent.ToLower() == "false"){
+						if (requestSilent.ToLower() == "false")
 							return false;
-						}
+						if (requestSilent.ToLower() == "true")
+							return true;
 					}
 				}catch (Exception e){
 					var ops = true;

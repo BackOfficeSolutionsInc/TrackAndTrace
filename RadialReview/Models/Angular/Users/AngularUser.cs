@@ -22,8 +22,20 @@ namespace RadialReview.Models.Angular.Users
 				ImageUrl = user.NotNull(x => x.ImageUrl(true, imageSize)),
 				Initials = user.NotNull(x => x.GetInitials()),
 			};
-
 		}
+		public static AngularUser CreateUser(UserModels.UserLookup user,ImageSize imageSize = ImageSize._64)
+		{
+			if (user == null)
+				return NoUser();
+
+			return new AngularUser(user.UserId)
+			{
+				Name = user.NotNull(x => x.Name),
+				ImageUrl = user.NotNull(x => x.ImageUrl(imageSize)),
+				Initials = user.NotNull(x => x.GetInitials()),
+			};
+		}
+
 
 		public static AngularUser NoUser()
 		{
@@ -39,5 +51,7 @@ namespace RadialReview.Models.Angular.Users
 		public string Name { get; set; }
 		public string ImageUrl { get; set; }
 		public string Initials { get; set; }
+
+	
 	}
 }
