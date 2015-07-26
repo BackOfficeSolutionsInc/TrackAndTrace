@@ -18,6 +18,8 @@ namespace RadialReview.Models.Askables {
 		public virtual long ForUserId { get; set; }
 		public virtual bool CompanyRock { get; set; }
 		public virtual DateTime? DueDate { get; set; }
+		public virtual RockState Completion { get; set; }
+
 		public override QuestionType GetQuestionType(){
 			return QuestionType.Rock;
 		}
@@ -32,6 +34,7 @@ namespace RadialReview.Models.Askables {
 		{
 			CreateTime = DateTime.UtcNow;
 			OnlyAsk = AboutType.Self;
+			Completion = RockState.OnTrack;
 		}
 
 		public override string GetQuestion()
@@ -55,6 +58,7 @@ namespace RadialReview.Models.Askables {
 			public RockModelMap()
 			{
 				Map(x => x.Rock);
+				Map(x => x.Completion);
 				Map(x => x.DueDate);
 				Map(x => x.OrganizationId);
 				Map(x => x.FromTemplateItemId);
@@ -72,7 +76,8 @@ namespace RadialReview.Models.Askables {
 			angularizer.Add("Name", x => x.Rock);
 			angularizer.Add("Owner", x => x.AccountableUser);
 			angularizer.Add("DueDate", x => x.DueDate);
-			angularizer.Add("Complete", x => x.CompleteTime!=null);
+			angularizer.Add("Complete", x => x.CompleteTime != null);
+			angularizer.Add("Completion", x => x.Completion);
 		}
 	}
 }

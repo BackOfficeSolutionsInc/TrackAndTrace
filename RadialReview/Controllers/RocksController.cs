@@ -29,6 +29,7 @@ namespace RadialReview.Controllers
 			}
 
 		}
+		
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult ModalSingle(long id,long userId,long periodId)
 		{

@@ -19,6 +19,13 @@
 	});
 });
 
-function updateRockCompletion(rockId, state) {
-	$("input[name='rock_" + rockId + "']").val(state);
+function updateRockCompletion(meetingRockId, state, rockId) {
+	$("input[name='rock_" + meetingRockId + "']").val(state);
+	if (rockId!==undefined) {
+		$("input[name='for_rock_" + rockId + "']").val(state);
+	}
+}
+
+function updateRockName(rockId, message) {
+	$(".message[rock='" + rockId + "']").html(message);
 }

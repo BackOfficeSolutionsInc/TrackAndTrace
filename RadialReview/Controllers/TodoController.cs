@@ -42,7 +42,49 @@ namespace RadialReview.Controllers
 			return View(model);
 		}
 
+		public class MeetingVm{
+			public long id { get; set; }
+			public string name { get; set; }
+		}
+	    [Access(AccessLevel.UserOrganization)]
+	    public ActionResult CreateTodoRecurrence()
+	    {
+			var model = new TodoVM(GetUser().Id){
+				ByUserId = GetUser().Id,
+				AccountabilityId = GetUser().Id,
+				MeetingId = -1
+			};
+			ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false)
+				.Select(x => new MeetingVm { name = x.Recurrence.Name, id = x.Recurrence.Id })
+				.ToList();
+			return PartialView("CreateTodoRecurrence", model);
+	    }
+		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
+		public JsonResult CreateTodoRecurrence(TodoVM model)
+		{
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId,x=>x.AccountabilityId);
+			if (model.MeetingId != -1)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+
+
+			TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
+			{
+				CreatedById = GetUser().Id,
+				ForRecurrenceId = model.RecurrenceId,
+				CreatedDuringMeetingId = model.MeetingId,
+				Message = model.Message ?? "",
+				Details = model.Details ?? "",
+				ForModel = "TodoModel",
+				ForModelId = -1,
+				Organization = GetUser().Organization,
+				AccountableUserId = model.AccountabilityId,
+				DueDate = model.DueDate
+			});
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+		}
+
+	    [Access(AccessLevel.UserOrganization)]
 		public ActionResult CreateTodo(long recurrence, long meeting = -1)
 		{
 			if (meeting!=-1)

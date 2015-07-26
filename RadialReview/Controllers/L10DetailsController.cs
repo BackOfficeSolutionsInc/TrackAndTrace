@@ -37,7 +37,13 @@ namespace RadialReview.Controllers
 	    {
 		    return Json(L10Accessor.GetAngularRecurrence(GetUser(), id), JsonRequestBehavior.AllowGet);
 	    }
-
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateAngularRock(AngularRock model, string connectionId = null)
+		{
+			L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult UpdateAngularIssue(AngularIssue model, string connectionId = null)

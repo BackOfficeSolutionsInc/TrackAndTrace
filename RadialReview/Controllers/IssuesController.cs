@@ -135,6 +135,53 @@ namespace RadialReview.Controllers
 			return PartialView("CreateIssueModal", model);
 	    }
 
+	    public class MeetingVm
+	    {
+		    public long id { get; set; }
+
+			public string name { get; set; }
+	    }
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult CreateIssueRecurrence()
+		{
+			//if (meeting != -1)
+			//	_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+
+			ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false)
+				.Select(x=>new MeetingVm{name=x.Recurrence.Name,id =x.Recurrence.Id})
+				.ToList();
+			
+			var model = new IssueVM()
+			{
+				ByUserId = GetUser().Id,
+				MeetingId = -1,
+				PossibleUsers = null,
+				OwnerId = GetUser().Id
+			};
+			return PartialView("CreateIssueRecurrenceModal", model);
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult CreateIssueRecurrence(IssueVM model)
+		{
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.OwnerId, x => x.ForId);
+			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel()
+			{
+				CreatedById = GetUser().Id,
+				//MeetingRecurrenceId = model.RecurrenceId,
+				CreatedDuringMeetingId = model.MeetingId,
+				Message = model.Message ?? "",
+				Description = model.Details ?? "",
+				ForModel = "IssueModel",
+				ForModelId = -1,
+				Organization = GetUser().Organization,
+
+			});
+			return Json(ResultObject.Success("Created issue").NoRefresh());
+		}
+
 		[HttpPost]
 	    [Access(AccessLevel.UserOrganization)]
 		public JsonResult CreateIssue(IssueVM model)

@@ -1,6 +1,7 @@
 ﻿using System;
 using NHibernate;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities;
 
@@ -162,6 +163,7 @@ namespace RadialReview.Accessors
 				edited = true;
 				answer.Complete = (finished != RockState.Indeterminate);
 				answer.Completion = finished;
+				((RockModel) answer.Askable).Completion = finished;
 				UpdateCompletion(answer, now, ref questionsAnsweredDelta, ref optionalAnsweredDelta);
 				s.Update(answer);
 				//tx.Commit();

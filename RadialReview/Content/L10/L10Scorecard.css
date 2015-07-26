@@ -25,6 +25,7 @@
 
 .scorecard-table .heading.who {
 	text-align: left;
+	min-width: 45px;
 }
 
 	.scorecard-table .heading.who.alignRight {
@@ -214,7 +215,7 @@
 	}
 
 .direction_1:empty:before {
-	content: "≥";
+	content: "â‰¥";
 }
 
 .direction_-1:empty:before {

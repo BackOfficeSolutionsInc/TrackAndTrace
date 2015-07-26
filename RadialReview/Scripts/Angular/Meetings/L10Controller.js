@@ -229,6 +229,8 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 
 	$scope.now = moment();
 
+	$scope.rockstates = [{ name: 'At Risk', value: 'AtRisk' }, { name: 'On Track', value: 'OnTrack' }, { name: 'Complete', value: 'Complete' }];
+
 	$scope.opts = {
 		ranges: {
 			'Incomplete': [moment().add('days', 1), moment().add('days', 1)],

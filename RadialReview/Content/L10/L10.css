@@ -160,7 +160,7 @@ ul {
 
 h3 {
 	margin-top: 10px;
-	margin-bottom: 20px;
+	/* margin-bottom: 30px; */
 	font-weight: bold;
 }
 
@@ -297,10 +297,13 @@ profile-image .picture-container {
 	border: 1px solid #DDD;
 	padding: 1px;
 	background-color: white;  
-	line-height: 25px;
+	line-height: 29px;
 	text-align: center;
 	font-weight: bold;
 	color: #444444;
+	/* font-size: 14px; */
+	/* white-space: nowrap; */
+	overflow: hidden;
 }
 
 profile-image .picture {

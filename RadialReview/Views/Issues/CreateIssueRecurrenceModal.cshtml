@@ -1,0 +1,40 @@
+﻿@model RadialReview.Models.Issues.IssueVM
+
+@Html.SecuredHiddenFor(x => x.ByUserId)
+@Html.SecuredHiddenFor(x => x.MeetingId)
+@Html.SecuredHiddenFor(x => x.OwnerId)
+@Html.SecuredHiddenFor(x => x.ForId)
+	
+<div class="form-group">
+	@Html.LabelFor(x => x.Message)
+	@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter the Issue" })
+</div>
+<div class="form-group">
+	@Html.LabelFor(x => x.Details)
+	@Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
+</div>
+
+<div class="form-group">
+	<label>Meeting</label>
+	<select name="@Html.NameFor(x => x.RecurrenceId)" class="form-control" style="width: 100%;">
+	@foreach (var u in ViewBag.PossibleMeetings)
+	{
+		<option value="@u.id" @(u.id == Model.RecurrenceId ? "selected" : "")>@u.name</option>
+	}
+	</select>
+</div>
+
+@*<script>
+	//function formatState(state) {
+	//	if (!state.id) {
+	//		return state.text;
+	//	}
+	//	var $state = $('<span><img style="max-width:32;max-height:32px" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+	//	return $state;
+	//};
+
+	$(".select-user").select2({
+		templateResult: imageListFormat,
+		templateSelection: imageListFormat,
+	});
+</script>*@

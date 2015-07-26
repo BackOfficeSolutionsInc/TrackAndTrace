@@ -43,7 +43,10 @@ namespace RadialReview.Models.UserModels
 
 		public virtual string GetInitials()
 		{
-			var inits = (Name ?? "").Split(' ').Select(x => x.Trim()).Where(x => !String.IsNullOrEmpty(x)).Select(x => x.Substring(0, 1).ToUpperInvariant());
+			var inits = (Name ?? "").Split(' ').Select(x => x.Trim()).Where(x => !String.IsNullOrEmpty(x)).Select(x => x.Substring(0, 1).ToUpperInvariant()).ToList();
+			while(inits.Count>2)
+				inits.RemoveAt(1);
+
 			return string.Join(" ", inits).ToUpperInvariant();
 		}
 

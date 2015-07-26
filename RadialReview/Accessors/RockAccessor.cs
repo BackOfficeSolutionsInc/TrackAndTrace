@@ -158,7 +158,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var rock = s.Get<RockModel>(rockId);
-					var perm = PermissionsUtility.Create(s, caller).ManagesUserOrganization(rock.ForUserId, false);
+					var perm = PermissionsUtility.Create(s, caller).EditRock(rock);
 					rock.DeleteTime = DateTime.UtcNow;
 					s.Update(rock);
 					tx.Commit();

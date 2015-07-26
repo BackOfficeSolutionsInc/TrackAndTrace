@@ -1091,6 +1091,7 @@
     <Content Include="Views\L10\Timeline.cshtml" />
     <Content Include="Views\Home\partial\DashboardScripts.cshtml" />
     <Content Include="Views\Manage\partial\members.cshtml" />
+    <Content Include="Views\Issues\CreateIssueRecurrenceModal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1359,6 +1360,7 @@
     <Content Include="Views\Scorecard\partial\list.cshtml" />
     <Content Include="Views\Scorecard\partial\listscripts.cshtml" />
     <Content Include="Views\Rocks\partial\list.cshtml" />
+    <Content Include="Views\Todo\CreateTodoRecurrence.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

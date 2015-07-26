@@ -18,19 +18,20 @@
                 <div></div>
                 <div ng-repeat="(key,value) in model.Todos | transform:this | groupBy: 'Owner.Name' ">
                     <table width="100%" class="component" ng-show="(value | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)).length">
-                        <tr ng-show="$first">
+                        <tr class="table-header" ng-show="$first">
                             <td></td>
                             <td class="picture-column"></td>
                             <th>To-Do</th>
                             <th class="alignCenter">Due Date</th>
-                            <th></th>
+                            <th class="empty-cell"></th>
 							@if (completion)
 							{
 								<th>Completed</th>
 							}
                         </tr>
                         @*| orderBy: ['Complete','-CompleteTime','Name']*@
-                        <tr id="todo_{{todo.Id}}" ng-repeat-start="todo in value | orderBy: ['Complete','-CompleteTime','DueDate'] | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)"
+	                    <tr id="todo_{{todo.Id}}" 
+							ng-repeat-start="todo in value | orderBy: ['Complete','-CompleteTime','DueDate'] | filter:filters.byRange('CompleteTime',date.startDate,date.endDate) track by $index"
                             ng-class="{grayRow: todo.Complete}"
                             ng-hide="model.Selected==todo.Key"
                             class="clickable">
@@ -40,8 +41,7 @@
                             <td class="picture-column"><profile-image user="todo.Owner"></profile-image></td>
                             <td style="width:100%" ng-click="model.Selected = todo.Key">{{todo.Name}}</td>
                             <td class="alignCenter" style="min-width: 80px;"><input ng-class="todo.Complete?(''):(todo.DueDate>now? 'green' : 'red')" class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
-	                        <td style="min-width: 15px;"></td>
-							
+	                        <td class="empty-cell" style="min-width: 15px;"></td>
 							@if (completion)
 							{
 								<td class="alignCenter" style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
@@ -54,7 +54,7 @@
                                 <input ng-model-options="{debounce: 200}" type="text" ng-model="todo.Name" class="fullWidth" ng-change="functions.sendUpdate(todo)" />
                             </td>
                             <td class="alignCenter" style="min-width: 75px;"><input class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
-                            <td style="min-width: 15px;"></td>
+                            <td class="empty-cell" style="min-width: 15px;"></td>
 							@if (completion)
 							{
 								<td class="alignCenter" style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
@@ -65,7 +65,7 @@
                             <td class="picture-column"></td>
                             <td><textarea ng-model-options="{debounce: 200}" class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter to-do details..." style="min-height: 100px;" ng-change="functions.sendUpdate(todo)"></textarea></td>
                             <td></td>
-	                        <td></td>
+	                        <td class="empty-cell"></td>
 							@if (completion)
 							{
 								<td></td>

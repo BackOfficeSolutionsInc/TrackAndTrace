@@ -4,6 +4,7 @@
 	scope: {
 		rock:"=rock"
 	},
+	require: 'ngModel',
     template:	"<div class=\"rockstate rockstate-thin editor\">"+
 					"<div class=\"rockstate-contents\">"+
 						"<input type=\"hidden\" class=\"changeable\" value=\"{{rock.State}}\" name=\"{{rock.Key}}\" \/>"+

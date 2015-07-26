@@ -55,6 +55,7 @@ $(function () {
 	meetingHub.client.updateTodoList = updateTodoList;
 	meetingHub.client.updateTodoCompletion = updateTodoCompletion;
 	meetingHub.client.updateRockCompletion = updateRockCompletion;
+	meetingHub.client.updateRockName = updateRockName;
 	
 	meetingHub.client.updateTodoMessage = updateTodoMessage;
 	meetingHub.client.updateTodoDetails = updateTodoDetails;
@@ -74,7 +75,6 @@ $(function () {
 	meetingHub.client.updateArchiveMeasurable = updateArchiveMeasurable;
 	meetingHub.client.addMeasurable = addMeasurable;
 	meetingHub.client.reorderMeasurables = reorderMeasurables;
-
 
 	//meetingHub.client.setLeader = setLeader;
 

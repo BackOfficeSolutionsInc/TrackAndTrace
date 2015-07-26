@@ -1116,6 +1116,30 @@ namespace RadialReview.Utilities
 		}
 		#endregion
 
+		#region Rocks
+		public PermissionsUtility ViewRock(RockModel rock)
+		{
+			return ViewUserOrganization(rock.ForUserId, false);
+		}
+
+		public PermissionsUtility EditRock(RockModel rock)
+		{
+			var recurrences= session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+				.Where(x => x.DeleteTime == null && x.User.Id == caller.Id)
+				.Select(x => x.L10Recurrence.Id).List<long>().ToList();
+
+			var rocks = session.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+				.Where(x => x.DeleteTime == null && x.ForRock.Id == rock.Id)
+				.WhereRestrictionOn(x=>x.L10Recurrence.Id).IsIn(recurrences)
+				.Select(x=>x.Id).List<long>();
+			if (rocks.Any())
+				return this;
+
+
+			return ManagesUserOrganization(rock.ForUserId, false);
+		}
+		#endregion
+
 		#region Survey
 		public PermissionsUtility ViewSurveyContainer(long surveyId)
 		{
@@ -1486,8 +1510,5 @@ namespace RadialReview.Utilities
 		{
 			return caller;
 		}
-
-
-		
 	}
 }

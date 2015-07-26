@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Accessors;
 using RadialReview.Models.ViewModels;
 
 namespace RadialReview.Controllers
@@ -53,6 +54,7 @@ namespace RadialReview.Controllers
 					model.IncludeTodos = GetUser().Organization.Settings.EnableL10;
 					model.IncludeScorecard = GetUser().Organization.Settings.EnableL10;
 					model.IncludeRocks = GetUser().Organization.Settings.EnableL10;
+					ViewBag.AnyL10s = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false).Any();
 
 				}
 				catch (Exception)

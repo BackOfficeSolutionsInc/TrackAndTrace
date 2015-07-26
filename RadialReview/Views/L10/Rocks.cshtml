@@ -26,7 +26,7 @@
 								</tr>
 								@foreach (var i in person)
 								{
-									<tr>
+									<tr class="rock_@(i.ForRock.Id)">
 										<td class="buttonHolder currentBlue" style="min-width: 45px;border-radius: 6px;height: 30px;margin: 1px;padding: 4px;">
 											<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
 											      data-meeting="@Model.Meeting.Id"
@@ -42,7 +42,7 @@
 											</span>
 										</td>
 										<td class="">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
-										<td class="message">@i.ForRock.Rock</td>
+										<td data-rock="@(i.ForRock.Id)" class="message">@i.ForRock.Rock</td>
 									</tr>
 								}
 							</table>
