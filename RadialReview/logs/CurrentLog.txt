@@ -41,3 +41,4 @@ Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Cannot convert null to 'b
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
 INFO  2015-07-25 23:59:37,873 [172] BaseController         - Permissions: [/L10/Load/4?page=todo&connection=bf8394df-8355-4763-aae2-4c3393235786] --> []
+INFO  2015-07-26 01:52:18,503 [183] BaseController         - Organization: [/Rocks/Modal/600] --> [/Rocks/Modal/600]
