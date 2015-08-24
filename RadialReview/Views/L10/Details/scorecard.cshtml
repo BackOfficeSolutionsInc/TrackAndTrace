@@ -1,5 +1,5 @@
 ﻿@{
-	var forceMin =  (ViewBag.ForceMin == null || ((bool)ViewBag.ForceMin) == true)?",true":"";
+	var forceMin = (ViewBag.ForceMin == null || ((bool)ViewBag.ForceMin) == true) ? ",true" : "";
 }
 
 <div class="btn-group pull-right" style="padding: 5px 3px;">
@@ -10,13 +10,13 @@
 </div>
 
 
-<div class="scorecard meeting-page" style="clear: both;">
+<div id="ScorecardContainer" class="scorecard meeting-page" style="clear: both;">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="component">
 				<div class="clearfix"></div>
 				<div style="position: relative;">
-					<div class="table-responsive" style="min-height: 600px;">
+					<div class="table-responsive scroll-right" style="min-height: 100px;">
 						<table id="ScorecardTable" class="scorecard-table">
 							<thead>
 								<tr>
@@ -25,23 +25,26 @@
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
-									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
-										{{functions.subtractDays(week.DisplayDate,0) | date:'MM/dd'}}
+									<th>&nbsp;</th>
+									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
+										{{functions.subtractDays(week.DisplayDate,0) | date:'MMM dd'}}
 									</th>
 
 								</tr>
 								<tr>
+									<th>&nbsp;</th>
 									<th class="heading who alignRight">Accountable</th>
 									<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
 									<th class="heading measurable">Measurable</th>
 									<th class="heading target" colspan="2">Goal</th>
-									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
-										{{functions.subtractDays(week.DisplayDate,-6) | date:'MM/dd'}}
+									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
+										{{functions.subtractDays(week.DisplayDate,-6) | date:'MMM dd'}}
 									</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr  ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
+								<tr data-measurable="{{measurable.Id}}" class="reorderable" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
+									<td><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
 									<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>
 									<td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
 									<td class="measurable first1" title="{{measurable.Name}}">
@@ -65,22 +68,24 @@
 									</td>
 									<td class="target value" data-measurable="{{measurable.Id}}">
 										<span class="inlineEdit modifiers {{measurable.Modifiers}}"
-										      data-type="number"
-										      data-name="target"
-										      data-measurable="{{measurable.Id}}"
-										      data-pk="{{measurable.Id}}_{{meetingId}}"
-										      data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+											  data-type="number"
+											  data-name="target"
+											  data-measurable="{{measurable.Id}}"
+											  data-pk="{{measurable.Id}}_{{meetingId}}"
+											  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
 										<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
 
 									</td>
 
 
-									<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate@(forceMin))" class="score" ng-class="{current:week.IsCurrentWeek}">
+									<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="score" ng-class="{current:week.IsCurrentWeek}">
+										<div ng-show="measurable.Id<0" class="grid gray {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}">{{functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured}}</div>
 										<input data-goal="{{measurable.Target}}"
 											   data-goal-dir="{{measurable.Direction}}"
 											   data-row="{{$parent.$index}}"
 											   data-col="{{$index}}"
 											   type="text"
+											   ng-hide="measurable.Id<0"
 											   placeholder="N/A"
 											   ng-model-options="{debounce: 200}"
 											   ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured"
@@ -95,7 +100,7 @@
 							</tbody>
 						</table>
 					</div>
-					<table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm">
+					<table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm resizable">
 						<thead>
 							<tr>
 								<th>&nbsp;</th>
@@ -103,8 +108,10 @@
 								<th>&nbsp;</th>
 								<th>&nbsp;</th>
 								<th>&nbsp;</th>
+								<th>&nbsp;</th>
 							</tr>
 							<tr>
+								<th>&nbsp;</th>
 								<th class="heading who alignRight">Accountable</th>
 								<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
 								<th class="heading measurable">Measurable</th>
@@ -112,7 +119,8 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
+							<tr data-measurable="{{measurable.Id}}" class="reorderable" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
+								<td><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
 								<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>
 								<td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
 								<td class="measurable first1" title="{{measurable.Name}}">
@@ -136,11 +144,11 @@
 								</td>
 								<td class="target value" data-measurable="{{measurable.Id}}">
 									<span class="inlineEdit modifiers {{measurable.Modifiers}}"
-									      data-type="number"
-									      data-name="target"
-									      data-measurable="{{measurable.Id}}"
-									      data-pk="{{measurable.Id}}_{{meetingId}}"
-									      data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+										  data-type="number"
+										  data-name="target"
+										  data-measurable="{{measurable.Id}}"
+										  data-pk="{{measurable.Id}}_{{meetingId}}"
+										  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
 									<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
 
 								</td>
@@ -160,10 +168,16 @@
 			border-bottom: dashed 1px #08C;
 			cursor: pointer;
 		}
+
+		.grid.gray {
+			background-color: #eee;
+			height: 100%;
+		}
 	</style>
 }
 @using (Html.BeginScripts())
 {
+	<script src="~/Scripts/jquery/jquery.ui.sortable.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 	<script src="~/Scripts/L10/L10Scorecard.js"></script>
 	<script>
@@ -196,7 +210,46 @@
 				$(this).attr("editable", "1");
 				$(this).click();
 			}
-		});/*
+		});
+		$(function () {
+			fixHelperModified = function (e, tr) {
+				var $originals = tr.children();
+				var $helper = tr.clone();
+				$helper.children().each(function (index) {
+					$(this).width($originals.eq(index).width());
+				});
+				return $helper;
+			};
+
+			var updateIndex = function (e, ui) {
+				var order = [];
+				var i = 0;
+				$('tr', ui.item.parent()).each(function (i) {
+					order.push(+$(this).attr("data-measurable"));
+				});
+
+				var data = {
+					ordering: order,
+					recurrenceId: angular.element(document.querySelector('#ScorecardContainer')).scope().meetingId
+				};
+				$.ajax({
+					url: "/L10/UpdateRecurrenceMeasurableOrdering",
+					method: "POST",
+					data: $.param(data, true),
+					success: function (d) { showJsonAlert(d); }
+				});
+			};
+
+			$(".scorecard-table tbody").xsortable({
+				items: ">.reorderable",
+				handle: ".handle",
+				helper: fixHelperModified,
+				stop: updateIndex,
+				placeholder: "xsortable-placeholder"
+			}).disableSelection();
+		});
+
+		/*
 		$(function() {
 			$(".inlineEdit").editable({
 				savenochange: true,

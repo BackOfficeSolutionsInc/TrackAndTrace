@@ -728,7 +728,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public void EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid)
+		public void EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid,bool? sendTodoEmails,int? sendTodoTime)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -744,6 +744,11 @@ namespace RadialReview.Accessors
 					if (imageGuid != null){
 						userOrg.ImageGuid = imageGuid;
 					}
+					if (sendTodoEmails != null){
+						userOrg.SendTodoTime = sendTodoEmails.Value ? sendTodoTime : null;
+					}
+
+					new Cache().Invalidate(CacheKeys.USER);
 
 					if (userOrg.UserOrganization != null){
 						foreach (var u in userOrg.UserOrganization){

@@ -61,7 +61,7 @@ namespace RadialReview.Controllers {
 		public ActionResult Products(OrganizationModel model)
 		{
 			if (ModelState.IsValid){
-				_OrganizationAccessor.UpdateProducts(GetUser(), model.Settings.EnableReview, model.Settings.EnableL10,model.Settings.Branding);
+				_OrganizationAccessor.UpdateProducts(GetUser(), model.Settings.EnableReview, model.Settings.EnableL10, model.Settings.EnableSurvey, model.Settings.Branding);
 				return RedirectToAction("Index", "Manage");
 			}
 			return View(GetUser().Organization);

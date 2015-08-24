@@ -31,7 +31,7 @@
 								@for(var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++)
 								{
 									<tr>
-										<td style=""></td>
+										<td style="width:50%;"></td>
 										<td style="width: 1px;">
 											@Html.Partial("_ProfilePicture", Model.Meeting._MeetingAttendees[i].User)
 										</td>
@@ -41,7 +41,7 @@
 										<td style="width: 1px;">
 											@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "any", type = "number", style = "width:60px", @class = "rt" })
 										</td>
-										<td></td>
+										<td style="width:50%;"></td>
 									</tr>
 								}
 								<tr>

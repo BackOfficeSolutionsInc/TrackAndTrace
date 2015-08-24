@@ -97,8 +97,8 @@ function makeXEditable_Scorecard(selector) {
 function addMeasurable(data, smallTable) {
 	//var row = $("<tr></tr>");
 	//row.append("<td>")
-	$("#ScorecardTable").append(data);
-	$("#ScorecardTable_Over").append(smallTable);
+	$("#ScorecardTable tbody").append(data);
+	$("#ScorecardTable_Over tbody").append(smallTable);
 
 	makeXEditable_Scorecard("#ScorecardTable .inlineEdit:not(.editable)");
 	makeXEditable_Scorecard("#ScorecardTable_Over .inlineEdit:not(.editable)");
@@ -126,6 +126,17 @@ function updateMeasurable(id, name, text, value) {
 		value = text;
 	sel.attr("data-value", value);
 	highlight(sel);
+
+
+	$($("tr[data-meetingmeasurable='"+id+"'] .score input")).each(function (d) {
+
+		if (name == "target")
+			$(this).attr("data-goal", value);
+		if(name=="direction")
+			$(this).attr("data-goal-dir", value);
+
+		updateScore(this,false);
+	});
 }
 
 function myIsNaN(o) {
@@ -407,6 +418,23 @@ function isElementInViewport(el) {
 function reorderMeasurables(order) {
 	for (var i = 0; i < order.length; i++) {
 		var found = $("tr[data-meetingmeasurable='" + order[i] + "']");
+		$(found).attr("data-order", i);
+		$(found).find(".grid").attr("data-row", i);
+	}
+	$(".scorecard-table").each(function() {
+		$(this).find("tbody").children("tr").detach().sort(function(a, b) {
+			if ($(a).attr("data-order") == $(b).attr("data-order"))
+				return $(b).attr("data-measurable") - $(a).attr("data-measurable");
+
+			return $(a).attr("data-order")-$(b).attr("data-order");
+		}).appendTo($(this));
+	});
+	updateScorecardNumbers();
+}
+
+function reorderRecurrenceMeasurables(order) {
+	for (var i = 0; i < order.length; i++) {
+		var found = $("tr[data-measurable='" + order[i] + "']");
 		$(found).attr("data-order", i);
 		$(found).find(".grid").attr("data-row", i);
 	}

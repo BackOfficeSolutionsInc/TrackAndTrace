@@ -207,25 +207,29 @@
 	left: 0px;
 	background-color: #FFF;
 	border-right: 1px solid #E8E8E8;
-	 max-width: 80%;
+	display: block;
+	max-width: 80%;
 }
 
 	#ScorecardTable_Over td, #ScorecardTable_Over th {
 		/*border-left: 1px solid #FFFFFF;*/
 	}
-
-.direction_1:empty:before {
-	content: "â‰¥";
+	
+.direction_1:empty:before,
+.direction_GreaterThan:empty:before {
+	content: "≥";
 }
 
-.direction_-1:empty:before {
+.direction_LessThan:empty:before {
 	content: "<";
 }
 
+.modifiers.Dollar:before, 
 .modifiers.dollar:before {
 	content: "$";
 }
 
+.modifiers.Percent:after,
 .modifiers.percent:after {
 	content: "%";
 }
@@ -247,7 +251,7 @@
 	content: "units";
 }
 
-.modifiers-1:after {
+.modifiers-1:after{
 	content: "dollars";
 }
 

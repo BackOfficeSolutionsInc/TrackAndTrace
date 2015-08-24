@@ -239,9 +239,10 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateTodoFromIssue(long recurrence, long issue, long meeting)
+		public ActionResult CreateTodoFromIssue(long issue,long recurrence, long? meeting=null)
 		{
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+			if (meeting!=null)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting.Value));
 			var i = IssuesAccessor.GetIssue(GetUser(), issue);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence,true);
 
@@ -252,7 +253,7 @@ namespace RadialReview.Controllers
 				Message = i.NotNull(x=>x.GetTodoMessage()),
 				Details = i.NotNull(x=>x.GetTodoDetails()),
 				ByUserId = GetUser().Id,
-				MeetingId = meeting,
+				MeetingId = meeting??-1,
 				IssueId = issue,
 				RecurrenceId = recurrence,
 				AccountabilityId = L10Accessor.GuessUserId(i, recur.DefaultTodoOwner),

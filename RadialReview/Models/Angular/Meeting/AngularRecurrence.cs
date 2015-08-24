@@ -31,9 +31,15 @@ namespace RadialReview.Models.Angular.Meeting
 		public IEnumerable<AngularRock> Rocks { get; set; }
 		public IEnumerable<AngularTodo> Todos { get; set; }
 		public IEnumerable<AngularIssue> Issues { get; set; } 
+		public AngularDateRange date { get; set; }
 	}
 
-	
+
+	public class AngularDateRange
+	{
+		public DateTime startDate { get; set; }
+		public DateTime endDate { get; set; }
+	}
 
 	//	public class AngularScorecardRow : BaseAngular
 	//	{

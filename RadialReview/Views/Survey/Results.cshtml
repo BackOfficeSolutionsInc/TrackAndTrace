@@ -1,0 +1,113 @@
+﻿@model RadialReview.Models.Survey.SurveyResultVM
+
+@{
+	ViewBag.Title = "Results";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="review">
+	<div class="row">
+		<div class="col-md-6">
+			<hgroup class="">
+				<h2>@Model.Container.Name: <small>Survey Results</small></h2>
+			</hgroup>
+		</div>
+		<div class="col-md-6">
+			<div class="pull-right">
+				<table>
+					<tr class="gray issue-date alignLeft"><th >Issue Date:</th><td class="alignRight">@(Model.Container.CreateTime.NotNull(x => x.ToShortDateString()) ?? "Not Issued")</td></tr>
+					<tr class="gray issue-completion alignLeft"><th>Completion:</th><td class="alignRight">@(Model.TotalStartedRespondents)/@(Model.TotalRequestedRespondents)</td></tr>
+				</table>
+			</div>
+
+		</div>
+	</div>
+	<div class="clearfix"></div>
+	<hr />
+
+	@foreach (var q in Model.Questions)
+	{
+		<div class="row question-group">
+			<div class="col-md-5 alignCenter"><h3>@q.Question</h3></div>
+			<div class="col-md-7">
+				<div class="pv_@q.PartialView">@Html.Partial("partial/" + q.PartialView, q)</div>
+			</div>
+		</div>
+		<hr />
+	}
+</div>
+
+@using (Html.BeginScripts())
+{
+	<script>
+		$(function () {
+			$(".feedbacks").each(function () {
+				if ($(this).height() > 200) {
+					$(this).css({ "height": 200, "resize": "vertical" });
+				}
+			});
+		});
+	</script>
+}
+
+@using (Html.BeginStyles())
+{
+	<style>
+		.radio5 {
+			margin-top: -17px;
+		}
+
+		h2 {
+			margin: 0;
+		}
+
+		h3 {
+			margin-top: 6px;
+		}
+
+		hr {
+		}
+
+		.feedbacks:not(:empty) {
+			/* list-style-type: none; */
+			overflow: auto;
+			position: relative;
+		}
+
+		.feedbacks:empty {
+			height: 20px;
+		}
+
+			.feedbacks:empty:after {
+				content: "No responses.";
+				text-align: center;
+				color: #BDBDBD;
+				/* text-align: right; */
+				/* margin: auto; */
+				position: absolute;
+				width: calc(100% - 80px);
+				top: 9px;
+			}
+
+		.feedbacks li {
+			padding-left: 10px;
+			padding-right: 10px;
+			color: #5A5A5A;
+		}
+
+			.feedbacks li:not(:last-child) {
+				border-bottom: 1px solid #d1d1d1;
+				margin-bottom: 5px;
+				padding-bottom: 5px;
+			}
+
+		.bar {
+			background-color: #338BD0;
+		}
+
+		/*.question-group:not(:last-child) {
+			border-bottom: 1px solid gray;
+		}*/
+	</style>
+}

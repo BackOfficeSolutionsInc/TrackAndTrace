@@ -184,7 +184,7 @@ namespace RadialReview.Controllers
 		#region Rocks
 		private PartialViewResult Rocks(L10MeetingVM model)
 		{
-			model.Rocks = L10Accessor.GetRocksForRecurrence(GetUser(), model.Recurrence.Id, model.Meeting.Id);
+			model.Rocks = L10Accessor.GetRocksForMeeting(GetUser(), model.Recurrence.Id, model.Meeting.Id);
 			return PartialView("Rocks", model);
 		}
 		#endregion
@@ -291,11 +291,8 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult MeetingStats(long recurrenceId)
 		{
-			var meetings = L10Accessor.GetL10Meetings(GetUser(), recurrenceId, true);
-			var model = new L10MeetingStatsVM()
-			{
-				AllMeetings = meetings
-			};
+			var model=L10Accessor.GetStats(GetUser(), recurrenceId);
+			
 
 			#region For Demo
 			if (recurrenceId == 1){

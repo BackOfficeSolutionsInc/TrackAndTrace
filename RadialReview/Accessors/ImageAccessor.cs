@@ -127,6 +127,7 @@ namespace RadialReview.Accessors
 						default: throw new PermissionsException();
 					}
 
+					new Cache().InvalidateForUser(user.Id, CacheKeys.USER);
 					tx.Commit();
 					s.Flush();
 				}

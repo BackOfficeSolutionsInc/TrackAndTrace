@@ -2,7 +2,26 @@
 	border: 1px solid gray;
 	padding: 20px;
 	background-color: white;
+	margin-bottom: 10px;
 }
+
+	.vto .goals {
+		font-weight: bold;
+	}
+		.vto .border-table .number {
+			width: 40px;
+			text-align: right;
+			padding: 0 6px;
+		}
+
+		.vto .border-table table {
+			width: 100%
+		}
+		
+	.vto .border-table td{
+		 border: 1px solid black;
+		padding: 2px 4px;
+	}
 
 	.vto .title {
 		font-weight: bold;

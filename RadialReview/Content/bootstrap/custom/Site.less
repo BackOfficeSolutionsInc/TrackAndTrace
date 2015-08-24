@@ -1,0 +1,36 @@
+﻿
+tr.grayRow {
+	background-image: url("/Content/img/graystripe.png");
+	//background-color: lighten(@traction-orange,40%);
+}
+
+.table-hover > tbody > tr:hover,
+.table-hover > tbody > tr.grayRow:hover {
+	background-color: lighten(@traction-orange,40%);
+}
+
+.clickable{
+	/*color: @traction-orange;*/
+} 
+
+.clickable:hover{
+	color: darken(@traction-orange,10%);//@link-hover-color;
+}
+
+
+.table-hover-underline a {
+	color: @traction-orange;
+}
+
+.table-hover tr:hover .table-hover-underline a {
+	color: @traction-orange;
+}
+
+.jumbotron h1{
+	color:white;
+}
+
+#alerts {
+    margin-top: 24px;
+	margin-bottom:2px;
+}

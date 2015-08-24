@@ -39,7 +39,7 @@ namespace RadialReview.Controllers
 
             //Scorecard
             var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), GetUser().Id);
-            var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, DateTime.UtcNow.AddDays(-7 * 13), DateTime.UtcNow.AddDays(9));
+            var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, DateTime.UtcNow.AddDays(-7 * 13), DateTime.UtcNow.AddDays(14));
             var sc = new AngularScorecard(
                 GetUser().Organization.Settings.WeekStart,
                 GetUser().Organization.GetTimezoneOffset(),
@@ -56,9 +56,16 @@ namespace RadialReview.Controllers
 	       // var directReports = _UserAccessor.GetDirectSubordinates(GetUser(), GetUser().Id).Select(x=>AngularUser.CreateUser(x));
 
 	        var directReports = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails)
-		        .Select(x => AngularUser.CreateUser(x));
+		        .Select(x => AngularUser.CreateUser(x,managing:true)).ToList();
 
-            return Json(new ListDataVM(id)
+
+
+	        if (!GetUser().IsRadialAdmin){
+				var managingIds = _DeepSubordianteAccessor.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
+				directReports = directReports.Where(x => managingIds.Contains(x.Id)).ToList();
+	        }
+
+	        return Json(new ListDataVM(id)
             {
 				Name = name,
                 Todos = todos,

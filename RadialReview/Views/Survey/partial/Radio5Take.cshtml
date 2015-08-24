@@ -1,0 +1,30 @@
+﻿@model RadialReview.Models.Survey.SurveyTakeAnswer
+
+
+<table class="answerTable">
+	<tr class="gray">
+		<td style="width:100px"></td>
+		<td style="width: 50px;text-align: center">Never</td>
+		@for (var k = 0; k < 5 - 2; k++)
+		{
+			<td style="width: 50px;"></td>
+		}
+		<td style="width: 50px;text-align: center">Always</td>
+	</tr>
+	<tr>
+		<th><label for="answer_@(Model.Id)_NA">N/A</label></th>
+		<th><label for="answer_@(Model.Id)_1">1</label></th>
+		<th><label for="answer_@(Model.Id)_2">2</label></th>
+		<th><label for="answer_@(Model.Id)_3">3</label></th>
+		<th><label for="answer_@(Model.Id)_4">4</label></th>
+		<th><label for="answer_@(Model.Id)_5">5</label></th>
+	</tr>
+	<tr>
+		<td><input id="answer_@(Model.Id)_NA"	class="answer" type="radio" @(Model.Answer == null ? "checked" : "") data-old="" name="answer_@(Model.Id)" value="" /></td>
+		<td><input id="answer_@(Model.Id)_1"	class="answer" type="radio" @(Model.Answer == 1 ? "checked" : "") data-old=""	name="answer_@(Model.Id)" value="1" /></td>
+		<td><input id="answer_@(Model.Id)_2"	class="answer" type="radio" @(Model.Answer == 2 ? "checked" : "") data-old=""	name="answer_@(Model.Id)" value="2" /></td>
+		<td><input id="answer_@(Model.Id)_3"	class="answer" type="radio" @(Model.Answer == 3 ? "checked" : "") data-old=""	name="answer_@(Model.Id)" value="3" /></td>
+		<td><input id="answer_@(Model.Id)_4"	class="answer" type="radio" @(Model.Answer == 4 ? "checked" : "") data-old=""	name="answer_@(Model.Id)" value="4" /></td>
+		<td><input id="answer_@(Model.Id)_5"	class="answer" type="radio" @(Model.Answer == 5 ? "checked" : "") data-old=""	name="answer_@(Model.Id)" value="5" /></td>
+	</tr>
+</table>

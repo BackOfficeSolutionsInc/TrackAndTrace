@@ -1,0 +1,137 @@
+﻿
+@traction-orange: #EF7622;
+@traction-black: #3E3935;
+@traction-gray: #cac8c8;
+
+@traction-primary: darken(#428bca, 6.5%); // #337ab7
+@traction-success: #5cb85c;
+@traction-info: #5bc0de;
+@traction-warning: #f0ad4e;
+@traction-danger: #d9534f;
+
+//VERSION 1
+
+.jumbotron {
+	background-color: lighten(@traction-orange,17%);
+}
+
+
+.jumbotron h1 {
+	color: white;
+}
+
+.panel-primary > .panel-heading {
+	background-color: @traction-orange;
+}
+
+
+.table-hover-underline a {
+	color: @traction-black;
+}
+
+.btn-primary {
+	color: @traction-orange;
+	border: 2px solid @traction-orange;
+	background-color: white;
+	font-weight: bold;
+}
+
+.btn-primary:hover {
+	background-color: @traction-orange;
+	border-color: @traction-orange;
+}
+
+
+tr.grayRow {
+	background-image: url("/Content/img/graystripe.png");
+	//background-color: lighten(@traction-orange,40%);
+}
+
+.background-color {
+	background-color: @traction-black;
+}
+
+
+
+
+.label-primary {
+	background-color: @traction-success;
+}
+
+.label-default {
+	background-color: darken(@traction-gray,20%);
+}
+
+.table-hover > tbody > tr:hover,
+.table-hover > tbody > tr.grayRow:hover {
+	background-color: lighten(@traction-orange,40%);
+}
+
+.table-hover tr:hover .table-hover-underline a {
+	color: @traction-orange;
+}
+
+
+//VERSION 2
+/*
+
+.jumbotron {
+	background-color: lighten(@traction-black,0%);
+}
+
+
+.jumbotron h1 {
+	color: white;
+}
+
+.panel-primary > .panel-heading {
+	background-color: @traction-black;
+}
+
+
+.table-hover-underline a {
+	color: @traction-black;
+}
+
+.btn-primary {
+	color: @traction-orange;
+	border: 2px solid @traction-orange;
+	background-color: white;
+	font-weight: bold;
+}
+
+.btn-primary:hover {
+	background-color: @traction-orange;
+	border-color: @traction-orange;
+}
+
+
+tr.grayRow {
+	background-image: url("/Content/img/graystripe.png");
+	//background-color: lighten(@traction-orange,40%);
+}
+
+.navbar-inverse {
+	background-color: @traction-orange;
+}
+
+
+
+
+.label-primary {
+	background-color: @traction-success;
+}
+
+.label-default {
+	background-color: darken(@traction-gray,20%);
+}
+
+.table-hover > tbody > tr:hover,
+.table-hover > tbody > tr.grayRow:hover {
+	background-color: lighten(@traction-orange,35%);
+}
+
+.table-hover tr:hover .table-hover-underline a {
+	color: @traction-orange;
+}
+*/

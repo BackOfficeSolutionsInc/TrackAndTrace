@@ -28,7 +28,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Any)]
-		public async Task<string> EmailTodos()
+		public async Task<string> EmailTodos(int currentTime)
 		{
 			var unsent = new List<MailModel>();
 			using (var s = HibernateSession.GetCurrentSession()){
@@ -102,24 +102,28 @@ namespace RadialReview.Controllers
 
 							try{
 								var user = userTodos.Value.First().AccountableUser;
-								var email = user.GetEmail();
 
-								var builder = new StringBuilder();
-								foreach (var t in userTodos.Value.Where(x=>x.CompleteTime==null || x.DueDate.Date>nowUtc.Date).GroupBy(x => x.ForRecurrenceId)){
-									builder.Append(TodoAccessor.BuildTodoTable(t.ToList(), t.First().ForRecurrence.NotNull(x => x.Name + " To-do")));
-									builder.Append("<br/>");
-								}
-								
-								var mail = MailModel.To(email)
-									.Subject(EmailStrings.TodoReminder_Subject, subject)
-									.Body(EmailStrings.TodoReminder_Body, 
-										user.GetName(), 
-										builder.ToString(), 
-										Config.ProductName(user.Organization),
-										Config.BaseUrl(user.Organization)+"Todo/List"
+								if ((user.User.NotNull(x=>x.SendTodoTime)) == currentTime)
+								{
+									var email = user.GetEmail();
+
+									var builder = new StringBuilder();
+									foreach (var t in userTodos.Value.Where(x => x.CompleteTime == null || x.DueDate.Date > nowUtc.Date).GroupBy(x => x.ForRecurrenceId)){
+										builder.Append(TodoAccessor.BuildTodoTable(t.ToList(), t.First().ForRecurrence.NotNull(x => x.Name + " To-do")));
+										builder.Append("<br/>");
+									}
+
+									var mail = MailModel.To(email)
+										.Subject(EmailStrings.TodoReminder_Subject, subject)
+										.Body(EmailStrings.TodoReminder_Body,
+											user.GetName(),
+											builder.ToString(),
+											Config.ProductName(user.Organization),
+											Config.BaseUrl(user.Organization) + "Todo/List"
 										);
 
-								unsent.Add(mail);
+									unsent.Add(mail);
+								}
 							}catch (Exception ex){
 
 							}

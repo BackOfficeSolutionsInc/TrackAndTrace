@@ -4,26 +4,216 @@
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Edit Survey</h2>
+@*<h2>Edit Survey</h2>*@
+
+@using (Html.BeginScripts())
+{
+	@*<script>
+			document.querySelector('.tiny').onscroll = function () {
+				this.classList[this.scrollTop < 20 ? 'add' : 'remove']('shadow-top');
+				this.classList[this.scrollHeight - this.clientHeight - this.scrollTop < 20 ? 'add' : 'remove']('shadow-bottom');
+			};
+		</script>*@
+}
+
+@using (Html.BeginStyles())
+{
+	<style>
+		hr {
+			border-top: 1px solid rgba(0, 0, 0, 0.15);
+		}
+
+		h3 {
+			margin: 20px 0 0 0;
+		}
+
+		.review {
+			padding-top: 5px;
+		}
+
+		.addBtn {
+			margin-top: 15px;
+		}
+
+		.tiny {
+			/* color: red !important; */
+			max-height: 400px;
+			/*max-height: calc(50vh - 60px);*/
+			overflow-y: auto;
+		}
+
+
+
+			.tiny::-webkit-scrollbar {
+				width: 14px;
+				height: 14px;
+			}
+
+			/* Track */
+			.tiny::-webkit-scrollbar-track {
+				background-color: rgba(0,0,0,.15);
+				border: 6px solid transparent;
+				background-clip: padding-box;
+				-webkit-border-radius: 2px;
+				border-radius: 2px;
+			}
+
+			/* Handle */
+			.tiny::-webkit-scrollbar-thumb {
+				-webkit-border-radius: 9px;
+				border-radius: 9px;
+				background: #ccc;
+				border: 3px solid transparent;
+				background-clip: padding-box;
+				margin: 2px;
+				-webkit-transition: background .2s ease-in-out;
+			}
+
+			.tiny:hover::-webkit-scrollbar-thumb {
+				background: #aaa;
+				-webkit-border-radius: 9px;
+				border-radius: 9px;
+				border: 3px solid transparent;
+				background-clip: padding-box;
+				margin: 2px;
+			}
+
+		.colored-sidebar {
+			height: 100%;
+			width: 16px;
+			position: absolute;
+			left: 0;
+			top: 0;
+			border-right: 1px solid #D1D1D1;
+			text-align: center;
+			padding-top: 2px;
+			font-weight: bold;
+			color: #FFF;
+		}
+
+		.c-blue {
+			background-color: rgba(163, 213, 213, 0.15);
+		}
+
+			.c-blue .colored-sidebar {
+				background-color: #A3D5D5;
+			}
+
+		.c-green {
+			background-color: rgba(212, 238, 159, 0.15);
+		}
+
+			.c-green .colored-sidebar {
+				background-color: #D4EE9F;
+			}
+
+		.c-red {
+			background-color: rgba(255, 170, 170, 0.15);
+		}
+
+			.c-red .colored-sidebar {
+				background-color: #FAA;
+			}
+
+		.email {
+			border: 1px solid #D1D1D1;
+			background-color: white;
+		}
+
+			.email td {
+				padding: 5px;
+			}
+
+			.email .email-body {
+			}
+
+			.email .subject {
+				border-bottom: 1px solid #d1d1d1;
+			}
+
+			.email .heading {
+				font-weight: bold;
+				text-align: center;
+				margin-top: 3px;
+				width: 100px;
+			}
+
+		.review-heading {
+			margin: -20px -30px 10px -14px;
+			padding-left: 13px;
+			padding-bottom: 0px;
+			border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+		}
+
+			.review-heading h3 {
+				margin: 24px 0 0 -5px;
+				color: rgba(0, 0, 0, 0.59);
+				font-size: 18px;
+			}
+
+			.review-heading btn {
+				height: 10px;
+			}
+	</style>
+}
 
 
 @using (Html.BeginForm())
 {
 
 	@Html.SecuredHiddenFor(x => x.Id)
-	@Html.SecuredHiddenFor(x => x.Organization.Id)
-	@Html.SecuredHiddenFor(x => x.Creator.Id)
+	@Html.SecuredHiddenFor(x => x.OrgId)
+	@Html.SecuredHiddenFor(x => x.CreatorId)
 	@Html.SecuredHiddenFor(x => x.CreateTime)
 	@Html.SecuredHiddenFor(x => x.DeleteTime)
 
 	@Html.ValidationSummary()
 
-	<div class="row smallBreak2">
-		<div class="col-sm-8"><b>Name:</b>@Html.TextBoxFor(x => x.Name, new { @class = "form-control", style = "max-width:350px" })</div>
-		<div class="col-sm-4"><input type="submit" value="Save" class="btn btn-primary" /></div>
+	<div class="row smallBreak2 ">
+		<div class="col-xs-12 review smallBreak2 c-blue" style="">
+			<div class="colored-sidebar" style="">1</div>
+
+			<div class="review-heading">
+				<h3 class="pull-left">Edit Survey Settings:</h3>
+				<input type="submit" name="submit" value="Save and Complete Later" class="btn btn-link clickable pull-right clearfix addBtn" />
+				<div class="clearfix"></div>
+			</div>
+			<div class="row smallBreak2">
+				<div class="col-sm-9">
+					<b>Survey Name:</b>@Html.TextBoxFor(x => x.Name, new { @class = "form-control", style = "" })
+				</div>
+			</div>
+			<div class="row smallBreak2">
+				<div class="col-sm-9">
+					<b>Embeddable:</b> @Html.CheckBoxFor(x => x.OpenEnded, new { @class = "", style = "" })
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-9">
+					<b>Email Format <span class="info" title="An email will be sent to respondents using the following format"></span></b>
+					<div class="email">
+						<table class="fullWidth">
+							<tr class="subject">
+								<td class="alignTop"><div class="heading" style="margin-top:5px;">Subject:</div></td>
+								<td>@Html.TextBoxFor(x => x.EmailSubject, new { @class = "form-control " })</td>
+							</tr>
+							<tr class="email-body">
+								<td class=" heading alignTop">Body:</td>
+								<td class="">@Html.TextAreaFor(x => x.EmailBody, new { @class = "form-control ", style = "resize:vertical;height:100px" })</td>
+
+							</tr>
+						</table>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</div>
 	<div class="row">
-		<div class="col-sm-6">
+		<div class="col-xs-12 review smallBreak2 c-green" style="">
+			<div class="colored-sidebar" style="">2</div>
+
 			@Html.HiddenFor(x => x.QuestionGroup.CopiedFrom)
 			@Html.HiddenFor(x => x.QuestionGroup.CreateTime)
 			@Html.HiddenFor(x => x.QuestionGroup.DeleteTime)
@@ -37,10 +227,14 @@
 
 			<div class="form">
 				<div class="">
-					<div class=""><div class="btn btn-default clickable " onclick="addRow_@(guid)();">Add Question</div></div>
-					<hr />
+					<div class="review-heading">
+						<h3 class="pull-left">Edit Survey Questions:</h3>
+						<div class="btn btn-link clickable pull-right  clearfix addBtn" onclick="addRow_@(guid)();" style="width:130px">Add Question</div>
+						<div class="btn btn-link clickable pull-right  clearfix addBtn" onclick="showTextAreaModal('Import Questions (one per line)',importQuestions);" style="width:100px">Import</div>
+						<div class="clearfix"></div>
+					</div>
 					<div class="row">
-						<div class="col-sm-12" id="allRows_@(guid)">
+						<div class="col-xs-12 scrollable tiny" id="allRows_@(guid)">
 							<div style="width:calc( 100% - 25px );display:inline-block">
 								@*<div class="row">
 										<div class="col-sm-6"><u>Measurable</u></div>
@@ -69,6 +263,21 @@
 						});
 						return false;
 					}
+					
+					
+					function importQuestions(text) {
+						$.ajax({
+							url: "/Survey/ImportQuestions",
+							cache: false,
+							data:{"questions":text},
+							method:'post',
+							success: function (html) {
+								$("#allRows_@(guid)").append(html);
+							}
+						});
+						return false;
+					}
+
 
 					$(function () {
 						$(document).on("click", "span.deleteRow", function () {
@@ -82,7 +291,10 @@
 
 
 		</div>
-		<div class="col-sm-6">
+		<div class="smallBreak2"></div>
+		<div class="col-xs-12 review c-red" style="">
+
+			<div class="colored-sidebar" style="">3</div>
 			@Html.HiddenFor(x => x.RespondentGroup.CopiedFrom)
 			@Html.HiddenFor(x => x.RespondentGroup.CreateTime)
 			@Html.HiddenFor(x => x.RespondentGroup.DeleteTime)
@@ -90,33 +302,46 @@
 			@Html.HiddenFor(x => x.RespondentGroup.Locked)
 
 			@{
-				var guid2 = Guid.NewGuid().ToString().Replace("-", "");
+	var guid2 = Guid.NewGuid().ToString().Replace("-", "");
 			}
 
 
 			<div class="form">
-				<div class="">
-					<div class="btn btn-default clickable" onclick="addRow_@(guid2)();">Add Respondent</div>
-					
-					<hr />
-					<div class="row">
-						<div class="col-sm-12" id="allRows_@(guid2)">
-							<div style="width:calc( 100% - 25px );display:inline-block">
-							</div>
-							@foreach (var item in Model.RespondentGroup._Respondents)
-							{
-								Html.RenderPartial("~/Views/Survey/_SurveyRespondentRow.cshtml", item);
-							}
-						</div>
-					</div>
+				<div class="review-heading">
+					<h3 class="pull-left">Edit Survey Respondents:</h3>
+					<div class="btn btn-link clickable pull-right clearfix addBtn" onclick="addRow_@(guid2)();" style="width:130px">Add Respondent</div>					
+					<div class="btn btn-link clickable pull-right clearfix addBtn" onclick="showTextAreaModal('Import Respondent Email Addresses (one per line)',importRepondents)" style="width:100px">Import</div>
 
+					<div class="clearfix"></div>
 				</div>
+				<div class="row">
+					<div class="col-xs-12  tiny scrollable" id="allRows_@(guid2)">
+						<div style="width:calc( 100% - 25px );display:inline-block">
+						</div>
+						@foreach (var item in Model.RespondentGroup._Respondents)
+						{
+							Html.RenderPartial("~/Views/Survey/_SurveyRespondentRow.cshtml", item);
+						}
+					</div>
+				</div>
+
 			</div>
 
 			@using (Html.BeginScripts())
 			{
 				<script>
-					function addRow_@(guid2)() {
+					function importRepondents(text) {
+						$.ajax({
+							url: "/Survey/ImportRespondents",
+							method:'post',
+							cache: false,
+							data:{'emails':text},
+							success: function (html) {
+								$("#allRows_@(guid2)").append(html);
+							}
+						});
+					}
+					function addRow_@(guid2)(email) {
 						$.ajax({
 							url: "/Survey/BlankRespondentEditorRow",
 							cache: false,
@@ -140,5 +365,8 @@
 		</div>
 	</div>
 	<hr />
+	<div class="alignCenter">
+		<input type="submit" name="submit" value="Save and Complete Later" class="btn btn-default clickable clearfix addBtn" />
+		<input type="submit" name="submit" value="Issue Survey" class="btn btn-primary clickable clearfix addBtn" />
+	</div>
 }
-

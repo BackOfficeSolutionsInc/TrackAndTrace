@@ -1,0 +1,11 @@
+﻿@using RadialReview.Models.Survey
+@model RadialReview.Models.Survey.SurveyResultItemVM
+		   
+@{
+	var listings = (SurveyResultItem_FeedbackVM) Model;
+}
+
+<ol class="tiny feedbacks" >@foreach (var answer in listings.Answers)
+{
+	<li class="">@answer</li>
+}</ol>

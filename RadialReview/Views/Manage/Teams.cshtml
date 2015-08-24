@@ -27,14 +27,16 @@
 	</div>
 	<div class="table-responsive">
 		<table class="table table-condensed">
+			<thead>
 			<tr>
 				<th style="width:25px;"></th>
 				<th>Name</th>
 				<th style="width:10px" class=""></th>
 				<th colspan="1" style="width:10px" class="">Members</th>
-                <th style="width:1px" class="">Template</th>
+				<th style="width:1px" class="">Template</th>
 				@*<th style="width:10px" class="">Questions</th>*@
 			</tr>
+			</thead>
 			@foreach (var p in Model.Teams.Alive().OrderBy(x => (int)x.Team.Type).ThenBy(x => x.Team.Name))
 			{
 				<tr class="team @p.Team.Type">
@@ -55,7 +57,7 @@
 							@if (p.Members == -1)
 							{
 								@:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NA
-												}
+							}
 							else
 							{
 								@Html.ViewOrEdit(p.Team.GetEditable() && p.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
@@ -68,15 +70,15 @@
 
 						</td>*@
 					
-					  <td class="alignCenter">
-		                @if (p.TemplateId == null){
+					<td class="alignCenter">
+						@if (p.TemplateId == null){
 							<a href="@Url.Action("Create","UserTemplate",new {type="team",id=p.Team.Id})">Create</a>
 						}
 						else
 						{
 							<a href="@Url.Action("Edit","UserTemplate",new {id=p.TemplateId})">Edit</a>
 						}
-	                </td>
+					</td>
 					@*<td class=" ">
 							<a href="@Url.Action("Edit", "Responsibilities", new { id = p.Team.Id })" class="fullWidth">
 							@Html.ViewOrEdit(p.Team.GetEditable()) @p.Team.Responsibilities.Count()

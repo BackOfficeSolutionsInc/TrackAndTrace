@@ -32,7 +32,7 @@ $(function () {
 					"<span class='btn btn-default btn-xs doneButton'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Complete</span>" +
 				"</span>" +
 				"<span class='expandContract btn-group'>" +
-				"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='issuefromtodo' data-todo='" + todo + "' data-recurrence='" + recurrenceId + "' data-meeting='" + meetingId + "'><span class='glyphicon glyphicon-pushpin'></span> New Issue</span>" +
+				"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='issuefromtodo' data-todo='" + todo + "' data-recurrence='" + recurrenceId + "' data-meeting='" + meetingId + "'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
 				//"<span class='btn btn-default btn-xs createTodoButton todoModal'><span class='glyphicon glyphicon-unchecked todoButton'></span> Todo</span>"+
 				"</span>" +
 				"</div>"+
@@ -296,7 +296,7 @@ function constructTodoRow(todo) {
 			'	</div>' +
 		
 			'	<div class="btn-group pull-right">'+
-			'		<span class="glyphicon glyphicon-pushpin issuesModal issuesButton" data-method="issuefromtodo" data-todo="'+todo.todo+'" data-recurrence="'+MeetingId+'" data-meeting="'+meetingId+'"></span>'+
+			'		<span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="'+todo.todo+'" data-recurrence="'+MeetingId+'" data-meeting="'+meetingId+'"></span>'+
 			'	</div>'+
 			'	<span class="profile-image">'+
 			'		<span class="profile-picture">' +

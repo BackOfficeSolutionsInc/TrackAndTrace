@@ -42,9 +42,9 @@ function escapeString(str) {
 			return elem.name || "";
 		}).join(",");
 	};
-	$.fn.asString = function() {
+	$.fn.asString = function () {
 		if (Object.prototype.toString.call(this) === '[object Array]') {
-			return $.map(this, function(elem) {
+			return $.map(this, function (elem) {
 				return elem || "";
 			}).join(",");
 		}
@@ -124,6 +124,33 @@ function refresh() {
 	location.reload();
 }
 
+/*
+if callback returns text or bool, there is an error
+*/
+function showTextAreaModal(title, callback, defaultText) {
+	$("#modalMessage").html("");
+	$("#modalMessage").addClass("hidden");
+	if (typeof defaultText === "undefined")
+		defaultText = "";
+
+	$('#modalBody').html("<div class='error' style='color:red;font-weight:bold'></div><textarea class='form-control verticalOnly' rows=5>" + defaultText + "</textarea>");
+	$("#modalTitle").html(title);
+	$("#modalForm").unbind('submit');
+	$("#modal").modal("show");
+
+	$("#modalForm").submit(function (e) {
+		e.preventDefault();
+		var result = callback($('#modalBody').find("textarea").val());
+		if (result) {
+			if (typeof result !== "string") {
+				result = "An error has occurred. Please check your input.";
+			}
+			$("#modalBody .error").html(result);
+		} else {
+			$("#modal").modal("hide");
+		}
+	});
+}
 
 function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
 	$("#modalMessage").html("");
@@ -287,7 +314,7 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 				message = "";
 			console.log(data.Trace);
 			console.log(data.Message);
-			if (data.MessageType!==undefined  && data.MessageType != "Success" || showSuccess) {
+			if (!data.Silent && (data.MessageType !== undefined && data.MessageType != "Success" || showSuccess)) {
 				var mType = data.MessageType || "danger";
 				showAlert(message, "alert-" + mType.toLowerCase(), data.Heading);
 			}
@@ -405,13 +432,13 @@ var interceptAjax = function (event, request, settings) {
 		var result = $.parseJSON(request.responseText);
 		try {
 			if (result.Refresh) {
-				if (result.Silent!==undefined && !result.Silent) {
+				if (result.Silent !== undefined && !result.Silent) {
 					result.Refresh = false;
 					StoreJsonAlert(result);
 				}
 				location.reload();
 			} else {
-				if (result.Silent!==undefined && !result.Silent) {
+				if (result.Silent !== undefined && !result.Silent) {
 					showJsonAlert(result, true, true);
 				}
 			}
@@ -425,6 +452,28 @@ var interceptAjax = function (event, request, settings) {
 $(document).ajaxSuccess(interceptAjax);
 $(document).ajaxError(interceptAjax);
 
+$(document).ajaxSend(function (event, jqXHR, ajaxOptions) {
+	if (ajaxOptions.url == null) {
+		ajaxOptions.url = "";
+	}
+	var date = (new Date().getTime());
+
+	if (ajaxOptions.data && ajaxOptions.data.indexOf("_clientTimestamp")!=-1) {
+		return;
+		/*var start = ajaxOptions.data.indexOf("_clientTimestamp")+17;
+		debugger;
+		date = ajaxOptions.data.substr(start).split("&")[0];*/
+	}
+
+	if (ajaxOptions.url.indexOf("_clientTimestamp") == -1) {
+		if (ajaxOptions.url.indexOf("?") == -1)
+			ajaxOptions.url += "?";
+		else
+			ajaxOptions.url += "&";
+
+		ajaxOptions.url += "_clientTimestamp=" + date;
+	}
+});
 /////////////////////////////////////////////////////////////////
 
 (function ($) {
@@ -437,9 +486,9 @@ $(document).ajaxError(interceptAjax);
 }(jQuery));
 
 
-function dateFormatter(date){
-    /*if(Date.parse('2/6/2009')=== 1233896400000){
+function dateFormatter(date) {
+	/*if(Date.parse('2/6/2009')=== 1233896400000){
         return [date.getMonth()+1, date.getDate(), date.getFullYear()].join('/');
     }*/
-    return [date.getMonth()+1,date.getDate(), date.getFullYear()].join('/');
+	return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('/');
 }

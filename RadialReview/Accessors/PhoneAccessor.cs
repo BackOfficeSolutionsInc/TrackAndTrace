@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Amazon.IdentityManagement.Model;
+using FluentNHibernate.Utils;
 using NHibernate;
 using NHibernate.Linq;
+using NHibernate.Mapping;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Issues;
+using RadialReview.Models.L10;
 using RadialReview.Models.Todo;
 using RadialReview.Utilities;
 
@@ -110,6 +113,7 @@ namespace RadialReview.Accessors
 					Organization = found.Caller.Organization,
 					OrganizationId = found.Caller.Organization.Id,
 					DueDate = now.AddDays(7),
+					ForRecurrenceId = found.ForId,
 					Details = "",
 					ForModel = "TodoModel",
 					ForModelId = -2,
@@ -120,6 +124,7 @@ namespace RadialReview.Accessors
 					CreatedDuringMeetingId = null,
 					Message = body,
 					Description = "",
+					//ForRecurrenceId = found.ForId,
 					ForModel = "IssueModel",
 					ForModelId = -2,
 					Organization = found.Caller.Organization,
@@ -161,8 +166,15 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction()){
 					PermissionsUtility.Create(s, caller).Self(userId);
 
-					return s.QueryOver<PhoneActionMap>().Where(x => x.Caller.Id == userId && x.DeleteTime == null)
-						.List().ToList();
+					var map =  s.QueryOver<PhoneActionMap>().Where(x => x.Caller.Id == userId && x.DeleteTime == null).List().ToList();
+					var recurrences = s.QueryOver<L10Recurrence>().WhereRestrictionOn(x => x.Id).IsIn(map.Select(x => x.ForId).ToList()).List().ToDictionary(x=>x.Id,x=>x);
+
+					foreach (var m in map){
+						L10Recurrence recur=null;
+						if (recurrences.TryGetValue(m.ForId, out recur))
+							m._Recurrence = recur;
+					}
+					return map;
 				}
 			}
 		}

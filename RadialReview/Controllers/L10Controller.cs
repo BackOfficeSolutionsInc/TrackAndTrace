@@ -34,9 +34,11 @@ namespace RadialReview.Controllers
 		// GET: L10
 	
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Meeting(long id)
+		public ActionResult Meeting(long? id=null)
 		{
-			var recurrenceId = id;
+			if (id == null)
+				return Content("Error: url requires a meeting Id");
+			var recurrenceId = id.Value;
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId,true);
 			var model = new L10MeetingVM(){
 				Recurrence = recurrence,
@@ -52,7 +54,7 @@ namespace RadialReview.Controllers
 		{
 			var m = new L10Recurrence();
 
-			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
+			var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 			var allRocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
 
@@ -94,7 +96,7 @@ namespace RadialReview.Controllers
 			var recurrenceId = id;
 			var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
 
-			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
+			var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 			var allRocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
 
@@ -125,7 +127,7 @@ namespace RadialReview.Controllers
 				ModelState.AddModelError("Name","Meeting name is required");
 			}
 			var allRocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), GetUser().Organization.Id,true);
-			var allMeasurables = ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
+			var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 			if (ModelState.IsValid){
 				model.Recurrence.OrganizationId = GetUser().Organization.Id;

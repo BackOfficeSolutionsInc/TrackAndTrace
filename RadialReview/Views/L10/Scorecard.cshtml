@@ -39,7 +39,7 @@
 					{
 						if (i == 0)
 						{
-							@:<div class="table-responsive scroll-right" style="min-height: 600px;">
+							@:<div class="table-responsive scroll-right" style="min-height: 100px;">
 						}
 
 						<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm resizable Flipped" : "")">
@@ -58,7 +58,7 @@
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-												@r.DisplayDate.AddDays(0).ToString("MM/dd")
+												@r.DisplayDate.AddDays(0).ToString("MMM d")
 											</th>
 											@*if (r.IsCurrentWeek){
 													<th class="date current buttonColumn"></th>
@@ -79,7 +79,7 @@
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-												@r.DisplayDate.AddDays(6).ToString("MM/dd")
+												@r.DisplayDate.AddDays(6).ToString("MMM d")
 											</th>
 											@*if (r.IsCurrentWeek){
 													<th class="date current buttonColumn"></th>
@@ -212,7 +212,7 @@
 			var data = {
 				ordering: order,
 				recurrenceId: @(Model.Recurrence.Id)
-				};
+			};
 			$.ajax({
 				url: "/L10/UpdateMeasurableOrdering",
 				method: "POST",

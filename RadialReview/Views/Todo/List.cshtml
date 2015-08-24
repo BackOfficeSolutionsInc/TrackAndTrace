@@ -8,6 +8,12 @@
 @Html.Partial("~/Views/Todo/Partial/list.cshtml")
 @Html.Partial("~/Views/Todo/Partial/listscripts.cshtml",Model,dict)
 
+@section top{
+	<div class="jumbotron">
+		<h1>To-do List</h1>
+	</div>
+}
+
 @using (Html.BeginStyles()){
 	<style>
 		.height-placeholder {
@@ -17,5 +23,6 @@
 		.component {
 			margin: 0px;
 		}
+
 	</style>
 }

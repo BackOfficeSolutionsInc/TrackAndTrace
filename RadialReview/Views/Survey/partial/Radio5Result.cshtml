@@ -1,0 +1,65 @@
+﻿@using RadialReview.Models.Survey
+@model RadialReview.Models.Survey.SurveyResultItemVM
+
+@{
+
+	var radioModel = (SurveyResultItem_RadioVM)Model;
+	var n = radioModel.Answers.Sum();
+}
+
+<table style="margin-left: auto;margin-right: auto;" class="radio5">
+	<tr class="gray">
+		<td style="width: 50px;text-align: center">Never</td>
+		@for (var k = 0; k < radioModel.Answers.Count() - 2; k++)
+		{
+			<td style="width: 50px;"></td>
+		}
+		<td style="width: 50px;text-align: center">Always</td>
+	</tr>
+	<tr>
+		@for (var i = 0; i < radioModel.Answers.Count(); i++)
+		{
+			<th style="width: 50px;text-align: center">@(i + 1)</th>
+		}
+	</tr>
+	<tr>
+		@for (var j = 0; j < radioModel.Answers.Count(); j++)
+		{
+			<td style="text-align: center">@*@radioModel.Answers[j]*@ &nbsp;</td>
+		}
+	</tr>
+	<tr>
+		@for (var j = 0; j < radioModel.Answers.Count(); j++)
+		{
+
+			var h = "1px";
+			if (n != 0 && radioModel.Answers[j]!=0)
+			{
+				h = "" + (radioModel.Answers[j]*1.0 / n * 100.0) + "%";
+			}
+
+			<td style="border-bottom: 1px solid #d1d1d1">
+				<div style="height: 30px; width: 100%; position: relative;text-align: center">
+					<div class="bar" style="position: absolute;bottom:-1px;left:5px;right:5px; height: @(h);"><span style="position: relative;top:-18px;">@radioModel.Answers[j]</span></div>
+				</div>
+			</td>
+		}
+	</tr>
+	<tr>
+		@for (var j = 0; j < radioModel.Answers.Count(); j++)
+		{
+			<td style="text-align: center;">
+				<div style="height: 20px; width: 100%; position: relative;right:-7px;color:#B5B5B5">
+					@if (n != 0)
+					{
+						@(Math.Round(radioModel.Answers[j]*1.0 / n * 100.0))
+						@:%
+					}
+					else
+					{
+					}
+				</div>
+			</td>
+		}
+	</tr>
+</table>

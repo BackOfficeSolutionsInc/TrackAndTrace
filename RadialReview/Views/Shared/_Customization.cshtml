@@ -91,6 +91,8 @@
 
 			<div class="row" style="overflow: hidden;">
 				<div class="col-xs-6 customize noPad">
+					<div id="" class="" >&nbsp;</div>
+
 					@{
 						var first = true;
 						var firstId = -1L;
@@ -107,7 +109,7 @@
 						}
 						first = false;
 					}
-					@for (int i = Model.Subordinates.Count; i < Model.AllReviewees.Count; i++)
+					@for (int i = Model.Subordinates.Count; i < Model.AllReviewees.Count-1; i++)
 					{
 						<div id="" class="">
 							<div class="pull-left counter">&nbsp;</div>
@@ -207,8 +209,9 @@
 		// $(".hideable.selected").addClass("animateHide");
 		var toHide = $(".hideable.selected");
 		toHide.removeClass("selected");
+		toHide.addClass("remove");
 		setTimeout(function() {
-			toHide.addClass("hide");
+			$(".hideable.remove").addClass("hide");
 			$("#second_" + id).removeClass("hide");
 			$("#second_" + id).addClass("selected");
 

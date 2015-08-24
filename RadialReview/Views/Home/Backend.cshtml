@@ -8,13 +8,13 @@
 }
 
 @section top{
-	@*<div class="jumbotron">
-		<h1>@Html.ProductName()</h1>
-	</div>*@
+	<div class="jumbotron">
+		<h1>@Html.ProductName() @*<small>Dashboard</small>*@</h1>
+	</div>
 }
 @using (Html.BeginStyles())
 {
-	<link href="~/Content/dashboard.css" rel="stylesheet" />
+	@*<link href="~/Content/bootstrap/custom/dashboard.css" rel="stylesheet" />*@
 	<style>
 		.welcome a {
 			color: #4A79FF;
@@ -66,7 +66,7 @@
 							<a href="/Account/Role?ReturnUrl=%2F" class="button icon fontastic-icon-torsos" @*title="Change Roles"*@></a>
 						}
 						@if (ViewBag.ShowL10 as bool? == true){
-							<div onclick="@Html.ShowModal("Create Issue", "/Issues/CreateIssueRecurrence/", "/Issues/CreateIssueRecurrence/")" class="button glyphicon glyphicon-pushpin"><span class="plus">+</span></div>
+							<div onclick="@Html.ShowModal("Create Issue", "/Issues/CreateIssueRecurrence/", "/Issues/CreateIssueRecurrence/")" class="button icon fontastic-icon-pinboard"><span class="plus">+</span></div>
 						}
 						<a href="/Account/Manage" class="button icon fontastic-icon-cog" @*title="Edit Settings"*@></a>
 						<div class="button empty"></div>
@@ -76,7 +76,7 @@
 
 				@if (Model.IncludeTodos && ViewBag.UserId != null)
 				{
-					<div class="review smallBreak2 loading tiny" style="min-height:30px;"><div class="todo-heading heading">Current To-Dos<a href="/todo/list" class="gray"> (View all)</a>@if(ViewBag.AnyL10s){<span class="pull-right clickable new" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")">Create New</span>}</div>@Html.Partial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary(){
+					<div class="review smallBreak2 loading tiny" style="min-height:30px;"><div class="todo-heading heading">Current To-Dos<a href="/todo/list" class=""> (View all)</a>@if(ViewBag.AnyL10s){<span class="clickable pull-right new" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")">Create New</span>}</div>@Html.Partial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary(){
 						                                                                      { "AddHeaders", false },
 																							  { "AddCompletion", false },
 																							  { "AddDatePicker", false },
@@ -142,6 +142,7 @@
 								Welcome to @Html.ProductName()
 
 								You'll need to enter your access code to begin. You should have received a code in your inbox.
+								If you haven't found the email, check your spam folder and remove us from your spam filter.
 								Enter it here to begin:
 							</p>
 							<form class="form-group" method="post" action="/Organization/Join">

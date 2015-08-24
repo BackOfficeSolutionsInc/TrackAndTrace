@@ -1,4 +1,5 @@
-﻿@model RadialReview.Controllers.IssueReviewModel
+﻿@using System.Web.UI.WebControls
+@model RadialReview.Controllers.IssueReviewModel
 @{
     ViewBag.Title = "Issue";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -38,16 +39,18 @@
                                 <input type="radio" name="forWho" value="all" class="hidden" />All of @Model.OrganizationName
                             </label>
                         </div>*@
-                        <div class="col-sm-6">
-                            <label class="btn btn-default  fullWidth" onclick="loadTeam()">
-                                <input type="radio" name="forWho" value="team" class="hidden" />One of my teams
-                            </label>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="btn btn-default disabled fullWidth" title="Coming soon." onclick="loadClient()">
-                                <input type="radio" name="forWho" value="team" class="hidden" />An outside client
-                            </label>
-                        </div>
+	                    <div class="col-sm-6">
+		                    <label class="btn btn-default  fullWidth" onclick="loadTeam()">
+			                    <input type="radio" name="forWho" value="team" class="hidden" />One of my teams
+		                    </label>
+	                    </div>
+						<div class="col-sm-6">
+							<label class="btn btn-default fullWidth @((ViewBag.ShowSurvey as bool?)==true?"":"disabled")" 
+							       title="@((ViewBag.ShowSurvey as bool?) == true ? "Use the survey tool to issue to outside clients." : "Enable the survey tool to issue to outside clients.")" 
+								   onclick="@((ViewBag.ShowSurvey as bool?) == true ? "window.location = '/Survey/Edit'" : "")">
+								<input type="radio" name="forWho" value="team" class="hidden" />An outside client
+							</label>
+						</div>
                     </div>
                 </div>
             </div>
@@ -94,5 +97,14 @@
         function loadClient() {
             loadPage("#pageIndex", "/Issue/IssueTeam/" + $("#team").val());
         }
+
+        var issuing = false;
+
+        window.onbeforeunload = function() {
+			if (issuing) {
+				return "Please wait until the survey has been issued before leaving the page.";
+			}
+		};
+
     </script>
 }

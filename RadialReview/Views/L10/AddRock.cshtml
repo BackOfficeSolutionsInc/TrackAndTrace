@@ -1,0 +1,40 @@
+﻿@model RadialReview.Controllers.L10Controller.AddRockVm
+		   
+
+@Html.SecuredHiddenFor(x => x.RecurrenceId)
+	
+<div class="form-group">
+	@Html.LabelFor(x => x.SelectedRock)
+	@Html.DropDownListFor(x => x.SelectedRock, Model.AvailableRocks, new { id = "rockSelector", @class = "form-control", placeholder = "Select a rock..." })
+</div>
+<div class="createNewRock hidden">
+	<hr/>
+		<div class="contents spinner" style="min-height:40px;"></div>
+	<hr/>
+</div>
+
+
+<script>
+    function Update_AddRock() {
+        if ($("#rockSelector").val() == -3) {
+			$(".createNewRock").removeClass("hidden");
+	        $.ajax({
+				url:"/Rocks/BlankEditorRow?includeUsers=true",
+				success:function(data) {
+					$(".createNewRock .contents").html(data);
+				}
+	        });
+
+        } else {
+            $(".createNewRock").addClass("hidden");
+            $(".createNewRock .contents").html("");
+        }
+    }
+
+    $(function () {
+	    $("#rockSelector").change(function() {
+		    Update_AddRock();
+	    });
+        Update_AddRock();
+    });
+</script>

@@ -1,0 +1,103 @@
+﻿.jumbotron {
+  background-color: #f5a873;
+}
+.jumbotron h1 {
+  color: white;
+}
+.panel-primary > .panel-heading {
+  background-color: #ef7622;
+}
+.table-hover-underline a {
+  color: #3e3935;
+}
+.btn-primary {
+  color: #ef7622;
+  border: 2px solid #ef7622;
+  background-color: white;
+  font-weight: bold;
+}
+.btn-primary:hover {
+  background-color: #ef7622;
+  border-color: #ef7622;
+}
+tr.grayRow {
+  background-image: url("/Content/img/graystripe.png");
+}
+.background-color {
+  background-color: #3e3935;
+}
+.label-primary {
+  background-color: #5cb85c;
+}
+.label-default {
+  background-color: #989494;
+}
+.table-hover > tbody > tr:hover,
+.table-hover > tbody > tr.grayRow:hover {
+  background-color: #fdece0;
+}
+.table-hover tr:hover .table-hover-underline a {
+  color: #ef7622;
+}
+/*
+
+.jumbotron {
+	background-color: lighten(@traction-black,0%);
+}
+
+
+.jumbotron h1 {
+	color: white;
+}
+
+.panel-primary > .panel-heading {
+	background-color: @traction-black;
+}
+
+
+.table-hover-underline a {
+	color: @traction-black;
+}
+
+.btn-primary {
+	color: @traction-orange;
+	border: 2px solid @traction-orange;
+	background-color: white;
+	font-weight: bold;
+}
+
+.btn-primary:hover {
+	background-color: @traction-orange;
+	border-color: @traction-orange;
+}
+
+
+tr.grayRow {
+	background-image: url("/Content/img/graystripe.png");
+	//background-color: lighten(@traction-orange,40%);
+}
+
+.navbar-inverse {
+	background-color: @traction-orange;
+}
+
+
+
+
+.label-primary {
+	background-color: @traction-success;
+}
+
+.label-default {
+	background-color: darken(@traction-gray,20%);
+}
+
+.table-hover > tbody > tr:hover,
+.table-hover > tbody > tr.grayRow:hover {
+	background-color: lighten(@traction-orange,35%);
+}
+
+.table-hover tr:hover .table-hover-underline a {
+	color: @traction-orange;
+}
+*/

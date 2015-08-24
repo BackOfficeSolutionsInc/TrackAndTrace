@@ -8,9 +8,9 @@
 			<div class="col-sm-12" id="allRows">
 				<div style="width:calc( 100% - 25px );display:inline-block">
 					@*<div class="row">
-						<div class="col-sm-6"><u>Measurable</u></div>
-						<div class="col-sm-6 alignCenter"><u>Weekly Goal</u></div>
-					</div>*@
+							<div class="col-sm-6"><u>Measurable</u></div>
+							<div class="col-sm-6 alignCenter"><u>Weekly Goal</u></div>
+						</div>*@
 				</div>
 				@foreach (var item in Model.Measurables)
 				{
@@ -25,7 +25,7 @@
 <script>
 	function addRow() {
 		$.ajax({
-			url: "/Measurable/BlankEditorRow",
+			url: "/Measurable/BlankEditorRow?admin=@(Model.UserId)",
 			cache: false,
 			success: function (html) {
 				$("#allRows").append(html);
@@ -44,3 +44,28 @@
 
 
 </script>
+
+<style>
+		#allRows .heading {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		@@media (min-width: 768px) {
+
+			#allRows .measurable-row:not(:nth-of-type(2)) .heading {
+				display: none;
+			}
+
+			#allRows .measurable-row:not(:nth-of-type(2)) .deleteRow {
+				top: 11px !important;
+			}
+		}
+
+		.deleteRow.disable {
+			text-decoration: line-through;
+			top: 22px !important;
+		}
+
+</style>

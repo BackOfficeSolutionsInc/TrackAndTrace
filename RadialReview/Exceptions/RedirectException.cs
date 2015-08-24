@@ -9,6 +9,8 @@ namespace RadialReview.Exceptions
     {
         public String RedirectUrl { get; set; }
 
+		public bool? Silent { get; set; }
+
         public RedirectException(String message) : base(message) {  
         }
     }

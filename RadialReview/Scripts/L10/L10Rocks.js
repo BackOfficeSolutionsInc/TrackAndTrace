@@ -1,5 +1,5 @@
 ﻿$(function() {
-	$("body").on("change", ".rocks-container .rockstate input", function() {
+	$(document).on("change", ".rocks-container .rockstate input", function() {
 		var name = $(this).prop("name");
 		var rockId = parseInt(name.split("_")[1]);
 
@@ -28,4 +28,9 @@ function updateRockCompletion(meetingRockId, state, rockId) {
 
 function updateRockName(rockId, message) {
 	$(".message[rock='" + rockId + "']").html(message);
+}
+
+
+function updateRocks(html) {
+	$(".rocks-container").html(html);
 }

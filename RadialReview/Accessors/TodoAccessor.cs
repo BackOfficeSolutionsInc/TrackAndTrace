@@ -102,7 +102,13 @@ namespace RadialReview.Accessors
 					var r = s.Get<L10Recurrence>(recurrenceId);
 					ExternalTodoAccessor.AddLink(s, perms, ForModel.Create(r), todo.AccountableUserId, todo);
 
+					todo.ForRecurrenceId = recurrenceId;
+					todo.ForRecurrence = r;
+
 					s.Save(todo);
+
+					todo.Ordering = -todo.Id;
+					s.Update(todo);
 
 					tx.Commit();
 					s.Flush();

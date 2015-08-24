@@ -5,6 +5,7 @@ using System.Web;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Models
 {
@@ -75,6 +76,8 @@ namespace RadialReview.Models
 		public virtual long ForId { get; set; }
 		public virtual long CallerNumber { get; set; }
 		public virtual long SystemNumber { get; set; }
+
+		public virtual L10Recurrence _Recurrence { get; set; }
 
 		public virtual string Placeholder { get; set; }
 

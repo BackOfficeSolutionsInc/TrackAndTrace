@@ -22,7 +22,13 @@ namespace RadialReview.Models.Application
                 return Email;
             }
 
-        }
+
+			public MailModel BodyPlainText(string body)
+			{
+				Email.HtmlBody = body;
+				return Email;
+			}
+		}
         public class MailIntermediate1 {
             protected MailModel Email { get; set; }
             public MailIntermediate1(MailModel email)
@@ -36,7 +42,13 @@ namespace RadialReview.Models.Application
                 Email.Subject = Regex.Replace(unformatted, @"[^A-Za-z0-9 \.\,&]", "");
                 return new MailIntermediate2(Email);
             }
-        }
+
+			public MailIntermediate2 SubjectPlainText(string subject)
+			{
+				Email.Subject = subject;
+				return new MailIntermediate2(Email);
+			}
+		}
 
 
         public string ToAddress { get; set; }

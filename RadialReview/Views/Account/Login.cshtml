@@ -1,72 +1,114 @@
-﻿@model RadialReview.Models.LoginViewModel
+﻿@using System.Web.Configuration
+@model RadialReview.Models.LoginViewModel
 
 @{
-    ViewBag.Title = "Log in";
+	ViewBag.Title = "Log in";
+	ViewBag.FullLogo = true;
 }
 
-<div class="row">
+@using (Html.BeginStyles())
+{
+	<style>
+		body {
+			background-color: #ef7622;
+		}
 
-    <div class=" col-md-11" >
-        @if (ViewBag.Message != null)
-        {
-        <div class="alert alert-danger">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Error!</strong> @ViewBag.Message
-        </div>
-        }
-    </div>
-    <div class="col-md-10">
-        <section id="loginForm">
-            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
-                <hr />
+		.logo-container {
+			text-align: center;
+		}
 
-                @Html.ValidationSummary(true)
-                <div class="form-group">
-                    @Html.Label("Email", new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.UserName)
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control password" })
-                        @Html.ValidationMessageFor(m => m.Password)
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <div class="checkbox">
-                            @Html.CheckBoxFor(m => m.RememberMe)
-                            @Html.LabelFor(m => m.RememberMe)
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Log in" class="btn btn-default" />
-                    </div>
-                </div>
-                <p>
-                    @Html.ActionLink("Forgot my password", "ResetPassword", new { returnUrl = ViewBag.ReturnUrl })
-                </p>
-                @*<p>
-                    or @Html.ActionLink("Register", "Register", new { returnUrl = ViewBag.ReturnUrl }) if you don't have a Radial account.
-                </p>*@
-            }
-        </section>
-    </div>
+			.logo-container img {
+				width: 100%;
+			}
 
-    @*
-        <!--div class="col-md-4">
-            <section id="socialLoginForm">
-                @Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
-            </section>
-        </div-->*@
+		.btn {
+			font-size: 16px;
+		}
+
+		#loginForm {
+			top: 98px;
+			position: relative;
+		}
+
+		#loginContainer {
+			margin-top: 4%;
+			position: relative;
+		}
+	</style>
+}
+
+<div id="loginContainer">
+	<div class="row">
+
+		<div class=" col-md-11">
+			@if (ViewBag.Message != null)
+			{
+				<div class="alert alert-danger">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<strong>Error!</strong> @ViewBag.Message
+				</div>
+			}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6">
+			<div class="logo-container">
+				<img src="~/Content/img/TRACTION-TOOLS_large_stacked_wh.png" />
+			</div>
+		</div>
+		<div class="col-md-6">
+			<section id="loginForm">
+				@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+				{
+					@Html.AntiForgeryToken()
+					@Html.ValidationSummary(true)
+					<div class="form-group">
+						@Html.Label("Email", new { @class = "col-md-2 control-label" })
+						<div class="col-md-10">
+							@Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+							@Html.ValidationMessageFor(m => m.UserName)
+						</div>
+					</div>
+					<div class="form-group">
+						@Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+						<div class="col-md-10">
+							@Html.PasswordFor(m => m.Password, new { @class = "form-control password" })
+							@Html.ValidationMessageFor(m => m.Password)
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="col-md-offset-2 col-md-3">
+							<input type="submit" value="LOG IN" class="btn btn-primary btn-invert" />
+						</div>
+						<div class="col-md-4">
+							<div class="checkbox" style="color:white;font-weight: bold;">
+								@Html.CheckBoxFor(m => m.RememberMe)
+								@Html.LabelFor(m => m.RememberMe)
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-offset-2 col-md-8 clickable">
+							@Html.ActionLink("Forgot my password", "ResetPassword", new { returnUrl = ViewBag.ReturnUrl })
+						</div>
+					</div>
+					@*<p>
+							or @Html.ActionLink("Register", "Register", new { returnUrl = ViewBag.ReturnUrl }) if you don't have a Radial account.
+						</p>*@
+				}
+			</section>
+		</div>
+
+		@*
+			<!--div class="col-md-4">
+				<section id="socialLoginForm">
+					@Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
+				</section>
+			</div-->*@
+	</div>
+
 </div>
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+	@Scripts.Render("~/bundles/jqueryval")
 }

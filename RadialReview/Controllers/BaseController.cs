@@ -36,12 +36,15 @@ namespace RadialReview.Controllers
 {
 	public class BaseController : Controller
 	{
+		#region Helpers
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+		#region Engines
 		protected static UserEngine _UserEngine = new UserEngine();
 		protected static ChartsEngine _ChartsEngine = new ChartsEngine();
 		protected static ReviewEngine _ReviewEngine = new ReviewEngine();
-
+		#endregion
+		#region Accessors
 		protected static RockAccessor _RockAccessor = new RockAccessor();
 		protected static RoleAccessor _RoleAccessor = new RoleAccessor();
 		protected static UserAccessor _UserAccessor = new UserAccessor();
@@ -64,16 +67,14 @@ namespace RadialReview.Controllers
 		protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
 		protected static DeepSubordianteAccessor _DeepSubordianteAccessor = new DeepSubordianteAccessor();
 		protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
-
-		protected void ManagerAndCanEditOrException(UserOrganizationModel user)
-		{
-			if (!user.IsManagerCanEditOrganization())
-				throw new PermissionsException();
-		}
+		#endregion
+		#region GetUserModel
 		protected UserModel GetUserModel()
 		{
-			using (var s = HibernateSession.GetCurrentSession()){
-				using (var tx = s.BeginTransaction()){
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
 					return GetUserModel(s);
 				}
 			}
@@ -81,17 +82,163 @@ namespace RadialReview.Controllers
 
 		protected UserModel GetUserModel(ISession s)
 		{
-			return new Cache().GetOrGenerate(CacheKeys.USER, x =>{
-				x.LifeTime=LifeTime.Session;
+			return new Cache().GetOrGenerate(CacheKeys.USER, x =>
+			{
+				x.LifeTime = LifeTime.Session;
 				var id = User.Identity.GetUserId();
 				return _UserAccessor.GetUserById(s, id);
 			});
 		}
+		#endregion
+		#region GetUser
+		private long? _CurrentUserOrganizationId = null;
+
+		private UserOrganizationModel PopulateUserData(UserOrganizationModel user)
+		{
+			user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
+			return user;
+		}
+		public UserOrganizationModel GetUser()
+		{
+			return PopulateUserData(_GetUser());
+		}
+		public UserOrganizationModel GetUser(ISession s)
+		{
+			return PopulateUserData(_GetUser(s));
+		}
+		public UserOrganizationModel GetUser(long userOrganizationId)
+		{
+			return PopulateUserData(_GetUser(userOrganizationId));
+		}
+		private UserOrganizationModel GetUserOrganization(ISession s, long userOrganizationId, String redirectUrl)//, Boolean full = false)
+		{
+			var cache = new Cache();
+
+			return cache.GetOrGenerate(CacheKeys.USERORGANIZATION, x =>
+			{
+				var id = User.Identity.GetUserId();
+				var found = _UserAccessor.GetUserOrganizations(s, id, userOrganizationId, redirectUrl);
+				if (found != null && found.User != null && !cache.Contains(CacheKeys.USER))
+				{
+					cache.Push(CacheKeys.USER, found.User, LifeTime.Session);
+				}
+				x.LifeTime = LifeTime.Session;
+				return found;
+			}, x => x.Id != userOrganizationId);
+		}
+
+		// ReSharper disable once RedundantOverload.Local
+		private UserOrganizationModel _GetUser(ISession s)
+		{
+			return _GetUser(s, null);
+		}
+		private UserOrganizationModel _GetUser()
+		{
+			long? userOrganizationId = null;
+
+			if (userOrganizationId == null)
+			{
+				var orgIdParam = Request.Params.Get("organizationId");
+				if (orgIdParam != null)
+					userOrganizationId = long.Parse(orgIdParam);
+			}
+
+			var cache = new Cache();
+
+			if (userOrganizationId == null && cache.Get(CacheKeys.USERORGANIZATION_ID) is long)
+			{
+				userOrganizationId = (long)cache.Get(CacheKeys.USERORGANIZATION_ID);
+			}
+
+
+
+			if (cache.Get(CacheKeys.USERORGANIZATION) is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION)).Id)
+				return (UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION);
+
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					return _GetUser(s, null);
+				}
+			}
+		}
+		private UserOrganizationModel _GetUser(long userOrganizationId)
+		{
+			var cache = new Cache();
+
+			if (cache.Get(CacheKeys.USERORGANIZATION) is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION)).Id)
+				return (UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION);
+
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					return _GetUser(s, userOrganizationId);
+				}
+			}
+		}
+		private UserOrganizationModel _GetUser(ISession s, long? userOrganizationId = null)//long? organizationId, Boolean full = false)
+		{
+			/**/
+			if (userOrganizationId == null)
+			{
+				var orgIdParam = Request.Params.Get("organizationId");
+				if (orgIdParam != null)
+					userOrganizationId = long.Parse(orgIdParam);
+			}
+			var cache = new Cache();
+
+			if (userOrganizationId == null && cache.Get(CacheKeys.USERORGANIZATION_ID) != null)
+			{
+				userOrganizationId = (long)cache.Get(CacheKeys.USERORGANIZATION_ID);
+			}
+			if (userOrganizationId == null)
+			{
+				userOrganizationId = GetUserModel(s).GetCurrentRole();
+			}
+
+
+			var user = cache.Get(CacheKeys.USERORGANIZATION);
+
+			if (user is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)user).Id)
+				return (UserOrganizationModel)user;
+
+			if (userOrganizationId == null)
+			{
+				var returnPath = Server.HtmlEncode(Request.Path);
+
+				var found = GetUserOrganizations(s, returnPath);
+				if (found.Count() == 0)
+					throw new NoUserOrganizationException();
+				else if (found.Count() == 1)
+				{
+					var uo = found.First();
+					//_CurrentUserOrganizationId = uo.Id;
+					cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Session);
+					cache.Push(CacheKeys.USERORGANIZATION_ID, uo.Id, LifeTime.Session);
+					return uo;
+				}
+				else
+					throw new OrganizationIdException(Request.Url.PathAndQuery);
+			}
+			else
+			{
+				var uo = GetUserOrganization(s, userOrganizationId.Value, Request.Url.PathAndQuery);
+				//_CurrentUserOrganizationId = uo.Id;
+				cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Session);
+				cache.Push(CacheKeys.USERORGANIZATION_ID, userOrganizationId.Value, LifeTime.Session);
+				return uo;
+
+			}
+		}
 
 		protected List<UserOrganizationModel> GetUserOrganizations(String redirectUrl) //Boolean full = false)
 		{
-			using (var s = HibernateSession.GetCurrentSession()){
-				using (var tx = s.BeginTransaction()){
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
 					return GetUserOrganizations(s, redirectUrl);
 				}
 			}
@@ -106,142 +253,37 @@ namespace RadialReview.Controllers
 			var id = User.Identity.GetUserId();
 			return _UserAccessor.GetUserOrganizations(s, id, redirectUrl/*, full*/);
 		}
-		/*protected List<UserOrganizationModel> GetUserOrganizations(String redirectUrl)//Boolean full = false)
+		#endregion
+		#region Validation
+		private List<String> ToValidate = new List<string>();
+		private NameValueCollection ValidationCollection;
+		protected void ValidateValues<T>(T model, params Expression<Func<T, object>>[] selectors)
 		{
-			var id = User.Identity.GetUserId();
-			return _UserAccessor.GetUserOrganizations(s, id, redirectUrl/*, full*);
-		}*/
-
-		private UserOrganizationModel GetUserOrganization(ISession s, long userOrganizationId, String redirectUrl)//, Boolean full = false)
-		{
-			var cache = new Cache();
-
-			return cache.GetOrGenerate(CacheKeys.USERORGANIZATION, x =>
+			foreach (var e in selectors)
 			{
-				var id = User.Identity.GetUserId();
-				var found = _UserAccessor.GetUserOrganizations(s, id, userOrganizationId, redirectUrl);
-				if (found != null && found.User != null && !cache.Contains(CacheKeys.USER)){
-					cache.Push(CacheKeys.USER, found.User, LifeTime.Session);
-				}
-				x.LifeTime= LifeTime.Session;
-				return found;
-			}, x => x.Id != userOrganizationId);
-		}
-
-		//private UserOrganizationModel _CurrentUser = null;
-		private long? _CurrentUserOrganizationId = null;
-		/*
-		protected void ChangeRole(long roleId)
-		{
-			_UserAccessor.ChangeRole(GetUserModel(),, roleId);
-		}
-		*/
-
-		public UserOrganizationModel GetUser(ISession s)
-		{
-			return _GetUser(s, null);
-		}
-
-		public UserOrganizationModel GetUser()
-		{
-			long? userOrganizationId = null;
-
-			if (userOrganizationId == null){
-				var orgIdParam = Request.Params.Get("organizationId");
-				if (orgIdParam != null)
-					userOrganizationId = long.Parse(orgIdParam);
-			}
-
-			var cache = new Cache();
-
-			if (userOrganizationId == null && cache.Get(CacheKeys.USERORGANIZATION_ID) is long){
-				userOrganizationId = (long)cache.Get(CacheKeys.USERORGANIZATION_ID);
-			}
-
-
-
-			if (cache.Get(CacheKeys.USERORGANIZATION) is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION)).Id)
-				return (UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION);
-
-			using (var s = HibernateSession.GetCurrentSession()){
-				using (var tx = s.BeginTransaction()){
-					return _GetUser(s, null);
-				}
+				//var meta = ModelMetadata.FromLambdaExpression(e, new ViewDataDictionary<T>());
+				var name = e.GetMvcName();//meta.DisplayName;
+				if (!ToValidate.Remove(name))
+					throw new PermissionsException("Validation item does not exist.");
+				SecuredValueValidator.ValidateValue(ValidationCollection, name);
 			}
 		}
-		public UserOrganizationModel GetUser(long userOrganizationId)
+		#endregion
+
+		protected void ManagerAndCanEditOrException(UserOrganizationModel user)
 		{
-			var cache = new Cache();
-
-			
-
-			if (cache.Get(CacheKeys.USERORGANIZATION) is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION)).Id)
-				return (UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION);
-
-			using (var s = HibernateSession.GetCurrentSession()){
-				using (var tx = s.BeginTransaction()){
-					return _GetUser(s, userOrganizationId);
-				}
-			}
+			if (!user.IsManagerCanEditOrganization())
+				throw new PermissionsException();
 		}
-
-
-		private UserOrganizationModel _GetUser(ISession s, long? userOrganizationId = null)//long? organizationId, Boolean full = false)
+		protected ActionResult RedirectToLocal(string returnUrl)
 		{
-			/**/
-			if (userOrganizationId == null){
-				var orgIdParam = Request.Params.Get("organizationId");
-				if (orgIdParam != null)
-					userOrganizationId = long.Parse(orgIdParam);
-			}
-			var cache=new Cache();
-
-			if (userOrganizationId == null && cache.Get(CacheKeys.USERORGANIZATION_ID) != null)
-			{
-				userOrganizationId = (long)cache.Get(CacheKeys.USERORGANIZATION_ID);
-			}
-			if (userOrganizationId == null){
-				userOrganizationId = GetUserModel(s).GetCurrentRole();
-			}
-
-
-			var user = cache.Get(CacheKeys.USERORGANIZATION);
-
-			if (user is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)user).Id)
-				return (UserOrganizationModel)user;
-
-			if (userOrganizationId == null){
-				var returnPath = Server.HtmlEncode(Request.Path);
-
-				var found = GetUserOrganizations(s,returnPath);
-				if (found.Count() == 0)
-					throw new NoUserOrganizationException();
-				else if (found.Count() == 1)
-				{
-					var uo = found.First();
-					//_CurrentUserOrganizationId = uo.Id;
-					cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Session);
-					cache.Push(CacheKeys.USERORGANIZATION_ID, uo.Id, LifeTime.Session);
-					return uo;
-				}
-				else
-					throw new OrganizationIdException(Request.Url.PathAndQuery);
-			}else{
-				var uo=GetUserOrganization(s, userOrganizationId.Value, Request.Url.PathAndQuery);
-				//_CurrentUserOrganizationId = uo.Id;
-				cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Session);
-				cache.Push(CacheKeys.USERORGANIZATION_ID, userOrganizationId.Value, LifeTime.Session);
-				return uo;
-
-			}
+			if (Url.IsLocalUrl(returnUrl))
+				return Redirect(returnUrl);
+			else
+				throw new RedirectException("Return URL is invalid.");
 		}
-
-		/*
-		public UserOrganizationModel GetUserOrganization(UserModel user,int organizationId)
-		{
-			return _UserAccessor.GetUserOrganizations(user, organizationId);
-		}*/
-
+		#endregion
+		#region User Status
 		protected void SignOut()
 		{
 			new Cache().Invalidate(CacheKeys.USERORGANIZATION_ID);
@@ -250,7 +292,19 @@ namespace RadialReview.Controllers
 			HttpContext.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
 			Session.Clear();
 		}
-
+		protected bool IsLoggedIn()
+		{
+			return User.Identity.GetUserId() != null;
+		}
+		protected IAuthenticationManager AuthenticationManager
+		{
+			get
+			{
+				return HttpContext.GetOwinContext().Authentication;
+			}
+		}
+		#endregion
+		#region Overrides
 		private static MethodInfo GetActionMethod(ExceptionContext filterContext)
 		{
 
@@ -265,9 +319,15 @@ namespace RadialReview.Controllers
 		{
 			var action = GetActionMethod(filterContext);
 
-			if (typeof(JsonResult).IsAssignableFrom(action.ReturnType))
-			{
-				filterContext.Result = Json(new ResultObject(filterContext.Exception), JsonRequestBehavior.AllowGet);
+			if (typeof(JsonResult).IsAssignableFrom(action.ReturnType)){
+				var exception = new ResultObject(filterContext.Exception);
+				if (filterContext.Exception is RedirectException){
+					var silent= ((RedirectException)filterContext.Exception).Silent;
+					if (silent != null)
+						exception.Silent = silent.Value;
+				}
+
+				filterContext.Result = Json(exception, JsonRequestBehavior.AllowGet);
 				filterContext.ExceptionHandled = true;
 				return;
 			}
@@ -319,27 +379,27 @@ namespace RadialReview.Controllers
 				filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
 				filterContext.ExceptionHandled = true;
 				filterContext.HttpContext.Response.Clear();
-			}else if (filterContext.Exception is HttpAntiForgeryException)
+			}
+			else if (filterContext.Exception is HttpAntiForgeryException)
 			{
 				log.Info("AntiForgery: [" + Request.Url.PathAndQuery + "] --> []");
 				filterContext.Result = RedirectToAction("Login", "Account", new { message = filterContext.Exception.Message });
 				filterContext.ExceptionHandled = true;
 				filterContext.HttpContext.Response.Clear();
-			}else{
+			}
+			else
+			{
 				log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);
 				base.OnException(filterContext);
 			}
 		}
-
-		private List<String> ToValidate = new List<string>();
-		private NameValueCollection ValidationCollection;
-
 		protected override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
 
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction()){
+				using (var tx = s.BeginTransaction())
+				{
 					//DataCollection.CommentMarkProfile(2, "Validation");
 					//Secure hidden fields
 					ValidationCollection = filterContext.RequestContext.HttpContext.Request.Form;
@@ -408,7 +468,7 @@ namespace RadialReview.Controllers
 					//DataCollection.CommentMarkProfile(2, "ViewBag");
 					if (IsLoggedIn())
 					{
-						var userOrgsCount = GetUserOrganizationCounts(s,Request.Url.PathAndQuery);
+						var userOrgsCount = GetUserOrganizationCounts(s, Request.Url.PathAndQuery);
 						UserOrganizationModel oneUser = null;
 						var hints = true;
 						try
@@ -429,6 +489,7 @@ namespace RadialReview.Controllers
 						filterContext.Controller.ViewBag.IsManager = false;
 						filterContext.Controller.ViewBag.ShowL10 = false;
 						filterContext.Controller.ViewBag.ShowReview = false;
+						filterContext.Controller.ViewBag.ShowSurvey = false;
 						filterContext.Controller.ViewBag.Organizations = userOrgsCount;
 						filterContext.Controller.ViewBag.Hints = true;
 						filterContext.Controller.ViewBag.ManagingOrganization = false;
@@ -456,20 +517,21 @@ namespace RadialReview.Controllers
 							filterContext.Controller.ViewBag.UserInitials = oneUser.GetInitials();
 							filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
 							filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
-							
+
 
 							filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
 							//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
 							filterContext.Controller.ViewBag.UserName = name;
 							filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
 							filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview;
+							filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey;
 							var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
 							filterContext.Controller.ViewBag.IsManager = isManager;
 							filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
 							filterContext.Controller.ViewBag.UserId = oneUser.Id;
 							filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
 							filterContext.Controller.ViewBag.Organization = oneUser.Organization;
-							filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x=>x.Hints);
+							filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
 
 						}
 						else
@@ -487,20 +549,6 @@ namespace RadialReview.Controllers
 			//DataCollection.CommentMarkProfile(2, "End");
 			base.OnActionExecuting(filterContext);
 		}
-
-
-		protected void ValidateValues<T>(T model, params Expression<Func<T, object>>[] selectors)
-		{
-			foreach (var e in selectors)
-			{
-				//var meta = ModelMetadata.FromLambdaExpression(e, new ViewDataDictionary<T>());
-				var name = e.GetMvcName();//meta.DisplayName;
-				if (!ToValidate.Remove(name))
-					throw new PermissionsException("Validation item does not exist.");
-				SecuredValueValidator.ValidateValue(ValidationCollection, name);
-			}
-		}
-
 		protected override void OnActionExecuted(ActionExecutedContext filterContext)
 		{
 			if (ToValidate.Any())
@@ -517,29 +565,10 @@ namespace RadialReview.Controllers
 
 			base.OnActionExecuted(filterContext);
 		}
-
-		protected ActionResult RedirectToLocal(string returnUrl)
-		{
-			if (Url.IsLocalUrl(returnUrl))
-				return Redirect(returnUrl);
-			else
-				throw new RedirectException("Return URL is invalid.");
-		}
-		protected bool IsLoggedIn()
-		{
-			return User.Identity.GetUserId() != null;
-		}
-		protected IAuthenticationManager AuthenticationManager
-		{
-			get
-			{
-				return HttpContext.GetOwinContext().Authentication;
-			}
-		}
-
+		#region Angular Json Overrides
 		protected new JsonResult Json(object data)
 		{
-			if (data is IAngular && Request.Params["transform"]==null)
+			if (data is IAngular && Request.Params["transform"] == null)
 				return base.Json(AngularSerializer.Serialize((IAngular)data));
 			return base.Json(data);
 		}
@@ -556,7 +585,7 @@ namespace RadialReview.Controllers
 				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType);
 			return base.Json(data, contentType);
 		}
-		protected new  JsonResult Json(object data, string contentType, JsonRequestBehavior behavior)
+		protected new JsonResult Json(object data, string contentType, JsonRequestBehavior behavior)
 		{
 			if (data is IAngular && Request.Params["transform"] == null)
 				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, behavior);
@@ -574,6 +603,9 @@ namespace RadialReview.Controllers
 				return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, encoding, behavior);
 			return base.Json(data, contentType, encoding, behavior);
 		}
+
+		#endregion
+		#endregion
 	}
 
 }

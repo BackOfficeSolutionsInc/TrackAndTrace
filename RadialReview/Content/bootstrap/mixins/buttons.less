@@ -1,0 +1,135 @@
+// Button variants
+//
+// Easily pump out default styles, as well as :hover, :focus, :active,
+// and disabled options for all buttons
+
+
+
+.button-variant(@color; @background; @border;) {
+  color: @color;
+  background-color: @background;
+  border-color: @border;
+  //color: @background;
+  /*border-width:1px;
+  font-weight:bold;*/
+
+  &:focus,
+  &.focus {
+    color: @color;
+    background-color: darken(@background, 10%);
+        border-color: darken(@border, 25%);
+  }
+  &:hover {
+    color: @color;
+    background-color: darken(@background, 10%);
+        border-color: darken(@border, 12%);
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    color: @color;
+    background-color: darken(@background, 10%);
+        border-color: darken(@border, 12%);
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: @color;
+      background-color: darken(@background, 17%);
+          border-color: darken(@border, 25%);
+    }
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &,
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+      background-color: @background;
+          border-color: @border;
+    }
+  }
+
+  .badge {
+    color: @background;
+    background-color: @color;
+  }
+}
+
+// Button sizes
+.button-size(@padding-vertical; @padding-horizontal; @font-size; @line-height; @border-radius) {
+  padding: @padding-vertical @padding-horizontal;
+  font-size: @font-size;
+  line-height: @line-height;
+  border-radius: @border-radius;
+}
+
+
+.button-variant-inverse(@color; @background; @border;) {
+  color: @background;
+  background-color: white;
+  border-color: @background;
+  //color: @background;
+  /*border-width:1px;*/
+  font-weight:bold;
+
+  &:focus,
+  &.focus {
+    color: white;
+    background-color: @background;
+        border-color: white;
+  }
+  &:hover {
+    color: white;
+    background-color: @background;
+        border-color: white;
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    color: white;
+    background-color: @background;
+        border-color: white;
+
+    &:hover,
+    &:focus,
+    &.focus {
+		color: white;
+		background-color: @background;
+			border-color: white;
+			outline: none;
+    }
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &,
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+      background-color: @background;
+          border-color: @background;
+		  outline: none;
+    }
+  }
+
+  .badge {
+    color: @background;
+    background-color: @color;
+  }
+}

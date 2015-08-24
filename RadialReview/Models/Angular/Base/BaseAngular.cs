@@ -17,6 +17,7 @@ namespace RadialReview.Models.Angular.Base
 		public BaseAngular(long id)
 		{
 			Id = id;
+			//Removed = false;
 		}
 
 		[Obsolete("Use BaseAngular(id) instead.")]
@@ -28,6 +29,7 @@ namespace RadialReview.Models.Angular.Base
 		public string Key { get { return this.GetKey(); } }
 
 		public bool CreateOnly { get; set; }
+
 	}
 
 	public class Removed
@@ -91,5 +93,6 @@ namespace RadialReview.Models.Angular.Base
 		public long Id{get { return 0; }}
 
 		public string Type{get { return "Removed"; }}
+		
 	}
 }

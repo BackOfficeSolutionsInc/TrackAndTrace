@@ -666,5 +666,25 @@ namespace RadialReview.Controllers
 			return "" + f;
 		}
 
+		[Access(AccessLevel.Radial)]
+		public string M8_7_2015()
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+					var users = s.QueryOver<UserModel>().Where(x=>x.SendTodoTime==null).List().ToList();
+					foreach (var o in users){
+						o.SendTodoTime = 10;
+						s.Update(o);
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "" + f;
+		}
 	}
 }

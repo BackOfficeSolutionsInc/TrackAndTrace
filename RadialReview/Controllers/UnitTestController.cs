@@ -12,7 +12,6 @@ using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
-using RadialReview.Models.L10VM;
 using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
@@ -41,6 +40,13 @@ namespace RadialReview.Controllers
             hubUsers.status(text);
         }
 
+		[Access(AccessLevel.Radial)]
+		public ActionResult Sync(long id)
+		{
+			var recurrenceId = id;
+			return View(recurrenceId);
+		}
+
 
 
 		[Access(AccessLevel.Radial)]
@@ -65,7 +71,7 @@ namespace RadialReview.Controllers
 	    {
 		    var recurrenceId = id;
 			var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
-			var rocks = L10Accessor.GetRocksForRecurrence(GetUser(),  recurrenceId, meeting.Id);
+			var rocks = L10Accessor.GetRocksForMeeting(GetUser(),  recurrenceId, meeting.Id);
 			var model = new AngularMeeting(recurrenceId){
 				MeetingId = meeting.Id
 			};
@@ -119,7 +125,7 @@ namespace RadialReview.Controllers
 		{
 			var recurrenceId = id;
 			var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
-			var rocks = L10Accessor.GetRocksForRecurrence(GetUser(), recurrenceId, meeting.Id);
+			var rocks = L10Accessor.GetRocksForMeeting(GetUser(), recurrenceId, meeting.Id);
 			
 			var aRocks = rocks.Select(x => new AngularMeetingRock(x)).ToList();
 			

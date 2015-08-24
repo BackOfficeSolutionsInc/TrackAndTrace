@@ -43,6 +43,7 @@
 @using (Html.BeginStyles())
 {
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 	@Styles.Render("~/styles/L10")
 	@Styles.Render("~/styles/meeting")
 	<style>
@@ -55,11 +56,17 @@
 			background-color: rgba(0, 0, 0, 0);
 			cursor: pointer;
 		}
+
+		.body-content {
+			max-width: 90%;
+		}
 	</style>
 
 }
 @using (Html.BeginScripts())
 {
+	<script src="~/Scripts/L10/charts/sparklines.min.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
 	<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
@@ -79,6 +86,30 @@
 		});
 
 		$(function() {
+
+			function fixHandle() {
+				$(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());
+			}
+
+			setTimeout(function() {
+				$(".scroll-right").scrollLeft(4000);
+
+
+				$("#ScorecardTable_Over").resizable({
+					handles: 'e',
+				});
+				$("#ScorecardTable_Over").scroll(function(e) {
+					fixHandle();
+				});
+				var shift = 0;
+				$(".table-responsive").scroll(function(e) {
+					$("#ScorecardTable_Over").removeClass("hidden");
+					if ($(".table-responsive").scrollLeft() - shift < $("#ScorecardTable_Over").scrollLeft() ) {
+						$("#ScorecardTable_Over").addClass("hidden");
+					}
+				});
+
+			}, 1000);
 
 			$("body").on("click", ".issuesModal", function() {
 				var parm = $.param($(this).data());
@@ -135,7 +166,7 @@
 		<div class="pull-left"><h3 style="margin-top: 5px;">{{model.Name}}</h3></div>
 		<div class="calendar-container pull-right" style="width:240px;">
 			<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-			<input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="date" options="opts" required placeholder="Select a date range..." />
+			<input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="model.date" options="opts" required placeholder="Select a date range..." />
 			<b class="caret"></b>
 		</div>
 		<div style="height:90px"></div>
@@ -149,7 +180,7 @@
 		</ul>
 
 		<div class="tab-content">
-			<div id="Scorecard" class="tab-pane active">@Html.Partial("~/Views/L10/Details/scorecard.cshtml",new ViewDataDictionary(){{"ForceMin",true}})</div>
+			<div id="Scorecard" class="tab-pane active">@Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", true } })</div>
 			<div id="Todo" class="tab-pane">@Html.Partial("~/Views/L10/Details/todo.cshtml")</div>
 			<div id="Issues" class="tab-pane">@Html.Partial("~/Views/L10/Details/issues.cshtml")</div>
 			<div id="Notes" class="tab-pane">@Html.Partial("~/Views/L10/Details/notes.cshtml")</div>

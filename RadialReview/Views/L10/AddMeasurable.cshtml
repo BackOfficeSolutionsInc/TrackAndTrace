@@ -15,7 +15,7 @@
 
 
 <script>
-    function Update() {
+    function Update_AddMeasurable() {
         if ($("#measurableSelector").val() == -3) {
 			$(".createNewMeasurable").removeClass("hidden");
 	        $.ajax({
@@ -33,8 +33,8 @@
 
     $(function () {
 	    $("#measurableSelector").change(function() {
-		    Update();
+		    Update_AddMeasurable();
 	    });
-        Update();
+        Update_AddMeasurable();
     });
 </script>

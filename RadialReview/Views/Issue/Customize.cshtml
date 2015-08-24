@@ -80,6 +80,8 @@
         qtip();
         $('form').unbind('submit');
         $("form").submit(function (event) {
+			//event.preventDefault();
+	        //issuing = true;
 	        $("#submitButton").prop("disabled", true);
             if ($(".customizeBoxes:checked").length == 0) {
                 alert("You haven't customized the @Html.ReviewName().ToLower(). You must ensure that some members evaluate each other.");
@@ -120,7 +122,10 @@
             	return;
             }
 
-            return;
+			//$("form").submit();
+			//issuing = false;
+			//window.location = "/Reviews/Index";
+			return;
         });
 
 		function showPeriodModal(that) {

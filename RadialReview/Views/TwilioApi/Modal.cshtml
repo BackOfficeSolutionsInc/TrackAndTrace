@@ -1,12 +1,20 @@
 ﻿@model RadialReview.Controllers.TwilioApiController.PhoneVM
 <div class="form">
 	<div class="">
+
+		@if (ViewBag.PossibleRecurrences == null){
+			@Html.HiddenFor(x => x.RecurrenceId)
+		}else{
+			<div class="row smallBreak2">
+				<div class="col-xs-4">Which Meeting:</div><div class="col-xs-8">@Html.DropDownListFor(x => x.RecurrenceId, (List<SelectListItem>)ViewBag.PossibleRecurrences, new { @class = "form-control" })</div>
+			</div>
+		}
 		<div class="row smallBreak2">
-			<div class="col-xs-4">Texting this number:</div><div class="col-xs-8">@Html.DropDownListFor(x=>x.SelectedNumber,Model.PossibleNumbers,new {@class="form-control"})</div>
+			<div class="col-xs-4">Texting this number:</div><div class="col-xs-8">@Html.DropDownListFor(x => x.SelectedNumber, Model.PossibleNumbers, new { @class = "form-control" })</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-4">Will:</div><div class="col-xs-8">@Html.DropDownListFor(x => x.SelectedAction, Model.PossibleActions, new { @class = "form-control" })</div>
 		</div>
+
 	</div>
 </div>
-@Html.SecuredHiddenFor(x=>x.RecurrenceId)

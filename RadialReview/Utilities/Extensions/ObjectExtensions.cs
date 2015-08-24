@@ -22,6 +22,14 @@ namespace RadialReview
 			return null;
 		}
 
+		public static long? TryParseLong(this string str)
+		{
+			long o;
+			if (long.TryParse(str, out o))
+				return o;
+			return null;
+		}
+
         //NotNull
         public static R NotNull<T, R>(this T obj, Func<T, R> f)
         {
@@ -42,9 +50,12 @@ namespace RadialReview
 
 	    public static string ToPhoneNumber(this long s )
 	    {
-		    string input=s.ToString();
-		   
-			var phone = "(" + input.Substring(0, 3) + ") " + input.Substring(3, 3) + "-" + input.Substring(6, 4);
+		    var input=s.ToString();
+		    var phone = "";
+			if (input.Length==11)
+				phone = input.Substring(0, 1) + "-" + input.Substring(1, 3) + "-" + input.Substring(4, 3) + "-" + input.Substring(7, 4);
+			else
+				phone = "(" + input.Substring(0, 3) + ") " + input.Substring(3, 3) + "-" + input.Substring(6, 4);
 		    return phone;
 	    }
         public static long ToLong(this String s)

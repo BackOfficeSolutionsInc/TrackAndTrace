@@ -4,13 +4,21 @@
 		<div class="col-md-12">
 			<hgroup class="page-header">
 				<div class="pull-right">
+					<div class="btn-group">
+						<div class="btn btn-default btn-xs" onclick="@Html.ShowModal("Add Rock", "/L10/AddRock/" + Model.Recurrence.Id, "/L10/AddRock/")">
+							<span class="icon fontastic-icon-science-laboratory"></span> Add Rock
+						</div>
+					</div>
 					@Html.Partial("partial/ButtonBar", Model)
+
 				</div>
 				<h2>@Html.Organization().Settings.RockName Review <small></small></h2>
 			</hgroup>
 			<div class="rocks-container">
 				
-				@foreach (var person in Model.Rocks.GroupBy(x => x.ForRock.ForUserId))
+				@Html.Partial("partial/RockGroup",Model.Rocks)
+
+				@*@foreach (var person in Model.Rocks.GroupBy(x => x.ForRock.ForUserId))
 				{
 					<div class="component">
 						@Html.Partial("_Picture", person.First().ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
@@ -28,16 +36,16 @@
 								{
 									<tr class="rock_@(i.ForRock.Id)">
 										<td class="buttonHolder currentBlue" style="min-width: 45px;border-radius: 6px;height: 30px;margin: 1px;padding: 4px;">
-											<span class="glyphicon glyphicon-pushpin issuesButton issuesModal"
-											      data-meeting="@Model.Meeting.Id"
-											      data-recurrence="@Model.Recurrence.Id"
-											      data-rock="@(i.ForRock.Id)"
-											      data-method="CreateRockIssue"></span>
+											<span class="icon fontastic-icon-pinboard issuesButton issuesModal"
+												  data-meeting="@Model.Meeting.Id"
+												  data-recurrence="@Model.Recurrence.Id"
+												  data-rock="@(i.ForRock.Id)"
+												  data-method="CreateRockIssue"></span>
 											<span class="glyphicon glyphicon-unchecked todoButton todoModal"
-											      data-meeting="@Model.Meeting.Id"
-											      data-recurrence="@Model.Recurrence.Id"
-											      data-rock="@(i.ForRock.Id)"
-											      data-method="CreateRockTodo"
+												  data-meeting="@Model.Meeting.Id"
+												  data-recurrence="@Model.Recurrence.Id"
+												  data-rock="@(i.ForRock.Id)"
+												  data-method="CreateRockTodo"
 												  data-accountable="@i.ForRock.ForUserId">
 											</span>
 										</td>
@@ -48,8 +56,8 @@
 							</table>
 						</div>
 					</div>
-				}
-				
+				}*@
+
 			</div>
 		</div>
 	</div>

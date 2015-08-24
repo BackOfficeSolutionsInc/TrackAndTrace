@@ -1,31 +1,104 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingStatsVM
 @{
 	//Layout = "~/Views/L10/BasePage.cshtml";
+
+	var list = new List<String>();
+	var join = "n/a";
+	var duration = "On-Going";
+	if (Model.StartTime != null)
+	{
+		list.Add(Model.StartTime.NotNull(x => x.Value.ToShortTimeString().Replace("AM", "").Replace("PM", "")));
+		if (Model.EndTime != null)
+		{
+			list.Add(Model.EndTime.NotNull(x => x.Value.ToShortTimeString().Replace("AM", "").Replace("PM", "")));
+			duration = (Model.EndTime.Value - Model.StartTime.Value).Minutes + " minutes";
+		}
+		else
+		{
+			list.Add(" In Progress ");
+		}
+		join = String.Join(" - ", list);
+	}
 }
 
 <div class="component meeting-stats">
 	<div class="row">
+
 		<div class="col-md-6">
-			<div class="chart-title">Meeting Start/End Time</div>
-			<div id="StartTime" style="width:100%;">
+			<div class="row">
+				<div class="col-xs-6 smallPad smallBreak2">
+					<div class="stats">
+						<h1 id="reviewsCompleted" class="scramble resize1" data-range="99" style="">@Model.IssuesSolved</h1>
+						<h6>Issues Completed</h6>
+					</div>
+				</div>
+				<div class="col-xs-6 smallPad smallBreak2">
+					<div class="stats">
+						<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="">@Model.TodoCompleted</h1>
+						<h6>To-do Completed</h6>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="col-md-6">
-			<div class="chart-title">Average Rating</div>
-			<div id="AvgRating" style="width:100%;">
+			<div class="row">
+				<div class="col-xs-6 smallPad smallBreak2">
+					<div class="stats">
+						<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="font-size: 32px;margin-top: 37px;margin-bottom: 34px;">
+							@join
+						</h1>
+
+						<h6>Meeting Time</h6>
+					</div>
+				</div>
+				<div class="col-xs-6 smallPad smallBreak2">
+					<div class="stats">
+						<h1 id="optionalAnswered" class="scramble resize1" data-range="200" style="font-size: 32px;margin-top: 37px;margin-bottom: 34px;">@duration</h1>
+						<h6>Meeting Duration</h6>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-
+	@if (Model.TodosCreated.Any(x => x.CompleteTime == null))
+	{
+		<h3 style="font-size: 20px; color: #444;">Confirm Your New To-Dos</h3>
+		<div class="todo-container ">
+			<ol class="todo-list sortable ">
+				@foreach (var i in Model.TodosCreated.OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)){
+					<li class="todo-item">
+						@Html.Partial("_ProfilePicture", i.AccountableUser)
+						<span class="todo-message">@i.Message</span>
+						<span class="todo-due">@i.DueDate.ToShortDateString()</span>
+					</li>
+				}
+			</ol>
+		</div>
+	}
 </div>
+
+@*<div class="component meeting-stats">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="chart-title">Meeting Start/End Time</div>
+				<div id="StartTime" style="width:100%;"></div>
+			</div>
+			<div class="col-md-6">
+				<div class="chart-title">Average Rating</div>
+				<div id="AvgRating" style="width:100%;">
+				</div>
+			</div>
+		</div>
+
+	</div>*@
 <script src="~/Scripts/d3/d3.v3.min.js"></script>
 <script src="~/Scripts/d3/Charts.js"></script>
 <script>
 
 	@{
-		
-		
-		
+
+
+
 		var start = Model.AllMeetings
 			.Select(x => x.StartTime)
 			.Where(x => x.HasValue)
@@ -39,14 +112,14 @@
 		var startEnd = start.ToList();
 		startEnd.AddRange(end);
 		var sa = startEnd.Select(x=>x.v).Median();
-	
+
 		var rating = Model.AllMeetings.OrderBy(x => x.StartTime).Select(x => new{
 			x = x.StartTime.Value.Date.ToJavascriptMilliseconds(),
 			y = x._MeetingAttendees.Average(y => y.Rating)
 		}).Where(x => x.y != null);
 
-		
-		
+
+
 	}
 
 	////////////////////
@@ -80,7 +153,7 @@
 	//Avg Rating
 
 	var ratingHistogram = new Charts.Line("#AvgRating")
-		.SetLabelFunction(function(d) { 
+		.SetLabelFunction(function(d) {
 			var curr_date = d.getDate();
 			var curr_month = d.getMonth() + 1; //Months are zero based
 			var curr_year = Charts.Util.pad(d.getFullYear() % 100, 2);
@@ -91,3 +164,26 @@
 		).RotateXTitle();
 
 </script>
+
+<style>
+	.todo-item {
+		font-size: 18px;
+	}
+
+	.todo-message {
+		position: relative;
+		top: -8px;
+	}
+
+	.todo-container .picture {
+		width: 32px;
+		height: 32px;
+	}
+
+	.todo-due {
+		float: right;
+		color: #CCC;
+		position: relative;
+		top: 8px;
+	}
+</style>

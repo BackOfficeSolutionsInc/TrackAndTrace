@@ -208,6 +208,7 @@ namespace RadialReview.Controllers
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         [Access(AccessLevel.SignedOut)]
+		[ValidateInput(false)]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
@@ -324,7 +325,40 @@ namespace RadialReview.Controllers
             return RedirectToAction("Manage", new { Message = message });
         }
 
-        //
+		protected List<SelectListItem> GetPossibleTimes(int? selected){
+
+			var possibleTimes = new List<SelectListItem>();
+
+			possibleTimes.Add(new SelectListItem(){
+				Selected = (selected ??-1) == -1 ,
+				Text = "Do not send e-mail",
+				Value = "-1"
+			});
+
+			for (int i = 0; i < 24; i++)
+			{
+				var name = " AM (GMT)";
+				if (i == 0)
+					name = "12" + name;
+				else if (i < 12)
+					name = "" + i + name;
+				else if (i==12)
+					name = "12 PM (GMT)";
+				else
+					name = "" + (i - 12) + " PM (GMT)";
+				
+				possibleTimes.Add(new SelectListItem()
+				{
+					Selected = selected == i,
+					Text = name,
+					Value = "" + i
+				});
+			}
+			return possibleTimes;
+
+		}
+
+			//
         // GET: /Account/Manage
         [Access(AccessLevel.User)]
         public ActionResult Manage(ManageMessageId? message)
@@ -349,11 +383,14 @@ namespace RadialReview.Controllers
             }
 
 
+
             var model = new ProfileViewModel()
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid)
+                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid),
+				SendTodoTime = user.SendTodoTime,
+				PossibleTimes = GetPossibleTimes(user.SendTodoTime),
             };
 
             return View(model);
@@ -364,7 +401,14 @@ namespace RadialReview.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Manage(ProfileViewModel model)
         {
-            _UserAccessor.EditUserModel(GetUserModel(), GetUserModel().Id, model.FirstName, model.LastName, null);
+			_UserAccessor.EditUserModel(
+				GetUserModel(), 
+				GetUserModel().Id, 
+				model.FirstName, 
+				model.LastName, 
+				null,
+				model.SendTodoTime!=null,
+				model.SendTodoTime);
             return RedirectToAction("Index","Home");
         }
 
@@ -376,6 +420,7 @@ namespace RadialReview.Controllers
             bool hasPassword = HasPassword();
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
+			
             if (hasPassword)
             {
                 if (ModelState.IsValid)

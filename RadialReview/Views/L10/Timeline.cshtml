@@ -5,7 +5,7 @@
 	var first = true;
 }
 <div class="clearfix">
-	<h2 style="float:left">Timeline</h2>
+	<h2 style="float:left">Timeline: <small>@Model.FirstOrDefault().NotNull(x=>x.Meeting.L10Recurrence.Name)</small></h2>
 	<h2 style="min-width: 200px;"><input class="form-control" type="text" id="input-filter" style="width: 250px;float:right;" placeholder="Search..." /></h2>
 </div>
 
@@ -19,12 +19,12 @@
 						<div class="clearfix">
 							<span class="pull-left">
 								<b>Meeting:</b>
-								<span style="width:100px;text-align: center">@meeting.Meeting.CreateTime.ToShortDateString()</span>
+								<span style="width:100px;text-align: center">@Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime).ToShortDateString()</span>
 							</span>
 							<span class="pull-right">
-								<span style="width:75px;text-align: right">@meeting.Meeting.CreateTime.ToShortTimeString()</span>
+								<span style="width:75px;text-align: right">@Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime).ToShortTimeString()</span>
 								<span> - </span>
-								<span style="width:75px">@(meeting.Meeting.CompleteTime.NotNull(x => x.Value.ToShortTimeString()) ?? "On-going")</span>
+								<span style="width:75px">@(meeting.Meeting.CompleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToShortTimeString()) ?? "On-going")</span>
 							</span>
 							&nbsp;
 						</div>
@@ -48,7 +48,7 @@
 								@foreach (var f in meeting.Audits)
 								{
 									<tr>
-										<td style="white-space: nowrap">@f.CreateTime.ToShortDateString() @f.CreateTime.ToShortTimeString()</td>
+										<td style="white-space: nowrap">@Html.Organization().ConvertFromUTC(f.CreateTime).ToShortDateString() @Html.Organization().ConvertFromUTC(f.CreateTime).ToShortTimeString()</td>
 										<td style="white-space: nowrap">@f.UserOrganization.NotNull(x => x.GetName())</td>
 										<td>@f.Action</td>
 										<td style="white-space: pre-line">@f.Notes</td>

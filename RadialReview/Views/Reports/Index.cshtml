@@ -42,12 +42,13 @@
 
 @using (Html.BeginStyles())
 {
-	
+
 	<link href="~/Content/print.css" rel="stylesheet" media="print" />
 	<style>
 		.nav-tabs .active a {
 			background-color: #FFF !important;
 		}
+
 		.nav-tabs.tabs-left a span {
 			float: left;
 		}
@@ -59,20 +60,46 @@
 		<ul class="nav nav-tabs tabs-left">
 			@if (ViewBag.IsManager ?? false && panels.Any())
 			{
-				<li role="presentation" class=""><a href="#Reminders" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-bell"></span> Send Reminders</a></li>
-				<li role="presentation" class=""><a href="#Reports" aria-controls="home" role="tab" data-toggle="tab"><span class="icon new-icon-page-multiple"></span> Report Builder</a></li>
+				<li role="presentation" class="ellipsis"><a href="#ReviewerReviewee" aria-controls="home" role="tab" data-toggle="tab"><span class="icon fontastic-icon-exchange"></span> Reviewer/ Reviewee</a></li>
+				<li role="presentation" class="ellipsis"><a href="#Reminders" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-bell"></span> Send Reminders</a></li>
+				<li role="presentation" class="ellipsis"><a href="#Reports" aria-controls="home" role="tab" data-toggle="tab"><span class="icon new-icon-page-multiple"></span> Report Builder</a></li>
 				if (Model.SurveyAnswers.Any())
 				{
-					<li role="presentation" class=""><a href="#Survey" aria-controls="home" role="tab" data-toggle="tab"><span class="icon fontastic-icon-checklist"></span> Survey Results</a></li>
+					<li role="presentation" class="ellipsis"><a href="#Survey" aria-controls="home" role="tab" data-toggle="tab"><span class="icon fontastic-icon-checklist"></span> Survey Results</a></li>
 				}
 			}
-			<li role="presentation" class=""><a href="#Aggregate" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-th-large"></span> Aggregate</a></li>
-			<li role="presentation" class="active"><a href="#Stats" aria-controls="home" role="tab" data-toggle="tab"><span class="icon fontastic-icon-chart-pie"></span> @Html.ReviewName() Stats</a></li>
-		
+			<li role="presentation" class="ellipsis"><a href="#Aggregate" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-th-large"></span> Aggregate</a></li>
+			<li role="presentation" class="active ellipsis"><a href="#Stats" aria-controls="home" role="tab" data-toggle="tab"><span class="icon fontastic-icon-chart-pie"></span> @Html.ReviewName() Stats</a></li>
+
 		</ul>
 	</div>
 	<div class="col-sm-9">
 		<div class="tab-content tabs-left">
+			<div role="tabpanel" class="tab-pane in" id="ReviewerReviewee">
+				<div class="table-responsive">
+					<table class="table table-condensed table-hover tablesorter">
+						<thead>
+							<tr>
+								<th style="width: 1px;"></th>
+								<th>Name</th>
+								<th class="alignCenter" style="width: 50px;">Edit</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var review in panel.Item3.OrderByDescending(x => x.ForUser.GetDirectlyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle()))
+							{
+								<tr class="@(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
+									<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
+									<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
+									<td class="alignCenter">
+										<a style="border-bottom: 1px dotted" href="/Prereview/Update/@review.Id">Edit</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
 			<div role="tabpanel" class="tab-pane in active" id="Stats">
 				@Html.Partial("_ReviewStats", Model.Review.Id)
 			</div>
@@ -84,7 +111,7 @@
 				if (Model.SurveyAnswers.Any())
 				{
 					<div role="tabpanel" class="tab-pane in" id="Survey">
-							@Html.Partial("_Survey", Model.SurveyAnswers)
+						@Html.Partial("_Survey", Model.SurveyAnswers)
 					</div>
 				}
 				<div role="tabpanel" class="tab-pane in" id="Reports">
@@ -99,13 +126,13 @@
 							</thead>
 							<tbody>
 								@foreach (var review in panel.Item3.OrderByDescending(x =>
-											{
-												double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
-												double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
-												return complete / total;
+								{
+									double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
+									double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
+									return complete / total;
 
-												//return x.GetCompletion().GetPercentage();
-											}))
+									//return x.GetCompletion().GetPercentage();
+								}))
 								{
 									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
 									<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
@@ -149,13 +176,13 @@
 							</thead>
 							<tbody>
 								@foreach (var review in panel.Item3.OrderByDescending(x =>
-											{
-												double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
-												double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
-												return complete / total;
+								{
+									double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
+									double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
+									return complete / total;
 
-												/*return x.GetCompletion().GetPercentage();*/
-											}))
+									/*return x.GetCompletion().GetPercentage();*/
+								}))
 								{
 									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
 									<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
@@ -170,13 +197,13 @@
 											@if (review.ForUser.GetDirectlyManaging())
 											{
 												@:<a style="border-bottom: 1px dotted" href="/Prereview/Update/@review.Id">
-														}
+											}
 											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete)) /
 											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count())
 											@if (review.ForUser.GetDirectlyManaging())
 											{
 												@:</a>
-														}
+											}
 										</td>
 										<td><span data-sort="@review.GetCompletion().GetPercentage()">@Html.Partial("_Completion", review.GetCompletion())</span></td>
 									</tr>
@@ -190,62 +217,62 @@
 	</div>
 </div>
 
-	@using (Html.BeginScripts())
-	{
-		<script>
+@using (Html.BeginScripts())
+{
+	<script>
 
-			$(function () {
-				$(".tablesorter.reports").tablesorter({
-					sortList: [[0, 0], [1, 0]],
-					sortForce: [[0, 0]]
-				});
-				$(".tablesorter.reminder").tablesorter({
-					sortList: [[0, 0], [5, 1]],
-					sortForce: [[0, 0]]
-				});
-
-
-				$("ul.nav-tabs > li > a").click(function (e) {
-					$(this).tab('show');
-					history.pushState(null, null, $(e.target).attr("href"));
-				});
-				var firstTab = true;
-				$('a').on('shown.bs.tab', function (e) {
-					if (firstTab) {
-						setTimeout(function () {
-							window.scrollTo(0, 0);
-						}, 1);
-					}
-					firstTab = false;
-				});
-				$('ul.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
-
-
-
-
-
-				@foreach (var p in panels){
-					@:$("#table_@p.Item2").tablesorter({ sortList: [[4, 1]] });
-																					}
-
+		$(function () {
+			$(".tablesorter.reports").tablesorter({
+				sortList: [[0, 0], [1, 0]],
+				sortForce: [[0, 0]]
+			});
+			$(".tablesorter.reminder").tablesorter({
+				sortList: [[0, 0], [5, 1]],
+				sortForce: [[0, 0]]
 			});
 
-			$(document).ready(function () {
-				setTimeout(function () {
-					$(this).scrollTop(0);
-				}, 1);
-			});
 
-			function sendReminders() {
-				var ids = [];
-				$('.userCheck:checked').each(function () {
-					ids.push($(this).data("id"));
-				});
-				if (ids && ids.length != 0) {
-					showModal('Send Reminder', '/Email/Remind?reviewId=@(Model.Review.Id)&userIds=' + ids.join(","), '/Email/Remind');
-				} else {
-					showAlert("You must select at least one user");
+			$("ul.nav-tabs > li > a").click(function (e) {
+				$(this).tab('show');
+				history.pushState(null, null, $(e.target).attr("href"));
+			});
+			var firstTab = true;
+			$('a').on('shown.bs.tab', function (e) {
+				if (firstTab) {
+					setTimeout(function () {
+						window.scrollTo(0, 0);
+					}, 1);
 				}
+				firstTab = false;
+			});
+			$('ul.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
+
+
+
+
+
+			@foreach (var p in panels){
+					@:$("#table_@p.Item2").tablesorter({ sortList: [[4, 1]] });
+																								}
+
+		});
+
+		$(document).ready(function () {
+			setTimeout(function () {
+				$(this).scrollTop(0);
+			}, 1);
+		});
+
+		function sendReminders() {
+			var ids = [];
+			$('.userCheck:checked').each(function () {
+				ids.push($(this).data("id"));
+			});
+			if (ids && ids.length != 0) {
+				showModal('Send Reminder', '/Email/Remind?reviewId=@(Model.Review.Id)&userIds=' + ids.join(","), '/Email/Remind');
+			} else {
+				showAlert("You must select at least one user");
 			}
-		</script>
-	}
+		}
+	</script>
+}

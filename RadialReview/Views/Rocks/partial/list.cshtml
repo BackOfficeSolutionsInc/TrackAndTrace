@@ -17,32 +17,32 @@
 		<div id="Rocks" class="tab-pane rock-pane scrollbox">
 			<div></div>
 			<div ng-repeat="(key,value) in model.Rocks | transform:this | groupBy: 'Owner.Name'">
-				<table width="100%" class="component" ng-show="(value | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)).length">
+				<table width="100%" class="component" ng-show="(value | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length">
 					<tr class="table-header" ng-show="$first">
 						<td></td>
 						<td class="picture-column"></td>
 						<th>Rock</th>
-						<th class="alignCenter">Due Date</th>
+						@*<th class="alignCenter">Due Date</th>*@
 						<th></th>
 
 					</tr>
 					@*| orderBy: ['Complete','-CompleteTime','Name']*@
-					<tr id="rock_{{rock.Id}}" ng-repeat="rock in value | orderBy: ['Complete','-CompleteTime','DueDate'] | filter:filters.byRange('CompleteTime',date.startDate,date.endDate) "
+					<tr id="rock_{{rock.Id}}" ng-repeat="rock in value | orderBy: ['Complete','-CompleteTime','DueDate'] | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate) "
 						@*ng-class="{grayRow: rock.Complete}"*@
-						class="clickable">
-						<td class=" rock-completion-container" style="min-width: 120px;text-align: center;">
+						class="">
+						<td class=" rock-completion-container" style="min-width: 120px;text-align: center;vertical-align: top;">
 							<select ng-class="rock.Completion" class="form-control rock-completion" ng-class="forRock_{{rock.Id}}" ng-model="rock.Completion" ng-options="item.value as item.name for item in rockstates" ng-change="functions.sendUpdate(rock)"></select>
 							@*<rockstate rock="rock" ng-model="rock" ></rockstate>*@
 							@*<input type="checkbox" ng-model="rock.Complete" />*@
 						</td>
 						<td class="picture-column"><profile-image user="rock.Owner"></profile-image></td>
 						<td class="name" style="width:100%">{{rock.Name}}</td>
-						<td class="alignCenter" style="min-width: 80px;"><input ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" class="due-date" data-rock="{{rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" /></td>
+						@*<td class="alignCenter" style="min-width: 80px;"><input ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" class="due-date" data-rock="{{rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" /></td>*@
 						<td style="min-width: 15px;"></td>
 					</tr>
 				</table>
 			</div>
-			<div class="gray" style="padding: 15px 15px;" ng-show="(model.Rocks | transform:this | filter:filters.byRange('CompleteTime',date.startDate,date.endDate)).length==0">
+			<div class="gray" style="padding: 15px 15px;" ng-show="(model.Rocks | transform:this | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length==0">
 				No @rockName fit your search criteria.
 			</div>
 		</div>

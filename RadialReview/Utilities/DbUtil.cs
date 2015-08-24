@@ -15,17 +15,20 @@ namespace RadialReview.Utilities
 			now = now ?? DateTime.UtcNow;
 			if (oldValues == null){
 				foreach (var a in newValues)
-					s.Save(a);
+					if (((ILongIdentifiable)a).Id >= 0)
+						s.Save(a);
 			}else{
 
 				var update = SetUtility.AddRemove(oldValues, newValues, x => ((ILongIdentifiable)x).Id);
 				foreach (var u in update.RemovedValues)
 				{
 					((IDeletable)u).DeleteTime = now;
-					s.Update(u);
+					if (((ILongIdentifiable)u).Id>=0)
+						s.Update(u);
 				}
 				foreach (var a in update.AddedValues)
-					s.Save(a);
+					if (((ILongIdentifiable)a).Id >= 0)
+						s.Save(a);
 
 			}
 		}

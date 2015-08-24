@@ -50,9 +50,9 @@ namespace RadialReview.Utilities
 				switch (org.Settings.Branding)
 				{
 					case BrandingType.RadialReview:
-						return GetAppSetting("ProductName_Review", "Radial Review");
+						return GetAppSetting("ProductName_Review", "Traction Tools");
 					case BrandingType.RoundTable:
-						return GetAppSetting("ProductName_Roundtable", "Radial Review");
+						return GetAppSetting("ProductName_Roundtable", "Traction Tools");
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
@@ -60,9 +60,9 @@ namespace RadialReview.Utilities
 			try
 			{
 				if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialreview"))
-					return GetAppSetting("ProductName_Review", "Radial Review");
+					return GetAppSetting("ProductName_Review", "Traction Tools");
 				else if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialroundtable"))
-					return GetAppSetting("ProductName_Roundtable", "Radial Review");
+					return GetAppSetting("ProductName_Roundtable", "Traction Tools");
 			}
 			catch (Exception)
 			{

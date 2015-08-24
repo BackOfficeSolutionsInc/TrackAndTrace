@@ -40,15 +40,29 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<div id="logo">
-							<div class="link">
-								<a href="@Url.Action("Index", "Home")" class="navbar-brand">
-									<span style="z-index:1000001;position:relative;top: -2px;">
-										<img src="/Content/img/logoWhiteTiny.png" height="24" width="24" style="opacity: .95;">
-									</span>
-								</a>
+						@if (ViewBag.FullLogo as bool? != true){
+							<div id="logo">
+								<div class="link">
+									<a href="@Url.Action("Index", "Home")" class="navbar-brand">
+										<span style="z-index: 1000001; position: relative; top: -2px;">
+											<img src="/Content/img/TRACTION-TOOLS_large_icon_wh.png" height="54" width="54" style="opacity: .95;">
+										</span>
+									</a>
+								</div>
 							</div>
-						</div>
+						}
+						else
+						{
+							<div id="logo">
+								<div class="link">
+									<a href="@Url.Action("Index", "Home")" class="navbar-brand">
+										<span style="z-index: 1000001; position: relative; top: -2px;">
+											<img src="/Content/img/TRACTION-TOOLS_small_horizontal_wh.png" height="54" style="opacity: .95;">
+										</span>
+									</a>
+								</div>
+							</div>
+						}
 					</div>
 					<div class="navbar-collapse collapse">
 						<ul class="nav navbar-nav">
@@ -82,7 +96,7 @@
 										<li>
 											<a href="@Url.Action("Index", "L10")">
 												L10
-												<span id="ManageNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+												<span id="L10Notification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
 											</a>
 										</li>
 									}
@@ -91,7 +105,16 @@
 										<li>
 											<a href="@Url.Action("Index", "Reviews")">
 												@(Html.ReviewName())s
-												<span id="ManageNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+												<span id="ReviewsNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+											</a>
+										</li>
+									}
+									if (ViewBag.ShowSurvey ?? false)
+									{
+										<li>
+											<a href="@Url.Action("Index", "Survey")">
+												Surveys
+												<span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
 											</a>
 										</li>
 									}
@@ -115,10 +138,10 @@
 							}
 							else
 							{
-								if (!(ViewBag.IsLogin ?? false))
+								/*if (!(ViewBag.IsLogin ?? false))
 								{
 									<li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "Index", "Home")</li>
-								}
+								}*/
 							}
 						</ul>
 						@if (!(ViewBag.IsLogin ?? false))

@@ -20,7 +20,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Meeting Name:</label>
 				<div class="col-sm-9">
-					@Html.TextBoxFor(x => x.Recurrence.Name, new { @class = "form-control", style = "max-width:600px;width:100%;", placeholder = "Add a name for the meeting..." })
+					@Html.TextBoxFor(x => x.Recurrence.Name, new { @class = "form-control editable", style = "width:100%;", placeholder = "Add a name for the meeting..." })
 				</div>
 			</div>
 
@@ -30,7 +30,7 @@
 					@Html.ListBoxFor(x =>
 					   x.SelectedMembers,
 						Model.PossibleMembers.ToSelectList(x => x.GetNameAndTitle(), x => x.Id).OrderBy(x => x.Text),
-						new { @class = "select2 form-control attendee", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a name..." })
+								 new { @class = "select2 form-control attendee editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a name..." })
 				</div>
 			</div>
 			<div class="form-group">
@@ -39,7 +39,7 @@
 					@Html.ListBoxFor(x =>
 						x.SelectedMeasurables,
 						Model.PossibleMeasurables.ToSelectList(x => x.Title + " (Owner: " + x.AccountableUser.GetName() + ")", x => x.Id).OrderBy(x => x.Text),
-								 new { @class = "select2 form-control measurables", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a measurable..." })
+										  new { @class = "select2 form-control measurables editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a measurable..." })
 				</div>
 			</div>
 			<div class="form-group">
@@ -48,49 +48,56 @@
 					@Html.ListBoxFor(x =>
 						x.SelectedRocks,
 						Model.PossibleRocks.ToSelectList(x => x.ToFriendlyString(), x => x.Id).OrderBy(x => x.Text),
-						new { @class = "select2 form-control rocks", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typeing one of your " + Html.Organization().Settings.RockName + "..." })
+								 new { @class = "select2 form-control rocks editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typeing one of your " + Html.Organization().Settings.RockName + "..." })
 				</div>
 			</div>
 			<hr />
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Segue duration (minutes):</label>
 				<div class="col-sm-9">
-					@Html.TextBox(Html.NameFor(x => x.Recurrence.SegueMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.SegueMinutes), new { @class = "select2 form-control", type = "number", min = "0", step = "any", max = "500" })
+					@Html.TextBox(Html.NameFor(x => x.Recurrence.SegueMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.SegueMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Scorecard duration (minutes):</label>
-				<div class="col-sm-9">					@Html.TextBox(Html.NameFor(x => x.Recurrence.ScorecardMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes), new { @class = "select2 form-control", type = "number", min = "0", step = "any", max = "500" })
+				<div class="col-sm-9">					@Html.TextBox(Html.NameFor(x => x.Recurrence.ScorecardMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
 </div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">@Html.Organization().Settings.RockName Review duration (minutes):</label>
-				<div class="col-sm-9">					@Html.TextBox(Html.NameFor(x => x.Recurrence.RockReviewMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes), new { @class = "select2 form-control", type = "number", min = "0", step = "any", max = "500" })
+				<div class="col-sm-9">					@Html.TextBox(Html.NameFor(x => x.Recurrence.RockReviewMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
 </div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Headlines duration (minutes):</label>
-				<div class="col-sm-9">					@Html.TextBox(Html.NameFor(x => x.Recurrence.HeadlinesMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes), new { @class = "select2 form-control", type = "number", min = "0", step = "any", max = "500" })
+				<div class="col-sm-9">					@Html.TextBox(Html.NameFor(x => x.Recurrence.HeadlinesMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
 </div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Todo List duration (minutes):</label><div class="col-sm-9">
-					@Html.TextBox(Html.NameFor(x => x.Recurrence.TodoListMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes), new { @class = "select2 form-control", type = "number", min = "0", step = "any", max = "500" })
+					@Html.TextBox(Html.NameFor(x => x.Recurrence.TodoListMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">IDS duration (minutes):</label>
-				<div class="col-sm-9">@Html.TextBox(Html.NameFor(x => x.Recurrence.IDSMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.IDSMinutes), new { @class = "select2 form-control", type = "number", min = "0", step = "any", max = "500" })</div>
+				<div class="col-sm-9">@Html.TextBox(Html.NameFor(x => x.Recurrence.IDSMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.IDSMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Conclusion duration (minutes):</label>
-				<div class="col-sm-9">@Html.TextBox(Html.NameFor(x => x.Recurrence.ConclusionMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes), new { @class = "select2 form-control", type = "number", min = "0", step = "any", max = "500" })</div>
+				<div class="col-sm-9">@Html.TextBox(Html.NameFor(x => x.Recurrence.ConclusionMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-3 control-label">Default Todo Owner:</label>
-				<div class="col-sm-9"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list"></select></div>
+				<label class="col-sm-3 control-label">Default To-do Owner:</label>
+				<div class="col-sm-9"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list editable"></select></div>
 			</div>
-
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Show Individual To-do Completion:</label>
+				<div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.IncludeIndividualTodos, new { @class = "editable", style = "margin-top: 11px;" })</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Show Aggregate To-do Completion:</label>
+				<div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.IncludeAggregateTodoCompletion, new { @class = "editable", style = "margin-top: 11px;" })</div>
+			</div>
 
 			@Html.SecuredHiddenFor(x => x.Recurrence.Id)
 			@Html.SecuredHiddenFor(x => x.Recurrence.CreateTime)
@@ -115,6 +122,22 @@
 	<script>
 
 		var selectedTodoList = @Model.Recurrence.DefaultTodoOwner;
+		var changes = false;
+
+		$("form").on("submit", function() {
+			changes = false;
+		});
+
+		$(function() {
+
+			$(".editable").on("keyup", function() {
+				changes = true;
+			});
+
+			$(".editable").on("change", function() {
+				changes = true;
+			});
+		});
 
 		function updateTodoList() {
 			$(".default-todo-list").html("");
@@ -170,6 +193,13 @@
 				return false;
 			}*/
 		});
+
+		window.onbeforeunload = function(f) {
+			if (changes) {
+				return "Leave without saving?";
+			}
+
+		};
 
 		$(function() {
 			updateTodoList();

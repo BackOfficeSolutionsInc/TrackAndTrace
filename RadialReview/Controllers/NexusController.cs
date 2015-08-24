@@ -166,11 +166,11 @@ namespace RadialReview.Controllers
 		        if (x.Count() > 1)
 			        r += " (x" + x.Count() + ")";
 		        return r;
-	        });
+	        }).ToList();
 
 	        var sent = "Sent " + output.Sent + " email".Pluralize(output.Sent) + ".";
-
-            return Json(ResultObject.Create(true, String.Join("<br/>",sent,errors)), JsonRequestBehavior.AllowGet);
+			errors.Insert(0,sent);
+            return Json(ResultObject.Create(true, String.Join("<br/>",errors)), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Manager)]

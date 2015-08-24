@@ -23,6 +23,8 @@ namespace RadialReview.Models.Angular.Scorecard
 			Target = measurable.Goal;
 			Direction = measurable.GoalDirection;
 			Modifiers = measurable.UnitType;
+			if (measurable.Id < 0)
+				Disabled = true;
 		}
 
 		public AngularMeasurable()
@@ -39,5 +41,6 @@ namespace RadialReview.Models.Angular.Scorecard
 		public UnitType? Modifiers { get; set; }
 
 		public int? Ordering { get; set; }
+		public bool? Disabled { get; set; }
 	}
 }

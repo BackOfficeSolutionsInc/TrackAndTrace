@@ -27,6 +27,9 @@ namespace RadialReview.Models
             Id = UserOrganizationModel.ADMIN_ID,
         };
 
+		public virtual long? _ClientTimestamp { get; set; }
+
+
         public virtual TempUserModel TempUser { get; set; }
         public virtual String EmailAtOrganization { get; set; }
 		public virtual Boolean ManagerAtOrganization { get; set; }
@@ -280,6 +283,7 @@ namespace RadialReview.Models
 			return this;
 
 		}
+
 	}
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
@@ -295,8 +299,8 @@ namespace RadialReview.Models
             Map(x => x.AttachTime);
             Map(x => x.CreateTime);
             Map(x => x.DetachTime);
-            Map(x => x.DeleteTime);
-	        Map(x => x.EmailAtOrganization);
+			Map(x => x.DeleteTime);
+			Map(x => x.EmailAtOrganization);
 			/*Map(x => x.NumRocks);
 			Map(x => x.NumRoles);
 			Map(x => x.NumMeasurables);*/

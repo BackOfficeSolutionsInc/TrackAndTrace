@@ -7,24 +7,51 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Properties;
 
 namespace RadialReview.Models.Survey
 {
 	public enum SurveyQuestionType
 	{
-		Invalid=0,
-		Scale	
+		Invalid = 0,
+		//Scale,
+		Radio,
+		Feedback
+	}
+
+	public static class SurveyQuestionTypeExtensions
+	{
+		public static String GetPartialView(this SurveyQuestionType type,string kind="Result")
+		{
+			switch(type){
+				//case SurveyQuestionType.Scale: return "ScaleResult";
+				case SurveyQuestionType.Radio: return "Radio5" + kind;
+				case SurveyQuestionType.Feedback: return "Feedback" + kind;
+				default: throw new ArgumentOutOfRangeException("SurveyQuestionType "+type);
+			}
+		}
 	}
 
 	public class SurveyContainerModel : ILongIdentifiable, IHistorical
 	{
 		public virtual long Id { get; set; }
+		public virtual string LookupId { get; set; }
+		public virtual bool OpenEnded { get; set; }
 		public virtual DateTime CreateTime { get; set; }
-		public virtual DateTime? DeleteTime{ get; set; }
-		public virtual UserOrganizationModel Creator { get; set; }
-		public virtual OrganizationModel Organization { get; set; }
+		public virtual DateTime? DeleteTime { get; set; }
+		public virtual long CreatorId { get; set; }
+		public virtual UserOrganizationModel _Creator { get; set; }
+		public virtual long OrgId { get; set; }
+		public virtual OrganizationModel _Organization { get; set; }
 		public virtual SurveyQuestionGroupModel QuestionGroup { get; set; }
 		public virtual SurveyRespondentGroupModel RespondentGroup { get; set; }
+		public virtual DateTime? IssueDate { get; set; }
+		[Required]
+		[Display(Name = "Email Subject")]
+		public virtual String EmailSubject{ get; set; }
+		[Required]
+		[Display(Name = "Email Body")]
+		public virtual String EmailBody { get; set; }
 		[Required]
 		public virtual string Name { get; set; }
 
@@ -32,6 +59,9 @@ namespace RadialReview.Models.Survey
 			CreateTime = DateTime.UtcNow;
 			QuestionGroup = new SurveyQuestionGroupModel();
 			RespondentGroup = new SurveyRespondentGroupModel();
+			EmailBody = EmailStrings.DefaultSurvey_Body;
+			EmailSubject = EmailStrings.DefaultSurvey_Subject;
+			LookupId = Guid.NewGuid().ToString().Replace("-", "").ToLower();
 		}
 
 		public class MMap : ClassMap<SurveyContainerModel> 
@@ -40,10 +70,16 @@ namespace RadialReview.Models.Survey
 			{
 				Id(x => x.Id);
 				Map(x => x.Name);
+				Map(x => x.LookupId);
+				Map(x => x.OpenEnded);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
-				References(x => x.Creator).Not.Nullable().ReadOnly();
-				References(x => x.Organization).Not.Nullable().ReadOnly();
+				Map(x => x.OrgId);
+				Map(x => x.CreatorId);
+				Map(x => x.IssueDate);
+				Map(x => x.EmailBody).Length(10000);
+				Map(x => x.EmailSubject).Length(10000);
+				//References(x => x.Creator).Not.Nullable().ReadOnly();
 				References(x => x.QuestionGroup).Not.Nullable().Not.LazyLoad();
 				References(x => x.RespondentGroup).Not.Nullable().Not.LazyLoad();
 			}
@@ -58,7 +94,7 @@ namespace RadialReview.Models.Survey
 		public virtual bool Locked { get; set; }
 		public virtual long? CopiedFrom { get; set; }
 
-		public virtual OrganizationModel Organization { get; set; }
+		public virtual long OrgId { get; set; }
 		public virtual string Name { get; set; }
 
 		public virtual List<SurveyQuestionModel> _Questions { get; set; }
@@ -79,7 +115,8 @@ namespace RadialReview.Models.Survey
 				Map(x => x.Name);
 				Map(x => x.Locked);
 				Map(x => x.CopiedFrom);
-				References(x => x.Organization).Not.Nullable().ReadOnly();
+				Map(x => x.OrgId);
+				//References(x => x.Organization).Not.Nullable().ReadOnly();
 			}
 		}
 	}
@@ -92,7 +129,7 @@ namespace RadialReview.Models.Survey
 		public virtual bool Locked { get; set; }
 		public virtual long? CopiedFrom { get; set; }
 		public virtual string Name { get; set; }
-		public virtual OrganizationModel Organization { get; set; }
+		public virtual long OrganizationId { get; set; }
 
 		public virtual List<SurveyRespondentModel> _Respondents { get; set; }
 
@@ -112,7 +149,7 @@ namespace RadialReview.Models.Survey
 				Map(x => x.DeleteTime);
 				Map(x => x.Locked);
 				Map(x => x.CopiedFrom);
-				References(x => x.Organization).Not.Nullable().ReadOnly();
+				Map(x => x.OrganizationId);
 			}
 		}
 	}
@@ -121,6 +158,7 @@ namespace RadialReview.Models.Survey
 	{
 		public virtual long Id { get; set; }
 		public virtual bool Locked { get; set; }
+		[EmailAddress(ErrorMessage = "Invalid Email Address")]
 		public virtual string Email { get; set; }
 		public virtual long? CopiedFrom { get; set; }
 		public virtual DateTime CreateTime { get; set; }
@@ -164,11 +202,12 @@ namespace RadialReview.Models.Survey
 		public virtual SurveyQuestionType QuestionType { get; set; }
 		public virtual SurveyQuestionGroupModel ForQuestionGroup { get; set; }
 		public virtual long ForQuestionGroupId { get; set; }
+		public virtual int _Order { get; set; }
 
 		public SurveyQuestionModel()
 		{
 			CreateTime = DateTime.UtcNow;
-			QuestionType = SurveyQuestionType.Scale;
+			QuestionType = SurveyQuestionType.Radio;
 		}
 		public class MMap : ClassMap<SurveyQuestionModel>
 		{
@@ -180,6 +219,7 @@ namespace RadialReview.Models.Survey
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.CopiedFrom);
+				Map(x => x._Order);
 				Map(x => x.ForQuestionGroupId).Column("ForQuestionGroupId");
 				Map(x => x.QuestionType).CustomType<SurveyQuestionType>();
 				References(x => x.ForQuestionGroup)

@@ -10,11 +10,11 @@ namespace RadialReview.Models.Enums
 {
 	public enum LessGreater
 	{
-		[Display(Name = "Less than")]
+		[Display(Name = "<")]
 		[Description("Less than")]
 		LessThan = -1,
 
-		[Display(Name = "Greater than")]
+		[Display(Name = "≥")]
 		[Description("Greater than")]
 		GreaterThan = 1,
 	}

@@ -33,14 +33,23 @@ namespace RadialReview.Controllers
 		{
 
 			VtoModel model;
-			if (id == 0)
-				model = new VtoModel();
-			else
+			if (id == 0){
+				 model =VtoAccessor.CreateVTO(GetUser(), GetUser().Organization.Id);
+				return RedirectToAction("Edit", new{id = model.Id});
+			}else{
 				model = VtoAccessor.GetVTO(GetUser(), id);
-			
+			}
 
-		    return View(model);
+
+			return View(model);
 	    }
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Data(long id)
+		{
+			var model = VtoAccessor.GetAngularVTO(GetUser(), id);
+			return Json(model,JsonRequestBehavior.AllowGet);
+		}
 
     }
 }

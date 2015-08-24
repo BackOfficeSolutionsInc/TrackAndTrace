@@ -1,6 +1,7 @@
 ﻿@{
 	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
 	var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
+	
 }
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak members-list-container">
 	<div @(headers ? "ng-controller=L10Controller" : "")>
@@ -18,10 +19,10 @@
 					<td style="min-width: 5px;"></td>
 					<td class="picture-column"><profile-image user="member"></profile-image></td>
 					<td style="width:100%"><a href="/User/Details/{{member.Id}}">{{member.Name}}</a></td>
-					<td class="rocks-column click-column" ng-click="functions.showModal('Edit Roles: '+ member.Name,'/Roles/Modal/'+member.Id,'/Roles/Modal?refresh=false&silent=true')">Roles</td>
-					<td class="rocks-column click-column" ng-click="functions.showModal('Edit @(rockName): '+ member.Name,'/Rocks/Modal/'+member.Id,'/Rocks/Modal?refresh=false&silent=true')">@(rockName)</td>
-					<td class="measurables-column click-column" ng-click="functions.showModal('Edit Measurables: '+ member.Name,'/Measurable/Modal/'+member.Id,'/Measurable/Modal?refresh=false&silent=true')">Measurables</td>
-					<td style="min-width: 15px;"></td>
+					<td ng-show="member.Managing" class="rocks-column click-column" ng-click="functions.showModal('Edit Roles: '+ member.Name,'/Roles/Modal/'+member.Id,'/Roles/Modal?refresh=false&silent=true')">Roles</td>
+					<td ng-show="member.Managing" class="rocks-column click-column" ng-click="functions.showModal('Edit @(rockName): '+ member.Name,'/Rocks/Modal/'+member.Id,'/Rocks/Modal?refresh=false&silent=true')">@(rockName)</td>
+					<td ng-show="member.Managing" class="measurables-column click-column" ng-click="functions.showModal('Edit Measurables: '+ member.Name,'/Measurable/Modal/'+member.Id,'/Measurable/Modal?refresh=false&silent=true')">Measurables</td>
+					<td ng-show="member.Managing" style="min-width: 15px;"></td>
 				</tr>
 			</table>
 			<div class="gray" style="padding: 30px 15px;" ng-show="(model.Members | transform:this).length==0">

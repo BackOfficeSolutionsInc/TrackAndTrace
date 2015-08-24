@@ -910,6 +910,16 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region VTO
+		public PermissionsUtility CreateVTO(long organizationId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			if (IsManager(organizationId))
+				return this;
+			throw new PermissionsException("Cannot create a VTO");
+		}
+
 		public PermissionsUtility ViewVTO(long vtoId)
 		{
 			if (IsRadialAdmin(caller))
@@ -1136,7 +1146,7 @@ namespace RadialReview.Utilities
 				return this;
 
 
-			return ManagesUserOrganization(rock.ForUserId, false);
+			return ManagesUserOrganizationOrSelf(rock.ForUserId);
 		}
 		#endregion
 
@@ -1148,26 +1158,55 @@ namespace RadialReview.Utilities
 
 			var survey = session.Get<SurveyContainerModel>(surveyId);
 
-			if (IsManagingOrganization(survey.Organization.Id))
+			if (IsManagingOrganization(survey.OrgId))
 				return this;
-			if (survey.Creator.Id == caller.Id)
+			if (survey.CreatorId == caller.Id)
 				return this;
 			throw new PermissionsException("Cannot view this survey");
 		}
 
+		public PermissionsUtility CreateSurvey()
+		{
+			if (IsManagingOrganization(caller.Organization.Id)){
+				return this;
+			}
+
+			if (caller.Organization.Settings.EmployeesCanCreateSurvey)
+				return this;
+
+			if (caller.Organization.Settings.ManagersCanCreateSurvey && IsManager(caller.Organization.Id)){
+				return this;
+			}
+
+			throw new PermissionsException("Cannot create survey");
+
+		}
+
+
 		public PermissionsUtility EditSurvey(long surveyId)
 		{
+			var survey = session.Get<SurveyContainerModel>(surveyId);
+
+			if (survey != null){
+				session.Evict(survey);
+				if (survey.QuestionGroup != null)
+					session.Evict(survey.QuestionGroup);
+				if (survey.RespondentGroup != null)
+					session.Evict(survey.RespondentGroup);
+			}
+			if (surveyId == 0)
+				return CreateSurvey();
+
+
 			if (IsRadialAdmin(caller))
 				return this;
 
-			if (surveyId == 0 && IsManagingOrganization(caller.Organization.Id))
-				return this;
+			if(survey.IssueDate!=null)
+				throw new PermissionsException("Cannot edit survey.");
 
-			var survey = session.Get<SurveyContainerModel>(surveyId);
-
-			if (IsManagingOrganization(survey.Organization.Id))
+			if (IsManagingOrganization(survey.OrgId))
 				return this;
-			if (survey.Creator.Id == caller.Id)
+			if (survey.CreatorId == caller.Id)
 				return this;
 			throw new PermissionsException("Cannot view this survey");
 		}
@@ -1510,5 +1549,7 @@ namespace RadialReview.Utilities
 		{
 			return caller;
 		}
+
+	
 	}
 }

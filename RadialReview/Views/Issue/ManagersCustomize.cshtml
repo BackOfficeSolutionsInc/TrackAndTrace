@@ -102,6 +102,9 @@
 	function startIssueOrg() {
 		$("form").unbind("submit");
 		$("form").submit(function (event) {
+			//event.preventDefault();
+
+			issuing = true;
 			$("#submitButton").prop("disabled", true);
 			if ($("#ReviewName").val().trim() == "") {
 				alert("You must specify a @Html.ReviewName().ToLower() name.");
@@ -133,6 +136,11 @@
 				$("#submitButton").prop("disabled", false);
 				return;
 			}
+			///$("form").submit();
+			//issuing = false;
+			//window.location = "/Reviews/Index";
+
+
 			return;
 		});
 

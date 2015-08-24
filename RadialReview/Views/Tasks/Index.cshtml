@@ -4,7 +4,7 @@
 @{
 	ViewBag.Title = "Tasks";
 	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.Subheading = "All your pending tasks.";
+	//ViewBag.Subheading = "All your pending tasks.";
 }
 
 @section top{
@@ -64,7 +64,7 @@
 											var txt = "TODO";
 										}
 										@if (t.DueDate < DateTime.UtcNow){
-											clzz = "label label-overdue";
+											clzz = "label label-primary";
 											txt = "OVERDUE";
 										}
 										<span class="@clzz" style="display: block;">@txt</span>

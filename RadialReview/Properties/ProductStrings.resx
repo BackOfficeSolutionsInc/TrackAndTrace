@@ -122,7 +122,7 @@
     <comment>http://localhost:2200/</comment>
   </data>
   <data name="Company" xml:space="preserve">
-    <value>Radial</value>
+    <value>Traction Tools</value>
   </data>
   <data name="CompanyName" xml:space="preserve">
     <value>Radial Inc.</value>
@@ -131,7 +131,7 @@
     <value>http://radialreview.com/</value>
   </data>
   <data name="ProductName" xml:space="preserve">
-    <value>Radial Review</value>
+    <value>Traction Tools</value>
   </data>
   <data name="PurchaseEmail" xml:space="preserve">
     <value>clay.upton@radialreview.com</value>

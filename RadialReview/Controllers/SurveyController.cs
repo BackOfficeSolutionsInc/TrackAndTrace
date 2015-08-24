@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models.Json;
 using RadialReview.Models.Survey;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -41,11 +44,12 @@ namespace RadialReview.Controllers
 	        SurveyContainerModel container;
 	        if (id == 0){
 		        container = new SurveyContainerModel(){
-			        Organization = GetUser().Organization,
-					Creator = GetUser()
+					OrgId = GetUser().Organization.Id,
+					CreatorId = GetUser().Id
 		        };
 	        }else{
 		        container = SurveyAccessor.GetSurveyContainer(GetUser(), id);
+				_PermissionsAccessor.Permitted(GetUser(),x=>x.EditSurvey(id));
 	        }
 
 			return View(container);
@@ -59,33 +63,97 @@ namespace RadialReview.Controllers
 				throw new PermissionsException("This id does not exist.");
 			}
 
-			var takeSurvey = SurveyAccessor.LoadSurvey(id,Request.UserAgent,Request.UserHostAddress);
+			var takeSurvey = SurveyAccessor.LoadSurvey(id,Request.UserAgent,Request.UserHostAddress,Request.UrlReferrer.NotNull(x=>x.ToString()));
 
 			return View(takeSurvey);
 		}
 
-		[Access(AccessLevel.Any)]
+
+	    [Access(AccessLevel.Any)]
+	    public ActionResult OpenEnded(string id,string respondent=null,bool embedded=false)
+	    {
+			var takeSurvey = SurveyAccessor.LoadOpenEndedSurvey(respondent, id, Request.UserAgent, Request.UserHostAddress, Request.UrlReferrer.NotNull(x=>x.ToString()));
+		    if (embedded){
+			    return PartialView("Embedded", takeSurvey);
+			}
+			return View("Take", takeSurvey);
+	    }
+
+	    [Access(AccessLevel.Any)]
 		
-		public JsonResult Set(string id,int? value)
+		public JsonResult Set(string id,int? value=null,string str=null)
 		{
-			SurveyAccessor.SetValue(id,value);
+			SurveyAccessor.SetValue(id,value,str);
 			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
 		}
 
+		[Access(AccessLevel.UserOrganization)]
+	    public ActionResult Results(long id)
+	    {
+			//_PermissionsAccessor.Permitted(GetUser(),x=>x.ViewSurveyContainer(id));
+			//var survey= SurveyAccessor.GetSurveyContainer(GetUser(), id);
+			var results = SurveyAccessor.GetResults(GetUser(), id);
+			return View(results);
+	    }
 
 		[HttpPost]
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Edit(SurveyContainerModel model)
 		{
-			ValidateValues(model,x=>x.Id,x=>x.Organization.Id,x=>x.CreateTime,x=>x.DeleteTime,x=>x.Creator.Id);
+			ValidateValues(model, x => x.Id, x => x.OrgId, x => x.CreateTime, x => x.DeleteTime, x => x.CreatorId);
 			if (ModelState.IsValid){
 				SurveyAccessor.EditSurvey(GetUser(), model);
+				if (Request.Form["Submit"].Contains("Issue"))
+				{
+					if (!model.QuestionGroup._Questions.Any())
+						ModelState.AddModelError("Questions", "You must add at least one question.");
+					if (!model.RespondentGroup._Respondents.Any() &&  !model.OpenEnded)
+						ModelState.AddModelError("Questions", "You must add at least one respondent or it must be embeddable.");
+
+					if (ModelState.IsValid)
+						SurveyAccessor.IssueSurvey(GetUser(), model.Id);
+					else
+						return View(model);
+				}
 				return RedirectToAction("Index");
 			}
 			return View(model);
 		}
 
+		[HttpPost]
 		[Access(AccessLevel.Manager)]
+		public ActionResult ImportRespondents(string emails)
+		{
+			var sb = new StringBuilder();
+			foreach (var e in emails.Split('\n'))
+			{
+				var ee = e.Trim();
+				if (!String.IsNullOrWhiteSpace(ee))
+				{
+					sb.Append(ViewUtility.RenderPartial("~/Views/Survey/_SurveyRespondentRow.cshtml", new SurveyRespondentModel() { Email = ee }));
+				}
+			}
+			return Content(sb.ToString());
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult ImportQuestions(string questions)
+		{
+			var sb = new StringBuilder();
+			foreach (var e in questions.Split('\n'))
+			{
+				var ee = e.Trim();
+				if (!String.IsNullOrWhiteSpace(ee))
+				{
+					sb.Append(ViewUtility.RenderPartial("~/Views/Survey/_SurveyQuestionRow.cshtml", new SurveyQuestionModel() { Question = ee,QuestionType = SurveyQuestionType.Radio}));
+				}
+			}
+			return Content(sb.ToString());
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
 		public ActionResult BlankQuestionEditorRow()
 		{
 			return PartialView("_SurveyQuestionRow", new SurveyQuestionModel());

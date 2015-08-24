@@ -30,6 +30,7 @@ namespace RadialReview.Models.Angular.Scorecard
 		public AngularMeasurable Measurable { get; set; } 
 		public DateTime? DateEntered { get; set; }
 		public decimal? Measured { get; set; }
+		public bool? Disabled { get; set; }
 	
 	}
 }

@@ -147,7 +147,7 @@
     <comment>[productName]</comment>
   </data>
   <data name="JoinOrganizationUnderManager_Body" xml:space="preserve">
-    <value>&lt;p&gt;{0},&lt;br/&gt; Please join {1} on {4} by click the following link:&lt;/p&gt;
+    <value>&lt;p&gt;{0},&lt;br/&gt; Please join {1} on {4} by clicking the following link:&lt;/p&gt;
 &lt;br&gt; 
     &lt;a href="{2}"&gt;{3}&lt;/a&gt;
 &lt;br /&gt;&lt;br /&gt;If you are prompted for an access code, please use the following:
@@ -274,5 +274,11 @@ The {2} Team</value>
   <data name="TodoReminder_Subject" xml:space="preserve">
     <value>{0}</value>
     <comment>[subject]</comment>
+  </data>
+  <data name="DefaultSurvey_Body" xml:space="preserve">
+    <value>You have a new survey to complete. Please complete the survey here:</value>
+  </data>
+  <data name="DefaultSurvey_Subject" xml:space="preserve">
+    <value>You have a new survey to complete</value>
   </data>
 </root>

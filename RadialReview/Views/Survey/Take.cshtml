@@ -1,81 +1,84 @@
 ﻿@model RadialReview.Models.Survey.SurveyTake
 @{
-	ViewBag.
+	ViewBag.Title = Model.Container.Name;
 }
-	  
 
-		
-<h1>@Model.Container.Name</h1>
-<hr />
-
-@for(var i=0;i<Model._Answers.Count;i++){
+@using (Html.BeginScripts())
+{
 	
+	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
+	<script src="~/Scripts/survey/submitAnswers.js"></script>
+}
+<div class="review">
 	<div class="row">
-		<div class="col-md-8">
-			<h4>@Model._Answers[i].Question.Question</h4>
+		<div class="col-md-6">
+			<hgroup class="">
+				<h2>@Model.Container.Name: <small>Survey</small></h2>
+			</hgroup>
 		</div>
-		<div class="col-md-4">
-			<table class="answerTable">
-				<tr>
-					<td>N/A</td>
-					<th>1</th>
-					<th>2</th>
-					<th>3</th>
-					<th>4</th>
-					<th>5</th>
-				</tr>
-				<tr>
-					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == null ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value=""/></td>
-					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 1 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="1" /></td>
-					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 2 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="2"/></td>
-					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 3 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="3"/></td>
-					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 4 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="4"/></td>
-					<td><input class="answer" type="radio" @(Model._Answers[i].Answer == 5 ? "checked" : "") data-old="" name="answer_@(Model._Answers[i].Id)" value="5"/></td>
-				</tr>
-			</table>
+		<div class="col-md-6">
 		</div>
 	</div>
+	<div class="clearfix"></div>
 	<hr />
-}
 
-@using (Html.BeginScripts()){
-	<script>
-		
-		$(".answer").on("change",function() {
-			var name = $(this).prop("name").substr(7);
-			var old = $(this).val();					
-			debugger;
-			$.ajax({
-				url: "/Survey/Set/"+name+"?value="+$(this).val(),
-				success:function(data) {
-					debugger;
-					showJsonAlert(data);
-				},
-				error:function(d) {
-					debugger;
-					var $radios = $('input:radio[name='+name+']');
-					if($radios.is(':checked') === false) {
-						$radios.filter('[value='+old+']').prop('checked', true);
-					}
-				}
-			});
-		});
+	@for (var i = 0; i < Model._Answers.Count; i++)
+	{
+		<div class="row question-group">
+			<div class="col-md-6 alignCenter">
+				<h3>@Model._Answers[i].Question.Question</h3>
+			</div>
+			<div class="col-md-6">
+				<div class="">
+					@Html.Partial("partial/" + Model._Answers[i].GetPartialView(), Model._Answers[i])
+				</div>
+			</div>
+		</div>
+	}
+</div>
 
-
-	</script>
-}
-
-@using (Html.BeginStyles()){
+@using (Html.BeginStyles())
+{
 	<style>
+		h2 {
+			margin: 0;
+		}
+
+		.question-group:not(:last-child) {
+			border-bottom: 1px solid #F3F3F3;
+			margin-bottom: 20px;
+		}
+
+		input[type=radio] {
+			width: 40px;
+		}
+
+		.question-group {
+		}
+
 		.answerTable {
-			width:170px;
 			text-align: center;
 			position: relative;
 			top: -15px;
+			margin-left: auto;
+			margin-right: auto;
+			left: -25px;
 		}
 
-		.answerTable th,.answerTable td {
-			text-align: center;
-		}
+			.answerTable label {
+				width: 100%;
+				height: 100%;
+				cursor: pointer;
+				left: -1px;
+				position: relative;
+			}
+
+			.answerTable input {
+				cursor: pointer;
+			}
+
+			.answerTable th, .answerTable td {
+				text-align: center;
+			}
 	</style>
 }

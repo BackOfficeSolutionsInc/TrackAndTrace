@@ -1,0 +1,92 @@
+﻿@model RadialReview.Models.Survey.SurveyTake
+@{
+	ViewBag.Title = Model.Container.Name;
+	ViewBag.Layout = null;
+}
+
+<style>
+	body {
+		background-color: #FDFDFD;
+		color: #444;
+	}
+
+	hr {
+		border-top: 1px solid #C1C1C1;
+		border-bottom: none;
+	}
+
+	h2 {
+		margin: 0;
+	}
+
+	.question-group:not(:last-child) {
+		border-bottom: 1px solid #F3F3F3;
+		margin-bottom: 20px;
+	}
+
+	input[type=radio] {
+		width: 40px;
+	}
+
+	.question-group {
+	}
+
+	.answerTable {
+		text-align: center;
+		position: relative;
+		top: -15px;
+		margin-left: auto;
+		margin-right: auto;
+		left: -25px;
+	}
+
+		.answerTable label {
+			width: 100%;
+			height: 100%;
+			cursor: pointer;
+			left: -1px;
+			position: relative;
+		}
+
+		.answerTable input {
+			cursor: pointer;
+		}
+
+		.answerTable th, .answerTable td {
+			text-align: center;
+		}
+</style>
+<body>
+	<div class="review">
+		<div class="row">
+			<div class="col-md-6">
+				<hgroup class="">
+					<h2>@Model.Container.Name: <small>Survey</small></h2>
+				</hgroup>
+			</div>
+			<div class="col-md-6">
+			</div>
+		</div>
+		<div class="clearfix"></div>
+		<hr />
+
+		@for (var i = 0; i < Model._Answers.Count; i++)
+		{
+			<div class="row question-group">
+				<div class="col-md-6 alignCenter">
+					<h3>@Model._Answers[i].Question.Question</h3>
+				</div>
+				<div class="col-md-6">
+					<div class="">
+						@Html.Partial("partial/" + Model._Answers[i].GetPartialView(), Model._Answers[i])
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</body>
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/Main/radial.js"></script>
+<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
+<script src="~/Scripts/survey/submitAnswers.js"></script>

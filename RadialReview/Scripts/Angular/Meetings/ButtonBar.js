@@ -16,7 +16,7 @@
 				" data-method=\"createissue\""+
 				" data-meeting=\"{{meeting}}\""+
 				" data-recurrence=\"{{recurrence}}\">"+
-					"<span class=\"glyphicon glyphicon-pushpin\"><\/span> New Issue"+
+					"<span class=\"icon fontastic-icon-pinboard\"><\/span> New Issue"+
 				"<\/div>"+
 				"<div class=\"btn btn-default btn-xs todoModal\""+
 				" data-method=\"createtodo\""+

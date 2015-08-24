@@ -1,88 +1,92 @@
 ﻿@model RadialReview.Models.ViewModels.OrgPositionsViewModel
 
 @{
-    ViewBag.Title = "Positions";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Positions";
+	ViewBag.Title = "Positions";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Page = "Positions";
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>Manage</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>Manage</h1>
+	</div>
 }
 
 @section header{
-    @Html.Partial("Partial/manageheader")
+	@Html.Partial("Partial/manageheader")
 }
 @section hints{
-    @Html.AlertBoxDismissable("You can edit your organization's positions from this view. You can then add questions to everyone in that position. To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
+	@Html.AlertBoxDismissable("You can edit your organization's positions from this view. You can then add questions to everyone in that position. To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
 }
 
 @using (var v = Html.BeginStyles())
 {
-    <style>
-        .viewEdit {
-            opacity: .1;
-        }
+	<style>
+		.viewEdit {
+			opacity: .1;
+		}
 
-        span:hover .viewEdit {
-            opacity: 1;
-        }
-    </style>
+		span:hover .viewEdit {
+			opacity: 1;
+		}
+	</style>
 }
 
 <div class="panel panel-primary">
-    @if (Model.CanEdit)
-    {
-        <div class="panel-heading-button">
-            <button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Position", "/Position/Modal", "/Position/Modal")">Add</button>
-        </div>
-    }
-    <div class="panel-heading">
-        <h3 class="panel-title">Manage Positions</h3>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-condensed">
-            <tr>
-                <th>Job Title</th>
-                @*<th style="">Job Class</th>
-				<th style="width:1px" class="">Questions</th>*@
-                <th style="width:1px" class="">People</th>
-                <th style="width:1px" class="">Template</th>
-            </tr>
-            @foreach (var p in Model.Positions.OrderBy(x => x.Name))
-            {
-                <tr>
-	                <td>
-		                @p.Name
-		                @if (Model.CanEdit){
-			                <span onclick="@Html.ShowModal("Edit Position", "/Position/Modal/" + p.Id, "/Position/Modal")" class="editButton clickable glyphicon glyphicon-pencil alignCenter"></span>
-		                }
-	                </td>
-	                <td class="alignCenter">
-		                @p.NumPeople
-	                </td>
-	                <td class="alignCenter">
-		                @if (p.TemplateId == null){
+	@if (Model.CanEdit)
+	{
+		<div class="panel-heading-button">
+			<button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Position", "/Position/Modal", "/Position/Modal")">Add</button>
+		</div>
+	}
+	<div class="panel-heading">
+		<h3 class="panel-title">Manage Positions</h3>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-condensed">
+			<thead>
+				<tr>
+					<th>Job Title</th>
+					@*<th style="">Job Class</th>
+						<th style="width:1px" class="">Questions</th>*@
+					<th style="width:1px" class="">People</th>
+					<th style="width:1px" class="">Template</th>
+				</tr>
+			</thead>
+			@foreach (var p in Model.Positions.OrderBy(x => x.Name))
+			{
+				<tr>
+					<td>
+						@p.Name
+						@if (Model.CanEdit)
+						{
+							<span onclick="@Html.ShowModal("Edit Position", "/Position/Modal/" + p.Id, "/Position/Modal")" class="editButton clickable glyphicon glyphicon-pencil alignCenter"></span>
+						}
+					</td>
+					<td class="alignCenter">
+						@p.NumPeople
+					</td>
+					<td class="alignCenter">
+						@if (p.TemplateId == null)
+						{
 							<a href="@Url.Action("Create","UserTemplate",new {type="position",id=p.Id})">Create</a>
 						}
 						else
 						{
 							<a href="@Url.Action("Edit","UserTemplate",new {id=p.TemplateId})">Edit</a>
 						}
-	                </td>
-                    @*<td>@p.SimilarTo</td>
-					<td class="">
-						<a href="@Url.Action("Edit", "Responsibilities", new { id=p.Id})" class="fullWidth">
-							<span>
-								@Html.ViewOrEdit(Model.CanEdit) @p.NumAccountabilities
-							</span>
-						</a>
-					</td>*@
-                </tr>
-            }
+					</td>
+					@*<td>@p.SimilarTo</td>
+						<td class="">
+							<a href="@Url.Action("Edit", "Responsibilities", new { id=p.Id})" class="fullWidth">
+								<span>
+									@Html.ViewOrEdit(Model.CanEdit) @p.NumAccountabilities
+								</span>
+							</a>
+						</td>*@
+				</tr>
+			}
 
-        </table>
-    </div>
+		</table>
+	</div>
 </div>

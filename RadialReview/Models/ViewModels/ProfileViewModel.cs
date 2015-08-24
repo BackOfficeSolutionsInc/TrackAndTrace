@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace RadialReview.Models.ViewModels
 {
@@ -11,6 +12,11 @@ namespace RadialReview.Models.ViewModels
         public String LastName { get; set; }
         public String ImageUrl { get;set; }
 
+		public bool EmailTodos { get; set; }
+		public int? SendTodoTime { get; set; }
+
         public ManageUserViewModel Manage { get; set; }
+
+	    public List<SelectListItem> PossibleTimes { get; set; }
     }
 }

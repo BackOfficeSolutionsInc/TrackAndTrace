@@ -8,6 +8,10 @@ html {
 	overflow: auto;
 }
 
+body {
+	background-color: #F7F7F7;
+}
+
 .component {
 	/* margin: 5px 10px; */
 	background-color: white;
@@ -196,6 +200,7 @@ h3 {
 
 .page-item.current > * {
 	font-weight: bold;
+	/*color: #EF7622;*/
 }
 
 .agenda ol {

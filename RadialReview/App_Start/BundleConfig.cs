@@ -44,6 +44,29 @@ namespace RadialReview
 					  "~/Scripts/bootstrap-datepicker.js"));
 
 			bundles.Add(new StyleBundle("~/Content/css").Include(
+					"~/Content/components/posneg.css",
+					"~/Content/components/tristate.css",
+					"~/Content/components/fivestate.css",
+					"~/Content/components/table.css",
+					"~/Content/components/checktree.css",
+					"~/Content/components/rockstate.css",
+					"~/Content/components/approvereject.css",
+					"~/Content/components/CompleteIncomplete.css",
+					"~/Content/select2-bootstrap.css",
+					"~/Content/select2.css",
+					"~/Content/datepicker.css",
+					"~/Content/bootstrap/bootstrap.css",
+					//"~/Content/Bootstrap-tabs.css",
+					"~/Content/bootstrap.vertical-tabs.css",
+					"~/Content/slider.css",
+					"~/Content/site.css",
+					"~/Content/Fonts.css",
+					"~/Content/jquery.qtip.css"));
+
+			//customStyles.Transforms.Add(new LessTransform());
+
+			/*
+			bundles.Add(new StyleBundle("~/Content/css").Include(
 					  "~/Content/components/posneg.css",
 					  "~/Content/components/tristate.css",
 					  "~/Content/components/fivestate.css",
@@ -62,7 +85,7 @@ namespace RadialReview
 					  "~/Content/site.css",
 					  "~/Content/Fonts.css",
 					  "~/Content/jquery.qtip.css"));
-
+			*/
 
 			bundles.Add(new StyleBundle("~/Content/ClientDetails").Include(
 					"~/Content/Chart/Scatter.v2.css",
@@ -120,7 +143,7 @@ namespace RadialReview
 			};
 
 
-			
+
 			bundles.Add(new ScriptBundle("~/bundles/meeting")
 				.Include(angularHelpers_Scripts)
 				.Include(
@@ -128,6 +151,12 @@ namespace RadialReview
 					"~/Scripts/Angular/Meetings/ButtonBar.js",
 					"~/Scripts/Angular/Meetings/L10App.js",
 					"~/Scripts/Angular/Meetings/L10Controller.js"
+				));
+			bundles.Add(new ScriptBundle("~/bundles/vto")
+				.Include(angularHelpers_Scripts)
+				.Include(
+					"~/Scripts/Angular/VTO/VtoApp.js",
+					"~/Scripts/Angular/VTO/VtoController.js"
 				));
 			bundles.Add(new StyleBundle("~/styles/meeting")
 				.Include(angularHelpers_Styles));

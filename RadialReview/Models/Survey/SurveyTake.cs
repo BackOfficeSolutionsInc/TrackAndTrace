@@ -21,6 +21,7 @@ namespace RadialReview.Models.Survey
 
 		public virtual String UserAgent { get; set; }
 		public virtual String IPAddress { get; set; }
+		public virtual string Referer { get; set; }
 		
 		public SurveyTake()
 		{
@@ -34,6 +35,7 @@ namespace RadialReview.Models.Survey
 				Id(x => x.Id);
 				Map(x => x.UserAgent);
 				Map(x => x.IPAddress);
+				Map(x => x.Referer);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 
@@ -44,21 +46,32 @@ namespace RadialReview.Models.Survey
 				References(x => x.Respondent).Column("RespondentId").Not.Nullable().ReadOnly();
 			}
 		}
+
 	}
 
 	public class SurveyTakeAnswer : IStringIdentifiable, IHistorical
 	{
 		public virtual String Id { get; set; }
 		public virtual int? Answer { get; set; }
+		public virtual String AnswerString { get; set; }
+
+		public virtual DateTime? AnswerTime { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual long SurveyTakeId { get; set; }
+		public virtual long SurveyContainerId { get; set; }
 		public virtual SurveyTake SurveyTake { get; set; }
 		public virtual long QuestionId { get; set; }
 		public virtual SurveyQuestionModel Question { get; set; }
+		public virtual int _Order { get; set; }
 		public SurveyTakeAnswer()
 		{
 			CreateTime = DateTime.UtcNow;
+		}
+
+		public virtual String GetPartialView()
+		{
+			return Question.QuestionType.GetPartialView("Take");
 		}
 
 		public class MMap : ClassMap<SurveyTakeAnswer>
@@ -70,6 +83,10 @@ namespace RadialReview.Models.Survey
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.Answer);
+				Map(x => x.AnswerTime);
+				Map(x => x.AnswerString).Length(10000);
+				Map(x => x.SurveyContainerId);
+				Map(x => x._Order);
 				Map(x => x.SurveyTakeId).Column("SurveyTake_id");
 				References(x => x.SurveyTake)
 					.Column("SurveyTake_id")

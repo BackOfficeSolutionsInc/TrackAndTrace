@@ -19,6 +19,9 @@ namespace RadialReview.Models.L10
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
 
+		public virtual bool IncludeIndividualTodos { get; set; }
+		public virtual bool IncludeAggregateTodoCompletion { get; set; }
+
 		public virtual IList<L10Recurrence_Attendee> _DefaultAttendees { get; set; }
 		public virtual IList<L10Recurrence_Measurable> _DefaultMeasurables { get; set; }
 		public virtual IList<L10Recurrence_Rocks> _DefaultRocks { get; set; }
@@ -54,6 +57,8 @@ namespace RadialReview.Models.L10
 			TodoListMinutes		= 5;
 			IDSMinutes			= 60;
 			ConclusionMinutes	= 5;
+			IncludeIndividualTodos = true;
+			IncludeAggregateTodoCompletion = true;
 		}
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>
@@ -77,6 +82,8 @@ namespace RadialReview.Models.L10
 				Map(x => x.ConclusionMinutes);
 
 				Map(x => x.DefaultTodoOwner);
+				Map(x => x.IncludeIndividualTodos);
+				Map(x => x.IncludeAggregateTodoCompletion);
 
 				Map(x => x.OrganizationId).Column("OrganizationId");
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();
@@ -210,7 +217,5 @@ namespace RadialReview.Models.L10
 				return Tuple.Create(Measurable.Id, L10Recurrence.Id, DeleteTime);
 			}
 		}
-
-
 	}
 }

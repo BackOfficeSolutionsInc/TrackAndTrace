@@ -15,6 +15,10 @@
 		@Html.CheckBoxFor(x => x.Settings.EnableReview, new { @class = "checkbox" })
 	</div>
 	<div class="form-group">
+		@Html.LabelFor(x => x.Settings.EnableSurvey)
+		@Html.CheckBoxFor(x => x.Settings.EnableSurvey, new { @class = "checkbox" })
+	</div>
+	<div class="form-group">
 		@Html.LabelFor(x => x.Settings.Branding)
 		@Html.EnumDropDownListFor(x => x.Settings.Branding, new { @class = "form-control" })
 	</div>

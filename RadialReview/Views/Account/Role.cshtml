@@ -1,39 +1,46 @@
 ﻿@model List<RadialReview.Models.UserOrganizationModel>
 @{
-    ViewBag.Title = "Change Role";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Change Role";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section top{
+	<div class="jumbotron">
+		<h1>Select Role</h1>
+	</div>
+}
+
+
 <div class="panel panel-primary">
-    <!-- Default panel contents -->
-    <div class="panel-heading"><b>Choose a role:</b></div>
-    <!-- Table -->
-    <table class="table">
+	<!-- Default panel contents -->
+	<div class="panel-heading"><b>Choose a role:</b></div>
+	<!-- Table -->
+	<table class="table">
+		@if (ViewBag.Admin)
+		{
+			<tr>
+				<td width="10px;"></td>
+				<td>
+					<form method="get" action="/Account/SetRole/">
+						<input type="number" name="id" />
+						<input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
+						<input type="submit" />
+					</form>
+				</td>
+			</tr>
+		}
+		@foreach (var userOrg in Model)
+		{
+			<tr>
+				<td width="10px;"></td>
+				<td>
+					<a href="@(Url.Action("SetRole","Account", new { id = userOrg.Id, ReturnUrl=ViewBag.ReturnUrl }))">@userOrg.GetTitles().Surround("", " at ")@(userOrg.Organization.Name) <span style="color:gray">@(userOrg.ManagingOrganization ? " (Admin)" : "")</span></a>
+				</td>
+			</tr>
+		}
 
-    @foreach (var userOrg in Model)
-    {
-        <tr>
-            <td width="10px;"></td>
-            <td>
-                <a href="@(Url.Action("SetRole","Account", new { id = userOrg.Id, ReturnUrl=ViewBag.ReturnUrl }))">@userOrg.GetTitles().Surround(""," at ")@(userOrg.Organization.Name) <span style="color:gray">@(userOrg.ManagingOrganization?" (Admin)":"")</span></a>
-            </td>
-        </tr>
-    }
 
-       @if(ViewBag.Admin)
-       {
-           <tr>
-               <td width="10px;"></td>
-               <td>
-                   <form method="get" action="/Account/SetRole/">
-                       <input type="number" name="id"/>
-                       <input type="hidden" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
-                       <input type="submit" />
-                   </form>
-               </td>
-           </tr>
-       }
-    
 
-    </table>
+
+	</table>
 </div>

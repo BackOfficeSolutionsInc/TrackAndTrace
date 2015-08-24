@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.Todo;
 
 namespace RadialReview.Models.L10.VM
 {
@@ -10,9 +11,12 @@ namespace RadialReview.Models.L10.VM
 		public List<L10Meeting> AllMeetings { get; set; }
 
 		public int IssuesSolved { get; set; }
+		public int TodoCompleted { get; set; }
 
-		public int TodoComplete { get; set; }
+		public List<TodoModel> TodosCreated { get; set; }
 
+		public DateTime? StartTime { get; set; }
+		public DateTime? EndTime { get; set; }
 
 	}
 }

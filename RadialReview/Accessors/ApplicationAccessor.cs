@@ -206,15 +206,17 @@ namespace RadialReview.Accessors
 	    {
 		    var found =s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == DAILY_EMAIL_TODO_TASK).List().ToList();
 		    if (!found.Any()){
-			    var b = DateTime.UtcNow.Date.AddHours(10).AddMinutes(3);
-			    s.Save(new ScheduledTask(){
-					MaxException = 1,
-				    Url = "/Scheduler/EmailTodos/",
-					NextSchedule = TimeSpan.FromDays(1),
-					Fire = b,
-					FirstFire =b,
-				    TaskName = DAILY_EMAIL_TODO_TASK,
-			    });
+			    for (var i = 0; i < 23; i++){
+				    var b = DateTime.UtcNow.Date.AddHours(i).AddMinutes(3);
+				    s.Save(new ScheduledTask(){
+					    MaxException = 1,
+					    Url = "/Scheduler/EmailTodos?currentTime="+i,
+					    NextSchedule = TimeSpan.FromDays(1),
+					    Fire = b,
+					    FirstFire = b,
+					    TaskName = DAILY_EMAIL_TODO_TASK,
+				    });
+			    }
 		    }
 	    }
 

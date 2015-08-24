@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Antlr.Runtime.Tree;
 using FluentNHibernate.Mapping;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -37,6 +38,8 @@ namespace RadialReview.Models
         /*
         public ICollection<UserLogin> Logins { get; set; }
         */
+		public virtual int? SendTodoTime { get; set; }
+
         //[NotMapped]
         private string _ImageUrl { get; set; }
 
@@ -55,6 +58,7 @@ namespace RadialReview.Models
         {
             UserOrganization = new List<UserOrganizationModel>();
             Hints = true;
+	        SendTodoTime = 10;
         }
 
         public virtual long? GetCurrentRole()
@@ -83,6 +87,7 @@ namespace RadialReview.Models
 				Map(x => x.UserName).Index("UserName_IDX");
 				Map(x => x.FirstName).Not.LazyLoad();
 				Map(x => x.LastName).Not.LazyLoad();
+				Map(x => x.SendTodoTime);
 				Map(x => x.PasswordHash);
 				Map(x => x.Hints);
 				Map(x => x.CurrentRole);

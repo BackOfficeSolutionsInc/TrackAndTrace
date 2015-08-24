@@ -13,13 +13,19 @@
 	<style>
 		input.due-date {
 			border: none;
-			width: 75px;
+			width: 85px;
 			text-decoration: none;
 			color: #767F99;
 			text-align: center;
 			background-color: rgba(0, 0, 0, 0);
 			cursor: pointer;
 		}
+
+		.todo-selected{
+			background-color: #FFFFE8;
+			border-top: 1px solid #E8E8A8;
+			border-bottom: 1px solid #E8E8A8;
+        }
 	</style>
 }
 
@@ -61,11 +67,7 @@
                 scrollTop: $("#todo_" + location.queryString.todo).offset().top - $(".navbar").height() - 16
             }, 500);
 
-            $("#todo_" + location.queryString.todo).css({
-                "background-color": "#FFFFE8",
-                "border-top": "1px solid #E8E8A8",
-                "border-bottom": "1px solid #E8E8A8"
-            });
+            $("#todo_" + location.queryString.todo).addClass("todo-selected");
         }   
 		setTimeout(function() {
 		    $(".scroll-right").scrollLeft(4000);

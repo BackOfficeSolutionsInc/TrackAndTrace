@@ -222,10 +222,13 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	//var sevenMin = moment().subtract('days', 6).toDate();
 	//var sevenMax = moment().add('days', 2).toDate();
 
-	var sevenMin = moment().subtract('days',89).toDate();
+	var sevenMin = moment().subtract('days',7).toDate();
 	var sevenMax = moment().add('days', 9).toDate();
 
-	$scope.date = { startDate: sevenMin, endDate: sevenMax };
+
+	if (!$scope.model)
+		$scope.model = {};
+	$scope.model.date = { startDate: sevenMin, endDate: sevenMax };
 
 	$scope.now = moment();
 
@@ -233,13 +236,13 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 
 	$scope.opts = {
 		ranges: {
-			'Incomplete': [moment().add('days', 1), moment().add('days', 1)],
-			'Today': [moment().subtract('days', 1), moment().add('days', 1)],
-			'Last 7 Days': [moment().subtract('days', 6), moment().add('days',1)],
-			'Last 14 Days': [moment().subtract('days', 13), moment().add('days', 1)],
-			'Last 30 Days': [moment().subtract('days', 29), moment().add('days', 1)],
+			'Incomplete': [moment().add('days', 1), moment().add('days', 9)],
+			'Today': [moment().subtract('days', 1), moment().add('days', 9)],
+			'Last 7 Days': [moment().subtract('days', 6), moment().add('days',9)],
+			'Last 14 Days': [moment().subtract('days', 13), moment().add('days', 9)],
+			'Last 30 Days': [moment().subtract('days', 29), moment().add('days', 9)],
 			//'Last 60 Days': [moment().subtract('days', 59), moment().add('days',1)],
-			'Last 90 Days': [sevenMin, sevenMax]
+			'Last 90 Days': [moment().subtract('days', 89), moment().add('days',9)]// [sevenMin, sevenMax]
 		},
 		separator: '  to  ',
 		showDropdowns: true,
@@ -264,7 +267,10 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	};
 
 	$scope.functions.sendUpdate = function (self) {
-		$http.post("/L10/Update" + self.Type + "?connectionId=" + $scope.connectionId, self).error(function (data) {
+		var dat = angular.copy(self);
+		var _clientTimestamp = new Date().getTime();
+
+		$http.post("/L10/Update" + self.Type + "?connectionId=" + $scope.connectionId+"&_clientTimestamp="+_clientTimestamp, dat).error(function (data) {
 			showJsonAlert(data, true, true);
 		});
 	};

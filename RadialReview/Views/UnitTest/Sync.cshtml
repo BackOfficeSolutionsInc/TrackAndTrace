@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewBag.Title = "Sync";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Sync</h2>
+
+<button onclick="testSync()">Test Sync</button>
+
+
+@using (Html.BeginScripts())
+{
+	<script src="~/Scripts/Main/radial.js"></script>
+	<script src="~/Scripts/L10/L10Scorecard.js"></script>
+	<script>
+		function testSync() {
+			var baseTime = new Date().getTime();
+			var offset = 100;
+			var recur = 3;
+
+			///Test A
+			var data = {
+				ordering: [3029, 3393, 3392,3030, 3391,3394,3395],
+				recurrenceId: recur,
+				_clientTimestamp: baseTime
+			};
+			$.ajax({
+				async: false,
+				url: "/L10/UpdateMeasurableOrdering",
+				method: "POST",
+				data: $.param(data,true),
+				success:function(d){showJsonAlert(d);}
+			});
+
+			///Test B
+			data._clientTimestamp = baseTime + offset * 2;
+			data.ordering = [3395,3029, 3393, 3392,3030, 3391,3394];
+			
+			$.ajax({
+				async: false,
+				url: "/L10/UpdateMeasurableOrdering",
+				method: "POST",
+				data: $.param(data,true),
+				success:function(d){showJsonAlert(d);}
+			});
+			
+			///Test C
+			data._clientTimestamp = baseTime + offset * 1;
+			data.ordering = [3029, 3395, 3393, 3392,3030, 3391,3394];
+			
+			$.ajax({
+				async: false,
+				url: "/L10/UpdateMeasurableOrdering",
+				method: "POST",
+				data: $.param(data,true),
+				success:function(d){showJsonAlert(d);}
+			});
+		}
+	</script>
+}

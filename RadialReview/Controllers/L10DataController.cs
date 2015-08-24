@@ -11,7 +11,11 @@ using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Hubs;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Meeting;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Json;
+using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Scorecard;
@@ -46,6 +50,60 @@ namespace RadialReview.Controllers
 
 			return Json(ResultObject.SilentSuccess(output), JsonRequestBehavior.AllowGet);
 		}
+		#region AddRock
+		public class AddRockVm
+		{
+			public long RecurrenceId { get; set; }
+			public List<SelectListItem> AvailableRocks { get; set; }
+			public long SelectedRock { get; set; }
+			/*public List<SelectListItem> AvailableMembers { get; set; }
+			public long SelectedAccountableMember { get; set; }*/
+			//public long SelectedAdminMember { get; set; }
+			public List<RockModel> Rocks { get; set; }
+
+		}
+
+		// GET: L10Data
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult AddRock(long id)
+		{
+			var recurrenceId = id;
+			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+
+			var allRocks = RockAccessor.GetPotentialMeetingRocks(GetUser(), recurrenceId, true);
+			//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+
+			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+			var already = recurrence._DefaultRocks.Select(x => x.ForRock.Id).ToList();
+
+			var addableRocks= allRocks
+				.Where(x => members.Contains(x.AccountableUser.Id) || members.Contains(x.ForUserId))
+				.Where(x => !already.Contains(x.Id))
+				.ToList();
+
+			//var addableMeasurables = allMeasurables.Except(, x => x.Id);
+
+			var am = new AddRockVm()
+			{
+				AvailableRocks = addableRocks.ToSelectList(x => x.ToFriendlyString(), x => x.Id),
+				//AvailableMembers = allMembers.ToSelectList(x => x.GetName(), x => x.Id),
+				RecurrenceId = recurrenceId,
+			};
+
+			am.AvailableRocks.Add(new SelectListItem() { Text = "<Create Rock>", Value = "-3" });
+
+			return PartialView(am);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult AddRock(AddRockVm model)
+		{
+			ValidateValues(model, x => x.RecurrenceId);
+			L10Accessor.CreateRock(GetUser(), model.RecurrenceId, model);
+			return Json(ResultObject.SilentSuccess());
+		}
+#endregion
 
 	    public class AddMeasurableVm
 		{
@@ -141,7 +199,7 @@ namespace RadialReview.Controllers
 			switch (name.ToLower()){
 				case "target": target = value.ToDecimal(); break;
 				case "direction":	direction = (LessGreater)Enum.Parse(typeof(LessGreater), value); break;
-				case "unittype": unitType = (UnitType)Enum.Parse(typeof(UnitType), value); break;
+				case "unittype":	unitType = (UnitType)Enum.Parse(typeof(UnitType), value); break;
 				case "title":		title = value; break;
 				case "admin":		adminId = value.ToLong(); break;
 				case "accountable": accountableId = value.ToLong(); break;
@@ -203,12 +261,20 @@ namespace RadialReview.Controllers
 	    }
 
 		[HttpPost]
-	    [Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization)]
 		public JsonResult UpdateMeasurableOrdering(MeasurableOrdering model)
-	    {
-			L10Accessor.SetMeasurableOrdering(GetUser(), model.recurrenceId, model.ordering.ToList());
-		    return Json(ResultObject.SilentSuccess());
-	    }
+		{
+			L10Accessor.SetMeetingMeasurableOrdering(GetUser(), model.recurrenceId, model.ordering.ToList());
+			return Json(ResultObject.SilentSuccess());
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateRecurrenceMeasurableOrdering(MeasurableOrdering model)
+		{
+			L10Accessor.SetRecurrenceMeasurableOrdering(GetUser(), model.recurrenceId, model.ordering.ToList());
+			return Json(ResultObject.SilentSuccess());
+		}
 
 		#endregion
 
@@ -366,16 +432,59 @@ namespace RadialReview.Controllers
 		[HttpPost]
 		public JsonResult EditNote(NoteVM model)
 		{
-			var cache =new Cache();
+			var cache = new Cache();
 			cache.Get(CacheKeys.LAST_SEND_NOTE_TIME);
 
-			if (cache.Get(CacheKeys.LAST_SEND_NOTE_TIME) == null || model.SendTime > (long)cache.Get(CacheKeys.LAST_SEND_NOTE_TIME)){
-				cache.Push(CacheKeys.LAST_SEND_NOTE_TIME,model.SendTime,LifeTime.Session);
+			if (cache.Get(CacheKeys.LAST_SEND_NOTE_TIME) == null || model.SendTime > (long)cache.Get(CacheKeys.LAST_SEND_NOTE_TIME))
+			{
+				cache.Push(CacheKeys.LAST_SEND_NOTE_TIME, model.SendTime, LifeTime.Session);
 				L10Accessor.EditNote(GetUser(), model.NoteId, model.Contents, model.Name, model.ConnectionId);
 				return Json(ResultObject.SilentSuccess(model).NoRefresh());
 			}
 			return Json(ResultObject.SilentSuccess("stale").NoRefresh());
 		}
+
+	    public class DeleteNoteVM
+	    {
+		    public long NoteId { get; set; }
+	    }
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult DeleteNote(long id)
+		{
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Note(id));
+			return PartialView(new DeleteNoteVM() { NoteId = id });
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult DeleteNote(DeleteNoteVM model)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, GetUser()).ViewL10Note(model.NoteId);
+					var n=s.Get<L10Note>(model.NoteId);
+					n.DeleteTime = DateTime.UtcNow;
+
+					var notes = s.QueryOver<L10Note>().Where(x => x.DeleteTime == null && x.Recurrence.Id == n.Recurrence.Id).List().ToList();
+
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(n.Recurrence.Id)).update(new AngularRecurrence(n.Recurrence.Id){
+						Notes = AngularList.Create(
+							AngularListType.ReplaceAll,
+							notes.Select(x=>new AngularMeetingNotes(x))
+						)
+					});
+					s.Update(n);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+
 
 
 		#endregion

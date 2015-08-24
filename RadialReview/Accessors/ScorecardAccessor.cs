@@ -12,6 +12,7 @@ using RadialReview.Models;
 using RadialReview.Models.L10;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Synchronize;
 
 namespace RadialReview.Accessors
 {
@@ -32,6 +33,39 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+		public static List<MeasurableModel> GetVisibleMeasurables(ISession s, PermissionsUtility perms, long organizationId, bool loadUsers)
+		{
+
+
+			if (perms.IsPermitted(x => x.ViewOrganizationScorecard(organizationId))){
+				return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
+			}else{
+				return GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers);
+			}
+
+		}
+
+		public static List<MeasurableModel> GetVisibleMeasurables(UserOrganizationModel caller, long organizationId, bool loadUsers)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetVisibleMeasurables(s, perms, organizationId, loadUsers);
+				}
+			}
+		}
+
+		public static List<MeasurableModel> GetOrganizationMeasurables(ISession s, PermissionsUtility perms, long organizationId, bool loadUsers)
+		{
+
+			perms.ViewOrganizationScorecard(organizationId);
+			var measurables = s.QueryOver<MeasurableModel>();
+			if (loadUsers)
+				measurables = measurables.Fetch(x => x.AccountableUser).Eager;
+			return measurables.Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
+
+		}
 
 		public static List<MeasurableModel> GetOrganizationMeasurables(UserOrganizationModel caller, long organizationId, bool loadUsers)
 		{
@@ -39,11 +73,10 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(organizationId);
-					var measurables = s.QueryOver<MeasurableModel>();
-					if (loadUsers)
-						measurables = measurables.Fetch(x => x.AccountableUser).Eager;
-					return measurables.Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
+
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetOrganizationMeasurables(s, perms, caller.Id, loadUsers);
+
 				}
 			}
 		}
@@ -54,17 +87,37 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					var perms =PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
 					var measurables = s.QueryOver<MeasurableModel>();
 					if (loadUsers)
 						measurables = measurables.Fetch(x => x.AccountableUser).Eager;
 
-					var userIds = L10Accessor.GetL10Recurrence(s,perms,recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
 
 					return measurables.Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUserId).IsIn(userIds).List().ToList();
 				}
 			}
-		} 
+		}
+
+
+
+		public static List<MeasurableModel> GetUserMeasurables(ISession s, PermissionsUtility perms, long userId, bool loadUsers)
+		{
+			perms.ViewUserOrganization(userId, false);
+			var found = s.QueryOver<MeasurableModel>()
+				.Where(x => x.AccountableUserId == userId && x.DeleteTime == null)
+				.Fetch(x => x.AdminUser).Eager
+				.List().ToList();
+			if (loadUsers)
+			{
+				foreach (var f in found)
+				{
+					var a = f.AccountableUser;
+				}
+			}
+			return found;
+		}
+
 
 
 		public static List<MeasurableModel> GetUserMeasurables(UserOrganizationModel caller, long userId)
@@ -73,15 +126,8 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
-					var found = s.QueryOver<MeasurableModel>()
-						.Where(x => x.AccountableUserId == userId && x.DeleteTime == null)
-						.Fetch(x=>x.AdminUser).Eager
-						.List().ToList();
-					foreach (var f in found){
-						var a= f.AccountableUser;
-					}
-					return found;
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetUserMeasurables(s, perms, userId, true);
 				}
 			}
 		}
@@ -112,7 +158,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}*/
-		
+
 		public static void EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -131,6 +177,19 @@ namespace RadialReview.Accessors
 						r.OrganizationId = orgId;
 						s.SaveOrUpdate(r);
 					}
+					var now = DateTime.UtcNow;
+
+					var toDelete = measurables.Where(x => x.DeleteTime != null).Select(x=>x.Id).ToList();
+					if (toDelete.Any()){
+						var recurMeasurables=s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+							.Where(x => x.DeleteTime == null)
+							.WhereRestrictionOn(x => x.Measurable.Id).IsIn(toDelete)
+							.List();
+						foreach (var m in recurMeasurables){
+							m.DeleteTime = now;
+							s.Update(m);
+						}
+					}
 
 					s.SaveOrUpdate(user);
 					user.UpdateCache(s);
@@ -141,7 +200,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static List<ScoreModel> GetUserScoresIncomplete(UserOrganizationModel caller, long userId,DateTime? now=null)
+		public static List<ScoreModel> GetUserScoresIncomplete(UserOrganizationModel caller, long userId, DateTime? now = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -149,7 +208,7 @@ namespace RadialReview.Accessors
 				{
 					PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
 					var nowPlus = (now ?? DateTime.UtcNow).Add(TimeSpan.FromDays(1));
-					var scorecards = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == userId && x.DateDue < nowPlus && x.DateEntered == null && x.DeleteTime==null).List().ToList();
+					var scorecards = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == userId && x.DateDue < nowPlus && x.DateEntered == null && x.DeleteTime == null).List().ToList();
 
 					scorecards = scorecards.Where(x => x.Measurable.DeleteTime == null).ToList();
 
@@ -176,22 +235,27 @@ namespace RadialReview.Accessors
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction()){
+				using (var tx = s.BeginTransaction())
+				{
 
 					var oldScores = scores.ToList();
-					
-					scores =s.QueryOver<ScoreModel>().WhereRestrictionOn(x => x.Id).IsIn(scores.Select(x => x.Id).ToArray()).List().ToList();
+
+					scores = s.QueryOver<ScoreModel>().WhereRestrictionOn(x => x.Id).IsIn(scores.Select(x => x.Id).ToArray()).List().ToList();
 
 					var now = DateTime.UtcNow;
 
 					var uid = scores.EnsureAllSame(x => x.AccountableUserId);
 					PermissionsUtility.Create(s, caller).EditUserScorecard(uid);
-					foreach (var x in scores){
+					foreach (var x in scores)
+					{
 						x.Measured = oldScores.FirstOrDefault(y => y.Id == x.Id).NotNull(y => y.Measured);
-						if (x.Measured == null){
+						if (x.Measured == null)
+						{
 							x.DateEntered = null;
 							x.DeleteTime = now;
-						}else{
+						}
+						else
+						{
 							x.DeleteTime = null;
 							x.DateEntered = now;
 						}
@@ -205,7 +269,7 @@ namespace RadialReview.Accessors
 		}
 
 
-		public static ScoreModel UpdateScoreInMeeting(ISession s,PermissionsUtility perms, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom)
+		public static ScoreModel UpdateScoreInMeeting(ISession s, PermissionsUtility perms, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom)
 		{
 			var now = DateTime.UtcNow;
 			DateTime? nowQ = now;
@@ -216,6 +280,8 @@ namespace RadialReview.Accessors
 
 			if (score != null && score.DeleteTime != null)
 			{
+				SyncUtil.EnsureStrictlyAfter(perms.GetCaller(),s,SyncAction.UpdateScore(scoreId));
+
 				//Editable in this meeting?
 				var ms = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
 					.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.Measurable.Id == score.MeasurableId)
@@ -246,11 +312,12 @@ namespace RadialReview.Accessors
 				week = week.StartOfWeek(DayOfWeek.Sunday);
 
 				//See if we can find it given week.
-				score = existingScores.OrderBy(x=>x.Id).FirstOrDefault(x => (x.ForWeek == week));
+				score = existingScores.OrderBy(x => x.Id).FirstOrDefault(x => (x.ForWeek == week));
 
 				if (score != null)
 				{
 					//Found it with false id
+					SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(score.Id));
 					score.Measured = value;
 					score.DateEntered = (value == null) ? null : nowQ;
 					s.Update(score);
@@ -341,12 +408,13 @@ namespace RadialReview.Accessors
 			Audit.L10Log(s, perms.GetCaller(), recurrenceId, "UpdateScoreInMeeting", score.NotNull(x => x.Measurable.NotNull(y => y.Title)) + " updated to " + value);
 			return score;
 		}
-		
-		public static ScoreModel UpdateScoreInMeeting(UserOrganizationModel caller, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value,string dom)
+
+		public static ScoreModel UpdateScoreInMeeting(UserOrganizationModel caller, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction()){
+				using (var tx = s.BeginTransaction())
+				{
 
 					var perms = PermissionsUtility.Create(s, caller);
 					var output = UpdateScoreInMeeting(s, perms, recurrenceId, scoreId, week, measurableId, value, dom);
@@ -359,11 +427,12 @@ namespace RadialReview.Accessors
 		}
 
 
-		public static ScoreModel GetScoreInMeeting(UserOrganizationModel caller, long scoreId,long recurrenceId)
+		public static ScoreModel GetScoreInMeeting(UserOrganizationModel caller, long scoreId, long recurrenceId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction()){
+				using (var tx = s.BeginTransaction())
+				{
 					var perms = PermissionsUtility.Create(s, caller);
 					var meeting = L10Accessor._GetCurrentL10Meeting(s, perms, recurrenceId);
 					var score = s.Get<ScoreModel>(scoreId);

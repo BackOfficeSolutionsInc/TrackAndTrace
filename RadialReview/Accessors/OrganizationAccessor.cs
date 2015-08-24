@@ -342,7 +342,7 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).EditOrganization(organizationId);
+                    PermissionsUtility.Create(s, caller).EditTeam(0).ViewOrganization(organizationId);
 
                     /*var existing = s.QueryOver<OrganizationPositionModel>()
                         .Where(x => x.Organization.Id == organizationId && positionId == x.Position.Id)
@@ -378,6 +378,8 @@ namespace RadialReview.Accessors
 																			bool? managersCanRemoveUsers = null,
 																			bool? managersCanEditSelf = null,
 																			bool? employeesCanEditSelf = null,
+																			bool? managersCanCreateSurvey = null,
+																			bool? employeesCanCreateSurvey = null,
 																			string rockName = null,
 																			string timeZoneId = null,
 																			DayOfWeek? weekStart=null
@@ -416,6 +418,12 @@ namespace RadialReview.Accessors
 
 					if (employeesCanEditSelf != null)
 						org.Settings.EmployeesCanEditSelf = employeesCanEditSelf.Value;
+
+					if (employeesCanCreateSurvey != null)
+						org.Settings.EmployeesCanCreateSurvey = employeesCanCreateSurvey.Value;
+
+					if (managersCanCreateSurvey!= null)
+						org.Settings.ManagersCanCreateSurvey = managersCanCreateSurvey.Value;
 
 					if (!String.IsNullOrWhiteSpace(rockName))
 						org.Settings.RockName = rockName;
@@ -669,7 +677,7 @@ namespace RadialReview.Accessors
 				.List().ToList();
 		}
 
-	    public void UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10,BrandingType branding)
+		public void UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10, bool enableSurvey, BrandingType branding)
 	    {
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -681,6 +689,7 @@ namespace RadialReview.Accessors
 					org.Settings.EnableL10 = enableL10;
 					org.Settings.EnableReview = enableReview;
 					org.Settings.Branding = branding;
+					org.Settings.EnableSurvey = enableSurvey;
 
 					
 					s.Update(org);
@@ -690,8 +699,7 @@ namespace RadialReview.Accessors
 
 					var all = OrganizationAccessor.GetAllUserOrganizations(s, perms, caller.Organization.Id);
 					var cache = new Cache();
-					foreach (var u in all)
-					{
+					foreach (var u in all){
 						cache.InvalidateForUser(u, CacheKeys.USERORGANIZATION);
 					}
 				}

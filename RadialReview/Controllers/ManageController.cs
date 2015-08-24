@@ -1,4 +1,5 @@
-﻿using RadialReview.Accessors;
+﻿using Microsoft.Ajax.Utilities;
+using RadialReview.Accessors;
 using RadialReview.Engines;
 using RadialReview.Exceptions;
 using RadialReview.Models;
@@ -149,12 +150,10 @@ namespace RadialReview.Controllers
 			return View(model);
 		}
 
-
 		[Access(AccessLevel.Manager)]
 		public ActionResult Organization()
 		{
 			var user = GetUser().Hydrate().Organization().Execute();
-
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 
 			var companyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
@@ -163,6 +162,24 @@ namespace RadialReview.Controllers
 			var companyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 			var companyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 
+			var model = new OrganizationViewModel(){
+				Id = user.Organization.Id,
+				CompanyValues = companyValues,
+				CompanyRocks = companyRocks,
+				CompanyQuestions = companyQuestions,
+			};
+			return View(model);
+		}
+
+
+		[Access(AccessLevel.Manager)]
+		public ActionResult Advanced()
+		{
+			var user = GetUser().Hydrate().Organization().Execute();
+
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
+
+		
 			var model = new OrganizationViewModel()
 			{
 				Id = user.Organization.Id,
@@ -171,12 +188,13 @@ namespace RadialReview.Controllers
 				StrictHierarchy = user.Organization.StrictHierarchy,
 				ManagersCanEditPositions = user.Organization.ManagersCanEditPositions,
 				ManagersCanRemoveUsers = user.Organization.ManagersCanRemoveUsers,
-				CompanyValues = companyValues,
-				CompanyRocks = companyRocks,
+			
 				SendEmailImmediately = user.Organization.SendEmailImmediately,
 				ManagersCanEditSelf = user.Organization.Settings.ManagersCanEditSelf,
 				EmployeesCanEditSelf = user.Organization.Settings.EmployeesCanEditSelf,
-				CompanyQuestions = companyQuestions,
+				ManagersCanCreateSurvey = user.Organization.Settings.ManagersCanCreateSurvey,
+				EmployeesCanCreateSurvey = user.Organization.Settings.EmployeesCanCreateSurvey,
+				
 				RockName = user.Organization.Settings.RockName,
 				TimeZone = user.Organization.Settings.TimeZoneId,
 				WeekStart = user.Organization.Settings.WeekStart
@@ -189,6 +207,18 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult Organization(OrganizationViewModel model)
 		{
+			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)//.Select(x => x.CompanyValue)
+				.ToList();
+			model.CompanyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+			model.CompanyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public ActionResult Advanced(OrganizationViewModel model)
+		{
 			_OrganizationAccessor.Edit(
 				GetUser(),
 				model.Id,
@@ -200,6 +230,8 @@ namespace RadialReview.Controllers
 				model.ManagersCanRemoveUsers,
 				model.ManagersCanEditSelf,
 				model.EmployeesCanEditSelf,
+				model.ManagersCanCreateSurvey,
+				model.EmployeesCanCreateSurvey,
 				model.RockName,
 				model.TimeZone,
 				model.WeekStart);

@@ -32,11 +32,11 @@
 					@foreach (var a in Model.Recurrence._DefaultAttendees)
 					{
 						<tr>
-							<td ></td>
+							<td style="width: 50%;"></td>
 							<td style="width: 1px;" class="check"><input type="checkbox" checked name="Attendees" value="@a.User.Id" /></td>
 							<td style="width: 1px;" class="pix">@Html.Partial("_ProfilePicture", a.User)</td>
 							<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;" class="name">@a.User.GetName()</td>
-							<td></td>
+							<td style="width: 50%;"></td>
 						</tr>
 					}
 				</table>

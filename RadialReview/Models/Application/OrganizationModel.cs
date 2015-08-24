@@ -47,6 +47,7 @@ namespace RadialReview.Models
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
 
+			public virtual bool EnableSurvey { get; set; }
 			public OrganizationSettings()
 			{
 				TimeZoneId = "Central Standard Time";
@@ -60,6 +61,9 @@ namespace RadialReview.Models
 
 				ManagersCanViewSubordinateL10 = true;
 				ManagersCanEditSubordinateL10 = false;
+
+				EmployeesCanCreateSurvey = false;
+				ManagersCanCreateSurvey = true;
 
 				EnableL10 = false;
 				EnableReview = false;
@@ -89,14 +93,22 @@ namespace RadialReview.Models
 					Map(x => x.ManagersCanEditSelf);
 					Map(x => x.EmployeesCanEditSelf);
 
+					Map(x => x.EmployeesCanCreateSurvey);
+					Map(x => x.ManagersCanCreateSurvey);
+
 					Map(x => x.EnableL10);
 					Map(x => x.EnableReview);
+					Map(x => x.EnableSurvey);
 
 					Map(x => x.RockName);
 
 					Map(x => x.Branding).CustomType<BrandingType>();
 				}
 			}
+
+			public bool EmployeesCanCreateSurvey { get; set; }
+
+			public bool ManagersCanCreateSurvey { get; set; }
 		}
 
 		/// <summary>

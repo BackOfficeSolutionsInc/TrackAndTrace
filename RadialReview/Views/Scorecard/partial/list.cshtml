@@ -5,7 +5,7 @@
                 <div class="clearfix"></div>
 	            <div style="position: relative;" ng-hide="(model.Scorecard|transform:this).Measurables.length==0">
 		            <div class="table-responsive scroll-right" style="min-height: 200px;">
-			            <table id="ScorecardTable" class="scorecard-table">
+			            <table id="ScorecardTable" class="scorecard-table ng-cloak">
 				            <thead>
 					            <tr>
 						            @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
@@ -16,8 +16,8 @@
 						            <th>&nbsp;</th>
 						            <th>&nbsp;</th>
 						            <th>&nbsp;</th>
-						            <th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate,true)" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
-							            {{functions.subtractDays(week.DisplayDate,0) | date:'MM/dd'}}
+						            <th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate,true)" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
+							            {{functions.subtractDays(week.DisplayDate,0) | date:'MMM dd'}}
 						            </th>
 
 					            </tr>
@@ -29,13 +29,13 @@
 						            }
 						            <th class="heading measurable">Measurable</th>
 						            <th class="heading target" colspan="2">Goal</th>
-						            <th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate,true)" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
-							            {{functions.subtractDays(week.DisplayDate,-6) | date:'MM/dd'}}
+						            <th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate,true)" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
+							            {{functions.subtractDays(week.DisplayDate,-6) | date:'MMM dd'}}
 						            </th>
 					            </tr>
 				            </thead>
 				            <tbody>
-					            <tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
+					            <tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['-Ordering']">
 
 						            @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
 						            {
@@ -43,7 +43,7 @@
 							            <td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
 						            }
 						            <td class="measurable first1" title="{{measurable.Name}}">
-							            <span class="inlineEdit"
+							            <span ng-class="{'inlineEdit': measurable.Disabled!=true}"
 							                  data-type="text"
 							                  data-name="title"
 							                  data-measurable="{{measurable.Id}}"
@@ -51,7 +51,8 @@
 							                  data-url="/L10/UpdateArchiveMeasurable">{{measurable.Name}}</span>
 						            </td>
 						            <td class="target direction" data-measurable="{{measurable.Id}}">
-							            <span class="inlineEdit direction_{{measurable.Direction}}"
+							            <span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+											  class="direction_{{measurable.Direction}}"
 							                  data-type="select"
 							                  data-name="direction"
 							                  data-measurable="{{measurable.Id}}"
@@ -62,7 +63,8 @@
 							                  data-value="{{measurable.Direction}}"></span>
 						            </td>
 						            <td class="target value" data-measurable="{{measurable.Id}}">
-							            <span class="inlineEdit modifiers {{measurable.Modifiers}}"
+							            <span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+											  class="modifiers {{measurable.Modifiers}}"
 							                  data-type="number"
 							                  data-name="target"
 							                  data-measurable="{{measurable.Id}}"
@@ -73,8 +75,9 @@
 						            </td>
 
 
-						            <td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',date.startDate,date.endDate)" class="score" ng-class="{current:week.IsCurrentWeek}">
-							            <input data-goal="{{measurable.Target}}"
+						            <td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate)" class="score" ng-class="{current:week.IsCurrentWeek}">
+							            <input ng-class="{'inlineEdit': measurable.Disabled!=true}"
+											   data-goal="{{measurable.Target}}"
 							                   data-goal-dir="{{measurable.Direction}}"
 							                   data-row="{{$parent.$index}}"
 							                   data-col="{{$index}}"
@@ -93,7 +96,7 @@
 				            </tbody>
 			            </table>
 		            </div>
-		            <table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm">
+		            <table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm ng-cloak">
 			            <thead>
 				            <tr>
 					            @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
@@ -123,7 +126,7 @@
 						            <td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
 					            }
 					            <td class="measurable first1" title="{{measurable.Name}}">
-						            <span class="inlineEdit"
+						            <span ng-class="{'inlineEdit': measurable.Disabled!=true}"
 						                  data-type="text"
 						                  data-name="title"
 						                  data-measurable="{{measurable.Id}}"
@@ -131,7 +134,8 @@
 						                  data-url="/L10/UpdateArchiveMeasurable">{{measurable.Name}}</span>
 					            </td>
 					            <td class="target direction" data-measurable="{{measurable.Id}}">
-						            <span class="inlineEdit direction_{{measurable.Direction}}"
+						            <span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+										  class="direction_{{measurable.Direction}}"
 						                  data-type="select"
 						                  data-name="direction"
 						                  data-measurable="{{measurable.Id}}"
@@ -142,7 +146,8 @@
 						                  data-value="{{measurable.Direction}}"></span>
 					            </td>
 					            <td class="target value" data-measurable="{{measurable.Id}}">
-						            <span class="inlineEdit modifiers {{measurable.Modifiers}}"
+						            <span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+										  class="modifiers {{measurable.Modifiers}}"
 						                  data-type="number"
 						                  data-name="target"
 						                  data-measurable="{{measurable.Id}}"

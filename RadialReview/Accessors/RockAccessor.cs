@@ -219,5 +219,23 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+
+		public static List<RockModel> GetPotentialMeetingRocks(UserOrganizationModel caller, long recurrenceId, bool loadUsers)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var rocks = s.QueryOver<RockModel>();
+					if (loadUsers)
+						rocks = rocks.Fetch(x => x.AccountableUser).Eager;
+
+					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+
+					return rocks.Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUser.Id).IsIn(userIds).List().ToList();
+				}
+			}
+		}
 	}
 }

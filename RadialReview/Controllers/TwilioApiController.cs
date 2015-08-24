@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using FluentNHibernate.Conventions;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models;
@@ -35,24 +36,47 @@ namespace RadialReview.Controllers
 	    protected static List<SelectListItem> PossibleActions = new List<SelectListItem>(){new SelectListItem(){Text = "Add an Issue", Value = "issue"}, new SelectListItem(){Text = "Add a To-Do", Value = "todo"}};
 
 		[Access(AccessLevel.UserOrganization)]
-	    public ActionResult Modal(long recurrenceId)
-	    {
-			new PermissionsAccessor().Permitted(GetUser(),x=>x.ViewL10Recurrence(recurrenceId));
+		public ActionResult Modal(long recurrenceId)
+		{
+			new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(recurrenceId));
 
-		    var model = new PhoneVM(){
+			var model = new PhoneVM()
+			{
 				RecurrenceId = recurrenceId,
 				PossibleActions = PossibleActions,
-				PossibleNumbers = PhoneAccessor.GetUnusedCallablePhoneNumbersForUser(GetUser(),GetUser().Id).ToSelectList(x=>x.Number.ToPhoneNumber(),x=>x.Id)
-		    };
-			
+				PossibleNumbers = PhoneAccessor.GetUnusedCallablePhoneNumbersForUser(GetUser(), GetUser().Id).ToSelectList(x => x.Number.ToPhoneNumber(), x => x.Id)
+			};
+
 			return PartialView(model);
-	    }
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult ModalRecurrence()
+		{
+			var meetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false);
+
+			if (!meetings.Any()){
+				throw new PermissionsException("You are not connected to any meetings.");
+			}
+
+			var model = new PhoneVM()
+			{
+				RecurrenceId = 0,
+				PossibleActions = PossibleActions,
+				PossibleNumbers = PhoneAccessor.GetUnusedCallablePhoneNumbersForUser(GetUser(), GetUser().Id).ToSelectList(x => x.Number.ToPhoneNumber(), x => x.Id)
+			};
+			ViewBag.PossibleRecurrences = meetings.ToSelectList(x=>x.Recurrence.Name,x=>x.Recurrence.Id);
+
+
+			return PartialView("Modal",model);
+		}
+
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult Modal(PhoneVM model)
 		{
-			ValidateValues(model,x=>x.RecurrenceId);
+			//ValidateValues(model,x=>x.RecurrenceId);
 			new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(model.RecurrenceId));
 			if(PossibleActions.All(x => x.Value != model.SelectedAction))
 				throw new PermissionsException("Action does not exist.");
