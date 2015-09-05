@@ -1,65 +1,23 @@
-ERROR 2015-08-22 16:54:34,749 [9] BaseController         - Error: [/Scheduler/Reschedule]<<Begin failed with SQL exception>>
-NHibernate.TransactionException: Begin failed with SQL exception ---> MySql.Data.MySqlClient.MySqlException: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.TimeoutException: Timeout in IO operation
-   at MySql.Data.MySqlClient.TimedStream.StopTimer()
-   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
-   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   --- End of inner exception stack trace ---
-   at MySql.Data.MySqlClient.ExceptionInterceptor.Throw(Exception exception)
-   at MySql.Data.MySqlClient.MySqlConnection.Throw(Exception ex)
-   at MySql.Data.MySqlClient.MySqlConnection.HandleTimeoutOrThreadAbort(Exception ex)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
-   at MySql.Data.MySqlClient.Driver.LoadServerProperties(MySqlConnection connection)
-   at MySql.Data.MySqlClient.Driver.Configure(MySqlConnection connection)
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.AdoNet.ConnectionManager.GetConnection()
-   at NHibernate.Impl.SessionImpl.get_Connection()
-   at NHibernate.Transaction.AdoTransaction.Begin(IsolationLevel isolationLevel)
-   --- End of inner exception stack trace ---
-   at NHibernate.Transaction.AdoTransaction.Begin(IsolationLevel isolationLevel)
-   at NHibernate.Transaction.AdoTransaction.Begin()
-   at NHibernate.Impl.SessionImpl.BeginTransaction()
-   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 342
-   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
-ERROR 2015-08-22 22:00:29,660 [19] nUniqueResultException - query did not return a unique result: 20
-ERROR 2015-08-22 22:00:42,291 [98] nUniqueResultException - query did not return a unique result: 20
-ERROR 2015-08-22 23:18:50,083 [42] nitializationException - Initializing[RadialReview.Models.UserModels.UserLookup#455]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserModels.UserLookup#455]-Could not initialize proxy - no Session.
-ERROR 2015-08-22 23:18:50,113 [42] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-ERROR 2015-08-22 23:18:50,126 [42] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-ERROR 2015-08-22 23:18:50,150 [42] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-ERROR 2015-08-22 23:18:50,189 [42] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-ERROR 2015-08-23 00:48:05,872 [45] nitializationException - Initializing[RadialReview.Models.UserModels.UserLookup#455]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserModels.UserLookup#455]-Could not initialize proxy - no Session.
-ERROR 2015-08-23 00:48:05,906 [45] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-ERROR 2015-08-23 00:48:05,919 [45] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-ERROR 2015-08-23 00:48:05,940 [45] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-ERROR 2015-08-23 00:48:05,967 [45] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-ERROR 2015-08-23 01:14:36,099 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
+ERROR 2015-08-23 15:53:38,055 [54] nitializationException - Initializing[RadialReview.Models.UserModels.UserLookup#24]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserModels.UserLookup#24]-Could not initialize proxy - no Session.
+ERROR 2015-08-23 15:53:38,088 [54] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
+ERROR 2015-08-23 15:53:38,101 [54] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
+ERROR 2015-08-23 15:53:38,146 [54] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
+ERROR 2015-08-23 15:53:38,177 [54] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
+INFO  2015-08-25 17:16:58,453 [152] BaseController         - Redirect: [/l10/UpdateScore/31?s=5268&w=1440288000000&m=231&value=1&dom=sc_5268&_clientTimestamp=1440540941727] --> []
+INFO  2015-08-25 17:17:54,360 [152] BaseController         - Redirect: [/l10/UpdateScore/31?s=5268&w=1440288000000&m=231&value=11&dom=sc_5268&_clientTimestamp=1440541031036] --> []
+ERROR 2015-08-29 05:37:05,367 [1] SchemaUpdate           - could not get database metadata
+MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts. ---> System.Net.Sockets.SocketException (0x80004005): No such host is known
+   at System.Net.Dns.GetAddrInfo(String name)
+   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)
+   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)
+   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
+   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.Driver.Open()
    at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
@@ -70,8 +28,14 @@ MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of 
    at NHibernate.Connection.DriverConnectionProvider.GetConnection()
    at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
    at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:14:36,115 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
+ERROR 2015-08-29 05:37:05,398 [1] SchemaUpdate           - could not complete schema update
+MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts. ---> System.Net.Sockets.SocketException (0x80004005): No such host is known
+   at System.Net.Dns.GetAddrInfo(String name)
+   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)
+   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)
+   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
+   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.Driver.Open()
    at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
@@ -82,3 +46,37 @@ MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of 
    at NHibernate.Connection.DriverConnectionProvider.GetConnection()
    at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
    at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+INFO  2015-09-01 00:44:13,065 [15] BaseController         - Login: [/vto] --> [/vto]
+INFO  2015-09-01 01:01:05,238 [52] BaseController         - Organization: [/vto] --> [/vto]
+ERROR 2015-09-04 16:49:22,942 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,210 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,221 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,233 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,245 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,257 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,268 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,284 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,296 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,309 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,321 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,331 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,344 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 16:49:24,356 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 18:00:30,477 [50] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-04 18:00:30,504 [50] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.

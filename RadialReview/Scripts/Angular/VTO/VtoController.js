@@ -111,7 +111,7 @@ function ($scope, $http, $timeout, signalR, vtoDataUrlBase, vtoId, vtoCallback) 
 		removeDeleted($scope.model);
 	}
 
-	var meetingHub = signalR('meetingHub', function (connection, proxy) {
+	var meetingHub = signalR('vtoHub', function (connection, proxy) {
 		console.log('trying to connect to service');
 		$scope.connectionId = connection.id;
 		rejoin(connection, proxy, function () {

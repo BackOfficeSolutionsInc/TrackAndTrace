@@ -452,13 +452,15 @@ var interceptAjax = function (event, request, settings) {
 $(document).ajaxSuccess(interceptAjax);
 $(document).ajaxError(interceptAjax);
 
-$(document).ajaxSend(function (event, jqXHR, ajaxOptions) {
+
+
+$(document).ajaxSend(function (event,jqX,ajaxOptions) {
 	if (ajaxOptions.url == null) {
 		ajaxOptions.url = "";
 	}
 	var date = (new Date().getTime());
 
-	if (ajaxOptions.data && ajaxOptions.data.indexOf("_clientTimestamp")!=-1) {
+	if (typeof (ajaxOptions.data) ==="string" && ajaxOptions.data.indexOf("_clientTimestamp")!=-1) {
 		return;
 		/*var start = ajaxOptions.data.indexOf("_clientTimestamp")+17;
 		debugger;

@@ -38,7 +38,7 @@
 						</div>
 						<div class="col-lg-8">
 							<div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
-							<div class="organzation-name"><span class="title">NAME:</span><input  ng-change="functions.sendUpdate((model| transform:this).Name)" ng-model="(model| transform:this).Name.Data " type="text"> </div>
+							<div class="organzation-name"><span class="title">NAME:</span><input  ng-change="functions.sendUpdate((model| transform:this).Name)" ng-model="(model| transform:this).Name.Data " type="text" ng-model-options="{ debounce: 250 }" > </div>
 							<div class="page-title">VISION</div>
 						</div>
 						<div class="col-lg-1"></div>

@@ -57,9 +57,9 @@ namespace RadialReview.Models
         public virtual IList<ManagerDuration> ManagedBy { get; set; }
         public virtual IList<GroupModel> Groups { get; set; }
         public virtual IList<GroupModel> ManagingGroups { get; set; }
-        public virtual IList<QuestionModel> CustomQuestions { get; set; }
-        public virtual IList<NexusModel> CreatedNexuses { get; set; }
-        public virtual IList<QuestionModel> CreatedQuestions { get; set; }
+        //public virtual IList<QuestionModel> CustomQuestions { get; set; }
+        //public virtual IList<NexusModel> CreatedNexuses { get; set; }
+        //public virtual IList<QuestionModel> CreatedQuestions { get; set; }
         public virtual IList<ReviewModel> Reviews { get; set; }
         public virtual List<ReviewsModel> CreatedReviews { get; set; }
         public virtual IList<PositionDurationModel> Positions { get; set; }
@@ -117,9 +117,9 @@ namespace RadialReview.Models
             ManagingUsers = new List<ManagerDuration>();
             Groups = new List<GroupModel>();
             ManagingGroups = new List<GroupModel>();
-            CustomQuestions = new List<QuestionModel>();
-            CreatedNexuses = new List<NexusModel>();
-            CreatedQuestions = new List<QuestionModel>();
+            //CustomQuestions = new List<QuestionModel>();
+            //CreatedNexuses = new List<NexusModel>();
+            //CreatedQuestions = new List<QuestionModel>();
             AttachTime = DateTime.UtcNow;
             //AllSubordinates = new List<UserOrganizationModel>();
             Properties = new Dictionary<string, List<String>>();
@@ -156,7 +156,7 @@ namespace RadialReview.Models
             var owns = new List<IOrigin>();
             owns.AddRange(ManagingUsers.Cast<IOrigin>());
             owns.AddRange(ManagingGroups.Cast<IOrigin>());
-            owns.AddRange(CreatedQuestions.Cast<IOrigin>());
+            //owns.AddRange(CreatedQuestions.Cast<IOrigin>());
             return owns;
         }
 
@@ -366,18 +366,18 @@ namespace RadialReview.Models
 				.LazyLoad()
                 .Table("GroupManagement")
                 .Inverse();
-            HasMany(x => x.CustomQuestions)
+           /* HasMany(x => x.CustomQuestions)
 				.LazyLoad()
                 .KeyColumn("UserQuestion_Id")
                 .Inverse();
             HasMany(x => x.CreatedQuestions)
 				.LazyLoad()
                 .KeyColumn("CreatedQuestionsId")
-                .Inverse();
-            HasManyToMany(x => x.CreatedNexuses)
+                .Inverse();*/
+            /*HasManyToMany(x => x.CreatedNexuses)
 				.LazyLoad()
                 .Cascade.SaveUpdate()
-                .Table("UserOrganizationNexuses");
+                .Table("UserOrganizationNexuses");*/
 
 
         }

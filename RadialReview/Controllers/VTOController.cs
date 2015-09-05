@@ -9,7 +9,7 @@ using RadialReview.Models.VTO;
 
 namespace RadialReview.Controllers
 {
-    public class VTOController : BaseController
+	public partial class VTOController : BaseController
     {
 	    public class VTOListingVM
 	    {

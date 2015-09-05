@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Microsoft.AspNet.SignalR;
 using NHibernate;
+using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Angular.VTO;
 using RadialReview.Models.VTO;
 using RadialReview.Utilities;
@@ -77,10 +80,10 @@ namespace RadialReview.Accessors
 
 					s.SaveOrUpdate(model);
 
-					model.Name.Vto = model;
+					//model.Name.Vto = model;
 					//s.Update(model.Name);
 
-					model.OrganizationWide.Vto = model;
+					//model.OrganizationWide.Vto = model;
 					//s.Update(model.OrganizationWide);
 
 					model.CoreFocus.Vto = model;
@@ -120,6 +123,54 @@ namespace RadialReview.Accessors
 
 					return model;
 				}
+			}
+		}
+
+		public static void UpdateVtoString(UserOrganizationModel caller, long vtoStringId, String message, string connectionId = null)
+		{
+			long? update_VtoId = null;
+			VtoModel.VtoItem_String str = null;
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					str = s.Get<VtoModel.VtoItem_String>(vtoStringId);
+					PermissionsUtility.Create(s, caller).EditVTO(str.Vto.Id);
+					if (str.Data != message){
+						/*newstr = new VtoModel.VtoItem_String(){
+							BaseId = str.BaseId,
+							CopiedFrom = str.Id,
+							Data = message,
+							Ordering = str.Ordering,
+							Type = str.Type,
+							Vto = str.Vto,
+						};*/
+						str.Data = message;
+						if (str.BaseId == 0)
+							str.BaseId = str.Id;
+
+						s.Update(str);
+						update_VtoId = str.Vto.Id;
+
+						tx.Commit();
+						s.Flush();
+					}
+
+				}
+			}
+			if (update_VtoId != null)
+			{
+				var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+				var group = hub.Clients.Group(VtoHub.GenerateMeetingGroupId(update_VtoId.Value), connectionId);
+				str.Vto = null;
+				group.update(str);
+			}
+		}
+
+		public static void Update(UserOrganizationModel caller, BaseAngular model, string connectionId)
+		{
+			if (model.Type == typeof(AngularVtoString).Name)
+			{
+				var m = (AngularVtoString)model;
+				UpdateVtoString(caller, m.Id, m.Data, connectionId);
 			}
 		}
 	}

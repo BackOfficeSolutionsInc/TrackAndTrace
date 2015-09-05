@@ -27,6 +27,7 @@ using RadialReview.Models.UserModels;
 using RadialReview.Models.Prereview;
 using RadialReview.Models.UserTemplate;
 using RadialReview.Models.VTO;
+using Twilio;
 
 namespace RadialReview.Utilities
 {
@@ -71,8 +72,10 @@ namespace RadialReview.Utilities
 		public static PermissionsUtility Create(ISession session, UserOrganizationModel caller)
 		{
 			var attached = caller;
-			if (!session.Contains(caller) && caller.Id != UserOrganizationModel.ADMIN_ID)
+			if (!session.Contains(caller) && caller.Id != UserOrganizationModel.ADMIN_ID){
 				attached = session.Get<UserOrganizationModel>(caller.Id);
+				attached._ClientTimestamp = caller._ClientTimestamp;
+			}
 			return new PermissionsUtility(session, attached);
 		}
 		#endregion
@@ -350,7 +353,7 @@ namespace RadialReview.Utilities
 
 			switch (question.OriginType)
 			{
-				case OriginType.User: if (!IsOwnedBelowOrEqual(caller, x => x.CustomQuestions.Any(y => y.Id == question.Id))) throw new PermissionsException(); break;
+				//case OriginType.User: if (!IsOwnedBelowOrEqual(caller, x => x.CustomQuestions.Any(y => y.Id == question.Id))) throw new PermissionsException(); break;
 				case OriginType.Group: if (!IsOwnedBelowOrEqual(caller, x => x.Groups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)) || x.ManagingGroups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)))) throw new PermissionsException(); break;
 				case OriginType.Organization: if (caller.Organization.Id != question.OriginId) throw new PermissionsException(); break;
 				case OriginType.Industry: break;
@@ -929,6 +932,17 @@ namespace RadialReview.Utilities
 			if (IsManagingOrganization(vto.Organization.Id))
 				return this;
 			throw new PermissionsException("Cannot view V/TO");
+
+		}
+		public PermissionsUtility EditVTO(long vtoId)
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var vto = session.Get<VtoModel>(vtoId);
+			if (IsManagingOrganization(vto.Organization.Id))
+				return this;
+			throw new PermissionsException("Cannot edit V/TO");
 
 		}
 		#endregion

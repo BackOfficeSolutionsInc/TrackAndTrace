@@ -2,9 +2,15 @@
 using FluentNHibernate.Automapping;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
+using FluentNHibernate.Mapping;
+using Microsoft.AspNet.Identity.EntityFramework;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
+using NHibernate.Envers;
+using NHibernate.Envers.Configuration;
+using NHibernate.Envers.Configuration.Attributes;
+using NHibernate.Envers.Strategy;
 using NHibernate.Event;
 using NHibernate.SqlCommand;
 using NHibernate.Tool.hbm2ddl;
@@ -16,8 +22,19 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Issues;
+using RadialReview.Models.L10;
+using RadialReview.Models.Periods;
+using RadialReview.Models.Reviews;
+using RadialReview.Models.Todo;
+using RadialReview.Models.UserModels;
+using RadialReview.Models.VTO;
 using RadialReview.Utilities.NHibernate;
+using NHibernate.Envers.Configuration.Fluent;
+using FluentConfiguration = NHibernate.Envers.Configuration.Fluent.FluentConfiguration;
+
 //using Microsoft.VisualStudio.Profiler;
 
 namespace RadialReview.Utilities
@@ -54,6 +71,7 @@ namespace RadialReview.Utilities
                 {
                     var config = System.Configuration.ConfigurationManager.AppSettings;
                     var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
+					
                     switch (Config.GetEnv())
                     {
                         case Env.local_sqlite:
@@ -65,6 +83,7 @@ namespace RadialReview.Utilities
                                 {
                                     var c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
+	                                //SetupAudit(c);
                                     factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                                     .Mappings(m =>
                                     {
@@ -74,8 +93,10 @@ namespace RadialReview.Utilities
 										//m.AutoMappings.Add(CreateAutomappings);
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-                                    }).ExposeConfiguration(BuildSchema)
-                                    .BuildSessionFactory();
+                                    })
+								   .ExposeConfiguration(SetupAudit)
+								   .ExposeConfiguration(BuildSchema)
+                                   .BuildSessionFactory();
                                 }
                                 catch (Exception e)
                                 {
@@ -87,6 +108,7 @@ namespace RadialReview.Utilities
 							{
 								var c = new Configuration();
 								c.SetInterceptor(new NHSQLInterceptor());
+								//SetupAudit(c);
 								factory = Fluently.Configure(c).Database(
 											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
 								   .Mappings(m =>
@@ -98,13 +120,17 @@ namespace RadialReview.Utilities
 									   //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
 									   //m.AutoMappings.Add(CreateAutomappings);
 									   //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-								   }).ExposeConfiguration(BuildProductionMySqlSchema)
+								   })
+								   .ExposeConfiguration(SetupAudit)
+								   .ExposeConfiguration(BuildProductionMySqlSchema)
 								   .BuildSessionFactory();
 								break;
 							}
                         case Env.production:
-                            {
-                                factory = Fluently.Configure().Database(
+							{
+								var c = new Configuration();
+								//SetupAudit(c);
+                                factory = Fluently.Configure(c).Database(
 											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
                                    .Mappings(m =>
                                    {
@@ -113,7 +139,9 @@ namespace RadialReview.Utilities
                                        //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                        //m.AutoMappings.Add(CreateAutomappings);
                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-                                   }).ExposeConfiguration(BuildProductionMySqlSchema)
+                                   })
+								   .ExposeConfiguration(SetupAudit)
+								   .ExposeConfiguration(BuildProductionMySqlSchema)
                                    .BuildSessionFactory();
                                 break;
                             }
@@ -178,6 +206,74 @@ namespace RadialReview.Utilities
             // and exports a database schema from it
         }
 
+		
+
+	    private static void SetupAudit(Configuration nhConf)
+	    {
+
+			var enversConf = new FluentConfiguration();
+			nhConf.SetEnversProperty(ConfigurationKey.StoreDataAtDelete, true);
+			nhConf.SetEnversProperty(ConfigurationKey.AuditStrategyValidityStoreRevendTimestamp, true);
+			nhConf.SetEnversProperty(ConfigurationKey.AuditStrategy, typeof(ValidityAuditStrategy));
+			
+			
+			enversConf.Audit<VtoModel.VtoItem>().ExcludeRelationData(x => x.Vto);
+			enversConf.Audit<VtoModel.VtoItem_Bool>().ExcludeRelationData(x=>x.Vto);
+			enversConf.Audit<VtoModel.VtoItem_String>().ExcludeRelationData(x => x.Vto);
+			enversConf.Audit<VtoModel.VtoItem_DateTime>().ExcludeRelationData(x => x.Vto);
+			enversConf.Audit<VtoModel.VtoItem_Decimal>().ExcludeRelationData(x => x.Vto);
+			enversConf.Audit<VtoModel>();
+			enversConf.Audit<VtoModel.CoreFocusModel>().ExcludeRelationData(x=>x.Vto);
+			enversConf.Audit<VtoModel.MarketingStrategyModel>().ExcludeRelationData(x => x.Vto);
+			enversConf.Audit<VtoModel.OneYearPlanModel>().ExcludeRelationData(x => x.Vto);
+			enversConf.Audit<VtoModel.QuarterlyRocksModel>().ExcludeRelationData(x => x.Vto);
+			enversConf.Audit<VtoModel.ThreeYearPictureModel>().ExcludeRelationData(x => x.Vto);
+
+			enversConf.Audit<TodoModel>();
+			enversConf.Audit<IssueModel>();
+			enversConf.Audit<L10Meeting>();
+			enversConf.Audit<L10Recurrence>();
+
+			enversConf.Audit<ClientReviewModel>();
+			enversConf.Audit<LongModel>();
+			enversConf.Audit<LongTuple>();
+			enversConf.Audit<PaymentModel>();
+			enversConf.Audit<PaymentPlanModel>();
+			enversConf.Audit<InvoiceModel>();
+			enversConf.Audit<InvoiceItemModel>();
+			enversConf.Audit<QuestionCategoryModel>();
+			enversConf.Audit<LocalizedStringModel>();
+			enversConf.Audit<LocalizedStringPairModel>();
+			enversConf.Audit<ImageModel>();
+
+			enversConf.Audit<PeriodModel>();
+			enversConf.Audit<ReviewModel>();
+			enversConf.Audit<ReviewsModel>();
+			enversConf.Audit<RockModel>();
+			enversConf.Audit<RoleModel>();
+		    enversConf.Audit<UserOrganizationModel>()
+			    .ExcludeRelationData(x => x.Groups)
+			    .ExcludeRelationData(x => x.ManagingGroups);
+				//.ExcludeRelationData(x => x.CustomQuestions);
+			enversConf.Audit<PositionDurationModel>();
+			enversConf.Audit<QuestionModel>();
+			enversConf.Audit<TeamDurationModel>();
+			enversConf.Audit<ManagerDuration>();
+			enversConf.Audit<OrganizationTeamModel>();
+			enversConf.Audit<OrganizationPositionModel>();
+			enversConf.Audit<PositionModel>();
+
+			enversConf.Audit<OrganizationModel>();
+			enversConf.Audit<ResponsibilityGroupModel>();
+			enversConf.Audit<ResponsibilityModel>();
+			enversConf.Audit<TempUserModel>();
+			enversConf.Audit<UserLookup>();
+			enversConf.Audit<UserModel>();
+			enversConf.Audit<UserLogin>();
+			enversConf.Audit<UserRoleModel>();
+			enversConf.Audit<IdentityUserClaim>();
+			nhConf.IntegrateWithEnvers(enversConf);
+	    }
 
 
         private static void BuildProductionMySqlSchema(Configuration config)

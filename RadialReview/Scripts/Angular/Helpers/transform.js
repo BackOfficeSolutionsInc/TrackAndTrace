@@ -1,20 +1,27 @@
 ﻿angular.module('transformModule', [])
 	.filter('transform', function () {
-		function populate(item, scope) {
+		function populate(item, scope,topLevel) {
+			if (typeof (topLevel) === "undefined")
+				topLevel = true;
 			if (Array.isArray(item)) {
 				var out = [];
 				for (var k in item) {
-					out.push(populate(item[k], scope));
+					out.push(populate(item[k], scope, false));
 				}
 				return out;
 			} else if (item && item._Pointer) {
 				var out = scope.model.Lookup[item.Key];
-
+				
 				for (var k in out) {
-					out[k] = populate(out[k], scope);
+					out[k] = populate(out[k], scope, false);
 				}
 				return out;
-			} else {
+			} else if (item && topLevel) {
+				for (var k in item) {
+					item[k] = populate(item[k], scope, false);
+				}
+				return item;
+			}else {
 				return item;
 			}
 		}

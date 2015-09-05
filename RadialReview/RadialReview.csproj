@@ -65,8 +65,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentNHibernate.1.4.0.0\lib\net35\FluentNHibernate.dll</HintPath>
     </Reference>
-    <Reference Include="Iesi.Collections">
-      <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
+    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="ImageResizer">
       <HintPath>..\packages\ImageResizer.3.4.1\lib\ImageResizer.dll</HintPath>
@@ -117,8 +118,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate">
-      <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
+    <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NHibernate.4.0.0.4000\lib\net40\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate.Envers">
+      <HintPath>..\packages\NHibernate.Envers.2.0.0\lib\Net40\NHibernate.Envers.dll</HintPath>
     </Reference>
     <Reference Include="OpenPop">
       <HintPath>..\packages\OpenPop.NET.2.0.4.369\lib\net20\OpenPop.dll</HintPath>
@@ -330,6 +335,7 @@
     <Compile Include="Controllers\TwilioApiController.cs" />
     <Compile Include="Controllers\UserTemplateController.cs" />
     <Compile Include="Controllers\VTOController.cs" />
+    <Compile Include="Controllers\VtoDataController.cs" />
     <Compile Include="Controllers\WebRtcController.cs" />
     <Compile Include="Controllers\_MigrationController.cs" />
     <Compile Include="Controllers\PrereviewController.cs" />
@@ -385,6 +391,7 @@
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
     <Compile Include="Hubs\MeetingHub.cs" />
+    <Compile Include="Hubs\VtoHub.cs" />
     <Compile Include="Hubs\WebRtcHub.cs" />
     <Compile Include="Models\Angular\Base\Angularized.cs" />
     <Compile Include="Models\Angular\Base\AngularList.cs" />
@@ -416,6 +423,7 @@
     <Compile Include="Models\Askables\CompanyValueModel.cs" />
     <Compile Include="Models\Attach\AttachModel.cs" />
     <Compile Include="Models\Audit\Audit.cs" />
+    <Compile Include="Models\Audit\RevisionEntity.cs" />
     <Compile Include="Models\Charts\Checktree.cs" />
     <Compile Include="Models\Charts\Histogram.cs" />
     <Compile Include="Models\Charts\Line.cs" />
@@ -788,7 +796,11 @@
     </Content>
     <Content Include="Content\components\daterangepicker-bs3.css" />
     <Content Include="Content\components\fivestate.css" />
+    <Content Include="Content\favicon.ico" />
+    <Content Include="Content\img\TRACTION-TOOLS_large_horizontal_wh.png" />
     <Content Include="Content\img\TRACTION-TOOLS_large_icon_wh.png" />
+    <Content Include="Content\img\TRACTION-TOOLS_large_stacked_wh.png" />
+    <Content Include="Content\img\TRACTION-TOOLS_small_horizontal_wh.png" />
     <Content Include="Content\img\TRACTION-TOOLS_small_icon_wh.png" />
     <Content Include="Content\Theme.css">
       <DependentUpon>Theme.less</DependentUpon>
@@ -884,7 +896,7 @@
     <Content Include="Content\components\tristate.css" />
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\favicon-old.ico" />
-    <Content Include="Content\favicon.ico" />
+    <Content Include="Content\favicon3.ico" />
     <Content Include="Content\favicon2.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1538,6 +1550,7 @@
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
     <Folder Include="Views\Url\" />
+    <Folder Include="Views\VtoData\" />
     <Folder Include="Views\WebRtc\" />
   </ItemGroup>
   <ItemGroup>

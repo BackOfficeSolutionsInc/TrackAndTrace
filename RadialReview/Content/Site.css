@@ -79,6 +79,9 @@ html, body {
 	.alignLeft-md {
 		text-align: left;
 	}
+	.alignCenter-md {
+		text-align: center;
+	}
 }
 
 .addButton {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
 using NHibernate;
+using NHibernate.Envers.Configuration.Fluent;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using Remotion.Linq.Clauses;
@@ -27,8 +28,8 @@ namespace RadialReview.Models.VTO
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual long? CopiedFrom { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
-		public virtual VtoItem_Bool OrganizationWide { get; set; }
-		public virtual VtoItem_String Name { get; set; }
+		public virtual bool OrganizationWide { get; set; }
+		public virtual String Name { get; set; }
 		public virtual List<CompanyValueModel> _Values { get; set; }
 
 		public virtual CoreFocusModel CoreFocus { get; set; }
@@ -40,10 +41,10 @@ namespace RadialReview.Models.VTO
 		public VtoModel()
 		{
 			CreateTime = DateTime.UtcNow;
-			OrganizationWide = new VtoItem_Bool();
+			//OrganizationWide = new VtoItem_Bool();
 			CoreFocus = new CoreFocusModel();
 			MarketingStrategy = new MarketingStrategyModel();
-			Name = new VtoItem_String();
+			//Name; //= new VtoItem_String();
 			_Values = new List<CompanyValueModel>();
 			ThreeYearPicture = new ThreeYearPictureModel();
 			OneYearPlan = new OneYearPlanModel();
@@ -59,8 +60,11 @@ namespace RadialReview.Models.VTO
 				Map(x => x.DeleteTime);
 				Map(x => x.CopiedFrom);
 				References(x => x.Organization).Not.Nullable().LazyLoad();
-				References(x => x.OrganizationWide).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-				References(x => x.Name).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+				//References(x => x.OrganizationWide).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+				Map(x => x.OrganizationWide);
+
+				//References(x => x.Name).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+				Map(x => x.Name);
 
 				References(x => x.CoreFocus).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 				References(x => x.MarketingStrategy).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();

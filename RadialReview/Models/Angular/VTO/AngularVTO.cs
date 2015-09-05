@@ -4,6 +4,7 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using System.Web;
 using Microsoft.Owin.Security.Provider;
+using Moq;
 using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.VTO;
@@ -23,7 +24,7 @@ namespace RadialReview.Models.Angular.VTO
 
 		public DateTime? CreateTime { get; set; }
 		public long? CopiedFrom { get; set; }
-		public AngularVtoString Name { get; set; }
+		public String Name { get; set; }
 
 		public AngularCoreFocus CoreFocus { get; set; }
 		public AngularStrategy Strategy { get; set; }
@@ -39,7 +40,7 @@ namespace RadialReview.Models.Angular.VTO
 				Id = vto.Id,
 				CreateTime = vto.CreateTime,
 				CopiedFrom = vto.CopiedFrom,
-				Name = AngularVtoString.Create(vto.Name),
+				Name = vto.Name, //AngularVtoString.Create(vto.Name),
 				Values = AngularCompanyValue.Create(vto._Values),
 				CoreFocus = AngularCoreFocus.Create(vto.CoreFocus),
 				Strategy = AngularStrategy.Create(vto.MarketingStrategy),
@@ -58,7 +59,7 @@ namespace RadialReview.Models.Angular.VTO
 		public AngularVtoString(){
 		}
 		public String Data { get; set; }
-
+		
 		public static AngularVtoString Create(VtoModel.VtoItem_String strs)
 		{
 			return new AngularVtoString()
@@ -82,6 +83,7 @@ namespace RadialReview.Models.Angular.VTO
 		public AngularVtoDateTime()
 		{
 		}
+
 		public DateTime? Data { get; set; }
 
 		public static AngularVtoDateTime Create(VtoModel.VtoItem_DateTime futureDate)

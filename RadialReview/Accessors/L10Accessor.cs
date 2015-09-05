@@ -887,6 +887,13 @@ namespace RadialReview.Accessors
 					}
 
 					var now = DateTime.UtcNow;
+
+					if (old != null){
+						foreach (var m in l10Recurrence._DefaultMeasurables){
+							m._Ordering = old._DefaultMeasurables.FirstOrDefault(x => x.Measurable.Id == m.Measurable.Id).NotNull(x => x._Ordering);
+						}
+					}
+
 					s.UpdateList(old.NotNull(x => x._DefaultAttendees), l10Recurrence._DefaultAttendees, now);
 					s.UpdateList(old.NotNull(x => x._DefaultMeasurables), l10Recurrence._DefaultMeasurables, now);
 					s.UpdateList(old.NotNull(x => x._DefaultRocks), l10Recurrence._DefaultRocks, now);
@@ -1825,7 +1832,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var p = PermissionsUtility.Create(s, caller);
-					forUsers.Distinct().ForEach(x => p.ManagesUserOrganizationOrSelf(x));
+					//forUsers.Distinct().ForEach(x => p.ManagesUserOrganizationOrSelf(x));
 
 					//s.QueryOver<TodoModel>().Where(x=>x.)
 					throw new Exception("todo");

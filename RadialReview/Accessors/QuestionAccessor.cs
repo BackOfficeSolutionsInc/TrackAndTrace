@@ -143,7 +143,7 @@ namespace RadialReview.Accessors
             forUser = s.Get<UserOrganizationModel>(forUser.Id);
             var questions = new List<QuestionModel>();
             //Self Questions
-            questions.AddRange(forUser.CustomQuestions);
+            //questions.AddRange(forUser.CustomQuestions);
             //Group Questions
             questions.AddRange(forUser.Groups.SelectMany(x => x.CustomQuestions));
             //Organization Questions

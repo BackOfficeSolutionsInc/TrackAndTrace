@@ -60,15 +60,15 @@
 					<div class="button-container uid_@ViewBag.UserId">
 						<div class="button empty"></div>
 
-						<a href="/tasks" class="button icon fontastic-icon-checkbox" @*title="To-Do List"*@></a>
-						<a href="/User/Details/@ViewBag.UserId" class="button icon fontastic-icon-torso" @*title="View Details"*@></a>
+						<a href="/tasks" class="button icon fontastic-icon-checkbox" title="To-Do List"></a>
+						<a href="/User/Details/@ViewBag.UserId" class="button icon fontastic-icon-torso" title="View Details"></a>
 						@if (((int?)ViewBag.Organizations ?? 0) > 1){
-							<a href="/Account/Role?ReturnUrl=%2F" class="button icon fontastic-icon-torsos" @*title="Change Roles"*@></a>
+							<a href="/Account/Role?ReturnUrl=%2F" class="button icon fontastic-icon-torsos" title="Change Roles"></a>
 						}
 						@if (ViewBag.ShowL10 as bool? == true){
-							<div onclick="@Html.ShowModal("Create Issue", "/Issues/CreateIssueRecurrence/", "/Issues/CreateIssueRecurrence/")" class="button icon fontastic-icon-pinboard"><span class="plus">+</span></div>
+							<div onclick="@Html.ShowModal("Create Issue", "/Issues/CreateIssueRecurrence/", "/Issues/CreateIssueRecurrence/")" class="button icon fontastic-icon-pinboard" title="Create an Issue"><span class="plus">+</span></div>
 						}
-						<a href="/Account/Manage" class="button icon fontastic-icon-cog" @*title="Edit Settings"*@></a>
+						<a href="/Account/Manage" class="button icon fontastic-icon-cog" title="Edit Settings"></a>
 						<div class="button empty"></div>
 						<span></span>
 					</div>

@@ -1,88 +1,108 @@
-INFO  2015-08-17 17:07:20,365 [23] BaseController         - Organization: [/Manage/UserDetails/948] --> [/Manage/UserDetails/948]
-INFO  2015-08-17 17:21:36,505 [5] BaseController         - Organization: [/Measurable/BlankEditorRow?admin=948&_=1439849464583] --> [/Measurable/BlankEditorRow?admin=948&_=1439849464583]
-INFO  2015-08-17 17:21:36,505 [34] BaseController         - Organization: [/Measurable/BlankEditorRow?admin=948&_=1439849464584] --> [/Measurable/BlankEditorRow?admin=948&_=1439849464584]
-INFO  2015-08-17 17:21:36,505 [44] BaseController         - Organization: [/Measurable/BlankEditorRow?admin=948&_=1439849464585] --> [/Measurable/BlankEditorRow?admin=948&_=1439849464585]
-INFO  2015-08-17 17:23:21,598 [45] BaseController         - Permissions: [/L10/timeline/3] --> []
-INFO  2015-08-17 17:23:25,761 [44] BaseController         - Permissions: [/L10/timeline/3] --> []
-INFO  2015-08-17 18:17:33,566 [44] BaseController         - Organization: [/Manage/UserDetails/948] --> [/Manage/UserDetails/948]
-INFO  2015-08-17 18:21:52,198 [46] BaseController         - Organization: [/Manage/UserDetails/948] --> [/Manage/UserDetails/948]
-INFO  2015-08-17 18:46:14,426 [23] BaseController         - Organization: [/Nexus/SendAllEmails] --> [/Nexus/SendAllEmails]
-INFO  2015-08-17 18:46:20,375 [41] BaseController         - Organization: [/Manage/Members] --> [/Manage/Members]
-INFO  2015-08-17 18:47:47,853 [27] BaseController         - Organization: [/Manage/Members] --> [/Manage/Members]
-ERROR 2015-08-17 19:22:54,230 [47] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0, ?p1, ?p2, ?p3)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
+ERROR 2015-08-21 15:52:00,511 [10] BaseAccessor           - Scheduled task error. 348
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+INFO  2015-08-22 01:30:17,490 [30] BaseController         - Organization: [/Survey] --> [/Survey]
+ERROR 2015-08-22 15:43:23,413 [12] BaseController         - Error: [/Reviews]<<Encountered end tag "a" with no matching start tag.  Are your start/end tags properly balanced?
+>>
+System.Web.HttpParseException (0x80004005): Encountered end tag "a" with no matching start tag.  Are your start/end tags properly balanced?
+
+   at System.Web.WebPages.Razor.RazorBuildProvider.EnsureGeneratedCode()
+   at System.Web.WebPages.Razor.RazorBuildProvider.get_CodeCompilerType()
+   at System.Web.Compilation.BuildProvider.GetCompilerTypeFromBuildProvider(BuildProvider buildProvider)
+   at System.Web.Compilation.BuildProvidersCompiler.ProcessBuildProviders()
+   at System.Web.Compilation.BuildProvidersCompiler.PerformBuild()
+   at System.Web.Compilation.BuildManager.CompileWebFile(VirtualPath virtualPath)
+   at System.Web.Compilation.BuildManager.GetVPathBuildResultInternal(VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
+   at System.Web.Compilation.BuildManager.GetVPathBuildResultWithNoAssert(HttpContext context, VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
+   at System.Web.Compilation.BuildManager.GetVirtualPathObjectFactory(VirtualPath virtualPath, HttpContext context, Boolean allowCrossApp, Boolean throwIfNotFound)
+   at System.Web.Compilation.BuildManager.GetCompiledType(VirtualPath virtualPath)
+   at System.Web.Compilation.BuildManager.GetCompiledType(String virtualPath)
+   at System.Web.Mvc.BuildManagerWrapper.System.Web.Mvc.IBuildManager.GetCompiledType(String virtualPath)
+   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
+   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+ERROR 2015-08-22 15:43:31,299 [61] BaseController         - Error: [/Reviews]<<Object reference not set to an instance of an object.>>
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at ASP._Page_Views_Reviews_Index_cshtml.<Execute>b__b(ReviewsViewModel x) in c:\repos\Radial\RadialReview\RadialReview\Views\Reviews\Index.cshtml:line 49
+   at System.Linq.Enumerable.Any[TSource](IEnumerable`1 source, Func`2 predicate)
+   at ASP._Page_Views_Reviews_Index_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\Reviews\Index.cshtml:line 49
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
+   at System.Web.WebPages.StartPage.RunPage()
+   at System.Web.WebPages.StartPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
+   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
+   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+ERROR 2015-08-22 16:54:21,450 [10] AdoTransaction         - Begin transaction failed
+MySql.Data.MySqlClient.MySqlException (0x80004005): Authentication to host 'localhost' for user 'root' using method 'mysql_native_password' failed with message: Reading from the stream has failed. ---> MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---> System.IO.IOException: Unable to read data from the transport connection: An established connection was aborted by the software in your host machine. ---> System.Net.Sockets.SocketException: An established connection was aborted by the software in your host machine
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at MySql.Data.Common.MyNetworkStream.HandleOrRethrowException(Exception e)
+   at MySql.Data.Common.MyNetworkStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.AuthenticationFailed(Exception ex)
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.Authenticate(Boolean reset)
+   at MySql.Data.MySqlClient.NativeDriver.Authenticate(String authMethod, Boolean reset)
+   at MySql.Data.MySqlClient.NativeDriver.Open()
+   at MySql.Data.MySqlClient.Driver.Open()
+   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
+   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
+   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
+   at MySql.Data.MySqlClient.MySqlConnection.Open()
+   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
+   at NHibernate.AdoNet.ConnectionManager.GetConnection()
+   at NHibernate.Impl.SessionImpl.get_Connection()
+   at NHibernate.Transaction.AdoTransaction.Begin(IsolationLevel isolationLevel)
+ERROR 2015-08-22 16:54:31,611 [9] AdoTransaction         - Begin transaction failed
+MySql.Data.MySqlClient.MySqlException (0x80004005): Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-08-17 19:22:54,238 [47] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:22:54,240 [47] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:22:54,241 [47] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:23:14,477 [12] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
+   at MySql.Data.MySqlClient.ExceptionInterceptor.Throw(Exception exception)
+   at MySql.Data.MySqlClient.MySqlConnection.Throw(Exception ex)
+   at MySql.Data.MySqlClient.MySqlConnection.HandleTimeoutOrThreadAbort(Exception ex)
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-08-17 19:23:14,477 [12] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:23:14,477 [12] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:23:14,477 [12] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:17,701 [20] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-08-17 19:24:17,702 [20] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:17,702 [20] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:17,702 [20] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:35,184 [45] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-08-17 19:24:35,185 [45] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:35,185 [45] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:35,185 [45] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:28:09,335 [38] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
+   at MySql.Data.MySqlClient.Driver.LoadServerProperties(MySqlConnection connection)
+   at MySql.Data.MySqlClient.Driver.Configure(MySqlConnection connection)
+   at MySql.Data.MySqlClient.MySqlConnection.Open()
+   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
+   at NHibernate.AdoNet.ConnectionManager.GetConnection()
+   at NHibernate.Impl.SessionImpl.get_Connection()
+   at NHibernate.Transaction.AdoTransaction.Begin(IsolationLevel isolationLevel)

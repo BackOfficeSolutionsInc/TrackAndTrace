@@ -135,7 +135,7 @@ namespace RadialReview.Accessors
                     db.SaveOrUpdate(nexus);
                     //var newUser=db.Get<UserOrganizationModel>(newUserId);
                     //manager.ManagingUsers.Add(newUser);
-                    caller.CreatedNexuses.Add(nexus);
+                    //caller.CreatedNexuses.Add(nexus);
                     db.SaveOrUpdate(caller);
                     tx.Commit();
                     db.Flush();
