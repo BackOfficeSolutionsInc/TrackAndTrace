@@ -16,14 +16,20 @@ namespace RadialReview.Models.Angular.CompanyValue
 
 		public string CompanyValue { get; set; }
 		public string CompanyValueDetails { get; set; }
+		public bool Deleted { get; set; }
 
 		public static List<AngularCompanyValue> Create(IEnumerable<CompanyValueModel> list)
 		{
-			return list.Select(x => new AngularCompanyValue(){
+			return list.Select(Create).ToList();
+		}
+
+		public static AngularCompanyValue Create(CompanyValueModel x){
+			return new AngularCompanyValue(){
 				CompanyValue = x.CompanyValue,
 				CompanyValueDetails = x.CompanyValueDetails,
 				Id = x.Id,
-			}).ToList();
+				Deleted = (x.DeleteTime!=null)
+			};
 		}
 	}
 }

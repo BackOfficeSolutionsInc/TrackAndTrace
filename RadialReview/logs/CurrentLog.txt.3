@@ -1,4 +1,51 @@
-ERROR 2015-08-23 01:14:43,740 [1] SchemaUpdate           - could not get database metadata
+ERROR 2015-09-04 20:45:24,098 [1] ADOExceptionReporter   - Fatal error encountered during command execution.
+ERROR 2015-09-04 20:45:24,119 [1] ADOExceptionReporter   - Fatal error encountered attempting to read the resultset.
+ERROR 2015-09-04 20:45:24,120 [1] ADOExceptionReporter   - Reading from the stream has failed.
+ERROR 2015-09-04 20:45:24,120 [1] ADOExceptionReporter   - Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host.
+ERROR 2015-09-04 20:45:24,120 [1] ADOExceptionReporter   - An existing connection was forcibly closed by the remote host
+ERROR 2015-09-04 20:45:24,121 [1] SchemaUpdate           - could not complete schema update
+NHibernate.Exceptions.GenericADOException: could not get table metadata: AudioVideoUser[SQL: SQL not available] ---> MySql.Data.MySqlClient.MySqlException: Fatal error encountered during command execution. ---> MySql.Data.MySqlClient.MySqlException: Fatal error encountered attempting to read the resultset. ---> MySql.Data.MySqlClient.MySqlException: Reading from the stream has failed. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at MySql.Data.Common.MyNetworkStream.HandleOrRethrowException(Exception e)
+   at MySql.Data.Common.MyNetworkStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   --- End of inner exception stack trace ---
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   --- End of inner exception stack trace ---
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   --- End of inner exception stack trace ---
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
+   at MySql.Data.MySqlClient.ISSchemaProvider.GetTable(String sql)
+   at MySql.Data.MySqlClient.ISSchemaProvider.Query(String table_name, String initial_where, String[] keys, String[] values)
+   at MySql.Data.MySqlClient.ISSchemaProvider.GetTables(String[] restrictions)
+   at MySql.Data.MySqlClient.SchemaProvider.GetIndexColumns(String[] restrictions)
+   at MySql.Data.MySqlClient.SchemaProvider.GetSchemaInternal(String collection, String[] restrictions)
+   at MySql.Data.MySqlClient.ISSchemaProvider.GetSchemaInternal(String collection, String[] restrictions)
+   at MySql.Data.MySqlClient.SchemaProvider.GetSchema(String collection, String[] restrictions)
+   at MySql.Data.MySqlClient.MySqlConnection.GetSchema(String collectionName, String[] restrictionValues)
+   at NHibernate.Dialect.Schema.AbstractDataBaseSchema.GetIndexColumns(String catalog, String schemaPattern, String tableName, String indexName)
+   at NHibernate.Dialect.Schema.AbstractTableMetadata.AddIndex(DataRow rs, IDataBaseSchema meta)
+   at NHibernate.Dialect.Schema.AbstractTableMetadata.InitIndexes(IDataBaseSchema meta)
+   at NHibernate.Dialect.Schema.AbstractTableMetadata..ctor(DataRow rs, IDataBaseSchema meta, Boolean extras)
+   at NHibernate.Dialect.Schema.MySQLDataBaseSchema.GetTableMetadata(DataRow rs, Boolean extras)
+   at NHibernate.Tool.hbm2ddl.DatabaseMetadata.GetTableMetadata(String name, String schema, String catalog, Boolean isQuoted)
+   --- End of inner exception stack trace ---
+   at NHibernate.Tool.hbm2ddl.DatabaseMetadata.GetTableMetadata(String name, String schema, String catalog, Boolean isQuoted)
+   at NHibernate.Cfg.Configuration.GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
+   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+ERROR 2015-09-04 20:45:28,307 [1] SchemaUpdate           - could not get database metadata
 MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
    at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.Driver.Open()
@@ -10,7 +57,7 @@ MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of 
    at NHibernate.Connection.DriverConnectionProvider.GetConnection()
    at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
    at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:14:43,756 [1] SchemaUpdate           - could not complete schema update
+ERROR 2015-09-04 20:45:28,321 [1] SchemaUpdate           - could not complete schema update
 MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
    at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.Driver.Open()
@@ -22,7 +69,7 @@ MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of 
    at NHibernate.Connection.DriverConnectionProvider.GetConnection()
    at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
    at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:14:50,834 [7] SchemaUpdate           - could not get database metadata
+ERROR 2015-09-04 20:45:37,288 [1] SchemaUpdate           - could not get database metadata
 MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
    at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.Driver.Open()
@@ -34,7 +81,7 @@ MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of 
    at NHibernate.Connection.DriverConnectionProvider.GetConnection()
    at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
    at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:14:50,834 [7] SchemaUpdate           - could not complete schema update
+ERROR 2015-09-04 20:45:37,301 [1] SchemaUpdate           - could not complete schema update
 MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
    at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.Driver.Open()
@@ -46,11 +93,12 @@ MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of 
    at NHibernate.Connection.DriverConnectionProvider.GetConnection()
    at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
    at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:14:55,692 [1] SchemaUpdate           - could not get database metadata
+ERROR 2015-09-04 20:47:31,990 [1] SchemaUpdate           - could not get database metadata
 MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
    at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.Driver.Open()
    at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.MySqlPool.CreateNewPooledConnection()
    at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
    at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
    at MySql.Data.MySqlClient.MySqlPool.GetConnection()
@@ -58,11 +106,12 @@ MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of 
    at NHibernate.Connection.DriverConnectionProvider.GetConnection()
    at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
    at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:14:55,708 [1] SchemaUpdate           - could not complete schema update
+ERROR 2015-09-04 20:47:32,012 [1] SchemaUpdate           - could not complete schema update
 MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
    at MySql.Data.MySqlClient.NativeDriver.Open()
    at MySql.Data.MySqlClient.Driver.Open()
    at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.MySqlPool.CreateNewPooledConnection()
    at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
    at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
    at MySql.Data.MySqlClient.MySqlPool.GetConnection()
@@ -70,74 +119,32 @@ MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of 
    at NHibernate.Connection.DriverConnectionProvider.GetConnection()
    at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
    at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:15:03,138 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:15:03,152 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:15:10,507 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:15:10,523 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-INFO  2015-08-23 15:37:43,338 [6] BaseController         - Login: [/UnitTest/Sync] --> [/UnitTest/Sync]
-ERROR 2015-08-23 15:37:52,089 [7] BaseController         - Error: [/UnitTest/Sync]<<The parameters dictionary contains a null entry for parameter 'id' of non-nullable type 'System.Int64' for method 'System.Web.Mvc.ActionResult Sync(Int64)' in 'RadialReview.Controllers.UnitTestController'. An optional parameter must be a reference type, a nullable type, or be declared as an optional parameter.
-Parameter name: parameters>>
-System.ArgumentException: The parameters dictionary contains a null entry for parameter 'id' of non-nullable type 'System.Int64' for method 'System.Web.Mvc.ActionResult Sync(Int64)' in 'RadialReview.Controllers.UnitTestController'. An optional parameter must be a reference type, a nullable type, or be declared as an optional parameter.
-Parameter name: parameters
-   at System.Web.Mvc.ActionDescriptor.ExtractParameterFromDictionary(ParameterInfo parameterInfo, IDictionary`2 parameters, MethodInfo methodInfo)
+ERROR 2015-09-07 14:36:18,244 [38] BaseController         - Error: [/vto/edit]<<No persister for: System.Boolean>>
+NHibernate.MappingException: No persister for: System.Boolean
+   at NHibernate.Impl.SessionFactoryImpl.GetEntityPersister(String entityName)
+   at NHibernate.Impl.SessionImpl.GetEntityPersister(String entityName, Object obj)
+   at NHibernate.Event.Default.AbstractSaveEventListener.SaveWithGeneratedId(Object entity, String entityName, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
+   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent event)
+   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.EntityIsTransient(SaveOrUpdateEvent event)
+   at NHibernate.Event.Default.DefaultSaveEventListener.PerformSaveOrUpdate(SaveOrUpdateEvent event)
+   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.OnSaveOrUpdate(SaveOrUpdateEvent event)
+   at NHibernate.Impl.SessionImpl.FireSave(SaveOrUpdateEvent event)
+   at NHibernate.Impl.SessionImpl.Save(Object obj)
+   at RadialReview.Accessors.VtoAccessor.CreateVTO(UserOrganizationModel caller, Int64 organizationId) in c:\repos\Radial\RadialReview\RadialReview\Accessors\VtoAccessor.cs:line 75
+   at RadialReview.Controllers.VTOController.Edit(Int64 id) in c:\repos\Radial\RadialReview\RadialReview\Controllers\VTOController.cs:line 37
+   at lambda_method(Closure , ControllerBase , Object[] )
+   at System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
    at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
    at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.ActionInvocation.InvokeSynchronousActionMethod()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<BeginInvokeSynchronousActionMethod>b__36(IAsyncResult asyncResult, ActionInvocation innerInvokeState)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
-   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
-   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)

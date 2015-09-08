@@ -71,6 +71,8 @@ namespace RadialReview.Models.VTO
 				References(x => x.ThreeYearPicture).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 				References(x => x.OneYearPlan).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 				References(x => x.QuarterlyRocks).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+
+				Table("VTO_Diagram");
 			}
 		}
 
@@ -79,13 +81,13 @@ namespace RadialReview.Models.VTO
 		{
 			public virtual long Id { get; set; }
 			public virtual VtoModel Vto { get; set; }
-			public virtual VtoItem_String Purpose { get; set; }
-			public virtual VtoItem_String Niche { get; set; }
+			public virtual string Purpose { get; set; }
+			public virtual String Niche { get; set; }
 
 			public CoreFocusModel()
 			{
-				Purpose = new VtoItem_String();
-				Niche = new VtoItem_String();
+				//Purpose = new VtoItem_String();
+				//Niche = new VtoItem_String();
 			}
 
 			public class CoreFocusMap : ClassMap<CoreFocusModel>
@@ -94,8 +96,11 @@ namespace RadialReview.Models.VTO
 				{
 					Id(x => x.Id);
 					References(x => x.Vto).Nullable().LazyLoad();
-					References(x => x.Purpose).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Niche).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Purpose).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Niche).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					Map(x => x.Purpose);
+					Map(x => x.Niche);
+					Table("VTO_CoreFocus");
 
 				}
 			}
@@ -109,18 +114,18 @@ namespace RadialReview.Models.VTO
 		{
 			public virtual long Id { get; set; }
 			public virtual VtoModel Vto { get; set; }
-			public virtual VtoItem_String TenYearTarget { get; set; }
-			public virtual VtoItem_String TargetMarket { get; set; }
-			public virtual VtoItem_String ProvenProcess { get; set; }
-			public virtual VtoItem_String Guarantee { get; set; }
+			public virtual string TenYearTarget { get; set; }
+			public virtual string TargetMarket { get; set; }
+			public virtual string ProvenProcess { get; set; }
+			public virtual string Guarantee { get; set; }
 			public virtual List<VtoItem_String> _Uniques { get; set; }
 
 			public MarketingStrategyModel()
 			{
-				TenYearTarget=new VtoItem_String();
-				TargetMarket = new VtoItem_String();
-				ProvenProcess = new VtoItem_String();
-				Guarantee = new VtoItem_String();
+				//TenYearTarget=new VtoItem_String();
+				//TargetMarket = new VtoItem_String();
+				//ProvenProcess = new VtoItem_String();
+				//Guarantee = new VtoItem_String();
 				_Uniques = new List<VtoItem_String>();
 			}
 			public class MarketingStrategyMap : ClassMap<MarketingStrategyModel>
@@ -129,11 +134,15 @@ namespace RadialReview.Models.VTO
 				{
 					Id(x => x.Id);
 					References(x => x.Vto).Nullable().LazyLoad();
-					References(x => x.TenYearTarget).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.TargetMarket).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.ProvenProcess).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Guarantee).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-
+					//References(x => x.TenYearTarget).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.TargetMarket).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.ProvenProcess).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Guarantee).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					Map(x => x.TenYearTarget);
+					Map(x => x.TargetMarket);
+					Map(x => x.ProvenProcess);
+					Map(x => x.Guarantee);
+					Table("VTO_MarketingStrategy");
 				}
 			}
 		}
@@ -144,18 +153,18 @@ namespace RadialReview.Models.VTO
 		{
 			public virtual long Id { get; set; }
 			public virtual VtoModel Vto { get; set; }
-			public virtual VtoItem_DateTime FutureDate { get; set; }
-			public virtual VtoItem_Decimal Revenue { get; set; }
-			public virtual VtoItem_Decimal Profit { get; set; }
-			public virtual VtoItem_String Measurables { get; set; }
+			public virtual DateTime? FutureDate { get; set; }
+			public virtual decimal? Revenue { get; set; }
+			public virtual decimal? Profit { get; set; }
+			public virtual string Measurables { get; set; }
 			public virtual List<VtoItem_String> _LooksLike { get; set; }
 
 			public ThreeYearPictureModel()
 			{
-				FutureDate = new VtoItem_DateTime();
-				Revenue = new VtoItem_Decimal();
-				Profit = new VtoItem_Decimal();
-				Measurables = new VtoItem_String();
+				//FutureDate = new VtoItem_DateTime();
+				//Revenue = new VtoItem_Decimal();
+				//Profit = new VtoItem_Decimal();
+				//Measurables = new VtoItem_String();
 				_LooksLike = new List<VtoItem_String>();
 			}
 
@@ -165,10 +174,15 @@ namespace RadialReview.Models.VTO
 				{
 					Id(x => x.Id);
 					References(x => x.Vto).Nullable().LazyLoad();
-					References(x => x.FutureDate).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Revenue).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Profit).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Measurables).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					Map(x => x.FutureDate);
+					Map(x => x.Revenue);
+					Map(x => x.Profit);
+					Map(x => x.Measurables);
+					Table("VTO_ThreeYearPicture");
+					//References(x => x.FutureDate).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Revenue).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Profit).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Measurables).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 				}
 			}
 
@@ -179,18 +193,18 @@ namespace RadialReview.Models.VTO
 		{
 			public virtual long Id { get; set; }
 			public virtual VtoModel Vto { get; set; }
-			public virtual VtoItem_DateTime FutureDate { get; set; }
-			public virtual VtoItem_Decimal Revenue { get; set; }
-			public virtual VtoItem_Decimal Profit { get; set; }
-			public virtual VtoItem_String Measurables { get; set; }
+			public virtual DateTime? FutureDate { get; set; }
+			public virtual decimal? Revenue { get; set; }
+			public virtual decimal? Profit { get; set; }
+			public virtual string Measurables { get; set; }
 			public virtual List<VtoItem_String> _GoalsForYear { get; set; }
 
 			public OneYearPlanModel()
 			{
-				FutureDate = new VtoItem_DateTime();
-				Revenue = new VtoItem_Decimal();
-				Profit = new VtoItem_Decimal();
-				Measurables = new VtoItem_String();
+				//FutureDate = new VtoItem_DateTime();
+				//Revenue = new VtoItem_Decimal();
+				//Profit = new VtoItem_Decimal();
+				//Measurables = new VtoItem_String();
 				_GoalsForYear = new List<VtoItem_String>();
 			}
 
@@ -200,10 +214,15 @@ namespace RadialReview.Models.VTO
 				{
 					Id(x => x.Id);
 					References(x => x.Vto).Nullable().LazyLoad();
-					References(x => x.FutureDate).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Revenue).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Profit).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Measurables).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					Map(x => x.Revenue);
+					Map(x => x.Profit);
+					Map(x => x.Measurables);
+					Map(x => x.FutureDate);
+					Table("VTO_OneYearPlan");
+					//References(x => x.FutureDate).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Revenue).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Profit).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Measurables).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 				}
 			}
 		}
@@ -213,18 +232,18 @@ namespace RadialReview.Models.VTO
 		{
 			public virtual long Id { get; set; }
 			public virtual VtoModel Vto { get; set; }
-			public virtual VtoItem_DateTime FutureDate { get; set; }
-			public virtual VtoItem_Decimal Revenue { get; set; }
-			public virtual VtoItem_Decimal Profit { get; set; }
-			public virtual VtoItem_String Measurables { get; set; }
+			public virtual DateTime? FutureDate { get; set; }
+			public virtual decimal? Revenue { get; set; }
+			public virtual decimal? Profit { get; set; }
+			public virtual string Measurables { get; set; }
 			public virtual List<Vto_Rocks> _Rocks { get; set; }
 
 			public QuarterlyRocksModel()
 			{
-				FutureDate = new VtoItem_DateTime();
-				Revenue=new VtoItem_Decimal();
-				Profit = new VtoItem_Decimal();
-				Measurables = new VtoItem_String();
+				//FutureDate = new VtoItem_DateTime();
+				//Revenue=new VtoItem_Decimal();
+				//Profit = new VtoItem_Decimal();
+				//Measurables = new VtoItem_String();
 				_Rocks = new List<Vto_Rocks>();
 			}
 			public class QuarterlyRocksMap : ClassMap<QuarterlyRocksModel>
@@ -233,10 +252,15 @@ namespace RadialReview.Models.VTO
 				{
 					Id(x => x.Id);
 					References(x => x.Vto).Nullable().LazyLoad();
-					References(x => x.FutureDate).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Revenue).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Profit).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					References(x => x.Measurables).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					Map(x => x.Revenue);
+					Map(x => x.Profit);
+					Map(x => x.Measurables);
+					Map(x => x.FutureDate);
+					Table("VTO_QuarterlyRocks");
+					//References(x => x.FutureDate).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Revenue).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Profit).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
+					//References(x => x.Measurables).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 				}
 			}
 

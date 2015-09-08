@@ -10,6 +10,7 @@ using RadialReview.Models.Audit;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.L10;
+using RadialReview.Models.VTO;
 
 namespace RadialReview.Utilities
 {
@@ -51,7 +52,39 @@ namespace RadialReview.Utilities
 			}
 		}
 
+		public static void VtoLog(ISession s, UserOrganizationModel caller, long vtoId, string action, string notes = null)
+		{
+			try
+			{
+				var audit = new VtoAuditModel();
+				if (HttpContext.Current != null && HttpContext.Current.Request != null)
+				{
+					var r = HttpContext.Current.Request;
+					r.InputStream.Seek(0, SeekOrigin.Begin);
+					var oSR = new StreamReader(r.InputStream);
+					var sContent = oSR.ReadToEnd();
+					r.InputStream.Seek(0, SeekOrigin.Begin);
 
+					audit.Method = r.HttpMethod;
+					audit.Data = sContent;
+					audit.Path = r.Url.LocalPath;
+					audit.Query = r.Url.Query;
+					audit.UserAgent = r.UserAgent;
+				}
+
+				audit.Action = action;
+				audit.Vto = s.Load<VtoModel>(vtoId);
+
+				audit.User = caller.User;
+				audit.UserOrganization = caller;
+				audit.Notes = notes;
+				s.Save(audit);
+			}
+			catch (Exception e)
+			{
+
+			}
+		}
 
 		public static void L10Log(ISession s, UserOrganizationModel caller, long recurrenceId, string action,string notes=null)
 		{

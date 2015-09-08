@@ -5,6 +5,36 @@
 	margin-bottom: 10px;
 }
 
+	.vto .add-row {
+		color: lightgray;
+	}
+	.vto .add-row:after {
+		content: "Add row";
+		color: lightgray;
+	}
+	
+	.vto .add-row:hover, 
+	.vto .add-row:hover:after {
+		color: gray;
+		cursor: pointer;
+	}
+
+	.vto input {
+		border: 0px;
+		border-bottom: 1px dotted #dadada;	
+	}
+
+	.vto input:hover {
+		border: 0px;
+		border-bottom: 1px dotted #ef7622;	
+
+	}
+	.vto input:focus {
+		border: 0px;
+		border-bottom: 1px dotted #ef7622;	
+		outline: none;
+	}
+
 	.vto .goals {
 		font-weight: bold;
 	}
@@ -37,20 +67,35 @@
 		overflow: auto;
 		-moz-box-sizing: border-box;
 	}
-
+	
 	.vto .heading .organzation-name {
 		border: 1px solid black;
 		padding: 6px 12px;
+		position: relative;
+		width: 100%;
+		display: table;
 	}
+
+
+	.vto .heading .title {
+		padding: 4px;
+		display: table-cell;
+		width: 1px;
+		padding-right: 12px;
+	}
+
+	.vto .heading .organzation-name input {
+		width: calc(100% - 55px);
+		display: table-cell;
+		width: 100%;
+	}
+	
 
 	.vto .heading .icon {
 		height: 64px;
 		width: 64px;
 		display: inline-block;
 		float: left;
-	}
-
-	.vto .heading .organzation-name {
 	}
 
 	.vto .heading .page-title {
@@ -76,6 +121,19 @@
 		text-align: center;
 		font-weight: bold;
 	}
+	
+	.vto .core-values li .delete{
+		opacity: 0;
+		cursor: pointer;
+	}
+	.vto .core-values li:hover .delete:hover{
+		opacity: .8;
+		cursor: pointer;
+	}
+	
+	.vto .core-values li:hover .delete {
+		opacity: .2;
+	}
 
 	.vto .core-focus .title .boxed,
 	.vto .core-values .title .boxed,
@@ -84,7 +142,7 @@
 	.vto .three-year-picture .title.boxed {
 		text-align: center;
 		padding: 5px;
-		background-color: #ddd;
+		background-color: #cac8c8;
 	}
 
 	.vto .boxed.content {

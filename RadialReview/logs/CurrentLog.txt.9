@@ -1,30 +1,116 @@
-ERROR 2015-08-14 14:30:27,477 [5] BaseController         - Error: [/Scheduler/Reschedule]<<could not update: [RadialReview.Models.Scorecard.MeasurableModel#3][SQL: UPDATE `MeasurableModel` SET Title = ?, NextGeneration = ?, AccountableUserId = ?, AdminUserId = ?, Goal = ?, GoalDirection = ?, OrganizationId = ?, CreateTime = ?, DeleteTime = ?, UnitType = ?, DueDate = ?, DueTime = ?, FromTemplateItemId = ? WHERE Id = ?]>>
-NHibernate.Exceptions.GenericADOException: could not update: [RadialReview.Models.Scorecard.MeasurableModel#3][SQL: UPDATE `MeasurableModel` SET Title = ?, NextGeneration = ?, AccountableUserId = ?, AdminUserId = ?, Goal = ?, GoalDirection = ?, OrganizationId = ?, CreateTime = ?, DeleteTime = ?, UnitType = ?, DueDate = ?, DueTime = ?, FromTemplateItemId = ? WHERE Id = ?] ---> MySql.Data.MySqlClient.MySqlException: Deadlock found when trying to get lock; try restarting transaction
+ERROR 2015-08-17 19:28:09,362 [38] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:28:09,409 [38] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:28:09,409 [38] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+INFO  2015-08-18 02:57:55,319 [6] BaseController         - Organization: [/L10/Details/31] --> [/L10/Details/31]
+ERROR 2015-08-18 03:20:16,584 [17] BaseController         - Error: [/L10/Details/31]<<Cannot perform runtime binding on a null reference>>
+Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Cannot perform runtime binding on a null reference
+   at CallSite.Target(Closure , CallSite , Object )
+   at System.Dynamic.UpdateDelegates.UpdateAndExecute1[T0,TRet](CallSite site, T0 arg0)
+   at ASP._Page_Views_L10_Details_scorecard_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\L10\Details\scorecard.cshtml:line 216
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
+   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
+   at System.Web.Mvc.HtmlHelper.RenderPartialInternal(String partialViewName, ViewDataDictionary viewData, Object model, TextWriter writer, ViewEngineCollection viewEngineCollection)
+   at System.Web.Mvc.Html.PartialExtensions.Partial(HtmlHelper htmlHelper, String partialViewName, Object model, ViewDataDictionary viewData)
+   at System.Web.Mvc.Html.PartialExtensions.Partial(HtmlHelper htmlHelper, String partialViewName, ViewDataDictionary viewData)
+   at ASP._Page_Views_L10_Details_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\L10\Details.cshtml:line 183
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
+   at System.Web.WebPages.StartPage.RunPage()
+   at System.Web.WebPages.StartPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
+   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
+   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+INFO  2015-08-18 03:54:04,931 [70] BaseController         - Organization: [/L10/Details/31] --> [/L10/Details/31]
+INFO  2015-08-18 04:30:33,661 [13] BaseController         - Organization: [/L10/Load/31?page=&connection=275f2d32-3fc2-4c7f-8446-8d936fb4bb4d] --> [/L10/Load/31?page=&connection=275f2d32-3fc2-4c7f-8446-8d936fb4bb4d]
+INFO  2015-08-18 04:55:14,368 [42] BaseController         - Organization: [/L10/Details/31] --> [/L10/Details/31]
+INFO  2015-08-18 04:55:14,369 [49] BaseController         - Organization: [/L10/Details/31] --> [/L10/Details/31]
+INFO  2015-08-18 05:13:06,907 [28] BaseController         - Organization: [/L10/Details/31] --> [/L10/Details/31]
+INFO  2015-08-18 05:14:39,074 [28] BaseController         - Organization: [/L10/Details/31] --> [/L10/Details/31]
+INFO  2015-08-18 05:20:34,502 [42] BaseController         - Organization: [/L10/Meeting/31] --> [/L10/Meeting/31]
+INFO  2015-08-18 05:20:36,222 [33] BaseController         - Organization: [/L10/Details/31] --> [/L10/Details/31]
+INFO  2015-08-18 05:25:45,961 [42] BaseController         - Organization: [/L10/Meeting/31] --> [/L10/Meeting/31]
+INFO  2015-08-18 05:25:47,491 [14] BaseController         - Organization: [/L10/Details/31] --> [/L10/Details/31]
+ERROR 2015-08-18 05:26:09,945 [42] ADOExceptionReporter   - The value "RadialReview.Models.L10.L10Meeting+L10Meeting_Measurable" is not of type "RadialReview.Models.L10.L10Recurrence+L10Recurrence_Measurable" and cannot be used in this generic collection.
+Parameter name: value
+INFO  2015-08-18 05:30:08,755 [14] BaseController         - Organization: [/L10/Details/31] --> [/L10/Details/31]
+ERROR 2015-08-21 15:51:05,272 [20] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id94_0_, this_.Ordering as Ordering94_0_, this_.CreateTime as CreateTime94_0_, this_.DeleteTime as DeleteTime94_0_, this_.CompleteTime as Complete5_94_0_, this_.DueDate as DueDate94_0_, this_.ForModel as ForModel94_0_, this_.ForModelId as ForModelId94_0_, this_.Message as Message94_0_, this_.Details as Details94_0_, this_.CreatedById as Created11_94_0_, this_.AccountableUserId as Account12_94_0_, this_.CreatedDuringMeetingId as Created13_94_0_, this_.ForRecurrenceId as ForRecu14_94_0_, this_.OrganizationId as Organiz15_94_0_ FROM `TodoModel` this_ WHERE (((?p0 <= this_.DueDate and this_.DueDate <= ?p1) or (this_.CompleteTime is null and this_.DueDate <= ?p2)) and this_.DeleteTime is null)
+MySql.Data.MySqlClient.MySqlException (0x80004005): Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
    at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
    at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
-   at NHibernate.AdoNet.NonBatchingBatcher.AddToBatch(IExpectation expectation)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
+   at MySql.Data.MySqlClient.ExceptionInterceptor.Throw(Exception exception)
+   at MySql.Data.MySqlClient.MySqlConnection.Throw(Exception ex)
+   at MySql.Data.MySqlClient.MySqlConnection.HandleTimeoutOrThreadAbort(Exception ex)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+ERROR 2015-08-21 15:51:05,293 [20] ADOExceptionReporter   - Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+ERROR 2015-08-21 15:51:05,293 [20] ADOExceptionReporter   - Timeout in IO operation
+ERROR 2015-08-21 15:51:05,309 [20] ADOExceptionReporter   - Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+ERROR 2015-08-21 15:51:05,309 [20] ADOExceptionReporter   - Timeout in IO operation
+ERROR 2015-08-21 15:51:05,310 [20] ADOExceptionReporter   - Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+ERROR 2015-08-21 15:51:05,310 [20] ADOExceptionReporter   - Timeout in IO operation
+ERROR 2015-08-21 15:51:05,370 [20] BaseController         - Error: [/Scheduler/EmailTodos?currentTime=0]<<could not execute query
+[ SELECT this_.Id as Id94_0_, this_.Ordering as Ordering94_0_, this_.CreateTime as CreateTime94_0_, this_.DeleteTime as DeleteTime94_0_, this_.CompleteTime as Complete5_94_0_, this_.DueDate as DueDate94_0_, this_.ForModel as ForModel94_0_, this_.ForModelId as ForModelId94_0_, this_.Message as Message94_0_, this_.Details as Details94_0_, this_.CreatedById as Created11_94_0_, this_.AccountableUserId as Account12_94_0_, this_.CreatedDuringMeetingId as Created13_94_0_, this_.ForRecurrenceId as ForRecu14_94_0_, this_.OrganizationId as Organiz15_94_0_ FROM `TodoModel` this_ WHERE (((?p0 <= this_.DueDate and this_.DueDate <= ?p1) or (this_.CompleteTime is null and this_.DueDate <= ?p2)) and this_.DeleteTime is null) ]
+  Name:cp0 - Value:8/20/2015 12:00:00 AM  Name:cp1 - Value:8/25/2015 11:59:59 PM  Name:cp2 - Value:8/28/2015 12:00:00 AM
+[SQL: SELECT this_.Id as Id94_0_, this_.Ordering as Ordering94_0_, this_.CreateTime as CreateTime94_0_, this_.DeleteTime as DeleteTime94_0_, this_.CompleteTime as Complete5_94_0_, this_.DueDate as DueDate94_0_, this_.ForModel as ForModel94_0_, this_.ForModelId as ForModelId94_0_, this_.Message as Message94_0_, this_.Details as Details94_0_, this_.CreatedById as Created11_94_0_, this_.AccountableUserId as Account12_94_0_, this_.CreatedDuringMeetingId as Created13_94_0_, this_.ForRecurrenceId as ForRecu14_94_0_, this_.OrganizationId as Organiz15_94_0_ FROM `TodoModel` this_ WHERE (((?p0 <= this_.DueDate and this_.DueDate <= ?p1) or (this_.CompleteTime is null and this_.DueDate <= ?p2)) and this_.DeleteTime is null)]>>
+NHibernate.Exceptions.GenericADOException: could not execute query
+[ SELECT this_.Id as Id94_0_, this_.Ordering as Ordering94_0_, this_.CreateTime as CreateTime94_0_, this_.DeleteTime as DeleteTime94_0_, this_.CompleteTime as Complete5_94_0_, this_.DueDate as DueDate94_0_, this_.ForModel as ForModel94_0_, this_.ForModelId as ForModelId94_0_, this_.Message as Message94_0_, this_.Details as Details94_0_, this_.CreatedById as Created11_94_0_, this_.AccountableUserId as Account12_94_0_, this_.CreatedDuringMeetingId as Created13_94_0_, this_.ForRecurrenceId as ForRecu14_94_0_, this_.OrganizationId as Organiz15_94_0_ FROM `TodoModel` this_ WHERE (((?p0 <= this_.DueDate and this_.DueDate <= ?p1) or (this_.CompleteTime is null and this_.DueDate <= ?p2)) and this_.DeleteTime is null) ]
+  Name:cp0 - Value:8/20/2015 12:00:00 AM  Name:cp1 - Value:8/25/2015 11:59:59 PM  Name:cp2 - Value:8/28/2015 12:00:00 AM
+[SQL: SELECT this_.Id as Id94_0_, this_.Ordering as Ordering94_0_, this_.CreateTime as CreateTime94_0_, this_.DeleteTime as DeleteTime94_0_, this_.CompleteTime as Complete5_94_0_, this_.DueDate as DueDate94_0_, this_.ForModel as ForModel94_0_, this_.ForModelId as ForModelId94_0_, this_.Message as Message94_0_, this_.Details as Details94_0_, this_.CreatedById as Created11_94_0_, this_.AccountableUserId as Account12_94_0_, this_.CreatedDuringMeetingId as Created13_94_0_, this_.ForRecurrenceId as ForRecu14_94_0_, this_.OrganizationId as Organiz15_94_0_ FROM `TodoModel` this_ WHERE (((?p0 <= this_.DueDate and this_.DueDate <= ?p1) or (this_.CompleteTime is null and this_.DueDate <= ?p2)) and this_.DeleteTime is null)] ---> MySql.Data.MySqlClient.MySqlException: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
    --- End of inner exception stack trace ---
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.UpdateOrInsert(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Int32[] dirtyFields, Boolean hasDirtyCollection, Object[] oldFields, Object oldVersion, Object obj, Object rowId, ISessionImplementor session)
-   at NHibernate.Action.EntityUpdateAction.Execute()
-   at NHibernate.Engine.ActionQueue.Execute(IExecutable executable)
-   at NHibernate.Engine.ActionQueue.ExecuteActions(IList list)
-   at NHibernate.Engine.ActionQueue.ExecuteActions()
-   at NHibernate.Event.Default.AbstractFlushingEventListener.PerformExecutions(IEventSource session)
-   at NHibernate.Event.Default.DefaultFlushEventListener.OnFlush(FlushEvent event)
-   at NHibernate.Impl.SessionImpl.Flush()
-   at NHibernate.Transaction.AdoTransaction.Commit()
-   at RadialReview.Accessors.TaskAccessor.UpdateScorecard(DateTime now) in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 334
-   at RadialReview.Controllers.SchedulerController.<Reschedule>d__26.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 188
+   at MySql.Data.MySqlClient.ExceptionInterceptor.Throw(Exception exception)
+   at MySql.Data.MySqlClient.MySqlConnection.Throw(Exception ex)
+   at MySql.Data.MySqlClient.MySqlConnection.HandleTimeoutOrThreadAbort(Exception ex)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+   at NHibernate.Loader.Loader.GetResultSet(IDbCommand st, Boolean autoDiscoverTypes, Boolean callable, RowSelection selection, ISessionImplementor session)
+   at NHibernate.Loader.Loader.DoQuery(ISessionImplementor session, QueryParameters queryParameters, Boolean returnProxies)
+   at NHibernate.Loader.Loader.DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, Boolean returnProxies)
+   at NHibernate.Loader.Loader.DoList(ISessionImplementor session, QueryParameters queryParameters)
+   --- End of inner exception stack trace ---
+   at NHibernate.Loader.Loader.DoList(ISessionImplementor session, QueryParameters queryParameters)
+   at NHibernate.Loader.Loader.ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)
+   at NHibernate.Loader.Loader.List(ISessionImplementor session, QueryParameters queryParameters, ISet`1 querySpaces, IType[] resultTypes)
+   at NHibernate.Loader.Criteria.CriteriaLoader.List(ISessionImplementor session)
+   at NHibernate.Impl.SessionImpl.List(CriteriaImpl criteria, IList results)
+   at NHibernate.Impl.CriteriaImpl.List(IList results)
+   at NHibernate.Impl.CriteriaImpl.List[T]()
+   at NHibernate.Criterion.QueryOver`1.List()
+   at NHibernate.Criterion.QueryOver`1.NHibernate.IQueryOver<TRoot>.List()
+   at RadialReview.Controllers.SchedulerController.<EmailTodos>d__1c.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 55
 --- End of stack trace from previous location where exception was thrown ---
    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
@@ -46,56 +132,3 @@ NHibernate.Exceptions.GenericADOException: could not update: [RadialReview.Model
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
-INFO  2015-08-15 01:20:08,240 [11] BaseAccessor           - CreateReview user=106 for review=162
-INFO  2015-08-15 01:20:08,630 [11] BaseAccessor           - CreateReview user=1007 for review=162
-INFO  2015-08-15 01:20:08,694 [11] BaseAccessor           - CreateReview user=104 for review=162
-INFO  2015-08-15 01:20:08,708 [11] BaseAccessor           - CreateReview user=875 for review=162
-INFO  2015-08-15 01:20:08,918 [11] BaseAccessor           - CreateReview user=910 for review=162
-INFO  2015-08-15 01:20:09,077 [11] BaseAccessor           - CreateReview user=102 for review=162
-INFO  2015-08-15 01:20:09,225 [11] BaseAccessor           - CreateReview user=1035 for review=162
-INFO  2015-08-15 01:20:09,310 [11] BaseAccessor           - CreateReview user=266 for review=162
-INFO  2015-08-15 01:20:09,434 [11] BaseAccessor           - CreateReview user=267 for review=162
-INFO  2015-08-15 01:20:09,567 [11] BaseAccessor           - CreateReview user=275 for review=162
-INFO  2015-08-15 01:20:09,601 [11] BaseAccessor           - CreateReview user=268 for review=162
-INFO  2015-08-15 01:20:09,615 [11] BaseAccessor           - CreateReview user=873 for review=162
-INFO  2015-08-15 01:20:09,704 [11] BaseAccessor           - CreateReview user=264 for review=162
-INFO  2015-08-15 01:20:09,806 [11] BaseAccessor           - CreateReview user=538 for review=162
-INFO  2015-08-15 01:20:09,924 [11] BaseAccessor           - CreateReview user=276 for review=162
-INFO  2015-08-15 01:20:09,950 [11] BaseAccessor           - CreateReview user=278 for review=162
-INFO  2015-08-15 01:20:10,013 [11] BaseAccessor           - CreateReview user=277 for review=162
-INFO  2015-08-15 01:20:10,074 [11] BaseAccessor           - CreateReview user=279 for review=162
-INFO  2015-08-15 01:20:10,109 [11] BaseAccessor           - CreateReview user=280 for review=162
-INFO  2015-08-15 01:20:10,143 [11] BaseAccessor           - CreateReview user=281 for review=162
-INFO  2015-08-15 01:20:10,170 [11] BaseAccessor           - CreateReview user=539 for review=162
-INFO  2015-08-15 01:27:40,120 [15] BaseAccessor           - CreateReview user=106 for review=163
-INFO  2015-08-15 01:27:40,425 [15] BaseAccessor           - CreateReview user=1007 for review=163
-INFO  2015-08-15 01:27:40,478 [15] BaseAccessor           - CreateReview user=104 for review=163
-INFO  2015-08-15 01:27:40,499 [15] BaseAccessor           - CreateReview user=875 for review=163
-INFO  2015-08-15 01:27:40,647 [15] BaseAccessor           - CreateReview user=910 for review=163
-INFO  2015-08-15 01:27:40,804 [15] BaseAccessor           - CreateReview user=102 for review=163
-INFO  2015-08-15 01:27:40,949 [15] BaseAccessor           - CreateReview user=1035 for review=163
-INFO  2015-08-15 01:27:41,195 [15] BaseAccessor           - CreateReview user=266 for review=163
-INFO  2015-08-15 01:27:41,416 [15] BaseAccessor           - CreateReview user=267 for review=163
-INFO  2015-08-15 01:27:41,578 [15] BaseAccessor           - CreateReview user=275 for review=163
-INFO  2015-08-15 01:27:41,636 [15] BaseAccessor           - CreateReview user=268 for review=163
-INFO  2015-08-15 01:27:41,653 [15] BaseAccessor           - CreateReview user=873 for review=163
-INFO  2015-08-15 01:27:41,736 [15] BaseAccessor           - CreateReview user=264 for review=163
-INFO  2015-08-15 01:27:41,761 [15] BaseAccessor           - CreateReview user=538 for review=163
-INFO  2015-08-15 01:27:41,894 [15] BaseAccessor           - CreateReview user=276 for review=163
-INFO  2015-08-15 01:27:41,931 [15] BaseAccessor           - CreateReview user=278 for review=163
-INFO  2015-08-15 01:27:42,078 [15] BaseAccessor           - CreateReview user=277 for review=163
-INFO  2015-08-15 01:27:42,131 [15] BaseAccessor           - CreateReview user=279 for review=163
-INFO  2015-08-15 01:27:42,196 [15] BaseAccessor           - CreateReview user=280 for review=163
-INFO  2015-08-15 01:27:42,235 [15] BaseAccessor           - CreateReview user=281 for review=163
-INFO  2015-08-15 01:27:42,260 [15] BaseAccessor           - CreateReview user=539 for review=163
-ERROR 2015-08-17 15:04:44,191 [12] AbstractBatcher        - Could not execute query: SELECT userorgani0_.ResponsibilityGroupModel_id as Id18_0_, userorgani0_1_.DeleteTime as DeleteTime18_0_, userorgani0_1_.Organization_id as Organiza3_18_0_, userorgani0_.IsRadialAdmin as IsRadial2_22_0_, userorgani0_.CountPerPage as CountPer3_22_0_, userorgani0_.ManagingOrganization as Managing4_22_0_, userorgani0_.ManagerAtOrganization as ManagerA5_22_0_, userorgani0_.AttachTime as AttachTime22_0_, userorgani0_.CreateTime as CreateTime22_0_, userorgani0_.DetachTime as DetachTime22_0_, userorgani0_.DeleteTime as DeleteTime22_0_, userorgani0_.EmailAtOrganization as EmailAt10_22_0_, userorgani0_.JobDescription as JobDesc11_22_0_, userorgani0_.JobDescriptionFromTemplateId as JobDesc12_22_0_, userorgani0_.TempUser_id as TempUser13_22_0_, userorgani0_.Cache_id as Cache14_22_0_, userorgani0_.User_id as User15_22_0_ FROM `UserOrganizationModel` userorgani0_ inner join `ResponsibilityGroupModel` userorgani0_1_ on userorgani0_.ResponsibilityGroupModel_id=userorgani0_1_.Id WHERE userorgani0_.ResponsibilityGroupModel_id=?p0
-MySql.Data.MySqlClient.MySqlException (0x80004005): Table definition has changed, please retry transaction
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)

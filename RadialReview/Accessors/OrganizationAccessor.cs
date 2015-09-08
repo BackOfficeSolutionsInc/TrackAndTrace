@@ -2,12 +2,18 @@
 using Amazon.ElasticMapReduce.Model;
 using Amazon.ElasticTranscoder.Model;
 using FluentNHibernate.Utils;
+using Microsoft.AspNet.SignalR;
 using RadialReview.Exceptions;
+using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.CompanyValue;
+using RadialReview.Models.Angular.VTO;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Periods;
 using RadialReview.Models.Permissions;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Models.VTO;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -613,8 +619,7 @@ namespace RadialReview.Accessors
 	    public static List<CompanyValueModel> GetCompanyValues(AbstractQuery query,PermissionsUtility perms, long organizationId,DateRange range)
 	    {
 			perms.ViewOrganization(organizationId);
-			return query.Where<CompanyValueModel>(x => x.OrganizationId == organizationId).FilterRange(range)
-				.ToList();
+			return query.Where<CompanyValueModel>(x => x.OrganizationId == organizationId).FilterRange(range).ToList();
 	    }
 
 		public List<CompanyValueModel> GetCompanyValues(UserOrganizationModel caller, long organizationId,DateRange range=null)
@@ -628,20 +633,39 @@ namespace RadialReview.Accessors
 			}
 	    }
 
+		public static void EditCompanyValues(ISession s, PermissionsUtility perms, long organizationId, List<CompanyValueModel> companyValues)
+		{
+			perms.EditCompanyValues(organizationId);
+			var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+
+				
+			foreach (var r in companyValues)
+			{
+				if (r.OrganizationId != organizationId)
+					throw new PermissionsException("You do not have access to this value.");
+
+				r.Category = category;
+				s.SaveOrUpdate(r);
+			}
+
+			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+			var vtoIds = s.QueryOver<VtoModel>().Where(x => x.Organization.Id == organizationId).Select(x => x.Id).List<long>();
+			foreach (var vtoId in vtoIds)
+			{
+				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId));
+				group.update(new AngularVTO(vtoId){
+					Values = AngularList.Create(AngularListType.ReplaceAll,  AngularCompanyValue.Create(companyValues))
+				});
+			}
+
+
+		}
 		public void EditCompanyValues(UserOrganizationModel caller, long organizationId, List<CompanyValueModel> companyValues)
 		{
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
-					PermissionsUtility.Create(s, caller).EditOrganization(organizationId);
-					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
-
-					foreach (var r in companyValues){
-						if (r.OrganizationId!=organizationId)
-							throw new PermissionsException("You do not have access to this value.");
-
-						r.Category = category;
-						s.SaveOrUpdate(r);
-					}
+					var perms = PermissionsUtility.Create(s, caller);
+					EditCompanyValues(s, perms, organizationId, companyValues);
 					tx.Commit();
 					s.Flush();
 				}

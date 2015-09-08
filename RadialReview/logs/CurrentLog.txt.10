@@ -1,131 +1,88 @@
-ERROR 2015-08-12 15:00:43,563 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-12 15:00:43,610 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-12 15:00:51,298 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-12 15:00:51,329 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-12 15:01:01,278 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-12 15:01:01,309 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-12 15:01:11,794 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-12 15:01:11,825 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-INFO  2015-08-14 14:27:13,707 [5] BaseController         - Login: [/Issue/Index] --> [/Issue/Index]
-ERROR 2015-08-14 14:30:27,385 [16] AbstractBatcher        - Could not execute command: UPDATE `MeasurableModel` SET Title = ?p0, NextGeneration = ?p1, AccountableUserId = ?p2, AdminUserId = ?p3, Goal = ?p4, GoalDirection = ?p5, OrganizationId = ?p6, CreateTime = ?p7, DeleteTime = ?p8, UnitType = ?p9, DueDate = ?p10, DueTime = ?p11, FromTemplateItemId = ?p12 WHERE Id = ?p13
-MySql.Data.MySqlClient.MySqlException (0x80004005): Deadlock found when trying to get lock; try restarting transaction
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+INFO  2015-08-17 17:07:20,365 [23] BaseController         - Organization: [/Manage/UserDetails/948] --> [/Manage/UserDetails/948]
+INFO  2015-08-17 17:21:36,505 [5] BaseController         - Organization: [/Measurable/BlankEditorRow?admin=948&_=1439849464583] --> [/Measurable/BlankEditorRow?admin=948&_=1439849464583]
+INFO  2015-08-17 17:21:36,505 [34] BaseController         - Organization: [/Measurable/BlankEditorRow?admin=948&_=1439849464584] --> [/Measurable/BlankEditorRow?admin=948&_=1439849464584]
+INFO  2015-08-17 17:21:36,505 [44] BaseController         - Organization: [/Measurable/BlankEditorRow?admin=948&_=1439849464585] --> [/Measurable/BlankEditorRow?admin=948&_=1439849464585]
+INFO  2015-08-17 17:23:21,598 [45] BaseController         - Permissions: [/L10/timeline/3] --> []
+INFO  2015-08-17 17:23:25,761 [44] BaseController         - Permissions: [/L10/timeline/3] --> []
+INFO  2015-08-17 18:17:33,566 [44] BaseController         - Organization: [/Manage/UserDetails/948] --> [/Manage/UserDetails/948]
+INFO  2015-08-17 18:21:52,198 [46] BaseController         - Organization: [/Manage/UserDetails/948] --> [/Manage/UserDetails/948]
+INFO  2015-08-17 18:46:14,426 [23] BaseController         - Organization: [/Nexus/SendAllEmails] --> [/Nexus/SendAllEmails]
+INFO  2015-08-17 18:46:20,375 [41] BaseController         - Organization: [/Manage/Members] --> [/Manage/Members]
+INFO  2015-08-17 18:47:47,853 [27] BaseController         - Organization: [/Manage/Members] --> [/Manage/Members]
+ERROR 2015-08-17 19:22:54,230 [47] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0, ?p1, ?p2, ?p3)
+System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+   at System.Convert.ToInt64(Object value)
+   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
+   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
+   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
+   at MySql.Data.MySqlClient.Statement.BindParameters()
+   at MySql.Data.MySqlClient.PreparableStatement.Execute()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
-ERROR 2015-08-14 14:30:27,415 [16] ADOExceptionReporter   - Deadlock found when trying to get lock; try restarting transaction
-ERROR 2015-08-14 14:30:27,428 [16] tFlushingEventListener - Could not synchronize database state with session
-NHibernate.Exceptions.GenericADOException: could not update: [RadialReview.Models.Scorecard.MeasurableModel#3][SQL: UPDATE `MeasurableModel` SET Title = ?, NextGeneration = ?, AccountableUserId = ?, AdminUserId = ?, Goal = ?, GoalDirection = ?, OrganizationId = ?, CreateTime = ?, DeleteTime = ?, UnitType = ?, DueDate = ?, DueTime = ?, FromTemplateItemId = ? WHERE Id = ?] ---> MySql.Data.MySqlClient.MySqlException: Deadlock found when trying to get lock; try restarting transaction
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+ERROR 2015-08-17 19:22:54,238 [47] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:22:54,240 [47] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:22:54,241 [47] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:23:14,477 [12] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
+System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+   at System.Convert.ToInt64(Object value)
+   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
+   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
+   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
+   at MySql.Data.MySqlClient.Statement.BindParameters()
+   at MySql.Data.MySqlClient.PreparableStatement.Execute()
    at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteNonQuery(IDbCommand cmd)
-   at NHibernate.AdoNet.NonBatchingBatcher.AddToBatch(IExpectation expectation)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
-   --- End of inner exception stack trace ---
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.UpdateOrInsert(Object id, Object[] fields, Object[] oldFields, Object rowId, Boolean[] includeProperty, Int32 j, Object oldVersion, Object obj, SqlCommandInfo sql, ISessionImplementor session)
-   at NHibernate.Persister.Entity.AbstractEntityPersister.Update(Object id, Object[] fields, Int32[] dirtyFields, Boolean hasDirtyCollection, Object[] oldFields, Object oldVersion, Object obj, Object rowId, ISessionImplementor session)
-   at NHibernate.Action.EntityUpdateAction.Execute()
-   at NHibernate.Engine.ActionQueue.Execute(IExecutable executable)
-   at NHibernate.Engine.ActionQueue.ExecuteActions(IList list)
-   at NHibernate.Engine.ActionQueue.ExecuteActions()
-   at NHibernate.Event.Default.AbstractFlushingEventListener.PerformExecutions(IEventSource session)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+ERROR 2015-08-17 19:23:14,477 [12] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:23:14,477 [12] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:23:14,477 [12] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:24:17,701 [20] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
+System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+   at System.Convert.ToInt64(Object value)
+   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
+   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
+   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
+   at MySql.Data.MySqlClient.Statement.BindParameters()
+   at MySql.Data.MySqlClient.PreparableStatement.Execute()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+ERROR 2015-08-17 19:24:17,702 [20] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:24:17,702 [20] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:24:17,702 [20] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:24:35,184 [45] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
+System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+   at System.Convert.ToInt64(Object value)
+   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
+   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
+   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
+   at MySql.Data.MySqlClient.Statement.BindParameters()
+   at MySql.Data.MySqlClient.PreparableStatement.Execute()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+ERROR 2015-08-17 19:24:35,185 [45] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:24:35,185 [45] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:24:35,185 [45] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+ERROR 2015-08-17 19:28:09,335 [38] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
+System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
+   at System.Convert.ToInt64(Object value)
+   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
+   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
+   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
+   at MySql.Data.MySqlClient.Statement.BindParameters()
+   at MySql.Data.MySqlClient.PreparableStatement.Execute()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)

@@ -159,6 +159,14 @@ function ($scope, $http, $timeout, signalR, vtoDataUrlBase, vtoId, vtoCallback) 
 			showJsonAlert(data, true, true);
 		});
 	};
+	$scope.functions.Get = function (url, dat) {
+		var _clientTimestamp = new Date().getTime();
+		url+=(url.indexOf("?") != -1)?"&":"?";
+		url += "connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp;
+		$http.get(url).error(function (data) {
+			showJsonAlert(data, false, true);
+		});
+	};
 
 	$scope.functions.showModal = function (title, pull, push, callback, validation, onSuccess) {
 		showModal(title, pull, push, callback, validation, onSuccess);

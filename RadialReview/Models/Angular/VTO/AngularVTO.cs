@@ -31,7 +31,7 @@ namespace RadialReview.Models.Angular.VTO
 		public AngularQuarterlyRocks QuarterlyRocks { get; set; }
 		public AngularThreeYearPicture ThreeYearPicture { get; set; }
 		public AngularOneYearPlan OneYearPlan { get; set; }
-		public List<AngularCompanyValue> Values { get; set; }
+		public IEnumerable<AngularCompanyValue> Values { get; set; }
 
 
 		public static AngularVTO Create(VtoModel vto)
@@ -125,15 +125,15 @@ namespace RadialReview.Models.Angular.VTO
 		public AngularCoreFocus(){
 		}
 
-		public AngularVtoString Purpose { get; set; }
-		public AngularVtoString Niche { get; set; }
+		public String Purpose { get; set; }
+		public String Niche { get; set; }
 
 		public static AngularCoreFocus Create(VtoModel.CoreFocusModel coreFocus)
 		{
 			return new AngularCoreFocus(){
 				Id=coreFocus.Id,
-				Niche = AngularVtoString.Create(coreFocus.Niche),
-				Purpose = AngularVtoString.Create(coreFocus.Purpose),
+				Niche = coreFocus.Niche,
+				Purpose = (coreFocus.Purpose),
 			};
 		}
 	}
@@ -147,10 +147,10 @@ namespace RadialReview.Models.Angular.VTO
 		public AngularStrategy()
 		{
 		}
-		public AngularVtoString TenYearTarget { get; set; }
-		public AngularVtoString TargetMarket { get; set; }
-		public AngularVtoString ProvenProcess { get; set; }
-		public AngularVtoString Guarantee { get; set; }
+		public String TenYearTarget { get; set; }
+		public String TargetMarket { get; set; }
+		public String ProvenProcess { get; set; }
+		public String Guarantee { get; set; }
 		public List<AngularVtoString> Uniques { get; set; }
 
 		internal static AngularStrategy Create(VtoModel.MarketingStrategyModel marketingStrategyModel)
@@ -158,10 +158,10 @@ namespace RadialReview.Models.Angular.VTO
 			return new AngularStrategy()
 			{
 				Id = marketingStrategyModel.Id,
-				Guarantee = AngularVtoString.Create(marketingStrategyModel.Guarantee),
-				ProvenProcess = AngularVtoString.Create(marketingStrategyModel.ProvenProcess),
-				TargetMarket = AngularVtoString.Create(marketingStrategyModel.TargetMarket),
-				TenYearTarget = AngularVtoString.Create(marketingStrategyModel.TenYearTarget),
+				Guarantee = (marketingStrategyModel.Guarantee),
+				ProvenProcess = (marketingStrategyModel.ProvenProcess),
+				TargetMarket = (marketingStrategyModel.TargetMarket),
+				TenYearTarget = (marketingStrategyModel.TenYearTarget),
 				Uniques = AngularVtoString.Create(marketingStrategyModel._Uniques),
 			};
 		}
@@ -176,20 +176,20 @@ namespace RadialReview.Models.Angular.VTO
 		public AngularThreeYearPicture()
 		{
 		}
-		public AngularVtoDateTime FutureDate { get; set; }
-		public AngularVtoDecimal Revenue { get; set; }
-		public AngularVtoDecimal Profit { get; set; }
-		public AngularVtoString Measurables { get; set; }
+		public DateTime? FutureDate { get; set; }
+		public Decimal? Revenue { get; set; }
+		public Decimal? Profit { get; set; }
+		public String Measurables { get; set; }
 		public List<AngularVtoString> LooksLike { get; set; }
 
 		public static AngularThreeYearPicture Create(VtoModel.ThreeYearPictureModel threeYearPicture)
 		{
 			return new AngularThreeYearPicture(){
-				FutureDate = AngularVtoDateTime.Create(threeYearPicture.FutureDate),
+				FutureDate = (threeYearPicture.FutureDate),
 				LooksLike = AngularVtoString.Create(threeYearPicture._LooksLike),
-				Measurables = AngularVtoString.Create(threeYearPicture.Measurables),
-				Profit = AngularVtoDecimal.Create(threeYearPicture.Profit),
-				Revenue = AngularVtoDecimal.Create(threeYearPicture.Revenue),
+				Measurables = (threeYearPicture.Measurables),
+				Profit = (threeYearPicture.Profit),
+				Revenue = (threeYearPicture.Revenue),
 				Id = threeYearPicture.Id
 			};
 		}
@@ -202,20 +202,20 @@ namespace RadialReview.Models.Angular.VTO
 		}
 		public AngularOneYearPlan(){
 		}
-		public AngularVtoDateTime FutureDate { get; set; }
-		public AngularVtoDecimal Revenue { get; set; }
-		public AngularVtoDecimal Profit { get; set; }
-		public AngularVtoString Measurables { get; set; }
+		public DateTime? FutureDate { get; set; }
+		public Decimal? Revenue { get; set; }
+		public Decimal? Profit { get; set; }
+		public String Measurables { get; set; }
 		public List<AngularVtoString> GoalsForYear { get; set; }
 
 		public static AngularOneYearPlan Create(VtoModel.OneYearPlanModel oneYearPlan)
 		{
 			return new AngularOneYearPlan(){
-				FutureDate = AngularVtoDateTime.Create(oneYearPlan.FutureDate),
+				FutureDate = (oneYearPlan.FutureDate),
 				GoalsForYear = AngularVtoString.Create(oneYearPlan._GoalsForYear),
-				Measurables = AngularVtoString.Create(oneYearPlan.Measurables),
-				Profit = AngularVtoDecimal.Create(oneYearPlan.Profit),
-				Revenue = AngularVtoDecimal.Create(oneYearPlan.Revenue),
+				Measurables = (oneYearPlan.Measurables),
+				Profit = (oneYearPlan.Profit),
+				Revenue = (oneYearPlan.Revenue),
 			};
 		}
 	}
@@ -227,20 +227,20 @@ namespace RadialReview.Models.Angular.VTO
 		}
 		public AngularQuarterlyRocks(){
 		}
-		public AngularVtoDateTime FutureDate { get; set; }
-		public AngularVtoDecimal Revenue { get; set; }
-		public AngularVtoDecimal Profit { get; set; }
-		public AngularVtoString Measurables { get; set; }
+		public DateTime? FutureDate { get; set; }
+		public Decimal? Revenue { get; set; }
+		public Decimal? Profit { get; set; }
+		public String Measurables { get; set; }
 		public List<AngularVtoRock> Rocks { get; set; }
 
 		public static AngularQuarterlyRocks Create(VtoModel.QuarterlyRocksModel quarterlyRocksModel)
 		{
 			return new AngularQuarterlyRocks(){
 				Id = quarterlyRocksModel.Id,
-				FutureDate = AngularVtoDateTime.Create(quarterlyRocksModel.FutureDate),
-				Measurables = AngularVtoString.Create(quarterlyRocksModel.Measurables),
-				Profit = AngularVtoDecimal.Create(quarterlyRocksModel.Profit),
-				Revenue = AngularVtoDecimal.Create(quarterlyRocksModel.Revenue),
+				FutureDate = (quarterlyRocksModel.FutureDate),
+				Measurables = (quarterlyRocksModel.Measurables),
+				Profit = (quarterlyRocksModel.Profit),
+				Revenue = (quarterlyRocksModel.Revenue),
 				Rocks = AngularVtoRock.Create(quarterlyRocksModel._Rocks)
 			};
 		}

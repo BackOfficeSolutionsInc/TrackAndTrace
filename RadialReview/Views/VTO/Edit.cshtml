@@ -38,7 +38,7 @@
 						</div>
 						<div class="col-lg-8">
 							<div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
-							<div class="organzation-name"><span class="title">NAME:</span><input  ng-change="functions.sendUpdate((model| transform:this).Name)" ng-model="(model| transform:this).Name.Data " type="text" ng-model-options="{ debounce: 250 }" > </div>
+							<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model| transform:this))" ng-model="(model| transform:this).Name " type="text" ng-model-options="{ debounce: 250 }" > </div>
 							<div class="page-title">VISION</div>
 						</div>
 						<div class="col-lg-1"></div>
@@ -66,11 +66,13 @@
 											<div style="display:table; width: 100%;height: 100%;">
 												<div style="display:table-cell;vertical-align:middle;">
 													<ol>
-														<li>asdf</li>
-														<li>asdf</li>
-														<li>asdasdf</li>
-														<li>asewrdf</li>
-														<li>a235sdf</li>
+														<li ng-repeat="value in (model| transform:this).Values">
+															<div ng-if="value.Deleted===false">
+																<input ng-change="functions.sendUpdate(value)" ng-model="value.CompanyValue" />
+																<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteCompanyValue?value='+value.Id)"></span>
+															</div>
+														</li>
+														<li class="add-row" ng-click="functions.Get('/VTO/AddCompanyValue?vto='+vtoId)"></li>
 													</ol>
 												</div>
 											</div>

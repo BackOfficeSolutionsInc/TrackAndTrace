@@ -1,82 +1,122 @@
-ERROR 2015-08-23 15:53:38,055 [54] nitializationException - Initializing[RadialReview.Models.UserModels.UserLookup#24]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserModels.UserLookup#24]-Could not initialize proxy - no Session.
-ERROR 2015-08-23 15:53:38,088 [54] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-ERROR 2015-08-23 15:53:38,101 [54] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-ERROR 2015-08-23 15:53:38,146 [54] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-ERROR 2015-08-23 15:53:38,177 [54] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#74]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-INFO  2015-08-25 17:16:58,453 [152] BaseController         - Redirect: [/l10/UpdateScore/31?s=5268&w=1440288000000&m=231&value=1&dom=sc_5268&_clientTimestamp=1440540941727] --> []
-INFO  2015-08-25 17:17:54,360 [152] BaseController         - Redirect: [/l10/UpdateScore/31?s=5268&w=1440288000000&m=231&value=11&dom=sc_5268&_clientTimestamp=1440541031036] --> []
-ERROR 2015-08-29 05:37:05,367 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts. ---> System.Net.Sockets.SocketException (0x80004005): No such host is known
-   at System.Net.Dns.GetAddrInfo(String name)
-   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)
-   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)
-   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
-   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-29 05:37:05,398 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts. ---> System.Net.Sockets.SocketException (0x80004005): No such host is known
-   at System.Net.Dns.GetAddrInfo(String name)
-   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)
-   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)
-   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
-   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-INFO  2015-09-01 00:44:13,065 [15] BaseController         - Login: [/vto] --> [/vto]
-INFO  2015-09-01 01:01:05,238 [52] BaseController         - Organization: [/vto] --> [/vto]
-ERROR 2015-09-04 16:49:22,942 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,210 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,221 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,233 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,245 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,257 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,268 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,284 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,296 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,309 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,321 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,331 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,344 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 16:49:24,356 [202] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 18:00:30,477 [50] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-ERROR 2015-09-04 18:00:30,504 [50] nitializationException - Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.VTO.VtoModel#1]-Could not initialize proxy - no Session.
+ERROR 2015-09-07 14:55:55,438 [41] AbstractBatcher        - Could not execute query: INSERT INTO `MarketingStrategyModel` (TenYearTarget, TargetMarket, ProvenProcess, Guarantee, Vto_id) VALUES (?p0, ?p1, ?p2, ?p3, ?p4);SELECT LAST_INSERT_ID()
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`marketingstrategymodel`, CONSTRAINT `FK9B5A6313801E8FB7` FOREIGN KEY (`TenYearTarget_id`) REFERENCES `vtoitem_string` (`VtoItem_id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+ERROR 2015-09-07 14:55:55,486 [41] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`marketingstrategymodel`, CONSTRAINT `FK9B5A6313801E8FB7` FOREIGN KEY (`TenYearTarget_id`) REFERENCES `vtoitem_string` (`VtoItem_id`))
+ERROR 2015-09-07 14:56:25,083 [41] BaseController         - Error: [/vto/edit]<<could not insert: [RadialReview.Models.VTO.VtoModel+MarketingStrategyModel][SQL: INSERT INTO `MarketingStrategyModel` (TenYearTarget, TargetMarket, ProvenProcess, Guarantee, Vto_id) VALUES (?, ?, ?, ?, ?);SELECT LAST_INSERT_ID()]>>
+NHibernate.Exceptions.GenericADOException: could not insert: [RadialReview.Models.VTO.VtoModel+MarketingStrategyModel][SQL: INSERT INTO `MarketingStrategyModel` (TenYearTarget, TargetMarket, ProvenProcess, Guarantee, Vto_id) VALUES (?, ?, ?, ?, ?);SELECT LAST_INSERT_ID()] ---> MySql.Data.MySqlClient.MySqlException: Cannot add or update a child row: a foreign key constraint fails (`radial`.`marketingstrategymodel`, CONSTRAINT `FK9B5A6313801E8FB7` FOREIGN KEY (`TenYearTarget_id`) REFERENCES `vtoitem_string` (`VtoItem_id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+   at NHibernate.Id.IdentityGenerator.InsertSelectDelegate.ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
+   at NHibernate.Id.Insert.AbstractReturningDelegate.PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
+   --- End of inner exception stack trace ---
+   at NHibernate.Id.Insert.AbstractReturningDelegate.PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object[] fields, Boolean[] notNull, SqlCommandInfo sql, Object obj, ISessionImplementor session)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object[] fields, Object obj, ISessionImplementor session)
+   at NHibernate.Action.EntityIdentityInsertAction.Execute()
+   at NHibernate.Engine.ActionQueue.Execute(IExecutable executable)
+   at NHibernate.Event.Default.AbstractSaveEventListener.PerformSaveOrReplicate(Object entity, EntityKey key, IEntityPersister persister, Boolean useIdentityColumn, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
+   at NHibernate.Event.Default.AbstractSaveEventListener.PerformSave(Object entity, Object id, IEntityPersister persister, Boolean useIdentityColumn, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
+   at NHibernate.Event.Default.AbstractSaveEventListener.SaveWithGeneratedId(Object entity, String entityName, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
+   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent event)
+   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.EntityIsTransient(SaveOrUpdateEvent event)
+   at NHibernate.Event.Default.DefaultSaveEventListener.PerformSaveOrUpdate(SaveOrUpdateEvent event)
+   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.OnSaveOrUpdate(SaveOrUpdateEvent event)
+   at NHibernate.Impl.SessionImpl.FireSave(SaveOrUpdateEvent event)
+   at NHibernate.Impl.SessionImpl.Save(Object obj)
+   at RadialReview.Accessors.VtoAccessor.CreateVTO(UserOrganizationModel caller, Int64 organizationId) in c:\repos\Radial\RadialReview\RadialReview\Accessors\VtoAccessor.cs:line 74
+   at RadialReview.Controllers.VTOController.Edit(Int64 id) in c:\repos\Radial\RadialReview\RadialReview\Controllers\VTOController.cs:line 37
+   at lambda_method(Closure , ControllerBase , Object[] )
+   at System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.ActionInvocation.InvokeSynchronousActionMethod()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<BeginInvokeSynchronousActionMethod>b__36(IAsyncResult asyncResult, ActionInvocation innerInvokeState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+ERROR 2015-09-07 15:04:23,224 [66] AbstractBatcher        - Could not execute query: INSERT INTO `CoreFocusModel` (Purpose, Niche, Vto_id) VALUES (?p0, ?p1, ?p2);SELECT LAST_INSERT_ID()
+MySql.Data.MySqlClient.MySqlException (0x80004005): Cannot add or update a child row: a foreign key constraint fails (`radial`.`corefocusmodel`, CONSTRAINT `FKC4167469E622B24B` FOREIGN KEY (`Purpose_id`) REFERENCES `vtoitem_string` (`VtoItem_id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+ERROR 2015-09-07 15:04:23,247 [66] ADOExceptionReporter   - Cannot add or update a child row: a foreign key constraint fails (`radial`.`corefocusmodel`, CONSTRAINT `FKC4167469E622B24B` FOREIGN KEY (`Purpose_id`) REFERENCES `vtoitem_string` (`VtoItem_id`))
+ERROR 2015-09-07 15:04:37,252 [66] BaseController         - Error: [/vto/edit]<<could not insert: [RadialReview.Models.VTO.VtoModel+CoreFocusModel][SQL: INSERT INTO `CoreFocusModel` (Purpose, Niche, Vto_id) VALUES (?, ?, ?);SELECT LAST_INSERT_ID()]>>
+NHibernate.Exceptions.GenericADOException: could not insert: [RadialReview.Models.VTO.VtoModel+CoreFocusModel][SQL: INSERT INTO `CoreFocusModel` (Purpose, Niche, Vto_id) VALUES (?, ?, ?);SELECT LAST_INSERT_ID()] ---> MySql.Data.MySqlClient.MySqlException: Cannot add or update a child row: a foreign key constraint fails (`radial`.`corefocusmodel`, CONSTRAINT `FKC4167469E622B24B` FOREIGN KEY (`Purpose_id`) REFERENCES `vtoitem_string` (`VtoItem_id`))
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+   at NHibernate.Id.IdentityGenerator.InsertSelectDelegate.ExecuteAndExtract(IDbCommand insert, ISessionImplementor session)
+   at NHibernate.Id.Insert.AbstractReturningDelegate.PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
+   --- End of inner exception stack trace ---
+   at NHibernate.Id.Insert.AbstractReturningDelegate.PerformInsert(SqlCommandInfo insertSQL, ISessionImplementor session, IBinder binder)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object[] fields, Boolean[] notNull, SqlCommandInfo sql, Object obj, ISessionImplementor session)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.Insert(Object[] fields, Object obj, ISessionImplementor session)
+   at NHibernate.Action.EntityIdentityInsertAction.Execute()
+   at NHibernate.Engine.ActionQueue.Execute(IExecutable executable)
+   at NHibernate.Event.Default.AbstractSaveEventListener.PerformSaveOrReplicate(Object entity, EntityKey key, IEntityPersister persister, Boolean useIdentityColumn, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
+   at NHibernate.Event.Default.AbstractSaveEventListener.PerformSave(Object entity, Object id, IEntityPersister persister, Boolean useIdentityColumn, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
+   at NHibernate.Event.Default.AbstractSaveEventListener.SaveWithGeneratedId(Object entity, String entityName, Object anything, IEventSource source, Boolean requiresImmediateIdAccess)
+   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.SaveWithGeneratedOrRequestedId(SaveOrUpdateEvent event)
+   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.EntityIsTransient(SaveOrUpdateEvent event)
+   at NHibernate.Event.Default.DefaultSaveEventListener.PerformSaveOrUpdate(SaveOrUpdateEvent event)
+   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.OnSaveOrUpdate(SaveOrUpdateEvent event)
+   at NHibernate.Impl.SessionImpl.FireSave(SaveOrUpdateEvent event)
+   at NHibernate.Impl.SessionImpl.Save(Object obj)
+   at RadialReview.Accessors.VtoAccessor.CreateVTO(UserOrganizationModel caller, Int64 organizationId) in c:\repos\Radial\RadialReview\RadialReview\Accessors\VtoAccessor.cs:line 76
+   at RadialReview.Controllers.VTOController.Edit(Int64 id) in c:\repos\Radial\RadialReview\RadialReview\Controllers\VTOController.cs:line 37
+   at lambda_method(Closure , ControllerBase , Object[] )
+   at System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.ActionInvocation.InvokeSynchronousActionMethod()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<BeginInvokeSynchronousActionMethod>b__36(IAsyncResult asyncResult, ActionInvocation innerInvokeState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)

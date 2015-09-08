@@ -277,6 +277,10 @@ namespace RadialReview.Utilities
 				return this;
 			throw new PermissionsException("Cannot view organization: " + organizationId);
 		}
+		
+		public PermissionsUtility EditCompanyValues(long organizationId){
+			return EditOrganization(organizationId);
+		}
 
 		#endregion
 
@@ -1564,6 +1568,7 @@ namespace RadialReview.Utilities
 			return caller;
 		}
 
-	
+
+
 	}
 }

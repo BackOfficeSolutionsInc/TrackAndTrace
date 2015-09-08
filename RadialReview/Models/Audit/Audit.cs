@@ -5,6 +5,7 @@ using System.Web;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.L10;
+using RadialReview.Models.VTO;
 
 namespace RadialReview.Models.Audit
 {
@@ -65,7 +66,25 @@ namespace RadialReview.Models.Audit
 				References(x => x.Recurrence).Column("RecurrenceId");
 				Map(x => x.Action);
 				Map(x => x.Notes).Length(1000);
-			}	
+			}
+		}
+	}
+	public class VtoAuditModel : AuditModel
+	{
+		public virtual VtoModel Vto { get; set; }
+		public virtual String Action { get; set; }
+		public virtual String Notes { get; set; }
+
+
+
+		public class VtoAuditMap : SubclassMap<VtoAuditModel>
+		{
+			public VtoAuditMap()
+			{
+				References(x => x.Vto).Column("VtoId");
+				Map(x => x.Action);
+				Map(x => x.Notes).Length(1000);
+			}
 		}
 	}
 }
