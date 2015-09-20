@@ -154,13 +154,13 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult BlankQuestionEditorRow()
+        public PartialViewResult BlankQuestionEditorRow()
 		{
 			return PartialView("_SurveyQuestionRow", new SurveyQuestionModel());
 		}
 		
 		[Access(AccessLevel.Manager)]
-		public ActionResult BlankRespondentEditorRow()
+        public PartialViewResult BlankRespondentEditorRow()
 		{
 			return PartialView("_SurveyRespondentRow", new SurveyRespondentModel());
 		}

@@ -1,84 +1,110 @@
-ERROR 2015-08-22 16:54:34,749 [9] BaseController         - Error: [/Scheduler/Reschedule]<<Begin failed with SQL exception>>
-NHibernate.TransactionException: Begin failed with SQL exception ---> MySql.Data.MySqlClient.MySqlException: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.TimeoutException: Timeout in IO operation
-   at MySql.Data.MySqlClient.TimedStream.StopTimer()
-   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
-   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   --- End of inner exception stack trace ---
-   at MySql.Data.MySqlClient.ExceptionInterceptor.Throw(Exception exception)
-   at MySql.Data.MySqlClient.MySqlConnection.Throw(Exception ex)
-   at MySql.Data.MySqlClient.MySqlConnection.HandleTimeoutOrThreadAbort(Exception ex)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
-   at MySql.Data.MySqlClient.Driver.LoadServerProperties(MySqlConnection connection)
-   at MySql.Data.MySqlClient.Driver.Configure(MySqlConnection connection)
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.AdoNet.ConnectionManager.GetConnection()
-   at NHibernate.Impl.SessionImpl.get_Connection()
-   at NHibernate.Transaction.AdoTransaction.Begin(IsolationLevel isolationLevel)
-   --- End of inner exception stack trace ---
-   at NHibernate.Transaction.AdoTransaction.Begin(IsolationLevel isolationLevel)
-   at NHibernate.Transaction.AdoTransaction.Begin()
-   at NHibernate.Impl.SessionImpl.BeginTransaction()
-   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 342
-   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
-ERROR 2015-08-22 22:00:29,660 [19] nUniqueResultException - query did not return a unique result: 20
-ERROR 2015-08-22 22:00:42,291 [98] nUniqueResultException - query did not return a unique result: 20
-ERROR 2015-08-22 23:18:50,083 [42] nitializationException - Initializing[RadialReview.Models.UserModels.UserLookup#455]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserModels.UserLookup#455]-Could not initialize proxy - no Session.
-ERROR 2015-08-22 23:18:50,113 [42] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-ERROR 2015-08-22 23:18:50,126 [42] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-ERROR 2015-08-22 23:18:50,150 [42] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-ERROR 2015-08-22 23:18:50,189 [42] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-ERROR 2015-08-23 00:48:05,872 [45] nitializationException - Initializing[RadialReview.Models.UserModels.UserLookup#455]-Could not initialize proxy - no Session.
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserModels.UserLookup#455]-Could not initialize proxy - no Session.
-ERROR 2015-08-23 00:48:05,906 [45] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedNexuses, no session or session was closed
-ERROR 2015-08-23 00:48:05,919 [45] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CreatedQuestions, no session or session was closed
-ERROR 2015-08-23 00:48:05,940 [45] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.CustomQuestions, no session or session was closed
-ERROR 2015-08-23 00:48:05,967 [45] nitializationException - Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-NHibernate.LazyInitializationException: Initializing[RadialReview.Models.UserOrganizationModel#948]-failed to lazily initialize a collection of role: RadialReview.Models.UserOrganizationModel.Groups, no session or session was closed
-ERROR 2015-08-23 01:14:36,099 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-08-23 01:14:36,115 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
+ERROR 2015-09-18 10:17:16,198 [7] BaseAccessor           - Scheduled task error. 1514
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,266 [11] BaseAccessor           - Scheduled task error. 1517
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,293 [7] BaseAccessor           - Scheduled task error. 1516
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,319 [11] BaseAccessor           - Scheduled task error. 1515
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,350 [7] BaseAccessor           - Scheduled task error. 1521
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,375 [11] BaseAccessor           - Scheduled task error. 1520
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,400 [7] BaseAccessor           - Scheduled task error. 1518
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,430 [11] BaseAccessor           - Scheduled task error. 1519
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,460 [7] BaseAccessor           - Scheduled task error. 1524
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,495 [7] BaseAccessor           - Scheduled task error. 1522
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:16,519 [11] BaseAccessor           - Scheduled task error. 1523
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116

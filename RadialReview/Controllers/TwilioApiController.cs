@@ -36,7 +36,7 @@ namespace RadialReview.Controllers
 	    protected static List<SelectListItem> PossibleActions = new List<SelectListItem>(){new SelectListItem(){Text = "Add an Issue", Value = "issue"}, new SelectListItem(){Text = "Add a To-Do", Value = "todo"}};
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Modal(long recurrenceId)
+        public PartialViewResult Modal(long recurrenceId)
 		{
 			new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(recurrenceId));
 
@@ -51,7 +51,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult ModalRecurrence()
+        public PartialViewResult ModalRecurrence()
 		{
 			var meetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false);
 

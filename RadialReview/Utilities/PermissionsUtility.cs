@@ -283,9 +283,14 @@ namespace RadialReview.Utilities
 		}
 
 		#endregion
-
-		#region Group
-		public PermissionsUtility EditGroup(long groupId)
+        #region Payment
+        public  PermissionsUtility EditCompanyPayment(long organizationId)
+        {
+            return EditOrganization(organizationId);
+        }
+        #endregion
+        #region Group
+        public PermissionsUtility EditGroup(long groupId)
 		{
 			if (IsRadialAdmin(caller))
 				return this;
@@ -1570,5 +1575,7 @@ namespace RadialReview.Utilities
 
 
 
-	}
+
+     
+    }
 }

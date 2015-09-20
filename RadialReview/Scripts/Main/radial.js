@@ -280,7 +280,19 @@ function showAlert(message, alertType, preface) {
 	if (alertType === undefined)
 		alertType = "alert-danger";
 	if (preface === undefined)
-		preface = "Warning!";
+	    preface = "Warning!";
+	if (Object.prototype.toString.call(message) === '[object Array]') {
+	    if (message.length > 1) {
+	        var msg = "<ul style='margin-bottom:0px;'>";
+	        for (var i in message) {
+	            msg += "<li>" + message[i] + "</li>"
+	        }
+            message = msg+"</ul>"
+	    } else {
+	        message = message.join("");
+	    }
+	}
+
 	var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>" + preface + "</strong> <span class=\"message\">" + message + "</span></div>");
 	$("#alerts").prepend(alert);
 	setTimeout(function () { alert.removeClass("start"); }, 1);

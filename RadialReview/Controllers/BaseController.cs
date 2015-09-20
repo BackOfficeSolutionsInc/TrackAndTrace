@@ -360,7 +360,11 @@ namespace RadialReview.Controllers
 				var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
 				log.Info("Permissions: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
 				ViewBag.Message = filterContext.Exception.Message;
-				filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
+                if (typeof(PartialViewResult).IsAssignableFrom(action.ReturnType)){
+                    filterContext.Result = PartialView("~/Views/Error/Index.cshtml", filterContext.Exception);
+                }else{
+                    filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
+                }
 				filterContext.ExceptionHandled = true;
 				filterContext.HttpContext.Response.Clear();
 			}

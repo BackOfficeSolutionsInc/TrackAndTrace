@@ -47,7 +47,7 @@ namespace RadialReview.Controllers
 			public string name { get; set; }
 		}
 	    [Access(AccessLevel.UserOrganization)]
-	    public ActionResult CreateTodoRecurrence()
+        public PartialViewResult CreateTodoRecurrence()
 	    {
 			var model = new TodoVM(GetUser().Id){
 				ByUserId = GetUser().Id,
@@ -85,7 +85,7 @@ namespace RadialReview.Controllers
 		}
 
 	    [Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateTodo(long recurrence, long meeting = -1)
+        public PartialViewResult CreateTodo(long recurrence, long meeting = -1)
 		{
 			if (meeting!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
@@ -133,7 +133,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateScorecardTodo(long meeting, long recurrence, long measurable, long score, long? accountable = null)
+        public PartialViewResult CreateScorecardTodo(long meeting, long recurrence, long measurable, long score, long? accountable = null)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -185,7 +185,7 @@ namespace RadialReview.Controllers
 			//return PartialView("ScorecardIssueModal", model);
 		}
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateRockTodo(long meeting, long recurrence, long rock, long? accountable = null)
+        public PartialViewResult CreateRockTodo(long meeting, long recurrence, long rock, long? accountable = null)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -239,7 +239,7 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateTodoFromIssue(long issue,long recurrence, long? meeting=null)
+        public PartialViewResult CreateTodoFromIssue(long issue, long recurrence, long? meeting = null)
 		{
 			if (meeting!=null)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting.Value));
@@ -304,7 +304,7 @@ namespace RadialReview.Controllers
 	    }
 
 	    [Access(AccessLevel.UserOrganization)]
-	    public ActionResult LinkToExternal(long recurrence,long user =0)
+        public PartialViewResult LinkToExternal(long recurrence, long user = 0)
 		{
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 		    var model = new LinkExternalTodo(){
@@ -356,7 +356,7 @@ namespace RadialReview.Controllers
 	    }
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult AjaxList(long? id = null)
+        public PartialViewResult AjaxList(long? id = null)
 		{
 			return PartialView("~/Views/Todo/Partial/list.cshtml",id ?? GetUser().Id);
 		}

@@ -48,7 +48,7 @@ namespace RadialReview.Controllers
 
         // GET: Period
 	    [Access(AccessLevel.Manager)]
-	    public ActionResult Modal(long id)
+        public PartialViewResult Modal(long id)
 	    {
 		    if (id == 0){
 			    return PartialView(new PeriodVM( new PeriodModel(){

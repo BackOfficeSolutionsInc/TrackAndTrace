@@ -128,7 +128,7 @@ namespace RadialReview.Controllers
 	    }
 
 	    [Access(AccessLevel.Manager)]
-	    public ActionResult EditDueDateModal(long id)
+        public PartialViewResult EditDueDateModal(long id)
 	    {
 		    var review = _ReviewAccessor.GetReview(GetUser(), id);
 
@@ -148,7 +148,7 @@ namespace RadialReview.Controllers
 	    }
 
 		[Access(AccessLevel.Manager)]
-		public ActionResult EditNameModal(long id)
+        public PartialViewResult EditNameModal(long id)
 		{
 			var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false, false);
 
@@ -272,7 +272,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Update(long id)
+        public PartialViewResult Update(long id)
         {
             var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false,false);
             var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
@@ -367,7 +367,7 @@ namespace RadialReview.Controllers
 
         [Access(AccessLevel.Manager)]
         [HttpGet]
-        public ActionResult Delete(long id)
+        public PartialViewResult Delete(long id)
         {
             _PermissionsAccessor.Permitted(GetUser(),x=>x.EditReviewContainer(id));
             var model=new DeleteReview(){ReviewContainerId = id};
@@ -375,7 +375,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult RemoveUser(long id)
+        public PartialViewResult RemoveUser(long id)
         {
             var usersInReview = _ReviewAccessor.GetUsersInReview(GetUser(), id);
             var model = new RemoveUserVM()
@@ -435,7 +435,7 @@ namespace RadialReview.Controllers
 
 
         [Access(AccessLevel.Manager)]
-        public ActionResult RemoveQuestion(long id)
+        public PartialViewResult RemoveQuestion(long id)
         {
             var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
             var usersSelect = users.ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
@@ -462,7 +462,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult AddQuestion(long id)
+        public PartialViewResult AddQuestion(long id)
         {
             var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
 
@@ -498,7 +498,7 @@ namespace RadialReview.Controllers
 
         [HttpGet]
         [Access(AccessLevel.Manager)]
-        public ActionResult DueDate(long id)
+        public PartialViewResult DueDate(long id)
         {
             _PermissionsAccessor.Permitted(GetUser(), x => x.EditReviewContainer(id));
             var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false, false);

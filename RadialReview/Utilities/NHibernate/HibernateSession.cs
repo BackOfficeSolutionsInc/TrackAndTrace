@@ -34,6 +34,7 @@ using RadialReview.Models.VTO;
 using RadialReview.Utilities.NHibernate;
 using NHibernate.Envers.Configuration.Fluent;
 using FluentConfiguration = NHibernate.Envers.Configuration.Fluent.FluentConfiguration;
+using RadialReview.Models.Payments;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -214,7 +215,7 @@ namespace RadialReview.Utilities
 			var enversConf = new FluentConfiguration();
 			nhConf.SetEnversProperty(ConfigurationKey.StoreDataAtDelete, true);
 			nhConf.SetEnversProperty(ConfigurationKey.AuditStrategyValidityStoreRevendTimestamp, true);
-			nhConf.SetEnversProperty(ConfigurationKey.AuditStrategy, typeof(ValidityAuditStrategy));
+            nhConf.SetEnversProperty(ConfigurationKey.AuditStrategy, typeof(CustomValidityAuditStrategy));
 			
 			
 			enversConf.Audit<VtoModel.VtoItem>().ExcludeRelationData(x => x.Vto);
@@ -270,8 +271,11 @@ namespace RadialReview.Utilities
 			enversConf.Audit<UserLookup>();
 			enversConf.Audit<UserModel>();
 			enversConf.Audit<UserLogin>();
-			enversConf.Audit<UserRoleModel>();
-			enversConf.Audit<IdentityUserClaim>();
+            enversConf.Audit<UserRoleModel>();
+            enversConf.Audit<IdentityUserClaim>();
+
+            enversConf.Audit<PaymentSpringsToken>();
+
 			nhConf.IntegrateWithEnvers(enversConf);
 	    }
 

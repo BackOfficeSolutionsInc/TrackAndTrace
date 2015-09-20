@@ -15,7 +15,7 @@ namespace RadialReview.Controllers
 	{
 		#region From Todo
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult IssueFromTodo(long recurrence, long todo, long meeting)
+        public PartialViewResult IssueFromTodo(long recurrence, long todo, long meeting)
 		{
 			//var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
 			//copyto = copyto ?? i.Recurrence.Id;
@@ -81,7 +81,7 @@ namespace RadialReview.Controllers
 		/// <param name="recurrence_issue"></param>
 		/// <returns></returns>
 	    [Access(AccessLevel.UserOrganization)]
-		public ActionResult CopyModal(long recurrence_issue, long? copyto=null)
+        public PartialViewResult CopyModal(long recurrence_issue, long? copyto = null)
 	    {
 			var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
 
@@ -110,7 +110,7 @@ namespace RadialReview.Controllers
 		}
 
 	    [Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateIssue(long recurrence, long meeting = -1)
+        public PartialViewResult CreateIssue(long recurrence, long meeting = -1)
 		{
 			if(meeting!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
@@ -143,7 +143,7 @@ namespace RadialReview.Controllers
 	    }
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateIssueRecurrence()
+        public PartialViewResult CreateIssueRecurrence()
 		{
 			//if (meeting != -1)
 			//	_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
@@ -206,7 +206,7 @@ namespace RadialReview.Controllers
 	    }
 
 	    [Access(AccessLevel.UserOrganization)]
-		public ActionResult Modal(long meeting, long recurrence, long measurable,long score)
+        public PartialViewResult Modal(long meeting, long recurrence, long measurable, long score)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -257,7 +257,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult CreateRockIssue(long meeting, long rock)
+        public PartialViewResult CreateRockIssue(long meeting, long rock)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 

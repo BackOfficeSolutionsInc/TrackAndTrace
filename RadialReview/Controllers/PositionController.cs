@@ -34,7 +34,7 @@ namespace RadialReview.Controllers
         }*/
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Modal(long id=0)
+        public PartialViewResult Modal(long id = 0)
         {
             var positions = _PositionAccessor.AllPositions().ToList();
 

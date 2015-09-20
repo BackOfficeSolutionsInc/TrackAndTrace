@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Payments;
 
 namespace RadialReview.Models.ViewModels
 {
@@ -36,6 +37,7 @@ namespace RadialReview.Models.ViewModels
 		public List<CompanyValueModel> CompanyValues { get; set; }
 		public List<RockModel> CompanyRocks { get; set; }
 		public List<AboutCompanyAskable> CompanyQuestions { get; set; }
-		public String RockName { get; set; }
+        public String RockName { get; set; }
+        public List<CreditCardVM> Cards { get; set; }
 	}
 }

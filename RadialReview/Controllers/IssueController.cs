@@ -100,7 +100,7 @@ namespace RadialReview.Controllers
 
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Customize(long id)
+        public PartialViewResult Customize(long id)
         {
             var teamId = id;
 
@@ -130,7 +130,7 @@ namespace RadialReview.Controllers
 
 
         [Access(AccessLevel.Manager)]
-        public ActionResult IssueOrganization()
+        public PartialViewResult IssueOrganization()
         {
             var orgTeam = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id).FirstOrDefault(x => x.Type == TeamType.AllMembers);
             ViewBag.OrganizationId = orgTeam.Id;
@@ -138,7 +138,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult IssueTeam()
+        public PartialViewResult IssueTeam()
         {
             var teams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id);
             var teamSelects = teams.Select(x => new SelectListItem() { Text = x.GetName(), Value = "" + x.Id }).ToList();
@@ -147,7 +147,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult ManagersCustomize()
+        public PartialViewResult ManagersCustomize()
         {
 	        var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x=>x.EndTime>DateTime.UtcNow).ToList();
 	        var plist = periods.ToSelectList(x => x.Name, x => x.Id);
@@ -159,7 +159,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult SelfCustomize()
+        public PartialViewResult SelfCustomize()
         {
             return PartialView();
         }

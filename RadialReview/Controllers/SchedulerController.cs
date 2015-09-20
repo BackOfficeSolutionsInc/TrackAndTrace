@@ -27,6 +27,12 @@ namespace RadialReview.Controllers
 			return true;
 		}
 
+        [Access(AccessLevel.Any)]
+        public async Task<string> ChargeAccount(long id)
+        {
+            return "Charged!";
+        }
+
 		[Access(AccessLevel.Any)]
 		public async Task<string> EmailTodos(int currentTime)
 		{

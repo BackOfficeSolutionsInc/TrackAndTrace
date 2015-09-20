@@ -12,12 +12,16 @@ namespace RadialReview.Utilities
 
 		public static string BaseUrl(OrganizationModel organization)
 		{
-
-			try{
-				var strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
-				return HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
-			}catch (Exception){
-				switch (GetEnv())
+            if (HttpContext.Current != null)
+            {
+                try{
+                    var strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+                    return HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+                }catch (Exception){
+                    //Skip
+                }
+            }
+            switch (GetEnv())
 				{
 					case Env.local_sqlite:
 						return "http://localhost:2200/";
@@ -39,7 +43,6 @@ namespace RadialReview.Utilities
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-			}
 		}
 
 		public static string ProductName(OrganizationModel organization = null)
@@ -201,5 +204,30 @@ namespace RadialReview.Utilities
 				default:				throw new ArgumentOutOfRangeException();
 			}
 		}
-	}
+
+        public static string PaymentSpring_PublicKey()
+        {
+            switch (GetEnv())
+            {
+                case Env.local_mysql: return GetAppSetting("PaymentSpring_PublicKey_Test");
+                case Env.local_sqlite: return GetAppSetting("PaymentSpring_PublicKey_Test");
+                case Env.production: return GetAppSetting("PaymentSpring_PublicKey");
+                default: throw new ArgumentOutOfRangeException();
+            }
+        }
+        [Obsolete("Be careful with private keys")]
+        public static string PaymentSpring_PrivateKey(bool forceUseTest=false)
+        {
+            if (forceUseTest)
+                return GetAppSetting("PaymentSpring_PrivateKey_Test");
+
+            switch (GetEnv())
+            {
+                case Env.local_mysql: return GetAppSetting("PaymentSpring_PrivateKey_Test");
+                case Env.local_sqlite: return GetAppSetting("PaymentSpring_PrivateKey_Test");
+                case Env.production: return GetAppSetting("PaymentSpring_PrivateKey");
+                default: throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
 }

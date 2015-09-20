@@ -17,6 +17,7 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Extensions;
+using RadialReview.Models.Payments;
 
 namespace RadialReview.Controllers {
 	public class OrganizationController : BaseController {
@@ -41,10 +42,22 @@ namespace RadialReview.Controllers {
 		public ActionResult Create(String name,bool enableL10,bool enableReview) {
 			Boolean managersCanEdit = false;
 			var user = GetUserModel();
-			var basicPlan=_PaymentAccessor.BasicPaymentPlan();
+			//var basicPlan=_PaymentAccessor.BasicPaymentPlan();
 			var localizedName=new LocalizedStringModel() { Standard = name };
 			long newRoleId;
-			var organization = _OrganizationAccessor.CreateOrganization(user, localizedName, managersCanEdit, basicPlan, DateTime.UtcNow, out newRoleId,enableL10,enableReview);
+
+            var plan= PaymentOptions.MonthlyPlan(10m,4m,DateTime.UtcNow.AddMonths(1),2);
+
+			var organization = _OrganizationAccessor.CreateOrganization(
+                user, 
+                localizedName, 
+                managersCanEdit, 
+                plan,
+                DateTime.UtcNow,
+                out newRoleId,
+                enableL10,
+                enableReview
+            );
 			return RedirectToAction("SetRole", "Account", new { id = newRoleId });
 		}
 
@@ -184,7 +197,8 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Manager)]
-		public ActionResult ResendJoin(long id) {
+        public PartialViewResult ResendJoin(long id)
+        {
 			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false);
 
 			if (found.TempUser == null)

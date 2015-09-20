@@ -39,18 +39,18 @@ namespace RadialReview.Accessors
             {
                 using (var tx = db.BeginTransaction())
                 {
+
                     organization = new OrganizationModel()
                     {
                         CreationTime = now,
-                        PaymentPlan = paymentPlan,
                         Name = name,
                         ManagersCanEdit = false,
-
 					};
 					organization.Settings.EnableL10 = enableL0;
 					organization.Settings.EnableReview= enableReview;
-
                     db.Save(organization);
+                    PaymentAccessor.CreatePlan(db, organization, paymentPlan);
+                    organization.PaymentPlan = paymentPlan;
 	                organization.Organization = organization;
 					db.Update(organization);
                     //db.Organizations.Add(organization);

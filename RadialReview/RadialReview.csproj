@@ -382,6 +382,7 @@
     <Compile Include="Engines\UserEngine.cs" />
     <Compile Include="Exceptions\MeetingExceptions\MeetingException.cs" />
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
+    <Compile Include="Exceptions\PaymentException.cs" />
     <Compile Include="Exceptions\PhoneException.cs" />
     <Compile Include="Exceptions\SchedulerException.cs" />
     <Compile Include="Exceptions\SyncException.cs" />
@@ -470,6 +471,10 @@
     <Compile Include="Models\L10\AgendaItemType.cs" />
     <Compile Include="Models\L10\L10Note.cs" />
     <Compile Include="Models\L10\AV\AudioVideoUser.cs" />
+    <Compile Include="Models\Payments\CreditCardVM.cs" />
+    <Compile Include="Models\Payments\PaymentOptions.cs" />
+    <Compile Include="Models\Payments\PaymentSpringCustomerCard.cs" />
+    <Compile Include="Models\Payments\PaymentSpringsCustomer.cs" />
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
     <Compile Include="Models\PhoneModel.cs" />
     <Compile Include="Models\Survey\SurveyContainerModel.cs" />
@@ -682,8 +687,10 @@
     <Compile Include="Utilities\Extensions\IssuesExtensions.cs" />
     <Compile Include="Utilities\Extensions\Math2.cs" />
     <Compile Include="Utilities\Audit.cs" />
+    <Compile Include="Utilities\Extensions\TimespanExtensions.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
+    <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
     <Compile Include="Utilities\RandomUtil.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
@@ -841,12 +848,14 @@
     <Content Include="Scripts\components\fivestate.js" />
     <Content Include="Scripts\home\colResizable-1.5.min.js" />
     <Content Include="Scripts\home\resizeable-tables.js" />
+    <Content Include="Scripts\jquery\jquery.redirect.js" />
     <Content Include="Scripts\L10\AV\adapter.js" />
     <Content Include="Scripts\L10\AV\app.js" />
     <Content Include="Scripts\L10\AV\connectionManager.js" />
     <Content Include="Scripts\L10\AV\viewModel.js" />
     <Content Include="Scripts\L10\charts\sparklines.min.js" />
     <Content Include="Scripts\L10\L10Notes.js" />
+    <Content Include="Scripts\payment\PaymentSprings.js" />
     <Content Include="Scripts\survey\submitAnswers.js" />
     <Content Include="Scripts\VTO\vto.js" />
     <Content Include="ssleay32.dll">
@@ -1252,6 +1261,7 @@
     <Content Include="Content\bootstrap\custom\Site.less" />
     <Content Include="Content\bootstrap\custom\dashboard.less" />
     <Content Include="Views\Manage\Advanced.cshtml" />
+    <Content Include="Views\Payment\SetCard.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

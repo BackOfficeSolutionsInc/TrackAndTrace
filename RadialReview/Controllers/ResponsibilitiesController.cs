@@ -25,7 +25,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Modal(long responsibilityGroupId=0,long id=0)
+        public PartialViewResult Modal(long responsibilityGroupId = 0, long id = 0)
         {
             var caller=GetUser();
 

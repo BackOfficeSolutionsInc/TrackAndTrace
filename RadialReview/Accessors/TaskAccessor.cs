@@ -103,6 +103,7 @@ namespace RadialReview.Accessors
 			}
 		}*/
 
+        
 		public async Task<List<ScheduledTask>>  ExecuteTask(String server, ScheduledTask task)
 		{
 			var newTasks = new List<ScheduledTask>();
@@ -119,8 +120,8 @@ namespace RadialReview.Accessors
 					task.Executed = DateTime.UtcNow;
 					if (task.NextSchedule != null){
 						var nt = new ScheduledTask(){
-							FirstFire = (task.FirstFire ?? task.Fire).Add(task.NextSchedule.Value),
-							Fire = (task.FirstFire ?? task.Fire).Add(task.NextSchedule.Value),
+							FirstFire = (task.FirstFire ?? task.Fire).AddTimespan(task.NextSchedule.Value),
+                            Fire = (task.FirstFire ?? task.Fire).AddTimespan(task.NextSchedule.Value),
 							NextSchedule = task.NextSchedule,
 							Url = task.Url,
 							TaskName = task.TaskName,
@@ -128,8 +129,9 @@ namespace RadialReview.Accessors
 						};
 
 						while (nt.Fire < DateTime.UtcNow){
-							nt.Fire += task.NextSchedule.Value;
-							nt.FirstFire += task.NextSchedule.Value;
+							nt.Fire= nt.Fire.AddTimespan(task.NextSchedule.Value);
+                            if (nt.FirstFire!=null)
+							    nt.FirstFire = nt.FirstFire.Value.AddTimespan(task.NextSchedule.Value);
 						}
 
 						newTasks.Add(nt);

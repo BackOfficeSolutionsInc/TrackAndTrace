@@ -116,7 +116,7 @@ namespace RadialReview.Controllers
 
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Remove(long id)
+        public PartialViewResult Remove(long id)
         {
 
             var user=_UserAccessor.GetUserOrganization(GetUser(),id,true,true, PermissionType.DeleteEmployees);
@@ -143,7 +143,7 @@ namespace RadialReview.Controllers
 
 
         [Access(AccessLevel.Manager)]
-        public ActionResult AddModal(long? managerId = null)
+        public PartialViewResult AddModal(long? managerId = null)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -203,7 +203,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult EditModal(long id)
+        public PartialViewResult EditModal(long id)
         {
             var userId = id;
             var found = _UserAccessor.GetUserOrganization(GetUser(), userId, true, false);
@@ -281,7 +281,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult PositionModal(long userId, long id = 0)
+        public PartialViewResult PositionModal(long userId, long id = 0)
         {
             var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
             var pos = user.Positions.FirstOrDefault(x => x.Id == id);
@@ -368,7 +368,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult TeamModal(long userId, long id = 0)
+        public PartialViewResult TeamModal(long userId, long id = 0)
         {
             var teams = _TeamAccessor.GetUsersTeams(GetUser(), userId);
             var aliveTeams = teams.ToListAlive();
@@ -424,7 +424,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult ManagerModal(long id)
+        public PartialViewResult ManagerModal(long id)
         {
             var potentialManagers = new List<UserOrganizationModel>();
             if (GetUser().ManagingOrganization){

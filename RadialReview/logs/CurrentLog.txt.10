@@ -1,88 +1,110 @@
-INFO  2015-08-17 17:07:20,365 [23] BaseController         - Organization: [/Manage/UserDetails/948] --> [/Manage/UserDetails/948]
-INFO  2015-08-17 17:21:36,505 [5] BaseController         - Organization: [/Measurable/BlankEditorRow?admin=948&_=1439849464583] --> [/Measurable/BlankEditorRow?admin=948&_=1439849464583]
-INFO  2015-08-17 17:21:36,505 [34] BaseController         - Organization: [/Measurable/BlankEditorRow?admin=948&_=1439849464584] --> [/Measurable/BlankEditorRow?admin=948&_=1439849464584]
-INFO  2015-08-17 17:21:36,505 [44] BaseController         - Organization: [/Measurable/BlankEditorRow?admin=948&_=1439849464585] --> [/Measurable/BlankEditorRow?admin=948&_=1439849464585]
-INFO  2015-08-17 17:23:21,598 [45] BaseController         - Permissions: [/L10/timeline/3] --> []
-INFO  2015-08-17 17:23:25,761 [44] BaseController         - Permissions: [/L10/timeline/3] --> []
-INFO  2015-08-17 18:17:33,566 [44] BaseController         - Organization: [/Manage/UserDetails/948] --> [/Manage/UserDetails/948]
-INFO  2015-08-17 18:21:52,198 [46] BaseController         - Organization: [/Manage/UserDetails/948] --> [/Manage/UserDetails/948]
-INFO  2015-08-17 18:46:14,426 [23] BaseController         - Organization: [/Nexus/SendAllEmails] --> [/Nexus/SendAllEmails]
-INFO  2015-08-17 18:46:20,375 [41] BaseController         - Organization: [/Manage/Members] --> [/Manage/Members]
-INFO  2015-08-17 18:47:47,853 [27] BaseController         - Organization: [/Manage/Members] --> [/Manage/Members]
-ERROR 2015-08-17 19:22:54,230 [47] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0, ?p1, ?p2, ?p3)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-08-17 19:22:54,238 [47] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:22:54,240 [47] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:22:54,241 [47] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:23:14,477 [12] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-08-17 19:23:14,477 [12] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:23:14,477 [12] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:23:14,477 [12] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:17,701 [20] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-08-17 19:24:17,702 [20] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:17,702 [20] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:17,702 [20] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:35,184 [45] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
-ERROR 2015-08-17 19:24:35,185 [45] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:35,185 [45] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:24:35,185 [45] ADOExceptionReporter   - Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-ERROR 2015-08-17 19:28:09,335 [38] AbstractBatcher        - Could not execute query: SELECT this_.Id as Id51_0_, this_.CreateTime as CreateTime51_0_, this_.DeleteTime as DeleteTime51_0_, this_._Ordering as column4_51_0_, this_.L10RecurrenceId as L5_51_0_, this_.MeasurableId as Measurab6_51_0_ FROM `L10Recurrence_Measurable` this_ WHERE this_.DeleteTime is null and this_.MeasurableId in (?p0)
-System.InvalidCastException: Unable to cast object of type 'RadialReview.Models.Scorecard.MeasurableModel' to type 'System.IConvertible'.
-   at System.Convert.ToInt64(Object value)
-   at MySql.Data.Types.MySqlInt64.MySql.Data.Types.IMySqlValue.WriteValue(MySqlPacket packet, Boolean binary, Object val, Int32 length)
-   at MySql.Data.MySqlClient.MySqlParameter.Serialize(MySqlPacket packet, Boolean binary, MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.Statement.SerializeParameter(MySqlParameterCollection parameters, MySqlPacket packet, String parmName, Int32 parameterIndex)
-   at MySql.Data.MySqlClient.Statement.InternalBindParameters(String sql, MySqlParameterCollection parameters, MySqlPacket packet)
-   at MySql.Data.MySqlClient.Statement.BindParameters()
-   at MySql.Data.MySqlClient.PreparableStatement.Execute()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
-   at NHibernate.AdoNet.AbstractBatcher.ExecuteReader(IDbCommand cmd)
+ERROR 2015-09-18 10:17:14,966 [11] BaseAccessor           - Scheduled task error. 1522
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,000 [7] BaseAccessor           - Scheduled task error. 1485
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,071 [9] BaseAccessor           - Scheduled task error. 1486
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,084 [17] BaseAccessor           - Scheduled task error. 1523
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,119 [7] BaseAccessor           - Scheduled task error. 1487
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,148 [9] BaseAccessor           - Scheduled task error. 1521
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,193 [11] BaseAccessor           - Scheduled task error. 1483
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,228 [7] BaseAccessor           - Scheduled task error. 1488
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,261 [11] BaseAccessor           - Scheduled task error. 1492
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,313 [7] BaseAccessor           - Scheduled task error. 1495
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116
+ERROR 2015-09-18 10:17:15,344 [11] BaseAccessor           - Scheduled task error. 1494
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 116

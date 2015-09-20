@@ -27,7 +27,7 @@ namespace RadialReview.Controllers
 	    }
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Modal(long id = 0)
+        public PartialViewResult Modal(long id = 0)
 		{
 			var orgId = GetUser().Organization.Id;
 
@@ -49,7 +49,7 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Modal(PermissionsVM model)
+        public ActionResult Modal(PermissionsVM model)
 		{
 			var orgId = GetUser().Organization.Id;
 			ValidateValues(model,x=>x.Id);

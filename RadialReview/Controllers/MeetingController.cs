@@ -28,7 +28,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-	    public ActionResult Template(string id)
+        public PartialViewResult Template(string id)
 	    {
 		    var approved = new []{"segue","scorecard","rocks","headlines","todo","ids","conclusion"};
 		    if (approved.Contains(id.ToLower()))

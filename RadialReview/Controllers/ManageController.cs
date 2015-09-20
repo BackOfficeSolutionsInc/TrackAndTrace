@@ -197,7 +197,8 @@ namespace RadialReview.Controllers
 				
 				RockName = user.Organization.Settings.RockName,
 				TimeZone = user.Organization.Settings.TimeZoneId,
-				WeekStart = user.Organization.Settings.WeekStart
+				WeekStart = user.Organization.Settings.WeekStart,
+                Cards = _PaymentAccessor.GetCards(GetUser(),GetUser().Organization.Id)
 			};
 
 			return View(model);

@@ -65,7 +65,7 @@ namespace RadialReview.Controllers
 
 		// GET: L10Data
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult AddRock(long id)
+        public PartialViewResult AddRock(long id)
 		{
 			var recurrenceId = id;
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
@@ -119,7 +119,7 @@ namespace RadialReview.Controllers
 
 		// GET: L10Data
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult AddMeasurable(long id)
+        public PartialViewResult AddMeasurable(long id)
 		{
 			var recurrenceId = id;
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
@@ -412,7 +412,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-	    public ActionResult CreateNote(long recurrence)
+        public PartialViewResult CreateNote(long recurrence)
 	    {
 		    return PartialView(new NoteVM(){RecurrenceId = recurrence});
 	    }
@@ -450,7 +450,7 @@ namespace RadialReview.Controllers
 	    }
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult DeleteNote(long id)
+        public PartialViewResult DeleteNote(long id)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Note(id));
 			return PartialView(new DeleteNoteVM() { NoteId = id });

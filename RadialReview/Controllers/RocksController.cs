@@ -118,7 +118,7 @@ namespace RadialReview.Controllers
 	    }
 
 	    [Access(AccessLevel.UserOrganization)]
-	    public ActionResult Table(long id,bool editor=false, bool current=true)
+        public PartialViewResult Table(long id, bool editor = false, bool current = true)
 	    {
 		    var forUserId = id;
 			var rocks = _RockAccessor.GetAllRocks(GetUser(), forUserId);

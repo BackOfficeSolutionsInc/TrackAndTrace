@@ -25,7 +25,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Modal(long id=0)
+        public PartialViewResult Modal(long id = 0)
         {
             var user = GetUser();
             var team = _TeamAccessor.GetTeam(user, id);
@@ -101,7 +101,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Manager)]
-        public ActionResult AddModal(long id)
+        public PartialViewResult AddModal(long id)
         {
             var teamId = id;
             var members = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id,false,false);

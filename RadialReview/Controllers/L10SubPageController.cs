@@ -96,7 +96,7 @@ namespace RadialReview.Controllers
 		#region StartMeeting
 		[HttpGet]
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult StartMeeting(L10MeetingVM model, bool start)
+        public PartialViewResult StartMeeting(L10MeetingVM model, bool start)
 		{
 			return PartialView("StartMeeting", model);
 		}
@@ -266,7 +266,7 @@ namespace RadialReview.Controllers
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(model.Recurrence.Id)).setHash("stats");
-					
+					 
 					//return RedirectToAction("Load", new { id = model.Recurrence.Id, page = "stats" });
 					return Json(ResultObject.SilentSuccess().NoRefresh());
 					//return MeetingStats(model.Recurrence.Id);

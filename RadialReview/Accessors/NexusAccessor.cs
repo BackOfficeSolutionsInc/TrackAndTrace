@@ -90,6 +90,12 @@ namespace RadialReview.Accessors
 		                var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id){
 			                Start = now,
 		                };
+
+
+                        var template = UserTemplateAccessor._GetAttachedUserTemplateUnsafe(db, position.Id, AttachType.Position);
+                        if (template != null)
+                            UserTemplateAccessor._AddUserToTemplateUnsafe(db, template.Organization, template.Id, newUser.Id, false);
+
 		                newUser.Positions.Add(positionDuration);
 	                }
 
