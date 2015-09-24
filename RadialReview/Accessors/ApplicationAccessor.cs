@@ -208,14 +208,18 @@ namespace RadialReview.Accessors
 		    if (!found.Any()){
 			    for (var i = 0; i < 23; i++){
 				    var b = DateTime.UtcNow.Date.AddHours(i).AddMinutes(3);
-				    s.Save(new ScheduledTask(){
+				    var task = new ScheduledTask(){
 					    MaxException = 1,
-					    Url = "/Scheduler/EmailTodos?currentTime="+i,
+					    Url = "/Scheduler/EmailTodos?currentTime=" + i,
 					    NextSchedule = TimeSpan.FromDays(1),
 					    Fire = b,
 					    FirstFire = b,
 					    TaskName = DAILY_EMAIL_TODO_TASK,
-				    });
+
+				    };
+					s.Save(task);
+				    task.OriginalTaskId = task.Id;
+					s.Update(task);
 			    }
 		    }
 	    }

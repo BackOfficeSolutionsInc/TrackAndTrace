@@ -206,7 +206,7 @@ namespace RadialReview.Controllers
         public PartialViewResult EditModal(long id)
         {
             var userId = id;
-            var found = _UserAccessor.GetUserOrganization(GetUser(), userId, true, false);
+            var found = _UserAccessor.GetUserOrganization(GetUser(), userId, true, false,PermissionType.ChangeEmployeePermissions);
 
             /*var strictHierarchy = GetUser().Organization.StrictHierarchy;
             List<SelectListItem> potentialManagers = new List<SelectListItem>();
@@ -411,7 +411,12 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public ActionResult Managers(long id)
         {
+	        var userId = id;
             var user = _UserAccessor.GetUserOrganization(GetUser(), id, false, false).Hydrate().Managers().PersonallyManaging(GetUser()).Execute();
+
+			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeManagers);
+			user.SetPersonallyManaging(members.Any(x => x.UserId == userId && x._PersonallyManaging));//.Hydrate().PersonallyManaging(GetUser()).Execute();
+
 
             return View(user);
         }
@@ -427,7 +432,10 @@ namespace RadialReview.Controllers
         public PartialViewResult ManagerModal(long id)
         {
             var potentialManagers = new List<UserOrganizationModel>();
-            if (GetUser().ManagingOrganization){
+
+
+
+			if (_PermissionsAccessor.AnyTrue(GetUser(), PermissionType.EditEmployeeManagers, x => x.ManagingOrganization)){
                 potentialManagers = _OrganizationAccessor.GetOrganizationManagers(GetUser(), GetUser().Organization.Id);
             }else if (GetUser().Organization.StrictHierarchy){                
                 potentialManagers = _UserAccessor.GetDirectSubordinates(GetUser(), GetUser().Id).Where(x => x.ManagerAtOrganization).ToListAlive();

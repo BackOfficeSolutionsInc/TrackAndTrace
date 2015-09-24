@@ -1,0 +1,57 @@
+﻿@model RadialReview.Models.PaymentPlan_Monthly
+@{
+	ViewBag.Title = "Edit_Plan_Monthly";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="pull-left">Plan Monthly:&nbsp;</h1>
+<h1 style="color:orange" class="pull-left"><b> @Html.Organization().GetName()</b></h1>
+<div class="clearfix"></div>
+<hr />
+@using (Html.BeginForm())
+{
+	<div class="row">
+		<div class="col-md-3">
+			<h3><b><u>Plan</u></b></h3>
+			@Html.EditorForModel()
+			<br /><hr />
+			<label>Task Id (delete to create new)</label>@Html.TextBox("TaskId", Model.Task == null ? (long?)null : Model.Task.Id)
+			<hr />
+		</div>
+		<div class="col-md-3 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")" >
+			<h3><b><u>Task Info</u></b></h3>
+
+			@if (Model.Task != null)
+			{
+				@Html.DisplayFor(x => x.Task)
+			}
+		</div>
+		<div class="col-md-3">
+			<h3><b><u>Current Task Info</u></b></h3>
+			@Html.DisplayFor(x => x._CurrentTask)
+		</div>
+	</div>
+	<button type="submit">Submit</button>
+}
+
+@using (Html.BeginStyles())
+{
+	<style>
+		.alignRight .display-label {
+			padding-right: 0px;	
+		}
+
+		.display-label {
+			 padding-right: 10px;
+			 font-weight: bold;
+		 }
+
+		.display-field {
+			height: 20px;
+		}
+
+		.grayed {
+			color: #888;
+		}
+	</style>
+}

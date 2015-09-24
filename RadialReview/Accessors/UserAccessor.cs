@@ -461,14 +461,20 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					var perm = PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrganizationId, false);
+					var perm = PermissionsUtility.Create(s, caller);
+
+					if (manageringOrganization != null)
+						perm.ManagesUserOrganization(userOrganizationId, false);
+					else
+						perm.ManagesUserOrganization(userOrganizationId, false, PermissionType.ChangeEmployeePermissions);
+
 					var found = s.Get<UserOrganizationModel>(userOrganizationId);
 
 					DateTime deleteTime = DateTime.UtcNow;
 
 					if (isManager != null && (isManager.Value != found.ManagerAtOrganization))
 					{
-						perm.ManagesUserOrganization(userOrganizationId, false);
+						perm.ManagesUserOrganization(userOrganizationId, false,PermissionType.ChangeEmployeePermissions);
 						found.ManagerAtOrganization = isManager.Value;
 						if (isManager == false)
 						{

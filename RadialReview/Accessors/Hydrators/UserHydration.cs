@@ -127,7 +127,7 @@ namespace RadialReview
         }
 
 
-        public UserHydration Organization(Boolean questions = false, Boolean memebers = false/*, Boolean reviews = false*/)
+        public UserHydration Organization(Boolean questions = false, Boolean memebers = false,Boolean paymentPlan = false)
         {
             OrganizationModel org = null;
             List<QuestionModel> questionsResolved = null;
@@ -154,7 +154,7 @@ namespace RadialReview
                    // orgQuery.Fetch(x => x.QuestionCategories).Eager.Future();
                 }
                 if (memebers)
-                    orgQuery.Fetch(x => x.Members).Eager.Future();
+					orgQuery.Fetch(x => x.Members).Eager.Future();
 
                 /*if (reviews)
                 {
@@ -165,6 +165,8 @@ namespace RadialReview
                 org = orgQuery.SingleOrDefault();
             }
             User.Organization = org;
+	        if (paymentPlan)
+				User.Organization.PaymentPlan = Session.Get<PaymentPlanModel>(org.PaymentPlan.Id);
             if (questionsResolved != null)
                 User.Organization.CustomQuestions = questionsResolved;
             if (categoriesResolved != null)

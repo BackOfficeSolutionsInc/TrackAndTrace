@@ -11,15 +11,21 @@ namespace RadialReview.Models
     public class InvoiceModel : ILongIdentifiable
     {
         public virtual long Id { get; protected set; }
-        public virtual DateTime InvoiceSentDate { get; set; }
-        public virtual DateTime InvoiceDueDate { get; set; }
+		public virtual DateTime InvoiceSentDate { get; set; }
+		public virtual DateTime InvoiceDueDate { get; set; }
+		public virtual DateTime CreateTime { get; set; }
         public virtual OrganizationModel Organization { get; set; }
         public virtual IList<InvoiceItemModel> InvoiceItems { get;set;}
+
+		public virtual DateTime? PaidTime { get; set; }
+
+		public virtual String TransactionId { get; set; }
 
 
         public InvoiceModel()
         {
-            InvoiceItems = new List<InvoiceItemModel>(); 
+            InvoiceItems = new List<InvoiceItemModel>();
+	        CreateTime = DateTime.UtcNow;
         }
         /*
         public override int GetHashCode()
@@ -48,9 +54,13 @@ namespace RadialReview.Models
         public InvoiceModelMap()
         {
             Id(x => x.Id);
-            Map(x => x.InvoiceSentDate);
-            Map(x => x.InvoiceDueDate);
-            References(x => x.Organization);
+			Map(x => x.InvoiceSentDate);
+			Map(x => x.InvoiceDueDate);
+			Map(x => x.PaidTime);
+			Map(x => x.CreateTime);
+			Map(x => x.TransactionId);
+
+			References(x => x.Organization);
             HasMany(x => x.InvoiceItems)
                 .Table("InvoiceItems")
                 .Cascade.SaveUpdate();

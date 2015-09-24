@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR;
 using RadialReview.Accessors;
 using RadialReview.Hubs;
 using System;
@@ -12,6 +13,7 @@ using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
+using RadialReview.Models.Tests;
 using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
@@ -120,7 +122,45 @@ namespace RadialReview.Controllers
 			return View();
 		}
 
+	    [Access(AccessLevel.Radial)]
+	    public async Task<ActionResult> AllPages()
+	    {
+		    var results = await new TestAccessor().RunAllUrlTests(GetUserModel().Id);
+			return View(results);
+	    }
+
+	    [Access(AccessLevel.Radial)]
+	    public ActionResult EditPage(long id=0)
+	    {
+			if (id==0)
+				return View(new TestUrl(){
+					Active = true,
+					AsUserId = GetUser().Id,
+					ExpectedCode = 200,
+				});
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					return View(s.Get<TestUrl>(id));
+				}
+			}
+	    }
+		[HttpPost]
 		[Access(AccessLevel.Radial)]
+		public ActionResult EditPage(TestUrl model)
+		{
+			using (var s = HibernateSession.GetCurrentSession()){
+				using (var tx = s.BeginTransaction()){
+					s.SaveOrUpdate(model);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			ViewBag.Message = "Added!";
+			return View(model);
+		}
+
+	    [Access(AccessLevel.Radial)]
 		public ActionResult Update(long id=1)
 		{
 			var recurrenceId = id;

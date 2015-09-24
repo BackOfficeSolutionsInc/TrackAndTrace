@@ -25,6 +25,8 @@ namespace RadialReview.Accessors
 		public static long AddTask(AbstractUpdate update, ScheduledTask task)
 		{
 			update.Save(task);
+			task.OriginalTaskId = task.Id;
+			update.Update(task);
 			return task.Id;
 		}
 
@@ -114,7 +116,15 @@ namespace RadialReview.Accessors
 					if (task.Url != null)
 					{
 						var webClient = new WebClient();
-						var str = await webClient.DownloadStringTaskAsync(new Uri((server.TrimEnd('/') + "/" + task.Url.TrimStart('/')), UriKind.Absolute));
+						var url = (server.TrimEnd('/') + "/" + task.Url.TrimStart('/'));
+
+						if (url.Contains("?"))
+							url += "&taskId=" + task.Id;
+						else
+							url += "?taskId=" + task.Id;
+
+
+						var str = await webClient.DownloadStringTaskAsync(new Uri(url, UriKind.Absolute));
 					}
 					log.Debug("Scheduled task was executed. " + task.Id);
 					task.Executed = DateTime.UtcNow;
@@ -126,6 +136,8 @@ namespace RadialReview.Accessors
 							Url = task.Url,
 							TaskName = task.TaskName,
 							MaxException = task.MaxException,
+							OriginalTaskId = task.OriginalTaskId,
+							CreatedFromTaskId = task.Id,
 						};
 
 						while (nt.Fire < DateTime.UtcNow){
@@ -150,7 +162,9 @@ namespace RadialReview.Accessors
 								NextSchedule = task.NextSchedule,
 								Url = task.Url,
 								MaxException = task.MaxException,
-								TaskName = task.TaskName
+								TaskName = task.TaskName,
+								OriginalTaskId = task.OriginalTaskId,
+								CreatedFromTaskId = task.Id,
 							});
 							task.Executed = DateTime.MaxValue;
 						}

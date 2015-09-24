@@ -13,8 +13,9 @@ namespace RadialReview.Models
         public virtual String Description { get; set; }
         public virtual DateTime PlanCreated { get; set; }
         public virtual Boolean IsDefault { get; set; }
-        public virtual DateTime FreeUntil { get; set; }
-        public virtual ScheduledTask Task { get; set; }
+		public virtual DateTime FreeUntil { get; set; }
+		public virtual ScheduledTask Task { get; set; }
+		public virtual ScheduledTask _CurrentTask { get; set; }
 
         public virtual TimeSpan SchedulerPeriod()        {
             return TimeSpan.MaxValue;
@@ -45,6 +46,10 @@ namespace RadialReview.Models
         public virtual decimal ReviewPricePerPerson { get; set; }
         public virtual int FirstN_Users_Free { get; set; }
         public virtual long OrganizationId { get; set; }
+
+		public virtual DateTime? ReviewFreeUntil { get; set; }
+		public virtual DateTime? L10FreeUntil { get; set; }
+
         public override TimeSpan SchedulerPeriod()
         {
             return TimespanExtensions.OneMonth();
@@ -56,8 +61,10 @@ namespace RadialReview.Models
             {
                 Map(x => x.L10PricePerPerson);
                 Map(x => x.ReviewPricePerPerson);
-                Map(x => x.FirstN_Users_Free);
-                Map(x => x.OrganizationId);
+				Map(x => x.FirstN_Users_Free);
+				Map(x => x.OrganizationId);
+				Map(x => x.ReviewFreeUntil);
+				Map(x => x.L10FreeUntil);
             }
         }
     }

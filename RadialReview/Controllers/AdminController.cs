@@ -574,7 +574,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Radial)]
         public async Task<JsonResult> ChargeToken(long id,decimal amt)
         {
-            return Json(await _PaymentAccessor.ChargeOrganization(id, amt, true),JsonRequestBehavior.AllowGet);
+            return Json(await _PaymentAccessor.ChargeOrganizationAmount(id, amt, true),JsonRequestBehavior.AllowGet);
         }
     }
 }

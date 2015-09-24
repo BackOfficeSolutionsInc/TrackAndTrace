@@ -24,22 +24,9 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">Job Description</h3>
 				</div>
-				<div class="panel-body">
-					@if (String.IsNullOrWhiteSpace(Model.JobDescription))
-					{
-						<span class="gray">
-							None entered.
-							@if (edit)
-							{
-								@:Click 'Edit' to add a job description to the template.
-							}
-						</span>
-					}
-					else
-					{
-						@Model.JobDescription
-					}
-				</div>
+				<div class="panel-body" style=" white-space: pre-line;">@if (String.IsNullOrWhiteSpace(Model.JobDescription)){<span class="gray">None entered. @if (edit){
+@: Click 'Edit' to add a job description to the template.
+}</span>}else{@Model.JobDescription}</div>
 			</div>
 
 

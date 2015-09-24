@@ -60,7 +60,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Manager)]
-		public async Task<ActionResult> Positions()
+		public ActionResult Positions()
 		{
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Positions", LifeTime.Session);
 			var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
@@ -198,7 +198,10 @@ namespace RadialReview.Controllers
 				RockName = user.Organization.Settings.RockName,
 				TimeZone = user.Organization.Settings.TimeZoneId,
 				WeekStart = user.Organization.Settings.WeekStart,
-                Cards = _PaymentAccessor.GetCards(GetUser(),GetUser().Organization.Id)
+                Cards = _PaymentAccessor.GetCards(GetUser(),GetUser().Organization.Id),
+
+				PaymentPlan = _PaymentAccessor.GetPlan(GetUser(),GetUser().Organization.Id)
+
 			};
 
 			return View(model);

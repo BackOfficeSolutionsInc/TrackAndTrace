@@ -1,0 +1,13 @@
+﻿@model RadialReview.Models.PaymentPlanModel
+
+@{
+    ViewBag.Title = "Plan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Plan</h2>
+
+@using (Html.BeginForm()){
+	@Html.EditorForModel()
+	<button type="submit">Submit</button>
+}

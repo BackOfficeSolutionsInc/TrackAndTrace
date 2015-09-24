@@ -211,6 +211,24 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;Payment Failed: {0}&lt;/p&gt;&lt;p&gt;{1}&lt;/p&gt;.
+        /// </summary>
+        public static string PaymentException_Body {
+            get {
+                return ResourceManager.GetString("PaymentException_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payment Failed for {0}.
+        /// </summary>
+        public static string PaymentException_Subject {
+            get {
+                return ResourceManager.GetString("PaymentException_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
         ///&lt;p&gt;The {1} pre-review has started. You&apos;ll need to customize reviews for your direct reports by  {2}. You can begin your pre-review customizations by clicking the following link:&lt;/p&gt;
         ///&lt;br&gt; 

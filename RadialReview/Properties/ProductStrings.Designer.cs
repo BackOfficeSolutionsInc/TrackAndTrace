@@ -88,11 +88,29 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to clay.upton@mytractiontools.com.
+        /// </summary>
+        public static string ErrorEmail {
+            get {
+                return ResourceManager.GetString("ErrorEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to http://radialreview.com/.
         /// </summary>
         public static string MarketingUrl {
             get {
                 return ResourceManager.GetString("MarketingUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to clay.upton@mytractiontools.com.
+        /// </summary>
+        public static string PaymentExceptionEmail {
+            get {
+                return ResourceManager.GetString("PaymentExceptionEmail", resourceCulture);
             }
         }
         

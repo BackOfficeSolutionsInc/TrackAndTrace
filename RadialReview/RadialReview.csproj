@@ -296,6 +296,7 @@
     <Compile Include="Accessors\SurveyAccessor.cs" />
     <Compile Include="Accessors\TaskAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
+    <Compile Include="Accessors\TestAccessor.cs" />
     <Compile Include="Accessors\TodoAccessor.cs" />
     <Compile Include="Accessors\TodoIntegrations\BaseCampAccessor.cs" />
     <Compile Include="Accessors\TodoIntegrations\ExternalTodoAccessor.cs" />
@@ -472,6 +473,7 @@
     <Compile Include="Models\L10\L10Note.cs" />
     <Compile Include="Models\L10\AV\AudioVideoUser.cs" />
     <Compile Include="Models\Payments\CreditCardVM.cs" />
+    <Compile Include="Models\Payments\Itemized.cs" />
     <Compile Include="Models\Payments\PaymentOptions.cs" />
     <Compile Include="Models\Payments\PaymentSpringCustomerCard.cs" />
     <Compile Include="Models\Payments\PaymentSpringsCustomer.cs" />
@@ -481,6 +483,7 @@
     <Compile Include="Models\Survey\SurveyResultVMs.cs" />
     <Compile Include="Models\Survey\SurveyTake.cs" />
     <Compile Include="Models\Synchronize\Sync.cs" />
+    <Compile Include="Models\Tests\TestUrl.cs" />
     <Compile Include="Models\Todo\ExternalTodoCreds.cs" />
     <Compile Include="Models\Todo\RockTodoVM.cs" />
     <Compile Include="Models\Todo\ScoreCardTodoVM.cs" />
@@ -683,6 +686,7 @@
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
     <Compile Include="Utilities\Config.cs" />
     <Compile Include="Utilities\DbUtil.cs" />
+    <Compile Include="Utilities\Extensions\AuditExtensions.cs" />
     <Compile Include="Utilities\Extensions\ExpressionExtensions.cs" />
     <Compile Include="Utilities\Extensions\IssuesExtensions.cs" />
     <Compile Include="Utilities\Extensions\Math2.cs" />
@@ -765,11 +769,35 @@
     <Content Include="Content\bootstrap\custom\dashboard.min.css">
       <DependentUpon>dashboard.css</DependentUpon>
     </Content>
+    <Content Include="Content\bootstrap\media.css">
+      <DependentUpon>media.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\media.min.css">
+      <DependentUpon>media.css</DependentUpon>
+    </Content>
     <Content Include="Content\bootstrap\mixins.css">
       <DependentUpon>mixins.less</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\mixins.min.css">
       <DependentUpon>mixins.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\alerts.css">
+      <DependentUpon>alerts.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\alerts.min.css">
+      <DependentUpon>alerts.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\background-variant.css">
+      <DependentUpon>background-variant.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\background-variant.min.css">
+      <DependentUpon>background-variant.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\border-radius.css">
+      <DependentUpon>border-radius.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\border-radius.min.css">
+      <DependentUpon>border-radius.css</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\mixins\buttons.css">
       <DependentUpon>buttons.less</DependentUpon>
@@ -777,11 +805,155 @@
     <Content Include="Content\bootstrap\mixins\buttons.min.css">
       <DependentUpon>buttons.css</DependentUpon>
     </Content>
+    <Content Include="Content\bootstrap\mixins\center-block.css">
+      <DependentUpon>center-block.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\center-block.min.css">
+      <DependentUpon>center-block.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\clearfix.css">
+      <DependentUpon>clearfix.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\clearfix.min.css">
+      <DependentUpon>clearfix.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\forms.css">
+      <DependentUpon>forms.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\forms.min.css">
+      <DependentUpon>forms.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\gradients.css">
+      <DependentUpon>gradients.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\gradients.min.css">
+      <DependentUpon>gradients.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\grid-framework.css">
+      <DependentUpon>grid-framework.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\grid-framework.min.css">
+      <DependentUpon>grid-framework.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\grid.css">
+      <DependentUpon>grid.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\grid.min.css">
+      <DependentUpon>grid.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\hide-text.css">
+      <DependentUpon>hide-text.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\hide-text.min.css">
+      <DependentUpon>hide-text.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\image.css">
+      <DependentUpon>image.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\image.min.css">
+      <DependentUpon>image.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\labels.css">
+      <DependentUpon>labels.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\labels.min.css">
+      <DependentUpon>labels.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\list-group.css">
+      <DependentUpon>list-group.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\list-group.min.css">
+      <DependentUpon>list-group.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\nav-divider.css">
+      <DependentUpon>nav-divider.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\nav-divider.min.css">
+      <DependentUpon>nav-divider.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\nav-vertical-align.css">
+      <DependentUpon>nav-vertical-align.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\nav-vertical-align.min.css">
+      <DependentUpon>nav-vertical-align.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\opacity.css">
+      <DependentUpon>opacity.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\opacity.min.css">
+      <DependentUpon>opacity.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\pagination.css">
+      <DependentUpon>pagination.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\pagination.min.css">
+      <DependentUpon>pagination.css</DependentUpon>
+    </Content>
     <Content Include="Content\bootstrap\mixins\panels.css">
       <DependentUpon>panels.less</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\mixins\panels.min.css">
       <DependentUpon>panels.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\progress-bar.css">
+      <DependentUpon>progress-bar.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\progress-bar.min.css">
+      <DependentUpon>progress-bar.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\reset-filter.css">
+      <DependentUpon>reset-filter.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\reset-filter.min.css">
+      <DependentUpon>reset-filter.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\reset-text.css">
+      <DependentUpon>reset-text.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\reset-text.min.css">
+      <DependentUpon>reset-text.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\resize.css">
+      <DependentUpon>resize.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\resize.min.css">
+      <DependentUpon>resize.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\responsive-visibility.css">
+      <DependentUpon>responsive-visibility.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\responsive-visibility.min.css">
+      <DependentUpon>responsive-visibility.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\size.css">
+      <DependentUpon>size.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\size.min.css">
+      <DependentUpon>size.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\tab-focus.css">
+      <DependentUpon>tab-focus.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\tab-focus.min.css">
+      <DependentUpon>tab-focus.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\table-row.css">
+      <DependentUpon>table-row.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\table-row.min.css">
+      <DependentUpon>table-row.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\text-emphasis.css">
+      <DependentUpon>text-emphasis.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\text-emphasis.min.css">
+      <DependentUpon>text-emphasis.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\text-overflow.css">
+      <DependentUpon>text-overflow.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\text-overflow.min.css">
+      <DependentUpon>text-overflow.css</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\mixins\utils.css">
       <DependentUpon>utils.less</DependentUpon>
@@ -794,6 +966,36 @@
     </Content>
     <Content Include="Content\bootstrap\custom\Site.min.css">
       <DependentUpon>Site.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\vendor-prefixes.css">
+      <DependentUpon>vendor-prefixes.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\mixins\vendor-prefixes.min.css">
+      <DependentUpon>vendor-prefixes.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\normalize.css">
+      <DependentUpon>normalize.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\normalize.min.css">
+      <DependentUpon>normalize.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\print.css">
+      <DependentUpon>print.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\print.min.css">
+      <DependentUpon>print.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\responsive-embed.css">
+      <DependentUpon>responsive-embed.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\responsive-embed.min.css">
+      <DependentUpon>responsive-embed.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\theme.css">
+      <DependentUpon>theme.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\theme.min.css">
+      <DependentUpon>theme.css</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\variables.css">
       <DependentUpon>variables.less</DependentUpon>
@@ -885,7 +1087,6 @@
     <Content Include="Views\UserTemplate\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Content\bootstrap-responsive.css" />
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap-switch.css" />
@@ -1262,6 +1463,8 @@
     <Content Include="Content\bootstrap\custom\dashboard.less" />
     <Content Include="Views\Manage\Advanced.cshtml" />
     <Content Include="Views\Payment\SetCard.cshtml" />
+    <Content Include="Views\Payment\Plan.cshtml" />
+    <Content Include="Views\Payment\Plan_Monthly.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1538,6 +1741,8 @@
     <Content Include="Views\Survey\partial\FeedbackResult.cshtml" />
     <Content Include="Views\Survey\Embedded.cshtml" />
     <Content Include="Views\UnitTest\Sync.cshtml" />
+    <Content Include="Views\UnitTest\AllPages.cshtml" />
+    <Content Include="Views\UnitTest\EditPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,25 @@
+﻿@model RadialReview.Models.Tests.TestUrl
+@{
+    ViewBag.Title = "AddPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (ViewBag.Message is string){
+	@Html.AlertBoxDismissable((string)ViewBag.Message, alertType: "alert-info", alertMessage: "Message")
+}
+<a href="/UnitTest/AllPages" class="btn btn-primary pull-right" style="margin-top:10px;">Run Tests</a>
+<h2>Add TestUrl Page</h2>
+
+
+<hr />
+@using (Html.BeginForm()){
+	@Html.EditorForModel()
+	<br />
+	<input type="submit" value="Submit">
+}
+
+	<style>
+		.single-line {
+			width: 100%;
+		}
+	</style>	

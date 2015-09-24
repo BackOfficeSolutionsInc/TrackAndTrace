@@ -95,7 +95,9 @@ namespace RadialReview.Controllers
 
 		private UserOrganizationModel PopulateUserData(UserOrganizationModel user)
 		{
-			user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
+			if (user != null){
+				user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
+			}
 			return user;
 		}
 		public UserOrganizationModel GetUser()

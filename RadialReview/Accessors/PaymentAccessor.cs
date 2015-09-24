@@ -1,8 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Drawing.Imaging;
+using System.Security.Cryptography.X509Certificates;
+using Amazon.SimpleDB.Model;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHibernate;
+using NHibernate.Envers;
+using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Payments;
 using RadialReview.Models.Tasks;
 using RadialReview.Utilities;
@@ -15,6 +21,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
+using RadialReview.Utilities.Extensions;
+using TrelloNet;
 
 namespace RadialReview.Accessors
 {
@@ -66,7 +74,162 @@ namespace RadialReview.Accessors
             public string customer_id { get; set; }
             public string merchant_id { get; set; }
         }
-        public async Task<PaymentResult> ChargeOrganization(long organizationId, decimal amount, bool useTest = false)
+
+	    public async Task<PaymentResult> ChargeOrganization(long organizationId,long taskId, bool forceUseTest = false)
+	    {
+		    using (var s = HibernateSession.GetCurrentSession()){
+			    using (var tx = s.BeginTransaction()){
+				    var org = s.Get<OrganizationModel>(organizationId);
+
+					if (org == null)
+						throw new NullReferenceException("Organization does not exist");
+
+				    var plan = org.PaymentPlan;
+
+					if (plan.Task == null)
+						throw new PermissionsException("Task was null.");
+					if (plan.Task.OriginalTaskId == 0)
+						throw new PermissionsException("PaymentPlan OriginalTaskId was 0.");
+
+				    var task = s.Get<ScheduledTask>(taskId);
+
+					if (task.OriginalTaskId == 0 )
+						throw new PermissionsException("ScheduledTask OriginalTaskId was 0.");
+					if (plan.Task.OriginalTaskId != task.OriginalTaskId)
+						throw new PermissionsException("ScheduledTask and PaymentPlan do not have the same task.");
+					
+					if(task.Executed !=null)
+						throw new PermissionsException("Task was already executed.");
+
+				    var executeTime = DateTime.UtcNow.Date;
+				    PaymentResult result = null;
+				    try{
+					    var itemized = CalculateCharge(s, org, plan, executeTime);
+					    var invoice = CreateInvoice(s, org, executeTime, itemized);
+					    result = await ExecuteInvoice(s, invoice, forceUseTest);
+				    }finally{
+
+					    tx.Commit();
+					    s.Flush();
+				    }
+				    return result;
+			    }
+		    }
+	    }
+
+
+	    public InvoiceModel CreateInvoice(ISession s,OrganizationModel org,DateTime executeTime,IEnumerable<Itemized> items)
+	    {  
+			var invoice = new InvoiceModel(){
+			    Organization = org,
+				InvoiceDueDate = executeTime.Add(TimespanExtensions.OneMonth()).Date
+		    };
+		    s.Save(invoice);
+
+		    var invoiceItems = items.Select(x => new InvoiceItemModel(){
+			    AmountDue = x.Total(),
+			    Currency = Currency.USD,
+			    PricePerItem = x.Price,
+			    Quantity = x.Quantity,
+				Name = x.Name,
+				Description = x.Description,
+			    ForInvoice = invoice,
+		    }).ToList();
+
+		    foreach (var i in invoiceItems)
+			    s.Save(i);
+
+		    invoice.InvoiceItems = invoiceItems;
+
+			s.Update(invoice);
+		    return invoice;
+	    }
+
+		[Obsolete("Unsafe")]
+	    public async Task<PaymentResult> ExecuteInvoice(ISession s, InvoiceModel invoice,bool useTest = false)
+	    {
+		    invoice = s.Get<InvoiceModel>(invoice.Id);
+			if (invoice.PaidTime!=null)
+				throw new PermissionsException("Invoice was already paid");
+
+		    var amount = invoice.InvoiceItems.Sum(x => x.AmountDue);
+
+		    var result = await ChargeOrganizationAmount(invoice.Organization.Id, amount, useTest);
+
+		    invoice.TransactionId = result.id;
+		    invoice.PaidTime = DateTime.UtcNow;
+			s.Update(invoice);
+
+		    return result;
+
+	    }
+
+		public List<Itemized> CalculateCharge(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime)
+		{
+			var itemized = new List<Itemized>();
+
+			if (NHibernateUtil.GetClass(paymentPlan) == typeof(PaymentPlan_Monthly))
+			{
+				var plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(paymentPlan);
+			    var rangeStart = executeTime.Subtract(TimespanExtensions.OneMonth());
+			    var rangeEnd = executeTime;
+
+			    var people = s.QueryOver<UserOrganizationModel>()
+					.Where(x => x.Organization.Id == org.Id && x.CreateTime < rangeEnd && (x.DeleteTime == null || x.DeleteTime > rangeStart))
+					.Select(x => x.Id)
+					.List<long>().Count();
+
+			    people = Math.Max(0, people - plan.FirstN_Users_Free);
+			    var allRevisions = s.Auditer().GetRevisionsBetween<OrganizationModel>(org.Id,rangeStart,rangeEnd).ToList();
+				
+				var reviewEnabled = allRevisions.Any(x => x.Object.Settings.EnableReview);
+				var l10Enabled = allRevisions.Any(x => x.Object.Settings.EnableL10);
+
+			    if (reviewEnabled){
+					var reviewItem = new Itemized(){
+							Name = "Review Software",
+							Price = plan.ReviewPricePerPerson,
+							Quantity = people,
+					};
+
+					itemized.Add(reviewItem);
+				    if (!(plan.ReviewFreeUntil == null || plan.ReviewFreeUntil.Value.Date > executeTime.Date)){
+						//Discount it since it is free
+						itemized.Add(reviewItem.Discount());
+					}
+			    }
+			    if (l10Enabled){
+					var l10Item = new Itemized()
+					{
+						Name = "L10 Meeting Software",
+						Price = plan.L10PricePerPerson,
+						Quantity = people,
+					};
+					itemized.Add(l10Item);
+
+					if (!(plan.L10FreeUntil == null || plan.L10FreeUntil.Value.Date > executeTime.Date)){
+						//Discount it since it is free
+						itemized.Add(l10Item.Discount());
+				    }
+			    }
+				if (!(plan.FreeUntil.Date > executeTime.Date))
+				{
+					//Discount it since it is free
+					var total = itemized.Sum(x => x.Total());
+					itemized.Add(new Itemized(){
+						Name = "Discount",
+						Price = -1*total,
+						Quantity = 1,
+					});
+				}
+		    }else{
+			    throw new PermissionsException("Unhandled Payment Plan");
+		    }
+			return itemized;
+		}
+
+		[Obsolete("Unsafe")]
+        public async Task<PaymentResult> ChargeOrganizationAmount(long organizationId, decimal amount, bool useTest = false)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -80,7 +243,7 @@ namespace RadialReview.Accessors
 
                     if (token == null)
                     {
-                        throw new PaymentException(organizationId, amount, PaymentExceptionType.MissingToken);
+                        throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.MissingToken);
                     }
                     //CURL 
                     var client = new HttpClient();
@@ -95,10 +258,10 @@ namespace RadialReview.Accessors
                     var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                     // Get the response.
-                    HttpResponseMessage response = await client.PostAsync("https://api.paymentspring.com/api/v1/charge", requestContent);
+                    var response = await client.PostAsync("https://api.paymentspring.com/api/v1/charge", requestContent);
 
                     // Get the response content.
-                    HttpContent responseContent = response.Content;
+                    var responseContent = response.Content;
 
                     // Get the stream of the content.
                     using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
@@ -113,8 +276,11 @@ namespace RadialReview.Accessors
                             {
                                 builder.Add(Json.Decode(result).errors[i].message + " (" + Json.Decode(result).errors[i].code + ").");
                             }
-                            throw new PaymentException(organizationId, amount, PaymentExceptionType.ResponseError, String.Join(" ", builder));
+							throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.ResponseError, String.Join(" ", builder));
                         }
+
+						if (Json.Decode(result).@class!="transaction")
+							throw  new PermissionsException("Response must be of type 'transaction'.");
 
                         return new PaymentResult
                         {
@@ -296,9 +462,33 @@ namespace RadialReview.Accessors
                 TaskName = ScheduledTask.MonthlyPaymentPlan,
             };
             s.Save(task);
+	        task.OriginalTaskId = task.Id;
+			s.Update(task);
             plan.Task = task;
             s.Save(plan);
             return plan;
         }
-    }
+
+		public PaymentPlanModel GetPlan(UserOrganizationModel caller, long organizationId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
+					var org = s.Get<OrganizationModel>(organizationId);
+
+					var plan = s.Get<PaymentPlanModel>(org.PaymentPlan.Id);
+
+					if (plan != null && plan.Task != null){
+						plan._CurrentTask = s.QueryOver<ScheduledTask>()
+							.Where(x => x.OriginalTaskId == plan.Task.OriginalTaskId && x.Executed == null)
+							.List().FirstOrDefault();
+					}
+
+					return (PaymentPlanModel)s.GetSessionImplementation().PersistenceContext.Unproxy(plan);
+
+				}
+			}
+		}
+	}
 }

@@ -28,6 +28,7 @@ using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.Periods;
 using RadialReview.Models.Reviews;
+using RadialReview.Models.Tasks;
 using RadialReview.Models.Todo;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.VTO;
@@ -274,7 +275,8 @@ namespace RadialReview.Utilities
             enversConf.Audit<UserRoleModel>();
             enversConf.Audit<IdentityUserClaim>();
 
-            enversConf.Audit<PaymentSpringsToken>();
+			enversConf.Audit<PaymentSpringsToken>();
+			enversConf.Audit<ScheduledTask>();
 
 			nhConf.IntegrateWithEnvers(enversConf);
 	    }

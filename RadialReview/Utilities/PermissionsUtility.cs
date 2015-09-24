@@ -1319,7 +1319,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Overrides
-		protected PermissionsUtility TryWithOverrides(Func<PermissionsUtility, PermissionsUtility> p, params PermissionType[] types)
+		public PermissionsUtility TryWithOverrides(Func<PermissionsUtility, PermissionsUtility> p, params PermissionType[] types)
 		{
 			try
 			{

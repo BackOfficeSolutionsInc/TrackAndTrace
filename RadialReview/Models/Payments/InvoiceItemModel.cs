@@ -13,7 +13,7 @@ namespace RadialReview.Models
     {
         public virtual long Id { get; protected set; }
 
-        public virtual int? Quantity { get; set; }
+		public virtual decimal? Quantity { get; set; }
         [Column(TypeName="Money")]
         public virtual decimal? PricePerItem { get; set; }
 
@@ -22,7 +22,11 @@ namespace RadialReview.Models
 
         public virtual Currency Currency { get; set; }
 
-        public virtual InvoiceModel ForInvoice { get; set; }
+	    public virtual String Name { get; set; }
+
+		public virtual String Description { get; set; }
+
+	    public virtual InvoiceModel ForInvoice { get; set; }
        
     }
 
@@ -32,9 +36,11 @@ namespace RadialReview.Models
         {
             Id(x => x.Id);
             Map(x => x.Quantity);
-            Map(x => x.PricePerItem);
-            Map(x => x.AmountDue);
-            Map(x => x.Currency);
+			Map(x => x.PricePerItem);
+			Map(x => x.AmountDue);
+			Map(x => x.Currency);
+			Map(x => x.Name);
+			Map(x => x.Description);
             References(x => x.ForInvoice);
         }
     }

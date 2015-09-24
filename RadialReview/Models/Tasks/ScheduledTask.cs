@@ -10,8 +10,10 @@ namespace RadialReview.Models.Tasks
     public class ScheduledTask : IDeletable, ILongIdentifiable
     {
 
-        public const string MonthlyPaymentPlan = "MONTHLY_PAYMENT_PLAN";
-        public virtual long Id { get; set; }
+		public const string MonthlyPaymentPlan = "MONTHLY_PAYMENT_PLAN";
+		public virtual long Id { get; set; }
+		public virtual long? CreatedFromTaskId { get; set; }
+		public virtual long OriginalTaskId { get; set; }
 		public virtual String Url { get; set; }
 		public virtual DateTime? FirstFire { get; set; }
 		public virtual DateTime Fire { get; set; }
@@ -46,6 +48,8 @@ namespace RadialReview.Models.Tasks
 			Map(x => x.ExceptionCount);
 			Map(x => x.NextSchedule);
 			Map(x => x.MaxException);
+			Map(x => x.CreatedFromTaskId);
+			Map(x => x.OriginalTaskId);
         }
     }
 }

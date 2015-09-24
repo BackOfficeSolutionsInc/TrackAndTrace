@@ -27,19 +27,55 @@ namespace RadialReview.Controllers
 			return true;
 		}
 
-        [Access(AccessLevel.Any)]
-        public async Task<string> ChargeAccount(long id)
-        {
-            return "Charged!";
-        }
+		[Access(AccessLevel.Any)]
+		public async Task<JsonResult> ChargeAccount(long id, long taskId)
+		{
+			PaymentException capturedPaymentException = null;
+			Exception capturedException = null;
+			try{
+				await _PaymentAccessor.ChargeOrganization(id, taskId, false);
+			}catch (PaymentException e){
+				capturedPaymentException = e;
+			}catch (Exception e){
+				capturedException = e;
+			}
+
+			if (capturedPaymentException != null){
+				log.Error("PaymentException",capturedPaymentException);
+				await Emailer.SendEmail(MailModel.To(ProductStrings.PaymentExceptionEmail).Subject(EmailStrings.PaymentException_Subject, capturedPaymentException.OrganizationName).Body(EmailStrings.PaymentException_Body, capturedPaymentException.Message, "" + capturedPaymentException.Type, capturedPaymentException.StackTrace));
+				Response.StatusCode = 501;
+				return Json(new{
+					charged=false,
+					payment_exception = true,
+					error=capturedPaymentException
+				},JsonRequestBehavior.AllowGet);
+			}
+			if (capturedException != null)
+			{
+				log.Error("Exception during Payment", capturedException);
+				await Emailer.SendEmail(MailModel.To(ProductStrings.ErrorEmail).Subject(EmailStrings.PaymentException_Subject, "<Non-payment exception>").Body(EmailStrings.PaymentException_Body, capturedException.Message, "<Non-payment>", capturedException.StackTrace));
+				Response.StatusCode = 500;
+				return Json(new
+				{
+					charged = false,
+					payment_exception = false,
+					error = capturedException
+				}, JsonRequestBehavior.AllowGet);
+			}
+			return Json(new{
+				charged=true
+			},JsonRequestBehavior.AllowGet);
+		}
 
 		[Access(AccessLevel.Any)]
 		public async Task<string> EmailTodos(int currentTime)
 		{
 			var unsent = new List<MailModel>();
-			using (var s = HibernateSession.GetCurrentSession()){
-				using (var tx = s.BeginTransaction()){
-					
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+
 					var nowUtc = DateTime.UtcNow;
 					if (nowUtc.DayOfWeek == DayOfWeek.Saturday || nowUtc.DayOfWeek == DayOfWeek.Sunday)
 						return "No fire on weekend.";
@@ -54,21 +90,24 @@ namespace RadialReview.Controllers
 					var rangeHigh = nowUtc.Date.AddDays(4).AddTicks(-1);
 					var nextWeek = nowUtc.Date.AddDays(7);
 					if (nowUtc.DayOfWeek == DayOfWeek.Friday)
-						rangeHigh=rangeHigh.AddDays(1);
+						rangeHigh = rangeHigh.AddDays(1);
 
 
 
 					var todos = s.QueryOver<TodoModel>().Where(x => ((rangeLow <= x.DueDate && x.DueDate <= rangeHigh) || (x.CompleteTime == null && x.DueDate <= nextWeek)) && x.DeleteTime == null).List().ToList();
 
 					var dictionary = new Dictionary<string, List<TodoModel>>();
-					
-					foreach (var t in todos.GroupBy(x => x.AccountableUser.NotNull(y=>y.User.NotNull(z=>z.Email)))){
-						if (t.Key != null){
+
+					foreach (var t in todos.GroupBy(x => x.AccountableUser.NotNull(y => y.User.NotNull(z => z.Email))))
+					{
+						if (t.Key != null)
+						{
 							dictionary.GetOrAddDefault(t.Key, x => new List<TodoModel>()).AddRange(t);
 						}
 					}
 
-					foreach (var userTodos in dictionary){
+					foreach (var userTodos in dictionary)
+					{
 						string subject = null;
 						var nowLocal = userTodos.Value.First().Organization.ConvertFromUTC(nowUtc).Date;
 
@@ -77,20 +116,23 @@ namespace RadialReview.Controllers
 							subject = "You have an overdue task";
 						else if (overDue > 1)
 							subject = "You have " + overDue + " overdue tasks";
-						else{
+						else
+						{
 							var dueToday = userTodos.Value.Count(x => x.DueDate.Date == nowLocal.Date && x.CompleteTime == null);
 
 							if (dueToday == 1)
 								subject = "You have a task due today";
 							else if (dueToday > 1)
 								subject = "You have " + dueToday + " tasks due today";
-							else{
+							else
+							{
 								var dueTomorrow = userTodos.Value.Count(x => x.DueDate.Date == nowLocal.AddDays(1).Date && x.CompleteTime == null);
 								if (dueTomorrow == 1)
 									subject = "You have a task due tomorrow";
 								else if (dueTomorrow > 1)
 									subject = "You have " + dueTomorrow + " tasks due tomorrow";
-								else{
+								else
+								{
 									var dueSoon = userTodos.Value.Count(x => x.DueDate.Date > nowLocal.AddDays(1).Date && x.CompleteTime == null);
 									if (dueSoon == 1)
 										subject = "You have a task due soon";
@@ -103,18 +145,20 @@ namespace RadialReview.Controllers
 
 						var shouldSend = userTodos.Value.Count(x => x.DueDate.Date >= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
 
-						if (subject != null && shouldSend>0)
+						if (subject != null && shouldSend > 0)
 						{
 
-							try{
+							try
+							{
 								var user = userTodos.Value.First().AccountableUser;
 
-								if ((user.User.NotNull(x=>x.SendTodoTime)) == currentTime)
+								if ((user.User.NotNull(x => x.SendTodoTime)) == currentTime)
 								{
 									var email = user.GetEmail();
 
 									var builder = new StringBuilder();
-									foreach (var t in userTodos.Value.Where(x => x.CompleteTime == null || x.DueDate.Date > nowUtc.Date).GroupBy(x => x.ForRecurrenceId)){
+									foreach (var t in userTodos.Value.Where(x => x.CompleteTime == null || x.DueDate.Date > nowUtc.Date).GroupBy(x => x.ForRecurrenceId))
+									{
 										builder.Append(TodoAccessor.BuildTodoTable(t.ToList(), t.First().ForRecurrence.NotNull(x => x.Name + " To-do")));
 										builder.Append("<br/>");
 									}
@@ -130,7 +174,9 @@ namespace RadialReview.Controllers
 
 									unsent.Add(mail);
 								}
-							}catch (Exception ex){
+							}
+							catch (Exception ex)
+							{
 
 							}
 						}
@@ -139,11 +185,13 @@ namespace RadialReview.Controllers
 					s.Flush();
 				}
 			}
-			try{
+			try
+			{
 				await Emailer.SendEmails(unsent);
-				return "sent: "+unsent.Count;
+				return "sent: " + unsent.Count;
 			}
-			catch (Exception e){
+			catch (Exception e)
+			{
 				return e.Message;
 			}
 		}
