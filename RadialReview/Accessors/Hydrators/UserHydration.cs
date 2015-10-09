@@ -1,5 +1,6 @@
 ﻿using NHibernate;
 using RadialReview.Models;
+using RadialReview.Models.Permissions;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -275,7 +276,7 @@ namespace RadialReview
                 //Blah blah blah this is bad.. 
                 try
                 {
-                    PermissionsUtility.Create(Session, self).ManagesUserOrganization(uOrgId,false);
+                    PermissionsUtility.Create(Session, self).ManagesUserOrganization(uOrgId,false,PermissionType.EditEmployeeManagers);
                     owned = true;
                 }
                 catch (PermissionsException)

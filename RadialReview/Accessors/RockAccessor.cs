@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Amazon.ElasticTranscoder.Model;
 using FluentNHibernate.Utils;
+using Microsoft.AspNet.SignalR;
+using NHibernate;
 using NHibernate.Linq;
 using RadialReview.Exceptions;
+using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.CompanyValue;
+using RadialReview.Models.Angular.VTO;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
 using RadialReview.Models.Periods;
+using RadialReview.Models.VTO;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
@@ -18,7 +26,7 @@ namespace RadialReview.Accessors
 {
 	public class RockAccessor
 	{
-		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId, long? periodId,DateRange range=null)
+		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId, long? periodId, DateRange range = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -29,62 +37,71 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId,long? periodId,DateRange range)
+		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId, long? periodId, DateRange range)
 		{
 			perms.ViewUserOrganization(forUserId, false);
 			if (periodId == null)
 				return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId).FilterRange(range).ToList();
-			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.PeriodId==periodId).FilterRange(range).ToList();
+			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.PeriodId == periodId).FilterRange(range).ToList();
 		}
+
+		public static void EditCompanyRocks(ISession s, PermissionsUtility perm, long organizationId, List<RockModel> rocks)
+		{
+			if (rocks.Any(x => x.OrganizationId != organizationId))
+				throw new PermissionsException("Rock OrgId does not match OrgId");
+
+			//var user = s.Get<UserOrganizationModel>(userId);
+			var org = s.Get<OrganizationModel>(organizationId);
+
+			long orgId = -1;
+
+			perm.ManagingOrganization(organizationId);
+			orgId = org.Id;
+
+			var ar = SetUtility.AddRemove(OrganizationAccessor.GetAllUserOrganizationIds(s, perm, organizationId), rocks.Select(x => x.ForUserId));
+			if (ar.AddedValues.Any())
+				throw new PermissionsException("User does not belong to organization");
+
+			var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+
+			foreach (var r in rocks)
+			{
+				r.AccountableUser = s.Load<UserOrganizationModel>(r.ForUserId);
+				r.OnlyAsk = AboutType.Self; //|| AboutType.Manager; 
+				r.Category = category;
+				r.OrganizationId = orgId;
+				r.Period = s.Get<PeriodModel>(r.PeriodId);
+				r.CompanyRock = true;
+				s.SaveOrUpdate(r);
+			}
+			/*
+			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+			var vtoIds = s.QueryOver<VtoModel>().Where(x => x.Organization.Id == organizationId).Select(x => x.Id).List<long>();
+			foreach (var vtoId in vtoIds)
+			{
+				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId));
+				var vto = s.Get<VtoModel>(vtoId);
+				group.update(new AngularQuarterlyRocks(vto.QuarterlyRocks.Id)
+				{
+					Rocks = AngularList.Create(AngularListType.ReplaceAll, AngularVtoRock.Create(rocks.t))
+				});
+			}*/
+		}
+
 		public void EditCompanyRocks(UserOrganizationModel caller, long organizationId, List<RockModel> rocks)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					if (rocks.Any(x => x.OrganizationId != organizationId))
-						throw new PermissionsException("Rock OrgId does not match OrgId");
-
 					var perm = PermissionsUtility.Create(s, caller);
-					//var user = s.Get<UserOrganizationModel>(userId);
-					var org = s.Get<OrganizationModel>(organizationId);
-
-					long orgId = -1;
-
-					//if (user == null && org != null){
-						perm.ManagingOrganization(organizationId);
-						orgId = org.Id;
-					/*}else if (user != null && org == null){
-					perm.ManagesUserOrganization(userId, false);
-					orgId = user.Organization.Id;
-					user.NumRocks = rocks.Count(x => x.DeleteTime == null);
-					s.SaveOrUpdate(user);
-					}else{
-						throw new PermissionsException("What?");
-					}*/
-
-					var ar=SetUtility.AddRemove(OrganizationAccessor.GetAllUserOrganizationIds(s,perm,organizationId),rocks.Select(x=>x.ForUserId));
-					if (ar.AddedValues.Any())
-						throw new PermissionsException("User does not belong to organization");
-
-					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
-
-					foreach (var r in rocks){
-						r.AccountableUser = s.Load<UserOrganizationModel>(r.ForUserId);
-						r.OnlyAsk = AboutType.Self; //|| AboutType.Manager; 
-						r.Category = category;
-						r.OrganizationId = orgId;
-						r.Period = s.Get<PeriodModel>(r.PeriodId);
-						r.CompanyRock = true;
-						s.SaveOrUpdate(r);
-					}
-
+					EditCompanyRocks(s, perm, organizationId, rocks);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
-		public void EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks,bool updateOutstanding)
+		public void EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstanding)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -103,15 +120,15 @@ namespace RadialReview.Accessors
 						perm.ManagingOrganization(userId_OR_organizationId);
 						orgId = org.Id;
 					}else if (user != null && org == null){*/
-						perm.EditQuestionForUser(userId);
-						orgId = user.Organization.Id;
-						//user.NumRocks = rocks.Count(x => x.DeleteTime == null);
-						s.SaveOrUpdate(user);
-						user.UpdateCache(s);
+					perm.EditQuestionForUser(userId);
+					orgId = user.Organization.Id;
+					//user.NumRocks = rocks.Count(x => x.DeleteTime == null);
+					s.SaveOrUpdate(user);
+					user.UpdateCache(s);
 					/*}else{
 						throw new PermissionsException("What?");
 					}*/
-						var outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, orgId);
+					var outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, orgId);
 
 
 					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
@@ -125,9 +142,11 @@ namespace RadialReview.Accessors
 						var added = r.Id == 0;
 						s.SaveOrUpdate(r);
 
-						if (updateOutstanding && added){
+						if (updateOutstanding && added)
+						{
 							var r1 = r;
-							foreach (var o in outstanding.Where(x=>x.PeriodId==r1.PeriodId)){
+							foreach (var o in outstanding.Where(x => x.PeriodId == r1.PeriodId))
+							{
 								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perm, o.Id, userId, r.Id);
 							}
 						}
@@ -143,7 +162,8 @@ namespace RadialReview.Accessors
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction()){
+				using (var tx = s.BeginTransaction())
+				{
 					var rock = s.Get<RockModel>(rockId);
 					var perm = PermissionsUtility.Create(s, caller).ViewUserOrganization(rock.ForUserId, false);
 					return rock;
@@ -179,13 +199,18 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+
+		public static List<RockModel> GetAllRocks(ISession s, PermissionsUtility perms, long forUserId){
+			return GetAllRocks(s.ToQueryProvider(true), perms, forUserId);
+		}
+
 		public static List<RockModel> GetAllRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId)
 		{
-			perms.Or(x => x.ViewUserOrganization(forUserId, false),x=>x.ViewOrganization(forUserId));
+			perms.Or(x => x.ViewUserOrganization(forUserId, false), x => x.ViewOrganization(forUserId));
 			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.DeleteTime == null);
 		}
 
-		public static List<RockModel> GetAllRocksAtOrganization(UserOrganizationModel caller, long orgId,bool populateUsers)
+		public static List<RockModel> GetAllRocksAtOrganization(UserOrganizationModel caller, long orgId, bool populateUsers)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -195,7 +220,7 @@ namespace RadialReview.Accessors
 					var perm = PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
 					var q = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null);
 					if (populateUsers)
-						q=q.Fetch(x=>x.AccountableUser).Eager;
+						q = q.Fetch(x => x.AccountableUser).Eager;
 					return q.List().ToList();
 				}
 			}
@@ -205,10 +230,11 @@ namespace RadialReview.Accessors
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction()){
+				using (var tx = s.BeginTransaction())
+				{
 					var p = PermissionsUtility.Create(s, caller).ViewL10Meeting(meetingId);
-					var found =s.QueryOver<L10Meeting.L10Meeting_Rock>().Where(x => x.DeleteTime == null && x.L10Meeting.Id == meetingId && x.ForRock.Id == rockId).Take(1).SingleOrDefault();
-					if (found==null)
+					var found = s.QueryOver<L10Meeting.L10Meeting_Rock>().Where(x => x.DeleteTime == null && x.L10Meeting.Id == meetingId && x.ForRock.Id == rockId).Take(1).SingleOrDefault();
+					if (found == null)
 						throw new PermissionsException("Rock not available.");
 
 					var a = found.ForRock.AccountableUser.GetName();

@@ -54,7 +54,13 @@
 }
 
 <div id="uploaded">
-    <img id="uploadedImg" class="thumbnail" style="margin-left:auto;margin-right:auto;"  width="@Model.Width" height="@Model.Height" src="@Model.GetUrl()" />
+	<img id="uploadedImg" class="thumbnail" style="margin-left:auto;margin-right:auto;"  
+		 @if (Model.Width != 0){
+				@:width="@Model.Width"
+		 } 
+		 @if (Model.Height != 0){
+			 @:height="@Model.Height"
+		 } src="@Model.GetUrl()" />
 </div>
 
 

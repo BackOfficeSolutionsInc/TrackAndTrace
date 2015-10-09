@@ -5,6 +5,7 @@
 	ViewBag.LayoutClass = (ViewBag.LayoutClass ?? "") + " dashboard";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	ViewBag.AnyL10s = ViewBag.AnyL10s ?? false;
+	//ViewBag.FullWidth = true;
 }
 
 @section top{
@@ -16,101 +17,69 @@
 {
 	@*<link href="~/Content/bootstrap/custom/dashboard.css" rel="stylesheet" />*@
 	<style>
-		.welcome a {
-			color: #4A79FF;
-		}
+	.welcome a {
+		color: #4A79FF;
+	}
 
-		h3 {
-			color: #6D6D6D;
-		}	
-		
-		.todo-pane {
-			max-height: 360px;
-			overflow: auto;
-			width: 100%;
-		}
-	</style>
+	h3 {
+		color: #6D6D6D;
+	}
+
+	.todo-pane {
+		max-height: 360px;
+		overflow: auto;
+		width: 100%;
+	}
+</style>
 }
 
 <div ng-app="L10App" class="meeting-review ng-cloak">
 	<div ng-controller="L10Controller">	
 		@if (Model.IncludeTodos || Model.IncludeScorecard || Model.IncludeRocks || ViewBag.IsManager)
 		{
-			@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
-				  { "IncludeComplete", false}
-			})
-		}
+							@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
+								  { "IncludeComplete", false}
+							})
+		} 
+		
 		<div class="row">
 			<div class="col-md-4 alignCenter">
 				<div class="hidden-sm hidden-xs">
 					<div>
-						@Html.Partial("_UserModel", Model.User.User,new ViewDataDictionary(){{"onclick","window.location='"+Url.Action("Manage","Account")+"'"}})
+						@Html.Partial("_UserModel", Model.User.User, new ViewDataDictionary() { { "onclick", "window.location='" + Url.Action("Manage", "Account") + "'" } })
 					</div>
 					@if (!Model.User.GetCompletion().FullyComplete)
-					{
+{
 						<div class="clickable" onclick="window.location='@Url.Action("Manage", "Account")'">
 							<h4>Profile Completion</h4>
 							@Html.Partial("_Completion", Model.User)
 						</div>
-					}
+}
 				</div>
 				<div class="smallBreak2 hidden-md"></div>
-				@if (ViewBag.UserId != null && ViewBag.UserId!=0)
-				{
+				@if (ViewBag.UserId != null && ViewBag.UserId != 0)
+{
 					<div class="button-container uid_@ViewBag.UserId">
 						<div class="button empty"></div>
 
 						<a href="/tasks" class="button icon fontastic-icon-checkbox" title="To-Do List"></a>
 						<a href="/User/Details/@ViewBag.UserId" class="button icon fontastic-icon-torso" title="View Details"></a>
-						@if (((int?)ViewBag.Organizations ?? 0) > 1){
+						@if (((int?)ViewBag.Organizations ?? 0) > 1)
+{
 							<a href="/Account/Role?ReturnUrl=%2F" class="button icon fontastic-icon-torsos" title="Change Roles"></a>
-						}
-						@if (ViewBag.ShowL10 as bool? == true){
+}
+						@if (ViewBag.ShowL10 as bool? == true)
+{
 							<div onclick="@Html.ShowModal("Create Issue", "/Issues/CreateIssueRecurrence/", "/Issues/CreateIssueRecurrence/")" class="button icon fontastic-icon-pinboard" title="Create an Issue"><span class="plus">+</span></div>
-						}
+}
 						<a href="/Account/Manage" class="button icon fontastic-icon-cog" title="Edit Settings"></a>
 						<div class="button empty"></div>
 						<span></span>
 					</div>
-				}
+}
 
-				@if (Model.IncludeTodos && ViewBag.UserId != null)
-				{
-					<div class="review smallBreak2 loading tiny" style="min-height:30px;"><div class="todo-heading heading">Current To-Dos<a href="/todo/list" class=""> (View all)</a>@if(ViewBag.AnyL10s){<span class="clickable pull-right new" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")">Create New</span>}</div>@Html.Partial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary(){
-						                                                                      { "AddHeaders", false },
-																							  { "AddCompletion", false },
-																							  { "AddDatePicker", false },
-																							
-					                                                                      })</div>
-					<div class="smallBreak2 hidden-md"></div>
-				}
-				@if (Model.IncludeRocks && ViewBag.UserId != null)
-				{
-					<div class="review smallBreak2 loading tiny" style="min-height:30px"><div class="rock-heading heading">Current @(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.RockName))??"Rocks")<a href="/todo/list" class="gray"></a>@if (ViewBag.AnyL10s && false){<span class="pull-right clickable new">Create New</span>}</div>@Html.Partial("~/Views/Rocks/Partial/list.cshtml", new ViewDataDictionary(){
-						                                                                     { "AddHeaders", false },
-																							 { "AddCompletion", false },
-																							 { "AddDatePicker", false },
-																							 { "RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z=>z.ToLower())))}
-					                                                                     })</div>
-					<div class="smallBreak2 hidden-md"></div>
-				}
-			</div>
-			<div class="col-md-8 col-sm-12">
-				@if (Model.IncludeScorecard && ViewBag.UserId != null)
-				{
-					<div class="review smallBreak2 loading tiny" style="min-height:30px;">
-						<div class="scorecard-heading heading">Measurables:<a href="/todo/list" class="gray"></a>@if (ViewBag.AnyL10s && false)
-																												 {
-							                                                                                         <span class="pull-right clickable new">Create New</span>
-						                                                                                         }</div>
-						@Html.Partial("~/Views/Scorecard/Partial/list.cshtml", new ViewDataDictionary(){
-							{"AddHeaders",false},
-							{"DisableName",true}
-						})
-					</div>
-				}
 				@if (ViewBag.IsManager)
-				{
+{
 					<div class="review smallBreak2 loading tiny" style="min-height:30px;">
 						<div class="heading" @*="margin:7px;"*@>Manage:</div>
 						@Html.Partial("~/Views/Manage/partial/members.cshtml", new ViewDataDictionary(){
@@ -121,6 +90,51 @@
 						})
 					</div>
 				}
+			</div>
+			<div class="col-md-8 col-sm-12">
+				@if (Model.IncludeScorecard && ViewBag.UserId != null)
+				{
+					<div class="review smallBreak2 loading tiny" style="min-height:30px;">
+						<div class="scorecard-heading heading">Measurables:<a href="/todo/list" class="gray"></a>@if (ViewBag.AnyL10s && false)
+							{
+							                                                                                         <span class="pull-right clickable new">Create New</span>
+							}</div>
+						@Html.Partial("~/Views/Scorecard/Partial/list.cshtml", new ViewDataDictionary(){
+							{"AddHeaders",false},
+							{"DisableName",true}
+						})
+					</div>
+				}
+				<div class ="row">
+					<div class = "col-md-6">
+					@if (Model.IncludeTodos && ViewBag.UserId != null)
+						{
+						<div class="review smallBreak2 loading tiny" style="min-height:30px;"><div class="todo-heading heading">Current To-Dos<a href="/todo/list" class=""> (View all)</a>@if (ViewBag.AnyL10s)
+								{<span class="clickable pull-right new" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")">Create New</span>}</div>@Html.Partial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary(){
+																								  { "AddHeaders", false },
+																								  { "AddCompletion", false },
+																								  { "AddDatePicker", false },
+																							
+																							  })</div>
+						<div class="smallBreak2 hidden-md"></div>
+						}
+				
+					</div>
+					<div class = "col-md-6">
+						@if (Model.IncludeRocks && ViewBag.UserId != null)
+						{
+						<div class="review smallBreak2 loading tiny" style="min-height:30px"><div class="rock-heading heading">Current @(Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)) ?? "Rocks")<a href="/todo/list" class="gray"></a>@if (ViewBag.AnyL10s && false)
+									{<span class="pull-right clickable new">Create New</span>}</div>@Html.Partial("~/Views/Rocks/Partial/list.cshtml", new ViewDataDictionary(){
+																								 { "AddHeaders", false },
+																								 { "AddCompletion", false },
+																								 { "AddDatePicker", false },
+																								 { "RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z=>z.ToLower())))}
+																							 })</div>
+						<div class="smallBreak2 hidden-md"></div>
+						}
+					</div>
+				</div>
+				
 
 				@*@if (Model.OutstandingReview != null)
 				{
@@ -132,6 +146,8 @@
 						 </div>
 					 }
 				}*@
+	
+
 				<div class="review welcome" style="min-height:30px">
 					<h2 class="alignCenter">Welcome to @Html.ProductName()</h2>
 					<div id="lipsum">
@@ -198,9 +214,3 @@
 		</div>
 	</div>
 </div>
-@using (Html.BeginStyles())
-{
-	<style>
-	
-	</style>
-}

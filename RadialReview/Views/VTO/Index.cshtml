@@ -1,4 +1,5 @@
-﻿@model RadialReview.Controllers.VTOController.VTOListingVM
+﻿@using Microsoft.Ajax.Utilities
+@model RadialReview.Controllers.VTOController.VTOListingVM
 @{
     ViewBag.Title = "V/TO";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -22,22 +23,19 @@
 @if (ViewBag.IsManager ?? false)
 {
 	<div style="text-align: right;margin-bottom: 3px;">
-		<a class="btn btn-primary" href="/Vto/Edit">Create new V/TO</a>
+		<a class="btn btn-primary btn-invert" href="/Vto/Edit">Create new V/TO</a>
 	</div>
 }
 
 <div class="panel panel-primary startHiddennGroup">
-	<div class="panel-heading">
-		<h3 class="panel-title">Vision/Traction Organizers:</h3>
-	</div>
 	@if (Model.VTOs.Any())
 	{
 		<div class="table-responsive">
 			<table class="table table-condensed tablesorter tablefilter tablesorter-default">
 				<thead>
 					<tr>
-						<th style="min-width: 120px"></th>
-						<th style="width:100px" class="alignCenter">Organization Wide</th>
+						<th style="min-width: 120px">Vision/Traction Organizer Diagrams</th>
+						<th style="width:140px" class="alignCenter">Organization Wide</th>
 						<th style="width:80px" class="alignCenter"></th>
 					</tr>
 				</thead>
@@ -45,7 +43,7 @@
 					@foreach (var vto in Model.VTOs)
 					{
 						<tr class="startHiddenn">
-							<td>@vto.Name</td>
+							<td><a href="/vto/edit/@vto.Id">@vto.Name.IfNullOrWhiteSpace("<untitled>")</a></td>
 							<td class="alignCenter">@vto.OrganizationWide</td>
 							<td class="alignCenter"></td>
 						</tr>

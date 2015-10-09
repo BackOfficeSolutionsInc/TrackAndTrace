@@ -1,0 +1,44 @@
+﻿@model RadialReview.Models.UserModel
+
+<div class="userprofile">
+	@Html.Partial("~/Views/Shared/_UserModel.cshtml", Model)
+	@*, new ViewDataDictionary() { { "onclick", "window.location='" + Url.Action("Manage", "Account") + "'" } }*@
+</div>
+
+<style>
+	.userprofile .thumbnail {
+		max-width: 100%;
+		max-height: 100% !important;
+	}
+
+	.userprofile .thumbnaill {
+		
+		position: absolute;
+		top: 0;
+		bottom: 0px;
+		left: 0;
+		right: 0;
+		justify-content: space-around;
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+
+	.userprofile .imageContainer {
+		height: inherit;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 36px;
+	}
+
+	.userprofile .caption {
+		position: absolute;
+		bottom: 0px;
+		left: 0;
+		right: 0;
+	}
+</style>

@@ -1,32 +1,22 @@
-ERROR 2015-09-21 19:28:10,846 [46] BaseAccessor           - Scheduled task error. 957
-System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
-   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
-   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
-   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 127
-ERROR 2015-09-21 20:19:52,947 [97] BaseController         - PaymentException
+ERROR 2015-10-08 21:29:26,204 [9] BaseController         - PaymentException
 RadialReview.Exceptions.PaymentException: An error occurred in making a payment.
-   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganizationAmount>d__56.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 231
+   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganizationAmount>d__59.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 246
 --- End of stack trace from previous location where exception was thrown ---
    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.PaymentAccessor.<ExecuteInvoice>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 152
+   at RadialReview.Accessors.PaymentAccessor.<ExecuteInvoice>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 157
 --- End of stack trace from previous location where exception was thrown ---
    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganization>d__1.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 108
+   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganization>d__1.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 109
 --- End of stack trace from previous location where exception was thrown ---
    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
    at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__0.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 36
-ERROR 2015-09-21 20:19:53,178 [97] BaseController         - Error: [/Scheduler/ChargeAccount/71?taskId=963]<<A circular reference was detected while serializing an object of type 'System.Reflection.RuntimeModule'.>>
+ERROR 2015-10-08 21:29:26,420 [9] BaseController         - Error: [/Scheduler/ChargeAccount/1634?taskId=1547]<<A circular reference was detected while serializing an object of type 'System.Reflection.RuntimeModule'.>>
 System.InvalidOperationException: A circular reference was detected while serializing an object of type 'System.Reflection.RuntimeModule'.
    at System.Web.Script.Serialization.JavaScriptSerializer.SerializeValueInternal(Object o, StringBuilder sb, Int32 depth, Hashtable objectsInUse, SerializationFormat serializationFormat, MemberInfo currentMember)
    at System.Web.Script.Serialization.JavaScriptSerializer.SerializeValue(Object o, StringBuilder sb, Int32 depth, Hashtable objectsInUse, SerializationFormat serializationFormat, MemberInfo currentMember)
@@ -56,7 +46,6 @@ System.InvalidOperationException: A circular reference was detected while serial
    at System.Web.Script.Serialization.JavaScriptSerializer.SerializeValue(Object o, StringBuilder sb, Int32 depth, Hashtable objectsInUse, SerializationFormat serializationFormat, MemberInfo currentMember)
    at System.Web.Script.Serialization.JavaScriptSerializer.Serialize(Object obj, StringBuilder output, SerializationFormat serializationFormat)
    at System.Web.Script.Serialization.JavaScriptSerializer.Serialize(Object obj, SerializationFormat serializationFormat)
-   at System.Web.Script.Serialization.JavaScriptSerializer.Serialize(Object obj)
    at System.Web.Mvc.JsonResult.ExecuteResult(ControllerContext context)
    at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
    at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
@@ -64,7 +53,7 @@ System.InvalidOperationException: A circular reference was detected while serial
    at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
-ERROR 2015-09-21 20:19:53,185 [139] BaseAccessor           - Scheduled task error. 963
+ERROR 2015-10-08 21:29:26,425 [52] BaseAccessor           - Scheduled task error. 1547
 System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
    at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
    at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
@@ -74,3 +63,20 @@ System.Net.WebException: The remote server returned an error: (500) Internal Ser
    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
    at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 127
+ERROR 2015-10-08 22:03:34,319 [127] BaseController         - Error: [/payment/plan_monthly]<<Object reference not set to an instance of an object.>>
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at ASP._Page_Views_payment_Plan_Monthly_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\Payment\Plan_Monthly.cshtml:line 8
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
+   at System.Web.WebPages.StartPage.RunPage()
+   at System.Web.WebPages.StartPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
+   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
+   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 using RadialReview.Accessors;
@@ -46,31 +47,33 @@ namespace RadialReview
 
 		void Application_EndRequest(Object Sender, EventArgs e)
 		{
-			if ("POST" == Request.HttpMethod)
-			{
-				var bytes = Request.BinaryRead(Request.TotalBytes);
-				var s = Encoding.UTF8.GetString(bytes);
-				if (!String.IsNullOrEmpty(s))
-				{
-					var QueryStringLength = 0;
-					if (0 < Request.QueryString.Count)
-					{
-						QueryStringLength = Request.ServerVariables["QUERY_STRING"].Length;
-						Response.AppendToLog("&");
-					}
+			if ("POST" == Request.HttpMethod){
+				try{
+					Request.InputStream.Seek(0, SeekOrigin.Begin);
+					var bytes = Request.BinaryRead(Request.TotalBytes);
+					var s = Encoding.UTF8.GetString(bytes);
+					if (!String.IsNullOrEmpty(s) && !s.ToLower().Contains("password")){
+						var QueryStringLength = 0;
+						if (0 < Request.QueryString.Count){
+							QueryStringLength = Request.ServerVariables["QUERY_STRING"].Length;
+							Response.AppendToLog("&");
+						}
 
-					if (4100 > (QueryStringLength + s.Length))
-					{
-						Response.AppendToLog(s);
+						if (4100 > (QueryStringLength + s.Length)){
+							Response.AppendToLog(s);
+						}
+						else{
+							// append only the first 4090 the limit is a total of 4100 char.
+							Response.AppendToLog(s.Substring(0, (4090 - QueryStringLength)));
+							// indicate buffer exceeded
+							Response.AppendToLog("|||...|||");
+							// TODO: if s.Length >; 4000 then log to separate file
+						}
 					}
-					else
-					{
-						// append only the first 4090 the limit is a total of 4100 char.
-						Response.AppendToLog(s.Substring(0, (4090 - QueryStringLength)));
-						// indicate buffer exceeded
-						Response.AppendToLog("|||...|||");
-						// TODO: if s.Length >; 4000 then log to separate file
-					}
+					Request.InputStream.Seek(0, SeekOrigin.Begin);
+				}
+				catch (Exception ee){
+					Response.AppendToLog("~Error~");
 				}
 			}
 		}

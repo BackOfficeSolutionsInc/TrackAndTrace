@@ -25,6 +25,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 			console.error(e);
 		}
 	}
+
 	function removeDeleted(model) {
 		for (var key in model) {
 			if (model[key] == "`delete`")

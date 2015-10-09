@@ -82,6 +82,7 @@ function ($scope, $http, $timeout, signalR, vtoDataUrlBase, vtoId, vtoCallback) 
 		var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
 		//var dateRegex2 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
 		var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
+		var dateRegex3 = /\S{3} \S{3} \d{2} \d{4} \d{2}:\d{2}:\d{2}/;
 		for (var key in obj) {
 			var value = obj[key];
 			var type = typeof (value);
@@ -91,6 +92,8 @@ function ($scope, $http, $timeout, signalR, vtoDataUrlBase, vtoId, vtoCallback) 
 				obj[key] = new Date(parseInt(value.substr(6)));
 			} else if (type == 'string' && dateRegex2.test(value)) {
 				obj[key] = new Date(obj[key]);
+			}else if (type == 'string' && dateRegex3.test(value)) {
+				obj[key] = new Date(dateRegex3.exec(obj[key]));
 			} else if (obj[key].getDate !== undefined) {
 				obj[key] = new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
 			} else if (type == 'object') {
@@ -155,13 +158,19 @@ function ($scope, $http, $timeout, signalR, vtoDataUrlBase, vtoId, vtoCallback) 
 		var dat = angular.copy(self);
 		var _clientTimestamp = new Date().getTime();
 		debugger;
-		$http.post("/VTO/Update" + self.Type + "?connectionId=" + $scope.connectionId+"&_clientTimestamp="+_clientTimestamp, dat).error(function (data) {
+		$http.post("/VTO/Update" + self.Type + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
 			showJsonAlert(data, true, true);
 		});
 	};
+
+	$scope.functions.AddRow = function(url, self) {
+		$scope.functions.Get(url);
+
+		debugger;
+	};
 	$scope.functions.Get = function (url, dat) {
 		var _clientTimestamp = new Date().getTime();
-		url+=(url.indexOf("?") != -1)?"&":"?";
+		url += (url.indexOf("?") != -1) ? "&" : "?";
 		url += "connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp;
 		$http.get(url).error(function (data) {
 			showJsonAlert(data, false, true);
@@ -178,4 +187,26 @@ function ($scope, $http, $timeout, signalR, vtoDataUrlBase, vtoId, vtoCallback) 
 	//$scope.$watch('Complete', function (newDate) {
 	//	console.log('Complete: ', newDate);
 	//}, false);
-}]);
+}]).directive('blurToCurrency', function($filter) {
+	return {
+		scope: {
+			amount: '='
+		},
+		link: function(scope, el, attrs) {
+			el.val($filter('currency')(scope.amount));
+
+			el.bind('focus', function() {
+				el.val(scope.amount);
+			});
+
+			el.bind('input', function() {
+				scope.amount = el.val();
+				scope.$apply();
+			});
+
+			el.bind('blur', function() {
+				el.val($filter('currency')(scope.amount));
+			});
+		}
+	};
+});

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
 using Amazon.EC2.Model;
+using Amazon.ElasticMapReduce.Model;
 using ImageResizer.Configuration.Issues;
 using MathNet.Numerics;
 using Microsoft.AspNet.SignalR;
@@ -2660,7 +2661,7 @@ namespace RadialReview.Accessors
 						});
 					}
 
-					recur.Scorecard = new AngularScorecard(caller.Organization.Settings.WeekStart, caller.Organization.GetTimezoneOffset(), measurables, scores);
+					recur.Scorecard = new AngularScorecard(caller.Organization.Settings.WeekStart, caller.Organization.GetTimezoneOffset(), measurables, scores, DateTime.UtcNow);
 					recur.Rocks = recurrence._DefaultRocks.Select(x => new AngularRock(x.ForRock)).ToList();
 					recur.Todos = GetAllTodosForRecurrence(s, perms, recurrenceId).Select(x => new AngularTodo(x)).ToList();
 					recur.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId).Select(x => new AngularIssue(x)).ToList();
@@ -2983,6 +2984,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var perm = PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
+					var current = _GetCurrentL10Meeting(s, perm, recurrenceId, true, false, false);
 
 					var recur = s.Get<L10Recurrence>(recurrenceId);
 
@@ -3002,12 +3004,15 @@ namespace RadialReview.Accessors
 						if (rock == null)
 							throw new PermissionsException("You must include a measurable to create.");
 
-						perm.ViewUserOrganization(rock.AccountableUser.Id, false);
+						perm.ViewUserOrganization(rock.ForUserId, false);
 
 						rock.OrganizationId = recur.OrganizationId;
 						rock.CreateTime = now;
 
-						rock.AccountableUser = s.Load<UserOrganizationModel>(rock.AccountableUser.Id);
+						rock.AccountableUser = s.Load<UserOrganizationModel>(rock.ForUserId);
+
+						rock.Category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+
 
 						s.Save(rock);
 
@@ -3035,10 +3040,11 @@ namespace RadialReview.Accessors
 						ForRock = rock,
 					};
 					s.Save(rm);
+					tx.Commit();
+					s.Flush();
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
-					var current = _GetCurrentL10Meeting(s, perm, recurrenceId, true, false, false);
 					if (current != null)
 					{
 						var mm = new L10Meeting.L10Meeting_Rock()
@@ -3091,8 +3097,7 @@ namespace RadialReview.Accessors
 
 					Audit.L10Log(s, caller, recurrenceId, "CreateRock", rock.Rock);
 
-					tx.Commit();
-					s.Flush();
+					
 				}
 			}
 		}

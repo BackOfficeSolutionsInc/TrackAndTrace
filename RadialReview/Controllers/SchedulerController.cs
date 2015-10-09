@@ -4,6 +4,7 @@ using log4net.Repository.Hierarchy;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Models.Application;
+using RadialReview.Models.Payments;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.Todo;
 using RadialReview.Properties;
@@ -41,13 +42,37 @@ namespace RadialReview.Controllers
 			}
 
 			if (capturedPaymentException != null){
+
+				try{
+					using (var s = HibernateSession.GetCurrentSession())
+					{
+						using (var tx = s.BeginTransaction()){
+							s.Save(PaymentErrorLog.Create(capturedPaymentException, taskId));
+							tx.Commit();
+							s.Flush();
+						}
+					}
+				}catch (Exception e){
+					log.Error("FatalPaymentException", e);
+				}
 				log.Error("PaymentException",capturedPaymentException);
-				await Emailer.SendEmail(MailModel.To(ProductStrings.PaymentExceptionEmail).Subject(EmailStrings.PaymentException_Subject, capturedPaymentException.OrganizationName).Body(EmailStrings.PaymentException_Body, capturedPaymentException.Message, "" + capturedPaymentException.Type, capturedPaymentException.StackTrace));
+				try{
+					var orgName = capturedPaymentException.OrganizationName + "(" + capturedPaymentException.OrganizationId + ")";
+					var trace = capturedPaymentException.StackTrace.NotNull(x => x.Replace("\n", "</br>"));
+					var email = MailModel.To(ProductStrings.PaymentExceptionEmail)
+						.Subject(EmailStrings.PaymentException_Subject, orgName)
+						.Body(EmailStrings.PaymentException_Body,capturedPaymentException.Message,"<b>" + capturedPaymentException.Type + "</b> for '" + orgName + "'  ($" + capturedPaymentException.ChargeAmount + ") at " + capturedPaymentException.OccurredAt + " [TaskId=" + taskId + "]", trace);
+
+					await Emailer.SendEmail(email, true);
+				}
+				catch (Exception e){
+					log.Error("FatalPaymentException",e);
+				}
 				Response.StatusCode = 501;
 				return Json(new{
 					charged=false,
 					payment_exception = true,
-					error=capturedPaymentException
+					error=capturedPaymentException.Type
 				},JsonRequestBehavior.AllowGet);
 			}
 			if (capturedException != null)
@@ -59,7 +84,7 @@ namespace RadialReview.Controllers
 				{
 					charged = false,
 					payment_exception = false,
-					error = capturedException
+					error = capturedException.Message
 				}, JsonRequestBehavior.AllowGet);
 			}
 			return Json(new{

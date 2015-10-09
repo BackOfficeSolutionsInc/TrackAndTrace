@@ -32,7 +32,9 @@ namespace RadialReview.Models.Angular.VTO
 		public AngularThreeYearPicture ThreeYearPicture { get; set; }
 		public AngularOneYearPlan OneYearPlan { get; set; }
 		public IEnumerable<AngularCompanyValue> Values { get; set; }
+		public IEnumerable<AngularVtoString> Issues { get; set; }
 
+		public String TenYearTarget { get; set; }
 
 		public static AngularVTO Create(VtoModel vto)
 		{
@@ -40,6 +42,7 @@ namespace RadialReview.Models.Angular.VTO
 				Id = vto.Id,
 				CreateTime = vto.CreateTime,
 				CopiedFrom = vto.CopiedFrom,
+				TenYearTarget = vto.TenYearTarget,
 				Name = vto.Name, //AngularVtoString.Create(vto.Name),
 				Values = AngularCompanyValue.Create(vto._Values),
 				CoreFocus = AngularCoreFocus.Create(vto.CoreFocus),
@@ -47,6 +50,7 @@ namespace RadialReview.Models.Angular.VTO
 				OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan),
 				QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
 				ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture),
+				Issues = AngularVtoString.Create(vto._Issues)
 			};
 		}
 	}
@@ -60,12 +64,15 @@ namespace RadialReview.Models.Angular.VTO
 		}
 		public String Data { get; set; }
 		
+		public bool Deleted { get; set; }
+
 		public static AngularVtoString Create(VtoModel.VtoItem_String strs)
 		{
 			return new AngularVtoString()
 			{
 				Data = strs.Data,
-				Id = strs.Id
+				Id = strs.Id,
+				Deleted = strs.DeleteTime!=null
 			};
 		}
 		public static List<AngularVtoString> Create(IEnumerable<VtoModel.VtoItem_String> strs)
@@ -114,7 +121,6 @@ namespace RadialReview.Models.Angular.VTO
 		}
 	}
 	#endregion
-
 	public class AngularCoreFocus : Base.BaseAngular
 	{
 		
@@ -147,11 +153,11 @@ namespace RadialReview.Models.Angular.VTO
 		public AngularStrategy()
 		{
 		}
-		public String TenYearTarget { get; set; }
+	//	public String TenYearTarget { get; set; }
 		public String TargetMarket { get; set; }
 		public String ProvenProcess { get; set; }
 		public String Guarantee { get; set; }
-		public List<AngularVtoString> Uniques { get; set; }
+		public IEnumerable<AngularVtoString> Uniques { get; set; }
 
 		internal static AngularStrategy Create(VtoModel.MarketingStrategyModel marketingStrategyModel)
 		{
@@ -161,7 +167,7 @@ namespace RadialReview.Models.Angular.VTO
 				Guarantee = (marketingStrategyModel.Guarantee),
 				ProvenProcess = (marketingStrategyModel.ProvenProcess),
 				TargetMarket = (marketingStrategyModel.TargetMarket),
-				TenYearTarget = (marketingStrategyModel.TenYearTarget),
+				//TenYearTarget = (marketingStrategyModel.TenYearTarget),
 				Uniques = AngularVtoString.Create(marketingStrategyModel._Uniques),
 			};
 		}
@@ -180,7 +186,7 @@ namespace RadialReview.Models.Angular.VTO
 		public Decimal? Revenue { get; set; }
 		public Decimal? Profit { get; set; }
 		public String Measurables { get; set; }
-		public List<AngularVtoString> LooksLike { get; set; }
+		public IEnumerable<AngularVtoString> LooksLike { get; set; }
 
 		public static AngularThreeYearPicture Create(VtoModel.ThreeYearPictureModel threeYearPicture)
 		{
@@ -206,11 +212,12 @@ namespace RadialReview.Models.Angular.VTO
 		public Decimal? Revenue { get; set; }
 		public Decimal? Profit { get; set; }
 		public String Measurables { get; set; }
-		public List<AngularVtoString> GoalsForYear { get; set; }
+		public IEnumerable<AngularVtoString> GoalsForYear { get; set; }
 
 		public static AngularOneYearPlan Create(VtoModel.OneYearPlanModel oneYearPlan)
 		{
 			return new AngularOneYearPlan(){
+				Id = oneYearPlan.Id,
 				FutureDate = (oneYearPlan.FutureDate),
 				GoalsForYear = AngularVtoString.Create(oneYearPlan._GoalsForYear),
 				Measurables = (oneYearPlan.Measurables),
@@ -231,7 +238,7 @@ namespace RadialReview.Models.Angular.VTO
 		public Decimal? Revenue { get; set; }
 		public Decimal? Profit { get; set; }
 		public String Measurables { get; set; }
-		public List<AngularVtoRock> Rocks { get; set; }
+		public IEnumerable<AngularVtoRock> Rocks { get; set; }
 
 		public static AngularQuarterlyRocks Create(VtoModel.QuarterlyRocksModel quarterlyRocksModel)
 		{
@@ -255,13 +262,19 @@ namespace RadialReview.Models.Angular.VTO
 		}
 
 		public AngularRock Rock { get; set; }
+		public bool Deleted { get; set; }
 
-		public static List<AngularVtoRock> Create(IEnumerable<VtoModel.Vto_Rocks> rocks)
+		public static AngularVtoRock Create(VtoModel.Vto_Rocks rock)
 		{
-			return rocks.Select(x => new AngularVtoRock(){
-				Rock = new AngularRock(x.Rock),
-				Id = x.Id,
-			}).ToList();
+			return new AngularVtoRock(){
+				Rock = new AngularRock(rock.Rock),
+				Id = rock.Id,
+				Deleted = rock.DeleteTime!=null
+			};
+		}
+
+		public static List<AngularVtoRock> Create(IEnumerable<VtoModel.Vto_Rocks> rocks){
+			return rocks.Select(Create).ToList();
 		}
 	}
 }

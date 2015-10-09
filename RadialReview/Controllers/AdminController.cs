@@ -286,6 +286,26 @@ namespace RadialReview.Controllers
 	    }
 
 
+	    [Access(AccessLevel.Radial)]
+	    public JsonResult AdminAllUsers(string search)
+	    {
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var users = s.QueryOver<UserOrganizationModel>()
+						.Where(x => x.DeleteTime == null)
+						.WhereRestrictionOn(c => c.EmailAtOrganization).IsLike("%" + search + "%")
+						.Select(x=>x.EmailAtOrganization, x=>x.Id)
+						.List<object[]>().ToList();
+					return Json(new{
+						results = users.Select(x =>new {
+							text=""+x[0],
+							value= ""+ x[1]
+						}).ToArray()
+					}, JsonRequestBehavior.AllowGet);
+				}
+			}
+	    }
 
 
 	    [Access(AccessLevel.Radial)]

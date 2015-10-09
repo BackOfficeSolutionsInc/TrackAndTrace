@@ -1,0 +1,128 @@
+﻿@model long
+
+@{
+	ViewBag.Title = "Dashboard";
+	ViewBag.LayoutClass = (ViewBag.LayoutClass ?? "") + " dashboard";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.AnyL10s = ViewBag.AnyL10s ?? false;
+	ViewBag.FullWidth = true;
+}
+
+@section top{
+	<div class="jumbotron">
+		<h1>@Html.ProductName() @*<small>Dashboard</small>*@</h1>
+	</div>
+}
+@using (Html.BeginStyles())
+{
+	@*<link href="~/Content/bootstrap/custom/dashboard.css" rel="stylesheet" />*@
+	<style>
+		.welcome a {
+			color: #4A79FF;
+		}
+
+		h3 {
+			color: #6D6D6D;
+		}
+
+		.todo-pane {
+			max-height: 360px;
+			overflow: auto;
+			width: 100%;
+		}
+	</style>
+	<link href="~/Scripts/Grid/style.css" rel="stylesheet" />
+}
+
+
+@using (Html.BeginScripts())
+{
+
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+	<script src="~/Scripts/Grid/fixtures.js"></script>
+	<script src="~/Scripts/Grid/src/gridList.js"></script>
+	<script src="~/Scripts/Grid/src/jquery.gridList.js"></script>
+	<script src="~/Scripts/Grid/load.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$.ajax({
+				method: "get",
+				url: "/Dashboard/Tiles/@Model",
+				success: function(data) {
+					if (showJsonAlert(data, false, true)) {
+						Grid.buildElements($('#grid'), data.Object, function(changed) {
+							if (changed.length == 0)
+								return;
+							var arr = [];
+							for (var cc in changed) {
+								var c = changed[cc];
+								arr.push({ x: c.x, y: c.y, w: c.w, h: c.h, id: c.id });
+							}
+							var dat = {
+								id: @Model,
+								model: arr,
+							};
+							$.ajax({
+								traditional:true,
+								contentType: "application/json; charset=utf-8",
+								method: "post",
+								data: JSON.stringify( dat),
+								url: "/Dashboard/UpdateTiles/",
+								success: function(data) {
+									showJsonAlert(data, false, true);
+								}
+
+							});
+						});
+					}
+
+				},
+				error: function(data) {
+					showAlert("There was an error getting your dashboard.");
+				}
+			});
+		});
+
+		function createTile(url,type) {
+			var dat = {
+				id: @Model,
+				type:type,
+				dataUrl:url
+			};
+			$.ajax({
+				url: "/Dashboard/CreateTile/",
+				data: dat,
+				success: function(data) {
+					if (showJsonAlert(data, false, true)) {
+						Grid.addTile(data.Object);
+					}
+				}
+			});
+		}
+	</script>
+}
+
+
+<!-- Single button -->
+<div class="btn-group" style="position:relative;top:-28px;z-index: 1001;color:white">
+  <button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Add Tile <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+	  <li><a onclick="createTile('/TileData/UserTodo','Url')">To-do</a></li>
+	  <li><a onclick="createTile('/TileData/UserScorecard','Url')">Scorecard</a></li>
+	  <li><a onclick="createTile('/TileData/UserRock','Url')">@Html.Organization().Settings.RockName</a></li>
+	  <li><a onclick="createTile('/TileData/UserManage','Url')">Direct Reports</a></li>
+	  <li><a onclick="createTile('/TileData/UserProfile','Url')">Profile</a></li>
+  </ul>
+</div>
+
+
+<div class="meeting-review ng-cloa2k grid-container">
+	<div ng-controller="L10Controller">
+		@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
+		{ "IncludeComplete", false}
+	})
+		<ul id="grid" class="grid"></ul>
+	</div>
+</div>

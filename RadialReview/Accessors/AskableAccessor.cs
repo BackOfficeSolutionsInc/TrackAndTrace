@@ -28,6 +28,9 @@ namespace RadialReview.Accessors {
 			var allAskables = new List<Askable>();
 
 			var rgm = queryProvider.Get<ResponsibilityGroupModel>(forRGMId);
+			if (rgm == null || rgm.Organization == null)
+				return allAskables;
+
 			var orgId = rgm.Organization.Id;
 
 			if (rgm is OrganizationModel){

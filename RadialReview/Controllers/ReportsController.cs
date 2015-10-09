@@ -88,7 +88,7 @@ namespace RadialReview.Controllers
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
-					var found = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == id && x.ForUserId == userId).SingleOrDefault();
+					var found = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == id && x.ForUserId == userId).List().FirstOrDefault();
 					if (found==null)
 						throw new PermissionsException("Report does not exist");
 					reviewId = found.Id;

@@ -19,9 +19,7 @@
 
 		@if (Context.IsDebuggingEnabled)
 		{
-			<div class="review">
-				@Model.NotNull(x => x.StackTrace)
-			</div>
+			<div class="review" style="white-space: pre;font-size: 11px;overflow-x: auto;">@Model.NotNull(x => x.StackTrace)</div>
 			<a target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Error:+@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(body)">Email Support</a>
 		}
 		

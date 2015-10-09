@@ -27,7 +27,7 @@ namespace RadialReview.Accessors
 			else if (other is OrganizationModel)
 				perms.ViewOrganization(otherId);
 			else 
-				throw new PermissionsException("Unhandled.");
+				throw new PermissionsException("Unhandled. "+otherId);
             
             var output = new List<AboutType>();
 

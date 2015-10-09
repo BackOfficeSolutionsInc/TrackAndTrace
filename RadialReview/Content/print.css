@@ -635,3 +635,14 @@ font-size: 9px;
   width: 85px;
   text-align: left;
 }
+
+.fill.True, .fill.Always,
+.fill.False, .fill.Never,
+.table-io.companyValues .fill.Positive, .valueTable .fill.Positive,
+.table-io.companyValues .fill.Neutral, .valueTable .fill.Neutral,
+.table-io.companyValues .fill.Negative, .valueTable .fill.Negative {
+	background-color: inherit;
+}
+
+
+@page {size: letter}

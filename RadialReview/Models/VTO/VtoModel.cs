@@ -12,12 +12,13 @@ using Remotion.Linq.Clauses;
 
 namespace RadialReview.Models.VTO
 {
-	public enum VtoItemType:int
+	public enum VtoItemType : int
 	{
-		Field=0,
+		Field = 0,
 		List_Uniques,
 		List_LookLike,
 		List_YearGoals,
+		List_Issues,
 
 	}
 
@@ -32,11 +33,16 @@ namespace RadialReview.Models.VTO
 		public virtual String Name { get; set; }
 		public virtual List<CompanyValueModel> _Values { get; set; }
 
+		public virtual long? PeriodId { get; set; }
+
 		public virtual CoreFocusModel CoreFocus { get; set; }
 		public virtual MarketingStrategyModel MarketingStrategy{ get; set; }
 		public virtual ThreeYearPictureModel ThreeYearPicture { get; set; }
 		public virtual OneYearPlanModel OneYearPlan { get; set; }
 		public virtual QuarterlyRocksModel QuarterlyRocks { get; set; }
+		public virtual string TenYearTarget { get; set; }
+
+		public virtual List<VtoItem_String> _Issues { get; set; }
 
 		public VtoModel()
 		{
@@ -46,6 +52,7 @@ namespace RadialReview.Models.VTO
 			MarketingStrategy = new MarketingStrategyModel();
 			//Name; //= new VtoItem_String();
 			_Values = new List<CompanyValueModel>();
+			_Issues = new List<VtoItem_String>();
 			ThreeYearPicture = new ThreeYearPictureModel();
 			OneYearPlan = new OneYearPlanModel();
 			QuarterlyRocks = new QuarterlyRocksModel();
@@ -59,9 +66,11 @@ namespace RadialReview.Models.VTO
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.CopiedFrom);
+				Map(x => x.PeriodId);
 				References(x => x.Organization).Not.Nullable().LazyLoad();
 				//References(x => x.OrganizationWide).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 				Map(x => x.OrganizationWide);
+				Map(x => x.TenYearTarget);
 
 				//References(x => x.Name).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 				Map(x => x.Name);
@@ -114,7 +123,7 @@ namespace RadialReview.Models.VTO
 		{
 			public virtual long Id { get; set; }
 			public virtual VtoModel Vto { get; set; }
-			public virtual string TenYearTarget { get; set; }
+			//public virtual string TenYearTarget { get; set; }
 			public virtual string TargetMarket { get; set; }
 			public virtual string ProvenProcess { get; set; }
 			public virtual string Guarantee { get; set; }
@@ -138,7 +147,7 @@ namespace RadialReview.Models.VTO
 					//References(x => x.TargetMarket).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 					//References(x => x.ProvenProcess).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
 					//References(x => x.Guarantee).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
-					Map(x => x.TenYearTarget);
+					//Map(x => x.TenYearTarget);
 					Map(x => x.TargetMarket);
 					Map(x => x.ProvenProcess);
 					Map(x => x.Guarantee);
@@ -394,6 +403,7 @@ namespace RadialReview.Models.VTO
 			}
 		}
 		#endregion
+
 
 	}
 }

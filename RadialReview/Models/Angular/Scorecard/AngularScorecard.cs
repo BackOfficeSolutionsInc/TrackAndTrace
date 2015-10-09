@@ -11,9 +11,9 @@ namespace RadialReview.Models.Angular.Scorecard
 {
 	public class AngularScorecard : BaseAngular
 	{
-		public AngularScorecard(DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores) : this()
+		public AngularScorecard(DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek) : this()
 		{
-			Weeks = TimingUtility.GetWeeks(weekstart,timezoneOffset, DateTime.UtcNow, null, scores,true).Select(x => new AngularWeek(x)).ToList();
+			Weeks = TimingUtility.GetWeeks(weekstart, timezoneOffset, DateTime.UtcNow, currentWeek.NotNull(x=>x.Value.AddDays(7)), scores, true).Select(x => new AngularWeek(x)).ToList();
 			Measurables = measurables.ToList();
 			Scores = scores.Select(x => new AngularScore(x)).ToList();
 		}

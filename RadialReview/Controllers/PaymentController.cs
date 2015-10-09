@@ -1,4 +1,6 @@
 ﻿using RadialReview.Models;
+using RadialReview.Models.Json;
+using RadialReview.Models.Payments;
 using RadialReview.Models.Tasks;
 using RadialReview.Utilities;
 using System;
@@ -7,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using TrelloNet;
 
 namespace RadialReview.Controllers
 {
@@ -61,11 +64,49 @@ namespace RadialReview.Controllers
 				L10PricePerPerson = 12,
 				ReviewPricePerPerson = 4,
 				PlanCreated = DateTime.UtcNow,
-				OrganizationId = GetUser().Organization.Id,
+				OrgId = GetUser().Organization.Id,
 
 			});
 		}
 
+		[Access(AccessLevel.Radial)]
+		public ActionResult Errors(int id=7)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var now = DateTime.UtcNow.Subtract(TimeSpan.FromDays(id));
+
+					var items = s.QueryOver<PaymentErrorLog>().Where(x => x.HandledAt == null || x.HandledAt > now).List().ToList();
+					return View(items);
+				}
+			}
+		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult SetErrorHandled(long id,bool handled)
+		{
+			using(var s = HibernateSession.GetCurrentSession())
+			{
+				using(var tx=s.BeginTransaction()){
+					var e = s.Get<PaymentErrorLog>(id);
+
+					if (handled){
+						e.HandledAt = DateTime.UtcNow;
+					}
+					else{
+						e.HandledAt = null;
+					}
+					tx.Commit();
+					s.Flush(); 
+				}
+			}
+
+			return Json(ResultObject.SilentSuccess(new{
+				id=id,
+				handled=handled,
+			}), JsonRequestBehavior.AllowGet);
+		}
 
 		[HttpPost]
 		[Access(AccessLevel.Radial)]
@@ -75,10 +116,19 @@ namespace RadialReview.Controllers
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					var org = s.Get<OrganizationModel>(model.OrganizationId);
+					var org = s.Get<OrganizationModel>(model.OrgId);
 
 					if (String.IsNullOrWhiteSpace(Request.Form["TaskId"]))
 					{
+						if (!String.IsNullOrWhiteSpace(Request.Form["OldTaskId"])){
+							var delete = s.QueryOver<ScheduledTask>().Where(x=>x.DeleteTime==null && x.OriginalTaskId==Request["OldTaskId"].ToLong()).List().ToList();
+							foreach (var oldTask in delete){
+								oldTask.DeleteTime = DateTime.UtcNow;
+								s.Update(oldTask);
+							}
+							
+						}
+
 
 						var fireTime = DateTime.MaxValue;
 						var setDate = false;
@@ -111,7 +161,7 @@ namespace RadialReview.Controllers
 						model.Task = new ScheduledTask()
 						{
 							MaxException = 1,
-							Url = "/Scheduler/ChargeAccount/" + model.OrganizationId,
+							Url = "/Scheduler/ChargeAccount/" + model.OrgId,
 							NextSchedule = model.SchedulerPeriod(),
 							Fire = fireTime,
 							FirstFire = fireTime,

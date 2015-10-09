@@ -333,7 +333,7 @@ namespace RadialReview.Controllers
 		public JsonResult SetNotes(long id, string notes)
 		{
 			_ReviewAccessor.UpdateNotes(GetUser(), id, notes);
-			return Json(ResultObject.Success("Added notes."));
+			return Json(ResultObject.Success("Added notes.").ForceSilent());
 		}
 
 		[HttpGet]
@@ -437,14 +437,14 @@ namespace RadialReview.Controllers
 		public JsonResult SetIncludeScatter(long reviewId, bool on)
 		{
 			_ReviewAccessor.SetIncludeScatter(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 		[Access(AccessLevel.Manager)]
 		public JsonResult SetIncludeTimeline(long id, bool on)
 		{
 			var reviewId = id;
 			_ReviewAccessor.SetIncludeTimeline(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 
@@ -471,7 +471,7 @@ namespace RadialReview.Controllers
 				_ReviewAccessor.AddAnswerToReview(GetUser(), reviewId, feedbackId);
 			else
 				_ReviewAccessor.RemoveAnswerFromReview(GetUser(), reviewId, feedbackId);
-			return Json(ResultObject.Create(new { FeedbackId = feedbackId, On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { FeedbackId = feedbackId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Manager)]
@@ -490,7 +490,7 @@ namespace RadialReview.Controllers
 		{
 
 			_ReviewAccessor.UpdateScatterChart(GetUser(), reviewId, aggregateBy, filterBy, title, xAxis, yAxis, startTime.NotNull(x => x.Value.ToDateTime()), endTime.NotNull(x => x.Value.ToDateTime()), include, includePrevious);
-			return Json(ResultObject.Create(new { ReviewId = reviewId }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { ReviewId = reviewId }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 
@@ -499,49 +499,49 @@ namespace RadialReview.Controllers
 		public JsonResult SetIncludeGWCFeedback(long answerId, bool on, string gwc)
 		{
 			_ReviewAccessor.SetIncludeGWCFeedback(GetUser(), on, answerId, gwc);
-			return Json(ResultObject.Create(new { On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Manager)]
 		public JsonResult SetIncludeValueFeedback(long answerId, bool on)
 		{
 			_ReviewAccessor.SetIncludeValueFeedback(GetUser(), on, answerId);
-			return Json(ResultObject.Create(new { On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Manager)]
 		public JsonResult SetIncludeTable(long reviewId, bool on)
 		{
 			_ReviewAccessor.SetIncludeQuestionTable(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Manager)]
 		public JsonResult SetIncludeManagerAnswers(long reviewId, bool on)
 		{
 			_ReviewAccessor.SetIncludeManagerAnswers(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Manager)]
 		public JsonResult SetIncludeSelfAnswers(long reviewId, bool on)
 		{
 			_ReviewAccessor.SetIncludeSelfAnswers(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Manager)]
 		public JsonResult SetIncludeNotes(long reviewId, bool on)
 		{
 			_ReviewAccessor.SetIncludeNotes(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Manager)]
 		public JsonResult SetIncludeEvaluation(long reviewId, bool on)
 		{
 			_ReviewAccessor.SetIncludeEvaluation(GetUser(), reviewId, on);
-			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }), JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Manager)]
@@ -549,7 +549,7 @@ namespace RadialReview.Controllers
 		{
 			var result = _ReviewAccessor.Authorize(GetUser(), reviewId, authorized);
 			result.Object = new { Authorized = authorized };
-			return Json(result, JsonRequestBehavior.AllowGet);
+			return Json(result.ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
 
 		public class ReviewDetailsViewModel

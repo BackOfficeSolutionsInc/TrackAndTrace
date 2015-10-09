@@ -1,4 +1,5 @@
-﻿using NHibernate;
+﻿using Amazon.DynamoDBv2.DocumentModel;
+using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
@@ -60,10 +61,10 @@ namespace RadialReview.Accessors
 	public class Emailer : BaseAccessor
 	{
 		#region Helpers
-		private static String EmailBodyWrapper(String htmlBody)
+		private static String EmailBodyWrapper(String htmlBody,int? tableWidth=null)
 		{
 			var footer = String.Format(EmailStrings.Footer, ProductStrings.CompanyName);
-			return String.Format(EmailStrings.BodyWrapper, htmlBody, footer);
+			return String.Format(EmailStrings.BodyWrapper, htmlBody, footer, tableWidth??600);
 		}
 
 		public static bool IsValid(string emailaddress)
@@ -295,12 +296,12 @@ namespace RadialReview.Accessors
 			};
 		}
 
-		public static async Task<int> SendMandrillEmails(List<EmailModel> emails, EmailResult result)
+		public static async Task<int> SendMandrillEmails(List<EmailModel> emails, EmailResult result, bool forceSend = false)
 		{
 
 			var api = new MandrillApi(ConstantStrings.MandrillApiKey, true);
 			var results = new List<Mandrill.EmailResult>();
-			if (Config.SendEmails())
+			if (Config.SendEmails() || forceSend)
 			{
 				results = (await Task.WhenAll(emails.Select(email => api.SendMessageAsync(CreateMandrillMessage(email))))).SelectMany(x => x).ToList();
 			}
@@ -359,17 +360,17 @@ namespace RadialReview.Accessors
 			return 1;
 		}
 
-		public static async Task<EmailResult> SendEmail(MailModel email)
+		public static async Task<EmailResult> SendEmail(MailModel email,bool forceSend=false)
 		{
-			return await SendEmails(email.AsList());
+			return await SendEmails(email.AsList(),forceSend);
 		}
 
-		public static async Task<EmailResult> SendEmails(IEnumerable<MailModel> emails)
+		public static async Task<EmailResult> SendEmails(IEnumerable<MailModel> emails, bool forceSend = false)
 		{
-			return await SendEmailsWrapped(emails);
+			return await SendEmailsWrapped(emails, forceSend);
 		}
 
-		private static async Task<EmailResult> SendEmailsWrapped(IEnumerable<MailModel> emails)
+		private static async Task<EmailResult> SendEmailsWrapped(IEnumerable<MailModel> emails, bool forceSend = false,int? tableWidth=null)
 		{
 			//Register emails
 			var unsentEmails = new List<EmailModel>();
@@ -382,7 +383,7 @@ namespace RadialReview.Accessors
 					{
 						var unsent = new EmailModel()
 						{
-							Body = EmailBodyWrapper(email.HtmlBody),
+							Body = EmailBodyWrapper(email.HtmlBody,tableWidth),
 							CompleteTime = null,
 							Sent = false,
 							Subject = email.Subject,
@@ -402,7 +403,7 @@ namespace RadialReview.Accessors
 			var startSending = DateTime.UtcNow;
 
 			//And... Go.
-			var threads = await SendMandrillEmails(unsentEmails, result);
+			var threads = await SendMandrillEmails(unsentEmails, result,forceSend);
 
 
 			result.TimeTaken = DateTime.UtcNow - startSending;

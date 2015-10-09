@@ -121,7 +121,7 @@
     <value>&lt;table style="background-color:#f3f4f4" bgcolor="#F3F4F4" width="100%" align="center" cellspacing="0" cellpadding="0"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;
             &lt;br&gt;
             &lt;table cellpadding="1" cellspacing="0" style="background-color:#d9dadb" align="center" bgcolor="#D9DADB"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;
-            &lt;table style="font-family:arial,helvetica,sans-serif;font-size:14px;line-height:20px;background-color:#ffffff" align="center" bgcolor="#ffffff" cellspacing="0" cellpadding="0" width="600"&gt;
+            &lt;table style="font-family:arial,helvetica,sans-serif;font-size:14px;line-height:20px;background-color:#ffffff" align="center" bgcolor="#ffffff" cellspacing="0" cellpadding="0" width="{2}"&gt;
 
             &lt;tbody&gt;&lt;tr&gt;&lt;td width="30"&gt;&lt;img style="display:block" border="0" alt="" width="1" height="1"&gt;&lt;/td&gt;
 
@@ -140,7 +140,7 @@
 
             &lt;/tbody&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;br&gt;&lt;/td&gt;&lt;/tr&gt;
             &lt;/tbody&gt;&lt;/table&gt;</value>
-    <comment>[htmlBody,footer]</comment>
+    <comment>[htmlBody,footer,tableWidth_600]</comment>
   </data>
   <data name="Footer" xml:space="preserve">
     <value>This message was generated automatically by {0} 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email.</value>
@@ -282,8 +282,8 @@ The {2} Team</value>
     <value>You have a new survey to complete</value>
   </data>
   <data name="PaymentException_Body" xml:space="preserve">
-    <value>&lt;p&gt;Payment Failed: {0}&lt;/p&gt;&lt;p&gt;{1}&lt;/p&gt;</value>
-    <comment>[Message,Details]</comment>
+    <value>&lt;p&gt;Payment Failed: {0}&lt;/p&gt;&lt;p&gt;{1}&lt;/p&gt;&lt;p&gt;{2}&lt;/p&gt;</value>
+    <comment>[Message,Details,Trace]</comment>
   </data>
   <data name="PaymentException_Subject" xml:space="preserve">
     <value>Payment Failed for {0}</value>

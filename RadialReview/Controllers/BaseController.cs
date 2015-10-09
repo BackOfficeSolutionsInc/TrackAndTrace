@@ -530,7 +530,7 @@ namespace RadialReview.Controllers
 							filterContext.Controller.ViewBag.UserName = name;
 							filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
 							filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview;
-							filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey;
+							filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
 							var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
 							filterContext.Controller.ViewBag.IsManager = isManager;
 							filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;

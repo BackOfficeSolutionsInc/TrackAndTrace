@@ -1,92 +1,10 @@
-ERROR 2015-09-23 17:12:35,064 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-09-23 17:12:41,377 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-09-23 17:12:41,393 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-09-23 17:12:47,627 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-09-23 17:12:47,643 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-09-23 17:12:53,846 [1] SchemaUpdate           - could not get database metadata
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-ERROR 2015-09-23 17:12:53,861 [1] SchemaUpdate           - could not complete schema update
-MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-INFO  2015-09-23 18:21:14,753 [14] BaseController         - Permissions: [/User/EditModal/177?_clientTimestamp=1443050464783] --> []
-INFO  2015-09-23 18:30:47,745 [38] BaseController         - Permissions: [/User/EditModal/177?_clientTimestamp=1443051047636] --> []
-INFO  2015-09-23 18:32:10,400 [42] BaseController         - Permissions: [/User/EditModal/177?_clientTimestamp=1443051130270] --> []
-INFO  2015-09-23 18:32:34,047 [31] BaseController         - Permissions: [/permissions/edit/71] --> []
-INFO  2015-09-23 18:33:46,360 [52] BaseController         - Permissions: [/permissions/edit/71] --> []
-INFO  2015-09-23 18:41:03,714 [17] BaseController         - Organization: [/User/EditModal/177?_clientTimestamp=1443051663377] --> [/User/EditModal/177?_clientTimestamp=1443051663377]
-INFO  2015-09-23 18:43:41,666 [21] BaseController         - Organization: [/User/EditModal/177?_clientTimestamp=1443051815386] --> [/User/EditModal/177?_clientTimestamp=1443051815386]
-INFO  2015-09-23 19:19:07,858 [85] BaseController         - Organization: [/User/Managers/177] --> [/User/Managers/177]
+ERROR 2015-10-09 00:06:45,864 [102] BaseAccessor           - Scheduled task error. 1575
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 127

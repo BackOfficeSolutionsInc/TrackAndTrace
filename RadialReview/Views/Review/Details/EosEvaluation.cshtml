@@ -72,7 +72,7 @@
 					</tbody>
 				</table>*@
 
-			@foreach (var r in rrs)
+			@foreach (var r in rrs.GroupBy(x=>x.Askable.Id).Select(x=>x.First()))
 			{
 				<div class="row">
 					<div class="col-xs-3 alignRight noPadLeft">
@@ -96,17 +96,17 @@
 									<div class="hidden-sm hidden-xs fullWidth" style="height: 10px;"></div>
 								}
 								<div class="row">
-									<div class="col-xs-4 alignCenter">
+									<div class="col-xs-4 alignCenter ">
 										@{
-								var state = Tristate.Indeterminate;
-								if (r.ManagerOverride == RockState.AtRisk)
-								{
-									state = Tristate.False;
-								}
-								else if (r.ManagerOverride == RockState.Complete)
-								{
-									state = Tristate.True;
-								}
+											var state = Tristate.Indeterminate;
+											if (r.ManagerOverride == RockState.AtRisk)
+											{
+												state = Tristate.False;
+											}
+											else if (r.ManagerOverride == RockState.Complete)
+											{
+												state = Tristate.True;
+											}
 										}
 										<div style="padding-top:5px;"></div>
 										@Html.EditorFor(x => state, "ApproveReject", new { name = "ar_" + r.Id })
@@ -127,10 +127,10 @@
 								}
 
 								<div class="row">
-									<div class="col-xs-4 alignCenter">
+									<div class="col-xs-4 alignCenter noPadRight">
 										@Html.DisplayFor(x => r.Completion)
 									</div>
-									<div class="col-xs-8 noPadRight" style="padding-left: 7px;">
+									<div class="col-xs-8 noPadLeft" style="padding-left: 7px;">
 										@if (!String.IsNullOrWhiteSpace(r.Reason))
 										{
 											<i>"@r.Reason"</i>

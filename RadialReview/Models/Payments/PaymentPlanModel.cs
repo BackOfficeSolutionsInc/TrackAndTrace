@@ -45,7 +45,8 @@ namespace RadialReview.Models
         public virtual decimal L10PricePerPerson { get; set; }
         public virtual decimal ReviewPricePerPerson { get; set; }
         public virtual int FirstN_Users_Free { get; set; }
-        public virtual long OrganizationId { get; set; }
+
+        public virtual long OrgId { get; set; }
 
 		public virtual DateTime? ReviewFreeUntil { get; set; }
 		public virtual DateTime? L10FreeUntil { get; set; }
@@ -62,7 +63,7 @@ namespace RadialReview.Models
                 Map(x => x.L10PricePerPerson);
                 Map(x => x.ReviewPricePerPerson);
 				Map(x => x.FirstN_Users_Free);
-				Map(x => x.OrganizationId);
+				Map(x => x.OrgId).Column("OrganizationId");
 				Map(x => x.ReviewFreeUntil);
 				Map(x => x.L10FreeUntil);
             }

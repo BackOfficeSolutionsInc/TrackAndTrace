@@ -1,0 +1,10 @@
+﻿@model RadialReview.Models.Dashboard.TileModel
+
+@Html.SecuredHiddenFor(x => x.Dashboard.ForUser.Id)
+@Html.SecuredHiddenFor(x => x.Dashboard.Id)
+
+
+<div class="form-group">
+	@Html.LabelFor(x => x.Type)
+	@Html.EnumDropDownListFor(x=>x.Type, new{@class = "form-control"})
+</div>

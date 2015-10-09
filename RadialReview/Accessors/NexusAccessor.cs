@@ -208,8 +208,11 @@ namespace RadialReview.Accessors
 	                }
 
 					foreach (var tempUser in toSend){
-                        unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
-                    }
+						var found = toUpdate.FirstOrDefault(x => x.Id == tempUser.UserOrganizationId);
+						if (found == null || found.DeleteTime!=null)
+							continue;
+						unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
+					}
 					var output = ((await Emailer.SendEmails(unsent)));
 					foreach (var user in toUpdate){
 						user.UpdateCache(s);
@@ -316,6 +319,8 @@ namespace RadialReview.Accessors
                         throw new PermissionsException();
                     return found;*/
                     var found = s.Get<NexusModel>(id);
+					if (found == null)
+						throw new PermissionsException("The request was not found.");
                     if (found.DeleteTime != null && DateTime.UtcNow > found.DeleteTime)
                         throw new PermissionsException("The request has expired.");
                     return found;

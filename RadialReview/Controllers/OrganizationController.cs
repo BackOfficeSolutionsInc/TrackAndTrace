@@ -6,6 +6,7 @@ using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Json;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.ViewModels;
 using RadialReview.Properties;
@@ -199,7 +200,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
         public PartialViewResult ResendJoin(long id)
         {
-			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false);
+			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false,PermissionType.EditEmployeeDetails);
 
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
@@ -210,7 +211,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		[HttpPost]
 		public async Task<JsonResult> ResendJoin(long id, TempUserModel model, long TempId) {
-			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false);
+			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
 

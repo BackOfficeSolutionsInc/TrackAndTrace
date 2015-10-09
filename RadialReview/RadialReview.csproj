@@ -251,6 +251,7 @@
     <Compile Include="Accessors\AttachAccessor.cs" />
     <Compile Include="Accessors\BaseAccessor.cs" />
     <Compile Include="Accessors\CategoryAccessor.cs" />
+    <Compile Include="Accessors\DashboardAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
     <Compile Include="Accessors\DbWrapper.cs" />
     <Compile Include="Accessors\DeepSubordianteAccessor.cs" />
@@ -332,6 +333,7 @@
     <Compile Include="Controllers\PermissionsController.cs" />
     <Compile Include="Controllers\RocksController.cs" />
     <Compile Include="Controllers\ScorecardController.cs" />
+    <Compile Include="Controllers\TileDataController.cs" />
     <Compile Include="Controllers\TodoController.cs" />
     <Compile Include="Controllers\TwilioApiController.cs" />
     <Compile Include="Controllers\UserTemplateController.cs" />
@@ -434,6 +436,8 @@
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
     <Compile Include="Models\Components\Completion.cs" />
     <Compile Include="Models\Components\ForModel.cs" />
+    <Compile Include="Models\Dashboard\DashboardModel.cs" />
+    <Compile Include="Models\Dashboard\TileModel.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\AttachType.cs" />
     <Compile Include="Models\Enums\BrandingType.cs" />
@@ -474,6 +478,7 @@
     <Compile Include="Models\L10\AV\AudioVideoUser.cs" />
     <Compile Include="Models\Payments\CreditCardVM.cs" />
     <Compile Include="Models\Payments\Itemized.cs" />
+    <Compile Include="Models\Payments\PaymentErrorLog.cs" />
     <Compile Include="Models\Payments\PaymentOptions.cs" />
     <Compile Include="Models\Payments\PaymentSpringCustomerCard.cs" />
     <Compile Include="Models\Payments\PaymentSpringsCustomer.cs" />
@@ -1018,6 +1023,7 @@
     <Content Include="Content\Theme.min.css">
       <DependentUpon>Theme.css</DependentUpon>
     </Content>
+    <Content Include="Content\VTO\VtoPrint.css" />
     <Content Include="Content\_dashboard_OLD.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\L10\L10Conference.css" />
@@ -1045,9 +1051,15 @@
     <Content Include="Scripts\Angular\Meetings\L10Controller.js" />
     <Content Include="Scripts\Angular\Helpers\signalR.js" />
     <Content Include="Scripts\Angular\Meetings\RockState.js" />
+    <Content Include="Scripts\Angular\SignalR\SignalR.js" />
     <Content Include="Scripts\Angular\VTO\VtoApp.js" />
     <Content Include="Scripts\Angular\VTO\VtoController.js" />
     <Content Include="Scripts\components\fivestate.js" />
+    <Content Include="Scripts\Grid\fixtures.js" />
+    <Content Include="Scripts\Grid\load.js" />
+    <Content Include="Scripts\Grid\src\gridList.js" />
+    <Content Include="Scripts\Grid\src\jquery.gridList.js" />
+    <Content Include="Scripts\Grid\style.css" />
     <Content Include="Scripts\home\colResizable-1.5.min.js" />
     <Content Include="Scripts\home\resizeable-tables.js" />
     <Content Include="Scripts\jquery\jquery.redirect.js" />
@@ -1071,9 +1083,13 @@
     <Content Include="Views\Measurable\TemplateModal.cshtml" />
     <Content Include="Views\Measurable\_TemplateMeasurableRow.cshtml" />
     <Content Include="Views\Shared\_TemplateDetails.cshtml" />
-    <Content Include="Content\fonts\fontastic.eot" />
+    <Content Include="Content\fonts\fontastic.eot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\fonts\fontastic.ttf" />
-    <Content Include="Content\fonts\fontastic.woff" />
+    <Content Include="Content\fonts\fontastic.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\L10\l10IDS.v2.css" />
     <Content Include="Content\L10\L10Rocks.css" />
     <Content Include="Content\L10\L10Todo.css" />
@@ -1111,7 +1127,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Fonts.css" />
-    <Content Include="Content\fonts\fontastic.svg" />
+    <Content Include="Content\fonts\fontastic.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\icons-reference.html" />
     <Content Include="Content\fonts\new.svg" />
     <Content Include="Content\fonts\Ref\icons-reference.html" />
@@ -1383,10 +1401,16 @@
     <Content Include="Views\Issues\CreateIssueRecurrenceModal.cshtml" />
     <Content Include="Views\L10\DeleteNote.cshtml" />
     <Content Include="Views\L10\AddRock.cshtml" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bootstrap\wells.less" />
     <Content Include="Content\bootstrap\variables.less" />
     <Content Include="Content\bootstrap\utilities.less" />
@@ -1465,6 +1489,9 @@
     <Content Include="Views\Payment\SetCard.cshtml" />
     <Content Include="Views\Payment\Plan.cshtml" />
     <Content Include="Views\Payment\Plan_Monthly.cshtml" />
+    <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Dashboard\CreateTileModal.cshtml" />
+    <Content Include="Views\Payment\Errors.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1743,6 +1770,12 @@
     <Content Include="Views\UnitTest\Sync.cshtml" />
     <Content Include="Views\UnitTest\AllPages.cshtml" />
     <Content Include="Views\UnitTest\EditPage.cshtml" />
+    <Content Include="Views\TileData\UserTodo.cshtml" />
+    <Content Include="Views\TileData\UserScorecard.cshtml" />
+    <Content Include="Views\TileData\UserManage.cshtml" />
+    <Content Include="Views\TileData\UserRock.cshtml" />
+    <Content Include="Views\TileData\UserProfile.cshtml" />
+    <Content Include="Views\Scorecard\partial\tile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1752,7 +1785,6 @@
     <Folder Include="Models\Rocks\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Views\Admin\" />
-    <Folder Include="Views\Dashboard\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\Img\" />

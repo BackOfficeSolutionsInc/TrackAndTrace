@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using Amazon.ElasticTranscoder.Model;
 using FluentNHibernate.Utils;
+using NHibernate.Cache;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -115,6 +116,10 @@ namespace RadialReview.Accessors
 			}
 		}
 
+		public static UserOrganizationModel GetUserOrganization(ISession s, PermissionsUtility perms, long userOrganizationId, bool asManager, bool sensitive, params PermissionType[] alsoCheck)
+		{
+			return GetUserOrganization(s.ToQueryProvider(true), perms, perms.GetCaller(), userOrganizationId, asManager, sensitive, alsoCheck);
+		}
 
 		public UserOrganizationModel GetUserOrganization(UserOrganizationModel caller, long userOrganizationId, bool asManager, bool sensitive,params PermissionType[] alsoCheck)
 		{
@@ -420,7 +425,7 @@ namespace RadialReview.Accessors
 
 					if (changed)
 					{
-						PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrgId, false);
+						PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrgId, false,PermissionType.EditEmployeeDetails);
 						s.Update(tempUser);
 						if (found!=null)
 							found.UpdateCache(s);
@@ -442,6 +447,8 @@ namespace RadialReview.Accessors
 					var user = s.Get<UserModel>(caller.Id);
 					user.Hints = turnedOn;
 					s.Update(user);
+					
+					new Cache().Invalidate(CacheKeys.USERORGANIZATION);
 
 					tx.Commit();
 					s.Flush();
@@ -470,7 +477,7 @@ namespace RadialReview.Accessors
 
 					var found = s.Get<UserOrganizationModel>(userOrganizationId);
 
-					DateTime deleteTime = DateTime.UtcNow;
+					var deleteTime = DateTime.UtcNow;
 
 					if (isManager != null && (isManager.Value != found.ManagerAtOrganization))
 					{
@@ -619,7 +626,7 @@ namespace RadialReview.Accessors
 		public static void RemoveManager(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long managerDurationId, DateTime now)
 		{
 			var managerDuration = s.Get<ManagerDuration>(managerDurationId);
-			perms.ManagesUserOrganization(managerDuration.SubordinateId, true).ManagesUserOrganization(managerDuration.ManagerId, false);
+			perms.ManagesUserOrganization(managerDuration.SubordinateId, true, PermissionType.EditEmployeeManagers).ManagesUserOrganization(managerDuration.ManagerId, false, PermissionType.EditEmployeeManagers);
 			RemoveMangerUnsafe(s, caller, managerDuration, now);
 		}
 
@@ -654,8 +661,8 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					PermissionsUtility.Create(s, caller)
-						.ManagesUserOrganization(userId, true)
-						.ManagesUserOrganization(managerId, false);
+						.ManagesUserOrganization(userId, true,PermissionType.EditEmployeeManagers)
+						.ManagesUserOrganization(managerId, false, PermissionType.EditEmployeeManagers);
 
 					AddMangerUnsafe(s, caller, userId, managerId, now);
 
@@ -697,9 +704,9 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					PermissionsUtility.Create(s, caller)
-						.ManagesUserOrganization(userId, true)
-						.ManagesUserOrganization(oldManagerId, false)
-						.ManagesUserOrganization(newManagerId, false);
+						.ManagesUserOrganization(userId, true, PermissionType.EditEmployeeManagers)
+						.ManagesUserOrganization(oldManagerId, false, PermissionType.EditEmployeeManagers)
+						.ManagesUserOrganization(newManagerId, false, PermissionType.EditEmployeeManagers);
 
 					var managerDuration = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.SubordinateId == userId && x.ManagerId == oldManagerId).Take(1).SingleOrDefault();
 

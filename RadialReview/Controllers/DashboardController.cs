@@ -4,6 +4,8 @@ using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Angular.Users;
+using RadialReview.Models.Dashboard;
+using RadialReview.Models.Json;
 using RadialReview.Models.Permissions;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,75 @@ namespace RadialReview.Controllers
             public ListDataVM(long id) : base(id) { }
         }
 
+	    public class TileVM
+	    {
+		    public int w { get; set; }
+		    public int h { get; set; }
+		    public int x { get; set; }
+			public int y { get; set; }
+			public long id { get; set; }
+		}
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Tiles(long id)
+		{
+			var dashboardId = id;
+			var tiles = DashboardAccessor.GetTiles(GetUser(), dashboardId);
+			return Json(ResultObject.SilentSuccess(tiles),JsonRequestBehavior.AllowGet);
+		}
+	    [Access(AccessLevel.UserOrganization)]
+	    [HttpPost]
+	    public JsonResult UpdateTiles(long id, IEnumerable<TileVM> model)
+	    {
+		    var dashboardId = id;
+			DashboardAccessor.EditTiles(GetUser(), dashboardId, model);
+		    return Json(ResultObject.SilentSuccess());
+	    }
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Tile(long id, bool? hidden = null, int? w = null, int? h = null, int? x = null, int? y = null, string dataurl = null, string title = null)
+		{
+			var tile = DashboardAccessor.EditTile(GetUser(), id, h, w, x, y, hidden, dataurl, title);
+			tile.ForUser = null;
+			tile.Dashboard = null;
+			return Json(ResultObject.SilentSuccess(tile), JsonRequestBehavior.AllowGet);
+		}
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult CreateDashboard(string title = null,bool primary=false)
+		{
+			var dash = DashboardAccessor.CreateDashboard(GetUser(), title, primary);
+			return RedirectToAction("Index",new {id=dash.Id});
+		}
+
+	    [Access(AccessLevel.UserOrganization)]
+		public PartialViewResult CreateTileModal()
+	    {
+		    return PartialView();
+	    }
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult CreateTile(long id, bool? hidden = null, int w = 1, int h = 1, int x = 0, int y = 0,TileType type=TileType.Invalid, string dataurl = null, string title = null)
+		{
+			var tile = DashboardAccessor.CreateTile(GetUser(), id, w, h, x, y, dataurl, title,type);
+			tile.ForUser = null;
+			tile.Dashboard = null;
+			return Json(ResultObject.SilentSuccess(tile), JsonRequestBehavior.AllowGet);
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+	    public ActionResult Index(long? id=null)
+		{
+			if (id == null)
+				id = DashboardAccessor.GetPrimaryDashboardForUser(GetUser(), GetUser().User.Id).NotNull(x=>x.Id);
+			if (id == 0)
+				id =DashboardAccessor.CreateDashboard(GetUser(), null, false).Id;
+
+			ViewBag.UserId = GetUser().Id;
+			return View(id.Value);
+		}
     
+
+
         //
         // GET: /Dashboard/
         [Access(AccessLevel.UserOrganization)]
@@ -44,7 +114,8 @@ namespace RadialReview.Controllers
                 GetUser().Organization.Settings.WeekStart,
                 GetUser().Organization.GetTimezoneOffset(),
                 measurables.Select(x => new AngularMeasurable(x)),
-                scores.ToList());
+				scores.ToList(), 
+				DateTime.UtcNow);
 	        var now = DateTime.UtcNow;
 			var currentPeriods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime);
 

@@ -45,6 +45,9 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult UserDetails(long id)
 		{
+			if (id == 0)
+				id = GetUser().Id;
+
 			//var caller = GetUser().Hydrate().ManagingUsers(true).Execute();
 			var details = _UserEngine.GetUserDetails(GetUser(), id);
 			//DeepSubordianteAccessor.ManagesUser(GetUser(), GetUser().Id, id);

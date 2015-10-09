@@ -1,4 +1,5 @@
-﻿using RadialReview.Exceptions;
+﻿using NHibernate;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.UserModels;
@@ -14,6 +15,10 @@ namespace RadialReview.Accessors {
 	public class RoleAccessor {
 
 
+		public static List<RoleModel> GetRoles(ISession s, PermissionsUtility perms, long id, DateRange range = null)
+		{
+			return GetRoles(s.ToQueryProvider(true), perms, id, range);
+		}
 
 		public List<RoleModel> GetRoles(UserOrganizationModel caller, long id, DateRange range=null)
 		{

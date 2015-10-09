@@ -14,6 +14,11 @@ namespace RadialReview
 			public IEnumerable<T> NewValues { get; set; }
 			public IEnumerable<T> AddedValues { get; set; }
 			public IEnumerable<T> RemovedValues { get; set; }
+
+			public bool AreSame()
+			{
+				return !AddedValues.Any() && !RemovedValues.Any();
+			}
 		}
 
 		public static AddedRemoved<T> AddRemove<T>(IEnumerable<T> oldValues, IEnumerable<T> newValues)

@@ -186,7 +186,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.SignedOut)]
         public ActionResult Login(string returnUrl, String message,string username)
         {
-            ViewBag.IsLogin = true;
+            //ViewBag.IsLogin = true;
             if (User.Identity.GetUserId() != null)
             {
                 AuthenticationManager.SignOut();
@@ -362,13 +362,21 @@ namespace RadialReview.Controllers
         // GET: /Account/Manage
         [Access(AccessLevel.User)]
         public ActionResult Manage(ManageMessageId? message)
-        {
-            ViewBag.StatusMessage =
-                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
-                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-                : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
-                : message == ManageMessageId.Error ? "An error has occurred."
-                : "";
+		{
+			ViewBag.StatusMessage =
+				message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
+				: message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+				: message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
+				: message == ManageMessageId.Error ? "An error has occurred."
+				: message == ManageMessageId.PasswordIncorrect ? "The password you entered was incorrect."
+				: "";
+			ViewBag.AlertType =
+				message == ManageMessageId.ChangePasswordSuccess ? "alert-success"
+				: message == ManageMessageId.SetPasswordSuccess ? "alert-success"
+				: message == ManageMessageId.RemoveLoginSuccess ? "alert-success"
+				: message == ManageMessageId.Error ? "alert-danger"
+				: message == ManageMessageId.PasswordIncorrect ? "alert-danger"
+				: "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
 
@@ -384,17 +392,23 @@ namespace RadialReview.Controllers
 
 
 
-            var model = new ProfileViewModel()
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid),
-				SendTodoTime = user.SendTodoTime,
-				PossibleTimes = GetPossibleTimes(user.SendTodoTime),
-            };
+	        var model = constructProfileViewModel(user);
 
             return View(model);
         }
+
+
+	    private ProfileViewModel constructProfileViewModel(UserModel user)
+	    {
+			return new ProfileViewModel()
+			{
+				FirstName = user.FirstName,
+				LastName = user.LastName,
+				ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid),
+				SendTodoTime = user.SendTodoTime,
+				PossibleTimes = GetPossibleTimes(user.SendTodoTime),
+			};
+	    }
 
         [HttpPost]
         [Access(AccessLevel.User)]
@@ -420,7 +434,8 @@ namespace RadialReview.Controllers
             bool hasPassword = HasPassword();
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
-			
+	        ManageMessageId? message = null;
+
             if (hasPassword)
             {
                 if (ModelState.IsValid)
@@ -433,6 +448,7 @@ namespace RadialReview.Controllers
                     else
                     {
                         AddErrors(result);
+						message = ManageMessageId.PasswordIncorrect;
                     }
                 }
             }
@@ -455,13 +471,13 @@ namespace RadialReview.Controllers
                     else
                     {
                         AddErrors(result);
+	                    message = ManageMessageId.Error;
                     }
                 }
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
-            return View(model);
+			return RedirectToAction("Manage", new { Message = message });
         }
 
         /*
@@ -665,7 +681,8 @@ namespace RadialReview.Controllers
             ChangePasswordSuccess,
             SetPasswordSuccess,
             RemoveLoginSuccess,
-            Error
+            Error,
+			PasswordIncorrect,
         }
 
         private ActionResult RedirectToLocal(string returnUrl)

@@ -21,7 +21,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
         public ActionResult Index()
         {
-	        var vtos = VtoAccessor.GetAllVTOForOrganization(GetUser(), GetUser().Id);
+	        var vtos = VtoAccessor.GetAllVTOForOrganization(GetUser(), GetUser().Organization.Id);
 	        var model = new VTOListingVM(){
 		        VTOs =  vtos
 	        };
@@ -34,7 +34,8 @@ namespace RadialReview.Controllers
 
 			VtoModel model;
 			if (id == 0){
-				 model =VtoAccessor.CreateVTO(GetUser(), GetUser().Organization.Id);
+				model =VtoAccessor.CreateVTO(GetUser(), GetUser().Organization.Id);
+				model.Name = "<no name>";
 				return RedirectToAction("Edit", new{id = model.Id});
 			}else{
 				model = VtoAccessor.GetVTO(GetUser(), id);

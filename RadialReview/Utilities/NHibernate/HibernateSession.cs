@@ -23,6 +23,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Dashboard;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
@@ -117,7 +118,7 @@ namespace RadialReview.Utilities
 								   {
 									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
 										   .Conventions.Add<StringColumnLengthConvention>();
-									   //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+									   m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
 
 									   //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
 									   //m.AutoMappings.Add(CreateAutomappings);
@@ -277,6 +278,10 @@ namespace RadialReview.Utilities
 
 			enversConf.Audit<PaymentSpringsToken>();
 			enversConf.Audit<ScheduledTask>();
+
+
+			enversConf.Audit<Dashboard>();
+			enversConf.Audit<TileModel>();
 
 			nhConf.IntegrateWithEnvers(enversConf);
 	    }

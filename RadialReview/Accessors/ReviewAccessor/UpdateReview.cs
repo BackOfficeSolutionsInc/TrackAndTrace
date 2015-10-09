@@ -163,14 +163,18 @@ namespace RadialReview.Accessors
 		{
 			//TODO Fix permissions. Should make sure we can edit the review
 			perms.ViewUserOrganization(byUserId, false).ViewReviews(reviewContainerId, false);
-			var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == byUserId).SingleOrDefault();
-			perms.ViewUserOrganization(review.ForUserId, false);
-			perms.ManageUserReview(review.Id, false);
+			var revieww = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == byUserId).List().ToList();
+			foreach (var review in revieww)
+			{
+				perms.ViewUserOrganization(review.ForUserId, false);
+				perms.ManageUserReview(review.Id, false);
+				var ans = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.ByUserId == byUserId && x.AboutUserId == aboutUserId).List();
+				var now = DateTime.UtcNow;
+				DeleteAnswers_Unsafe(s, ans, now);
+			}
 
 
-			var ans = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.ByUserId == byUserId && x.AboutUserId == aboutUserId).List();
-			var now = DateTime.UtcNow;
-			DeleteAnswers_Unsafe(s, ans, now);
+
 		}
 
 		private static void AddToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId, AboutType aboutType)
@@ -178,32 +182,37 @@ namespace RadialReview.Accessors
 			//TODO Fix permissions. Should make sure we can edit the review
 			perms.ViewUserOrganization(byUserId, false).ViewReviews(reviewContainerId, false);
 
-			var review = s.Where<ReviewModel>(x => x.ForReviewsId == reviewContainerId && x.ForUserId == byUserId).Single();
 			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+			var reviews = s.Where<ReviewModel>(x => x.ForReviewsId == reviewContainerId && x.ForUserId == byUserId).ToList();
+			if (!reviews.Any())
+				throw new InvalidOperationException("Review does not exist.");
 
-			perms.ViewUserOrganization(review.ForUserId, false).ManageUserReview(review.Id, true);
+			foreach (var review in reviews)
+			{
+				perms.ViewUserOrganization(review.ForUserId, false).ManageUserReview(review.Id, true);
 
-			/*var askable = new AskableUtility();
+				/*var askable = new AskableUtility();
 
-			var appQuestions = ApplicationAccessor.GetApplicationQuestions(s.GetQueryProvider()).ToList();//, ApplicationAccessor.FEEDBACK);
-			var userResponsibilities = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, aboutUserId, reviewContainer.PeriodId).ToListAlive();
-											/*ResponsibilitiesAccessor
-												  .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, aboutUserId)
-												  .SelectMany(x => x.Responsibilities)
-												  .ToListAlive();*
+				var appQuestions = ApplicationAccessor.GetApplicationQuestions(s.GetQueryProvider()).ToList();//, ApplicationAccessor.FEEDBACK);
+				var userResponsibilities = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, aboutUserId, reviewContainer.PeriodId).ToListAlive();
+												/*ResponsibilitiesAccessor
+													  .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, aboutUserId)
+													  .SelectMany(x => x.Responsibilities)
+													  .ToListAlive();*
 
-			askable.AddUnique(userResponsibilities, aboutType, aboutUserId);
-			foreach (var aq in appQuestions)
-				askable.AddUnique(aq, aboutType, aboutUserId);*/
+				askable.AddUnique(userResponsibilities, aboutType, aboutUserId);
+				foreach (var aq in appQuestions)
+					askable.AddUnique(aq, aboutType, aboutUserId);*/
 
-			var range = new DateRange(reviewContainer.DateCreated, DateTime.UtcNow);
+				var range = new DateRange(reviewContainer.DateCreated, DateTime.UtcNow);
 
-			var askables = ReviewAccessor.GetAskables(caller, perms, s, new[] { aboutUserId }, byUserId, reviewContainer.PeriodId, range);
+				var askables = ReviewAccessor.GetAskables(caller, perms, s, new[] { aboutUserId }, byUserId, reviewContainer.PeriodId, range);
 
-			var forUser = s.Get<UserOrganizationModel>(review.ForUserId);
-			//var review=s.QueryOver<ReviewModel>().Where(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).SingleOrDefault();
+				var forUser = s.Get<UserOrganizationModel>(review.ForUserId);
+				//var review=s.QueryOver<ReviewModel>().Where(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).SingleOrDefault();
 
-			AddAskablesToReview(s, perms, caller, forUser, review, reviewContainer.AnonymousByDefault, askables);
+				AddAskablesToReview(s, perms, caller, forUser, review, reviewContainer.AnonymousByDefault, askables);
+			}
 		}
 
 		public void RemoveQuestionFromReviewForUser(UserOrganizationModel caller, long reviewContainerId, long userId, long askableId)
@@ -260,8 +269,8 @@ namespace RadialReview.Accessors
 
 			foreach (var r in relationships)
 			{
-				var existingReview = dataInteration.Where<ReviewModel>(x => x.ForUserId == r.Key.Id).SingleOrDefault();
-				if (existingReview != null)
+				var existingReviews = dataInteration.Where<ReviewModel>(x => x.ForUserId == r.Key.Id).ToList();
+				foreach (var existingReview in existingReviews)
 				{
 					var askableUtil = new AskableUtility();
 					foreach (var about in r.Value)
@@ -305,14 +314,16 @@ namespace RadialReview.Accessors
 					var deleteTime = DateTime.UtcNow;
 					var user = s.Get<UserOrganizationModel>(userOrganizationId);
 
-					var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == userOrganizationId && x.DeleteTime == null).SingleOrDefault();
-					review.DeleteTime = deleteTime;
-					s.Update(review);
-					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
-					var answers = s.QueryOver<AnswerModel>().Where(x => (x.AboutUserId == userOrganizationId || x.ByUserId == userOrganizationId) && x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null).List();
+					var revieww = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == userOrganizationId && x.DeleteTime == null).List().ToList();
+					foreach (var review in revieww)
+					{
+						review.DeleteTime = deleteTime;
+						s.Update(review);
+						new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
+						var answers = s.QueryOver<AnswerModel>().Where(x => (x.AboutUserId == userOrganizationId || x.ByUserId == userOrganizationId) && x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null).List();
 
-					DeleteAnswers_Unsafe(s, answers, deleteTime);
-
+						DeleteAnswers_Unsafe(s, answers, deleteTime);
+					}
 					tx.Commit();
 					s.Flush();
 					return ResultObject.Success("Removed " + user.GetNameAndTitle() + " from the review.");
@@ -322,7 +333,7 @@ namespace RadialReview.Accessors
 		}
 
 		#region Update
-		public async Task<ResultObject> AddUserToReviewContainer(HttpContext context,UserOrganizationModel caller, long reviewContainerId, long userOrganizationId, bool sendEmails)
+		public async Task<ResultObject> AddUserToReviewContainer(HttpContext context, UserOrganizationModel caller, long reviewContainerId, long userOrganizationId, bool sendEmails)
 		{
 			var unsent = new List<MailModel>();
 			String userBeingReviewed = null;
@@ -397,7 +408,7 @@ namespace RadialReview.Accessors
 						var range = new DateRange(now, now);
 
 						//TODO Populate a query provider structure here..
-						var toEmail = AddUserToReview(context,caller, true, dueDate, reviewContainer.GetParameters(), new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team, ref exceptions, beingReviewedUser, accessibleUsers, range);
+						var toEmail = AddUserToReview(context, caller, true, dueDate, reviewContainer.GetParameters(), new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team, ref exceptions, beingReviewedUser, accessibleUsers, range);
 						unsent.AddRange(toEmail);
 						userBeingReviewed = beingReviewedUser.GetName();
 						tx.Commit();
@@ -451,7 +462,7 @@ namespace RadialReview.Accessors
 			//.List<AnswerModel>();
 
 			//var firstIncomplete = s.QueryOver<AnswerModel>().Where(x => x.ForReviewId == reviewId && x.Required && !x.Complete && x.DeleteTime == null).Select(x=>x.Id).Take(1).SingleOrDefault<object>();
-			
+
 			//var anyIncomplete = firstIncomplete != null;
 			var review = s.Get<ReviewModel>(reviewId);
 			var output = new ReviewContainerStats(review.ForReviewsId);
@@ -475,7 +486,8 @@ namespace RadialReview.Accessors
 				new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
 			}
 
-			if (started && !review.Started){
+			if (started && !review.Started)
+			{
 				review.Started = true;
 				updated = true;
 				output.Completion.Started += 1;
@@ -505,10 +517,10 @@ namespace RadialReview.Accessors
 			}
 
 			s.Update(review);
-					
+
 
 			return output;
-			
+
 		}
 
 		public ReviewContainerStats UpdateAllCompleted(UserOrganizationModel caller, long reviewId, bool started, decimal durationMinutes, int additionalAnswered, int optionalAnswered)

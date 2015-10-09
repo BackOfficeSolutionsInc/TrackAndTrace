@@ -6,51 +6,99 @@
 }
 
 	.vto .add-row {
-		color: lightgray;
+		color: transparent;
+		pointer-events: none;
+		list-style-type: none;
 	}
+
+	.vto ol {
+		padding-top: 20px;
+	}
+
+
+	.vto .content:hover .add-row,
+	.vto .content:hover .add-row:after {
+		color: lightgray;
+		pointer-events: all;
+	}
+
 	.vto .add-row:after {
 		content: "Add row";
-		color: lightgray;
+		color: transparent;
 	}
-	
-	.vto .add-row:hover, 
+
+	.vto .add-row:hover,
 	.vto .add-row:hover:after {
 		color: gray;
 		cursor: pointer;
 	}
 
+	.vto textarea {
+		width: 90%;
+		border: 1px solid transparent;
+		resize: none;
+	}
+
+
+		.vto textarea:hover {
+			border: 0px;
+			border: 1px dotted #ef7622;
+		}
+
+		.vto textarea:focus, .vto .boxed.content:hover textarea:focus {
+			border: 0px;
+			border: 1px dotted #ef7622;
+			outline: none;
+		}
+
+	.vto .boxed.content:hover textarea {
+		border: 0px;
+		border: 1px dotted #dadada;
+		resize: vertical;
+	}
+
 	.vto input {
-		border: 0px;
-		border-bottom: 1px dotted #dadada;	
+		border: none;
+		border-bottom: 1px solid transparent;
+		width: 90%;
 	}
 
-	.vto input:hover {
-		border: 0px;
-		border-bottom: 1px dotted #ef7622;	
+		.vto input:focus, .vto .boxed.content:hover input:focus {
+			border: 0px;
+			border-bottom: 1px dotted #ef7622;
+			outline: none;
+		}
 
-	}
-	.vto input:focus {
-		border: 0px;
-		border-bottom: 1px dotted #ef7622;	
-		outline: none;
+		.vto input:hover {
+			border: 0px;
+			border-bottom: 1px dotted #ef7622;
+		}
+
+	.vto .boxed.content:hover input {
+		border-bottom: 1px dotted #dadada;
 	}
 
 	.vto .goals {
 		font-weight: bold;
 	}
-		.vto .border-table .number {
-			width: 40px;
-			text-align: right;
-			padding: 0 6px;
-		}
 
-		.vto .border-table table {
-			width: 100%
-		}
-		
-	.vto .border-table td{
-		 border: 1px solid black;
+	.vto .border-table .number {
+		width: 40px;
+		text-align: right;
+		padding: 0 6px;
+	}
+
+	.vto .border-table table {
+		width: 100%;
+	}
+
+	.vto .border-table td {
+		border: 1px solid black;
 		padding: 2px 4px;
+	}
+
+	.vto .border-table .add-row-tr td {
+		border: 1px solid transparent;
 	}
 
 	.vto .title {
@@ -67,7 +115,7 @@
 		overflow: auto;
 		-moz-box-sizing: border-box;
 	}
-	
+
 	.vto .heading .organzation-name {
 		border: 1px solid black;
 		padding: 6px 12px;
@@ -89,7 +137,7 @@
 		display: table-cell;
 		width: 100%;
 	}
-	
+
 
 	.vto .heading .icon {
 		height: 64px;
@@ -121,17 +169,21 @@
 		text-align: center;
 		font-weight: bold;
 	}
-	
-	.vto .core-values li .delete{
+
+	.vto /*.core-values*/ tr .delete,
+	.vto /*.core-values*/ li .delete {
 		opacity: 0;
 		cursor: pointer;
 	}
-	.vto .core-values li:hover .delete:hover{
+
+	.vto /*.core-values*/ tr:hover .delete:hover,
+	.vto /*.core-values*/ li:hover .delete:hover {
 		opacity: .8;
 		cursor: pointer;
 	}
-	
-	.vto .core-values li:hover .delete {
+
+	.vto /*.core-values*/ tr:hover .delete,
+	.vto /*.core-values*/ li:hover .delete {
 		opacity: .2;
 	}
 
@@ -149,9 +201,29 @@
 		padding: 5px;
 	}
 
+	.vto .core-focus .boxed.content div {
+		display: flex;
+		-webkit-box-orient: vertical;
+		-moz-box-orient: vertical;
+		-webkit-flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+
+
 	.vto .core-focus .purpose,
 	.vto .core-focus .niche {
 		padding: 10px 0px;
+	}
+
+	.vto .core-focus td {
+		vertical-align: top;
+		padding: 0px;
+	}
+
+	.vto .core-focus .content .title {
+		padding: 3px;
+		display: inline-block;
 	}
 
 	.vto .marketing-strategy .target-market,
@@ -164,6 +236,23 @@
 	.vto .marketing-strategy .boxed.content {
 		padding: 5px;
 	}
+
+	.vto .ten-year-target {
+		position: relative;
+	}
+
+		.vto .ten-year-target textarea {
+			position: absolute;
+			top: 5px;
+			bottom: 5px;
+			left: 5px;
+			right: 5px;
+			resize: none !important;
+			width: 90%;
+			width: calc(100% - 10px);
+			vertical-align: middle;
+			display: inline-block;
+		}
 
 	.vto ol {
 		margin-bottom: 0px;
@@ -208,4 +297,39 @@
 
 #main {
 	padding-bottom: 0px !important;
+}
+
+profile-image .picture-container {
+	width: 32px;
+	height: 32px;
+	border: 1px solid #DDD;
+	padding: 1px;
+	background-color: #FFF;
+	line-height: 29px;
+	text-align: center;
+	font-weight: bold;
+	color: #444;
+	/* font-size: 14px; */
+	/* white-space: nowrap; */
+	overflow: hidden;
+}
+
+
+.rock-accountable {
+	text-decoration: none;
+	border-bottom: none !important;
+	top: -8px;
+	position: relative;
+	white-space: nowrap;
+}
+
+	.rock-accountable profile-image {
+		position: relative;
+		top: 11px;
+	}
+
+
+.looks-like {
+	text-decoration: underline;
+	font-weight: bold;
 }

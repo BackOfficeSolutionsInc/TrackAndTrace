@@ -86,7 +86,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							@foreach (var review in panel.Item3.OrderByDescending(x => x.ForUser.GetDirectlyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle()))
+							@foreach (var review in panel.Item3.GroupBy(x => x.ForUserId).Select(x => x.FirstOrDefault()).OrderByDescending(x => x.ForUser.GetDirectlyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle()))
 							{
 								<tr class="@(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
 									<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
@@ -125,7 +125,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								@foreach (var review in panel.Item3.OrderByDescending(x =>
+								@foreach (var review in panel.Item3.GroupBy(x=>x.ForUserId).Select(x=>x.FirstOrDefault()).OrderByDescending(x =>
 								{
 									double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
 									double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
@@ -175,7 +175,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								@foreach (var review in panel.Item3.OrderByDescending(x =>
+								@foreach (var review in panel.Item3.GroupBy(x => x.ForUserId).Select(x => x.FirstOrDefault()).OrderByDescending(x =>
 								{
 									double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
 									double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());

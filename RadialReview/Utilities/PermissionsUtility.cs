@@ -10,6 +10,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Components;
+using RadialReview.Models.Dashboard;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.Permissions;
@@ -244,6 +245,54 @@ namespace RadialReview.Utilities
 			}, PermissionType.EditEmployeeDetails);
 		}
 		#endregion
+		
+		#region Dashboard
+
+		public PermissionsUtility ViewDashboardForUser(String userid)
+		{
+			var user = session.Get<UserModel>(userid);
+			if (user == null)
+				throw new PermissionsException("Dashboard not found");
+
+			if (IsRadialAdmin(caller))
+				return this;
+
+			if (userid == caller.User.Id)
+				return this;
+
+			throw new PermissionsException("Cannot view dashboard");
+		}
+
+		public PermissionsUtility EditDashboard(long dashboardId)
+		{
+			var dash = session.Get<Dashboard>(dashboardId);
+			if (dash == null)
+				throw new PermissionsException("Dashboard not found");
+
+			if (IsRadialAdmin(caller))
+				return this;
+
+			if (dash.ForUser.Id == caller.User.Id)
+				return this;
+
+			throw new PermissionsException("Cannot edit dashboard");
+
+		}
+
+		public PermissionsUtility EditTile(long tileId)
+		{
+			var tile = session.Get<TileModel>(tileId);
+			if (tile == null)
+				throw new PermissionsException("Tile not found");
+
+			if (IsRadialAdmin(caller))
+				return this;
+
+			if (tile.ForUser.Id == caller.User.Id)
+				return this;
+			throw new PermissionsException("Cannot edit tile");
+		}
+		#endregion
 
 		#region Organization
 		public PermissionsUtility EditOrganization(long organizationId)
@@ -283,12 +332,14 @@ namespace RadialReview.Utilities
 		}
 
 		#endregion
+
         #region Payment
         public  PermissionsUtility EditCompanyPayment(long organizationId)
         {
             return EditOrganization(organizationId);
         }
         #endregion
+
         #region Group
         public PermissionsUtility EditGroup(long groupId)
 		{
@@ -516,13 +567,18 @@ namespace RadialReview.Utilities
 
 			if (answer == null)
 				throw new PermissionsException("Answer does not exist");
-			var review = session.QueryOver<ReviewModel>()
+			var reviews = session.QueryOver<ReviewModel>()
 				.Where(x => x.DeleteTime == null && x.ForReviewsId == answer.ForReviewContainerId && x.ForUserId == answer.AboutUserId)
-				.SingleOrDefault();
-			if (review == null)
+				.List();
+			if (!reviews.Any())
 				throw new PermissionsException("Review does not exist");
 
-			return ManageUserReview(review.Id, userCanManageOwnReview);
+			foreach (var review in reviews){
+				ManageUserReview(review.Id, userCanManageOwnReview);
+			}
+
+
+			return this;
 		}
 
 		#endregion
@@ -1393,6 +1449,8 @@ namespace RadialReview.Utilities
 
 		#endregion
 
+		
+
 		/*public PermissionsUtility ViewImage(string imageId)
 		{
 			if (imageId == null)
@@ -1576,6 +1634,8 @@ namespace RadialReview.Utilities
 
 
 
-     
-    }
+
+
+		
+	}
 }

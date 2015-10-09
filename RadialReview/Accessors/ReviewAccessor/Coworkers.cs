@@ -30,7 +30,11 @@ namespace RadialReview.Accessors {
 
 			//var applicationQuestions = ApplicationAccessor.GetApplicationQuestions(queryProvider).ToList();
 			
-			foreach (var revieweeId in revieweeIds) {
+			foreach (var revieweeId in revieweeIds){
+				var found = dataInteraction.Get<ResponsibilityGroupModel>(revieweeId);
+				if (found == null || found.DeleteTime != null)
+					continue;
+
 				var revieweeAskables = AskableAccessor.GetAskablesForUser(caller, queryProvider, perms, revieweeId, periodId, range);
 				var relationships = RelationshipAccessor.GetRelationships(perms, queryProvider, reviewerId, revieweeId);
 

@@ -518,16 +518,14 @@ function updateChart() {
 	}
 
 	chart.PullPlot(dataUrl+"&groupBy="+groupBy+"&includePrevious="+IncludePrevious, null, function(data) {
-		$(".chartPlaceholder").addClass("hidden");
+		setTimeout(function() { $(".chartPlaceholder").addClass("hidden"); }, 1);
 		$("#chart2,#legend").fadeIn();
 	},opts);
 }
 
 $(".update").change(function () {
-
-	$("#chart2,#legend").fadeOut(function () {
-		$(".chartPlaceholder").removeClass("hidden");
-	});
+	$(".chartPlaceholder").removeClass("hidden");
+	$("#chart2,#legend").fadeOut();
 	UpdateChart();
 	updateChart();
 });

@@ -1,0 +1,72 @@
+﻿@model List<RadialReview.Models.Payments.PaymentErrorLog>
+@{
+    ViewBag.Title = "Errors";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Errors</h2>
+
+<table class="table table-condensed table-hover">
+	<thead>
+		<tr>
+			<td></td>
+			<td>Id</td>
+			<td>Type</td>
+			<td>Amount</td>
+			<td>OrganizationName</td>
+			<td>OrganizationId</td>
+			<td>TaskId</td>
+			<td>HandledAt</td>
+		</tr>
+	</thead>
+	<tbody>
+	@foreach (var i in Model){
+		<tr>
+			<td><span data-id="@i.Id" class=" clickable glyphicon @(i.HandledAt == null ? "glyphicon-unchecked" : "glyphicon-check")" onclick="setHandled(this)"> </span></td>
+			<td>@i.Id</td>
+			<td>@i.Type</td>
+			<td>@i.Amount</td>
+			<td>@i.OrganizationName</td>
+			<td>@i.OrganizationId</td>
+			<td>@i.TaskId</td>
+			<td class="handled_@(i.Id)">@i.HandledAt</td>
+		</tr>
+	}
+	</tbody>
+
+</table>
+
+@using (Html.BeginScripts()){
+	<script>
+		$(function() {
+			$("table").tablesorter();
+		});
+
+		function setHandled(self) {
+			var unhandled = $(self).hasClass("glyphicon-unchecked");
+			var id = $(self).attr("data-id");
+			$(self).addClass("gray");
+			$(self).removeClass("clickable");
+			$.ajax({
+				url: "/Payment/SetErrorHandled/" + id + "?handled=" + unhandled,
+				success: function(data) {
+					if (showJsonAlert(data, false, true)) {
+						if (data.Object.handled) {
+							$(self).addClass("glyphicon-check");
+							$(self).removeClass("glyphicon-unchecked");
+							$(".handled_" + data.Object.id).html("--just now--");
+						} else {
+							$(self).addClass("glyphicon-unchecked");
+							$(self).removeClass("glyphicon-check");
+							$(".handled_" + data.Object.id).html("");
+						}
+					}
+				},
+				complete:function() {
+					$(self).removeClass("gray");
+					$(self).addClass("clickable");
+				}
+			});
+		}
+	</script>
+}

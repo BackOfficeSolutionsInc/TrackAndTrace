@@ -212,7 +212,7 @@ namespace RadialReview.Accessors
 						itemized.Add(l10Item.Discount());
 				    }
 			    }
-				if (!(plan.FreeUntil.Date > executeTime.Date))
+				if (!(plan.FreeUntil.Date >= executeTime.Date))
 				{
 					//Discount it since it is free
 					var total = itemized.Sum(x => x.Total());
@@ -461,9 +461,14 @@ namespace RadialReview.Accessors
                 FirstFire = Math2.Max(DateTime.UtcNow.Date, plan.FreeUntil.Date),
                 TaskName = ScheduledTask.MonthlyPaymentPlan,
             };
-            s.Save(task);
+			s.Save(task);
 	        task.OriginalTaskId = task.Id;
 			s.Update(task);
+	        if (plan is PaymentPlan_Monthly){
+		        var ppm = (PaymentPlan_Monthly) plan;
+		        ppm.OrgId = organization.Id;
+	        }
+
             plan.Task = task;
             s.Save(plan);
             return plan;

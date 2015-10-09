@@ -641,7 +641,7 @@ namespace RadialReview.Engines
 					{
 						var p=PermissionsUtility.Create(s, caller);//.ManagesUserOrganization(forUserId, false);
 						//p.Permitted(caller, x => x.ManagesUserOrganization(forUserId, false));
-						var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewsId && x.ForUserId == forUserId).SingleOrDefault();
+						var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewsId && x.ForUserId == forUserId).Take(1).SingleOrDefault();
 						var managingOrg = p.IsPermitted(x => x.ManagingOrganization(review.ForReviewContainer.ForOrganizationId));
 						if (forUserId == caller.Id && ((!review.ClientReview.Visible && !managingOrg) || !review.ClientReview.IncludeScatterChart))
 							throw new PermissionsException();

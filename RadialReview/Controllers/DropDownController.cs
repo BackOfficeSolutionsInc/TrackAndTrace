@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Controllers
 {
@@ -39,13 +40,29 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
+		public JsonResult OrganizationMembers(long id, bool userId = false)
+		{
+			var recurrenceId = id;
+			var attendees = _OrganizationAccessor.GetOrganizationMembers(GetUser(), recurrenceId, false, false);
+
+			var result = attendees.Select(x => new DropDownItem(){
+				text = x.GetName(),
+				value = ""+ x.Id 
+			});
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
 		public JsonResult MeetingMembers(long id,bool userId=false)
 		{
 			var recurrenceId = id;
-			var result =L10Accessor.GetCurrentL10Meeting(GetUser(), id, true, true, false)._MeetingAttendees.Select(x=>new DropDownItem(){
+			var attendees = L10Accessor.GetL10Recurrence(GetUser(), id, true)._DefaultAttendees;
+
+			var result =attendees.Select(x=>new DropDownItem(){
 				text = x.User.GetName(),
 				value = userId?""+x.User.Id:""+x.Id
-			});
+			}).OrderBy(x=>x.text);
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
     }

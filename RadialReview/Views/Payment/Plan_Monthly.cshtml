@@ -17,6 +17,7 @@
 			<br /><hr />
 			<label>Task Id (delete to create new)</label>@Html.TextBox("TaskId", Model.Task == null ? (long?)null : Model.Task.Id)
 			<hr />
+			@Html.TextBox("OldTaskId", Model.Task == null ? (long?)null : Model.Task.OriginalTaskId,new {type="hidden"})
 		</div>
 		<div class="col-md-3 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")" >
 			<h3><b><u>Task Info</u></b></h3>

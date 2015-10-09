@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Utilities;
 
 namespace RadialReview.Engines
 {
@@ -22,47 +23,54 @@ namespace RadialReview.Engines
 
         public UserOrganizationDetails GetUserDetails(UserOrganizationModel caller,long id)
         {
-             var foundUser = _UserAccessor.GetUserOrganization(caller, id, false, false);
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var perms = PermissionsUtility.Create(s, caller);
+					var foundUser = UserAccessor.GetUserOrganization(s,perms, id, false, false);
 
-	        foundUser.SetPersonallyManaging(DeepSubordianteAccessor.ManagesUser(caller, caller.Id, id));
+					foundUser.SetPersonallyManaging(DeepSubordianteAccessor.ManagesUser(s,perms, caller.Id, id));
 
-            var responsibilities = new List<String>();
+					var responsibilities = new List<String>();
 
-            var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(caller, id);
-            var teams = _TeamAccessor.GetUsersTeams(caller, id);
-            var userResponsibility = ((UserOrganizationModel)r).Hydrate().Position().SetTeams(teams).Execute();
+					var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(s, perms, id);
+					var teams = _TeamAccessor.GetUsersTeams(caller, id);
+					var userResponsibility = ((UserOrganizationModel)r).Hydrate(s).Position().SetTeams(teams).Execute();
 
-            responsibilities.AddRange(userResponsibility.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
-            foreach (var rgId in userResponsibility.Positions.ToListAlive().Select(x => x.Position.Id))
-            {
-                var positionResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(caller, rgId);
-                responsibilities.AddRange(positionResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
-            }
-            foreach (var teamId in userResponsibility.Teams.ToListAlive().Select(x => x.Team.Id))
-            {
-                var teamResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(caller, teamId);
-                responsibilities.AddRange(teamResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
-            }
+					responsibilities.AddRange(userResponsibility.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
+					foreach (var rgId in userResponsibility.Positions.ToListAlive().Select(x => x.Position.Id))
+					{
+						var positionResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(s, perms, rgId);
+						responsibilities.AddRange(positionResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
+					}
+					foreach (var teamId in userResponsibility.Teams.ToListAlive().Select(x => x.Team.Id))
+					{
+						var teamResp = _ResponsibilitiesAccessor.GetResponsibilityGroup(s, perms, teamId);
+						responsibilities.AddRange(teamResp.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
+					}
 
-			var roles = _RoleAccessor.GetRoles(caller, id);
-			var rocks = _RockAccessor.GetAllRocks(caller, id);
-	        var measurables = ScorecardAccessor.GetUserMeasurables(caller, id);
-			//foundUser.PopulatePersonallyManaging(caller, caller.AllSubordinates);
+					var roles = RoleAccessor.GetRoles(s, perms, id);
+					var rocks = RockAccessor.GetAllRocks(s, perms, id);
+					var measurables = ScorecardAccessor.GetUserMeasurables(s, perms, id, true);
+					//foundUser.PopulatePersonallyManaging(caller, caller.AllSubordinates);
 
-            var model = new UserOrganizationDetails()
-            {
-                User=foundUser,
-                Responsibilities = responsibilities,
-				Roles = roles,
-				Rocks = rocks,
-				Measurables = measurables,
-				ManagingOrganization = caller.ManagingOrganization,
-				/*Editable =	caller.ManagingOrganization || foundUser.GetPersonallyManaging() || 
-							(foundUser.Organization.Settings.ManagersCanEditSelf && foundUser.ManagerAtOrganization) ||
-							(foundUser.Organization.Settings.EmployeesCanEditSelf)*/
-            };
+					var model = new UserOrganizationDetails()
+					{
+						User=foundUser,
+						Responsibilities = responsibilities,
+						Roles = roles,
+						Rocks = rocks,
+						Measurables = measurables,
+						ManagingOrganization = caller.ManagingOrganization,
+						/*Editable =	caller.ManagingOrganization || foundUser.GetPersonallyManaging() || 
+									(foundUser.Organization.Settings.ManagersCanEditSelf && foundUser.ManagerAtOrganization) ||
+									(foundUser.Organization.Settings.EmployeesCanEditSelf)*/
+					};
 
-            return model;
+					return model;
+				}
+			}
+         
         }
 
     }

@@ -6,7 +6,12 @@
 	ViewBag.Title = "Manage Account";
 }
 
-<p class="text-success">@ViewBag.StatusMessage</p>
+@*<p class="text-success">@ViewBag.StatusMessage</p>*@
+@if (!string.IsNullOrWhiteSpace(ViewBag.StatusMessage)){
+	@Html.AlertBoxDismissable((string)ViewBag.StatusMessage, (string)ViewBag.AlertType, ViewBag.AlertType != "alert-danger" ? "Success" : "Warning")
+	<br />
+}
+
 <p>You're logged in as <strong>@User.Identity.GetUserName()</strong>.</p>
 
 <div class="row">
@@ -76,8 +81,8 @@
 					{
 						ForType = RadialReview.Models.Enums.UploadType.ProfileImage.ToString(),
 						Url = Model.ImageUrl,
-						Width = 200,
-						Height = 200,
+						/*Width = 200,
+						Height = 200,*/
 					})
 			</div>
 		</div>

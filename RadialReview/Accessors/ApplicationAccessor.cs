@@ -4,6 +4,7 @@ using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Dashboard;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Tasks;
@@ -175,7 +176,7 @@ namespace RadialReview.Accessors
 					tx.Commit();
 					s.Flush();
 
-	            }
+				}
 				using (var tx = s.BeginTransaction())
 				{
 					ConstructPhoneNumbers(s);
@@ -183,6 +184,7 @@ namespace RadialReview.Accessors
 					s.Flush();
 
 				}
+				
                 using (var tx = s.BeginTransaction())
                 {
                     var application = s.Get<ApplicationWideModel>(APPLICATION_ID);
@@ -224,7 +226,10 @@ namespace RadialReview.Accessors
 		    }
 	    }
 
-		public List<long> AllowedPhoneNumbers = new List<long>() { 6467599497, 6467599498, 6467599499 };
+		public List<long> AllowedPhoneNumbers = new List<long>(){
+			6467599497, 6467599498, 6467599499,
+			6467603167, 6467603168, 6467603169,
+		};
 		public void ConstructPhoneNumbers(ISession s)
 		{
 			var found = s.QueryOver<CallablePhoneNumber>().Where(x => x.DeleteTime == null).List().ToList();

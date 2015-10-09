@@ -44,6 +44,9 @@ namespace RadialReview.Accessors {
 				var revieweeIds = whoReviewsWho.Where(x => x.Item1 == reviewerId).Distinct().Select(x => x.Item2);
                 var user = dataInteraction.Get<UserOrganizationModel>(reviewerId);
 
+				if (user==null || user.DeleteTime != null)
+					continue;
+
 	            var allAskables=GetAskables(caller, perms, dataInteraction, revieweeIds, reviewerId,reviewContainer.PeriodId,range);
 				
 				if (allAskables.Any()) {

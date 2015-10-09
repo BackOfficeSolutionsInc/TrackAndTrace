@@ -1463,14 +1463,24 @@ textarea.reason {
 		bottom: 0;
 		top: calc(50% - 10px);
 		font-weight: bold;
+		font-size: 13px;
 		/* vertical-align: middle; */
 		/* display: table-cell; */
 	}
 
+	/*
 .body-full-width .navbar {
 	height: 30px;
 	min-height: 30px;
-}
+}*/
+
+	.body-full-width .navbar {
+		min-height: 30px;
+	}
+
+	.body-full-width .navbar-brand{
+		height: 30px;
+	}
 
 	.body-full-width .navbar .picture-container {
 		height: 26px;
@@ -1486,7 +1496,7 @@ textarea.reason {
 .body-full-width .navbar-brand img {
 	width: 30px;
 	height: 30px;
-	top: -2px;
+	top: 1px;
     position: relative;
 }
 
@@ -1562,7 +1572,8 @@ textarea.reason {
 
 .body-full-width .navbar-toggle {
 	padding: 4px 8px;
-	margin-top: 4px;
+	margin-top: 2px;
+	margin-bottom: 0px;
 }
 
 .bred {

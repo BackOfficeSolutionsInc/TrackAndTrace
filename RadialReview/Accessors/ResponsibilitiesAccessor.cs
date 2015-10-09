@@ -50,20 +50,25 @@ namespace RadialReview.Accessors
                     .ToList();
         }
 
+	    public ResponsibilityGroupModel GetResponsibilityGroup(ISession s,PermissionsUtility perms, long responsibilityGroupId)
+	    {
+		        var resGroup = s.Get<ResponsibilityGroupModel>(responsibilityGroupId);
+				long orgId;
+
+				if (resGroup is OrganizationModel) orgId = resGroup.Id;
+				else orgId = resGroup.Organization.Id;
+
+				perms.ViewOrganization(orgId);
+				return resGroup;
+	    }
+
         public ResponsibilityGroupModel GetResponsibilityGroup(UserOrganizationModel caller, long responsibilityGroupId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
-                using (var tx = s.BeginTransaction())
-                {
-                    var resGroup = s.Get<ResponsibilityGroupModel>(responsibilityGroupId);
-                    long orgId;
-
-                    if (resGroup is OrganizationModel) orgId = resGroup.Id;
-                    else orgId = resGroup.Organization.Id;
-
-                    PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
-                    return resGroup;
+                using (var tx = s.BeginTransaction()){
+	                var perms = PermissionsUtility.Create(s, caller);
+	                return GetResponsibilityGroup(s, perms, responsibilityGroupId);
                 }
             }
         }

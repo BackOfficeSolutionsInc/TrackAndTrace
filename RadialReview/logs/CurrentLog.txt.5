@@ -1,101 +1,121 @@
-ERROR 2015-09-22 16:51:29,046 [971] BaseController         - Error: [/UnitTest/AllPages]<<a different object with the same identifier value was already associated with the session: 2, of entity: RadialReview.Models.Tests.TestUrlBatch>>
-NHibernate.NonUniqueObjectException: a different object with the same identifier value was already associated with the session: 2, of entity: RadialReview.Models.Tests.TestUrlBatch
-   at NHibernate.Engine.StatefulPersistenceContext.CheckUniqueness(EntityKey key, Object obj)
-   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.PerformUpdate(SaveOrUpdateEvent event, Object entity, IEntityPersister persister)
-   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.EntityIsDetached(SaveOrUpdateEvent event)
-   at NHibernate.Event.Default.DefaultUpdateEventListener.PerformSaveOrUpdate(SaveOrUpdateEvent event)
-   at NHibernate.Event.Default.DefaultSaveOrUpdateEventListener.OnSaveOrUpdate(SaveOrUpdateEvent event)
-   at NHibernate.Impl.SessionImpl.FireUpdate(SaveOrUpdateEvent event)
-   at NHibernate.Impl.SessionImpl.Update(Object obj)
-   at RadialReview.Accessors.TestAccessor.<RunAllUrlTests>d__13.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TestAccessor.cs:line 143
+ERROR 2015-10-08 22:51:06,375 [45] BaseAccessor           - Scheduled task error. 1561
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
 --- End of stack trace from previous location where exception was thrown ---
    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Controllers.UnitTestController.<AllPages>d__7.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\UnitTestController.cs:line 128
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 127
+ERROR 2015-10-08 23:09:33,379 [101] BaseController         - PaymentException
+RadialReview.Exceptions.PaymentException: An error occurred in making a payment.
+   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganizationAmount>d__59.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 246
 --- End of stack trace from previous location where exception was thrown ---
    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.PaymentAccessor.<ExecuteInvoice>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 157
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganization>d__1.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 109
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__2.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 36
+ERROR 2015-10-08 23:10:25,956 [101] BaseController         - Error: [/Scheduler/ChargeAccount/1634?taskId=1564]<<Index (zero based) must be greater than or equal to zero and less than the size of the argument list.>>
+System.FormatException: Index (zero based) must be greater than or equal to zero and less than the size of the argument list.
+   at System.Text.StringBuilder.AppendFormatHelper(IFormatProvider provider, String format, ParamsArray args)
+   at System.String.FormatHelper(IFormatProvider provider, String format, ParamsArray args)
+   at System.String.Format(String format, Object arg0, Object arg1, Object arg2)
+   at RadialReview.Accessors.Emailer.EmailBodyWrapper(String htmlBody, Nullable`1 tableWidth) in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 67
+   at RadialReview.Accessors.Emailer.<SendEmailsWrapped>d__1c.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 384
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.Emailer.<SendEmails>d__17.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 370
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.Emailer.<SendEmail>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 365
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__2.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 51
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.GetResult()
    at lambda_method(Closure , Task )
    at System.Threading.Tasks.TaskHelpersExtensions.ThrowIfFaulted(Task task)
    at System.Web.Mvc.Async.TaskAsyncActionDescriptor.EndExecute(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass34.<BeginInvokeAsynchronousActionMethod>b__33(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
-ERROR 2015-09-22 18:33:51,500 [14] BaseController         - Error: [/]<<Object reference not set to an instance of an object.>>
-System.NullReferenceException: Object reference not set to an instance of an object.
-   at RadialReview.Controllers.BaseController.IsLoggedIn() in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 299
-   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 475
-   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
-   at System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass12.<>c__DisplayClass14.<InvokeActionMethodWithFilters>b__11()
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
-ERROR 2015-09-22 18:34:20,158 [14] BaseController         - Error: [/]<<Object reference not set to an instance of an object.>>
-System.NullReferenceException: Object reference not set to an instance of an object.
-   at RadialReview.Controllers.BaseController.IsLoggedIn() in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 299
-   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 475
-   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
-   at System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass12.<>c__DisplayClass14.<InvokeActionMethodWithFilters>b__11()
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
-ERROR 2015-09-22 18:34:56,504 [5] BaseController         - Error: [/]<<Object reference not set to an instance of an object.>>
-System.NullReferenceException: Object reference not set to an instance of an object.
-   at RadialReview.Controllers.BaseController.IsLoggedIn() in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 299
-   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 475
-   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
-   at System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass12.<>c__DisplayClass14.<InvokeActionMethodWithFilters>b__11()
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
-ERROR 2015-09-22 18:35:56,488 [5] BaseController         - Error: [/]<<Object reference not set to an instance of an object.>>
-System.NullReferenceException: Object reference not set to an instance of an object.
-   at RadialReview.Controllers.BaseController.IsLoggedIn() in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 299
-   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 475
-   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
-   at System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass12.<>c__DisplayClass14.<InvokeActionMethodWithFilters>b__11()
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
-INFO  2015-09-22 18:58:18,815 [39] BaseAccessor           - Charged Card: {"class":"transaction","id":"4b2dfc3a41","created_at":"2015-09-22T23:58:37+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":268400,"amount_refunded":0,"amount_settled":268400,"amount_failed":0,"transaction_type":"sale","reference_number":"2593012","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"21871d","receipt":null,"company":"Firespring","website":"firespring.com","card_owner_name":"Clay Upton","email":"","first_name":"Clay","last_name":"Upton","address_1":"1201 Infinity Court","address_2":"","city":"Lincoln","state":"NE","zip":"68512","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
-ERROR 2015-09-22 20:03:19,392 [98] AdoTransaction         - Begin transaction failed
-MySql.Data.MySqlClient.MySqlException (0x80004005): Authentication to host 'localhost' for user 'root' using method 'mysql_native_password' failed with message: Reading from the stream has failed. ---> MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---> System.IO.IOException: Unable to read data from the transport connection: An established connection was aborted by the software in your host machine. ---> System.Net.Sockets.SocketException: An established connection was aborted by the software in your host machine
-   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
-   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
-   --- End of inner exception stack trace ---
-   at MySql.Data.Common.MyNetworkStream.HandleOrRethrowException(Exception e)
-   at MySql.Data.Common.MyNetworkStream.Read(Byte[] buffer, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
-   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
-   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
-   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.ReadPacket()
-   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket()
-   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.AuthenticationFailed(Exception ex)
-   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket()
-   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.Authenticate(Boolean reset)
-   at MySql.Data.MySqlClient.NativeDriver.Authenticate(String authMethod, Boolean reset)
-   at MySql.Data.MySqlClient.NativeDriver.Open()
-   at MySql.Data.MySqlClient.Driver.Open()
-   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
-   at MySql.Data.MySqlClient.MySqlPool.CreateNewPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
-   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
-   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
-   at MySql.Data.MySqlClient.MySqlConnection.Open()
-   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
-   at NHibernate.AdoNet.ConnectionManager.GetConnection()
-   at NHibernate.Impl.SessionImpl.get_Connection()
-   at NHibernate.Transaction.AdoTransaction.Begin(IsolationLevel isolationLevel)
+ERROR 2015-10-08 23:10:25,971 [67] BaseAccessor           - Scheduled task error. 1564
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 127
+ERROR 2015-10-08 23:27:09,188 [92] BaseController         - PaymentException
+RadialReview.Exceptions.PaymentException: An error occurred in making a payment.
+   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganizationAmount>d__59.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 246
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.PaymentAccessor.<ExecuteInvoice>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 157
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganization>d__1.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 109
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__2.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 37
+ERROR 2015-10-08 23:48:41,975 [92] BaseController         - FatalPaymentException
+System.FormatException: Index (zero based) must be greater than or equal to zero and less than the size of the argument list.
+   at System.Text.StringBuilder.AppendFormatHelper(IFormatProvider provider, String format, ParamsArray args)
+   at System.String.FormatHelper(IFormatProvider provider, String format, ParamsArray args)
+   at System.String.Format(String format, Object arg0, Object arg1, Object arg2)
+   at RadialReview.Accessors.Emailer.EmailBodyWrapper(String htmlBody, Nullable`1 tableWidth) in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 67
+   at RadialReview.Accessors.Emailer.<SendEmailsWrapped>d__1c.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 384
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.Emailer.<SendEmails>d__17.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 370
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.Emailer.<SendEmail>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 365
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__2.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 66

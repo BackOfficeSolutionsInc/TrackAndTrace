@@ -47,8 +47,10 @@ namespace RadialReview.Models.ViewModels
             int complete = 1;
             int total = 1;
 
-            complete += (User.ImageGuid != null).ToInt(); 
-            total++;
+	        if (User != null){
+		        complete += (User.ImageGuid != null).ToInt();
+				total++;
+	        }
 
             return new CompletionModel(complete, total);
         }

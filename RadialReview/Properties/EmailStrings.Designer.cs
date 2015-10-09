@@ -64,7 +64,7 @@ namespace RadialReview.Properties {
         ///   Looks up a localized string similar to &lt;table style=&quot;background-color:#f3f4f4&quot; bgcolor=&quot;#F3F4F4&quot; width=&quot;100%&quot; align=&quot;center&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;
         ///            &lt;br&gt;
         ///            &lt;table cellpadding=&quot;1&quot; cellspacing=&quot;0&quot; style=&quot;background-color:#d9dadb&quot; align=&quot;center&quot; bgcolor=&quot;#D9DADB&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;
-        ///            &lt;table style=&quot;font-family:arial,helvetica,sans-serif;font-size:14px;line-height:20px;background-color:#ffffff&quot; align=&quot;center&quot; bgcolor=&quot;#ffffff&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; width=&quot;600&quot;&gt;
+        ///            &lt;table style=&quot;font-family:arial,helvetica,sans-serif;font-size:14px;line-height:20px;background-color:#ffffff&quot; align=&quot;center&quot; bgcolor=&quot;#ffffff&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; width=&quot;{2}&quot;&gt;
         ///
         ///            &lt;tbody&gt;&lt;t [rest of string was truncated]&quot;;.
         /// </summary>
@@ -211,7 +211,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;p&gt;Payment Failed: {0}&lt;/p&gt;&lt;p&gt;{1}&lt;/p&gt;.
+        ///   Looks up a localized string similar to &lt;p&gt;Payment Failed: {0}&lt;/p&gt;&lt;p&gt;{1}&lt;/p&gt;&lt;p&gt;{2}&lt;/p&gt;.
         /// </summary>
         public static string PaymentException_Body {
             get {

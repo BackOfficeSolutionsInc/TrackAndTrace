@@ -121,10 +121,10 @@
     <value>You're already a member of this organization.</value>
   </data>
   <data name="AnErrorOccured" xml:space="preserve">
-    <value>An error has occured.</value>
+    <value>An error has occurred.</value>
   </data>
   <data name="AnErrorOccuredContactUs" xml:space="preserve">
-    <value>An error has occured. If the problem persists, please contact us.</value>
+    <value>An error has occurred. If the problem persists, please contact us.</value>
   </data>
   <data name="CategoryAccessability" xml:space="preserve">
     <value>This category isn't accessible.</value>
@@ -142,7 +142,7 @@
     <value>You do not have access to this resource.</value>
   </data>
   <data name="DefaultUnknownException" xml:space="preserve">
-    <value>An unknown exception occured.</value>
+    <value>An unknown exception occurred.</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
     <value>E-mail address is invalid.</value>

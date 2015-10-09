@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Utils;
+using NHibernate;
 using RadialReview.Models;
 using RadialReview.Models.Permissions;
 using RadialReview.Utilities;
@@ -49,6 +50,21 @@ namespace RadialReview.Accessors
 			}
 		}
 
+		public static bool AnyTrue(ISession s, UserOrganizationModel caller, PermissionType? type, Predicate<UserOrganizationModel> predicate)
+		{
+			if (predicate(caller))
+				return true;
+			if (type != null){
+				var ids = s.QueryOver<PermissionOverride>().Where(x => x.DeleteTime == null && x.Permissions == type && x.ForUser.Id == caller.Id).Select(x => x.AsUser.Id).List<long>().ToList();
+				var uorgs = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(ids).List().ToList();
+
+				if (uorgs.Any(o => predicate(o))){
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public bool AnyTrue(UserOrganizationModel caller, PermissionType type, Predicate<UserOrganizationModel> predicate)
 		{
 			if (predicate(caller))
@@ -56,15 +72,9 @@ namespace RadialReview.Accessors
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
-					var ids = s.QueryOver<PermissionOverride>().Where(x => x.DeleteTime == null && x.Permissions == type && x.ForUser.Id == caller.Id).Select(x => x.AsUser.Id).List<long>().ToList();
-					var uorgs = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(ids).List().ToList();
-
-					if (uorgs.Any(o => predicate(o))){
-						return true;
-					}
+					return AnyTrue(s, caller, type, predicate);
 				}
 			}
-			return false;
 		}
 
 		public static PermissionOverride GetPermission(UserOrganizationModel caller, long overrideId)

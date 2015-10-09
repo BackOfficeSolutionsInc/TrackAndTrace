@@ -74,6 +74,16 @@
 {
 	<script src="/Scripts/jquery/jquery.filtertable.min.js"></script>
 	<script>
-		$(".tablefilter").filterTable({ inputSelector: '#input-filter' });
+		$(".tablefilter").filterTable({ inputSelector: '#input-filter',minRows:0});
 	</script>
+}
+
+@using (Html.BeginStyles()){
+	
+	<style>
+		.alt {
+			background-color: #ffc;
+			background-color: rgba(255, 255, 0, 0.2);;
+		}
+	</style>
 }

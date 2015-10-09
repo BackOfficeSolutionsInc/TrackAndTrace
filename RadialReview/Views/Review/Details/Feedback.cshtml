@@ -13,7 +13,7 @@
 				<th colspan="3">@feedbacks.First().Askable.GetQuestion():</th>
 				<th class="rightButton alignCenter">Included</th>
 			</tr>
-			@foreach (var feedback in feedbacks){
+			@foreach (var feedback in feedbacks.GroupBy(x=>x.ByUserId).Select(x=>x.First())){
 				<tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
 					<td></td>
 					<td style ="width: 120px">@feedback.ByUser.GetName():</td>
