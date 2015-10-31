@@ -19,14 +19,17 @@ namespace RadialReview.Controllers
 			public bool Override { get; set; }
 	    }
 
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id) {
+
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
+
 			var user = _UserAccessor.GetUserOrganization(GetUser(), id, false, false);
 			return PartialView(new JobDescriptionVM{JobDescription = user.JobDescription, UserId = user.Id, Locked = user.JobDescriptionFromTemplateId!=null});
 		}
 
 		[HttpPost]
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Modal(JobDescriptionVM model)
 		{
 			_UserAccessor.EditJobDescription(GetUser(), model.UserId, model.JobDescription);

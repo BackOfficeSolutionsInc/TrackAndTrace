@@ -16,6 +16,8 @@ namespace RadialReview.Exceptions
         }
         public OrganizationIdException(String redirectUrl = null) : this(ExceptionStrings.DefaultOrganizationIdException, redirectUrl ?? "/Account/Role")
         {
+	        ForceReload = true;
         }
+
     }
 }

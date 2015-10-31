@@ -137,8 +137,8 @@ namespace RadialReview.Utilities
 		{
 			switch (GetEnv())
 			{
-				case Env.local_sqlite: return false;
-				case Env.local_mysql: return false;
+				case Env.local_sqlite: return GetAppSetting("OptimizeBundles", "False").ToBoolean();
+				case Env.local_mysql: return GetAppSetting("OptimizeBundles", "False").ToBoolean();
 				case Env.production: return true;
 				default: throw new ArgumentOutOfRangeException();
 			}
@@ -229,5 +229,32 @@ namespace RadialReview.Utilities
                 default: throw new ArgumentOutOfRangeException();
             }
         }
-    }
+
+		public static string VideoConferenceUrl(string resource=null)
+		{
+			var server =  GetAppSetting("VideoConferenceServer").TrimEnd('/');
+			if (resource != null){
+				server = server + "/" + resource.TrimStart('/');
+			}
+			return server;
+			/*
+			switch (GetEnv())
+			{
+				case Env.local_mysql:   return server;
+				case Env.local_sqlite:	return GetAppSetting("VideoConferenceServer");
+				case Env.production:	return GetAppSetting("VideoConferenceServer");
+				default: throw new ArgumentOutOfRangeException();
+			}*/
+		}
+
+		public static string GetMandrillGoogleAnalyticsDomain()
+		{
+			return GetAppSetting("Mandrill_GoogleAnalyticsDomain", null);
+		}
+
+		internal static string PaymentEmail()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

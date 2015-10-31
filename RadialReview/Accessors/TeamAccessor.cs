@@ -488,7 +488,9 @@ namespace RadialReview.Accessors
 		{
 			var forUser = s.Get<UserOrganizationModel>(forUserId);
 			permissions.ViewOrganization(forUser.Organization.Id);
-			var teams = forUser.Teams.ToList();
+			var teams = s.Where<TeamDurationModel>(x => x.DeleteTime == null && x.UserId == forUserId);
+
+			//var teams = forUser.Teams.ToList();
 			if (forUser.IsManager())
 			{
 				var managerTeam = s.Where<OrganizationTeamModel>(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.Managers).SingleOrDefault();

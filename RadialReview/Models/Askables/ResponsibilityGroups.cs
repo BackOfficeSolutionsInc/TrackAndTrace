@@ -85,6 +85,10 @@ namespace RadialReview.Models.Askables
         {
             return DisplayNameStrings.position;
         }
+
+	    public override string GetImageUrl(){
+            return ConstantStrings.AmazonS3Location + ConstantStrings.ImagePositionPlaceholder;
+	    }
     }
 
     public class OrganizationTeamModel : ResponsibilityGroupModel
@@ -113,6 +117,11 @@ namespace RadialReview.Models.Askables
         {
             return DisplayNameStrings.team;
         }
+
+		public override string GetImageUrl()
+		{
+			return ConstantStrings.AmazonS3Location + ConstantStrings.ImageGroupPlaceholder;
+		}
 
         public static OrganizationTeamModel SubordinateTeam(UserOrganizationModel creator, UserOrganizationModel manager)
         {

@@ -75,12 +75,11 @@ namespace RadialReview.Hubs
 		{
 
 			// They are here, so tell them someone wants to talk
-
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, GetUser()).ViewVideoL10Recurrence(recurrenceId);
+					PermissionsUtility.Create(s, GetUser(s)).ViewVideoL10Recurrence(recurrenceId);
 					var found = s.QueryOver<AudioVideoUser>().Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId && /*x.User.Id == GetUser().Id*/ x.ConnectionId==Context.ConnectionId).SingleOrDefault();
 					var now = DateTime.UtcNow;
 					if (found != null){
@@ -95,7 +94,7 @@ namespace RadialReview.Hubs
 						Video = video,
 						ConnectionId = Context.ConnectionId,
 						RecurrenceId = recurrenceId,
-						User = GetUser(),
+						User = GetUser(s),
 					};
 
 					s.Save(newAVU);
@@ -191,7 +190,7 @@ namespace RadialReview.Hubs
 					tx.Commit();
 					s.Flush();
 					Clients.OthersInGroup(GenerateMeetingGroupId(meetingId /*us.L10Meeting*/))
-						.UpdateUserFocus(domId, GetUser().Id /*us.User.Id*/);
+						.UpdateUserFocus(domId, GetUser(s).Id /*us.User.Id*/);
 					return ResultObject.SilentSuccess();
 				}
 			}

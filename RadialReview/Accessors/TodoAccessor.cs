@@ -120,7 +120,7 @@ namespace RadialReview.Accessors
 					updates.Todos = new List<AngularTodo>() { new AngularTodo(todo) };
 					meetingHub.update(updates);
 
-					Audit.L10Log(s, caller, recurrenceId, "CreateTodo", todo.NotNull(x => x.Message));
+					Audit.L10Log(s, caller, recurrenceId, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));
 
 				}
 			}

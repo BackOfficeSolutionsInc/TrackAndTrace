@@ -33,4 +33,6 @@ function updateRockName(rockId, message) {
 
 function updateRocks(html) {
 	$(".rocks-container").html(html);
+	$(".rock-empty-holder").addClass("hidden");
+	$(".rocks-container").removeClass("hidden");
 }

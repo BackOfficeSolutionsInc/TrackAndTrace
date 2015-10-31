@@ -9,8 +9,9 @@ namespace RadialReview.Models
 {
     public class EmailModel : ILongIdentifiable
     {
-        public virtual long Id { get; set; }
-        public virtual string ToAddress { get; set; }
+		public virtual long Id { get; set; }
+		public virtual string ToAddress { get; set; }
+		public virtual string Bcc { get; set; }
         public virtual string Body { get; set; }
         public virtual string Subject { get; set; }
         public virtual DateTime? SentTime { get; set; }
@@ -23,8 +24,9 @@ namespace RadialReview.Models
     {
         public EmailModelMap()
         {
-            Id(x => x.Id);
-            Map(x => x.ToAddress);
+			Id(x => x.Id);
+			Map(x => x.ToAddress);
+			Map(x => x.Bcc);
             Map(x => x.Body).Length(3000).Not.Nullable();
             Map(x => x.Subject);
             Map(x => x.SentTime);

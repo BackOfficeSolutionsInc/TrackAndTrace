@@ -20,7 +20,7 @@
 						</div>
 					</div>
 					<div class="btn-group">
-						<div class="btn btn-default btn-xs" onclick="@Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/")">
+						<div class="btn btn-default btn-xs @(Model.CanEdit?"":"disabled")" onclick="@(Model.CanEdit?Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/"):new HtmlString(""))">
 							<span class="icon fontastic-icon-science-laboratory"></span> Add Measurable
 						</div>
 					</div>
@@ -32,9 +32,11 @@
 				</div>
 				<h2>Scorecard<small></small></h2>
 			</hgroup>
+				<div class="empty-holder scorecard-empty-holder @(Model.Meeting._MeetingMeasurables.Any() ? "hidden" : "")"></div>
 			<div class="component zoomable">
 				<div class="clearfix"></div>
-				<div style="position: relative;">
+
+				<div style="position: relative;" class="scorecard-holder @(Model.Meeting._MeetingMeasurables.Any()?"":" hidden")">
 					@for (var i = 0; i < 2; i++)
 					{
 						if (i == 0)

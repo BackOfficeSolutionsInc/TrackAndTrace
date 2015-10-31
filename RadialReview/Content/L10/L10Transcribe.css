@@ -1,0 +1,96 @@
+﻿.transcript-container .footer-bar-tab {
+	right: 190px;
+	padding-right: 30px;
+}
+
+.transcript-container .shifted {
+	/*bottom: 327px;
+		background: #0F0F0F;*/
+}
+
+.transcript-container .footer-bar-contents {
+	background-color: #1B1B1B;
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#272727+0,1b1b1b+76,1b1b1b+100 */
+	background: -moz-linear-gradient(-45deg, #272727 0%, #1b1b1b 76%, #1b1b1b 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#272727), color-stop(76%,#1b1b1b), color-stop(100%,#1b1b1b)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(-45deg, #272727 0%,#1b1b1b 76%,#1b1b1b 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(-45deg, #272727 0%,#1b1b1b 76%,#1b1b1b 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(-45deg, #272727 0%,#1b1b1b 76%,#1b1b1b 100%); /* IE10+ */
+	background: linear-gradient(135deg, #272727 0%,#1b1b1b 76%,#1b1b1b 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#272727', endColorstr='#1b1b1b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+.transcript-container .footer-bar-tab {
+	background-color: #1B1B1B;
+}
+
+.transcript-container .transcript-bar {
+	overflow-y: auto;
+}
+
+	.transcript-container .transcript-bar ul {
+		text-align: center;
+		list-style-type: none;
+		color: rgba(255, 255, 255, 0.50);
+		font-size: 14px;
+		margin: 0;
+	}
+
+	.transcript-container .transcript-bar li {
+		width: 80%;
+		margin: auto;
+	}
+
+	.transcript-container .transcript-bar ul.temp {
+		text-align: center;
+		list-style-type: none;
+		color: rgba(255, 255, 255, 0.30);
+		font-size: 14px;
+	}
+
+.transcript-container .todo-text,
+.transcript-container .issue-text {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.50);
+}
+
+	.transcript-container .todo-text:before,
+	.transcript-container .todo-text:after,
+	.transcript-container .issue-text:before,
+	.transcript-container .issue-text:after {
+		content: '"';
+	}
+
+	.transcript-container .todo-text:hover,
+	.transcript-container .issue-text:hover {
+		border-bottom: 1px solid white;
+		cursor: pointer;
+	}
+
+.transcript-container .transcript-bar *::selection {
+	background: #2C77BA !important; /* WebKit/Blink Browsers */
+	color: white;
+}
+
+
+.transcript-bar::-webkit-scrollbar {
+	width: 10px;
+}
+
+/* Track */
+.transcript-bar::-webkit-scrollbar-track {
+	border-radius: 10px;
+	margin: 2px;
+	margin-bottom: 22px;
+}
+
+/* Handle */
+.transcript-bar::-webkit-scrollbar-thumb {
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	background: rgba(255,255,255,.6);
+	height: 32px;
+}
+
+	.transcript-bar::-webkit-scrollbar-thumb:window-inactive {
+		background: rgba(255,255,255,.6);
+	}

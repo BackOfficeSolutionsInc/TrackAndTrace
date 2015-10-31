@@ -280,9 +280,22 @@ namespace RadialReview.Accessors
 			public String LastName { get; set; }
 		}
 
+		private static string FixEmail(string email)
+		{
+			return Config.IsLocal() ? "clay.upton+test_" + email.Replace("@", "_at_") + "@radialreview.com" : email;
+		}
+
 		private static EmailMessage CreateMandrillMessage(EmailModel email)
 		{
-			var toAddress = Config.IsLocal() ? "clay.upton+test_" + email.ToAddress.Replace("@", "_at_") + "@radialreview.com" : email.ToAddress;
+			var toAddress = FixEmail(email.ToAddress);
+
+			var toAddresses = new EmailAddress(toAddress).AsList();
+			if (email.Bcc != null){
+				foreach (var bcc in email.Bcc.Split(new []{','},StringSplitOptions.RemoveEmptyEntries)){
+					var fixedBcc = FixEmail(bcc);
+					toAddresses.Add(new EmailAddress(fixedBcc) { type = "bcc" });
+				}
+			}
 
 			return new EmailMessage()
 			{
@@ -290,9 +303,10 @@ namespace RadialReview.Accessors
 				from_name = MandrillStrings.FromName,
 				html = email.Body,
 				subject = email.Subject,
-				to = new EmailAddress(toAddress).AsList(),
+				to = toAddresses,
 				track_opens = true,
 				track_clicks = true,
+				google_analytics_domains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x=>x.Split(new []{','},StringSplitOptions.RemoveEmptyEntries).ToList())
 			};
 		}
 
@@ -301,6 +315,9 @@ namespace RadialReview.Accessors
 
 			var api = new MandrillApi(ConstantStrings.MandrillApiKey, true);
 			var results = new List<Mandrill.EmailResult>();
+
+			if (!emails.Any())
+				return 1;
 			if (Config.SendEmails() || forceSend)
 			{
 				results = (await Task.WhenAll(emails.Select(email => api.SendMessageAsync(CreateMandrillMessage(email))))).SelectMany(x => x).ToList();
@@ -388,6 +405,7 @@ namespace RadialReview.Accessors
 							Sent = false,
 							Subject = email.Subject,
 							ToAddress = email.ToAddress,
+							Bcc = String.Join(",",email.Bcc),
 							SentTime = now
 						};
 						s.Save(unsent);

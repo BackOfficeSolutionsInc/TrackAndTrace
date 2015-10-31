@@ -10,7 +10,7 @@
 					<div class="clearfix"></div>
 					<div style="position: relative;" ng-hide="(model.Scorecard|transform:this).Measurables.length==0">
 						<div class="table-responsive scroll-right" style1="min-height: 200px;">
-							<table id="ScorecardTable" class="scorecard-table ng-cloak">
+							<table id="ScorecardTable" class="scorecard-table ng-cloak"> 
 								<thead>
 									<tr>
 										@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
@@ -39,7 +39,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['-Ordering']">
+									<tr class="specialClass" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables  | orderBy: ['Ordering']">
 										@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
 										{
 											<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>

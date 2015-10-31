@@ -30,6 +30,7 @@ using System.Security.Principal;
 using RadialReview.Utilities.Extensions;
 using RadialReview.Utilities.Serializers;
 using System.Text;
+using NHibernate.Context;
 
 
 namespace RadialReview.Controllers
@@ -319,84 +320,90 @@ namespace RadialReview.Controllers
 
 		protected override void OnException(ExceptionContext filterContext)
 		{
-			var action = GetActionMethod(filterContext);
+			try{
+				var action = GetActionMethod(filterContext);
 
-			if (typeof(JsonResult).IsAssignableFrom(action.ReturnType)){
-				var exception = new ResultObject(filterContext.Exception);
-				if (filterContext.Exception is RedirectException){
-					var silent= ((RedirectException)filterContext.Exception).Silent;
-					if (silent != null)
-						exception.Silent = silent.Value;
+				if (typeof (JsonResult).IsAssignableFrom(action.ReturnType)){
+					var exception = new ResultObject(filterContext.Exception);
+					if (filterContext.Exception is RedirectException){
+						var re = ((RedirectException) filterContext.Exception);
+						if (re.Silent != null)
+							exception.Silent = re.Silent.Value;
+
+						if (re.ForceReload)
+							exception.Refresh = true;
+					}
+
+					filterContext.ExceptionHandled = true;
+					filterContext.HttpContext.Response.Clear();
+					filterContext.HttpContext.Response.TrySkipIisCustomErrors = true; 
+					filterContext.HttpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
+					filterContext.Result = new JsonResult(){Data = exception,JsonRequestBehavior = JsonRequestBehavior.AllowGet};
+					return;
 				}
 
-				filterContext.Result = Json(exception, JsonRequestBehavior.AllowGet);
-				filterContext.ExceptionHandled = true;
-				return;
-			}
 
+				if (filterContext.ExceptionHandled)
+					return;
 
-			if (filterContext.ExceptionHandled)
-				return;
-
-			if (filterContext.Exception is LoginException)
-			{
-				SignOut();
-				var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
-				if (redirectUrl == null)
-					redirectUrl = Request.Url.PathAndQuery;
-				log.Info("Login: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
-				filterContext.Result = RedirectToAction("Login", "Account", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
-				filterContext.ExceptionHandled = true;
-				filterContext.HttpContext.Response.Clear();
+				if (filterContext.Exception is LoginException){
+					SignOut();
+					var redirectUrl = ((RedirectException) filterContext.Exception).RedirectUrl;
+					if (redirectUrl == null)
+						redirectUrl = Request.Url.PathAndQuery;
+					log.Info("Login: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
+					filterContext.Result = RedirectToAction("Login", "Account", new{message = filterContext.Exception.Message, returnUrl = redirectUrl});
+					filterContext.ExceptionHandled = true;
+					filterContext.HttpContext.Response.Clear();
+				}
+				else if (filterContext.Exception is OrganizationIdException){
+					var redirectUrl = ((RedirectException) filterContext.Exception).RedirectUrl;
+					log.Info("Organization: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
+					filterContext.Result = RedirectToAction("Role", "Account", new{message = filterContext.Exception.Message, returnUrl = redirectUrl});
+					filterContext.ExceptionHandled = true;
+					filterContext.HttpContext.Response.Clear();
+				}
+				else if (filterContext.Exception is PermissionsException){
+					var returnUrl = ((RedirectException) filterContext.Exception).RedirectUrl;
+					log.Info("Permissions: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
+					ViewBag.Message = filterContext.Exception.Message;
+					if (typeof (PartialViewResult).IsAssignableFrom(action.ReturnType)){
+						filterContext.Result = PartialView("~/Views/Error/Index.cshtml", filterContext.Exception);
+					}
+					else{
+						filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
+					}
+					filterContext.ExceptionHandled = true;
+					filterContext.HttpContext.Response.Clear();
+				}
+				else if (filterContext.Exception is MeetingException){
+					var type = ((MeetingException) filterContext.Exception).MeetingExceptionType;
+					log.Info("MeetingException: [" + Request.Url.PathAndQuery + "] --> [" + type + "]");
+					filterContext.Result = RedirectToAction("ErrorMessage", "L10", new{message = filterContext.Exception.Message, type});
+					filterContext.ExceptionHandled = true;
+					filterContext.HttpContext.Response.Clear();
+				}
+				else if (filterContext.Exception is RedirectException){
+					var returnUrl = ((RedirectException) filterContext.Exception).RedirectUrl;
+					log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
+					filterContext.Result = RedirectToAction("Index", "Error", new{message = filterContext.Exception.Message, returnUrl = returnUrl});
+					filterContext.ExceptionHandled = true;
+					filterContext.HttpContext.Response.Clear();
+				}
+				else if (filterContext.Exception is HttpAntiForgeryException){
+					log.Info("AntiForgery: [" + Request.Url.PathAndQuery + "] --> []");
+					filterContext.Result = RedirectToAction("Login", "Account", new{message = filterContext.Exception.Message});
+					filterContext.ExceptionHandled = true;
+					filterContext.HttpContext.Response.Clear();
+				}
+				else{
+					log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);
+					base.OnException(filterContext);
+				}
 			}
-			else if (filterContext.Exception is OrganizationIdException)
-			{
-				var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
-				log.Info("Organization: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
-				filterContext.Result = RedirectToAction("Role", "Account", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
-				filterContext.ExceptionHandled = true;
-				filterContext.HttpContext.Response.Clear();
-			}
-			else if (filterContext.Exception is PermissionsException)
-			{
-				var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
-				log.Info("Permissions: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
-				ViewBag.Message = filterContext.Exception.Message;
-                if (typeof(PartialViewResult).IsAssignableFrom(action.ReturnType)){
-                    filterContext.Result = PartialView("~/Views/Error/Index.cshtml", filterContext.Exception);
-                }else{
-                    filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
-                }
-				filterContext.ExceptionHandled = true;
-				filterContext.HttpContext.Response.Clear();
-			}
-			else if (filterContext.Exception is MeetingException)
-			{
-				var type = ((MeetingException)filterContext.Exception).MeetingExceptionType;
-				log.Info("MeetingException: [" + Request.Url.PathAndQuery + "] --> [" + type + "]");
-				filterContext.Result = RedirectToAction("ErrorMessage", "L10", new { message = filterContext.Exception.Message, type });
-				filterContext.ExceptionHandled = true;
-				filterContext.HttpContext.Response.Clear();
-			}
-			else if (filterContext.Exception is RedirectException)
-			{
-				var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
-				log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
-				filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
-				filterContext.ExceptionHandled = true;
-				filterContext.HttpContext.Response.Clear();
-			}
-			else if (filterContext.Exception is HttpAntiForgeryException)
-			{
-				log.Info("AntiForgery: [" + Request.Url.PathAndQuery + "] --> []");
-				filterContext.Result = RedirectToAction("Login", "Account", new { message = filterContext.Exception.Message });
-				filterContext.ExceptionHandled = true;
-				filterContext.HttpContext.Response.Clear();
-			}
-			else
-			{
-				log.Error("Error: [" + Request.Url.PathAndQuery + "]<<" + filterContext.Exception.Message + ">>", filterContext.Exception);
-				base.OnException(filterContext);
+			catch (Exception e){
+				log.Info("OnException(Exception)", e);
+				filterContext.Result = Content(e.Message+"  "+e.StackTrace);
 			}
 		}
 		protected override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -519,11 +526,12 @@ namespace RadialReview.Controllers
 								}
 							}
 							//DataCollection.CommentMarkProfile(2, "ViewBagPop");
-							filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._128);
+							filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._img);
 							filterContext.Controller.ViewBag.UserInitials = oneUser.GetInitials();
 							filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
 							filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
 
+							filterContext.Controller.ViewBag.UserOrganization = oneUser;
 
 							filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
 							//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
@@ -568,6 +576,8 @@ namespace RadialReview.Controllers
 				ModelState.Merge((ModelStateDictionary)TempData["ModelState"]);
 			if (TempData["Message"] != null)
 				ViewBag.Message = TempData["Message"];
+
+			HibernateSession.CloseCurrentSession();
 
 			base.OnActionExecuted(filterContext);
 		}

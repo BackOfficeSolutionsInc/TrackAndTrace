@@ -75,6 +75,11 @@ namespace RadialReview.Models
 		public virtual int NumRoles { get; set; }
 		public virtual int NumMeasurables { get; set; }*/
 
+		public override string GetImageUrl()
+		{
+			return this.ImageUrl(true);
+		}
+
         public virtual OriginType GetOriginType()
         {
             return OriginType.User;
@@ -255,7 +260,10 @@ namespace RadialReview.Models
 			Cache.IsManager = this.IsManager();
 			Cache.Managers = String.Join(", ", ManagedBy.ToListAlive().Select(x => x.Manager.GetName()));
 			Cache.Positions = String.Join(", ", Positions.ToListAlive().Select(x => x.Position.CustomName));
-			Cache.Teams = String.Join(", ", Teams.ToListAlive().Select(x => x.Team.Name));
+
+			var teams = s.QueryOver<TeamDurationModel>().Where(x => x.DeleteTime == null && x.UserId == Id).Select(x => x.Team).List<OrganizationTeamModel>().ToList();
+
+			Cache.Teams = String.Join(", ", teams.Select(x => x.Name));
 			Cache.Name = this.GetName();
 
 			var measurable=s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == Id).ToRowCountQuery().FutureValue<int>();
@@ -330,10 +338,10 @@ namespace RadialReview.Models
             /*References(x => x.Organization)
                 .Column("Organization_Id")
                 .Cascade.SaveUpdate();*/
-            HasMany(x => x.Teams)
+           /* HasMany(x => x.Teams)
 				.LazyLoad()
                 .KeyColumn("User_id")
-                .Cascade.SaveUpdate();
+                .Cascade.SaveUpdate();*/
 
             HasMany(x => x.ManagedBy)
 				.LazyLoad()

@@ -96,7 +96,6 @@ function load(key) {
 }
 
 
-
 function ForceUnhide() {
 	var speed = 40;
 	$(".startHiddenGroup").each(function (i, e) {
@@ -280,17 +279,17 @@ function showAlert(message, alertType, preface) {
 	if (alertType === undefined)
 		alertType = "alert-danger";
 	if (preface === undefined)
-	    preface = "Warning!";
+		preface = "Warning!";
 	if (Object.prototype.toString.call(message) === '[object Array]') {
-	    if (message.length > 1) {
-	        var msg = "<ul style='margin-bottom:0px;'>";
-	        for (var i in message) {
-	            msg += "<li>" + message[i] + "</li>"
-	        }
-            message = msg+"</ul>"
-	    } else {
-	        message = message.join("");
-	    }
+		if (message.length > 1) {
+			var msg = "<ul style='margin-bottom:0px;'>";
+			for (var i in message) {
+				msg += "<li>" + message[i] + "</li>"
+			}
+			message = msg + "</ul>"
+		} else {
+			message = message.join("");
+		}
 	}
 
 	var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>" + preface + "</strong> <span class=\"message\">" + message + "</span></div>");
@@ -430,6 +429,10 @@ $.fn.flash = function (ms, backgroundColor, borderColor, color) {
 	this.css({ 'border-color': borderColor, 'background-color': backgroundColor, "boxShadow": "0px 0px 5px 3px " + borderColor, "color": color })
 	.animate({ 'border-color': originalBorderColor, 'background-color': originalBackgroundColor, "boxShadow": "0px 0px 0px 0px " + borderColor, "color": originalColor }, ms, function () {
 		$(this).css("boxShadow", originalBoxColor);
+		$(this).css("background-color", "");
+		$(this).css("border-color", "");
+		$(this).css("color", "");
+		$(this).css("boxShadow", "");
 	});
 
 
@@ -438,8 +441,8 @@ $.fn.flash = function (ms, backgroundColor, borderColor, color) {
 //Ajax Interceptors
 
 var interceptAjax = function (event, request, settings) {
-	console.log(event);
-	console.log(settings);
+	//console.log(event);
+	//console.log(settings);
 	try {
 		var result = $.parseJSON(request.responseText);
 		try {
@@ -466,13 +469,13 @@ $(document).ajaxError(interceptAjax);
 
 
 
-$(document).ajaxSend(function (event,jqX,ajaxOptions) {
+$(document).ajaxSend(function (event, jqX, ajaxOptions) {
 	if (ajaxOptions.url == null) {
 		ajaxOptions.url = "";
 	}
 	var date = (new Date().getTime());
 
-	if (typeof (ajaxOptions.data) ==="string" && ajaxOptions.data.indexOf("_clientTimestamp")!=-1) {
+	if (typeof (ajaxOptions.data) === "string" && ajaxOptions.data.indexOf("_clientTimestamp") != -1) {
 		return;
 		/*var start = ajaxOptions.data.indexOf("_clientTimestamp")+17;
 		debugger;
@@ -497,6 +500,16 @@ $(document).ajaxSend(function (event,jqX,ajaxOptions) {
 		this.val('').val($thisVal);
 		return this;
 	};
+	$.fn.insertAt = function (elements, index) {
+		var children = this.children();
+		if (index >= children.size()) {
+			this.append(elements);
+			return this;
+		}
+		var before = children.eq(index);
+		$(elements).insertBefore(before);
+		return this;
+	};
 }(jQuery));
 
 
@@ -506,3 +519,53 @@ function dateFormatter(date) {
     }*/
 	return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('/');
 }
+
+$(function () {
+	/*$('img').hide().on('load', function () {
+		// do something, maybe:
+		$(this).fadeIn();
+		$(this).addClass("loaded");
+	});*/
+	$(".footer-bar-container").each(function () {
+		var h = parseInt($(this).attr("data-height"));
+		$(this).find(".footer-bar-contents").css("bottom",/*-h+*/"0px");
+		$(this).css("bottom", -h + "px");
+		$(this).find(".footer-bar-contents").css("height", h + "px");
+	});
+
+	$("body").on("click", ".footer-bar-tab", function () {
+		var on = !$(this).hasClass("shifted");
+		$(this).toggleClass("shifted", on);
+		var parent = $(this).parent(".footer-bar-container");
+		parent.toggleClass("shifted", on);
+		parent.find(".footer-bar-contents").toggleClass("shifted", on);
+
+		var curHeight = 0;
+		$(".footer-bar-container").each(function () {
+			var isShift = $(this).hasClass("shifted");
+			var selfH = parseInt($(this).attr("data-height"));
+			if (isShift) {
+				curHeight += selfH;
+			}
+			$(this).css("bottom", -(-curHeight + selfH) + "px");
+			//$(this).parent(".footer-bar-container").css("bottom", curHeight + "px");
+		});
+
+		$(".body-full-width #main").css("padding-bottom", Math.max(20, curHeight) + "px");
+
+		$(window).trigger("footer-resize");
+	});
+
+	$('.picture').each(function () {
+		var picture = $(this);
+		var bg = $(picture).css('background-image');
+		if (bg && bg != "none") {
+			$(picture).hide();
+			var src = bg.replace(/(^url\()|(\)$|[\"\'])/g, '');
+			var $img = $('<img>').attr('src', src).on('load', function () {
+				// do something, maybe:
+				$(picture).fadeIn();
+			});
+		}
+	});
+});

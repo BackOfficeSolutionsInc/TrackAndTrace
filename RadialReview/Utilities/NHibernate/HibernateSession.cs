@@ -160,9 +160,43 @@ namespace RadialReview.Utilities
             }
         }
 
-        public static ISession GetCurrentSession()
+
+	    public static bool CloseCurrentSession()
+	    {
+			var session = (SessionPerRequest)HttpContext.Current.Items["NHibernateSession"];
+		    if (session != null){
+			    if (session.IsOpen){
+				    session.Close();
+			    }
+
+			    if (session.WasDisposed){
+					session.GetBackingSession().Dispose();
+			    }
+				HttpContext.Current.Items.Remove("NHibernateSession");
+			    return true;
+		    }
+		    return false;
+	    }
+		
+
+
+        public static ISession GetCurrentSession(bool singleSession=true)
         {
-            return GetDatabaseSessionFactory().OpenSession();
+	        if (singleSession && !(HttpContext.Current == null || HttpContext.Current.Items == null)){
+		        try{
+			        var session = (SessionPerRequest) HttpContext.Current.Items["NHibernateSession"];
+			        if (session == null){
+				        session = new SessionPerRequest(GetDatabaseSessionFactory().OpenSession()); // Create session, like SessionFactory.createSession()...
+				        HttpContext.Current.Items.Add("NHibernateSession", session);
+			        }
+			        return session;
+		        }
+		        catch (Exception e){
+					//Something went wrong.. revert
+			        var a = "Error";
+		        }
+	        }
+	        return GetDatabaseSessionFactory().OpenSession();
             /*while(true)
             {
                 lock (lck)

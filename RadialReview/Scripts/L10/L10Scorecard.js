@@ -53,19 +53,26 @@ function updateServerScore(self) {
 	var id = $(self).data("scoreid");
 	var val = $(self).val();
 	var dom = $(self).attr("id");
+	var oldVal = $(self).attr("data-oldval");
+	debugger;
 	$.ajax({
 		url: "/l10/UpdateScore/" + MeetingId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val + "&dom=" + dom,
 		success: function (data) {
-
 			if (data.Error) {
 				showJsonAlert(data);
+				$(self).val(oldVal);
+			} else {
+				$(self).attr("data-oldval", val);
 			}
-
 			/*console.log(data);
 			if (data.Object != val) {
 				console.log("err:"+data.Object);
 				$(self).val("");
 			}*/
+		},
+		error:function(data) {
+			$(self).val(oldVal);
+			updateScore(self);
 		}
 	});
 }
@@ -106,6 +113,9 @@ function addMeasurable(data, smallTable) {
 	updateScore($("#ScorecardTable").find(".score input").last());
 
 	updateScorecardNumbers();
+
+	$(".scorecard-holder").removeClass("hidden");
+	$(".scorecard-empty-holder").addClass("hidden");
 }
 
 function updateArchiveMeasurable(id, name, text, value) {

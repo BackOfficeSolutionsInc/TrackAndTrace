@@ -1,15 +1,13 @@
 ﻿<div class="review smallBreak2 loading tiny rock-tile" style="min-height:30px">
 	<div class="rock-heading heading">
 		Current @(Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)) ?? "Rocks")<a href="/todo/list" class="gray"></a>
-	</div><div class="tile">
-		@Html.Partial("~/Views/Rocks/Partial/list.cshtml", new ViewDataDictionary(){
-		                        { "AddHeaders", false },
-		                        { "AddController", true },
-		                        { "AddCompletion", false },
-		                        { "AddDatePicker", false },
-		                        { "RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z=>z.ToLower())))}
-	                        })
-	</div>
+	</div><div class="tile">@{ Html.RenderPartial("~/Views/Rocks/Partial/list.cshtml", new ViewDataDictionary(){
+		                           {"AddHeaders", false},
+		                           {"AddController", false},
+		                           {"AddCompletion", false},
+		                           {"AddDatePicker", false},
+		                           {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))}
+	                           }); }</div>
 </div>
 
 <style>

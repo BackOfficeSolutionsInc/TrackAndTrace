@@ -1,0 +1,56 @@
+﻿@model List<RadialReview.Controllers.PaymentController.Charge>
+@{
+	ViewBag.Title = "AllCharges";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>All Charges</h2>
+
+
+<div class="panel panel-primary">
+	<table class="table table-condensed table-hover">
+		<thead>
+			<tr>
+				<td>Create Time (local)</td>
+				<td>Organization</td>
+				<td>Amount</td>
+				<td>Status</td>
+				<td>TransactionId</td>
+				<td>TaskId</td>
+				<td>Message</td>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var i in Model)
+			{
+				<tr>
+
+					<td>@Html.Organization().ConvertFromUTC(i.CreateTime)</td>
+					<td title="@i.OrganizationId"><b>@i.Organization</b></td>
+					<td>@String.Format("{0:C}",i.Amount)</td>
+					<td><span class="label label-@(i.Label)">@(i.Status)</span></td>
+					<td>@i.TransactionId</td>
+					<td>@i.TaskId</td>
+					<td>@i.Message</td>
+				</tr>
+			}
+		</tbody>
+
+	</table>
+</div>
+@using (Html.BeginScripts()){
+	<script>
+		$(function() {
+			$("table").tablesorter({sortList: [[0,1]]});
+		});
+	</script>
+}
+
+@using (Html.BeginStyles()){
+	<style>
+		.label {
+			width: 80px;
+			display: inline-block;
+		}
+	</style>
+}

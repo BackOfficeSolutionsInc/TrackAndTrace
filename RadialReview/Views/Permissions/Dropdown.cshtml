@@ -1,0 +1,226 @@
+﻿@model RadialReview.Models.Permissions.PermissionDropdownVM
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
+
+<div class="dropdown dropdown-permissions dd_@guid">
+	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		<span class="icon fontastic-icon-unlock-1 gray"></span>
+		@(Model.DisplayText ?? new HtmlString("Permissions"))
+		<span class="caret"></span>
+	</button>
+	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+
+		<li class="">
+			<form class="container">
+				<label>Add permissions for a user, team, or position. Begin typing here...</label>
+				<br />
+				<select id="search_@guid" style="width:600px;height: 28px !important;" placeholder=""></select>
+				<hr />
+				<div class="form-group" id="container_@guid" >
+					<table style="text-align: center;">
+						<thead>
+							<tr>
+								<th class="name"></th>
+								<th></th>
+								<th class="setting">View</th>
+								<th class="setting">Edit</th>
+								<th class="setting">Admin</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var u in Model.Items)
+							{
+								@Html.Partial("PermItemRow", new ViewDataDictionary(u){
+									{"CanEdit_View", Model.CanEdit_View},
+									{"CanEdit_Edit", Model.CanEdit_Edit},
+									{"CanEdit_Admin", Model.CanEdit_Admin}
+								})
+							}
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</li>
+	</ul>
+</div>
+
+@using (Html.BeginStyles())
+{
+	<style>
+		.dropdown-permissions .select2-container .select2-selection--single {
+			height: 28px !important;
+		}
+
+		.dropdown-permissions .search-row .label {
+			float: right;
+			width: 80px;
+		}
+
+		.dropdown-permissions .group-User {
+			background-color: #FFA02F;
+		}
+
+		.dropdown-permissions .group-Position {
+			background-color: #FF2F2F;
+		}
+
+		.dropdown-permissions .group-Team {
+			background-color: #26CC26;
+		}
+
+		.dropdown-permissions .group-Organization {
+			background-color: #2576A2;
+		}
+
+		.dropdown-permissions .picture-container {
+			height: 32px;
+			width: 32px;
+		}
+
+		
+		.dropdown-permissions th.name,
+		.dropdown-permissions td.name{
+			min-width: 110px;
+			text-align: right;
+			padding-right: 4px;
+			font-weight: bold;
+		}
+
+		.dropdown-permissions th.setting{
+			width: 40px;
+			text-align: center;
+		}
+	</style>
+}
+
+@using (Html.BeginScripts())
+{
+	<script>
+		$.fn.extend({
+			OptionsSelect2Create: function () {
+				var $me = this;
+				$.fn.select2.amd.require([
+					"select2/utils",
+					"select2/dropdown",
+					"select2/dropdown/attachContainer",
+					"select2/dropdown/search"
+				], function (Utils, DropdownAdapter, AttachContainer, DropdownSearch) {
+					var CustomAdapter = Utils.Decorate(
+						Utils.Decorate(
+							DropdownAdapter,
+							DropdownSearch
+						),
+						AttachContainer
+					);
+					$me.select2({
+						//placeholder:{text:"Add permissions for a user, team, or position. Begin typing here..."},
+						dropdownAdapter: CustomAdapter,
+						ajax: {
+							url: "/DropDown/OrganizationRGM",
+							dataType: 'json',
+							delay: 250,
+							data: function (params) {
+								return {
+									q: params.term, // search term
+									page: params.page
+								};
+							},
+							processResults: function (data, page) {
+								// parse the results into the format expected by Select2.
+								// since we are using custom formatting functions we do not need to
+								// alter the remote JSON data
+								return {
+									results: data
+								};
+							},
+							cache: true
+						},
+						escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+						minimumInputLength: 1,
+						templateResult: function (d) {
+							return "<div class='clickable search-row' onclick='add_@(guid)(" + d.value + ")'>" + d.text + "</div>";
+						}, // omitted for brevity, see the source of this page
+						templateSelection: function () {
+							return d.value;
+						} // omitted for brevity, see the source of this page
+						//templateResult: formatRepo, // omitted for brevity, see the source of this page
+						//templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+
+
+					});
+				});
+				return $me;
+			}
+		});
+
+		function updatePermItem(id, level, self) {
+			if (!$(self).attr("disabled")){
+				var on = $(self).is(":checked");
+				$(self).attr("disabled", true);
+				$.ajax({
+					url: "/Permissions/UpdatePerm/" + id + "?" + level + "=" + on,
+					success: function(data) {
+						if (!showJsonAlert(data, false, true)) {
+							$(self).prop('checked', !on);
+						}
+					},
+					error: function(data) {
+						$(self).prop('checked', !on);
+					},
+					complete:function() {
+						$(self).attr("disabled", false);
+					}
+				});
+			}
+		}
+
+		function add_@(guid)(accessorId) {
+			console.log(accessorId);
+
+			$.ajax({
+				url: "/Permissions/BlankDropdownRow/" + accessorId + "?resource=@Model.ResId&type=@Model.ResType",
+				success: function (data) {
+					$("#container_@guid table").append(data);
+				}
+
+			});
+			$("#search_@guid").select2("close");
+		}
+
+		$("#search_@guid").OptionsSelect2Create();/*{
+			//$(".js-data-example-ajax").select2({
+			//DropdownAdapter: "AttachContainer",
+			ajax: {
+				url: "/DropDown/OrganizationRGM",
+				dataType: 'json',
+				delay: 250,
+				data: function (params) {
+					return {
+						q: params.term, // search term
+						page: params.page
+					};
+				},
+				processResults: function (data, page) {
+					// parse the results into the format expected by Select2.
+					// since we are using custom formatting functions we do not need to
+					// alter the remote JSON data
+					return {
+						results: data
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+			minimumInputLength: 1,
+			templateResult: function (d) {
+				return "<div class='clickable search-row'>" + d.text + "</div>";
+			}, // omitted for brevity, see the source of this page
+			templateSelection: function () {
+				return d.value;
+			} // omitted for brevity, see the source of this page
+			//templateResult: formatRepo, // omitted for brevity, see the source of this page
+			//templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+		});*/
+	</script>
+}

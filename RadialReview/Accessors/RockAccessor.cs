@@ -200,7 +200,8 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static List<RockModel> GetAllRocks(ISession s, PermissionsUtility perms, long forUserId){
+		public static List<RockModel> GetAllRocks(ISession s, PermissionsUtility perms, long forUserId)
+		{
 			return GetAllRocks(s.ToQueryProvider(true), perms, forUserId);
 		}
 
@@ -208,6 +209,42 @@ namespace RadialReview.Accessors
 		{
 			perms.Or(x => x.ViewUserOrganization(forUserId, false), x => x.ViewOrganization(forUserId));
 			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.DeleteTime == null);
+		}
+
+		public static List<RockModel> GetAllVisibleRocksAtOrganization(ISession s, PermissionsUtility perm, long orgId, bool populateUsers)
+		{
+			perm.ViewOrganization(orgId);
+			var caller = perm.GetCaller();
+			IQueryOver<RockModel, RockModel> q;
+
+			var managing = caller.Organization.Id == orgId && caller.ManagingOrganization;
+
+			if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou && !managing)
+			{
+				var userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
+				q = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).WhereRestrictionOn(x => x.ForUserId).IsIn(userIds);
+			}
+			else
+			{
+				q = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null);
+			}
+
+			if (populateUsers)
+				q = q.Fetch(x => x.AccountableUser).Eager;
+			return q.List().ToList();
+		}
+
+		public static List<RockModel> GetAllVisibleRocksAtOrganization(UserOrganizationModel caller, long orgId, bool populateUsers)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Todo permissions not enough
+					var perm = PermissionsUtility.Create(s, caller);
+					return GetAllVisibleRocksAtOrganization(s, perm, orgId, populateUsers);
+				}
+			}
 		}
 
 		public static List<RockModel> GetAllRocksAtOrganization(UserOrganizationModel caller, long orgId, bool populateUsers)
@@ -258,7 +295,9 @@ namespace RadialReview.Accessors
 						rocks = rocks.Fetch(x => x.AccountableUser).Eager;
 
 					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
-
+					if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou){
+						userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
+					}
 					return rocks.Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUser.Id).IsIn(userIds).List().ToList();
 				}
 			}

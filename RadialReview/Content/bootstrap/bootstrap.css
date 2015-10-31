@@ -255,7 +255,7 @@ th {
 @font-face {
   font-family: 'Glyphicons Halflings';
   src: url('../fonts/glyphicons-halflings-regular.eot');
-  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/Content/fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 .glyphicon {
   position: relative;
@@ -4557,6 +4557,12 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     border-bottom-color: #ffffff;
   }
 }
+.nav-tabs.nav-tabs-line {
+  border-bottom: 1px solid #dddddd;
+}
+.nav-tabs.nav-tabs-line > li:not(.active) a {
+  border-bottom: 1px solid #dddddd;
+}
 .nav-pills > li {
   float: left;
 }
@@ -4957,6 +4963,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-right {
     float: right !important;
     margin-right: -15px;
+    margin-right: 4px;
   }
   .navbar-right ~ .navbar-right {
     margin-right: 0;
@@ -7303,6 +7310,110 @@ select:-webkit-autofill:focus {
   font-size: 32px;
   margin-top: -6px;
 }
+.video-container .volume {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 1px;
+}
+.video-container .volume-bar {
+  float: right;
+  height: 10px;
+  margin: 0 1px 1px 0;
+  width: 1px;
+  background-color: rgba(0, 196, 255, 0.8);
+}
+.video-container.loudest {
+  border: 2px solid #006bff !important;
+}
+.footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.footer-bar .footer-bar-container {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  -webkit-transition: bottom 0.25s;
+  -moz-transition: bottom 0.25s;
+  -o-transition: bottom 0.25s;
+  transition: bottom 0.25s;
+}
+.footer-bar .footer-bar-contents {
+  position: relative;
+  background: #0F0F0F;
+}
+.footer-bar .footer-bar-tab {
+  position: absolute;
+  right: 0px;
+  top: -19px;
+  height: 20px;
+  text-align: center;
+  background: #0F0F0F;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  color: #777;
+  border-color: #444;
+  border-width: 1px 0px 0px 1px;
+  border-style: solid;
+  -webkit-transition: bottom 0.25s;
+  -moz-transition: bottom 0.25s;
+  -o-transition: bottom 0.25s;
+  transition: bottom 0.25s;
+  z-index: 10001;
+  padding: 0 10px;
+  cursor: default;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+.footer-bar .footer-bar-contents {
+  border-top: 1px solid #444;
+}
+/*
+.footer-bar .footer-bar-item {
+	background-color: red;
+	position: absolute;
+	left:0;
+	right:0;
+}
+
+.footer-bar .footer-bar-tab {
+	position: absolute;
+	height: 20px;
+	top: -20px;
+	text-align: center;
+	background: #0F0F0F;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	color: #777;
+	cursor: pointer;
+	border-color: #444;
+	border-width: 1px 0px 0px 1px;
+	border-style: solid;
+	-webkit-transition: bottom 0.25s;
+	transition: bottom 0.25s;
+	z-index: 10001;
+	display: inline-block;
+	padding: 0 20px;
+	float: right;
+}
+
+.footer-bar .videoconference-container .footer-bar-tab {
+	right: 0px;
+}
+
+.footer-bar .transcript-container .footer-bar-tab {
+	right: -214px;
+}
+	*/
 .tiny {
   /* color: red !important; */
   padding: 0px;
@@ -7380,11 +7491,6 @@ select:-webkit-autofill:focus {
 }
 .dashboard .container.body-navbar {
   width: 100% !important;
-}
-.dashboard .container.body-navbar .collapse {
-  max-width: 95% !important;
-  width: calc(100% - 70px) !important;
-  margin-left: -11px;
 }
 .dashboard .review-container {
   max-width: 500px;

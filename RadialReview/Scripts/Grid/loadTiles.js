@@ -38,17 +38,17 @@
 			classes += "width_1";
 		var $item = $(
 				'<li class="' + classes + '">' +
-				'<div class="inner">' +
-					'<div class="settings-container">' +
-						'<span class="glyphicon glyphicon-fullscreen icon settings resize-control"></span>' +
-						'<span class="glyphicon glyphicon-trash icon settings trash" onclick="Grid.removeTile(' + id + ')"></span>' +
-						'<div class="controls" style="width:'+(Grid.currentSize*10+6)+'px;">' +
-							resizers +
+					'<div class="inner">' +
+						'<div class="settings-container">' +
+							'<span class="glyphicon glyphicon-fullscreen icon settings resize-control"></span>' +
+							'<span class="glyphicon glyphicon-trash icon settings trash" onclick="Grid.removeTile(' + id + ')"></span>' +
+							'<div class="controls" style="width:'+(Grid.currentSize*10+6)+'px;">' +
+								resizers +
+							'</div>' +
 						'</div>' +
+						//['+id+']
+						'<div class="content" id="' + id + '_tile" ></div>' +
 					'</div>' +
-
-					'<div class="content" id="' + id + '_tile"></div>' +
-				'</div>' +
 				'</li>'
 			);
 		$item.attr({
@@ -59,16 +59,30 @@
 			'data-id': id
 		});
 		$item.find(".content").addClass("transparent");
-
+		console.log("requesting tile");
 		$.ajax({
 			url: url,
 			success: function (data) {
-				var dom = $item.find(".content");
-				dom.html(data);
-				angular.bootstrap(dom.find(".app"), ['L10App']);
-				setTimeout(function () {
-					dom.removeClass("transparent");
-				}, 500);
+				console.log("received tile");
+				console.log(data);
+				try {
+					var dom = $item.find(".content");
+					var ctrl = $("[ng-controller=L10Controller]");
+					//dom.html(data);
+					var scope = angular.element(ctrl).scope();
+					scope.functions.setHtml(dom, data);
+					/*if (typeof(scope.ajaxData) === "undefined")
+					scope.ajaxData = {};
+				scope.ajaxData=data;*/
+					//angular.bootstrap(dom.find(".app"), ['L10App']);
+					setTimeout(function() {
+						dom.removeClass("transparent");
+						console.log("appearing tile");
+					}, 500);
+				} catch (e) {
+					console.log("Error with tile");
+					console.error(e);
+				}
 			},
 			error: function (data) {
 				var dom = $item.find(".content");
@@ -76,6 +90,7 @@
 				dom.html("<div class='gray error-message'>An error has occurred loading this tile.</div>");
 				setTimeout(function () {
 					dom.removeClass("transparent");
+					console.log("appearing tile (error)");
 				}, 500);
 			}
 		});

@@ -39,7 +39,7 @@ namespace RadialReview.Accessors {
 			return reviews;
 		}
 
-		public static List<ReviewModel> GetReviewsForUser(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long forUserId, int page, int pageCount, DateTime dueAfter) {
+		public static List<ReviewModel> GetReviewsForUser(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long forUserId, int page, int pageCount, DateTime dueAfter,bool includeAnswers=true) {
 			perms.ViewUserOrganization(forUserId, true);
 
 			List<ReviewModel> reviews;
@@ -56,14 +56,15 @@ namespace RadialReview.Accessors {
 				//.Fetch(x => x.Answers).Eager
 				//add reviewModel Id to answers, query for that
 								.List().ToList();
+			if (includeAnswers){
+				var allAnswers = s.QueryOver<AnswerModel>()
+					.Where(x => /*x.ByUserId == forUserId &&*/ x.DeleteTime == null)
+					.WhereRestrictionOn(x => x.ByUserId).IsIn(usersIds)
+					.List().ToListAlive();
 
-			var allAnswers = s.QueryOver<AnswerModel>()
-								.Where(x => /*x.ByUserId == forUserId &&*/ x.DeleteTime == null)
-								.WhereRestrictionOn(x => x.ByUserId).IsIn(usersIds)
-								.List().ToListAlive();
-
-			for (int i = 0; i < reviews.Count; i++)
-				PopulateAnswers(/*s,*/ reviews[i], allAnswers);
+				for (int i = 0; i < reviews.Count; i++)
+					PopulateAnswers( /*s,*/ reviews[i], allAnswers);
+			}
 			return reviews;
 		}
 
@@ -167,7 +168,7 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetReviewsForUser(s, perms, caller, forUserId, page, pageCount, dueAfter);
+					return GetReviewsForUser(s, perms, caller, forUserId, page, pageCount, dueAfter,false);
 				}
 			}
 		}

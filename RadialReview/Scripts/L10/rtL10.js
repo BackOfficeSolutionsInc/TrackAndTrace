@@ -78,6 +78,9 @@ $(function () {
 	meetingHub.client.reorderMeasurables = reorderMeasurables;
 	meetingHub.client.reorderRecurrenceMeasurables = reorderRecurrenceMeasurables;
 
+	
+	meetingHub.client.addTranscription = addTranscription;
+
 	//meetingHub.client.setLeader = setLeader;
 
 	console.log("StartingHub ");
@@ -129,11 +132,11 @@ function initConnection() {
 		// Clear text box and reset focus for next comment. 
 		$('#message').val('').focus();
 	});*/
-
+		console.log("called initConnection");
 
 		rejoin(function() {
-			afterLoad();
 			console.log("Logged in: " + $.connection.hub.id);
+			afterLoad();
 		});
 		
 		
@@ -152,13 +155,15 @@ function initConnection() {
 }
 
 function rejoin(callback) {
+	console.log("called rejoin");
 	try {
 		if (meetingHub) {
 			meetingHub.server.join(MeetingId, $.connection.hub.id).done(function() {
 				//update(d);
-				console.log("rejoin");
+				console.log("rejoin completed");
 				$(".rt").prop("disabled", false);
 				if (callback) {
+					console.log("calling rejoin callback");
 					callback();
 				}
 				if (disconnected) {
@@ -166,10 +171,15 @@ function rejoin(callback) {
 					showAlert("Reconnected.", "alert-success", "Success");
 				}
 				disconnected = false;
-			});
+			}).fail(function() {
+				console.error('Could not connect. Join failed');
+				showAlert("Join meeting failed. Could not connect with server.","alert-danger","Error");
+			});;
 		}
 	} catch (e) {
-		console.log(e);
+		console.error(e);
+		showAlert("Could not connect with server.","alert-danger","Error");
+		//callback();
 	}
 }
 

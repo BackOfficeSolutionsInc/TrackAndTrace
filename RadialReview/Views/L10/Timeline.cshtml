@@ -1,13 +1,39 @@
-﻿@model List<RadialReview.Controllers.L10Controller.TimelineItem>
+﻿@using NHibernate.Criterion
+@using RadialReview.Models.Timeline
+@model List<RadialReview.Models.Timeline.MeetingTimeline>
 @{
 	ViewBag.Title = "Timeline";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	var first = true;
+
 }
-<div class="clearfix">
-	<h2 style="float:left">Timeline: <small>@Model.FirstOrDefault().NotNull(x=>x.Meeting.L10Recurrence.Name)</small></h2>
-	<h2 style="min-width: 200px;"><input class="form-control" type="text" id="input-filter" style="width: 250px;float:right;" placeholder="Search..." /></h2>
+
+<div class="top-fixed container">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="clearfix">
+				<h2 style="float:left">Timeline: <small>@Model.FirstOrDefault().NotNull(x => x.Meeting.L10Recurrence.Name)</small></h2>
+				<h2 style="min-width: 200px;"><input class="form-control" type="text" id="input-filter" style="width: 250px;float:right;" placeholder="Search..." /></h2>
+			</div>
+
+			<div class="btn-group">
+				<table>
+					<tr>
+						@foreach (var k in TimelineLookup.GetIconOrdering())
+						{
+							<td><span class="filter-switch on" data-filter="@k"><span class="@k"></span></span></td>
+						}
+						<td><div style="width: 10px;text-align: center">|</div></td>
+						<td><span class="filter-switch on" data-filter="glyphicon glyphicon-comment"><span class="glyphicon glyphicon-comment"></span></span></td>
+						<td><div style="width: 10px;text-align: center"></div></td>
+						<td> <span class="btn-link btn" onclick="$('.filter-switch:not(.on)').trigger('click')">Show All</span> | <span class="btn-link btn"  onclick="$('.filter-switch.on').trigger('click')">Hide All</span></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
 </div>
+<div style="height:120px"></div>
 
 @foreach (var meeting in Model.OrderByDescending(x => x.Meeting.StartTime))
 {
@@ -33,25 +59,44 @@
 			</div>
 			<div id="collapse_@(meeting.Meeting.Id)" class="panel-collapse collapse @(first?"in":"")" role="tabpanel" aria-labelledby="headingOne">
 				<div class="panel-body">
-					@if (meeting.Audits.Any())
+					@if (meeting.Items.Any())
 					{
 						<table class="fullWidth table table-condensed tablefilter">
 							<thead>
 								<tr>
-									<th style="width: 1px">Date</th>
-									<th style="width: 1px">User</th>
+									<th class="alignCenter" style="width: 110px">Date</th>
+									<th class="" style="width: 110px">User</th>
 									<th style="width: 1px">Action</th>
-									<th>Notes</th>
+									<th class="alignCenter">Notes</th>
+									<th></th>
 								</tr>
 							</thead>
 							<tbody>
-								@foreach (var f in meeting.Audits)
+								@{
+						var ordered = meeting.Items.OrderBy(x => x.Time);
+						var fT = 0.0;
+						var eT = 1.0;
+						if (ordered.Count() > 1)
+						{
+							fT = ordered.First().Time.Ticks;
+							eT = ordered.Last().Time.Ticks;
+						}
+								}
+								@foreach (var f in ordered)
 								{
-									<tr>
-										<td style="white-space: nowrap">@Html.Organization().ConvertFromUTC(f.CreateTime).ToShortDateString() @Html.Organization().ConvertFromUTC(f.CreateTime).ToShortTimeString()</td>
-										<td style="white-space: nowrap">@f.UserOrganization.NotNull(x => x.GetName())</td>
-										<td>@f.Action</td>
-										<td style="white-space: pre-line">@f.Notes</td>
+
+									<tr data-filter-row="@f.Icon">
+										<td style="white-space: nowrap; position: relative">@f.TimeString<span class="bar" style="width:@(Math.Max(2,(f.Time.Ticks - fT) / (eT - fT)*100))%"></span></td>
+										<td  class="" style="white-space: nowrap">@f.User</td>
+										<td class="alignCenter"><span class="@f.Icon" style="background-color: @f.IconColor;padding:4px;color:rgba(0,0,0,.8);"></span></td>
+										<td class="alignCenter" style="white-space: nowrap;font-weight: bold;">
+											@foreach (var anchor in f.Anchors){
+												<a id="@anchor"></a>
+											}
+											
+											@f.Title
+										</td>
+										<td style="white-space: pre-line">@f.Details</td>
 									</tr>
 								}
 							</tbody>
@@ -62,7 +107,7 @@
 						<div class="gray">No timeline information.</div>
 					}
 					@{
-						first = false;
+	first = false;
 					}
 				</div>
 			</div>
@@ -74,16 +119,93 @@
 {
 	<script src="/Scripts/jquery/jquery.filtertable.min.js"></script>
 	<script>
-		$(".tablefilter").filterTable({ inputSelector: '#input-filter',minRows:0});
+		$(".tablefilter").filterTable({ inputSelector: '#input-filter', minRows: 0 });
+		$(".filter-switch").on("click", function () {
+			$(this).toggleClass("on");
+			var isOn = ($(this).hasClass("on"));
+			var f = $(this).attr("data-filter");
+			console.log(f);
+			$("[data-filter-row='" + f + "']").toggleClass("hidden", !isOn);
+		});
+
+		$(document).ready(function() {
+			setTimeout(function() {
+				var elem = $('#' + window.location.hash.replace('#', ''));
+				if (elem.length) {
+					var o = elem.offset();
+					$(document).scrollTop(o.top - 200);
+					$(elem).closest("tr").find("td").css({"color":"#3c763d","background-color":"#dff0d8"});
+					setTimeout(function() {
+						$(elem).closest("tr").flash();
+
+					}, 500);
+				}
+			},1);
+		});
+
+
 	</script>
 }
 
-@using (Html.BeginStyles()){
-	
+@using (Html.BeginStyles())
+{
+
 	<style>
+		.top-fixed {
+			position: fixed;
+			top: 54px;
+			left: 0;
+			right: 0;
+			background-color: white;
+			z-index: 1;
+			padding-bottom: 20px;
+			border-bottom: 1px solid #F5F5F5;
+			box-shadow: 0px 7px 5px -3px rgba(128, 128, 128, 0.2);
+		}
+
+		.icon {
+			height: 16px;
+		}
+
+		.bar {
+			height: 31px;
+			position: absolute;
+			background-color: rgba(62,57,53,0.07);
+			left: 0;
+			top: 0;
+			z-index: 0;
+			margin: auto;
+			right: 0;
+			border-top: 1px solid #ef7622;
+		}
+
+		.filter-switch span {
+			padding: 2px;
+		}
+
+		.filter-switch {
+			width: 20px;
+			height: 20px;
+			margin: 2px;
+			display: inline-block;
+			cursor: pointer;
+		}
+
+			.filter-switch.on {
+				border: 1px solid rgba(0, 0, 0, .8);
+				background-color: #f0ad4e;
+				color: rgba(0, 0, 0, .8);
+			}
+
+			.filter-switch:not(.on) {
+				color: rgba(0, 0, 0, .8);
+				border: 1px solid rgba(0, 0, 0, .8);
+			}
+
 		.alt {
 			background-color: #ffc;
-			background-color: rgba(255, 255, 0, 0.2);;
+			background-color: rgba(255, 255, 0, 0.2);
+			;
 		}
 	</style>
 }

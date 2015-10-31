@@ -29,10 +29,11 @@ namespace RadialReview.Controllers
 			}
 
 		}
-		
-		[Access(AccessLevel.Manager)]
+
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult ModalSingle(long id,long userId,long periodId)
 		{
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(userId));
 			RockModel rock;
 			if (id == 0)
 				rock = new RockModel()
@@ -48,21 +49,25 @@ namespace RadialReview.Controllers
 
 			return PartialView(new RocksController.RockVM { Rocks = rock.AsList(), UserId = userId });
 		}
-	    [Access(AccessLevel.Manager)]
+	    [Access(AccessLevel.UserOrganization)]
 	    public JsonResult Delete(long id)
 	    {
 		    RockAccessor.DeleteRock(GetUser(), id);
 		    return Json(ResultObject.SilentSuccess());
 	    }
-		[Access(AccessLevel.Manager)]
-		public PartialViewResult BlankEditorRow(bool includeUsers=false,bool companyRock=false){
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult BlankEditorRow(bool includeUsers=false,bool companyRock=false,long? periodId=null,bool hideperiod=false){
 			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
 			if (includeUsers)
 				ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+
+			ViewBag.HidePeriod = hideperiod;
+
 			return PartialView("_RockRow", new RockModel(){
 				CreateTime = DateTime.UtcNow,
 				CompanyRock = companyRock,
 				OnlyAsk = AboutType.Self,
+				PeriodId = periodId
 			});
 		}
 
@@ -89,9 +94,10 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.Success));
 		}
 
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id)
 		{
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 			var userId = id;
 			var rocks = _RockAccessor.GetAllRocks(GetUser(), userId);
 			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x=>x.Name,x=>x.Id);
@@ -100,7 +106,7 @@ namespace RadialReview.Controllers
 		}
 
 		[HttpPost]
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Modal(RocksController.RockVM model)
 		{
 			foreach (var r in model.Rocks){

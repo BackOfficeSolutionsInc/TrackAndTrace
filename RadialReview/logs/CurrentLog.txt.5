@@ -1,121 +1,102 @@
-ERROR 2015-10-08 22:51:06,375 [45] BaseAccessor           - Scheduled task error. 1561
-System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
-   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
-   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
-   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 127
-ERROR 2015-10-08 23:09:33,379 [101] BaseController         - PaymentException
-RadialReview.Exceptions.PaymentException: An error occurred in making a payment.
-   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganizationAmount>d__59.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 246
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.PaymentAccessor.<ExecuteInvoice>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 157
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganization>d__1.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 109
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__2.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 36
-ERROR 2015-10-08 23:10:25,956 [101] BaseController         - Error: [/Scheduler/ChargeAccount/1634?taskId=1564]<<Index (zero based) must be greater than or equal to zero and less than the size of the argument list.>>
-System.FormatException: Index (zero based) must be greater than or equal to zero and less than the size of the argument list.
-   at System.Text.StringBuilder.AppendFormatHelper(IFormatProvider provider, String format, ParamsArray args)
-   at System.String.FormatHelper(IFormatProvider provider, String format, ParamsArray args)
-   at System.String.Format(String format, Object arg0, Object arg1, Object arg2)
-   at RadialReview.Accessors.Emailer.EmailBodyWrapper(String htmlBody, Nullable`1 tableWidth) in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 67
-   at RadialReview.Accessors.Emailer.<SendEmailsWrapped>d__1c.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 384
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.Emailer.<SendEmails>d__17.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 370
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.Emailer.<SendEmail>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 365
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__2.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 51
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.GetResult()
-   at lambda_method(Closure , Task )
-   at System.Threading.Tasks.TaskHelpersExtensions.ThrowIfFaulted(Task task)
-   at System.Web.Mvc.Async.TaskAsyncActionDescriptor.EndExecute(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass34.<BeginInvokeAsynchronousActionMethod>b__33(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
-   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
-   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
-ERROR 2015-10-08 23:10:25,971 [67] BaseAccessor           - Scheduled task error. 1564
-System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
-   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
-   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
-   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 127
-ERROR 2015-10-08 23:27:09,188 [92] BaseController         - PaymentException
-RadialReview.Exceptions.PaymentException: An error occurred in making a payment.
-   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganizationAmount>d__59.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 246
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.PaymentAccessor.<ExecuteInvoice>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 157
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganization>d__1.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 109
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__2.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 37
-ERROR 2015-10-08 23:48:41,975 [92] BaseController         - FatalPaymentException
-System.FormatException: Index (zero based) must be greater than or equal to zero and less than the size of the argument list.
-   at System.Text.StringBuilder.AppendFormatHelper(IFormatProvider provider, String format, ParamsArray args)
-   at System.String.FormatHelper(IFormatProvider provider, String format, ParamsArray args)
-   at System.String.Format(String format, Object arg0, Object arg1, Object arg2)
-   at RadialReview.Accessors.Emailer.EmailBodyWrapper(String htmlBody, Nullable`1 tableWidth) in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 67
-   at RadialReview.Accessors.Emailer.<SendEmailsWrapped>d__1c.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 384
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.Emailer.<SendEmails>d__17.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 370
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.Emailer.<SendEmail>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\Emailer.cs:line 365
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__2.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 66
+ERROR 2015-10-29 23:14:13,161 [8] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+>>
+FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+ ---> FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+ ---> System.UnauthorizedAccessException: Access to the path 'C:\Users\Clay\Desktop\temp\mysql\RadialReview.Models.AnswerModel.hbm.xml' is denied.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+   at FluentNHibernate.PersistenceModel.<>c__DisplayClass5.<WriteMappingsTo>b__4(HibernateMapping mapping)
+   at FluentNHibernate.PersistenceModel.WriteMappingsTo(Func`2 writerBuilder, Boolean shouldDispose)
+   at FluentNHibernate.PersistenceModel.WriteMappingsTo(String folder)
+   at FluentNHibernate.Cfg.FluentMappingsContainer.Apply(PersistenceModel model)
+   at FluentNHibernate.Cfg.MappingConfiguration.Apply(Configuration cfg)
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
+   --- End of inner exception stack trace ---
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   --- End of inner exception stack trace ---
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   at RadialReview.Utilities.HibernateSession.GetDatabaseSessionFactory() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 115
+   at RadialReview.Utilities.HibernateSession.GetCurrentSession(Boolean singleSession) in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 199
+   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 412
+   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
+
+
+ERROR 2015-10-29 23:14:53,324 [8] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+>>
+FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+ ---> FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+ ---> System.UnauthorizedAccessException: Access to the path 'C:\Users\Clay\Desktop\temp\mysql\RadialReview.Models.AnswerModel.hbm.xml' is denied.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+   at FluentNHibernate.PersistenceModel.<>c__DisplayClass5.<WriteMappingsTo>b__4(HibernateMapping mapping)
+   at FluentNHibernate.PersistenceModel.WriteMappingsTo(Func`2 writerBuilder, Boolean shouldDispose)
+   at FluentNHibernate.PersistenceModel.WriteMappingsTo(String folder)
+   at FluentNHibernate.Cfg.FluentMappingsContainer.Apply(PersistenceModel model)
+   at FluentNHibernate.Cfg.MappingConfiguration.Apply(Configuration cfg)
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
+   --- End of inner exception stack trace ---
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   --- End of inner exception stack trace ---
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   at RadialReview.Utilities.HibernateSession.GetDatabaseSessionFactory() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 115
+   at RadialReview.Utilities.HibernateSession.GetCurrentSession(Boolean singleSession) in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 199
+   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 412
+   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
+
+
+ERROR 2015-10-29 23:14:57,996 [8] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+>>
+FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+ ---> FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+
+ ---> System.UnauthorizedAccessException: Access to the path 'C:\Users\Clay\Desktop\temp\mysql\RadialReview.Models.AnswerModel.hbm.xml' is denied.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+   at FluentNHibernate.PersistenceModel.<>c__DisplayClass5.<WriteMappingsTo>b__4(HibernateMapping mapping)
+   at FluentNHibernate.PersistenceModel.WriteMappingsTo(Func`2 writerBuilder, Boolean shouldDispose)
+   at FluentNHibernate.PersistenceModel.WriteMappingsTo(String folder)
+   at FluentNHibernate.Cfg.FluentMappingsContainer.Apply(PersistenceModel model)
+   at FluentNHibernate.Cfg.MappingConfiguration.Apply(Configuration cfg)
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
+   --- End of inner exception stack trace ---
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   --- End of inner exception stack trace ---
+   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   at RadialReview.Utilities.HibernateSession.GetDatabaseSessionFactory() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 115
+   at RadialReview.Utilities.HibernateSession.GetCurrentSession(Boolean singleSession) in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 199
+   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 412
+   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
+
+

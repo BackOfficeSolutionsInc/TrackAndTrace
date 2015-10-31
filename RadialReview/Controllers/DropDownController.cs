@@ -65,5 +65,20 @@ namespace RadialReview.Controllers
 			}).OrderBy(x=>x.text);
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
+
+	    [Access(AccessLevel.UserOrganization)]
+	    public JsonResult OrganizationRGM(string q)
+	    {
+
+		    q = q.ToLower();
+
+		    var rgm = OrganizationAccessor.GetOrganizationResponsibilityGroupModels(GetUser(), GetUser().Organization.Id).Where(x=> x.GetName().ToLower().Contains(q) );
+			var result = rgm.Select(x => new DropDownItem()
+			{
+				text = x.GetName() +"<span class='label label-default group-"+x.GetGroupType()+"'>"+x.GetGroupType()+"</span>",
+				value = ""+x.Id
+			}).OrderBy(x => x.text);
+			return Json(result, JsonRequestBehavior.AllowGet);
+	    }
     }
 }

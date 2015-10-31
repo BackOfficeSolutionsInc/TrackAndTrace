@@ -4,7 +4,7 @@
 	top: 50px;
 	width: 75vw;
 	min-width: 300px;
-	z-index: 20;
+	z-index: 200;
 }
 
 	.notes .overlay {
@@ -24,6 +24,7 @@
 		box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24);
 		margin-right: 0px;
 		margin-left: auto;
+		width: 100%;
 	}
 
 	.notes .row {

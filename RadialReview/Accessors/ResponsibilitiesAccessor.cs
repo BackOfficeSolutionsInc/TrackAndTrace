@@ -1,4 +1,5 @@
-﻿using NHibernate;
+﻿using System.Web.UI.WebControls;
+using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
@@ -58,6 +59,14 @@ namespace RadialReview.Accessors
 				if (resGroup is OrganizationModel) orgId = resGroup.Id;
 				else orgId = resGroup.Organization.Id;
 
+				try{
+					var a=resGroup.GetName();
+					var b=resGroup.GetImageUrl();
+				}
+				catch{
+			    
+				}
+
 				perms.ViewOrganization(orgId);
 				return resGroup;
 	    }
@@ -94,7 +103,27 @@ namespace RadialReview.Accessors
 
         private static TeamAccessor _TeamAccessor = new TeamAccessor();
         private static PositionAccessor _PositionAccessor = new PositionAccessor();
-                
+
+	    public static List<UserOrganizationModel> GetResponsibilityGroupMembers(ISession s, PermissionsUtility perm, long rgmId)
+	    {
+		    var found = s.Get<ResponsibilityGroupModel>(rgmId);
+
+		    if (found is UserOrganizationModel){
+			    perm.ViewUserOrganization(found.Id, false);
+			    return new List<UserOrganizationModel>(){(UserOrganizationModel)found};
+		    }else if (found is OrganizationModel){
+			    return OrganizationAccessor.GetAllUserOrganizations(s, perm, found.Id);
+		    }else if (found is OrganizationTeamModel){
+			    return TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perm, found.Id, true).Select(x => x.User).ToList();
+		    }else if (found is OrganizationPositionModel){
+				return OrganizationAccessor.GetUsersWithOrganizationPositions(s, perm, found.Organization.Id);
+		    }else{
+				throw new ArgumentOutOfRangeException();
+		    }
+
+	    } 
+
+
         public List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(UserOrganizationModel caller, long userId)
         {
             using (var s = HibernateSession.GetCurrentSession())

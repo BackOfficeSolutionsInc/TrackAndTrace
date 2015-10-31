@@ -145,7 +145,8 @@
 					<th style="min-width:10px" class="NalignCenter">Managers</th>
 					@*<th style="width:10px" class="NalignCenter">Roles</th>*@
 					@*<th style="width:10px" class="NalignCenter">Questions</th>*@
-					@if (Model.Organization.ManagersCanRemoveUsers) {
+					@if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization)
+					{
 						<th style="width:10px" class="alignCenter"></th>
 					}
 				</tr>

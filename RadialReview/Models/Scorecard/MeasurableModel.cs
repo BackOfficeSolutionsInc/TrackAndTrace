@@ -26,8 +26,9 @@ namespace RadialReview.Models.Scorecard
 		public virtual TimeSpan DueTime { get; set; }
 
 		public virtual UnitType UnitType { get; set; }
-		public virtual bool _Editable { get; set; }
 
+		public virtual bool _Editable { get; set; }
+		public virtual int? _Ordering { get; set; }
 
 		public MeasurableModel()
 		{
@@ -79,6 +80,7 @@ namespace RadialReview.Models.Scorecard
 		public virtual string ToSymbolString(){
 			return GoalDirection.ToSymbol()+" "+Goal.ToString("0.#####");
 		}
+
 
 	}
 }

@@ -1,4 +1,5 @@
-﻿using RadialReview.Models.Askables;
+﻿using Ionic.Zip;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
 using System;
@@ -58,6 +59,7 @@ namespace RadialReview.Models.ViewModels
 
     public class UserOrganizationDetails
     {
+		public long SelfId { get; set; }
 		public UserOrganizationModel User { get; set; }
 		public List<String> Responsibilities { get; set; }
 		public List<RoleModel> Roles { get; set; }
@@ -68,10 +70,14 @@ namespace RadialReview.Models.ViewModels
 			get
 			{
 				return ForceEditable || ManagingOrganization || User.GetPersonallyManaging() ||
-				       (User.Organization.Settings.ManagersCanEditSelf && User.ManagerAtOrganization) ||
-				       (User.Organization.Settings.EmployeesCanEditSelf);
+				       (User.Organization.Settings.ManagersCanEditSelf  && User.Id == SelfId && User.ManagerAtOrganization) ||
+					   (User.Organization.Settings.EmployeesCanEditSelf && User.Id == SelfId);
 			}
 		}
 	    public bool ForceEditable { get; set; }
-    }
+
+		public bool CanViewRocks { get; set; }
+
+		public bool CanViewMeasurables { get; set; }
+	}
 }

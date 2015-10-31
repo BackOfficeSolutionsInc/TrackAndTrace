@@ -69,6 +69,68 @@ namespace RadialReview.Controllers
 			});
 		}
 
+
+		public class Charge
+		{
+			public DateTime CreateTime { get; set; }
+			public string Status { get; set; }
+			public string Label { get; set; }
+			public string Message { get; set; }
+			public string TransactionId { get; set; }
+			public decimal Amount { get; set; }
+			public long TaskId { get; set; }
+			public long OrganizationId { get; set; }
+			public string Organization { get; set; }
+		}
+
+
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult AllCharges(int id = 7)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var now = DateTime.UtcNow.Subtract(TimeSpan.FromDays(id));
+
+					var items = s.QueryOver<InvoiceModel>().Where(x => x.CreateTime > now).List().ToList();
+
+					var errors = s.QueryOver<PaymentErrorLog>().Where(x => x.HandledAt == null || x.HandledAt > now).List().ToList();
+
+					var allCharges = new List<Charge>();
+
+					allCharges.AddRange(items.Select(x=>new Charge(){
+						Amount = x.InvoiceItems.Sum(y=>y.AmountDue),
+						CreateTime = x.CreateTime,
+						Message =  "<Invoice>",
+						Label = x.PaidTime != null?"success":"warning",
+						Status = x.PaidTime!=null?"Charged":"Not Charged",
+						TransactionId = x.TransactionId,
+						Organization = x.Organization.GetName(),
+						OrganizationId = x.Organization.Id,
+					}));
+
+					allCharges.AddRange(errors.Select(x=>new Charge(){
+						Amount = x.Amount,
+						Label = "danger",
+						Status = "Error",
+						CreateTime = x.OccurredAt,
+						Message = "<"+x.Type+"> "+x.Message,
+						TaskId = x.TaskId,
+						Organization = x.OrganizationName,
+						OrganizationId = x.OrganizationId,
+					}));
+
+
+					return View(allCharges);
+				}
+			}
+		}
+
+
+
+
 		[Access(AccessLevel.Radial)]
 		public ActionResult Errors(int id=7)
 		{
@@ -213,6 +275,7 @@ namespace RadialReview.Controllers
 				Request.Form["phone"],
 				Request.Form["website"],
 				Request.Form["country"],
+				Request.Form["email"],
 				true);
 
 			return RedirectToAction("Advanced", "Manage");

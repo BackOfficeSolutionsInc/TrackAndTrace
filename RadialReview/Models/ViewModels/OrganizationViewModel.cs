@@ -24,6 +24,8 @@ namespace RadialReview.Models.ViewModels
 		public Boolean EmployeesCanEditSelf { get; set; }
 		public DayOfWeek WeekStart { get; set; }
 		public string TimeZone { get; set; }
+		public bool OnlySeeRockAndScorecardBelowYou { get; set; }
+
 		public List<SelectListItem> TimeZones
 		{
 			get{
@@ -40,5 +42,6 @@ namespace RadialReview.Models.ViewModels
         public String RockName { get; set; }
         public List<CreditCardVM> Cards { get; set; }
 		public PaymentPlanModel PaymentPlan { get; set; }
+
 	}
 }

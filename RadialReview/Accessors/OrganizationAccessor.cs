@@ -3,6 +3,7 @@ using Amazon.ElasticMapReduce.Model;
 using Amazon.ElasticTranscoder.Model;
 using FluentNHibernate.Utils;
 using Microsoft.AspNet.SignalR;
+using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
@@ -220,15 +221,20 @@ namespace RadialReview.Accessors
 			}
 		}
 
+		public static List<OrganizationPositionModel> GetOrganizationPositions(ISession s, PermissionsUtility perms, long organizationId)
+		{
+			perms.ViewOrganization(organizationId);
+			var positions = s.QueryOver<OrganizationPositionModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+			return positions;
+		} 
+
 		public List<OrganizationPositionModel> GetOrganizationPositions(UserOrganizationModel caller, long organizationId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction())
-				{
-					PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-					var positions = s.QueryOver<OrganizationPositionModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
-					return positions;
+				using (var tx = s.BeginTransaction()){
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetOrganizationPositions(s, perms, organizationId);
 				}
 			}
 		}
@@ -392,6 +398,7 @@ namespace RadialReview.Accessors
 																			bool? managersCanCreateSurvey = null,
 																			bool? employeesCanCreateSurvey = null,
 																			string rockName = null,
+																			bool? onlySeeRockAndScorecardBelowYou = null,
 																			string timeZoneId = null,
 																			DayOfWeek? weekStart = null
 			)
@@ -432,6 +439,9 @@ namespace RadialReview.Accessors
 
 					if (employeesCanCreateSurvey != null)
 						org.Settings.EmployeesCanCreateSurvey = employeesCanCreateSurvey.Value;
+
+					if (onlySeeRockAndScorecardBelowYou != null)
+						org.Settings.OnlySeeRocksAndScorecardBelowYou = onlySeeRockAndScorecardBelowYou.Value;
 
 					if (managersCanCreateSurvey != null)
 						org.Settings.ManagersCanCreateSurvey = managersCanCreateSurvey.Value;
@@ -496,9 +506,18 @@ namespace RadialReview.Accessors
 
 					var managers = s.QueryOver<UserOrganizationModel>()
 										.Where(x => x.Organization.Id == orgId && x.ManagingOrganization)
-										.Fetch(x => x.Teams).Default
+										//.Fetch(x => x.Teams).Default
 										.List()
 										.ToListAlive();
+					var managerIds = managers.Select(x => x.Id).ToList();
+
+					var managerTeams =s.QueryOver<TeamDurationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.UserId).IsIn(managerIds).List().ToList();
+
+					foreach (var t in managerTeams){
+						managers.First(x=>x.Id==t.UserId).Teams.Add(t);
+					}
+
+
 
 					var deep = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
 
@@ -817,6 +836,31 @@ namespace RadialReview.Accessors
 					}
 
 					return users;
+				}
+			}
+		}
+
+		public static List<PositionDurationModel> GetOrganizationUserPositions(ISession s, PermissionsUtility perm, long orgId)
+		{
+			perm.ViewOrganization(orgId);
+			return s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId && x.DeleteTime==null).List().ToList();
+		}
+
+		public static List<UserOrganizationModel> GetUsersWithOrganizationPositions(ISession s, PermissionsUtility perm, long orgId)
+		{
+			perm.ViewOrganization(orgId);
+			var ids = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId && x.DeleteTime == null).Select(x=>x.UserId).List<long>().ToList();
+
+			return s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(ids).List().ToList();
+		}
+
+		public static List<ResponsibilityGroupModel> GetOrganizationResponsibilityGroupModels(UserOrganizationModel caller, long organizationId)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+					return s.QueryOver<ResponsibilityGroupModel>().Where(x => x.DeleteTime == null && x.Organization.Id == organizationId).List().ToList();
 				}
 			}
 		}

@@ -88,12 +88,20 @@
                         <input class="form-control" id="country" name="country" type="text" placeholder="Country">
                     </div>
                 </div>
-                <div class="row smallBreak2">
+	            <div class="row smallBreak2">
+		            <div class="col-md-3">
+			            <label for="website">Website</label>
+		            </div>
+		            <div class="col-md-9">
+			            <input class="form-control" id="website" name="website" type="text" placeholder="Website">
+		            </div>
+	            </div>
+				   <div class="row smallBreak2">
                     <div class="col-md-3">
-                        <label for="website">Website</label>
+                        <label for="email">Email Receipt To</label>
                     </div>
                     <div class="col-md-9">
-                        <input class="form-control" id="website" name="website" type="text" placeholder="Website">
+                        <input class="form-control" id="email" name="email" type="email" placeholder="Email Address" value="@Html.UserOrganization().NotNull(x=>x.GetEmail())">
                     </div>
                 </div>
                 <div class="row smallBreak2 alignCenter">
@@ -190,6 +198,7 @@
                         data.zip = $("#zip").val();
                         data.country = $("#country").val();
                         data.website = $("#website").val();
+                        data.email = $("#email").val();
 
                         $.redirect('/payment/setcard?submit=true', data);
                         $("#result").html(JSON.stringify(data));

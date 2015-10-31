@@ -23,7 +23,8 @@
 			@:var currentPageBaseMinutes = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0);
 			@:meetingStart = true;
 			
-			var meetingId = @Model.Meeting.Id;
+			@:var meetingId = @Model.Meeting.Id;
+			@:console.log("Setting meetingid="+meetingId);
 		}
 		else{
 

@@ -1,0 +1,44 @@
+﻿@model long
+
+@{
+	ViewBag.Title = "title";
+}
+
+<h2>title</h2>
+@using (Html.BeginScripts())
+{
+
+	<script src="~/Scripts/speechrecog.js"></script>
+	<script>
+		var speech = new SpeechRecog();
+		speech.ignore_onend = true;
+
+		speech.onfinalresult = function (e) {
+			var style = "";
+			var text = e.transcript;
+			var ind = e.transcript.indexOf("to do");
+			if (ind>0) {
+				style = "color:blue";
+				text = text.substring(0, ind+5) + "<b>" + text.substring(ind+5) + "</b>";
+			}
+			$(".holder").append("<li style='"+style+"'>" + text + "</li>");
+			$(".temp").html("");
+		};
+
+		speech.oninterimresult = function (e) {
+			var style = "";
+			if (e.transcript.indexOf("to do")>0) {
+				style = "color:red";
+			}
+
+			$(".temp").append("<li style='"+style+"'>" + e.transcript + "</li>");
+		};
+
+		speech.Start();
+
+
+	</script>
+}
+
+<ul class="holder"></ul>
+<ul class="temp gray"></ul>

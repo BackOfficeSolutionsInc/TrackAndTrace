@@ -13,7 +13,7 @@ WebRTC API has been normalized using 'adapter.js'
 var DefaultIceServers= [{ url: 'stun:74.125.142.127:19302' }];
 
 var previous_offers = [];
-
+var ConnectionEstablished = {};
 WebRtcDemo.ConnectionManager = (function () {
 
 	var _signaler,
@@ -36,8 +36,14 @@ WebRtcDemo.ConnectionManager = (function () {
         	_onStreamRemovedCallback = onStreamRemoved || _onStreamRemovedCallback;
         },
 		my_onicecandiate = function (connection,candidate,partnerClientId) {
+
 			console.log("my_onicecandiate");
-        	_getConnection(partnerClientId).addIceCandidate(new RTCIceCandidate(candidate));
+			console.log(candidate);
+			console.log(partnerClientId);
+
+			var rtcIC = new RTCIceCandidate(candidate);
+
+        	_getConnection(partnerClientId).addIceCandidate(rtcIC);
 		},
         // Create a new WebRTC Peer Connection with the given partner
         _createConnection = function (partnerClientId) {
@@ -45,8 +51,19 @@ WebRtcDemo.ConnectionManager = (function () {
 			
         	// Create a new PeerConnection
         	var connection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+			/*var dataChannel = connection.createDataChannel("myLabel", {
+				ordered: false, // do not guarantee order
+				maxRetransmitTime: 3000, // in milliseconds
+			});
+			dataChannel.onerror = function (error) {console.log("Data Channel Error:", error);};
+			dataChannel.onmessage = function (event) {console.log("Got Data Channel Message:", event.data);};
+			dataChannel.onopen = function () {dataChannel.send("Hello World!");};
+			dataChannel.onclose = function () {console.log("The Data Channel is Closed");};
 
 
+	        connection.dataChannel = dataChannel;*/
+
+	        ConnectionEstablished[partnerClientId] = 0;
 
         	// ICE Candidate Callback
         	connection.onicecandidate = function (event) {
@@ -57,10 +74,15 @@ WebRtcDemo.ConnectionManager = (function () {
         		} else {
         			// Null candidate means we are done collecting candidates.
         			console.log('WebRTC: ICE candidate gathering complete');
+			        ConnectionEstablished[partnerClientId] += 1;
         		}
         	};
 
-
+	        connection.ongatheringchange = function(event) {
+			   console.log("ongatheringchange");
+		        if (event.currentTarget.iceGatheringState === "complete")
+			        console.log("End of candidates");
+	        };
 
         	// State changing
         	connection.onstatechange = function () {
@@ -108,10 +130,14 @@ WebRtcDemo.ConnectionManager = (function () {
 
 
 						    onicecandidateAllowed.push(partnerClientId);
+							
+							//ConnectionEstablished[partnerClientId] = true;
         					if (partnerClientId in onicecandidateQueue) {
         						for (var cc in onicecandidateQueue[partnerClientId]) {
+							        //debugger;
 							        var candidate = onicecandidateQueue[partnerClientId][cc];
-        							my_onicecandiate(connection, candidate, partnerClientId);
+							        console.log("A");
+									my_onicecandiate(connection, candidate, partnerClientId);
         						}
         						//Clear out queue
         						onicecandidateQueue[partnerClientId] = [];
@@ -150,7 +176,9 @@ WebRtcDemo.ConnectionManager = (function () {
         	try {
         		console.log('WebRTC: processing candidate signal');
 				var index = onicecandidateAllowed.indexOf(partnerClientId);
-        		if (index > -1) {
+        		if (index > -1) { 
+					console.log("Candidate Signal > -1");
+					console.log("B");
         			my_onicecandiate(connection,candidate, partnerClientId);
         		} else {
 			        if (!(partnerClientId in onicecandidateQueue))
@@ -164,7 +192,9 @@ WebRtcDemo.ConnectionManager = (function () {
 
         // Retreive an existing or new connection for a given partner
         _getConnection = function (partnerClientId) {
+	        console.log("Get Connection:" + partnerClientId);
         	var connection = _connections[partnerClientId] || _createConnection(partnerClientId);
+	        console.log(connection);
         	return connection;
         },
 

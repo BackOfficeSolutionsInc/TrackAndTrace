@@ -14,6 +14,9 @@
 	@Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
 </div>
 
+@Html.HiddenFor(x => x.ForModelId)
+@Html.HiddenFor(x => x.ForModelType)
+
 <div class="form-group">
 	@Html.LabelFor(x => x.OwnerId)
 	<select name="@Html.NameFor(x => x.OwnerId)" class="select-user form-control" style="width: 100%;height:64px;">

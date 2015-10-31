@@ -41,7 +41,9 @@ namespace RadialReview
    
             new ApplicationAccessor().EnsureApplicationExists();
 
-
+			ViewEngines.Engines.Clear(); 
+			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new [] { "cshtml" } };
+			ViewEngines.Engines.Add(razorEngine);  
             
         }
 

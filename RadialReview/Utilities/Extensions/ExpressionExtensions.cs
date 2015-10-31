@@ -35,8 +35,9 @@ namespace RadialReview.Utilities.Extensions
 			}
 			if (selector.Body is MemberExpression)
 			{
-				p = ((MemberExpression)selector.Body).Member.Name.ToString();
-				return p;
+				//p = ((MemberExpression)selector.Body).Member.Name.ToString();
+				p = ((MemberExpression)selector.Body).ToString();
+				return p.Substring(p.IndexOf(".") + 1);
 			}
 			throw new Exception("Unhandled");
 		}

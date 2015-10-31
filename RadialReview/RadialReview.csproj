@@ -128,6 +128,9 @@
     <Reference Include="OpenPop">
       <HintPath>..\packages\OpenPop.NET.2.0.4.369\lib\net20\OpenPop.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
@@ -148,6 +151,10 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -173,9 +180,6 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.0.0\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Optimization">
-      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.1\lib\net40\System.Web.Optimization.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
@@ -191,6 +195,9 @@
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="TimeZoneNames">
+      <HintPath>..\packages\TimeZoneNames.1.2.1\lib\portable-net40+sl50+win+wpa81+wp80\TimeZoneNames.dll</HintPath>
     </Reference>
     <Reference Include="TrelloNet">
       <HintPath>..\packages\TrelloNet.0.6.2\lib\net40-Client\TrelloNet.dll</HintPath>
@@ -302,6 +309,7 @@
     <Compile Include="Accessors\TodoIntegrations\BaseCampAccessor.cs" />
     <Compile Include="Accessors\TodoIntegrations\ExternalTodoAccessor.cs" />
     <Compile Include="Accessors\TodoIntegrations\TrelloAccessor.cs" />
+    <Compile Include="Accessors\TranscriptAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
     <Compile Include="Accessors\UserTemplateAccessor.cs" />
     <Compile Include="Accessors\VtoAccessor.cs" />
@@ -335,8 +343,10 @@
     <Compile Include="Controllers\ScorecardController.cs" />
     <Compile Include="Controllers\TileDataController.cs" />
     <Compile Include="Controllers\TodoController.cs" />
+    <Compile Include="Controllers\TranscriptController.cs" />
     <Compile Include="Controllers\TwilioApiController.cs" />
     <Compile Include="Controllers\UserTemplateController.cs" />
+    <Compile Include="Controllers\VideoController.cs" />
     <Compile Include="Controllers\VTOController.cs" />
     <Compile Include="Controllers\VtoDataController.cs" />
     <Compile Include="Controllers\WebRtcController.cs" />
@@ -467,6 +477,7 @@
     <Compile Include="Models\Interfaces\IStringIdentifiable.cs" />
     <Compile Include="Models\Charts\ChartOptions.cs" />
     <Compile Include="Models\Charts\ScatterPlot.cs" />
+    <Compile Include="Models\Interfaces\ITimeline.cs" />
     <Compile Include="Models\Interfaces\ITodo.cs" />
     <Compile Include="Models\Issues\CopyIssueVM.cs" />
     <Compile Include="Models\Issues\IssueModel.cs" />
@@ -476,12 +487,15 @@
     <Compile Include="Models\L10\AgendaItemType.cs" />
     <Compile Include="Models\L10\L10Note.cs" />
     <Compile Include="Models\L10\AV\AudioVideoUser.cs" />
+    <Compile Include="Models\L10\Transcript.cs" />
     <Compile Include="Models\Payments\CreditCardVM.cs" />
     <Compile Include="Models\Payments\Itemized.cs" />
     <Compile Include="Models\Payments\PaymentErrorLog.cs" />
     <Compile Include="Models\Payments\PaymentOptions.cs" />
     <Compile Include="Models\Payments\PaymentSpringCustomerCard.cs" />
     <Compile Include="Models\Payments\PaymentSpringsCustomer.cs" />
+    <Compile Include="Models\PermissionItem.cs" />
+    <Compile Include="Models\Permissions\PermissionDropdownVM.cs" />
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
     <Compile Include="Models\PhoneModel.cs" />
     <Compile Include="Models\Survey\SurveyContainerModel.cs" />
@@ -489,6 +503,7 @@
     <Compile Include="Models\Survey\SurveyTake.cs" />
     <Compile Include="Models\Synchronize\Sync.cs" />
     <Compile Include="Models\Tests\TestUrl.cs" />
+    <Compile Include="Models\Timeline\MeetingTimeline.cs" />
     <Compile Include="Models\Todo\ExternalTodoCreds.cs" />
     <Compile Include="Models\Todo\RockTodoVM.cs" />
     <Compile Include="Models\Todo\ScoreCardTodoVM.cs" />
@@ -539,6 +554,7 @@
     <Compile Include="Models\UserTemplate\IUserTemplateItem.cs" />
     <Compile Include="Models\UserTemplate\UserTemplate.cs" />
     <Compile Include="Models\UserTemplate\UserTemplateVM.cs" />
+    <Compile Include="Models\VideoConference\VideoConferenceVM.cs" />
     <Compile Include="Models\ViewModels\AdditionalReviewViewModel.cs" />
     <Compile Include="Models\Completion\TwoBarCompletion.cs" />
     <Compile Include="Models\Enums\TeamType.cs" />
@@ -700,6 +716,8 @@
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
+    <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
+    <Compile Include="Utilities\PermissionItemHelper.cs" />
     <Compile Include="Utilities\RandomUtil.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
@@ -760,6 +778,17 @@
     <Compile Include="Utilities\TimingUtility.cs" />
     <Compile Include="Utilities\ViewUtility.cs" />
     <Compile Include="Models\Audit\LogModel.cs" />
+    <Content Include="Content\img\ajax-loader-ob.gif" />
+    <Content Include="Content\img\ajax-loader-orange.gif" />
+    <Content Include="Content\L10\L10Transcribe.css" />
+    <Content Include="Scripts\L10\L10Transcribe.js" />
+    <Content Include="Scripts\Main\intercom.min.js" />
+    <Content Include="Scripts\speechrecog.js" />
+    <Content Include="Scripts\video\FileBufferReader.js" />
+    <Content Include="Scripts\video\hark.js" />
+    <Content Include="Scripts\video\RTCMultiConnection.js" />
+    <Content Include="Scripts\video\socket.io.js" />
+    <Content Include="Views\Permissions\Dropdown.cshtml" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />
     <Content Include="Content\bootstrap\bootstrap.css">
@@ -1040,10 +1069,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\Angular\Helpers\ClockController.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\bindUnsafeHtml.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\ImageTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\angular-timer.min.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\ModalTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\angular-daterangepicker.js" />
+    <Content Include="Scripts\Angular\Helpers\Libraries\angular-filter.min.js" />
     <Content Include="Scripts\Angular\Helpers\transform.js" />
     <Content Include="Scripts\Angular\helpers.js" />
     <Content Include="Scripts\Angular\Meetings\ButtonBar.js" />
@@ -1056,7 +1087,7 @@
     <Content Include="Scripts\Angular\VTO\VtoController.js" />
     <Content Include="Scripts\components\fivestate.js" />
     <Content Include="Scripts\Grid\fixtures.js" />
-    <Content Include="Scripts\Grid\load.js" />
+    <Content Include="Scripts\Grid\loadTiles.js" />
     <Content Include="Scripts\Grid\src\gridList.js" />
     <Content Include="Scripts\Grid\src\jquery.gridList.js" />
     <Content Include="Scripts\Grid\style.css" />
@@ -1069,6 +1100,7 @@
     <Content Include="Scripts\L10\AV\viewModel.js" />
     <Content Include="Scripts\L10\charts\sparklines.min.js" />
     <Content Include="Scripts\L10\L10Notes.js" />
+    <Content Include="Scripts\Main\moment.min.js" />
     <Content Include="Scripts\payment\PaymentSprings.js" />
     <Content Include="Scripts\survey\submitAnswers.js" />
     <Content Include="Scripts\VTO\vto.js" />
@@ -1492,6 +1524,8 @@
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Dashboard\CreateTileModal.cshtml" />
     <Content Include="Views\Payment\Errors.cshtml" />
+    <Content Include="Views\Payment\AllCharges.cshtml" />
+    <Content Include="Views\Permissions\PermItemRow.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1776,6 +1810,9 @@
     <Content Include="Views\TileData\UserRock.cshtml" />
     <Content Include="Views\TileData\UserProfile.cshtml" />
     <Content Include="Views\Scorecard\partial\tile.cshtml" />
+    <Content Include="Views\UnitTest\Video.cshtml" />
+    <Content Include="Views\Video\Join.cshtml" />
+    <Content Include="Views\UnitTest\SpeechRecog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1796,6 +1833,7 @@
     <Folder Include="Views\Migration\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
+    <Folder Include="Views\Transcript\" />
     <Folder Include="Views\Url\" />
     <Folder Include="Views\VtoData\" />
     <Folder Include="Views\WebRtc\" />
@@ -1836,6 +1874,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\EmailStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

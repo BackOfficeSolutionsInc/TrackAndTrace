@@ -245,6 +245,8 @@ namespace RadialReview
             User.CreatedReviews = reviews;
             return this;
         }*/
+
+
         public UserHydration SetTeams(List<TeamDurationModel> teams)
         {
             /*using(var tx = Session.BeginTransaction())
@@ -252,7 +254,7 @@ namespace RadialReview
                 var uOrg = GetUnderlying();
                 User.Teams = uOrg.Teams.ToList();
             }    */
-            User.Teams = teams;
+			User.Teams = teams;
             return this;
         }
 

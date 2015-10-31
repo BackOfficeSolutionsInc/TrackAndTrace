@@ -1,9 +1,9 @@
 ﻿.video-bar {
-	position: fixed;
+	/*position: fixed;
 	left: 0px;
 	right: 0px;
 	bottom: -128px;
-	height: 128px;
+	height: 128px;*/
 	background: #0F0F0F;
 	overflow-x: auto;
 	overflow-y: hidden;
@@ -15,7 +15,7 @@
 }
 
 	.video-bar.shifted {
-		bottom: 0px;
+		/*bottom: 0px;*/
 	}
 
 .video-container {
@@ -29,6 +29,11 @@
 	cursor: pointer;
 	border: 2px solid black;
 	position: relative;
+	box-shadow: 0 0 0px 0px;
+	-moz-transition: box-shadow .2s linear;
+	-o-transition: box-shadow .2s linear;
+	-webkit-transition: box-shadow .2s linear;
+	transition: box-shadow .2s linear;
 }
 
 	.video-container video {
@@ -40,6 +45,10 @@
 			color: white;
 		}
 
+
+	.video-container.speaking {
+		box-shadow: 0 0 5px 1px #a4b2b7;
+	}
 
 .video-overlay {
 	position: fixed;
@@ -93,10 +102,9 @@
 }*/
 
 
-.uncollapser {
-	position: fixed;
+.videoconference-container .uncollapser {
+	/*position: absolute;
 	right: 0px;
-	width: 180px;
 	bottom: 0px;
 	height: 20px;
 	text-align: center;
@@ -110,10 +118,11 @@
 	-webkit-transition: bottom 0.25s;
 	transition: bottom 0.25s;
 	z-index: 10001;
+	padding: 0 10px;*/
 }
 
 	.uncollapser.shifted {
-		bottom: 127px;
+		/*bottom: 127px;*/
 		background: #0F0F0F;
 	}
 

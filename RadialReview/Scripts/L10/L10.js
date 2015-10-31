@@ -13,6 +13,16 @@ function imageListFormat(state) {
 };
 
 function initL10() {
+
+	try {
+		$(window).bind('hashchange', function (e) {
+			e.preventDefault();
+		});
+	} catch (e) {
+		console.error(e);
+	}
+
+
 	updateTime();
 	resizing();
 	if (meetingStart && (isLeader || !followLeader)) {
@@ -33,24 +43,24 @@ function initL10() {
 		loadPage(loc);
 	});
 
-	$("body").on("click", ".issuesModal", function () {
+	$("body").on("click", ".issuesModal:not(.disabled)", function () {
 		var dat = $(this).data();
 		var parm = $.param(dat);
-		var m=$(this).data("method");
+		var m = $(this).data("method");
 		if (!m)
 			m = "Modal";
 		var title = dat.title || "Add an issue";
-		showModal(title, "/Issues/"+m+"?" + parm, "/Issues/"+m);
+		showModal(title, "/Issues/" + m + "?" + parm, "/Issues/" + m);
 	});
 
-	$("body").on("click", ".todoModal", function () {
+	$("body").on("click", ".todoModal:not(.disabled)", function () {
 		var dat = $(this).data();
 		var parm = $.param(dat);
-		var m=$(this).data("method");
+		var m = $(this).data("method");
 		if (!m)
 			m = "Modal";
 		var title = dat.title || "Add a to-do";
-		showModal(title, "/Todo/"+m+"?" + parm, "/Todo/"+m);
+		showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m);
 	});
 
 }
@@ -58,9 +68,9 @@ function initL10() {
 function highlight(item) {
 	if (!item.hasClass("editable-bg-transition")) {
 		item.addClass("editable-bg-transition");
-		setTimeout(function() {
+		setTimeout(function () {
 			item.css("background-color", "rgba(0,0,0,0)");
-			setTimeout(function() { item.removeClass("editable-bg-transition"); }, 1700);
+			setTimeout(function () { item.removeClass("editable-bg-transition"); }, 1700);
 		}, 15);
 		item.css("background-color", "#FFFF80");
 	}
@@ -83,12 +93,14 @@ function resetClickables() {
 	$(".agenda a").prop("href", "#");
 	if (isLeader || !followLeader || !meetingStart) {
 		$(".agenda a").addClass("clickable");
-		$(".agenda a").each(function() {
+		$(".agenda a").each(function () {
 			$(this).prop("href", "#" + $(this).data("location"));
 		});
+
+		$(".agenda a").prop("title", "");
 	} else {
 		if (meetingStart) {
-			$(".agenda a").prop("title", "Unlock to change pages");
+			$(".agenda a").prop("title", "You are following the meeting leader. Unlock to change the page.");
 			$(".agenda a").addClass("lockedPointer");
 		}
 	}
@@ -103,10 +115,10 @@ function ms2Time(ms) {
 	minutes = Math.floor(minutes % 60);
 	hours = Math.floor(hours/* % 24 */);
 	return {
-		hours: Math.max(0,hours),
-		minutes: Math.max(0,minutes),
-		seconds: Math.max(0,secs),
-		ms :Math.max(0,ms)
+		hours: Math.max(0, hours),
+		minutes: Math.max(0, minutes),
+		seconds: Math.max(0, secs),
+		ms: Math.max(0, ms)
 	};
 }
 
@@ -132,27 +144,27 @@ function updateTime() {
 
 
 	var nowUtc = new Date().getTime();
-	if (typeof currentPage != 'undefined' && currentPage!=null) {
+	if (typeof currentPage != 'undefined' && currentPage != null) {
 		var ee = ms2Time(nowUtc - currentPageStartTime);
-		setPageTime(currentPage, (ee.minutes + ee.hours * 60 + currentPageBaseMinutes+ee.seconds/60));
+		setPageTime(currentPage, (ee.minutes + ee.hours * 60 + currentPageBaseMinutes + ee.seconds / 60));
 	}
 
 }
 
 function setPageTime(pageName, minutes) {
-	var over = $(".page-" + pageName + " .page-time").data("over");	
-	var sec =Math.floor(60* (minutes-Math.floor(minutes)));
+	var over = $(".page-" + pageName + " .page-time").data("over");
+	var sec = Math.floor(60 * (minutes - Math.floor(minutes)));
 
-	$(".page-" + pageName + " .page-time").html(Math.floor(minutes) + "m<span class='second'>"+sec+"s</span>");
+	$(".page-" + pageName + " .page-time").html(Math.floor(minutes) + "m<span class='second'>" + sec + "s</span>");
 	//$(".page-time.page-" + pageName).prop("title", Math.floor(minutes) + "m" + pad(sec, 2) + "s");
 	if (minutes >= over) {
-		$(".page-"+pageName+" .page-time").addClass("over");
+		$(".page-" + pageName + " .page-time").addClass("over");
 	} else {
 		$(".page-" + pageName + " .page-time").removeClass("over");
 	}
 
 }
-function setupMeeting(_startTime,leaderId) {
+function setupMeeting(_startTime, leaderId) {
 	console.log("setupmeeting");
 	$(".page-item .page-time").html("");
 	meetingStart = true;
@@ -168,7 +180,7 @@ function concludeMeeting() {
 	loadPage("stats");
 }
 
-function setCurrentPage(pageName, startTime,baseMinutes) {
+function setCurrentPage(pageName, startTime, baseMinutes) {
 	if (pageName == "") {
 		pageName = "segue";
 	}
@@ -183,7 +195,18 @@ function setCurrentPage(pageName, startTime,baseMinutes) {
 }
 
 function setHash(hash) {
-	window.location.hash = '#'+hash;
+	//location.hash = $hash;
+	window.location.hash = '#' + hash;
+	/*
+	if (history.pushState) {
+		history.pushState(null, null, '#' + hash);
+	}
+		//Else use the old-fashioned method to do the same thing,
+		//albeit with a flicker of content
+	else {
+		location.hash = $hash;
+		window.location.hash = '#' + hash;
+	}*/
 }
 
 function loadPage(location) {
@@ -198,18 +221,21 @@ function loadPageForce(location) {
 	$(".todo-list").sortable("destroy");
 	$(".issues-list").sortable("refresh");
 	$(".todo-list").sortable("refresh");
-	window.location.hash = location;
+	setHash(location);
+	//window.location.hash = location;
 	location = location.toLowerCase();
 	//if (location != myPage) {
 	showLoader();
 	myPage = location;
 	$.ajax({
-		url: "/L10/Load/" + MeetingId + "?page=" + location+"&connection="+$.connection.hub.id,
-		success: function(data) {
-			replaceMainWindow(data);
+		url: "/L10/Load/" + MeetingId + "?page=" + location + "&connection=" + $.connection.hub.id,
+		success: function (data) {
+			replaceMainWindow(data,function(){
+				$(window).trigger("page-" + location.toLowerCase());
+			});
 		},
-		error: function() {
-			setTimeout(function() {
+		error: function () {
+			setTimeout(function () {
 				$("#alerts").html("");
 				showAlert("Page could not be loaded.");
 				replaceMainWindow("");
@@ -249,11 +275,12 @@ function showLoader() {
 	replaceMainWindow("<div class='loader centered'><div class='component '><div>Loading</div><img src='/Content/select2-spinner.gif' /></div></div>");
 }
 
-function replaceMainWindow(html) {
-	$("#main-window").fadeOut(200, function () {
+function replaceMainWindow(html,callback) {
+	$("#main-window").fadeOut(200,function () {
 		$("#main-window").html(html);
-		$("#main-window").fadeIn(200);
+		$("#main-window").fadeIn(200,callback);
 	});
+
 }
 
 function fixSidebar() {
@@ -267,68 +294,68 @@ function fixSidebar() {
 $(document).scroll(fixSidebar);
 $(document).resize(fixSidebar);
 
-$(document).on("click", ".arrowkey", function() {
+$(document).on("click", ".arrowkey", function () {
 	var that = this;
-	setTimeout(function() {
-			if($(that).position().top < $(window).scrollTop() || $(that).position().top + $(that).height() > $(window).scrollTop() + (window.innerHeight || document.documentElement.clientHeight)){
-				//scroll up
-				var scr= $(that).offset().top - (window.innerHeight || document.documentElement.clientHeight) / 2.0;
-				$('html, body').scrollTop(scr);
-			}else if(false){
-				//scroll down
-				$('html, body').scrollTop($(that).position().top - (window.innerHeight || document.documentElement.clientHeight) + $(that).height() + 15);
-			}
+	setTimeout(function () {
+		if ($(that).position().top < $(window).scrollTop() || $(that).position().top + $(that).height() > $(window).scrollTop() + (window.innerHeight || document.documentElement.clientHeight)) {
+			//scroll up
+			var scr = $(that).offset().top - (window.innerHeight || document.documentElement.clientHeight) / 2.0;
+			$('html, body').scrollTop(scr);
+		} else if (false) {
+			//scroll down
+			$('html, body').scrollTop($(that).position().top - (window.innerHeight || document.documentElement.clientHeight) + $(that).height() + 15);
+		}
 	}, 1);
 });
 
-$(document).keydown(function(event) {
+$(document).keydown(function (event) {
 	if (event.which == 27) {
 		$(":focus").blur();
 		$(".modal").modal('hide');
 	}
-	
+
 
 	if ($(':focus').length || $(".modal.in").length || event.ctrlKey || event.metaKey || event.altKey) {
 		return;
 	}
-	
+
 	if (event.which == 73 && event.shiftKey) {
-		$(".button-bar .issuesModal").click();
+		$(".button-bar .issuesModal:not(.disabled)").click();
 		return;
 	}
 	if (event.which == 84 && event.shiftKey) {
-		$(".button-bar .todoModal").click();
+		$(".button-bar .todoModal:not(.disabled)").click();
 		return;
 	}
 
 	var f1 = $(".arrowkey.selected,.arrowkey.selected");
 	if (event.which == 38) {
-		if (f1.length>0) {
+		if (f1.length > 0) {
 			f1.prev(".arrowkey").click();
 		} else {
 			$(".arrowkey").last().click();
 		}
-	}else if (event.which == 40) {
-		if (f1.length >0) {
+	} else if (event.which == 40) {
+		if (f1.length > 0) {
 			f1.next(".arrowkey").click();
-		}else {
+		} else {
 			$(".arrowkey").first().click();
 		}
-	} else if (event.which == 32||event.which == 13) {
+	} else if (event.which == 32 || event.which == 13) {
 		$(f1).find(".todo-checkbox,.issue-checkbox").click();
 		return false;
-	}else if (event.which == 73) {
-		$(f1).find(".issuesModal").click();
+	} else if (event.which == 73) {
+		$(f1).find(".issuesModal:not(.disabled)").click();
 	} else if (event.which == 84) {
-		$(f1).find(".todoModal").click();
+		$(f1).find(".todoModal:not(.disabled)").click();
 	}/*else if (event.which == 67) {
 		$(f1).find(".todoModal").click();
 	}*/else if (event.which == 9) {
 		$(".message-holder .message").click();
 		event.preventDefault();
-	}else if (event.which == 33) {
+	} else if (event.which == 33) {
 		$(".page-item.current").prev().find("a").click();
-	}else if (event.which == 34) {
+	} else if (event.which == 34) {
 		$(".page-item.current").next().find("a").click();
 	}
 });

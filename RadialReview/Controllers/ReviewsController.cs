@@ -44,7 +44,9 @@ namespace RadialReview.Controllers
                 TakableId = takabled.GetOrDefault(x.Id, null),
                 UserReview = usefulReviews.FirstOrDefault(y=>y.ForReviewsId==x.Id)
 
-            }).OrderByDescending(x => x.Review.DateCreated).ToList();
+            }).Where(x=>x.Editable||x.TakableId!=null||x.UserReview!=null).OrderByDescending(x => x.Review.DateCreated).ToList();
+
+			
 
             var resultPerPage = 10;
 

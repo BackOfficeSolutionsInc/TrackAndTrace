@@ -1,6 +1,8 @@
 ﻿using System.Web.Security;
 using RadialReview.Accessors;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
+using RadialReview.Models.Scorecard;
 using RadialReview.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -34,7 +36,7 @@ namespace RadialReview.Engines
 					var responsibilities = new List<String>();
 
 					var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(s, perms, id);
-					var teams = _TeamAccessor.GetUsersTeams(caller, id);
+					var teams = TeamAccessor.GetUsersTeams(s.ToQueryProvider(true),perms,caller, id);
 					var userResponsibility = ((UserOrganizationModel)r).Hydrate(s).Position().SetTeams(teams).Execute();
 
 					responsibilities.AddRange(userResponsibility.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));
@@ -50,22 +52,30 @@ namespace RadialReview.Engines
 					}
 
 					var roles = RoleAccessor.GetRoles(s, perms, id);
-					var rocks = RockAccessor.GetAllRocks(s, perms, id);
-					var measurables = ScorecardAccessor.GetUserMeasurables(s, perms, id, true);
-					//foundUser.PopulatePersonallyManaging(caller, caller.AllSubordinates);
-
 					var model = new UserOrganizationDetails()
 					{
+						SelfId = caller.Id,
 						User=foundUser,
 						Responsibilities = responsibilities,
 						Roles = roles,
-						Rocks = rocks,
-						Measurables = measurables,
 						ManagingOrganization = caller.ManagingOrganization,
 						/*Editable =	caller.ManagingOrganization || foundUser.GetPersonallyManaging() || 
 									(foundUser.Organization.Settings.ManagersCanEditSelf && foundUser.ManagerAtOrganization) ||
 									(foundUser.Organization.Settings.EmployeesCanEditSelf)*/
 					};
+					
+					if (perms.IsPermitted(x => x.CanViewUserRocks(id))){
+						model.Rocks = RockAccessor.GetAllRocks(s, perms, id);
+						model.CanViewRocks = true;
+					}
+
+					if (perms.IsPermitted(x => x.CanViewUserMeasurables(id))){
+						model.Measurables = ScorecardAccessor.GetUserMeasurables(s, perms, id, true, false);
+						model.CanViewMeasurables = true;
+					}
+					//foundUser.PopulatePersonallyManaging(caller, caller.AllSubordinates);
+
+				
 
 					return model;
 				}

@@ -14,6 +14,7 @@ using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Tests;
+using RadialReview.Models.VideoConference;
 using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
@@ -186,7 +187,16 @@ namespace RadialReview.Controllers
 			return Json(updates, JsonRequestBehavior.AllowGet);
 		}
 
-
+		[Access(AccessLevel.Radial)]
+		public ActionResult Video(string room=null)
+		{
+			if (room == null)
+				return RedirectToAction("Video", new{room = Guid.NewGuid().ToString()});
+			var m = new VideoConferenceVM(){
+				RoomId = room
+			};
+			return View(m);
+		}
 	    [Access(AccessLevel.Radial)]
 	    public ActionResult UpdateName(long id = 1,string name="NEW_NAME",long user=604)
 	    {
@@ -202,11 +212,17 @@ namespace RadialReview.Controllers
 			return Json(updates, JsonRequestBehavior.AllowGet);
 	    }
 
-	    [Access(AccessLevel.UserOrganization)]
-	    public ActionResult VideoChat(long id)
-	    {
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult VideoChat(long id)
+		{
 			return View(id);
-	    }
+		}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult SpeechRecog(long id)
+		{
+			return View(id);
+		}
 
     }
 }

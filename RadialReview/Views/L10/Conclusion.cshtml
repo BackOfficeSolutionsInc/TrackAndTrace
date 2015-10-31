@@ -1,4 +1,5 @@
-﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+﻿@using RadialReview.Models.Todo
+@model RadialReview.Models.L10.VM.L10MeetingVM
 @{
 	Layout = "~/Views/L10/BasePage.cshtml";
 }
@@ -28,7 +29,7 @@
 							@Html.ValidationSummaryMin()
 							@Html.SecuredHiddenFor(x => x.Recurrence.Id)
 							<table style="width: 100%;">
-								@for(var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++)
+								@for (var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++)
 								{
 									<tr>
 										<td style="width:50%;"></td>
@@ -46,10 +47,10 @@
 								}
 								<tr>
 									<td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
-									<td>@Html.CheckBoxFor(x=>x.SendEmail,new{@class="checkbox", style="margin:auto;"})</td>
+									<td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>
 								</tr>
 							</table>
-							
+
 							<div class="alignCenter">
 								<input type="submit" class="btn btn-primary center" value="Conclude Meeting" />
 							</div>
@@ -61,8 +62,53 @@
 	</div>
 </div>
 
+@if (ViewBag.TodosCreated is List<TodoModel>)
+{
+	<div class="centered" style="width:75%; max-width: 700px;margin-top: 25px;">
+		<div class="component meeting-stats">
+			<h3 style="font-size: 20px; color: #444;">Confirm Your New To-Dos</h3>
+			<div class="todo-container ">
+				<ol class="todo-list sortable">@foreach (var i in ((List<TodoModel>)ViewBag.TodosCreated).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)){<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>}</ol>
+			</div>
+		</div>
+	</div>
+}
+
 <script>
 	function gotoIndex(data) {
 		window.location.href = "/L10/MeetingStats/";
 	}
 </script>
+
+
+<style>
+	.todo-list:empty:after {
+		content: "No to-dos added.'";
+		color: #C1C1C1;
+		font-size: 15px;
+		margin: 15px;
+		display: block;
+	}
+
+	 .todo-item {
+		 font-size: 18px;
+		 text-align: left;
+	 }
+
+	.todo-message {
+		position: relative;
+		top: -8px;
+	}
+
+	.todo-container .picture {
+		width: 32px;
+		height: 32px;
+	}
+
+	.todo-due {
+		float: right;
+		color: #CCC;
+		position: relative;
+		top: 8px;
+	}
+</style>

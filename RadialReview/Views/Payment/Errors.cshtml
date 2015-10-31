@@ -1,44 +1,52 @@
 ﻿@model List<RadialReview.Models.Payments.PaymentErrorLog>
 @{
-    ViewBag.Title = "Errors";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Errors";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Errors</h2>
 
-<table class="table table-condensed table-hover">
-	<thead>
-		<tr>
-			<td></td>
-			<td>Id</td>
-			<td>Type</td>
-			<td>Amount</td>
-			<td>OrganizationName</td>
-			<td>OrganizationId</td>
-			<td>TaskId</td>
-			<td>HandledAt</td>
-		</tr>
-	</thead>
-	<tbody>
-	@foreach (var i in Model){
-		<tr>
-			<td><span data-id="@i.Id" class=" clickable glyphicon @(i.HandledAt == null ? "glyphicon-unchecked" : "glyphicon-check")" onclick="setHandled(this)"> </span></td>
-			<td>@i.Id</td>
-			<td>@i.Type</td>
-			<td>@i.Amount</td>
-			<td>@i.OrganizationName</td>
-			<td>@i.OrganizationId</td>
-			<td>@i.TaskId</td>
-			<td class="handled_@(i.Id)">@i.HandledAt</td>
-		</tr>
-	}
-	</tbody>
+<div class="panel panel-primary">
+	<table class="table table-condensed table-hover">
+		<thead>
+			<tr>
+				<td></td>
+				<td>Id</td>
+				<td>Date (local)</td>
+				<td>Type</td>
+				<td>Amount</td>
+				<td>OrganizationName</td>
+				<td>OrganizationId</td>
+				<td>TaskId</td>
+				<td>Message</td>
+				<td>HandledAt (local)</td>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var i in Model)
+			{
+				<tr>
+					<td><span data-id="@i.Id" class=" clickable glyphicon @(i.HandledAt == null ? "glyphicon-unchecked" : "glyphicon-check") " onclick="setHandled(this)"> </span></td>
+					<td>@i.Id</td>
+					
+					<td>@Html.Organization().ConvertFromUTC(i.OccurredAt)</td>
+					<td>@i.Type</td>
+					<td>@i.Amount</td>
+					<td>@i.OrganizationName</td>
+					<td>@i.OrganizationId</td>
+					<td>@i.TaskId</td>
+					<td>@i.Message</td>
+					<td class="handled_@(i.Id)">@(i.HandledAt.NotNull<DateTime?, DateTime?>(y => Html.Organization().ConvertFromUTC((DateTime)y)))</td>
+				</tr>
+			}
+		</tbody>
 
-</table>
-
-@using (Html.BeginScripts()){
+	</table>
+</div>
+@using (Html.BeginScripts())
+{
 	<script>
-		$(function() {
+		$(function () {
 			$("table").tablesorter();
 		});
 
@@ -49,7 +57,7 @@
 			$(self).removeClass("clickable");
 			$.ajax({
 				url: "/Payment/SetErrorHandled/" + id + "?handled=" + unhandled,
-				success: function(data) {
+				success: function (data) {
 					if (showJsonAlert(data, false, true)) {
 						if (data.Object.handled) {
 							$(self).addClass("glyphicon-check");
@@ -62,7 +70,7 @@
 						}
 					}
 				},
-				complete:function() {
+				complete: function () {
 					$(self).removeClass("gray");
 					$(self).addClass("clickable");
 				}

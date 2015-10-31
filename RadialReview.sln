@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompareDbSchema", "Sqlite\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertMysqlToSqlite", "ConvertMysqlToSqlite\ConvertMysqlToSqlite.csproj", "{8B8FBD04-CA72-4E97-89AE-4907179C25B5}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "VideoApplication", "..\VideoConference\VideoApplication.njsproj", "{804EBF4B-AFC7-43F3-B91B-A1F149952D74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -146,6 +148,24 @@ Global
 		{8B8FBD04-CA72-4E97-89AE-4907179C25B5}.UPDATE DATABSE|Mixed Platforms.Build.0 = Release|Any CPU
 		{8B8FBD04-CA72-4E97-89AE-4907179C25B5}.UPDATE DATABSE|x64.ActiveCfg = Release|Any CPU
 		{8B8FBD04-CA72-4E97-89AE-4907179C25B5}.UPDATE DATABSE|x86.ActiveCfg = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Release|x64.ActiveCfg = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.Release|x86.ActiveCfg = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.UPDATE DATABSE|Any CPU.ActiveCfg = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.UPDATE DATABSE|Any CPU.Build.0 = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.UPDATE DATABSE|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.UPDATE DATABSE|Mixed Platforms.Build.0 = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.UPDATE DATABSE|x64.ActiveCfg = Release|Any CPU
+		{804EBF4B-AFC7-43F3-B91B-A1F149952D74}.UPDATE DATABSE|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -125,7 +125,7 @@
 }
 
 .ids h4 {
-    margin-top: 20px;
+    margin-top: 13px;
     margin-bottom: 0px;
 }
 
@@ -214,7 +214,7 @@ ol.sortable li {
     display: inline-block;
     position: relative;
     left: -24px;
-    top: -5px;
+    top: -6px;
 }
 
 
@@ -300,11 +300,24 @@ ol.sortable li {
     color: gray;
 }
 
+.issues-list .dd-list  .dd-list  .placeholder:before {
+	content: "↳";
+	margin-left:-18px;
+	margin-top:-18px;
+	color: #B3B3B3;
+    font-size: 18px; 
+}
+
 .issues-list .placeholder {
     min-height: 10px;
     border: 1px dotted gray;
     margin: 1px;
-    margin-left: 0px;
+    margin-left: -14px;
+}
+
+.issues-list .dd-list .dragged {
+    margin-left: 7px !important;
+    margin-top:  -5px !important;
 }
 
 .issues-list > .placeholder {
@@ -352,7 +365,8 @@ ol.sortable li {
     opacity: .5;
     z-index: 2000;
     margin: 0px !important;
-    margin-top: -10px !important;
+    margin-top: -16px !important;
+    margin-left: -13px !important;
 }
 
     .dragged, .dragged * {
@@ -385,6 +399,9 @@ body.dragging, body.dragging * {
 }
 
 .issueDetails .move-icon {
+    display: none;
+}
+.issueDetails .issue-row .btn-group {
     display: none;
 }
 
@@ -584,7 +601,8 @@ body.dragging, body.dragging * {
 }
 
 .ids .issueDetails textarea {
-    max-height: 600px;
+    /*max-height: 600px;*/
+	min-height: 60px;
     white-space: pre-line;
 }
 

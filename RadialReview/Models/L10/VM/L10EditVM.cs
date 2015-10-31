@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.Scorecard;
 
 namespace RadialReview.Models.L10.VM
@@ -32,5 +33,7 @@ namespace RadialReview.Models.L10.VM
 		}
 
 		public string Return { get; set; }
+
+		public PermissionDropdownVM PermissionsDropdown { get; set; }
 	}
 }

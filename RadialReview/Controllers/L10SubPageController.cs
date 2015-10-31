@@ -9,9 +9,11 @@ using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Hubs;
+using RadialReview.Models;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
+using RadialReview.Models.VideoConference;
 using RestSharp.Validation;
 using MathNet.Numerics.Distributions;
 using RadialReview.Utilities;
@@ -31,7 +33,10 @@ namespace RadialReview.Controllers
 				L10Accessor.UpdatePage(GetUser(), GetUser().Id, recurrenceId, page, connection);
 
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
-			var model = new L10MeetingVM(){Recurrence = recurrence};
+			var model = new L10MeetingVM(){
+				Recurrence = recurrence,
+				EnableTranscript = recurrence.EnableTranscription
+			};
 
 			//Dont need the meeting 
 			switch(page){
@@ -47,6 +52,13 @@ namespace RadialReview.Controllers
 			try{
 				model.Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
 
+				if (model != null && model.Recurrence != null)
+				{
+					model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+					model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+
+				}
+				
 				switch (page)
 				{
 					case "headlines":
@@ -180,7 +192,6 @@ namespace RadialReview.Controllers
 		}
 		#endregion
 		
-		
 		#region Rocks
 		private PartialViewResult Rocks(L10MeetingVM model)
 		{
@@ -188,12 +199,14 @@ namespace RadialReview.Controllers
 			return PartialView("Rocks", model);
 		}
 		#endregion
+
 		#region Headlines
 		private PartialViewResult Headlines(L10MeetingVM model)
 		{
 			return PartialView("Headlines", model);
 		}
 		#endregion
+
 		#region Todo
 		private PartialViewResult Todo(L10MeetingVM model)
 		{
@@ -219,7 +232,9 @@ namespace RadialReview.Controllers
 			model.SendEmail = true;
 
 			model.Meeting._MeetingAttendees.ForEach(x=>x.Rating=x.Rating??10);
-
+			
+			var stats=L10Accessor.GetStats(GetUser(), model.Recurrence.Id);
+			ViewBag.TodosCreated = stats.TodosCreated.Where(x=>x.CompleteTime == null).ToList();
 
 			return PartialView("Conclusion", model);
 		}

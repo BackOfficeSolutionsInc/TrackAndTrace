@@ -1,4 +1,4 @@
-﻿@model long
+﻿@model RadialReview.Controllers.DashboardController.DashboardVM
 
 @{
 	ViewBag.Title = "Dashboard";
@@ -39,53 +39,70 @@
 {
 
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-	<script src="~/Scripts/Grid/fixtures.js"></script>
+	@*<script src="~/Scripts/Grid/fixtures.js"></script>
 	<script src="~/Scripts/Grid/src/gridList.js"></script>
 	<script src="~/Scripts/Grid/src/jquery.gridList.js"></script>
-	<script src="~/Scripts/Grid/load.js"></script>
+	<script src="~/Scripts/Grid/load.js?v=2"></script>*@
+	
+	@Scripts.Render("~/bundles/DashboardGrid")
+	
 	<script type="text/javascript">
+		
+		function buildGrid(data) {
+			if (showJsonAlert(data, false, true)) {
+				Grid.buildElements($('#grid'), data.Object, function(changed) {
+					if (changed.length == 0)
+						return;
+					var arr = [];
+					for (var cc in changed) {
+						var c = changed[cc];
+						arr.push({ x: c.x, y: c.y, w: c.w, h: c.h, id: c.id });
+					}
+					var dat = {
+						id: @(Model.DashboardId),
+						model: arr,
+					};
+					$.ajax({
+						traditional:true,
+						contentType: "application/json; charset=utf-8",
+						method: "post",
+						data: JSON.stringify( dat),
+						url: "/Dashboard/UpdateTiles/",
+						success: function(data) {
+							showJsonAlert(data, false, true);
+						}
+
+					});
+				});
+			}
+
+			$(".grid").addClass("post-load");
+		}
+
 		$(function() {
+			var tileJson = @(new HtmlString(Model.TileJson));
+			buildGrid(tileJson);
+		});
+		
+		function initTiles() {
+			
+			meetingCallback();
+		}
+
+		@*$(function() {
 			$.ajax({
 				method: "get",
-				url: "/Dashboard/Tiles/@Model",
-				success: function(data) {
-					if (showJsonAlert(data, false, true)) {
-						Grid.buildElements($('#grid'), data.Object, function(changed) {
-							if (changed.length == 0)
-								return;
-							var arr = [];
-							for (var cc in changed) {
-								var c = changed[cc];
-								arr.push({ x: c.x, y: c.y, w: c.w, h: c.h, id: c.id });
-							}
-							var dat = {
-								id: @Model,
-								model: arr,
-							};
-							$.ajax({
-								traditional:true,
-								contentType: "application/json; charset=utf-8",
-								method: "post",
-								data: JSON.stringify( dat),
-								url: "/Dashboard/UpdateTiles/",
-								success: function(data) {
-									showJsonAlert(data, false, true);
-								}
-
-							});
-						});
-					}
-
-				},
+				url: "/Dashboard/Tiles/@Model.DashboardId",
+				success: buildGrid,
 				error: function(data) {
 					showAlert("There was an error getting your dashboard.");
 				}
 			});
-		});
+		});*@
 
 		function createTile(url,type) {
 			var dat = {
-				id: @Model,
+				id: @(Model.DashboardId),
 				type:type,
 				dataUrl:url
 			};
@@ -103,26 +120,42 @@
 }
 
 
+@section topSection{
+
+	<div class="ng-cloak2" ng-app="L10App">
+		<div ng-controller="L10Controller">
+}
+
+
 <!-- Single button -->
-<div class="btn-group" style="position:relative;top:-28px;z-index: 1001;color:white">
+<div class="btn-group" style="position: fixed;top: 25px;;z-index: 1001;color:white">
   <button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Add Tile <span class="caret"></span>
   </button>
   <ul class="dropdown-menu">
-	  <li><a onclick="createTile('/TileData/UserTodo','Url')">To-do</a></li>
-	  <li><a onclick="createTile('/TileData/UserScorecard','Url')">Scorecard</a></li>
-	  <li><a onclick="createTile('/TileData/UserRock','Url')">@Html.Organization().Settings.RockName</a></li>
-	  <li><a onclick="createTile('/TileData/UserManage','Url')">Direct Reports</a></li>
-	  <li><a onclick="createTile('/TileData/UserProfile','Url')">Profile</a></li>
+	  <li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do</a></li>
+	  <li><a onclick="createTile('/TileData/UserScorecard2','Url')">Scorecard</a></li>
+	  <li><a onclick="createTile('/TileData/UserRock2','Url')">@Html.Organization().Settings.RockName</a></li>
+	  @if (ViewBag.IsManager){
+		  <li><a onclick=" createTile('/TileData/UserManage2', 'Url') ">Direct Reports</a></li>
+	  }
+	  <li><a onclick="createTile('/TileData/UserProfile2','Url')">Profile</a></li>
   </ul>
 </div>
 
 
 <div class="meeting-review ng-cloa2k grid-container">
-	<div ng-controller="L10Controller">
+	<div ng-controller2="L10Controller">
 		@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
-		{ "IncludeComplete", false}
-	})
+			{ "IncludeComplete", false},
+			//{ "Callback", "initTiles"}
+		})
 		<ul id="grid" class="grid"></ul>
 	</div>
 </div>
+			
+
+@section bottomSection{
+		</div>
+	</div>
+}

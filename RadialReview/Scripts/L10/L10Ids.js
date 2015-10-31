@@ -3,6 +3,7 @@ var currentIssuesDetailsId;
 $(function () {
 
     refreshCurrentIssueDetails();
+	fixIssueDetailsBoxSize();
 	$("body").on("click", ".issues-list>.issue-row", function () {
 		var issueRow = $(this);//.closest(".issue-row");
 		$(".issue-row.selected").removeClass("selected");
@@ -52,6 +53,8 @@ $(function () {
 			"</span>" +
 
 			"</div>");
+
+		fixIssueDetailsBoxSize();
 	});
 
 	$("body").on("click", ".issueDetails .message-holder .message", function() {
@@ -137,6 +140,29 @@ $("body").on("click", ".issueDetails .assignee .btn", function () {
 		});
 	});
 
+$(window).resize(fixIssueDetailsBoxSize);
+$(window).on("page-ids",fixIssueDetailsBoxSize);
+$(window).on("footer-resize",function() {
+	setTimeout(fixIssueDetailsBoxSize, 250);
+});
+
+function fixIssueDetailsBoxSize() {
+	if ($(".details.issue-details").length) {
+		var wh = $(window).height();
+		var pos = $(".details.issue-details").offset();
+		var st = $(window).scrollTop();
+		var footerH = wh;
+		try {
+			footerH = $(".footer-bar .footer-bar-container").last().offset().top;
+		} catch (e) {
+
+		}
+
+		//$(".details.issue-details").height(wh - pos.top + st - footerH - 110);
+		$(".details.issue-details").height(footerH - 20 - 110 - pos.top  );
+	}
+}
+
 function sendNewIssueAccountable(self, id) {
 	var val = $(self).val();
 	var data = {
@@ -187,7 +213,7 @@ function sortIssueBy(recurrenceId, issueList,sortBy,title,mult) {
 			return mult*$(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
 		return mult*$(a).attr(sortBy).localeCompare($(b).attr(sortBy));
 	}).appendTo($(issueList));
-	updateIssuesList(recurrenceId, issueList);
+	updateIssuesList(recurrenceId, issueList, sortBy);
 	refreshCurrentIssueDetails();
 
 }
@@ -205,8 +231,24 @@ function deserializeIssues(selector, issueList) {
 	$(selector).html(sub);
 	refreshCurrentIssueDetails();
 }
-function appendIssue(selector, issue) {
+function appendIssue(selector, issue, order) {
 	var li = $(constructRow(issue));
+	if (typeof(order) !== "undefined") {
+		if (order == "data-priority") {
+			var found = $(">li", selector).filter(function() {
+				return +$(this).attr("data-priority") > 0;
+			}).last();
+			if (found.length == 0) {
+				$(selector).prepend(li);
+			} else {
+				$(li).insertAfter(found);
+			}
+			$(li).flash();
+			refreshCurrentIssueDetails();
+			return;
+		}
+	}
+	//fallback version
 	$(selector).prepend(li);
 	$(li).flash();
 	refreshCurrentIssueDetails();
@@ -223,37 +265,37 @@ function constructRow(issue) {
 	if (issue.details)
 		details = issue.details;
 
-	return '<li class="issue-row dd-item arrowkey" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '">'
-		+ '	<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>'
-		+ '	<div class="move-icon noselect dd-handle">'
-		+ '		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>'
-		+ '		<span class="inner icon fontastic-icon-primitive-square"></span>'
-		+ '	</div>'
-		+ '<div class="btn-group pull-right">'
-		+ ' <span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + recurrenceId + '" data-recurrence_issue="' + issue.issue + '" data-method="copymodal" style="padding-right: 5px"></span> '	
-		+ ' <span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" data-issue="'+issue.issue+'" data-meeting="'+issue.createdDuringMeetingId+'" data-recurrence="'+recurrenceId+'" data-method="CreateTodoFromIssue"></span>'
-		+ '</div>'
-		+ '<div class="number-priority">'
-		+	' <span class="number"></span>'
-        +	' <span class="priority" data-priority="'+issue.priority+'"></span>'
-		+ '</div>'
-		+ '<span class="profile-image">'
-		+ '		<span class="profile-picture">' 
-		+	'			<span class="picture-container" title="' + issue.owner + '">' 
-		+	'				<span class="picture" style="background: url(' + issue.imageUrl + ') no-repeat center center;"></span>' 
-		+	'			</span>' 
-		+	'		</span>'
-		+	'	</span>' 
-		+ '	<div class="message" data-recurrence_issue='+issue.issue+'>' + issue.message + '</div>'
-		+ '	<div class="issue-details-container"><div class="issue-details" data-recurrence_issue='+issue.issue+'>' + details + '</div></div>'
+	return '<li class="issue-row dd-item arrowkey" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '">\n'
+		+ '	<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>\n'
+		+ '	<div class="move-icon noselect dd-handle">\n'
+		+ '		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>\n'
+		+ '		<span class="inner icon fontastic-icon-primitive-square"></span>\n'
+		+ '	</div>\n'
+		+ '<div class="btn-group pull-right">\n'
+		+ ' <span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + recurrenceId + '" data-recurrence_issue="' + issue.issue + '" data-method="copymodal" style="padding-right: 5px"></span>\n'	
+		+ ' <span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" data-issue="'+issue.issue+'" data-meeting="'+issue.createdDuringMeetingId+'" data-recurrence="'+recurrenceId+'" data-method="CreateTodoFromIssue"></span>\n'
+		+ '</div>\n'
+		+ '<div class="number-priority">\n'
+		+	' <span class="number"></span>\n'
+        +	' <span class="priority" data-priority="'+issue.priority+'"></span>\n'
+		+ '</div>\n'
+		+ '<span class="profile-image">\n'
+		+ '		<span class="profile-picture">\n' 
+		+	'			<span class="picture-container" title="' + issue.owner + '">\n' 
+		+	'				<span class="picture" style="background: url(' + issue.imageUrl + ') no-repeat center center;"></span>\n' 
+		+	'			</span>\n' 
+		+	'		</span>\n'
+		+	'	</span>\n' 
+		+ '	<div class="message" data-recurrence_issue='+issue.issue+'>' + issue.message + '</div>\n'
+		+ '	<div class="issue-details-container"><div class="issue-details" data-recurrence_issue='+issue.issue+'>' + details + '</div></div>\n'
 		+ '<ol class="dd-list">'
 		+ sub
-		+ '</ol>'
+		+ '</ol>\n'
 		+ '</li>';
 }
 
-function updateIssuesList(recurrenceId, issueRow) {
-	var d = { issues: $(issueRow).sortable('serialize').toArray(), connectionId: $.connection.hub.id };
+function updateIssuesList(recurrenceId, issueRow,orderby) {
+	var d = { issues: $(issueRow).sortable('serialize').toArray(), connectionId: $.connection.hub.id,orderby:orderby };
 	console.log(d);
 	var that = issueRow;
 	$.ajax({

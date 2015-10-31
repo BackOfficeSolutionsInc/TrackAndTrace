@@ -14,7 +14,7 @@
 	@Styles.Render("~/Content/css")
 	@RenderSection("styles", required: false)
 	@Html.PageStyles()
-	@if (ViewBag.VideoChatRoom is long)
+	@if (ViewBag.VideoChatRoom != null)
 	{
 		<link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
 	}
@@ -150,7 +150,7 @@
 							</ul>
 							@if (!(ViewBag.IsLogin ?? false))
 							{
-								@Html.Partial("_LoginPartial", (string)ViewBag.ReturnUrl)
+								Html.RenderPartial("_LoginPartial", (string) ViewBag.ReturnUrl);
 							}
 						</div>
 					</div>
@@ -166,11 +166,11 @@
 						@RenderSection("hints", false)
 					</div>
 					@RenderBody()
-					@Html.Partial("Partial/_VideoChat")
+					<div class="footer-bar">@{ Html.RenderPartial("Partial/_VideoChat"); }</div>
 				</div>
 				<div id="spinnerContainer"></div>
 			</div>
-			@Html.Partial("Partial/_Modal")
+			@{Html.RenderPartial("Partial/_Modal");}
 			@using (var s = Html.BeginScripts())
 			{
 				<!--script src="~/Scripts/Main/radial.js"></script-->
@@ -196,7 +196,7 @@
 		</div>
 		<div id="footer">
 			<p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName</p>
-			@Html.Partial("Partial/Footer")
+			@{ Html.RenderPartial("Partial/Footer"); }
 		</div>
 		@RenderSection("bottomSection", required: false)
 		@Scripts.Render("~/bundles/jquery")

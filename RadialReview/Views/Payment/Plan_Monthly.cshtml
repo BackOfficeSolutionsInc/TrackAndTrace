@@ -11,7 +11,7 @@
 @using (Html.BeginForm())
 {
 	<div class="row">
-		<div class="col-md-3">
+		<div class="col-sm-3">
 			<h3><b><u>Plan</u></b></h3>
 			@Html.EditorForModel()
 			<br /><hr />
@@ -19,7 +19,7 @@
 			<hr />
 			@Html.TextBox("OldTaskId", Model.Task == null ? (long?)null : Model.Task.OriginalTaskId,new {type="hidden"})
 		</div>
-		<div class="col-md-3 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")" >
+		<div class="col-sm-4 alignRight @((Model._CurrentTask !=null && Model.Task.Id != Model._CurrentTask.Id)?"grayed":"")" >
 			<h3><b><u>Task Info</u></b></h3>
 
 			@if (Model.Task != null)
@@ -27,7 +27,7 @@
 				@Html.DisplayFor(x => x.Task)
 			}
 		</div>
-		<div class="col-md-3">
+		<div class="col-sm-4">
 			<h3><b><u>Current Task Info</u></b></h3>
 			@Html.DisplayFor(x => x._CurrentTask)
 		</div>

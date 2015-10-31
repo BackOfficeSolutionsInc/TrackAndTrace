@@ -22,6 +22,9 @@ namespace RadialReview.Models.Payments
         public virtual string CardLast4 { get; set; }
         public virtual bool Active { get; set; }
 
+		public virtual String ReceiptEmail { get; set; }
+		public virtual long CreatedBy { get; set; }
+
         public virtual long OrganizationId { get; set; }
 
         public PaymentSpringsToken()        {
@@ -37,8 +40,11 @@ namespace RadialReview.Models.Payments
                 Map(x => x.DeleteTime);
                 //Map(x => x.CustomerId);
                 Map(x => x.CustomerToken);
-                Map(x => x.MonthExpire);
-                Map(x => x.YearExpire);
+				Map(x => x.MonthExpire);
+				Map(x => x.YearExpire);
+
+				Map(x => x.ReceiptEmail);
+				Map(x => x.CreatedBy);
 
                 Map(x => x.CardType);
                 Map(x => x.CardOwner);
@@ -49,5 +55,6 @@ namespace RadialReview.Models.Payments
                 Map(x => x.OrganizationId);
             }
         }
-    }
+
+	}
 }

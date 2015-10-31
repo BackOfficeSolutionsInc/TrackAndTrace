@@ -1609,6 +1609,10 @@ textarea {
 	color: #777;
 	padding: 0 3px;
 }
+.template-link:not(.job-description-link) {
+	float: left;
+    margin-left: -39px;
+}
 
 .fontastic-icon-checklist:before {
 	/*line-height: 0 !important;

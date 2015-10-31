@@ -281,7 +281,14 @@
 						@Html.CheckBoxFor(x => x.EmployeesCanCreateSurvey, new { @class = "checkbox" })
 					</div>
 				</div>
-
+					<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Managers can only see @Html.Organization().Settings.RockName and Measurables below them:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.OnlySeeRockAndScorecardBelowYou, new { @class = "checkbox" })
+					</div>
+				</div>
 
 				<div class="row">
 					<div class="col-sm-4 ttt">

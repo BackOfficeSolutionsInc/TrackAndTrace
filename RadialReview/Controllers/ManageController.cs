@@ -203,6 +203,8 @@ namespace RadialReview.Controllers
 				WeekStart = user.Organization.Settings.WeekStart,
                 Cards = _PaymentAccessor.GetCards(GetUser(),GetUser().Organization.Id),
 
+				OnlySeeRockAndScorecardBelowYou = user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou,
+
 				PaymentPlan = _PaymentAccessor.GetPlan(GetUser(),GetUser().Organization.Id)
 
 			};
@@ -240,6 +242,7 @@ namespace RadialReview.Controllers
 				model.ManagersCanCreateSurvey,
 				model.EmployeesCanCreateSurvey,
 				model.RockName,
+				model.OnlySeeRockAndScorecardBelowYou,
 				model.TimeZone,
 				model.WeekStart);
 			ViewBag.Success = "Successfully Saved.";
@@ -249,6 +252,7 @@ namespace RadialReview.Controllers
 				.ToList();
 
 			model.CompanyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+			model.Cards = _PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id);
 
 			model.CompanyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 

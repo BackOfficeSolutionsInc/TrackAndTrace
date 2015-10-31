@@ -9,6 +9,7 @@ using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Components;
 using RadialReview.Models.L10;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
@@ -35,13 +36,37 @@ namespace RadialReview.Accessors
 		}
 		public static List<MeasurableModel> GetVisibleMeasurables(ISession s, PermissionsUtility perms, long organizationId, bool loadUsers)
 		{
+			var caller = perms.GetCaller();
 
+			var managing = caller.Organization.Id == organizationId && caller.ManagingOrganization;
+			IQueryOver<MeasurableModel, MeasurableModel> q;
+			if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou && !managing)
+			{
+				var userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
+				q = s.QueryOver<MeasurableModel>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUserId).IsIn(userIds);
+				if (loadUsers)
+					q=q.Fetch(x => x.AccountableUser).Eager;
 
+				return q.List().ToList();
+			}
+			else
+			{
+				//q = s.QueryOver<MeasurableModel>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null);
+				if (perms.IsPermitted(x => x.ViewOrganizationScorecard(organizationId))){
+					return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
+				}
+				else
+				{
+					return GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers, false);
+				}
+			}
+
+			/*
 			if (perms.IsPermitted(x => x.ViewOrganizationScorecard(organizationId))){
 				return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
 			}else{
-				return GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers);
-			}
+				return GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers,false);
+			}*/
 
 		}
 
@@ -88,11 +113,15 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+
+					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+					if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou){
+						userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
+					}
+
 					var measurables = s.QueryOver<MeasurableModel>();
 					if (loadUsers)
 						measurables = measurables.Fetch(x => x.AccountableUser).Eager;
-
-					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
 
 					return measurables.Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUserId).IsIn(userIds).List().ToList();
 				}
@@ -101,18 +130,46 @@ namespace RadialReview.Accessors
 
 
 
-		public static List<MeasurableModel> GetUserMeasurables(ISession s, PermissionsUtility perms, long userId, bool loadUsers)
+		public static List<MeasurableModel> GetUserMeasurables(ISession s, PermissionsUtility perms, long userId, bool loadUsers,bool ordered)
 		{
 			perms.ViewUserOrganization(userId, false);
 			var found = s.QueryOver<MeasurableModel>()
 				.Where(x => x.AccountableUserId == userId && x.DeleteTime == null)
-				.Fetch(x => x.AdminUser).Eager
 				.List().ToList();
+
+			if (ordered){
+				var measuableIds = found.Select(x => x.Id).ToList();
+				var ordering = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+					.Where(x => x.DeleteTime == null)
+					.WhereRestrictionOn(x => x.Measurable.Id).IsIn(measuableIds)
+					.Select(x => x.Measurable.Id, x => x._Ordering, x => x.L10Recurrence.Id)
+					.List<object[]>().ToList();
+				var orderedOrdering  = ordering.GroupBy(x => (long?) x[2]??0).SelectMany(y => y.OrderBy(x => (int?) x[1]??0)).Distinct(x=>(long)x[0]).ToList();
+
+				var newOrder = new List<MeasurableModel>();
+				var i = 0;
+				foreach (var o in orderedOrdering){
+					var newOrderItem = found.FirstOrDefault(x => x.Id == (long) o[0]);
+					if (newOrderItem != null){
+						newOrder.Add(newOrderItem);
+						newOrderItem._Ordering = i;
+						i++;
+					}
+
+				}
+				found = newOrder;
+
+			}
+
+
 			if (loadUsers)
 			{
 				foreach (var f in found)
 				{
-					var a = f.AccountableUser;
+					var a = f.AdminUser.GetName();
+					var b = f.AdminUser.GetImageUrl();
+					var c = f.AccountableUser.GetName();
+					var d = f.AccountableUser.GetImageUrl();
 				}
 			}
 			return found;
@@ -120,14 +177,14 @@ namespace RadialReview.Accessors
 
 
 
-		public static List<MeasurableModel> GetUserMeasurables(UserOrganizationModel caller, long userId)
+		public static List<MeasurableModel> GetUserMeasurables(UserOrganizationModel caller, long userId,bool ordered=false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetUserMeasurables(s, perms, userId, true);
+					return GetUserMeasurables(s, perms, userId, true, ordered);
 				}
 			}
 		}
@@ -274,6 +331,8 @@ namespace RadialReview.Accessors
 			var now = DateTime.UtcNow;
 			DateTime? nowQ = now;
 
+			perms.EditL10Recurrence(recurrenceId);
+
 			var meeting = L10Accessor._GetCurrentL10Meeting(s, perms, recurrenceId);
 			var score = s.Get<ScoreModel>(scoreId);
 
@@ -405,7 +464,7 @@ namespace RadialReview.Accessors
 			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 			hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).updateTextContents(dom, value);
 
-			Audit.L10Log(s, perms.GetCaller(), recurrenceId, "UpdateScoreInMeeting", score.NotNull(x => x.Measurable.NotNull(y => y.Title)) + " updated to " + value);
+			Audit.L10Log(s, perms.GetCaller(), recurrenceId, "UpdateScoreInMeeting",ForModel.Create(score), score.NotNull(x => x.Measurable.NotNull(y => y.Title)) + " updated to " + value);
 			return score;
 		}
 

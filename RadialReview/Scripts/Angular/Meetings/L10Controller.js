@@ -1,5 +1,5 @@
-﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId',"meetingCallback",
-function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetingCallback) {
+﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId',"meetingCallback","$compile",
+function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetingCallback,$compile) {
 	if (meetingId == null)
 		throw Error("MeetingId was empty");
 	$scope.disconnected = false;
@@ -141,6 +141,12 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	$scope.functions = {};
 	$scope.filters = {};
 
+
+	$scope.functions.setHtml = function(element,data) {
+		var newstuff = element.html(data);
+        $compile(newstuff)($scope); // loads the angular stuff in the new markup
+		$scope.$apply();
+	};
 
 	$scope.functions.setPage = function (page) {
 		$http.get("/meeting/SetPage/" + $scope.model.RecurrenceId + "?page=" + page + "&connection=" + $scope.connectionId);

@@ -80,3 +80,7 @@
 .rocks-container .component {
 	margin: 5px;
 }
+
+.rock-empty-holder:after {
+    content: "Click 'Add Rock' to create a rock";
+}

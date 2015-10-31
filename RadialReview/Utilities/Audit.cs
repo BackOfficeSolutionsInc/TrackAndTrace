@@ -86,7 +86,7 @@ namespace RadialReview.Utilities
 			}
 		}
 
-		public static void L10Log(ISession s, UserOrganizationModel caller, long recurrenceId, string action,string notes=null)
+		public static void L10Log(ISession s, UserOrganizationModel caller, long recurrenceId, string action, ForModel forModel, string notes=null)
 		{
 			try
 			{
@@ -106,6 +106,7 @@ namespace RadialReview.Utilities
 					audit.UserAgent = r.UserAgent;
 				}
 
+				audit.ForModel = forModel;
 				audit.Action = action;
 				audit.Recurrence = s.Load<L10Recurrence>(recurrenceId);
 

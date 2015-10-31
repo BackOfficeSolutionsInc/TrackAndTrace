@@ -375,7 +375,7 @@ namespace RadialReview.Controllers
             var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();
             var team = user.Teams.FirstOrDefault(x => x.Id == id);
             var orgTeam = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id)
-                            .Where(x => !aliveTeams.Any(y => y.Team.Id == x.Id))//_TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id)
+                            .Where(x => aliveTeams.All(y => y.Team.Id != x.Id))//_TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id)
                             .Where(x => x.Type == TeamType.Standard)
                             .ToSelectList(x => x.Name, x => x.Id, id).ToList();
             orgTeam.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });

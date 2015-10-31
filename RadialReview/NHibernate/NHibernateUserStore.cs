@@ -234,7 +234,7 @@ namespace RadialReview.NHibernate
                 using (var tx = db.BeginTransaction())
                 {
                     user = db.Get<UserModel>(user.Id);
-                    return user.Roles.Where(x=>!x.Deleted).Select(x => x.Role).ToList();
+                    return user.Roles.NotNull(y=>y.Where(x=>!x.Deleted).Select(x => x.Role).ToList());
                 }
             }
 
@@ -242,7 +242,7 @@ namespace RadialReview.NHibernate
 
         public async Task<bool> IsInRoleAsync(UserModel user, string role)
         {
-            return user.Roles.Any(x => x.Role == role && x.Deleted==false);
+            return user.Roles.NotNull(y=>y.Any(x => x.Role == role && x.Deleted==false));
         }
 
         public async Task RemoveFromRoleAsync(UserModel user, string role)
@@ -252,7 +252,7 @@ namespace RadialReview.NHibernate
                 using(var tx=db.BeginTransaction())
                 {
                     user=db.Get<UserModel>(user.Id);
-                    var found=user.Roles.ToList().FirstOrDefault(x=>x.Role==role);
+                    var found=user.Roles.NotNull(y=>y.ToList().FirstOrDefault(x=>x.Role==role));
                     if (found != null){
                         found.Deleted = true;
                     }else{

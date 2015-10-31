@@ -55,7 +55,7 @@
 				</div>*@
 			<div class="issues-container">
 				<ol class="issues-list sortable init-@(guid)">
-					@foreach (var i in Model.Issues.OrderBy(x => x.Ordering))
+					@foreach (var i in Model.Issues.OrderBy(x => x.Ordering).ThenByDescending(x=>x.CreateTime))
 					{@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)}
 			</ol>
 		</div>

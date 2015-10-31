@@ -1,4 +1,5 @@
-﻿using FluentNHibernate.Mapping;
+﻿using FluentNHibernate.Conventions.AcceptanceCriteria;
+using FluentNHibernate.Mapping;
 using NHibernate.Mapping;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
@@ -11,6 +12,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using TimeZoneNames;
 
 namespace RadialReview.Models
 {
@@ -43,6 +45,7 @@ namespace RadialReview.Models
 			public virtual bool ManagersCanEditSubordinateL10 { get; set; }
 			public virtual bool ManagersCanEditSelf { get; set; }
 			public virtual bool EmployeesCanEditSelf { get; set; }
+			public virtual bool OnlySeeRocksAndScorecardBelowYou { get; set; }
 
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
@@ -64,6 +67,8 @@ namespace RadialReview.Models
 
 				EmployeesCanCreateSurvey = false;
 				ManagersCanCreateSurvey = true;
+
+				OnlySeeRocksAndScorecardBelowYou = true;
 
 				EnableL10 = false;
 				EnableReview = false;
@@ -96,6 +101,9 @@ namespace RadialReview.Models
 					Map(x => x.EmployeesCanCreateSurvey);
 					Map(x => x.ManagersCanCreateSurvey);
 
+
+					Map(x => x.OnlySeeRocksAndScorecardBelowYou);
+
 					Map(x => x.EnableL10);
 					Map(x => x.EnableReview);
 					Map(x => x.EnableSurvey);
@@ -106,9 +114,9 @@ namespace RadialReview.Models
 				}
 			}
 
-			public bool EmployeesCanCreateSurvey { get; set; }
+			public virtual bool EmployeesCanCreateSurvey { get; set; }
 
-			public bool ManagersCanCreateSurvey { get; set; }
+			public virtual bool ManagersCanCreateSurvey { get; set; }
 		}
 
 		/// <summary>
@@ -126,6 +134,19 @@ namespace RadialReview.Models
 			var zone = Settings.TimeZoneId ?? "Central Standard Time";
 			var tz = TimeZoneInfo.FindSystemTimeZoneById(zone);
 			return TimeZoneInfo.ConvertTimeFromUtc(utcTime, tz); //your UTC date here
+		}
+
+		public virtual string GetTimeZoneId(DateTime? time=null)
+		{
+			time = time ?? DateTime.UtcNow;
+			var id = Settings.TimeZoneId ?? "Central Standard Time";
+			var tz=TimeZoneInfo.FindSystemTimeZoneById(id);
+			var abb=TimeZoneNames.TimeZoneNames.GetAbbreviationsForTimeZone(id, "en-us");
+			if (tz.IsDaylightSavingTime(time.Value)){
+				return abb.Daylight;
+			}
+			return abb.Standard;
+
 		}
 
 		public virtual DateTime ConvertToUTC(DateTime localTime){

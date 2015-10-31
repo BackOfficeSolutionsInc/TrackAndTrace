@@ -10,6 +10,81 @@ var webRtc_NameLookup = {};
 
 WebRtcDemo.App = (function (viewModel, connectionManager) {
 	var viewModel = {};
+
+	window.AudioContext = window.AudioContext || window.webkitAudioContext;
+	var audioContext = {};
+	var sourceI = {},
+		inputPoint = {},
+		audioRecorder = null;
+	var analyserContext = null;
+	var analyserNode = {};
+	var rafID = null;
+	var zeroGain = {};
+
+	var updateAnalysers = function(time) {
+		//debugger;
+		// analyzer draw code here
+		//var SPACING = 3;
+		//var BAR_WIDTH = 1;
+		//var numBars = Math.round(canvasWidth / SPACING);
+
+		var maxId = null;
+		var max = 200;
+		
+		$(".loudest").removeClass("loudest");
+		for (var k in analyserNode) {
+			var freqByteData = new Uint8Array(analyserNode[k].frequencyBinCount);
+			analyserNode[k].getByteFrequencyData(freqByteData);
+			var sum = freqByteData.reduce(function(pv, cv) { return pv + cv; }, 0);
+			var html = "";
+
+			if (sum > max) {
+				max = sum;
+				maxId = k;
+			}
+
+			for(var i=0;i<Math.min(5,sum/300);i++)
+			{
+				html += "<div class='volume-bar'></div>";
+			}
+			
+
+			$("." + k + " .volume").html(html);
+			if (sum > 300) {
+				$("." + k).addClass("loudest");
+			}
+
+			//console.log(freqByteData);
+		}
+
+		/*if (maxId != null) {
+			$("." + maxId).addClass("loudest");
+		}*/
+
+
+
+		//analyserContext.clearRect(0, 0, canvasWidth, canvasHeight);
+		//analyserContext.fillStyle = '#F6D565';
+		//analyserContext.lineCap = 'round';
+		//var multiplier = analyserNode.frequencyBinCount / numBars;
+
+		// Draw rectangle for each frequency bin.
+		/*for (var i = 0; i < numBars; ++i) {
+			var magnitude = 0;
+			var offset = Math.floor(i * multiplier);
+			// gotta sum/average the block, or we miss narrow-bandwidth spikes
+			for (var j = 0; j < multiplier; j++)
+				magnitude += freqByteData[offset + j];
+			magnitude = magnitude / multiplier;
+			var magnitude2 = freqByteData[i * multiplier];
+			//analyserContext.fillStyle = "hsl( " + Math.round((i * 360) / numBars) + ", 100%, 50%)";
+			//analyserContext.fillRect(i * SPACING, canvasHeight, BAR_WIDTH, -magnitude);
+		}*/
+
+		rafID = window.requestAnimationFrame(updateAnalysers);
+	};
+
+
 	var _mediaStream,
 		_hub,
 		_connect = function (username, onSuccess, onFailure) {
@@ -63,7 +138,23 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			_startSession(username);
 		},
 
+		_addStreamGain = function(stream,id) {
+			audioContext[id] = new AudioContext();
+			analyserNode[id] = audioContext[id].createAnalyser();
+			analyserNode[id].fftSize = 32;
+			//inputPoint[id] = audioContext[id].createGain();
+				// Create an AudioNode from the stream.
+			sourceI[id] = audioContext[id].createMediaStreamSource(stream);
+			sourceI[id].connect(analyserNode[id]);
+			//analyserNode[id].connect(audioContext[id].destination);
 
+			//audioRecorder = new Recorder( inputPoint );
+
+			/*zeroGain[id] = audioContext.createGain();
+			zeroGain[id].gain.value = 0.0;
+			inputPoint[id].connect(zeroGain[id]);
+			zeroGain[id].connect(audioContext.destination);*/
+		},
 		_tryGetMedia = function (audio, video, success, onError) {
 			getUserMedia({
 				// Permissions to request
@@ -75,15 +166,27 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 				// Store off the stream reference so we can share it later
 				_mediaStream = stream;
 
+
+				//==========Volume========== 
+
+				_addStreamGain(stream, "streamid_"+viewModel.MyConnectionId );
+				
+
+				//========End-Volume========
+
+
 				// Load the stream into a video element so it starts playing in the UI
 				console.log('playing my local video feed');
 				//var videoElement = document.querySelector('.video.mine');
 
-				var container = $("<div class='video-container mine streamid_" + viewModel.MyConnectionId + "'><video muted src='' height='116px' autoplay/><div class='video-name'>You</div></div>");
+				var container = $("<div class='video-container mine streamid_" + viewModel.MyConnectionId + "'><video muted src='' height='116px' autoplay/><div class='video-name'>You</div><div class='volume'></div></div>");
 
 				$(".video-bar").prepend(container);
 				var videoElement = $(".video-container.streamid_" + viewModel.MyConnectionId + " video")[0];
-				attachMediaStream(videoElement, _mediaStream);
+
+				if (video || audio) {
+					attachMediaStream(videoElement, _mediaStream);
+				}
 
 				// UI in calling mode
 				viewModel.Mode = ('calling');
@@ -91,6 +194,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 				// Hook up the UI
 				//_attachUiHandlers();
 				setTimeout(function () {
+					console.log("FOUR");
 					_hub.server.callMeeting(VideoChatRoomId, true, true);
 				}, 1000);
 
@@ -138,6 +242,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 
 			// Initialize our client signal manager, giving it a signaler (the SignalR hub) and some callbacks
 			console.log('initializing connection manager');
+			updateAnalysers();
 			connectionManager.initialize(hub.server, _callbacks.onReadyForStream, _callbacks.onStreamAdded, _callbacks.onStreamRemoved);
 			_attachUiHandlers();
 		}, function (event) {
@@ -148,12 +253,13 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 
 	_attachUiHandlers = function () {
 		// Add click handler to users in the "Users" pane
-		$('body').on('click', '.start-video', function () {
+		$('body').on('click', '.start-video:not(.disabled)', function () {
+			$(".start-video").addClass("disabled");
 			_tryGetMedia(true, true, function () {
 				$(".start-conference").addClass("hidden");
-
 			}, function () {
 				showAlert("Failed to connect to hardware. Make sure camera and audio are enabled in your browser.");
+				$(".start-video").removeClass("disabled");
 			});
 		});
 		$('body').on('click', '.start-screenshare', function () {
@@ -175,15 +281,15 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 
 		//var connected = false;
 
-	$('body').on('click', '.uncollapser .clicker', function () {
+		$('body').on('click', '.uncollapser .clicker', function () {
 			if (!connected) {
 				console.log("calling in");
 				viewModel.Mode = ('calling');
 				_hub.server.callMeeting(VideoChatRoomId, true, true);
 				connected = true;
 			}
-			$(".video-bar").toggleClass("shifted");
-			$(this).parent().toggleClass("shifted");
+			/*$(".video-bar").toggleClass("shifted");
+			$(this).parent().toggleClass("shifted");*/
 		});
 		$('body').on('click', '.sendVideo', function (e) {
 			if (_mediaStream.getVideoTracks().length == 1) {
@@ -219,6 +325,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			$(".video-overlay").addClass("fade1");
 			var self = this;
 			setTimeout(function () {
+				console.log("FIVE");
 				$(".video-overlay video").attr("src", $(self).find("video").attr("src"));
 				$(".video-overlay video")[0].muted = $(self).find("video")[0].muted;
 				$(".video-overlay").removeClass("hidden1");
@@ -263,7 +370,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			}*/
 		};
 
-		hub.client.offerTo = function(acceptingUser) {
+		hub.client.offerTo = function (acceptingUser) {
 			console.log('offering stream to: ' + JSON.stringify(acceptingUser));
 			webRtc_NameLookup[acceptingUser.ConnectionId] = acceptingUser.Name;
 			connectionManager.initiateOffer(acceptingUser.ConnectionId, _mediaStream);
@@ -331,20 +438,39 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			// The connection manager needs our stream
 			// todo: not sure I like this
 			if (_mediaStream) {
+				
+				console.log("ZERO");
 				connection.addStream(_mediaStream);
+				
+				console.log("SIX");
 			}
 		},
 		onStreamAdded: function (connection, event, streamId) {
 			console.log('binding remote stream to the partner window');
 			// Bind the remote stream to the partner window
 			//var otherVideo = document.querySelector('.video.partner');
-			var container = $("<div class='video-container streamid_" + streamId + "'><video src='' height='116px' autoplay/><div class='video-name'>"+webRtc_NameLookup[streamId]+"</div></div>");
+			var container = $("<div class='video-container streamid_" + streamId + "'><video src='' height='116px' autoplay/><div class='video-name'>" + webRtc_NameLookup[streamId] + "</div><div class='volume'></div></div>");
 			$(".video-bar").append(container);
 
 			var otherVideo = $(".video-container.streamid_" + streamId + " video")[0];
-			setTimeout(function () {
-				attachMediaStream(otherVideo, event.stream); // from adapter.js
-			}, 1000);
+
+			console.log("ONE");
+			var timer = 1000;
+
+			var tryAttachVideo = function() {
+				console.log("TWO");
+				console.log(ConnectionEstablished[streamId]);
+				if (!(streamId in ConnectionEstablished) || ConnectionEstablished[streamId] <= 0) {
+					timer *= 1.5;
+					setTimeout(tryAttachVideo, timer);
+				} else {
+					//_addStreamGain(event.stream, "streamid_" + streamId);
+					attachMediaStream(otherVideo, event.stream); // from adapter.js
+					console.log("THREE");
+				}
+			};
+
+			setTimeout(tryAttachVideo, timer);
 		},
 		onStreamRemoved: function (connection, streamId) {
 			// todo: proper stream removal.  right now we are only set up for one-on-one which is why this works.

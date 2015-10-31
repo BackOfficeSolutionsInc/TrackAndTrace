@@ -289,4 +289,23 @@ The {2} Team</value>
     <value>Payment Failed for {0}</value>
     <comment>[OrganizationName]</comment>
   </data>
+  <data name="PaymentReceipt_Body" xml:space="preserve">
+    <value>&lt;p&gt;We received payment for your {0} subscription. Thanks for your business!&lt;/p&gt;
+
+&lt;p&gt;Questions? Contact us anytime at {1}.&lt;/p&gt;
+
+&lt;p&gt;------------------------------------
+&lt;br/&gt;{0} Receipt - Pro Subscription - {2}
+&lt;br/&gt;
+&lt;br/&gt;Amount: USD {3}
+&lt;br/&gt;
+&lt;br/&gt;Charged to: ({4})
+&lt;br/&gt;Transaction ID: {5}
+&lt;br/&gt;Date: {6}
+&lt;br/&gt;For service through: {7}
+&lt;br/&gt;
+&lt;br/&gt;{8}
+&lt;br/&gt;-----------------------------------&lt;/p&gt;</value>
+    <comment>[ProductName,SupportEmail,OrgName,Charged,CardLast4,TransactionId,ChargeTime,ServiceThroughDate,Address]</comment>
+  </data>
 </root>

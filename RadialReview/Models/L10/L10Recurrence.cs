@@ -47,9 +47,14 @@ namespace RadialReview.Models.L10
 		public virtual long DefaultTodoOwner { get; set; }
 
 		public virtual long CreatedById { get; set; }
+		public virtual List<long> _WhoCanEdit { get; set; }
+		public virtual string VideoId { get; set; }
+		public virtual string OrderIssueBy { get; set; }
+		public virtual bool EnableTranscription { get; set; }
 
 		public L10Recurrence()
 		{
+			VideoId = Guid.NewGuid().ToString();
 			SegueMinutes		= 5;
 			ScorecardMinutes	= 5;
 			RockReviewMinutes	= 5;
@@ -59,6 +64,7 @@ namespace RadialReview.Models.L10
 			ConclusionMinutes	= 5;
 			IncludeIndividualTodos = true;
 			IncludeAggregateTodoCompletion = true;
+			EnableTranscription = true;
 		}
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>
@@ -67,9 +73,14 @@ namespace RadialReview.Models.L10
 			{
 				Id(x => x.Id);
 				Map(x => x.Name).Length(10000);
+				Map(x => x.VideoId);
 				Map(x => x.CreateTime);
 				Map(x => x.MeetingInProgress);
 				Map(x => x.DeleteTime);
+
+				Map(x => x.EnableTranscription);
+
+				Map(x => x.OrderIssueBy);
 
 				Map(x => x.CreatedById);
 
@@ -217,5 +228,7 @@ namespace RadialReview.Models.L10
 				return Tuple.Create(Measurable.Id, L10Recurrence.Id, DeleteTime);
 			}
 		}
+
+
 	}
 }

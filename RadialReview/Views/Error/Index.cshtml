@@ -4,24 +4,46 @@
 @{
 	ViewBag.Title = RadialReview.Properties.ExceptionStrings.AnErrorOccured;
 	Layout = "~/Views/Shared/_Layout.cshtml";
-	var subject=((string)ViewBag.Message).NotNull(x => x.ToString().UrlEncode());
+	var subject = ((string)ViewBag.Message).NotNull(x => x.ToString().UrlEncode());
 	var body = Model.NotNull(x => x.StackTrace.UrlEncode());
 }
+
+
 
 
 
 <div class="centered">
 	<div class="component">
 		<div class="">
-			<h2>@RadialReview.Properties.ExceptionStrings.AnErrorOccured</h2>
-			<h3>@ViewBag.Message</h3>
+			<h2>@(String.IsNullOrWhiteSpace(ViewBag.Message)?RadialReview.Properties.ExceptionStrings.AnErrorOccured:ViewBag.Message)</h2>
 		</div>
 
-		@if (Context.IsDebuggingEnabled)
+		@if (Context.IsDebuggingEnabled && Model != null && !String.IsNullOrWhiteSpace(Model.StackTrace))
 		{
 			<div class="review" style="white-space: pre;font-size: 11px;overflow-x: auto;">@Model.NotNull(x => x.StackTrace)</div>
-			<a target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Error:+@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(body)">Email Support</a>
+			<a target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Error:@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(body)">Email Support</a>
 		}
-		
+
+		@if (((int?)ViewBag.Organizations ?? 0) == 0)
+		{
+			<div class="review">
+				<h4>Instructions to access your organization:</h4>
+				<p>
+					Welcome to @Html.ProductName()
+
+					You'll need to enter your access code to begin. You should have received a code in your inbox.
+					If you haven't found the email, check your spam folder and remove us from your spam filter.
+					Enter it here to begin:
+				</p>
+				<form class="form-group" method="post" action="/Organization/Join">
+					<input class="form-control smallBreak2" type="text" name="id" value="" placeholder="Access code" />
+
+					<div class="row">
+						<button class="btn btn-primary col-md-2 col-md-offset-5" type="submit">Submit</button>
+					</div>
+				</form>
+			</div>
+		}
+
 	</div>
 </div>

@@ -66,7 +66,7 @@ namespace RadialReview.Controllers
 					await Emailer.SendEmail(email, true);
 				}
 				catch (Exception e){
-					log.Error("FatalPaymentException",e);
+					log.Error("FatalPaymentException1",e);
 				}
 				Response.StatusCode = 501;
 				return Json(new{
@@ -78,13 +78,24 @@ namespace RadialReview.Controllers
 			if (capturedException != null)
 			{
 				log.Error("Exception during Payment", capturedException);
-				await Emailer.SendEmail(MailModel.To(ProductStrings.ErrorEmail).Subject(EmailStrings.PaymentException_Subject, "<Non-payment exception>").Body(EmailStrings.PaymentException_Body, capturedException.Message, "<Non-payment>", capturedException.StackTrace));
+				try{
+					var trace = capturedException.StackTrace.NotNull(x => x.Replace("\n", "</br>"));
+					var email = MailModel.To(ProductStrings.ErrorEmail)
+						.Subject(EmailStrings.PaymentException_Subject, "<Non-payment exception>")
+						.Body(EmailStrings.PaymentException_Body, capturedException.NotNull(x=>x.Message), "<Non-payment>", trace);
+
+					await Emailer.SendEmail(email, true);
+				}
+				catch (Exception e)
+				{
+					log.Error("FatalPaymentException2", e);
+				}
 				Response.StatusCode = 500;
 				return Json(new
 				{
 					charged = false,
 					payment_exception = false,
-					error = capturedException.Message
+					error = capturedException.NotNull(x => x.Message)
 				}, JsonRequestBehavior.AllowGet);
 			}
 			return Json(new{

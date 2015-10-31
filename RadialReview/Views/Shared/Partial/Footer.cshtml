@@ -3,15 +3,12 @@
 <div class="container footer">
 	<div class="row">
 		<div class="col-sm-6">
-			@if ((ViewBag.IsLogin ?? false))
-			{
-				<div style="padding-top: 20px; text-align: left">
-					<a href="/Organization/Tree">Organization Tree</a>
-				</div>
-				<div style="padding-top: 20px; text-align: left">
-					<a href="/Employee/Listing">Employee Listing</a>
-				</div>
-			}
+			<div style="padding-top: 20px; text-align: left">
+				<a href="/Organization/Tree">Organization Tree</a>
+			</div>
+			<div style="padding-top: 20px; text-align: left">
+				<a href="/Employee/Listing">Employee Listing</a>
+			</div>
 		</div>
 		<div class="col-sm-6">
 			<div style="padding-top:20px;text-align: left">
@@ -19,7 +16,7 @@
 			</div>
 		</div>
 	</div>
-	<!--div class="row ">
+	@*<!--div class="row ">
 		<div class="row col-md-6 col-md-push-6">
 			<div class="col-sm-6 smallBreak2 col-md-push-6" style="text-align: center">
 				<h4>Let's hear from you!</h4>
@@ -40,19 +37,19 @@
 		<li><h4>Members</h4></li>
 		<li><h5>@Html.ActionLink("Reviews", "Outstanding", "Reviews")</h5></li>
 		<li><h5>@Html.ActionLink("FAQ", "Index", "Faq")</h5></li>
-		<!--li><h5>Culture Profiles</h5></li->
+		<li><h5>Culture Profiles</h5></li->
 		</ul>
 		</div>
 			<div class="col-sm-6 smallBreak2" style="text-align: center">
 			<ul class="noBullet ">
 
 			<li><h4>Organizations</h4></li>
-			@*  <li><h5>@Html.ActionLink("Join Radial", "Index", "Organization")</h5></li> *@
+			  <li><h5>@Html.ActionLink("Join Radial", "Index", "Organization")</h5></li>
 			<li><h5>@Html.ActionLink("Tree", "Tree", "Organization")</h5></li>
-			<!--li><h5>Culture Profiles</h5></li->
+			<li><h5>Culture Profiles</h5></li->
 
 			</ul>
 			</div>
 			</div>
-			</div-->
+			</div-->*@
 </div>

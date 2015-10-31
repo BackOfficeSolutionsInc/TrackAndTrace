@@ -1,7 +1,7 @@
 ﻿<div class="review smallBreak2 loading tiny" style2="min-height:30px;">
-	<div class="heading" @*="margin:7px;"*@>Manage:</div><div class="tile">@Html.Partial("~/Views/Manage/partial/members.cshtml", new ViewDataDictionary(){
-		{ "AddHeaders",false},
-		{ "AddController",true},
-		{ "DisableName",true},
-		{ "RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName))}
-})</div></div>
+	<div class="heading" @*="margin:7px;"*@>Manage:</div><div class="tile">@{Html.RenderPartial("~/Views/Manage/partial/members.cshtml", new ViewDataDictionary(){
+		                                                                          {"AddHeaders", false},
+		                                                                          {"AddController", false},
+		                                                                          {"DisableName", true},
+		                                                                          {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName))}
+	                                                                          }); }</div></div>

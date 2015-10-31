@@ -20,6 +20,9 @@ namespace RadialReview.Models.L10.VM
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 
+		public bool CanEdit { get; set; }
+		public bool CanAdmin { get; set; }
+
 		public class WeekVM
 		{
 			public DateTime DisplayDate { get; set; }
@@ -33,10 +36,9 @@ namespace RadialReview.Models.L10.VM
 		{
 			get
 			{
-				if (Meeting != null)
-				{
+				if (Meeting != null){
 					if (Meeting.StartTime != null)
-						return Meeting.StartTime.Value;//.AddMinutes(Recurrence.Organization.Settings.TimeZoneOffsetMinutes);
+						return Meeting.StartTime.Value; //.AddMinutes(Recurrence.Organization.Settings.TimeZoneOffsetMinutes);
 				}
 				return null;
 			}
@@ -45,14 +47,25 @@ namespace RadialReview.Models.L10.VM
 		public long[] Attendees { get; set; }
 		public bool SendEmail { get; set; }
 
+		public bool EnableTranscript { get; set; }
+
+		public List<MeetingTranscriptVM> CurrentTranscript { get; set; }
 
 		public L10MeetingVM()
 		{
 			StartDate = DateTime.UtcNow;
 			EndDate = DateTime.UtcNow;
 			Weeks = new List<WeekVM>();
+			CurrentTranscript=new List<MeetingTranscriptVM>();
 		}
+	}
 
+	public class MeetingTranscriptVM
+	{
+		public long Id { get; set; }
+		public string Message { get; set; }
+		public string Owner { get; set; }
 
+		public long Order { get; set; }
 	}
 }

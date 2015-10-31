@@ -16,6 +16,15 @@ namespace RadialReview.Models.Angular.Scorecard
 			Weeks = TimingUtility.GetWeeks(weekstart, timezoneOffset, DateTime.UtcNow, currentWeek.NotNull(x=>x.Value.AddDays(7)), scores, true).Select(x => new AngularWeek(x)).ToList();
 			Measurables = measurables.ToList();
 			Scores = scores.Select(x => new AngularScore(x)).ToList();
+
+			foreach (var s in Scores){
+				var found = Measurables.FirstOrDefault(x => x.Id == s.Measurable.Id);
+				if (found != null){
+					s.Measurable.Ordering = found.Ordering;
+					s.Measurable.RecurrenceId = found.RecurrenceId;
+				}
+
+			}
 		}
 
 		public AngularScorecard() :base(-1)

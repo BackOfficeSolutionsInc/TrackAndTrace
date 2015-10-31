@@ -6,6 +6,7 @@ using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.L10;
 using RadialReview.Models.VTO;
+using RadialReview.Models.Components;
 
 namespace RadialReview.Models.Audit
 {
@@ -25,7 +26,7 @@ namespace RadialReview.Models.Audit
 
 		public virtual String Data { get; set; }
 		public virtual String Method { get; set; }
-
+		public virtual ForModel ForModel { get; set; }
 		public virtual String UserAgent { get; set; }
 
 		public AuditModel()
@@ -47,17 +48,28 @@ namespace RadialReview.Models.Audit
 				Map(x => x.UserAgent);
 				References(x => x.User).Column("UserId").Nullable();
 				References(x => x.UserOrganization).Column("UserOrganizationId").Nullable();
+				Component(x=>x.ForModel).ColumnPrefix("ForModel_");
 			}
 		}
 	}
 
-	public class L10AuditModel : AuditModel
+	public class L10AuditModel : AuditModel, ITimeline
 	{
 		public virtual L10Recurrence Recurrence { get; set; }
 		public virtual String Action { get; set; }
 		public virtual String Notes { get; set; }
 
-
+		public virtual String CustomAnchor()
+		{
+			if (ForModel == null)
+				return null;
+			switch (Action)
+			{
+				case "CreateTodo": return "TodoModel-" + ForModel.ModelId;
+				case "CreateIssue": return "IssueModel-" + ForModel.ModelId;
+				default: return null;
+			}
+		}
 
 		public class L10AuditMap : SubclassMap<L10AuditModel>
 		{

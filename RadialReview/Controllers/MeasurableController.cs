@@ -25,9 +25,10 @@ namespace RadialReview.Controllers
 			public long TemplateId { get; set; }
 		}
 
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id)
 		{
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 			var rocks = ScorecardAccessor.GetUserMeasurables(GetUser(), id);
 			ViewBag.AllMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
 
@@ -45,7 +46,7 @@ namespace RadialReview.Controllers
 		}
 
 		[HttpPost]
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Modal(MeasurableController.MeasurableVM model)
 		{
 			var avail = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).Select(x => x.Id).ToList();

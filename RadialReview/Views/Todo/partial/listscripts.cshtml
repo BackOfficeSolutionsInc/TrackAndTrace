@@ -1,8 +1,10 @@
 ﻿@model long
 		   
 @{
-	var includeComplete = (ViewBag.IncludeComplete as bool? != null ? "completed="+((bool) ViewBag.IncludeComplete) + "&":"");
-	var name = (ViewBag.SetName as string != null ? "name=" + ((string)ViewBag.SetName) + "&" : "");
+	var includeComplete = new HtmlString((ViewBag.IncludeComplete as bool? != null ? "completed="+((bool) ViewBag.IncludeComplete) + "&":""));
+	var name =new HtmlString( (ViewBag.SetName as string != null ? "name=" + ((string)ViewBag.SetName) + "&" : ""));
+	var callback = ViewBag.Callback ?? "meetingCallback";
+	
 }
 
 @using (Html.BeginStyles())
@@ -33,16 +35,20 @@
 {
 	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
 	<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+
+	@*<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
+	  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+	<script src="~/Scripts/Angular/Helpers/Libraries/angular-filter.min.js"></script>
+	<script src="~/Scripts/Main/moment.min.js"></script>*@
+
     <script src="~/Scripts/L10/L10.js"></script>
 	@Scripts.Render("~/bundles/meeting")
 
 	<script>
     angular.module('L10App')
         .value('meetingId', -3)
-        .value('meetingDataUrlBase', '/Dashboard/Data/@Model?@(includeComplete)@(name)')
-        .value('meetingCallback', meetingCallback);
+        .value('meetingDataUrlBase', '/DashboardData/Data2/@Model?@(includeComplete)@(name)')
+        .value('meetingCallback', @callback);
     @*/*angular.module('L10App')
 			.value('meetingId',-3)
 			.value('meetingDataUrlBase', '/Scorecard/ListData/@Model?')
@@ -89,7 +95,7 @@
 	     
         }, 1);
 
-        $("body").on("click", ".issuesModal", function () {
+        $("body").on("click", ".issuesModal:not(.disabled)", function () {
             var parm = $.param($(this).data());
             var m = $(this).data("method");
             if (!m)
@@ -97,7 +103,7 @@
             showModal("Add an issue", "/Issues/" + m + "?" + parm, "/Issues/" + m);
         });
 
-        $("body").on("click", ".todoModal", function () {
+        $("body").on("click", ".todoModal:not(.disabled)", function () {
             var parm = $.param($(this).data());
             var m = $(this).data("method");
             if (!m)

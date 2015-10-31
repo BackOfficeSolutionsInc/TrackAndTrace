@@ -13,6 +13,25 @@ namespace System.Web
 {
     public static class HtmlExtensions
 	{
+		public static string VideoConferenceUrl(this HtmlHelper html, string resource = null)
+		{
+			return Config.VideoConferenceUrl(resource);
+		}
+
+		public static string GetBaseUrl(this HtmlHelper html, string resource = null)
+		{
+			var server =   Config.BaseUrl((OrganizationModel)html.ViewBag.Organization).TrimEnd('/');
+			if (resource != null){
+				server = server + "/" + resource.TrimStart('/');
+			}
+
+			return server;
+		}
+		public static UserOrganizationModel UserOrganization(this HtmlHelper html)
+		{
+			return (UserOrganizationModel)html.ViewBag.UserOrganization;
+		}
+
 		public static OrganizationModel Organization(this HtmlHelper html){
 			return (OrganizationModel)html.ViewBag.Organization;
 		}

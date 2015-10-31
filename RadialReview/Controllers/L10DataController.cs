@@ -31,7 +31,7 @@ namespace RadialReview.Controllers
 		#region Scorecard
 		// GET: L10Data
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult UpdateScore(long id, long s, long w, long m, string value, string dom)
+		public JsonResult UpdateScore(long id, long s, long w, long m, string value, string dom)
 		{
 			var recurrenceId = id;
 			var scoreId = s;

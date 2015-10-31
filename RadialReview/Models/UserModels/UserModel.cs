@@ -59,6 +59,7 @@ namespace RadialReview.Models
             UserOrganization = new List<UserOrganizationModel>();
             Hints = true;
 	        SendTodoTime = 10;
+			Roles = new List<UserRoleModel>();
         }
 
         public virtual long? GetCurrentRole()

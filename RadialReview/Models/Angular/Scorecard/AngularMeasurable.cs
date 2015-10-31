@@ -25,6 +25,7 @@ namespace RadialReview.Models.Angular.Scorecard
 			Modifiers = measurable.UnitType;
 			if (measurable.Id < 0)
 				Disabled = true;
+			Ordering = measurable._Ordering;
 		}
 
 		public AngularMeasurable()
@@ -42,5 +43,6 @@ namespace RadialReview.Models.Angular.Scorecard
 
 		public int? Ordering { get; set; }
 		public bool? Disabled { get; set; }
+		public long RecurrenceId { get; set; }
 	}
 }

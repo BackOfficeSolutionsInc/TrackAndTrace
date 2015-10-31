@@ -47,6 +47,7 @@ $(function () {
 					"</span>" +
 				"</div>" +
 			"</div>");
+		fixTodoDetailsBoxSize();
 	});
 
 	$("body").on("click", ".todoDetails .doneButton", function () { $(this).find(">input").trigger("click"); });
@@ -154,6 +155,25 @@ $(function () {
 		});
 	});
 
+});
+
+function fixTodoDetailsBoxSize() {
+	if ($(".details.todo-details").length) {
+		var wh = $(window).height();
+		var pos = $(".details.todo-details").offset();
+		var st = $(window).scrollTop();
+		var footerH = wh;
+		try {
+			footerH = $(".footer-bar .footer-bar-container").last().offset().top;
+		} catch (e) {}
+		$(".details.todo-details").height(footerH - 20 - 140 - pos.top  );
+	}
+}
+
+$(window).resize(fixTodoDetailsBoxSize);
+$(window).on("page-todo",fixTodoDetailsBoxSize);
+$(window).on("footer-resize",function() {
+	setTimeout(fixTodoDetailsBoxSize, 250);
 });
 
 function updateTodoDueDate(todo, duedate) {

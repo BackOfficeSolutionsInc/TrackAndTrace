@@ -11,7 +11,7 @@
 		if (Model.EndTime != null)
 		{
 			list.Add(Model.EndTime.NotNull(x => x.Value.ToShortTimeString().Replace("AM", "").Replace("PM", "")));
-			duration = (Model.EndTime.Value - Model.StartTime.Value).Minutes + " minutes";
+			duration = (long)(Model.EndTime.Value - Model.StartTime.Value).TotalMinutes + " minutes";
 		}
 		else
 		{
@@ -62,7 +62,7 @@
 	</div>
 	@if (Model.TodosCreated.Any(x => x.CompleteTime == null))
 	{
-		<h3 style="font-size: 20px; color: #444;">Confirm Your New To-Dos</h3>
+		<h3 style="font-size: 20px; color: #444;">Newly Added New To-Dos</h3>
 		<div class="todo-container ">
 			<ol class="todo-list sortable ">
 				@foreach (var i in Model.TodosCreated.OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)){
@@ -95,10 +95,7 @@
 <script src="~/Scripts/d3/Charts.js"></script>
 <script>
 
-	@{
-
-
-
+	@*@{
 		var start = Model.AllMeetings
 			.Select(x => x.StartTime)
 			.Where(x => x.HasValue)
@@ -161,14 +158,14 @@
 			//return d3.time.format("%d-%b-%y").parse(d);
 		}).Initialize(
 			@Html.ArrayToString(rating)
-		).RotateXTitle();
+		).RotateXTitle();*@
 
 </script>
 
 <style>
-	.todo-item {
-		font-size: 18px;
-	}
+	 .todo-item {
+		 font-size: 18px;
+	 }
 
 	.todo-message {
 		position: relative;

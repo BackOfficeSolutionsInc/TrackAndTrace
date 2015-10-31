@@ -6,13 +6,13 @@
 		</div>
 	</div>
 	<div class="btn-group">
-		<div class="btn btn-default btn-xs issuesModal"
+		<div class="btn btn-default btn-xs issuesModal @(Model.CanEdit?"":"disabled")"
 			 data-method="createissue"
 			 data-meeting="@Model.Meeting.Id"
 			 data-recurrence="@Model.Recurrence.Id">
 			<span class="icon fontastic-icon-pinboard"></span> New Issue
 		</div>
-		<div class="btn btn-default btn-xs todoModal"
+		<div class="btn btn-default btn-xs todoModal @(Model.CanEdit?"":"disabled")"
 			 data-method="createtodo"
 			 data-meeting="@Model.Meeting.Id"
 			 data-recurrence="@Model.Recurrence.Id">
@@ -33,7 +33,9 @@
 
 			<li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})"  target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
 			<li class="divider"></li>
-			<li><a href="@Url.Action("Edit",new { id=Model.Recurrence.Id, @return="meeting" })" onclick="skipBeforeUnload=true" ><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+			@if (Model.CanAdmin){
+				<li><a href="@Url.Action("Edit", new{id = Model.Recurrence.Id, @return = "meeting"})" onclick=" skipBeforeUnload = true " ><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+			}
 			<li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank" ><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
 
 		</ul>

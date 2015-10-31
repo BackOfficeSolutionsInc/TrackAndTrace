@@ -158,6 +158,10 @@ namespace RadialReview
 
 		public static String GetInitials(this UserOrganizationModel user)
 		{
+			var cacheVersion = user.Cache.NotNull(x => x.GetInitials());
+			if (cacheVersion!=null)
+				return cacheVersion;
+
 			var inits = new List<string>();
 			if (user.GetFirstName() != null && user.GetFirstName().Length > 0)
 				inits.Add(user.GetFirstName().Substring(0, 1));

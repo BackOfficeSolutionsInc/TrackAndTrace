@@ -6,13 +6,16 @@ using System.Web;
 using System.Web.Mvc;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.SimpleWorkflow.Model;
 using RadialReview.Accessors;
 using RadialReview.Engines;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Dashboard;
 using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
 using RadialReview.Models.Reviews;
+using RadialReview.Models.Tests;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Models.Responsibilities;
@@ -679,6 +682,145 @@ namespace RadialReview.Controllers
 					foreach (var o in users){
 						o.SendTodoTime = 10;
 						s.Update(o);
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "" + f;
+		}
+
+		[Access(AccessLevel.Radial)]
+		public string M10_19_2015()
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+					var pis = s.QueryOver<PermItem>().List().ToList();
+
+					var l10= s.QueryOver<L10Recurrence>().List().ToList();
+					foreach (var o in l10){
+						if (pis.Any(x=>x.ResId==o.Id && x.ResType==PermItem.ResourceType.L10Recurrence))
+							continue;
+
+						var p1 = new PermItem(){
+							AccessorId = o.CreatedById,
+							AccessorType = PermItem.AccessType.Creator,
+							CanAdmin = true,
+							CanView = true,
+							CanEdit = true,
+							CreatorId = -2,
+							CreateTime = DateTime.UtcNow,
+							OrganizationId = o.OrganizationId,
+							IsArchtype = false,
+							ResId = o.Id,
+							ResType = PermItem.ResourceType.L10Recurrence,
+						};
+						s.Save(p1);
+						var p2 = new PermItem(){
+							AccessorId = 0,
+							AccessorType = PermItem.AccessType.Members,
+							CanAdmin = true,
+							CanView = true,
+							CanEdit = true,
+							CreatorId = -2,
+							CreateTime = DateTime.UtcNow,
+							OrganizationId = o.OrganizationId,
+							IsArchtype = false,
+							ResId = o.Id,
+							ResType = PermItem.ResourceType.L10Recurrence,
+						};
+						s.Save(p2);
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "" + f;
+		}
+		[Access(AccessLevel.Radial)]
+		public string M10_20_2015()
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+
+					var l10 = s.QueryOver<TileModel>().List().ToList();
+					foreach (var o in l10)
+					{
+						if (o.DataUrl.EndsWith("2"))
+							continue;
+						f++;
+						o.DataUrl += "2";
+						s.Update(o);
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "" + f;
+		}
+
+		[Access(AccessLevel.Radial)]
+		public string M10_20_2015_2()
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+
+					var l10 = s.QueryOver<PermItem>().List().ToList();
+					foreach (var o in l10)
+					{
+						if (o.AccessorType == PermItem.AccessType.Creator && o.AccessorId == 0){
+							o.DeleteTime = DateTime.UtcNow;
+							f++;
+							s.Update(o);
+						}
+						/*
+						if (!(o.AccessorType == PermItem.AccessType.Creator && o.AccessorId == -2 && o.ResType == PermItem.ResourceType.L10Recurrence))
+							continue;
+						o.AccessorId = s.Get<L10Recurrence>(o.ResId).CreatedById;*/
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "" + f;
+		}
+
+
+		[Access(AccessLevel.Radial)]
+		public string M10_27_2015()
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+
+					var l10 = s.QueryOver<L10Recurrence>().List().ToList();
+					foreach (var o in l10)
+					{
+						if (String.IsNullOrWhiteSpace(o.VideoId))
+						{
+							o.VideoId = Guid.NewGuid().ToString();
+							f++;
+							s.Update(o);
+						}
+						/*
+						if (!(o.AccessorType == PermItem.AccessType.Creator && o.AccessorId == -2 && o.ResType == PermItem.ResourceType.L10Recurrence))
+							continue;
+						o.AccessorId = s.Get<L10Recurrence>(o.ResId).CreatedById;*/
 					}
 					tx.Commit();
 					s.Flush();

@@ -3,7 +3,10 @@
 	ViewBag.Title = "Meeting";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	ViewBag.FullWidth = true;
-	ViewBag.VideoChatRoom = Model.Recurrence.Id;
+	if (ViewBag.VideoChatRoom == null)
+	{
+		ViewBag.VideoChatRoom = Model.Recurrence.Id;
+	}
 }
 @using (Html.BeginStyles())
 {
@@ -13,8 +16,9 @@
 		.bootstrap-switch.bootstrap-switch-small {
 			min-width: 120px;
 		}
+
 		.bootstrap-switch > div > span.bootstrap-switch-default {
-		  color: #999;
+			color: #999;
 		}
 	</style>
 }
@@ -26,38 +30,41 @@
 		var MeetingId = @Model.Recurrence.Id;
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-		}
+												}
 
-		
+
 	</script>
 	@*<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
-	<script src="~/signalr/hubs"></script>*@
+		<script src="~/signalr/hubs"></script>*@
 	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
 	<script src="~/Scripts/jquery/jquery.scrollTo.js"></script>
 	<script src="~/Scripts/bootstrap-switch.js"></script>
+
+
 	@*<script src="~/Scripts/L10/L10.js"></script>
-	<script src="~/Scripts/L10/rtL10.js"></script>*@
+		<script src="~/Scripts/L10/rtL10.js"></script>*@
 	@Scripts.Render("~/bundles/L10")
 	@Html.Partial("_SetupScript", Model)
 	<script>
 		function afterLoad() {
+			console.log("called afterLoad");
 			userId = @(ViewBag.UserId);
 			@if (Model.Meeting != null){
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
+																			@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
 
 				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
 					@:setPageTime("@i.Item1",@i.Item2);
-				}
+																			}
 			}
 			else{
 				@:isLeader =false;
-			}
+																		}
 			initL10();
 			try {
 				resetClickables();
 			} catch (e) {
-				
+
 			}
 		}
 
@@ -73,7 +80,7 @@
 
 <div class="row full">
 	<div class="col-sm-3 col-md-2 full fixed-pos" style="padding-bottom: 10px;">
-		<div class="" >
+		<div class="">
 			<div class="component">
 				<div class="current-time">
 					<span class="centered">
@@ -105,28 +112,28 @@
 					<li class="page-item page-headlines">	<a data-location="Headlines" href="#Headlines">Headlines</a><span data-over="@Model.Recurrence.HeadlinesMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.HeadlinesMinutes) minutes on Headlines" class="page-time"></span></li>
 					<li class="page-item page-todo">		<a data-location="Todo" href="#Todo">To-do List</a><span title="Spend @String.Format("{0:0.##}",Model.Recurrence.TodoListMinutes) minutes on your Todo List" data-over="@Model.Recurrence.TodoListMinutes" class="page-time"></span></li>
 					<li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"></span></li>
-					<li class="page-item page-conclusion">	<a data-location="Conclusion" href="#Conclusion">Conclusion</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"></span></li>
+					<li class="page-item page-conclusion">	<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"></span></li>
 				</ol>
 				<div class="alignCenter">
 					<a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
 				</div>
-			</div>	
+			</div>
 			@if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId)
 			{
 				<br />
 				<div class="alignCenter">
 					<div style="color: #bbb;">Follow meeting leader:</div>
 					<input id="Follow"
-					       type="checkbox" 
-					       checked
-					       class="switch switch-large fullWidth"
-					       style="min-width: 138px;"
-					       data-on-color="default"
-					       data-off-color="info"
-					       data-on-text="Locked"
-					       data-off-text="Unlocked"
-					       data-size="small"
-					       data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
+						   type="checkbox"
+						   checked
+						   class="switch switch-large fullWidth"
+						   style="min-width: 138px;"
+						   data-on-color="default"
+						   data-off-color="info"
+						   data-on-text="Locked"
+						   data-off-text="Unlocked"
+						   data-size="small"
+						   data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
 
 				</div>
 				<br />
@@ -146,7 +153,7 @@
 <div class="notes" style="display: none;">
 	<div class="overlay"></div>
 	<div class="row">
-		<div class="col-xs-9 noPadLeft">
+		<div class="col-xs-9 noPadLeft noPadRight">
 			<div class="container main">
 				<textarea cols="9" class="verticalOnly"></textarea>
 			</div>
@@ -154,12 +161,105 @@
 		<div class="col-xs-3 noPadRight">
 			<div class="side tabs">
 				<div class="tab add"><span class="pull-right glyphicon glyphicon-plus-sign"></span> Add Page</div>
-				@if (Model.Recurrence != null){
-					foreach (var t in Model.Recurrence._MeetingNotes){
-						 <div data-id="@t.Id" class="tab">@t.Name</div>
-					 }
+				@if (Model.Recurrence != null)
+				{
+					foreach (var t in Model.Recurrence._MeetingNotes)
+					{
+						<div data-id="@t.Id" class="tab">@t.Name</div>
+					}
 				}
 			</div>
 		</div>
+	</div>
+</div>
+@using (Html.BeginScripts())
+{
+
+	@*<script src="~/Scripts/speechrecog.js"></script>*@
+	<script>
+
+	var shouldStart = false;
+	@if (Model.EnableTranscript)
+	{
+		@:shouldStart = true;
+	}
+
+	
+
+	$(function() {
+		$(document).on("click", ".todo-text", function() {
+			var text = encodeURIComponent($(this).text());
+			var tid=$(this).parent("li").attr("data-transcript-id");
+			showModal("Add a to-do",
+					  "/Todo/CreateTodo?recurrence=@Model.Recurrence.Id&meeting=@(Model.Meeting==null?-1:Model.Meeting.Id)&todo="+text+"&modelid="+tid+"&modeltype=Transcript",
+					  "/Todo/CreateTodo");
+		});
+		$(document).on("click", ".issue-text", function() {
+			var text = encodeURIComponent($(this).text());
+			var tid=$(this).parent("li").attr("data-transcript-id");
+			showModal("Add an issue",
+					  "/Issues/CreateIssue?recurrence=@Model.Recurrence.Id&meeting=@(Model.Meeting==null?-1:Model.Meeting.Id)&issue="+text+"&modelid="+tid+"&modeltype=Transcript",
+					  "/Issues/CreateIssue");
+		});
+		var speech = new SpeechRecog();
+		speech.ignore_onend = true;
+		speech.onfinalresult = function (e) {
+			var style = "";
+			var text = e.transcript;
+			var data = {
+				MeetingId : meetingId,	@*@(Model.Meeting==null?(long?)-1:Model.Meeting.Id)*@
+				RecurrenceId : @Model.Recurrence.Id,
+				Text:text,
+				ConnectionId: $.connection.hub.id
+			};
+			$.ajax({
+				url: "/transcript/add/",
+				data: data,
+				method: "post",
+				success: function(data) {
+					if (showJsonAlert(data)) {
+						$(".temp").html("");
+						$(".transcript-container .transcribing").stop().css("opacity", 0);
+						addTranscription(e.transcript, "You", data.Object.date,data.Object.id,true);
+					}
+				}
+			});
+		};
+
+		speech.oninterimresult = function (e) {
+			var style = "";
+			if (e.indexOf("to do") > 0) {
+			}
+			if(+$(".transcript-container .transcribing").css("opacity")==0){
+				$(".transcript-container .transcribing").animate({"opacity":.4},550);
+			}
+			$(".temp").html("<li style='"+style+"'>" + e + "</li>");
+		};
+		$(".transcript-container").appendTo(".footer-bar");
+		if (shouldStart){
+			if (speech.Init()) {
+				speech.Start();
+				$(".transcript-container").removeClass("hidden");
+			}
+		}
+	});
+	</script>
+}
+
+
+<div class="transcript-container hidden footer-bar-container" data-height="200px" style="bottom: -200px;"> 
+	<div class="tab footer-bar-tab">
+		<span class="transcribing" style="opacity: 0"><img src="~/Content/img/ajax-loader-ob.gif" /></span>
+		<span class="clicker">Transcript</span>
+		<span class="sendAudio icon fontastic-icon-mic-no"></span>
+	</div>
+	<div class="transcript-bar footer footer-bar-contents">
+		<ul class="temp gray"></ul>
+		<ul class="transcription-contents">
+			@foreach (var t in Model.CurrentTranscript.OrderByDescending(x=>x.Order)){
+				<li title="@t.Owner" data-order="@t.Order">@t.Message</li>
+			}
+		</ul>
+		<span class="noselect" style="position: relative;left:0;bottom:0;" target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers" class="experimental">This experimental feature is built for Chrome.</span>
 	</div>
 </div>

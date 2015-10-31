@@ -9,6 +9,9 @@ namespace RadialReview.Models.Todo
 {
 	public class TodoVM
 	{
+		private long? _forModelId;
+		private string _forModelType;
+
 		[Required]
 		public long MeetingId { get; set; }
 
@@ -32,6 +35,10 @@ namespace RadialReview.Models.Todo
 		public List<AccountableUserVM> PossibleUsers { get; set; }
 
 		public DateTime DueDate { get; set; }
+
+		public long? ForModelId { get; set; }
+
+		public string ForModelType { get; set; }
 
 		public TodoVM()
 		{

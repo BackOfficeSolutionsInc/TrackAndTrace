@@ -111,7 +111,8 @@ namespace RadialReview
 					"~/Content/L10/L10Rocks.css",
 					"~/Content/L10/L10IDS.v2.css",
 					"~/Content/L10/L10Scorecard.css",
-					"~/Content/L10/L10Notes.css"
+					"~/Content/L10/L10Notes.css",
+					"~/Content/L10/L10Transcribe.css"
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/L10").Include(
@@ -126,14 +127,19 @@ namespace RadialReview
 					"~/Scripts/L10/L10Scorecard.js",
 					"~/Scripts/L10/L10Notes.js",
 					"~/Scripts/L10/sortable.js",
+					"~/Scripts/speechrecog.js",
+					"~/Scripts/L10/L10Transcribe.js",
 					"~/Scripts/L10/rtL10.js"//Ensure last
 				));
 
 
 			var angularHelpers_Scripts = new[]{
+				"~/Scripts/Main/moment.min.js",
+				"~/Scripts/Angular/Helpers/Libraries/angular-filter.min.js", 
 				"~/Scripts/Angular/Helpers/Libraries/angular-daterangepicker.js", 
 				"~/Scripts/Angular/Helpers/transform.js", 
 				"~/Scripts/Angular/Helpers/signalR.js",
+				"~/Scripts/Angular/Helpers/Directives/bindUnsafeHtml.js",
 				"~/Scripts/Angular/Helpers/Directives/ImageTemplates.js",
 				"~/Scripts/Angular/Helpers/angular-timer.min.js",
 				"~/Scripts/Angular/helpers.js", 
@@ -167,8 +173,26 @@ namespace RadialReview
 					//"~/Scripts/jquery.signalR-{version}.js",
 					  "~/Scripts/jquery/jquery.tablesorter.js",
 					  "~/Scripts/Main/finally.js",
+					  "~/Scripts/Main/intercom.min.js",
 					  "~/Scripts/L10/jquery-ui.color.js"
 			));
+
+			bundles.Add(new ScriptBundle("~/bundles/DashboardGrid").Include(
+				"~/Scripts/Grid/fixtures.js",
+				"~/Scripts/Grid/src/gridList.js",
+				"~/Scripts/Grid/src/jquery.gridList.js",
+				"~/Scripts/Grid/loadTiles.js"
+			));
+
+			bundles.Add(new ScriptBundle("~/bundles/Video").Include(
+				"~/Scripts/video/RTCMultiConnection.js",
+				"~/Scripts/video/FileBufferReader.js",
+				"~/Scripts/video/socket.io.js",
+				"~/Scripts/video/hark.js"
+
+				
+			));
+
 			BundleTable.EnableOptimizations = Config.OptimizationEnabled();
 			/*
 #if DEBUG 

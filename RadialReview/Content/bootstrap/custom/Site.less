@@ -59,9 +59,9 @@ select:-webkit-autofill:focus {
 	height: 24px;
 	padding: 0;
 	left: 0;
-    right: 0;
-    position: fixed;
-    top: 30px;
+	right: 0;
+	position: fixed;
+	top: 30px;
 	z-index: 1000;
 }
 
@@ -69,3 +69,117 @@ select:-webkit-autofill:focus {
 	font-size: 32px;
 	margin-top: -6px;
 }
+
+
+.video-container .volume {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 1px;
+}
+
+.video-container .volume-bar {
+	float: right;
+	height: 10px;
+	margin: 0 1px 1px 0;
+	width: 1px;
+	background-color: rgba(0, 196, 255, 0.80);
+}
+
+.video-container.loudest {
+	border: 2px solid #006bff !important;
+}
+
+.footer-bar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.footer-bar .footer-bar-container {
+	position: absolute;
+	bottom: 0px;
+	left: 0;
+	right: 0;
+	-webkit-transition: bottom 0.25s;
+	-moz-transition: bottom 0.25s;
+	-o-transition: bottom 0.25s;
+	transition: bottom 0.25s;
+}
+
+.footer-bar .footer-bar-contents{
+	position:relative;
+	background: #0F0F0F;
+}
+
+.footer-bar .footer-bar-tab.shifted{	
+	
+}
+
+.footer-bar .footer-bar-tab{
+	position: absolute;
+	right: 0px;
+	//bottom: -1px;*/
+	top:-19px;
+	height: 20px;
+	text-align: center;
+	background: #0F0F0F;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	color: #777;
+	cursor: pointer;
+	border-color: #444;
+	border-width: 1px 0px 0px 1px;
+	border-style: solid;
+	-webkit-transition: bottom 0.25s;
+	-moz-transition: bottom 0.25s;
+	-o-transition: bottom 0.25s;
+	transition: bottom 0.25s;
+	z-index: 10001;
+	padding: 0 10px;
+	.noselect;
+	cursor:pointer;
+}
+
+.footer-bar .footer-bar-contents{    
+	border-top: 1px solid #444;
+}
+
+/*
+.footer-bar .footer-bar-item {
+	background-color: red;
+	position: absolute;
+	left:0;
+	right:0;
+}
+
+.footer-bar .footer-bar-tab {
+	position: absolute;
+	height: 20px;
+	top: -20px;
+	text-align: center;
+	background: #0F0F0F;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	color: #777;
+	cursor: pointer;
+	border-color: #444;
+	border-width: 1px 0px 0px 1px;
+	border-style: solid;
+	-webkit-transition: bottom 0.25s;
+	transition: bottom 0.25s;
+	z-index: 10001;
+	display: inline-block;
+	padding: 0 20px;
+	float: right;
+}
+
+.footer-bar .videoconference-container .footer-bar-tab {
+	right: 0px;
+}
+
+.footer-bar .transcript-container .footer-bar-tab {
+	right: -214px;
+}
+	*/

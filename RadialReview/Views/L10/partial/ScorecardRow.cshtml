@@ -34,20 +34,20 @@
 			var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == Model.MeetingMeasurable.Measurable.Id);
 
 			<td class="score @(r.IsCurrentWeek ? "current" : "")">
-				<input 
-					@(inlineEdit=="" ?"disabled":"")
-					data-goal="@(Model.MeetingMeasurable.Measurable.Goal)"
-					data-goal-dir="@(Model.MeetingMeasurable.Measurable.GoalDirection)"
-					data-row="@(ViewBag.Row)"
-					data-col="@(col)"
-					type="text"
-					placeholder="N/A"
-					value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
-					class="grid rt"
-					data-scoreid="@(found.NotNull(x => x.Id))"
-					data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-					data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
-					id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />
+				<input @(inlineEdit == "" ? "disabled" : "")
+					   data-goal="@(Model.MeetingMeasurable.Measurable.Goal)"
+					   data-goal-dir="@(Model.MeetingMeasurable.Measurable.GoalDirection)"
+					   data-row="@(ViewBag.Row)"
+					   data-col="@(col)"
+					   data-oldval="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+					   type="text"
+					   placeholder="N/A"
+					   value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+					   class="grid rt"
+					   data-scoreid="@(found.NotNull(x => x.Id))"
+					   data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+					   data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
+					   id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />
 			</td>
 			if (r.IsCurrentWeek)
 			{

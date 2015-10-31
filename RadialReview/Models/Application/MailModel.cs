@@ -36,6 +36,12 @@ namespace RadialReview.Models.Application
                 Email=email;
             }
 
+	        public MailIntermediate1 AddBcc(string email)
+	        {
+				Email.Bcc.Add(email);
+		        return this;
+	        }
+
             public MailIntermediate2 Subject(String subjectFormat, params String[] args)
             {
                 var unformatted=String.Format(subjectFormat, args);
@@ -52,13 +58,15 @@ namespace RadialReview.Models.Application
 
 
         public string ToAddress { get; set; }
+
+		public List<String> Bcc { get; set; } 
         public string HtmlBody { get; set; }
         public string Subject { get; set; }
         //public virtual bool Send {get;set;}
         //public virtual DateTime? CompleteTime {get;set;}
 
         protected MailModel(){
-
+			Bcc = new List<string>();
         }
 
         public static MailIntermediate1 To(String toAddress)

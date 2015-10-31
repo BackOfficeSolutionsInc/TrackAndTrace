@@ -78,3 +78,30 @@
 	padding-top: 10px;
 	padding-left: 40px;
 }
+
+.meeting-stats .todo-list .todo-row {
+	background-color: #fff;
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+
+.meeting-stats .todo-list .todo-row input,
+.meeting-stats .todo-list .todo-row .move-icon,
+.meeting-stats .todo-list .todo-row .issuesButton{ 
+	display: none;
+}
+
+.meeting-stats .due-date {
+	    float: right;
+    color: #CCC;
+    position: relative;
+    top: 8px;
+	    font-size: 18px;
+		    width: inherit;
+}
+
+.meeting-stats .todo-list .message {
+	left: 0;
+	display: inline-block;
+}

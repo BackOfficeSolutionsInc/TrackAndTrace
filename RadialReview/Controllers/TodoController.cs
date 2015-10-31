@@ -85,7 +85,7 @@ namespace RadialReview.Controllers
 		}
 
 	    [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateTodo(long recurrence, long meeting = -1)
+		public PartialViewResult CreateTodo(long recurrence, long meeting = -1, string todo = null, long? modelId = null, string modelType = null)
 		{
 			if (meeting!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
@@ -93,6 +93,9 @@ namespace RadialReview.Controllers
 
 			var model = new TodoVM(recur.DefaultTodoOwner)
 			{
+				ForModelId = modelId,
+				ForModelType = modelType,
+				Message = todo,
 				ByUserId = GetUser().Id,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
@@ -123,8 +126,8 @@ namespace RadialReview.Controllers
 				CreatedDuringMeetingId = model.MeetingId,
 				Message = model.Message ?? "",
 				Details = model.Details ?? "",
-				ForModel = "TodoModel",
-				ForModelId = -1,
+				ForModel = model.ForModelType??"TodoModel",
+				ForModelId = model.ForModelId??-1,
 				Organization = GetUser().Organization,
 				AccountableUserId = model.AccountabilityId,
 				DueDate = model.DueDate

@@ -1,4 +1,5 @@
-﻿@model RadialReview.Models.L10.VM.L10EditVM
+﻿@using RadialReview.Models
+@model RadialReview.Models.L10.VM.L10EditVM
 @{
 	ViewBag.Title = "Edit L10 Meeting";
 	Layout = "~/Views/Shared/_Layout.cshtml";
@@ -10,8 +11,18 @@
 		<h1 class="nameFade">L10 Meeting</h1>
 	</div>
 }
+<div class="pull-left smallBreak2">
+	@{
 
-<div class="panel panel-primary">
+		if (Model.Recurrence.Id != 0)
+		{
+			Html.RenderAction("Dropdown", "Permissions", new { id = Model.Recurrence.Id, type = PermItem.ResourceType.L10Recurrence });
+		}
+	}
+</div>
+<div class="clearfix"></div>
+
+<div class="panel panel-primary ">
 	<div class="panel-heading">
 		<h3 class="panel-title">Edit L10 Meeting</h3>
 	</div>
@@ -60,18 +71,21 @@
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Scorecard duration (minutes):</label>
-				<div class="col-sm-9">					@Html.TextBox(Html.NameFor(x => x.Recurrence.ScorecardMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
-</div>
+				<div class="col-sm-9">
+					@Html.TextBox(Html.NameFor(x => x.Recurrence.ScorecardMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
+				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">@Html.Organization().Settings.RockName Review duration (minutes):</label>
-				<div class="col-sm-9">					@Html.TextBox(Html.NameFor(x => x.Recurrence.RockReviewMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
-</div>
+				<div class="col-sm-9">
+					@Html.TextBox(Html.NameFor(x => x.Recurrence.RockReviewMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
+				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Headlines duration (minutes):</label>
-				<div class="col-sm-9">					@Html.TextBox(Html.NameFor(x => x.Recurrence.HeadlinesMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
-</div>
+				<div class="col-sm-9">
+					@Html.TextBox(Html.NameFor(x => x.Recurrence.HeadlinesMinutes).ToHtmlString(), String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes), new { @class = "select2 form-control editable", type = "number", min = "0", step = "any", max = "500" })
+				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">Todo List duration (minutes):</label><div class="col-sm-9">
@@ -98,12 +112,20 @@
 				<label class="col-sm-3 control-label">Show Aggregate To-do Completion:</label>
 				<div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.IncludeAggregateTodoCompletion, new { @class = "editable", style = "margin-top: 11px;" })</div>
 			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Transcribe Meeting :</label>
+				<div class="col-sm-9">@Html.CheckBoxFor(x => x.Recurrence.EnableTranscription, new { @class = "editable", style = "margin-top: 11px;" }) <span class="gray">(Chrome Only!)</span></div>
+			</div>
 
 			@Html.SecuredHiddenFor(x => x.Recurrence.Id)
 			@Html.SecuredHiddenFor(x => x.Recurrence.CreateTime)
 			@Html.SecuredHiddenFor(x => x.Recurrence.OrganizationId)
 			@Html.SecuredHiddenFor(x => x.Recurrence.MeetingInProgress)
 			@Html.SecuredHiddenFor(x => x.Recurrence.CreatedById)
+			@Html.SecuredHiddenFor(x => x.Recurrence.VideoId)
+			@Html.SecuredHiddenFor(x => x.Recurrence.OrderIssueBy)
+
 			@Html.HiddenFor(x => x.Return)
 			<div class="alignCenter">
 				<input class="btn btn-primary" type="submit" value="Submit" />
@@ -147,7 +169,7 @@
 			});;
 		}
 
-		
+
 		$(".default-todo-list").on("change", function() {
 			selectedTodoList = $(this).val();
 		});
@@ -156,7 +178,7 @@
 			updateTodoList();
 		});
 
-		
+
 		function goL10() {
 			window.location = "/L10";
 		}

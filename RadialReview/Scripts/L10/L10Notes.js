@@ -36,7 +36,7 @@
 		$(this).css("z-index", null);
 	});
 
-	$("body").on("click", ".notesButton", function () {
+	$("body").on("click", ".notesButton:not(.disabled)", function () {
 		$(this).css("z-index", 20);
 		$(".notes").css({ right: 10, top: 40 });
 		$(".notes").fadeIn();
@@ -51,7 +51,7 @@
 	});
 
 
-	$("body").on("keyup", ".notes textarea", $.throttle(250, sendNoteContents));
+	$("body").on("keyup", ".notes textarea:not(.disabled)", $.throttle(250, sendNoteContents));
 
 });
 

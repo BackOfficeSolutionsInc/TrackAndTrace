@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Amazon.ElasticTranscoder.Model;
 using FluentNHibernate.Utils;
 using RadialReview.Accessors;
 using RadialReview.Models.Json;
@@ -22,9 +23,58 @@ namespace RadialReview.Controllers
 			public long CopyFrom { get; set; }
 
 			public List<UserOrganizationModel> PossibleUsers { get; set; }
-			
-			
 	    }
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult Dropdown(PermissionDropdownVM model)
+		{
+			PermissionsAccessor.EditPermItems(GetUser(), model);
+
+			return Dropdown(model.ResId, model.ResType);
+		}
+
+	    [Access(AccessLevel.UserOrganization)]
+	    public PartialViewResult BlankDropdownRow(long id,long resource,PermItem.ResourceType type)
+	    {
+			var rgm = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), id);
+
+		    var isAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(type, resource));
+
+		    ViewBag.CanEdit_View = isAdmin;
+		    ViewBag.CanEdit_Edit = isAdmin;
+		    ViewBag.CanEdit_Admin = isAdmin;
+
+		    var piVM = new PermItemVM(){
+				AccessorId = id,
+				AccessorType = PermItem.AccessType.RGM,
+				CanView = true,
+				CanEdit = false,
+				CanAdmin = false,
+				Title = rgm.GetName(),
+				ImageUrl = rgm.GetImageUrl(),
+				Edited = false
+		    };
+
+		    var vm = PermissionsAccessor.CreatePermItem(GetUser(), piVM, PermItem.ResourceType.L10Recurrence, resource);
+
+			return PartialView("PermItemRow", vm);
+	    }
+
+	    [Access(AccessLevel.UserOrganization)]
+	    public JsonResult UpdatePerm(long id, bool? view=null,bool? edit=null,bool? admin=null)
+	    {
+			PermissionsAccessor.EditPermItem(GetUser(), id, view, edit, admin);
+		    return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+	    }
+
+	    [Access(AccessLevel.UserOrganization)]
+		public PartialViewResult Dropdown(long id,PermItem.ResourceType type)
+		{
+			var model = PermissionsAccessor.GetPermItems(GetUser(),id, type);
+
+			return PartialView(model);
+		}
 
 		[Access(AccessLevel.UserOrganization)]
         public PartialViewResult Modal(long id = 0)

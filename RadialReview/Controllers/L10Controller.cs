@@ -4,14 +4,18 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MathNet.Numerics.Distributions;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Models;
 using RadialReview.Models.Audit;
 using RadialReview.Models.L10;
 using RadialReview.Accessors;
 using RadialReview.Models.L10.VM;
+using RadialReview.Models.Permissions;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Json;
+using RadialReview.Models.Timeline;
+using RadialReview.Models.VideoConference;
 using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
@@ -40,10 +44,28 @@ namespace RadialReview.Controllers
 				return Content("Error: url requires a meeting Id");
 			var recurrenceId = id.Value;
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId,true);
+
+			ViewBag.VideoChatRoom = new VideoConferenceVM()
+			{
+				RoomId = recurrence.VideoId
+			};
+
 			var model = new L10MeetingVM(){
 				Recurrence = recurrence,
-				Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(),recurrenceId,true,loadLogs:true)
+				Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(),recurrenceId,true,loadLogs:true),
+				EnableTranscript = recurrence.EnableTranscription
 			};
+
+			if (model.Meeting != null){
+				var transcript = TranscriptAccessor.GetMeetingTranscript(GetUser(), model.Meeting.Id);
+				model.CurrentTranscript = transcript.Select(x => new MeetingTranscriptVM()
+				{
+					Id = x.Id,
+					Message = x.Text,
+					Order = x.CreateTime.ToJavascriptMilliseconds(),
+					Owner = x._User.GetName()
+				}).ToList();
+			}
 
 
 			return View(model);
@@ -56,7 +78,7 @@ namespace RadialReview.Controllers
 
 			var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
-			var allRocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
+			var allRocks = RockAccessor.GetAllVisibleRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
 
 			var model = new L10EditVM()
 			{
@@ -64,6 +86,7 @@ namespace RadialReview.Controllers
 				{
 					CreateTime = DateTime.UtcNow,
 					OrganizationId = GetUser().Organization.Id,
+					VideoId = Guid.NewGuid().ToString()
 				},
 				PossibleMeasurables = allMeasurables,
 				PossibleMembers = allMembers,
@@ -71,7 +94,11 @@ namespace RadialReview.Controllers
 				SelectedMeasurables = new long[0],
 				SelectedMembers = new long[0],
 				SelectedRocks = new long[0],
+				
 			};
+
+
+
 
 			return View("Edit", model);
 		}
@@ -94,11 +121,18 @@ namespace RadialReview.Controllers
 		public ActionResult Edit(long id,string @return=null)
 		{
 			var recurrenceId = id;
+
+			_PermissionsAccessor.Permitted(GetUser(),x=>x.CanAdmin(PermItem.ResourceType.L10Recurrence, id));
+
 			var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
 
 			var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
-			var allRocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
+			var allRocks = RockAccessor.GetAllVisibleRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
+
+
+			allRocks.AddRange(r._DefaultRocks.Where(x => x.Id>0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
+			allMeasurables.AddRange(r._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y.Id != x.Measurable.Id)).Select(x => x.Measurable));
 
 			var model = new L10EditVM()
 			{
@@ -121,14 +155,28 @@ namespace RadialReview.Controllers
 	    [Access(AccessLevel.UserOrganization)]
 	    public ActionResult Edit(L10EditVM model)
 	    {
-			ValidateValues(model, x => x.Recurrence.Id, x => x.Recurrence.CreateTime, x => x.Recurrence.OrganizationId, x => x.Recurrence.MeetingInProgress, x => x.Recurrence.CreatedById);
+			ValidateValues(model, 
+				x => x.Recurrence.Id, 
+				x => x.Recurrence.CreateTime, 
+				x => x.Recurrence.OrganizationId, 
+				x => x.Recurrence.MeetingInProgress,
+				x => x.Recurrence.CreatedById,
+				x => x.Recurrence.VideoId,
+				x => x.Recurrence.OrderIssueBy);
 
 			if (String.IsNullOrWhiteSpace(model.Recurrence.Name)){
 				ModelState.AddModelError("Name","Meeting name is required");
 			}
-			var allRocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), GetUser().Organization.Id,true);
+
+			var existing = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
+
+			var allRocks = RockAccessor.GetAllVisibleRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
 			var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+
+			allRocks.AddRange(existing._DefaultRocks.Where(x => x.Id > 0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
+			allMeasurables.AddRange(existing._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y.Id != x.Measurable.Id)).Select(x => x.Measurable));
+
 			if (ModelState.IsValid){
 				model.Recurrence.OrganizationId = GetUser().Organization.Id;
 				model.Recurrence._DefaultAttendees = allMembers.Where(x => model.SelectedMembers.Any(y => y == x.Id))
@@ -166,8 +214,6 @@ namespace RadialReview.Controllers
 			model.SelectedRocks = model.SelectedRocks ?? new long[0];
 			model.SelectedMembers = model.SelectedMembers ?? new long[0];
 			model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
-			
-
 
 			return View("Edit",model);
 		}
@@ -181,23 +227,30 @@ namespace RadialReview.Controllers
 			return View(links);
 		}
 
-	    public class TimelineItem
-	    {
-		    public List<L10AuditModel> Audits { get; set; } 
-			public L10Meeting Meeting { get; set; }
-	    }
+	   
 
+	   
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Timeline(long id)
 		{
 			var recurrence = id;
-			var audits = L10Accessor.GetL10Audit(GetUser(), id);
+			var audits = L10Accessor.GetL10Audit(GetUser(), recurrence);
+			var transcripts = TranscriptAccessor.GetRecurrenceTranscript(GetUser(), recurrence);
 			var meetings = L10Accessor.GetL10Meetings(GetUser(), id, false);
-			var list = new List<TimelineItem>();
+			var list = new List<MeetingTimeline>();
+			var user = GetUser();
 			foreach (var m in meetings){
-				list.Add(new TimelineItem(){
+				
+				var curAudits = audits.Where(x => m.CreateTime <= x.CreateTime && (m.CompleteTime == null || x.CreateTime <= m.CompleteTime)).ToList();
+				var curTranscripts = transcripts.Where(x => m.CreateTime <= x.CreateTime && (m.CompleteTime == null || x.CreateTime <= m.CompleteTime)).ToList();
+
+				var allItems = new List<TimelineItem>();
+				allItems.AddRange(curAudits.Select(x=>TimelineItem.Create(user,x)));
+				allItems.AddRange(curTranscripts.Select(x=>TimelineItem.Create(user,x)));
+
+				list.Add(new MeetingTimeline(){
 					Meeting = m,
-					Audits =  audits.Where(x=>m.CreateTime<=x.CreateTime && (m.CompleteTime==null || x.CreateTime<=m.CompleteTime)).ToList()
+					Items =  allItems
 				});
 			}
 			return View(list);

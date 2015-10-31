@@ -69,8 +69,8 @@
 	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
 	<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+	@*<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>*@
 	@Scripts.Render("~/bundles/meeting")
 
 	<script src="~/Scripts/L10/L10.js"></script>
@@ -111,7 +111,7 @@
 
 			}, 1000);
 
-			$("body").on("click", ".issuesModal", function() {
+			$("body").on("click", ".issuesModal:not(.disabled)", function() {
 				var parm = $.param($(this).data());
 				var m = $(this).data("method");
 				if (!m)
@@ -119,7 +119,7 @@
 				showModal("Add an issue", "/Issues/" + m + "?" + parm, "/Issues/" + m);
 			});
 
-			$("body").on("click", ".todoModal", function() {
+			$("body").on("click", ".todoModal:not(.disabled)", function() {
 				var parm = $.param($(this).data());
 				var m = $(this).data("method");
 				if (!m)
@@ -127,7 +127,7 @@
 				showModal("Add a to-do", "/Todo/" + m + "?" + parm, "/Todo/" + m);
 			});
 
-			$("body").on("click", ".measurableModal", function() {
+			$("body").on("click", ".measurableModal:not(.disabled)", function() {
 				var m = $(this).data("recurrence");
 				showModal('Add Measurable', '/L10/AddMeasurable/' + m, '/L10/AddMeasurable/');
 			});

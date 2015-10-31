@@ -596,5 +596,15 @@ namespace RadialReview.Controllers
         {
             return Json(await _PaymentAccessor.ChargeOrganizationAmount(id, amt, true),JsonRequestBehavior.AllowGet);
         }
+
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> ClearCache()
+		{
+			var urlToRemove = Url.Action("UserScorecard", "TileData");
+			HttpResponse.RemoveOutputCacheItem(urlToRemove);
+			return Json("cleared", JsonRequestBehavior.AllowGet);
+		}
+
+
     }
 }

@@ -57,6 +57,8 @@ namespace RadialReview.Models.L10.VM
 
 		public string connectionId { get; set; }
 
+		public string orderby { get; set; }
+
 		public List<long> GetAllIds()
 		{
 			return idsRecurse(issues).Distinct().ToList();

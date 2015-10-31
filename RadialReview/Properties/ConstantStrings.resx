@@ -120,11 +120,17 @@
   <data name="AmazonS3Location" xml:space="preserve">
     <value>https://s3.amazonaws.com/Radial/</value>
   </data>
+  <data name="ImageGroupPlaceholder" xml:space="preserve">
+    <value>placeholder/GroupIcon.png</value>
+  </data>
   <data name="ImageOrganizationPlaceholder" xml:space="preserve">
     <value>placeholder/orgPlaceholder.png</value>
   </data>
   <data name="ImagePlaceholder" xml:space="preserve">
     <value>placeholder/orgPlaceholder.png</value>
+  </data>
+  <data name="ImagePositionPlaceholder" xml:space="preserve">
+    <value>/placeholder/Briefcase.png</value>
   </data>
   <data name="ImageUserPlaceholder" xml:space="preserve">
     <value>placeholder/placeholder.png</value>

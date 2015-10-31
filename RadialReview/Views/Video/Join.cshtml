@@ -1,0 +1,17 @@
+﻿@{
+	ViewBag.FullWidth = true;
+}
+
+@using (Html.BeginScripts())
+{
+	<script>
+		$(function () {
+			$(".video-bar").addClass("shifted");
+			$(".uncollapser .clicker").parent().addClass("shifted");
+
+			setTimeout(function() {
+				$('.video-container.mine').click();
+			},1500);
+		});
+	</script>
+}

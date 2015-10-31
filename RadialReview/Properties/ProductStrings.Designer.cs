@@ -61,6 +61,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1201 Infinity Ct, Lincoln, NE 68512.
+        /// </summary>
+        public static string Address {
+            get {
+                return ResourceManager.GetString("Address", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://review.radialreview.com/.
         /// </summary>
         public static string BaseUrl2 {
@@ -111,6 +120,15 @@ namespace RadialReview.Properties {
         public static string PaymentExceptionEmail {
             get {
                 return ResourceManager.GetString("PaymentExceptionEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to payment-receipts@mytractiontools.com.
+        /// </summary>
+        public static string PaymentReceiptEmail {
+            get {
+                return ResourceManager.GetString("PaymentReceiptEmail", resourceCulture);
             }
         }
         

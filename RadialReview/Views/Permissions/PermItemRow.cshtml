@@ -1,0 +1,49 @@
+﻿@model RadialReview.Models.Permissions.PermItemVM
+
+
+<tr>
+	<td class="name">@Model.Title</td>
+	<td>
+		@{Html.RenderPartial("~/Views/Shared/_Picture.cshtml", new ViewDataDictionary(Model.ImageUrl){
+			  {"ImageTitle",Model.Title}
+		  });}
+	</td>
+	<td>
+		@if (ViewBag.CanEdit_View)
+		{
+			@Html.CheckBoxFor(x => x.CanView, new { onchange = "updatePermItem("+Model.Id+",'view',this)" })
+		}
+		else
+		{
+			@Html.CheckBoxFor(x => x.CanView, new { title = "Cannot change view permissions.",disabled=true })
+			@*<span class="disabled gray icon fontastic-icon-eye-2" title=""></span>*@
+		}
+	</td>
+	<td>
+		@if (ViewBag.CanEdit_Edit)
+		{
+			@Html.CheckBoxFor(x => x.CanEdit, new { onchange = "updatePermItem(" + Model.Id + ",'edit',this)" })
+			@*<span class="glyphicon glyphicon-pencil"></span>*@
+		}
+		else
+		{
+			@Html.CheckBoxFor(x => x.CanEdit, new { title = "Cannot change edit permissions.", disabled = true })
+			@*<div class="disabled gray" title="Cannot change edit permissions.">Edit</div>*@
+		}
+
+	</td>
+	<td>
+
+		@if (ViewBag.CanEdit_Admin)
+		{
+			@Html.CheckBoxFor(x => x.CanAdmin, new { onchange = "updatePermItem(" + Model.Id + ",'admin',this)" })
+			@*<span class="icon fontastic-icon-key"></span>*@
+		}
+		else
+		{
+			@Html.CheckBoxFor(x => x.CanAdmin, new { title = "Cannot change admin permissions.", disabled = true })
+			@*<div class="disabled gray" title="Cannot change admin permissions.">Admin</div>*@
+		}
+	</td>
+
+</tr>

@@ -10,7 +10,7 @@ namespace RadialReview.Models
 {
     public class InvoiceModel : ILongIdentifiable
     {
-        public virtual long Id { get; protected set; }
+	    public virtual long Id { get; protected set; }
 		public virtual DateTime InvoiceSentDate { get; set; }
 		public virtual DateTime InvoiceDueDate { get; set; }
 		public virtual DateTime CreateTime { get; set; }
@@ -21,8 +21,12 @@ namespace RadialReview.Models
 
 		public virtual String TransactionId { get; set; }
 
+		public virtual DateTime ServiceStart { get; set; }
+	    public virtual DateTime ServiceEnd { get; set; }
 
-        public InvoiceModel()
+	    public virtual decimal AmountDue { get; set; }
+
+	    public InvoiceModel()
         {
             InvoiceItems = new List<InvoiceItemModel>();
 	        CreateTime = DateTime.UtcNow;
@@ -59,6 +63,11 @@ namespace RadialReview.Models
 			Map(x => x.PaidTime);
 			Map(x => x.CreateTime);
 			Map(x => x.TransactionId);
+
+			Map(x => x.AmountDue);
+
+			Map(x => x.ServiceStart);
+			Map(x => x.ServiceEnd);
 
 			References(x => x.Organization);
             HasMany(x => x.InvoiceItems)

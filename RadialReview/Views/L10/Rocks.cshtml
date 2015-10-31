@@ -5,7 +5,7 @@
 			<hgroup class="page-header">
 				<div class="pull-right">
 					<div class="btn-group">
-						<div class="btn btn-default btn-xs" onclick="@Html.ShowModal("Add Rock", "/L10/AddRock/" + Model.Recurrence.Id, "/L10/AddRock/")">
+						<div class="btn btn-default btn-xs @(Model.CanEdit?"":"disabled")" onclick="@(Model.CanEdit?Html.ShowModal("Add Rock", "/L10/AddRock/" + Model.Recurrence.Id, "/L10/AddRock/"):new HtmlString(""))">
 							<span class="icon fontastic-icon-science-laboratory"></span> Add Rock
 						</div>
 					</div>
@@ -14,8 +14,10 @@
 				</div>
 				<h2>@Html.Organization().Settings.RockName Review <small></small></h2>
 			</hgroup>
-			<div class="rocks-container" style="padding-bottom: 20px;">
-				
+			<div class="empty-holder rock-empty-holder @(Model.Meeting._MeetingRocks.Any() ? "hidden" : "")"></div>
+
+			<div class="rocks-container  @(Model.Meeting._MeetingRocks.Any() ? "" : "hidden")" style="padding-bottom: 20px;">
+
 				@Html.Partial("partial/RockGroup",Model.Rocks)
 
 				@*@foreach (var person in Model.Rocks.GroupBy(x => x.ForRock.ForUserId))

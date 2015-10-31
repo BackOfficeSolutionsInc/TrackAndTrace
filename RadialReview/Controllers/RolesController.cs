@@ -24,19 +24,21 @@ namespace RadialReview.Controllers
 			public DateTime CurrentTime = DateTime.UtcNow;
 		}
 
-		[Access(AccessLevel.Manager)]
-		public PartialViewResult Modal(long id) {
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult Modal(long id)
+		{
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 			var roles = _RoleAccessor.GetRoles(GetUser(), id);
 			return PartialView(new RoleVM { Roles = roles, UserId = id });
 		}
 
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult BlankEditorRow() {
 			return PartialView("_RoleRow", new RoleModel());
 		}
 
 		[HttpPost]
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Modal(RoleVM model) {
 			
 
@@ -47,7 +49,7 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess());
 		}
 
-		#region Template 
+		#region Template
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult TemplateModal(long id)
 		{
@@ -55,7 +57,7 @@ namespace RadialReview.Controllers
 			return PartialView(new RoleVM { TemplateRoles = template._Roles, TemplateId = id });
 		}
 
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult BlankTemplateEditorRow(long id)
 		{
 			var templateId = id;

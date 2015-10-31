@@ -8,6 +8,7 @@ using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Angular.Issues;
 using RadialReview.Models.Angular.Meeting;
+using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
@@ -24,7 +25,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var perms = PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
 					//perms.ViewL10Recurrence(recurrenceId);
 
 					if (issue.Id!=0)
@@ -55,27 +56,42 @@ namespace RadialReview.Accessors
 					issue.CreatedBy = s.Get<UserOrganizationModel>(issue.CreatedById);
 					*/
 					s.Save(issue);
+					var r = s.Get<L10Recurrence>(recurrenceId);
+
 					var recur=new IssueModel.IssueModel_Recurrence(){
 						CopiedFrom = null,
 						Issue = issue,
 						CreatedBy = issue.CreatedBy,
-						Recurrence = s.Load<L10Recurrence>(recurrenceId),
+						Recurrence = r,
 						CreateTime = issue.CreateTime,
-						Owner = s.Load<UserOrganizationModel>(ownerId)
+						Owner = s.Load<UserOrganizationModel>(ownerId),
+						
 					};
 					s.Save(recur);
-
+					if (r.OrderIssueBy == "data-priority"){
+						var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+							.Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Priority > 0 && x.ParentRecurrenceIssue==null)
+							.Select(x => x.Ordering).List<long?>().Where(x=>x!=null).ToList();
+						var max = -1L;
+						if (order.Any())
+							max = order.Max()??-1;
+						max+=1;
+						recur.Ordering = max;
+						s.Update(recur);
+					}
 					tx.Commit();
 					s.Flush(); 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 
-					meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur));
+				
+
+					meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur), r.OrderIssueBy);
 					
 					var updates = new AngularRecurrence(recurrenceId);
 					updates.Issues = new List<AngularIssue>() { new AngularIssue(recur) };
 					meetingHub.update(updates);
-					Audit.L10Log(s, caller, recurrenceId, "CreateIssue", issue.NotNull(x => x.Message));
+					Audit.L10Log(s, caller, recurrenceId, "CreateIssue",ForModel.Create(issue), issue.NotNull(x => x.Message));
 				}
 			}
 		}
@@ -170,7 +186,7 @@ namespace RadialReview.Accessors
 
 					meetingHub.appendIssue(".issues-list", viewModel);
 					var issue = s.Get<IssueModel>(parent.Issue.Id);
-					Audit.L10Log(s, caller, parent.Recurrence.Id, "CopyIssue", issue.NotNull(x => x.Message) +" copied into "+ childRecur.NotNull(x=>x.Name));
+					Audit.L10Log(s, caller, parent.Recurrence.Id, "CopyIssue", ForModel.Create(issue_recur), issue.NotNull(x => x.Message) + " copied into " + childRecur.NotNull(x => x.Name));
 					
 				}
 			}
