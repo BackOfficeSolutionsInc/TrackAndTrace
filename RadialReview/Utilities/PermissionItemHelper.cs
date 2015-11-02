@@ -78,7 +78,7 @@ namespace RadialReview.Utilities
 		}
 
 
-		public PermissionsUtility CanView(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility> defaultAction = null)
+		public PermissionsUtility CanView(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null)
 		{
 			return CheckCacheFirst("CanView_" + resourceType, resourceId).Execute(() =>
 			{
@@ -89,7 +89,7 @@ namespace RadialReview.Utilities
 			});
 		}
 
-		public PermissionsUtility CanEdit(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility> defaultAction = null)
+		public PermissionsUtility CanEdit(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null)
 		{
 			return CheckCacheFirst("CanEdit_" + resourceType, resourceId).Execute(() =>
 			{
@@ -100,7 +100,7 @@ namespace RadialReview.Utilities
 				throw new PermissionsException("Can not edit this item.");
 			});
 		}
-		public PermissionsUtility CanAdmin(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility> defaultAction = null)
+		public PermissionsUtility CanAdmin(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null)
 		{
 			return CheckCacheFirst("CanAdmin_" + resourceType, resourceId).Execute(() =>
 			{
@@ -111,8 +111,8 @@ namespace RadialReview.Utilities
 				throw new PermissionsException("Can not administrate this item.");
 			});
 		}
-		
-		protected bool CanAccessItem(PermItem.AccessLevel level, PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility> defaultAction,ref PermissionsUtility result,bool and=true)
+
+		protected bool CanAccessItem(PermItem.AccessLevel level, PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction, ref PermissionsUtility result, bool and = true)
 		{
 			if (IsRadialAdmin(caller))
 				return true;
@@ -123,7 +123,7 @@ namespace RadialReview.Utilities
 			if (!permItems.Any()){
 				//This might be redundant with the !anyFlags check.
 				if (defaultAction != null){
-					result = defaultAction();
+					result = defaultAction(this);
 					return true;
 				}
 				return false;

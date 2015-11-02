@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using FluentNHibernate.Conventions.AcceptanceCriteria;
 using RadialReview.Models.UserModels;
 
 namespace RadialReview.Models.ViewModels
@@ -40,6 +41,8 @@ namespace RadialReview.Models.ViewModels
         public List<string> ManagersTitles { get; set; }
         public bool Admin { get; set; }
 
+	    public bool IsClient { get; set; }
+
         public OrgMemberViewModel(UserOrganizationModel userOrg)
         {
             Id = userOrg.Id;
@@ -51,6 +54,8 @@ namespace RadialReview.Models.ViewModels
             PositionTitles = userOrg.Positions.ToListAlive().Select(x=>x.Position.CustomName).ToList();
             ManagersTitles = userOrg.ManagedBy.ToListAlive().Select(x => x.Manager.GetName()).ToList();
             NumIndividualResponsibilities = userOrg.Responsibilities.ToListAlive().Count();
+
+	        IsClient = userOrg.IsClient;
             EmailSent=true;
             if (userOrg.TempUser != null && userOrg.TempUser.LastSent == null)
                 EmailSent = false;
@@ -83,7 +88,7 @@ namespace RadialReview.Models.ViewModels
 			ManagersTitles = u.Managers.Split(',').Select(x => x.Trim()).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
 			EmailSent = u.HasSentInvite;
 			Admin = u.IsAdmin;
-
+			IsClient = u.IsClient;
 			Managing = u._PersonallyManaging;
 
 			//PositionTitle = userOrg.Positions.ToListAlive().FirstOrDefault().NotNull(x => x.Position.CustomName);

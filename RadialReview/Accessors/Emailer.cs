@@ -405,7 +405,7 @@ namespace RadialReview.Accessors
 							Sent = false,
 							Subject = email.Subject,
 							ToAddress = email.ToAddress,
-							Bcc = String.Join(",",email.Bcc),
+							Bcc = String.Join(",",email.BccList),
 							SentTime = now
 						};
 						s.Save(unsent);

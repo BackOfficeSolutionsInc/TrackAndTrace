@@ -143,7 +143,7 @@ namespace RadialReview.Controllers
 
 
         [Access(AccessLevel.Manager)]
-        public PartialViewResult AddModal(long? managerId = null)
+        public PartialViewResult AddModal(long? managerId = null,bool isClient=false)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -197,6 +197,8 @@ namespace RadialReview.Controllers
                 StrictlyHierarchical = strictHierarchy,
                 ManagerId = managerId??caller.Id,
                 PotentialManagers = managers,
+				SendEmail = caller.Organization.SendEmailImmediately,
+				IsClient = isClient
             };
             var e5 = sw.ElapsedMilliseconds;
             return PartialView(model);
@@ -267,6 +269,9 @@ namespace RadialReview.Controllers
 
 
             var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
+			if (user.IsClient)
+				throw new PermissionsException("Cannot edit positions of a client.", true);
+
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
 			user.SetPersonallyManaging(members.Any(x => x.UserId == userId && x._PersonallyManaging));//.Hydrate().PersonallyManaging(GetUser()).Execute();
 
@@ -413,6 +418,9 @@ namespace RadialReview.Controllers
         {
 	        var userId = id;
             var user = _UserAccessor.GetUserOrganization(GetUser(), id, false, false).Hydrate().Managers().PersonallyManaging(GetUser()).Execute();
+
+			if (user.IsClient)
+				throw new PermissionsException("Cannot edit managers of a client.", true);
 
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeManagers);
 			user.SetPersonallyManaging(members.Any(x => x.UserId == userId && x._PersonallyManaging));//.Hydrate().PersonallyManaging(GetUser()).Execute();

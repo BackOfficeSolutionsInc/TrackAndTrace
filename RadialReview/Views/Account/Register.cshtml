@@ -123,6 +123,19 @@
 						</div>
 					</div>
 				</div>
+				@*@if (Model.IsClient){
+					<div class="form-group">
+						@Html.Label("Organization", new{@class = "col-md-4 control-label"})
+						<div class="col-md-8">
+							<div class="col-xs-12" style="padding: 0 2px 0 0;">
+								@Html.TextBoxFor(m => m.OrganizationName, new{@class = "form-control", placeholder = Html.DisplayNameFor(x => x.fname), autocomplete = "org"})
+							</div>
+							<div class="col-xs-6" style="padding: 0 0 0 2px;">
+								@Html.TextBoxFor(m => m.lname, new{@class = "form-control", placeholder = Html.DisplayNameFor(x => x.lname), autocomplete = "family-name"})
+							</div>
+						</div>
+					</div>
+				}*@
 				@*<div class="form-group">
                     @Html.LabelFor(m => m.UserName, new { @class = "col-md-4 control-label" })
                     <div class="col-md-8">

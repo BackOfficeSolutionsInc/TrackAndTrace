@@ -1,4 +1,5 @@
-﻿using FluentNHibernate.Mapping;
+﻿using System.ComponentModel.DataAnnotations;
+using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,22 +9,29 @@ using System.Web;
 
 namespace RadialReview.Models
 {
-    public class InvoiceModel : ILongIdentifiable
+    public class InvoiceModel : ILongIdentifiable, IHistorical
     {
-	    public virtual long Id { get; protected set; }
+		public virtual long Id { get; protected set; }
+		[Display(Name = "Sent"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
 		public virtual DateTime InvoiceSentDate { get; set; }
+		[Display(Name = "Due"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
 		public virtual DateTime InvoiceDueDate { get; set; }
 		public virtual DateTime CreateTime { get; set; }
+		public virtual DateTime? DeleteTime { get; set; }
         public virtual OrganizationModel Organization { get; set; }
         public virtual IList<InvoiceItemModel> InvoiceItems { get;set;}
 
+		[Display(Name = "Date Paid"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
 		public virtual DateTime? PaidTime { get; set; }
 
+		[Display(Name = "Transaction Id")]
 		public virtual String TransactionId { get; set; }
 
 		public virtual DateTime ServiceStart { get; set; }
+		[Display(Name = "Service Through"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
 	    public virtual DateTime ServiceEnd { get; set; }
 
+		[Display(Name = "Amount Due"), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
 	    public virtual decimal AmountDue { get; set; }
 
 	    public InvoiceModel()
@@ -62,6 +70,7 @@ namespace RadialReview.Models
 			Map(x => x.InvoiceDueDate);
 			Map(x => x.PaidTime);
 			Map(x => x.CreateTime);
+			Map(x => x.DeleteTime);
 			Map(x => x.TransactionId);
 
 			Map(x => x.AmountDue);

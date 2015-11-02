@@ -1,4 +1,5 @@
-﻿using RadialReview.Models;
+﻿using RadialReview.Accessors;
+using RadialReview.Models;
 using RadialReview.Models.Json;
 using RadialReview.Models.Payments;
 using RadialReview.Models.Tasks;
@@ -51,12 +52,16 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult Plan_Monthly()
+		public ActionResult Plan_Monthly(long? orgid=null)
 		{
-			var plan = _PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id);
-			if (plan is PaymentPlan_Monthly)
-			{
-				return View((PaymentPlan_Monthly)plan);
+			var id = orgid ?? GetUser().Organization.Id;
+
+			var plan = _PaymentAccessor.GetPlan(GetUser(), id);
+			var org = _OrganizationAccessor.GetOrganization(GetUser(), id);
+			if (plan is PaymentPlan_Monthly){
+				var pr = (PaymentPlan_Monthly) plan;
+				pr._Org = org;
+				return View(pr);
 			}
 			return View(new PaymentPlan_Monthly()
 			{
@@ -64,8 +69,8 @@ namespace RadialReview.Controllers
 				L10PricePerPerson = 12,
 				ReviewPricePerPerson = 4,
 				PlanCreated = DateTime.UtcNow,
-				OrgId = GetUser().Organization.Id,
-
+				OrgId = id,
+				_Org =org
 			});
 		}
 

@@ -257,6 +257,11 @@ namespace RadialReview.Controllers
 
                     model.fname = nexus.GetArgs()[3];
                     model.lname = nexus.GetArgs()[4];
+	                model.IsClient = false;
+	                if (nexus.GetArgs().Length > 5){
+						model.IsClient = nexus.GetArgs()[5].ToBoolean();
+	                }
+
                 }
                 catch (Exception e)
                 {

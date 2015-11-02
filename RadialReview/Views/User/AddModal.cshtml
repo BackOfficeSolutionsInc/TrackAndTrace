@@ -3,49 +3,77 @@
 @Html.HiddenFor(x => x.OrgId)
 
 <div class="row">
-    <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.name):</label></div>
-    <div class="row col-xs-9 noPadLeft">
-        <div class="col-xs-6 noPadLeft">@Html.TextBoxFor(x => x.FirstName, new { placeholder = RadialReview.Properties.DisplayNameStrings.firstName, @class = "fullWidth form-control" })</div>
-        <div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>
-    </div>
+	<div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.name):</label></div>
+
+	<div class="row col-xs-9 noPadLeft">
+		<div class="col-xs-6 noPadLeft">@Html.TextBoxFor(x => x.FirstName, new { placeholder = RadialReview.Properties.DisplayNameStrings.firstName, @class = "fullWidth form-control" })</div>
+		<div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>
+	</div>
 </div>
+@if (Model.IsClient)
+{
+	<div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-xs-3"><label>Organization Name:</label></div>
+
+		<div class="col-xs-9">
+			@Html.TextBoxFor(x => x.OrganizationName, new { placeholder = "Client Name", @class = "fullWidth form-control" })
+			@*<div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>*@
+		</div>
+	</div>
+}
 <div class="smallBreak"></div>
 <div class="row">
-    <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
-    <div class="col-xs-9">@Html.TextBoxFor(x => x.Email, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control" })</div>
+	<div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
+	<div class="col-xs-9">@Html.TextBoxFor(x => x.Email, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control" })</div>
 </div>
 <div class="smallBreak"></div>
-
-@Html.EditorFor(x => x.Position, "~/Views/User/EditorTemplates/UserPositionViewModel.cshtml")
-
-@if (Model.StrictlyHierarchical)
+@if (!Model.IsClient)
 {
-    @Html.HiddenFor(x => x.ManagerId)
+	@Html.EditorFor(x => x.Position, "~/Views/User/EditorTemplates/UserPositionViewModel.cshtml")
+
+	if (Model.StrictlyHierarchical)
+	{
+		@Html.HiddenFor(x => x.ManagerId)
+	}
+	else
+	{
+		<div class="smallBreak"></div>
+		<div class="row">
+			<div class="col-xs-3"><label>Supervisor:</label></div>
+			<div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerId, Model.PotentialManagers, new { @class = "fullWidth form-control" })</div>
+		</div>
+	}
+
+	<div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-xs-3"><label>Is Manager:</label></div>
+		<div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox" })</div>
+	</div>
+
 }
 else
 {
-    <div class="smallBreak"></div>
-    <div class="row">
-        <div class="col-xs-3"><label>Supervisor:</label></div>
-        <div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerId, Model.PotentialManagers, new { @class = "fullWidth form-control" })</div>
-    </div>
+	@Html.Hidden("ManagerId", "-4"); @*No Manger*@
+	@Html.Hidden("Position.PositionId", "-2"); @*No Position*@
 }
 
+@Html.HiddenFor(x => x.IsClient)
 
 
 
 <script>
-    /*
-    $(function () {
-        $("#positionSelector").change(function () {
-            $("#customPosition").val($("#positionSelector option:selected").text());
-            setTimeout(function () { $("#customPosition")[0].select(); }, 10);
-        })
-    });*/
+	/*
+	$(function () {
+		$("#positionSelector").change(function () {
+			$("#customPosition").val($("#positionSelector option:selected").text());
+			setTimeout(function () { $("#customPosition")[0].select(); }, 10);
+		})
+	});*/
 </script>
 
 <div class="smallBreak"></div>
 <div class="row">
-    <div class="col-xs-3"><label>Is Manager:</label></div>
-    <div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox" })</div>
+	<div class="col-xs-3"><label>Send Email Invite:</label></div>
+	<div class="col-xs-9">@Html.CheckBoxFor(x => x.SendEmail, new { style = "padding-bottom: 7px;", @class = "checkbox" })</div>
 </div>

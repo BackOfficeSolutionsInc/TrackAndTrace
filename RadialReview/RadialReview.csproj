@@ -268,6 +268,7 @@
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
     <Compile Include="Accessors\ImageAccessor.cs" />
+    <Compile Include="Accessors\InvoiceAccessor.cs" />
     <Compile Include="Accessors\IssuesAccessor.cs" />
     <Compile Include="Accessors\KeyValueAccessor.cs" />
     <Compile Include="Accessors\L10Accessor.cs" />
@@ -326,6 +327,7 @@
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\FaqController.cs" />
+    <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\IssuesController.cs" />
     <Compile Include="Controllers\JobDescriptionController.cs" />
@@ -780,7 +782,14 @@
     <Compile Include="Models\Audit\LogModel.cs" />
     <Content Include="Content\img\ajax-loader-ob.gif" />
     <Content Include="Content\img\ajax-loader-orange.gif" />
+    <Content Include="Content\L10\L10ChatLog.css">
+      <DependentUpon>L10ChatLog.less</DependentUpon>
+    </Content>
+    <Content Include="Content\L10\L10ChatLog.min.css">
+      <DependentUpon>L10ChatLog.css</DependentUpon>
+    </Content>
     <Content Include="Content\L10\L10Transcribe.css" />
+    <Content Include="Scripts\L10\L10ChatLog.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
     <Content Include="Scripts\speechrecog.js" />
@@ -1526,6 +1535,11 @@
     <Content Include="Views\Payment\Errors.cshtml" />
     <Content Include="Views\Payment\AllCharges.cshtml" />
     <Content Include="Views\Permissions\PermItemRow.cshtml" />
+    <Content Include="Content\L10\L10ChatLog.less" />
+    <Content Include="Views\Organization\Which.cshtml" />
+    <Content Include="Views\Organization\WhichList.cshtml" />
+    <Content Include="Views\Invoice\List.cshtml" />
+    <Content Include="Views\Invoice\Details.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

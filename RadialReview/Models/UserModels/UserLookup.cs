@@ -10,6 +10,8 @@ namespace RadialReview.Models.UserModels
 {
 	public class UserLookup : ILongIdentifiable, IHistorical
 	{
+		private bool _isClient;
+
 		[Obsolete("Use UserId instead")]
 		public virtual long Id { get; set; }
 		public virtual long UserId { get; set; }
@@ -30,8 +32,12 @@ namespace RadialReview.Models.UserModels
 		public virtual bool HasSentInvite { get; set; }
 		public virtual long OrganizationId { get; set; }
 
+		public virtual DateTime? LastLogin { get; set; }
+
 		public virtual bool _PersonallyManaging { get; set; }
 		public virtual string _ImageUrlSuffix { get; set; }
+
+		public virtual bool IsClient { get; set; }
 
 		public virtual string ImageUrl(ImageSize size = ImageSize._32)
 		{
@@ -61,6 +67,7 @@ namespace RadialReview.Models.UserModels
 				Map(x => x.DeleteTime);
 				Map(x => x.Name);
 				Map(x => x.NumRocks);
+				Map(x => x.IsClient);
 				Map(x => x.NumMeasurables);
 				Map(x => x.NumRoles);
 				Map(x => x.Email);
@@ -70,6 +77,7 @@ namespace RadialReview.Models.UserModels
 				Map(x => x.IsManager);
 				Map(x => x.IsAdmin);
 				Map(x => x.HasJoined);
+				Map(x => x.LastLogin);
 				Map(x => x.HasSentInvite);
 				Map(x => x.OrganizationId).Index("UserLookup_OrganizationId_IDX");
 				Map(x => x._ImageUrlSuffix);

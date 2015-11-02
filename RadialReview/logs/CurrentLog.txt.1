@@ -1,45 +1,4 @@
-INFO  2015-10-31 01:58:52,206 [81] BaseAccessor           - Charged Card: {"errors":[{"code":99820,"message":"Invalid Routing"}],"transaction":{"id":"7d7eba7ffb","class":"transaction","created_at":"2015-10-31T06:58:59+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":null,"amount_refunded":0,"amount_settled":0,"amount_failed":30,"transaction_type":"sale","reference_number":null,"description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":false,"settled":false,"refunded":false,"voided":false,"system_trace":null,"status":"FAILED","customer_id":"9207d2","receipt":null,"company":"Traction Tools","website":"","card_owner_name":"Clay Upton","email":"clay.upton@radialreview.com","first_name":"Clay","last_name":"Upton","address_1":"9122 s 29th street","address_2":"","city":"Lincoln","state":"Ne","zip":"68516","country":"United States","phone":"","fax":"","csc_check":null,"avs_address_check":null,"error_message":"Invalid Routing"}}
-ERROR 2015-10-31 01:58:52,821 [81] BaseController         - PaymentException
-RadialReview.Exceptions.PaymentException: Invalid Routing (99820).
-   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganizationAmount>d__69.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 332
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.PaymentAccessor.<ExecuteInvoice>d__14.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 178
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganization>d__1.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 118
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__8.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 37
-ERROR 2015-10-31 01:59:15,973 [81] BaseAccessor           - Scheduled task error. 2064
-System.Net.WebException: The remote server returned an error: (501) Not Implemented.
-   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
-   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
-   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 127
-INFO  2015-10-31 02:15:20,568 [55] BaseAccessor           - Charged Card: {"class":"transaction","id":"3d32b894ec","created_at":"2015-10-31T07:15:28+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":60,"amount_refunded":0,"amount_settled":60,"amount_failed":0,"transaction_type":"sale","reference_number":"5682950","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"9207d2","receipt":null,"company":"Traction Tools","website":"","card_owner_name":"Clay Upton","email":"clay.upton@radialreview.com","first_name":"Clay","last_name":"Upton","address_1":"9122 s 29th street","address_2":"","city":"Lincoln","state":"Ne","zip":"68516","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
-ERROR 2015-10-31 02:35:36,313 [55] BaseController         - Exception during Payment
-System.ObjectDisposedException: Cannot access a disposed object.
-Object name: 'AdoTransaction'.
-   at NHibernate.Transaction.AdoTransaction.CheckNotDisposed()
-   at NHibernate.Transaction.AdoTransaction.Commit()
-   at RadialReview.Accessors.PaymentAccessor.<ChargeOrganization>d__1.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\PaymentAccessor.cs:line 123
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Controllers.SchedulerController.<ChargeAccount>d__8.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 37
-ERROR 2015-10-31 02:36:34,403 [55] BaseAccessor           - Scheduled task error. 2068
+ERROR 2015-11-02 12:06:13,338 [1932] BaseAccessor           - Scheduled task error. 2115
 System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
    at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
    at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
@@ -48,32 +7,92 @@ System.Net.WebException: The remote server returned an error: (500) Internal Ser
    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
    at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__4.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 127
-ERROR 2015-10-31 02:45:17,753 [5] ADOExceptionReporter   - Out of memory (Needed 264992 bytes)
-ERROR 2015-10-31 02:45:17,768 [5] SchemaUpdate           - could not complete schema update
-NHibernate.Exceptions.GenericADOException: could not get table metadata: RelativeComparisonAnswer[SQL: SQL not available] ---> MySql.Data.MySqlClient.MySqlException: Out of memory (Needed 264992 bytes)
-   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
-   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
-   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
-   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
-   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
-   at MySql.Data.MySqlClient.ISSchemaProvider.GetTable(String sql)
-   at MySql.Data.MySqlClient.ISSchemaProvider.GetForeignKeys(String[] restrictions)
-   at MySql.Data.MySqlClient.SchemaProvider.GetSchemaInternal(String collection, String[] restrictions)
-   at MySql.Data.MySqlClient.ISSchemaProvider.GetSchemaInternal(String collection, String[] restrictions)
-   at MySql.Data.MySqlClient.SchemaProvider.GetSchema(String collection, String[] restrictions)
-   at MySql.Data.MySqlClient.MySqlConnection.GetSchema(String collectionName, String[] restrictionValues)
-   at NHibernate.Dialect.Schema.AbstractDataBaseSchema.GetForeignKeys(String catalog, String schema, String table)
-   at NHibernate.Dialect.Schema.AbstractTableMetadata.InitForeignKeys(IDataBaseSchema meta)
-   at NHibernate.Dialect.Schema.AbstractTableMetadata..ctor(DataRow rs, IDataBaseSchema meta, Boolean extras)
-   at NHibernate.Dialect.Schema.MySQLDataBaseSchema.GetTableMetadata(DataRow rs, Boolean extras)
-   at NHibernate.Tool.hbm2ddl.DatabaseMetadata.GetTableMetadata(String name, String schema, String catalog, Boolean isQuoted)
-   --- End of inner exception stack trace ---
-   at NHibernate.Tool.hbm2ddl.DatabaseMetadata.GetTableMetadata(String name, String schema, String catalog, Boolean isQuoted)
-   at NHibernate.Cfg.Configuration.GenerateSchemaUpdateScript(Dialect dialect, DatabaseMetadata databaseMetadata)
-   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)
-INFO  2015-10-31 03:11:19,085 [8] BaseController         - Organization: [/Dashboard] --> [/Dashboard]
-INFO  2015-10-31 03:17:58,384 [19] BaseController         - Organization: [/Dashboard] --> [/Dashboard]
-INFO  2015-10-31 03:32:55,707 [35] BaseAccessor           - Charged Card: {"class":"transaction","id":"06bd1a8c95","created_at":"2015-10-31T08:33:00+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":60,"amount_refunded":0,"amount_settled":60,"amount_failed":0,"transaction_type":"sale","reference_number":"9449823","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"9207d2","receipt":null,"company":"Traction Tools","website":"","card_owner_name":"Clay Upton","email":"clay.upton@radialreview.com","first_name":"Clay","last_name":"Upton","address_1":"9122 s 29th street","address_2":"","city":"Lincoln","state":"Ne","zip":"68516","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__6.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 129
+INFO  2015-11-02 12:06:13,462 [1928] BaseController         - Organization: [/Dashboard] --> [/Dashboard]
+ERROR 2015-11-02 12:26:04,025 [1934] BaseController         - Error: [/Rocks/Modal]<<The parameters dictionary contains a null entry for parameter 'id' of non-nullable type 'System.Int64' for method 'System.Web.Mvc.PartialViewResult Modal(Int64)' in 'RadialReview.Controllers.RocksController'. An optional parameter must be a reference type, a nullable type, or be declared as an optional parameter.
+Parameter name: parameters>>
+System.ArgumentException: The parameters dictionary contains a null entry for parameter 'id' of non-nullable type 'System.Int64' for method 'System.Web.Mvc.PartialViewResult Modal(Int64)' in 'RadialReview.Controllers.RocksController'. An optional parameter must be a reference type, a nullable type, or be declared as an optional parameter.
+Parameter name: parameters
+   at System.Web.Mvc.ActionDescriptor.ExtractParameterFromDictionary(ParameterInfo parameterInfo, IDictionary`2 parameters, MethodInfo methodInfo)
+   at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<BeginInvokeSynchronousActionMethod>b__36(IAsyncResult asyncResult, ActionInvocation innerInvokeState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+ERROR 2015-11-02 14:08:36,478 [1701] BaseController         - Error: [/Scheduler/EmailTodos?currentTime=19&taskId=2125]<<No row with the given identifier exists[NHibernate.Envers.DefaultRevisionEntity#16340]>>
+NHibernate.ObjectNotFoundException: No row with the given identifier exists[NHibernate.Envers.DefaultRevisionEntity#16340]
+   at NHibernate.Engine.ActionQueue.BeforeTransactionCompletionProcessQueue.BeforeTransactionCompletion()
+   at NHibernate.Impl.SessionImpl.BeforeTransactionCompletion(ITransaction tx)
+   at NHibernate.Transaction.AdoTransaction.Commit()
+   at RadialReview.Controllers.SchedulerController.<EmailTodos>d__2f.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 220
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at lambda_method(Closure , Task )
+   at System.Threading.Tasks.TaskHelpersExtensions.ThrowIfFaulted(Task task)
+   at System.Web.Mvc.Async.TaskAsyncActionDescriptor.EndExecute(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass34.<BeginInvokeAsynchronousActionMethod>b__33(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+ERROR 2015-11-02 14:08:36,501 [1701] BaseAccessor           - Scheduled task error. 2125
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__6.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 129
+ERROR 2015-11-02 14:08:36,529 [1700] BaseController         - Error: [/Scheduler/EmailTodos?currentTime=19&taskId=2126]<<No row with the given identifier exists[NHibernate.Envers.DefaultRevisionEntity#16340]>>
+NHibernate.ObjectNotFoundException: No row with the given identifier exists[NHibernate.Envers.DefaultRevisionEntity#16340]
+   at NHibernate.Engine.ActionQueue.BeforeTransactionCompletionProcessQueue.BeforeTransactionCompletion()
+   at NHibernate.Impl.SessionImpl.BeforeTransactionCompletion(ITransaction tx)
+   at NHibernate.Transaction.AdoTransaction.Commit()
+   at RadialReview.Controllers.SchedulerController.<EmailTodos>d__2f.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 220
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at lambda_method(Closure , Task )
+   at System.Threading.Tasks.TaskHelpersExtensions.ThrowIfFaulted(Task task)
+   at System.Web.Mvc.Async.TaskAsyncActionDescriptor.EndExecute(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass34.<BeginInvokeAsynchronousActionMethod>b__33(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+ERROR 2015-11-02 14:08:36,533 [1704] BaseAccessor           - Scheduled task error. 2126
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__6.MoveNext() in c:\repos\Radial\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 129

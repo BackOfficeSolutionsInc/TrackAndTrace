@@ -225,15 +225,15 @@ namespace RadialReview.Controllers
 							v.Complete = true;
 							if (r.NextDouble() < a.luckB)
 							{
-								v.GetIt = (r.NextDouble() > .666) ? FiveState.Always : FiveState.Mostly;
-								v.WantIt = (r.NextDouble() > .666) ? FiveState.Always : FiveState.Mostly;
-								v.HasCapacity = (r.NextDouble() > .666) ? FiveState.Always : FiveState.Mostly;
+								v.GetIt = (r.NextDouble() > .1) ? FiveState.Always : FiveState.Mostly;
+								v.WantIt = (r.NextDouble() > .1) ? FiveState.Always : FiveState.Mostly;
+								v.HasCapacity = (r.NextDouble() > .1) ? FiveState.Always : FiveState.Mostly;
 							}
 							else
 							{
-								v.GetIt = (r.NextDouble() > .666) ? FiveState.Rarely : FiveState.Never;
-								v.WantIt = (r.NextDouble() > .666) ? FiveState.Rarely : FiveState.Never;
-								v.HasCapacity = (r.NextDouble() > .666) ? FiveState.Rarely : FiveState.Never;
+								v.GetIt = (r.NextDouble() > .25) ? FiveState.Rarely : FiveState.Never;
+								v.WantIt = (r.NextDouble() > 25) ? FiveState.Rarely : FiveState.Never;
+								v.HasCapacity = (r.NextDouble() > 25) ? FiveState.Rarely : FiveState.Never;
 							}
 							s.Update(v);
 						}

@@ -553,7 +553,7 @@ $(function () {
 
 		$(".body-full-width #main").css("padding-bottom", Math.max(20, curHeight) + "px");
 
-		$(window).trigger("footer-resize");
+		$(window).trigger("footer-resize",on);
 	});
 
 	$('.picture').each(function () {

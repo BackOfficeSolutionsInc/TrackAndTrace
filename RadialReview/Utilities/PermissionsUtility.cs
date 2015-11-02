@@ -1074,7 +1074,8 @@ namespace RadialReview.Utilities
 					return this;
 
 
-				return CanEdit(PermItem.ResourceType.L10Recurrence, recurrenceId,()=>{
+				return CanEdit(PermItem.ResourceType.L10Recurrence, recurrenceId, (@this) =>
+				{
 					var availUserIds = new[] { caller.Id };
 
 					if (caller.Organization.Settings.ManagersCanEditSubordinateL10)
@@ -1087,7 +1088,7 @@ namespace RadialReview.Utilities
 						.WhereRestrictionOn(x => x.User.Id).IsIn(availUserIds)
 						.RowCount();
 					if (exists > 0)
-						return this;
+						return @this;
 					throw new PermissionsException();
 				});
 			}
@@ -1128,20 +1129,20 @@ namespace RadialReview.Utilities
 			if (IsManagingOrganization(recurrences_OrgId))
 				return this;
 
-			return CanView(PermItem.ResourceType.L10Recurrence, recurrenceId, () =>{
+			return CanView(PermItem.ResourceType.L10Recurrence, recurrenceId, (@this) =>{
 					var possibleUsers = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
 				.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
 				.Select(x => x.User.Id).List<long>()
 				.ToList();
 
 				if (possibleUsers.Contains(caller.Id))
-					return this;
+					return @this;
 
 				if (caller.Organization.Settings.ManagersCanViewSubordinateL10)
 				{
 					var subIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(session, caller, caller.Id);
 					if (possibleUsers.ContainsAny(subIds))
-						return this;
+						return @this;
 				}
 				throw new PermissionsException();
 			});
@@ -1205,16 +1206,17 @@ namespace RadialReview.Utilities
 			if (IsManagingOrganization(meeting_OrgId))
 				return this;
 
-			return CanView(PermItem.ResourceType.L10Recurrence, meeting.L10RecurrenceId, () =>{
+			return CanView(PermItem.ResourceType.L10Recurrence, meeting.L10RecurrenceId, (@this) =>
+			{
 				var meetingIds = session.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x =>
 					x.L10Meeting.Id == meetingId &&
 					x.DeleteTime == null).List().Select(x => x.UserId).ToList();
 				if (caller.UserIds.ContainsAny(meetingIds))
-					return this;
+					return @this;
 				if (caller.Organization.Settings.ManagersCanViewSubordinateL10){
 					var subIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(session, caller, caller.Id);
 					if (subIds.ContainsAny(meetingIds))
-						return this;
+						return @this;
 				}
 
 				var recurId = meeting.L10RecurrenceId;
@@ -1223,11 +1225,11 @@ namespace RadialReview.Utilities
 					x.DeleteTime == null).List().Select(x => x.User.Id).ToList();
 
 				if (caller.UserIds.ContainsAny(defaultIds))
-					return this;
+					return @this;
 				if (caller.Organization.Settings.ManagersCanViewSubordinateL10){
 					var subIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(session, caller, caller.Id);
 					if (subIds.ContainsAny(defaultIds))
-						return this;
+						return @this;
 				}
 
 				throw new PermissionsException();

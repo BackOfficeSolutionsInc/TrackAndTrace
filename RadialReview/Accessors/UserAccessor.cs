@@ -935,16 +935,23 @@ namespace RadialReview.Accessors
 			if (org.Id != model.OrgId)
 				throw new PermissionsException();
 
-			if (model.Position.CustomPosition != null)
+			if (model.Position!=null && model.Position.CustomPosition != null)
 			{
 				var newPosition = _OrganizationAccessor.EditOrganizationPosition(user, 0, user.Organization.Id, /*model.Position.CustomPositionId,*/ model.Position.CustomPosition);
 				model.Position.PositionId = newPosition.Id;
 			}
 
+			var positionId = -2L;
+			if (model.Position != null)
+				positionId = model.Position.PositionId;
+
 			var nexusIdandUser = await _NexusAccessor.JoinOrganizationUnderManager(
 					user, model.ManagerId, model.IsManager,
-					model.Position.PositionId, model.Email,
-					model.FirstName, model.LastName
+					positionId, model.Email,
+					model.FirstName, model.LastName,
+					model.IsClient,
+					model.SendEmail,
+					model.OrganizationName
 				);
 			createdUser = nexusIdandUser.Item2;
 			var nexusId = nexusIdandUser.Item1;

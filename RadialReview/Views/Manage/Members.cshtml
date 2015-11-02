@@ -24,7 +24,8 @@
             To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
 }
 
-@using (Html.BeginStyles()) {
+@using (Html.BeginStyles())
+{
 	<style>
 		tr.managing {
 		}
@@ -56,17 +57,18 @@
 			background-color: rgba(255, 255, 0, 0.2);
 		}
 	</style>
-  
+
 }
 
-@using (Html.BeginScripts()) {
-	
-    <script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
+@using (Html.BeginScripts())
+{
+
+	<script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
 	<script src="~/Scripts/jquery/jquery.filtertable.min.js"></script>
 	<script>
 
 		function SendEmails() {
-			$("#sendButton").prop("disabled", true);
+			$("#send").prop("disabled", true);
 			$.ajax({
 				url: "/Nexus/SendAllEmails",
 				success: function (data) {
@@ -77,7 +79,7 @@
 		}
 
 		function ResendEmails() {
-			$("#resendButton").prop("disabled", true);
+			$("#send").prop("disabled", true);
 			$.ajax({
 				url: "/Nexus/ResendAllEmails",
 				success: function (data) {
@@ -87,18 +89,18 @@
 			});
 		}
 
-      $(function () {
-          $(".tablefilter").filterTable({ inputSelector: '#input-filter' });
+		$(function () {
+			$(".tablefilter").filterTable({ inputSelector: '#input-filter' });
 
-          $("table").tablesorter({
-              headers: {
-                  1: { sorter: 'attr' },
-                  2: { sorter: 'attr' }
-              },
-              sortForce: [[0, 1]],
-              sortStable: true,
-          });
-      });
+			$("table").tablesorter({
+				headers: {
+					1: { sorter: 'attr' },
+					2: { sorter: 'attr' }
+				},
+				sortForce: [[0, 1]],
+				sortStable: true,
+			});
+		});
 	</script>
 
 
@@ -106,19 +108,47 @@
 
 
 <div class="panel panel-primary">
-	<div style="float:right;padding: 1px 1px 0 0;width: calc(100% - 170px); min-width:622px;text-align: right;" class="">
+	<div style="float:right;padding: 1px 1px 0 0;width: calc(100% - 180px); min-width:632px;text-align: right;" class="">
 		<input id="input-filter" style="max-width: 296px;display: inline-block;" type="text" class="form-control" placeholder="Filter by.. (ex. 'Joe', 'CEO', 'Sales Dept.' etc)" />
-		<button id="resendButton" class="btn btn-default  plus" onclick="ResendEmails()">
-			Resend all invites
-		</button>
-		@if (Model.Users.Any(p => p.EmailSent) || !Model.Organization.SendEmailImmediately) {
-			<button id="sendButton" class="btn btn-default  plus" onclick=" SendEmails() ">
-				Send invites
+		<!-- Single button -->
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="send">
+				Send invites <span class="caret"></span>
 			</button>
-		}
-		<button class="btn btn-default  plus" style="width: 69px;" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">
-			Add
-		</button>
+			<ul class="dropdown-menu alignRight dropdown-menu-right">
+				<li>
+					<a href="#" id="resendButton" class="" onclick="ResendEmails()">
+						Email uninvited members
+					</a>
+				</li>
+				@if (Model.Users.Any(p => p.EmailSent) || !Model.Organization.SendEmailImmediately)
+				{
+					<li>
+						<a  href="#" id="sendButton" class="" onclick="SendEmails()">
+							Email members that have not joined
+						</a>
+					</li>
+				}
+
+			</ul>
+		</div>
+
+
+		@*<button class="btn btn-default  plus" style="width: 69px;">
+				Add
+			</button>*@<!-- Split button -->
+		<div class="btn-group plus" style="width: 79px;">
+			<button type="button" class="btn btn-default plus" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">Add</button>
+			<button type="button" class="btn btn-default dropdown-toggle plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="caret"></span>
+				<span class="sr-only">Toggle Dropdown</span>
+			</button>
+			<ul class="dropdown-menu dropdown-menu-right">
+				<li><a href="#" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
+				<li><a href="#" onclick="@Html.ShowModal("Add managed user", "/User/AddModal?isClient=true", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-globe gray"></span> Add Client</a></li>
+			</ul>
+		</div>
+
 		@*<a class="btn btn-default plus"  href="/Manage/Reorganize">
 				Reorganize
 			</a>*@
@@ -128,7 +158,7 @@
 		<h3 class="panel-title">Manage Members</h3>
 
 	</div>
-	<div class="table-responsive">
+	<div class="table-responsive" style="clear: both;top: -1px;position: relative;">
 		<table class="table table-condensed table-hover tablesorter tablefilter">
 			<thead>
 				<tr>
@@ -152,7 +182,8 @@
 				</tr>
 			</thead>
 			<tbody>
-				@foreach (var p in Model.Users.OrderByDescending(x => x.Managing)/*.ThenBy(x=>-1*(x.Admin.ToInt()+x.Manager.ToInt()))*/.ThenBy(x => x.Name)) {
+				@foreach (var p in Model.Users.OrderByDescending(x => x.Managing)/*.ThenBy(x=>-1*(x.Admin.ToInt()+x.Manager.ToInt()))*/.ThenBy(x => x.Name))
+				{
 
 					<tr class="@(p.Managing?"managing":"grayRow") row_@(p.Id)">
 						<td class="hidden">@(p.Managing ? 1 : 0)</td>
@@ -165,30 +196,39 @@
 										<div onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))" class="editButton"></div>
 								}*@
 
-							<span @if (p.Manager) { if (p.Admin) {  @: class="glyphicon glyphicon-tower gold strokeGold" title="An admin" data-sort="1"
-								                                                                                    } else { @: class="glyphicon glyphicon-tower darkblue strokeDarkBlue" title="A supervisor" data-sort="2"
-								                                                                                        } } else {  @: class="glyphicon glyphicon-user blue strokeBlue" title="Not a supervisor" data-sort="3"
-								                                                                                                                                                                }
-								  @if (p.Managing) { @: style="cursor:pointer;" onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id = p.Id }), Url.Action("EditModal", "User"))"
-								                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }>
+							<span @if (p.IsClient) {  @: class="glyphicon glyphicon-globe green strokeGreen" title="A client" data-sort="0"
+								  							      } else { if (p.Manager) { if (p.Admin) { @: class="glyphicon glyphicon-tower gold strokeGold" title="An admin" data-sort="1"
+								  									      } else { @: class="glyphicon glyphicon-tower darkblue strokeDarkBlue" title="A supervisor" data-sort="2"
+								  									      } } else { @: class="glyphicon glyphicon-user blue strokeBlue" title="Not a supervisor" data-sort="3"
+								  								      } }
+								  @if (p.Managing && !p.IsClient) { @: style="cursor:pointer;" onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id = p.Id }), Url.Action("EditModal", "User"))"
+								  								  								                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }>
 							</span>
+
+
 
 						</td>
 						<td class="alignCenter noselect noPadLeft">
 
-							@if (p.Verified || (!p.Managing && !Model.ManagingOrganization)) {
-								if (p.Verified) {
+							@if (p.Verified || (!p.Managing && !Model.ManagingOrganization))
+							{
+								if (p.Verified)
+								{
 									<span title="Joined." class="glyphicon glyphicon-ok-sign strokeGray gray" data-sort="4"></span>
 								}
-								else {
+								else
+								{
 									<span title="Has not joined." class="glyphicon glyphicon-envelope strokeGray gray" data-sort="3"></span>
 								}
 							}
-							else {
-								if (p.EmailSent) {
+							else
+							{
+								if (p.EmailSent)
+								{
 									<span data-sort="2" title="Resend Email" class="glyphicon glyphicon-envelope strokeRed red clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
 								}
-								else {
+								else
+								{
 									<span data-sort="1" class="glyphicon glyphicon-exclamation-sign red strokeRed clickable icon" title="Invitation not sent." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
 								}
 							}
@@ -240,9 +280,11 @@
 
 								</a>
 							</td>*@
-						@if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization) {
+						@if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization)
+						{
 							<td>
-								@if (p.Managing || Model.ManagingOrganization) {
+								@if (p.Managing || Model.ManagingOrganization)
+								{
 									<span data-sort="1" onclick="@(Html.ShowModal("Remove " + p.Name + " from the organization?", "/User/Remove/" + p.Id, "/User/Remove", onCompleteFunction: "function(){$('.row_" + p.Id + "').remove();UnstoreJsonAlert();}"))"
 										  class="glyphicon glyphicon-trash clickable">
 									</span>

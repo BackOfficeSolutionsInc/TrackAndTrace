@@ -842,22 +842,36 @@ namespace RadialReview.Controllers
 						ex = PositiveNegativeNeutral.Indeterminate;
 					else if (v[2] > 0)
 					{
-						reason = "Aiming for 0 negatives.";
+						reason = "Aiming for 0 negatives. A negative may indicate an area of improvement. It may also indicate animosity.";
 						ex = PositiveNegativeNeutral.Negative;
 					}
 					else if (v[0] == v[1]) //Num == Denom
 						ex = PositiveNegativeNeutral.Positive;
-					else
-					{
-						if ((v[1] - v[0]) * 2 >= NEUTRAL_CUTOFF)
-						{
-							ex = PositiveNegativeNeutral.Negative;
-							reason = "Several ratings of +/- may indicate an area of improvement.";
+					else{
+						//(Completion - Scoring)* 2 = number of +/-
+						var numPlus_Minus = (v[1] - v[0])*2;
+
+						if (v[1] <= 6){
+							if  (numPlus_Minus >= NEUTRAL_CUTOFF){
+								ex = PositiveNegativeNeutral.Negative;
+								reason = "Several ratings of +/- may indicate an area of improvement.";
+							}
+							else{
+								ex = PositiveNegativeNeutral.Neutral;
+								reason = "One +/- may indicate an area of improvement.";
+							}
 						}
-						else
-						{
-							ex = PositiveNegativeNeutral.Neutral;
-							reason = "One +/- may indicate an area of improvement.";
+						else{
+							if (numPlus_Minus*5/v[1] >= NEUTRAL_CUTOFF)
+							{
+								ex = PositiveNegativeNeutral.Negative;
+								reason = "Several ratings of +/- may indicate an area of improvement.";
+							}
+							else
+							{
+								ex = PositiveNegativeNeutral.Neutral;
+								reason = "A few ratings of +/- may indicate an area of improvement.";
+							}
 						}
 					}
 					var clz = "";//String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";

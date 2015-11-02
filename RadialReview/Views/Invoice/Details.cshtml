@@ -1,0 +1,45 @@
+﻿@model RadialReview.Models.InvoiceModel
+
+@{
+    ViewBag.Title = "Invoice Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+<div>
+    <h4>Invoice (@Html.DisplayFor(model => model.TransactionId))</h4>
+	<hr />
+	<dl class="dl-horizontal">
+		<dt>@Html.DisplayNameFor(model => model.InvoiceSentDate)</dt>
+		<dd>@Html.DisplayFor(model => model.InvoiceSentDate)</dd>
+
+		<dt>@Html.DisplayNameFor(model => model.InvoiceDueDate)</dt>
+		<dd>@Html.DisplayFor(model => model.InvoiceDueDate)</dd>
+
+		<dt>@Html.DisplayNameFor(model => model.PaidTime)</dt>
+		<dd>@Html.DisplayFor(model => model.PaidTime)</dd>
+		
+		<dt>@Html.DisplayNameFor(model => model.ServiceEnd)</dt>
+		<dd>@Html.DisplayFor(model => model.ServiceEnd)</dd>
+
+		<dt>@Html.DisplayNameFor(model => model.AmountDue)</dt>
+		<dd>@Html.DisplayFor(model => model.AmountDue)</dd>
+	</dl>
+	
+	<hr />
+	<dl class="dl-horizontal">
+		@for(var i=0;i<Model.InvoiceItems.Count;i++)
+		{
+			<dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].Id)</dt>			<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].Id)</dd>
+			<dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].Name)</dt>			<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].Name)</dd>
+			<dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].Description)</dt>	<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].Description)</dd>
+			<dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].PricePerItem)</dt>	<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].PricePerItem)</dd>
+			<dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].Quantity)</dt>		<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].Quantity)</dd>
+			<dt>@Html.DisplayNameFor(model => Model.InvoiceItems[i].AmountDue)</dt>		<dd>@Html.DisplayFor(model => Model.InvoiceItems[i].AmountDue)</dd>
+		}
+	</dl>
+
+</div>
+<p>
+    @Html.ActionLink("Back to List", "List")
+</p>

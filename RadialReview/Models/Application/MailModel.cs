@@ -6,6 +6,13 @@ using System.Web;
 
 namespace RadialReview.Models.Application
 {
+	public enum AddressType
+	{
+		to,
+		cc,
+		bcc,
+	}
+
     public class MailModel
     {
         public class MailIntermediate2
@@ -38,7 +45,7 @@ namespace RadialReview.Models.Application
 
 	        public MailIntermediate1 AddBcc(string email)
 	        {
-				Email.Bcc.Add(email);
+				Email.BccList.Add(email);
 		        return this;
 	        }
 
@@ -59,20 +66,27 @@ namespace RadialReview.Models.Application
 
         public string ToAddress { get; set; }
 
-		public List<String> Bcc { get; set; } 
+		public List<String> BccList { get; set; } 
         public string HtmlBody { get; set; }
         public string Subject { get; set; }
         //public virtual bool Send {get;set;}
         //public virtual DateTime? CompleteTime {get;set;}
 
         protected MailModel(){
-			Bcc = new List<string>();
+			BccList = new List<string>();
         }
 
-        public static MailIntermediate1 To(String toAddress)
-        {
-            return new MailIntermediate1(new MailModel() {ToAddress=toAddress });
-        }
+		public static MailIntermediate1 To(String toAddress)
+		{
+			return new MailIntermediate1(new MailModel() { ToAddress = toAddress });
+		}
+		public static MailIntermediate1 Bcc(String toAddress)
+		{
+			return new MailIntermediate1(new MailModel(){
+				BccList = toAddress.AsList(),
+				ToAddress = "",
+			});
+		}
     }
 
     

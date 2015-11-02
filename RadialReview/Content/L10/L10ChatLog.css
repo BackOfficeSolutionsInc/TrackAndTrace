@@ -1,0 +1,25 @@
+﻿.chat-container {
+  /*position:relative;*/
+  background-color: #EFEFEF;
+  border: 1px solid #E2E2E2;
+  font-size: 12px;
+  padding-left: 4px;
+  display: none;
+}
+.chat-container .component {
+  margin-bottom: -6px;
+  background-color: rgba(0, 0, 0, 0);
+}
+.chat-container .text.typing {
+  color: lightgray;
+}
+.chat-container .text.log {
+  color: lightgray;
+}
+.chat-container .text.chat {
+  color: #ADADAD;
+}
+.chat-container ul {
+  list-style-type: none;
+  padding-left: 5px;
+}

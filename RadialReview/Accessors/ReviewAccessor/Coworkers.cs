@@ -158,9 +158,9 @@ namespace RadialReview.Accessors {
 					var perms = PermissionsUtility.Create(s, caller).ViewTeam(forTeam);
 					var orgId = caller.Organization.Id;
 
-					var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
-					var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
-					var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).List();
+					var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
+					var allTeamDurations = s.QueryOver<TeamDurationModel>().Where(x=>x.DeleteTime==null).JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
+					var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId && !x.IsClient && x.DeleteTime==null).List();
 					//var allManagerSubordinates = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == orgId).List();
 					//var allPositions = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId).List();
 					//var applicationQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).List();

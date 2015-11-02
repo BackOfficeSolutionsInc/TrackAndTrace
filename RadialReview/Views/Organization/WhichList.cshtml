@@ -1,0 +1,72 @@
+﻿@model IEnumerable<RadialReview.Models.OrganizationModel>
+
+@{
+	ViewBag.Title = "Which List";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (Html.Organization() != null)
+{
+	<div class="clearfix"></div>
+	<h2 class="pull-left">Currently</h2>
+	<h2 style="color: orange" class="pull-left"><b> @Html.Organization().GetName()</b></h2>
+}
+<div class="clearfix"></div>
+<h4 class="pull-left">Server Time</h4>
+<h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
+
+<div class="clearfix"></div>
+<h1 class="pull-left">Which List</h1>
+<table class="table table-hover">
+	<tr>
+		<th>Id</th>
+		<th>Name</th>
+		<th class="alignCenter">Payment Plan</th>
+		<th>
+		<th></th>
+	</tr>
+
+	@foreach (var item in Model)
+	{
+		<tr class="row_@(item.Id)">
+			<td>
+				@item.Id
+			</td>
+			<td>
+				<a href="/Organization/Which/@item.Id">@item.GetName()</a>
+			</td>
+			<td class="alignCenter">
+				@if (item.PaymentPlan != null)
+				{
+					<a href="/Payment/Plan_Monthly?orgid=@item.Id">Plan</a>
+				}
+			</td>
+			<td class="alignCenter deleteButton">
+				<a class="clickable" onclick="confirmDelete('@item.GetName()',@item.Id)">Delete</a>
+			</td>
+		</tr>
+	}
+
+</table>
+
+
+<script>
+	function confirmDelete(name, id) {
+		if (confirm('Are you sure you want to delete '+name)) {
+			$.ajax({
+				url: '/Organization/Delete/' + id,
+				success: function() {
+					$(".row_" + id).addClass("delete");
+					$(".row_" + id+" deleteButton").prop('onclick',null).off('click');
+				}
+			});
+		}
+	}
+</script>
+
+@using (Html.BeginScripts()){
+	<style>
+		tr.delete td {
+			text-decoration: line-through;
+		}
+	</style>
+}

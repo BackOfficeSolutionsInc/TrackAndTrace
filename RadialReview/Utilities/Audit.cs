@@ -4,13 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using Microsoft.Ajax.Utilities;
+using Microsoft.AspNet.SignalR;
 using NHibernate;
+using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Audit;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.L10;
 using RadialReview.Models.VTO;
+using RestSharp.Extensions;
 
 namespace RadialReview.Utilities
 {
@@ -110,10 +113,19 @@ namespace RadialReview.Utilities
 				audit.Action = action;
 				audit.Recurrence = s.Load<L10Recurrence>(recurrenceId);
 
+
+
 				audit.User = caller.User;
 				audit.UserOrganization = caller;
 				audit.Notes = notes;
 				s.Save(audit);
+
+				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+				var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+				var type = forModel.FriendlyType();
+				var html = "<div><span class='log-action'>" + action + "</span><span class='log-notes'>" + notes + "</span></div>";
+				meetingHub.addOrEditLogRow(type + "_" + forModel.ModelId, html, type);
+
 			}
 			catch (Exception e)
 			{

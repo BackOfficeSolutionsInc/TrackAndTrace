@@ -20,8 +20,9 @@ namespace RadialReview.Models
 		}
 		public enum ResourceType
 		{
-			Invalid		  = 0,
+			Invalid = 0,
 			L10Recurrence = 1,
+			InvoiceForOrganization = 2,
 		}
 		[Flags]
 		public enum AccessLevel

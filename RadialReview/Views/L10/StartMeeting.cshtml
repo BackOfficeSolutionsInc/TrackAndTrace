@@ -6,7 +6,7 @@
 
 }
 
-<div class="centered" style="width:50%;">
+<div class="centered start-meeting" style="width:50%;">
 	<div class="component">
 		<div class="meeting-manager">
 			<div class="title">Who's attending this meeting?</div>
@@ -52,8 +52,11 @@
 			<div class="alignCenter smallBreak2">
 				<a class="btn btn-default " href="/L10/Details/@Model.Recurrence.Id"><span class="icon fontastic-icon-archive-1"></span> Go to archive</a>
 			</div>
-			<div class="alignCenter">
+			<div class="alignCenter smallBreak2">
 				<a class="btn btn-default " href="/L10/ExportAll/@Model.Recurrence.Id"><span class="icon fontastic-icon-file-zip"></span> Export All</a>
+			</div>
+			<div class="alignCenter">
+				<a class="btn btn-default " href="/L10/Edit/@Model.Recurrence.Id"><span class="glyphicon glyphicon-cog"></span> Settings</a>
 			</div>
 		</div>
 	</div>

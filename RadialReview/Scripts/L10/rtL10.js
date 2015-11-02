@@ -77,7 +77,10 @@ $(function () {
 	meetingHub.client.addMeasurable = addMeasurable;
 	meetingHub.client.reorderMeasurables = reorderMeasurables;
 	meetingHub.client.reorderRecurrenceMeasurables = reorderRecurrenceMeasurables;
-
+	
+	meetingHub.client.addLogRow = addLogRow;
+	meetingHub.client.editLogRow = editLogRow;
+	meetingHub.client.addOrEditLogRow = addOrEditLogRow;
 	
 	meetingHub.client.addTranscription = addTranscription;
 
@@ -174,12 +177,12 @@ function rejoin(callback) {
 			}).fail(function() {
 				console.error('Could not connect. Join failed');
 				showAlert("Join meeting failed. Could not connect with server.","alert-danger","Error");
-			});;
+			});
 		}
 	} catch (e) {
 		console.error(e);
-		showAlert("Could not connect with server.","alert-danger","Error");
-		//callback();
+		showAlert("Could not connect with server. Your changes may not be saved.","alert-danger","Error");
+		callback();
 	}
 }
 

@@ -521,6 +521,7 @@ body.dragging, body.dragging * {
 
 .issueDetails > .dd-list {
     max-height: 400px;
+	max-height: 35vh;
     padding-bottom: 20px;
     margin-bottom: 20px;
     overflow-y: auto;

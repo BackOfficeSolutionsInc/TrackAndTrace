@@ -1,9 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Tasks;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace RadialReview.Models
 {
@@ -47,6 +44,8 @@ namespace RadialReview.Models
         public virtual int FirstN_Users_Free { get; set; }
 
         public virtual long OrgId { get; set; }
+
+		public virtual OrganizationModel _Org { get; set; }
 
 		public virtual DateTime? ReviewFreeUntil { get; set; }
 		public virtual DateTime? L10FreeUntil { get; set; }

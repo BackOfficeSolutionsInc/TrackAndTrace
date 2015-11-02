@@ -33,196 +33,209 @@
 			<div class="panel panel-default">
 				@if (edit)
 				{<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Job Description", "/JobDescription/Modal/" + Model.User.Id, "/JobDescription/Modal?refresh=true&silent=true")">Edit</a>}<div class="panel-heading"><h3 class="panel-title">Job Description</h3></div>
-				<div class="panel-body" style="white-space: pre-line;">@if (String.IsNullOrWhiteSpace(Model.User.JobDescription))
-				{<span class="gray">None entered.@if (edit)
-				{<span> Click 'Edit' to add a job description.</span>}</span>}
-				else
-				{
-					if (Model.User.JobDescriptionFromTemplateId.HasValue)
-					{<span class="icon fontastic-icon-link-2 template-link job-description-link" title="This job description was created by a template."></span>}@Model.User.JobDescription}</div>
+				<div class="panel-body" style="white-space: pre-line;">@if (String.IsNullOrWhiteSpace(Model.User.JobDescription)){<span class="gray">None entered.@if (edit){<span> Click 'Edit' to add a job description.</span>}</span>}else{if (Model.User.JobDescriptionFromTemplateId.HasValue){<span class="icon fontastic-icon-link-2 template-link job-description-link" title="This job description was created by a template."></span>}@Model.User.JobDescription}</div>
+		</div>
+		<div class="panel panel-default">
+			@if (edit && Model.CanViewRocks)
+			{
+				<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Individual " + @Html.Organization().Settings.RockName, "/Rocks/Modal/" + Model.User.Id, "/Rocks/Modal?refresh=true&silent=true")">Edit</a>
+			}
+			<div class="panel-heading">
+				<h3 class="panel-title">Individual Quarterly @Html.Organization().Settings.RockName</h3>
 			</div>
-			<div class="panel panel-default">
-				@if (edit && Model.CanViewRocks)
+			<div class="panel-body numbers">
+
+				@if (Model.CanViewRocks)
 				{
-					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Individual " + @Html.Organization().Settings.RockName, "/Rocks/Modal/" + Model.User.Id, "/Rocks/Modal?refresh=true&silent=true")">Edit</a>
-				}
-				<div class="panel-heading">
-					<h3 class="panel-title">Individual Quarterly @Html.Organization().Settings.RockName</h3>
-				</div>
-				<div class="panel-body numbers">
-
-					@if (Model.CanViewRocks)
+					if (Model.Rocks.Any())
 					{
-						if (Model.Rocks.Any())
-						{
-							foreach (var rg in Model.Rocks.GroupBy(x => x.PeriodId))
+						<br />
+						<br />
+
+						<ul class="nav nav-tabs nav-tabs-line" role="tablist">
+							@{ var first = true;}
+							@foreach (var q in Model.Rocks.Select(x => x.Period).OrderByDescending(x=>x.EndTime).Distinct(x => x.Id))
 							{
-								<b>@rg.First().Period.NotNull(x => x.Name):</b>
-								<ul>
-									@foreach (var r in rg)
-									{
-										<li class="font-size:19px;">
-
-											@r.Rock
-											@if (r.FromTemplateItemId.HasValue)
-											{
-												<span class="icon fontastic-icon-link-2 template-link" title="This was created by a template."></span>
-											}
-										</li>
-									}
-								</ul>
-							}
-						}
-						else
-						{
-							<div class="gray">
-								No @Html.Organization().Settings.RockName.
-								@if (edit)
-								{
-									@:Click 'Edit' to add an individuals @Html.Organization().Settings.RockName.
-								 }
-							</div>
-						}
-					}
-					else
-					{
-						<div class="gray">
-							Cannot view this employee's @Html.Organization().Settings.RockName.
-						</div>
-					}
-
-				</div>
-			</div>
-
-
-
-			<div class="panel panel-default">
-				@if (edit)
-				{
-					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Roles", "/Roles/Modal/" + Model.User.Id, "/Roles/Modal?refresh=true&silent=true")">Edit</a>
-				}
-				<div class="panel-heading">
-					<h3 class="panel-title">Individual Roles</h3>
-				</div>
-				<div class="panel-body numbers">
-					@if (Model.Roles.Any())
-					{
-						<ul>
-							@foreach (var r in Model.Roles)
-							{
-								<li class="font-size:19px;">
-									@r.Role
-									@if (r.FromTemplateItemId.HasValue)
-									{
-										<span class="icon fontastic-icon-link-2 template-link" title="This role was created by a template."></span>
-									}
-								</li>
+								<li role="presentation" class="@(first?"active":"")"><a href="#period_@(q.Id)" aria-controls="period_@(q.Name)" role="tab" data-toggle="tab">@(q.Name)</a></li>
+								first = false;
 							}
 						</ul>
-					}
-					else
-					{
-						<div class="gray">
-							No roles.
-							@if (edit)
+
+						<br />
+							<!-- Tab panes -->
+						<div class="tab-content">
+							@{ first = true;}
+							@foreach (var q in Model.Rocks.Select(x => x.Period).OrderByDescending(x => x.EndTime).Distinct(x => x.Id))
 							{
-								@:Click 'Edit' to add a role.
-							}
-						</div>
-					}
-				</div>
-			</div>
+								<div role="tabpanel" class="tab-pane @(first?"active":"")" id="period_@(q.Id)">
+									<ul>
+										@foreach (var r in Model.Rocks.Where(x => x.Period.Id == q.Id))
+										{
 
-			<div class="panel panel-default">
-				@if (edit && Model.CanViewMeasurables)
-				{
-					<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Measurables", "/Measurable/Modal/" + Model.User.Id, "/Measurable/Modal?refresh=true&silent=true")">Edit</a>
-				}
-				<div class="panel-heading">
-					<h3 class="panel-title">Scorecard Measurables</h3>
-				</div>
-				<div class="panel-body numbers">
-
-					@if (Model.CanViewMeasurables)
-					{
-
-						if (Model.Measurables.Any())
-						{
-							<table class="fullWidth">
-								<thead>
-									<tr>
-										<th style="width: 40px;"></th>
-										<th>Measurable</th>
-										<th style="width: 90px;" class="alignCenter">Weekly Goal</th>
-										<th style="width: 160px;" class="alignCenter">Admin</th>
-									</tr>
-								</thead>
-
-								<tbody>
-									@{ var i = 1; }
-									@foreach (var r in Model.Measurables)
-									{
-										<tr>
-											<td class="alignRight" style="padding-right: 8px;">@i.</td>
-											<td>
-												@r.Title
+											<li class="font-size:19px;">
+												@r.Rock
 												@if (r.FromTemplateItemId.HasValue)
 												{
-													<span class="icon fontastic-icon-link-2 template-link" title="This measurable was created by a template."></span>
+													<span class="icon fontastic-icon-link-2 template-link" title="This was created by a template."></span>
 												}
-											</td>
-											<td class="alignCenter">@r.GoalDirection.GetDisplayName() @r.Goal.ToString("0.#####")</td>
-											<td class="alignCenter">@r.AdminUser.NotNull(x => x.GetName())</td>
-										</tr>
-												{
-													i++;
-												}
-									}
-								</tbody>
-							</table>
-						}
-						else
-						{
-							<div class="gray">
-								No measurables.
-								@if (edit)
-								{
-									@:Click 'Edit' to add a measurable.
-								 }
-							</div>
-						}
+											</li>
+										}
+									</ul>
+								</div>
+								first = false;
+							}
+						</div>
 					}
 					else
 					{
 						<div class="gray">
-							Cannot view this employee's measurables.
+							No @Html.Organization().Settings.RockName.
+							@if (edit)
+							{
+								@:Click 'Edit' to add an individuals @Html.Organization().Settings.RockName.
+								 }
 						</div>
 					}
-				</div>
+				}
+				else
+				{
+					<div class="gray">
+						Cannot view this employee's @Html.Organization().Settings.RockName.
+					</div>
+				}
+
 			</div>
-
-
-
-			@*<div class="panel panel-default">
-					@if (edit)
-					{
-						<a class="headerButton" href="~/Responsibilities/Edit/@Model.User.Id">Edit</a>
-					}
-					<div class="panel-heading">
-						<h3 class="panel-title">Questions</h3>
-					</div>
-					<div class="panel-body numbers">
-						<ul>
-							@foreach (var r in Model.Responsibilities)
-							{
-								<li class="font-size:19px;">
-									@r
-								</li>
-							}
-						</ul>
-					</div>
-				</div>*@
-
 		</div>
+
+
+
+		<div class="panel panel-default">
+			@if (edit)
+			{
+				<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Roles", "/Roles/Modal/" + Model.User.Id, "/Roles/Modal?refresh=true&silent=true")">Edit</a>
+			}
+			<div class="panel-heading">
+				<h3 class="panel-title">Individual Roles</h3>
+			</div>
+			<div class="panel-body numbers">
+				@if (Model.Roles.Any())
+				{
+					<ul>
+						@foreach (var r in Model.Roles)
+						{
+							<li class="font-size:19px;">
+								@r.Role
+								@if (r.FromTemplateItemId.HasValue)
+								{
+									<span class="icon fontastic-icon-link-2 template-link" title="This role was created by a template."></span>
+								}
+							</li>
+						}
+					</ul>
+				}
+				else
+				{
+					<div class="gray">
+						No roles.
+						@if (edit)
+						{
+							@:Click 'Edit' to add a role.
+							}
+					</div>
+				}
+			</div>
+		</div>
+
+		<div class="panel panel-default">
+			@if (edit && Model.CanViewMeasurables)
+			{
+				<a class="headerButton clickable" onclick="@Html.ShowModal("Edit Measurables", "/Measurable/Modal/" + Model.User.Id, "/Measurable/Modal?refresh=true&silent=true")">Edit</a>
+			}
+			<div class="panel-heading">
+				<h3 class="panel-title">Scorecard Measurables</h3>
+			</div>
+			<div class="panel-body numbers">
+
+				@if (Model.CanViewMeasurables)
+				{
+
+					if (Model.Measurables.Any())
+					{
+						<table class="fullWidth">
+							<thead>
+								<tr>
+									<th style="width: 40px;"></th>
+									<th>Measurable</th>
+									<th style="width: 90px;" class="alignCenter">Weekly Goal</th>
+									<th style="width: 160px;" class="alignCenter">Admin</th>
+								</tr>
+							</thead>
+
+							<tbody>
+								@{ var i = 1; }
+								@foreach (var r in Model.Measurables)
+								{
+									<tr>
+										<td class="alignRight" style="padding-right: 8px;">@i.</td>
+										<td>
+											@r.Title
+											@if (r.FromTemplateItemId.HasValue)
+											{
+												<span class="icon fontastic-icon-link-2 template-link" title="This measurable was created by a template."></span>
+											}
+										</td>
+										<td class="alignCenter">@r.GoalDirection.GetDisplayName() @r.Goal.ToString("0.#####")</td>
+										<td class="alignCenter">@r.AdminUser.NotNull(x => x.GetName())</td>
+									</tr>
+											{
+												i++;
+											}
+								}
+							</tbody>
+						</table>
+					}
+					else
+					{
+						<div class="gray">
+							No measurables.
+							@if (edit)
+							{
+								@:Click 'Edit' to add a measurable.
+								 }
+						</div>
+					}
+				}
+				else
+				{
+					<div class="gray">
+						Cannot view this employee's measurables.
+					</div>
+				}
+			</div>
+		</div>
+
+
+
+		@*<div class="panel panel-default">
+				@if (edit)
+				{
+					<a class="headerButton" href="~/Responsibilities/Edit/@Model.User.Id">Edit</a>
+				}
+				<div class="panel-heading">
+					<h3 class="panel-title">Questions</h3>
+				</div>
+				<div class="panel-body numbers">
+					<ul>
+						@foreach (var r in Model.Responsibilities)
+						{
+							<li class="font-size:19px;">
+								@r
+							</li>
+						}
+					</ul>
+				</div>
+			</div>*@
+
 	</div>
+</div>
 </div>

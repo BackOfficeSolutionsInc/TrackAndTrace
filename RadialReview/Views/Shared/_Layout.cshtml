@@ -160,8 +160,7 @@
 				<div class="container body-content">
 					@RenderSection("header", false)
 					<div class="clearfix subheading noPrint">@ViewBag.Subheading</div>
-					<div id="alerts">
-					</div>
+					<div id="alerts"></div>
 					<div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
 						@RenderSection("hints", false)
 					</div>

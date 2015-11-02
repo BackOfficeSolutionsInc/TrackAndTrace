@@ -37,6 +37,13 @@ namespace RadialReview.Models.Components
 			};
 		}
 
+		public virtual string FriendlyType()
+		{
+			if (ModelType == null)
+				return null;
+			return ModelType.Split('.').Last();
+		}
+
 		public static string GetModelType(ILongIdentifiable creator)
 		{
 			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(creator.GetType()).EntityName;

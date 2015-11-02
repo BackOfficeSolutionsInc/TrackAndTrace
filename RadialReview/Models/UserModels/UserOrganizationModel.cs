@@ -26,7 +26,7 @@ namespace RadialReview.Models
             IsRadialAdmin = true,
             Id = UserOrganizationModel.ADMIN_ID,
         };
-
+		
 		public virtual long? _ClientTimestamp { get; set; }
 
 
@@ -97,7 +97,10 @@ namespace RadialReview.Models
             return User != null;
         }
         public virtual List<UserOrganizationModel> AllSubordinates { get; set; }
-        /*
+
+		public virtual bool IsClient { get; set; }
+
+		/*
         public virtual List<OriginType> EditableQuestionOrigins
         {
             get
@@ -133,6 +136,7 @@ namespace RadialReview.Models
             Positions = new List<PositionDurationModel>();
             Teams = new List<TeamDurationModel>();
             TempUser = null;
+	        IsClient = false;
 			Cache=new UserLookup();
         }
 
@@ -254,6 +258,7 @@ namespace RadialReview.Models
 			Cache.CreateTime = CreateTime;
 			Cache.DeleteTime = DeleteTime;
 			Cache.Email = this.GetEmail();
+			Cache.IsClient = this.IsClient;
 			Cache.HasJoined = User != null;
 			Cache.HasSentInvite = !(TempUser != null && TempUser.LastSent == null);
 			Cache.IsAdmin = ManagingOrganization;
@@ -292,6 +297,8 @@ namespace RadialReview.Models
 
 		}
 
+
+		public virtual string ClientOrganizationName { get; set; }
 	}
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
@@ -309,6 +316,9 @@ namespace RadialReview.Models
             Map(x => x.DetachTime);
 			Map(x => x.DeleteTime);
 			Map(x => x.EmailAtOrganization);
+			Map(x => x.IsClient);
+
+			Map(x => x.ClientOrganizationName);
 			/*Map(x => x.NumRocks);
 			Map(x => x.NumRoles);
 			Map(x => x.NumMeasurables);*/

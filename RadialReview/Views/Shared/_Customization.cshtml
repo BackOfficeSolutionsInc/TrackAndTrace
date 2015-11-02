@@ -59,100 +59,167 @@
 </style>
 
 <div class="customizeSelection">
-	<div class="row">
-		<div class="col-sm-5 col-sm-push-7">
-			<div class="well">
-				<p>
-					From this menu, you can choose select who each employee will evaluate. The "Default" option ensures that users will evaluate themselves and their Supervisors, Direct Reports, Teammates, and Peers.
+	<br /><br />
+	<ul class="nav nav-tabs nav-tabs-line" role="tablist">
+		<li role="presentation" class="active"><a href="#simple" aria-controls="home" role="tab" data-toggle="tab">Simple</a></li>
+		<li role="presentation" class=""><a href="#advanced" aria-controls="home" role="tab" data-toggle="tab">Advanced</a></li>
+	</ul>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="simple">
+			<br />
+			<div class="" data-toggle="buttons">
+				<label class="btn btn-default active simple-btn" title="Supervisors, Direct Reports and Teammembers review each other.">
+					<input type="radio" name="review_type" id="review_360" autocomplete="off" checked> 360° Review
+				</label>
 
-					<i> For the most organizations, selecting "Default" is sufficient.</i>
-				</p>
+				<label class="btn btn-default simple-btn" title="Supervisors review direct reports and vise versa">
+					<input type="radio" name="review_type" id="review_S2D_D2S" autocomplete="off" > Supervisor <b>&hArr;</b> Direct Report
+				</label>
+				<label class="btn btn-default simple-btn">
+					<input type="radio" name="review_type" id="review_S2D" autocomplete="off" title="Supervisors review direct reports only">Supervisor <b>&rArr;</b> Direct Report
+				</label>
 			</div>
+
+			<br />
+
+			<br />
+
+			<div class="" data-toggle="buttons">
+				<label class="btn btn-default active simple-btn">
+					<input type="radio" name="self_review" id="review_self" autocomplete="off" checked> Employees Review Themselves
+				</label>
+				<label class="btn btn-default simple-btn">
+					<input type="radio" name="self_review" id="review_notself" autocomplete="off"> Employees Do Not Review Themselves
+				</label>
+			</div>
+			<br />
+
 		</div>
-		<div class="col-sm-7 col-sm-pull-5 smallBreak2">
-			@foreach (var s in Model.Selectors)
-			{
-				<div class="row ">
-					<div class="alignRight col-xs-6">@(s.Name)</div> <div class="alignLeft quickSelect col-xs-6" data-checkclass="is@(s.UniqueId)">       (<a class="select">select</a> | <a class="deselect">deselect</a>)</div>
+		<div role="tabpanel" class="tab-pane" id="advanced">
+			<br/>
+			<div class="row">
+				<div class="col-sm-5 col-sm-push-7">
+					<div class="well">
+						<p>
+							From this menu, you can choose select who each employee will evaluate. The "Default" option ensures that users will evaluate themselves and their Supervisors, Direct Reports, Teammates, and Peers.
+
+							<i> For the most organizations, selecting "Default" is sufficient.</i>
+						</p>
+					</div>
 				</div>
-			}
-		</div>
-	</div>
-	<div class="row">
-
-		<div class="col-sm-10 col-sm-offset-1 bordered noselect">
-			<div class="row bold" style="border-bottom:1px solid #808080;">
-				<div class="col-xs-4">This person</div>
-				<div class="col-xs-1">&#10148;</div>
-				<div class="col-xs-2">reviews</div>
-				<div class="col-xs-1">&#10148;</div>
-				<div class="col-xs-4">This person</div>
-			</div>
-
-			<div class="row" style="overflow: hidden;">
-				<div class="col-xs-6 customize noPad">
-					<div id="" class="" >&nbsp;</div>
-
-					@{
-						var first = true;
-						var firstId = -1L;
-					}
-					@foreach (var user in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
+				<div class="col-sm-7 col-sm-pull-5 smallBreak2">
+					@foreach (var s in Model.Selectors)
 					{
-						<div id="first_@user.Id" class="@(first?"selected":"") selectable clickable" data-id="@(user.Id)" onclick="unhide(@user.Id)">
-							<div class="pull-left counter">0</div>
-							@user.GetNameAndTitle()
-						</div>
-						if (first)
-						{
-							firstId = user.Id;
-						}
-						first = false;
-					}
-					@for (int i = Model.Subordinates.Count; i < Model.AllReviewees.Count-1; i++)
-					{
-						<div id="" class="">
-							<div class="pull-left counter">&nbsp;</div>
-							&nbsp;
+						<div class="row ">
+							<div class="alignRight col-xs-6">@(s.Name)</div> <div class="alignLeft quickSelect col-xs-6" data-checkclass="is@(s.UniqueId)">       (<a class="select">select</a> | <a class="deselect">deselect</a>)</div>
 						</div>
 					}
 				</div>
-				@{
-					first = true;
-				}
-				@foreach (var firstUser in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
-				{
-					<div id="second_@firstUser.Id" class="col-xs-6 noPad alignLeft customize hideable @(first ? "selected" : "hide")">
-						@foreach (var secondUser in Model.AllReviewees.OrderBy(x=>x.GetGroupType()).ThenBy(x => x.GetName()))
-						{
-							var classes = new HashSet<String>();
-							foreach (var s in Model.Selectors)
+			</div>
+			<div class="row">
+
+				<div class="col-sm-10 col-sm-offset-1 bordered noselect">
+					<div class="row bold" style="border-bottom:1px solid #808080;">
+						<div class="col-xs-4">This person</div>
+						<div class="col-xs-1">&#10148;</div>
+						<div class="col-xs-2">reviews</div>
+						<div class="col-xs-1">&#10148;</div>
+						<div class="col-xs-4">This person</div>
+					</div>
+
+					<div class="row" style="overflow: hidden;">
+						<div class="col-xs-6 customize noPad">
+							<div id="" class="">&nbsp;</div>
+
+							@{
+								var first = true;
+								var firstId = -1L;
+							}
+							@foreach (var user in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
 							{
-								if (s.Pairs.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
+								<div id="first_@user.Id" class="@(first?"selected":"") selectable clickable" data-id="@(user.Id)" onclick="unhide(@user.Id)">
+									<div class="pull-left counter">0</div>
+									@user.GetNameAndTitle()
+								</div>
+								if (first)
 								{
-									classes.Add("is" + s.UniqueId);
+									firstId = user.Id;
 								}
+								first = false;
 							}
-							if (Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
+							@for (int i = Model.Subordinates.Count; i < Model.AllReviewees.Count-1; i++)
 							{
-								<input type="hidden" name="originalCustomize_@(firstUser.Id)_@secondUser.Id" value="True" />
+								<div id="" class="">
+									<div class="pull-left counter">&nbsp;</div>
+									&nbsp;
+								</div>
 							}
-							<div class="selected isAll @String.Join(" ",classes)">
-								<label class="noMargin" style="padding-left:15px;">
-									<input data-original="@(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")" @(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")
-										   class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.Id)" data-parent="first_@(firstUser.Id)" type="checkbox" name="customize_@(firstUser.Id)_@secondUser.Id" />
-									@secondUser.GetNameExtended()
-								</label>
+						</div>
+						@{
+							first = true;
+						}
+						@foreach (var firstUser in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
+						{
+							<div id="second_@firstUser.Id" class="col-xs-6 noPad alignLeft customize hideable @(first ? "selected" : "hide")">
+								@foreach (var secondUser in Model.AllReviewees.OrderBy(x=>x.GetGroupType()).ThenBy(x => x.GetName()))
+								{
+									var classes = new HashSet<String>();
+									foreach (var s in Model.Selectors)
+									{
+										if (s.Pairs.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
+										{
+											classes.Add("is" + s.UniqueId);
+										}
+									}
+									if (Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
+									{
+										<input type="hidden" name="originalCustomize_@(firstUser.Id)_@secondUser.Id" value="True" />
+									}
+									<div class="selected isAll @String.Join(" ",classes)">
+										<label class="noMargin" style="padding-left:15px;">
+											<input data-original="@(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")" @(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")
+											       class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.Id)" data-parent="first_@(firstUser.Id)" type="checkbox" name="customize_@(firstUser.Id)_@secondUser.Id" />
+											@secondUser.GetNameExtended()
+										</label>
+									</div>
+								}
 							</div>
+							first = false;
 						}
 					</div>
-						first = false;
-				}
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 <script>
+
+	$(document).off("change", ".simple-btn input");
+	$(document).on("change", ".simple-btn input", function() {
+		UpdateSimple();
+	});
+
+	function UpdateSimple() {
+			var rtype = $(" [name='review_type']:checked").attr("id");
+		var rself = $(" [name='self_review']:checked").attr("id");
+
+		debugger;
+		$(".customizeBoxes").attr("checked",null);
+		
+		switch(rtype) {
+			case"review_360": $(".isDefault input, .isOrganization input").prop("checked", true);break;
+			case"review_S2D_D2S": $(".isSupervisors input, .isDirectReports input, .isOrganization input").prop("checked", true);break;
+			case"review_S2D": $(".isDirectReports input, .isOrganization input").prop("checked", true);break;
+		}
+		
+		switch(rself) {
+			case"review_self": $(".isSelf input").prop("checked", "checked");break;
+			case"review_notself":$(".isSelf input").prop("checked", null);break;
+		}
+
+		updateAll();
+	}
+
 	function updateCount(parent) {
 		var count = 0;
 		$(".parent_" + parent).each(function () {
@@ -164,8 +231,9 @@
 	}
 
 	function start_Customize() {
-		setTimeout(function() {
-			$(".quickSelect a").hover(function() {
+		setTimeout(function () {
+			UpdateSimple();
+			$(".quickSelect a").hover(function () {
 				var parent = $(this).parent().get(0);
 				var clss = $(parent).data("checkclass");
 				$("." + clss + " label").addClass("hovered");
@@ -175,7 +243,7 @@
 				if ($(this).hasClass("deselect")) {
 					$("." + clss + " label").addClass("deselect");
 				}
-			}, function() {
+			}, function () {
 				var parent = $(this).parent().get(0);
 				var clss = $(parent).data("checkclass");
 				var value = $(this).hasClass("select");
@@ -185,12 +253,12 @@
 
 			})
 
-			$(".customizeBoxes").change(function() {
+			$(".customizeBoxes").change(function () {
 				var parent = $(this).data("parent");
 				updateCount(parent);
 			});
 
-			$(".quickSelect a").click(function(item) {
+			$(".quickSelect a").click(function (item) {
 				var parent = $(this).parent().get(0);
 
 				var clss = $(parent).data("checkclass");
@@ -210,7 +278,7 @@
 		var toHide = $(".hideable.selected");
 		toHide.removeClass("selected");
 		toHide.addClass("remove");
-		setTimeout(function() {
+		setTimeout(function () {
 			$(".hideable.remove").addClass("hide");
 			$("#second_" + id).removeClass("hide");
 			$("#second_" + id).addClass("selected");
@@ -238,3 +306,17 @@
 	}
 </script>
 <img src="/i/wait" onload="start_Customize()" />
+
+
+<style>
+	.simple-btn {
+		width: 260px;
+	}
+
+		.simple-btn:not(.active) {
+			color: #5e5e5e;
+			;
+			background-color: #FFF;
+			border-color: #CCC;
+		}
+</style>

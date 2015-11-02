@@ -11,6 +11,7 @@ namespace RadialReview.Exceptions
 
 		public bool? Silent { get; set; }
 		public bool ForceReload { get; set; }
+		public bool DisableStacktrace { get; set; }
 
         public RedirectException(String message) : base(message) {  
         }

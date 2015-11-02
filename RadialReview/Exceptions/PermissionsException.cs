@@ -8,8 +8,9 @@ namespace RadialReview.Exceptions
 {
     public class PermissionsException : RedirectException
     {        
-        public PermissionsException(String message): base(message)
+        public PermissionsException(String message,bool disableStacktrace=false): base(message)
         {
+	        DisableStacktrace = disableStacktrace;
         }
 
         public PermissionsException() : base(ExceptionStrings.DefaultPermissionsException)

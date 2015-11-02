@@ -16,21 +16,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Extensions;
 using RadialReview.Models.Payments;
 
-namespace RadialReview.Controllers {
-	public class OrganizationController : BaseController {
+namespace RadialReview.Controllers
+{
+	public class OrganizationController : BaseController
+	{
 		//
 		// GET: /Organization/
 		[Access(AccessLevel.Any)]
-		public ActionResult Index() {
+		public ActionResult Index()
+		{
 			return View();
 		}
 
 		[Access(AccessLevel.Any)]
-		public ActionResult Create(int? count) {
+		public ActionResult Create(int? count)
+		{
 			var user = GetUserModel();
 			if (count == null)
 				return RedirectToAction("Index");
@@ -38,27 +43,76 @@ namespace RadialReview.Controllers {
 			return View();
 		}
 
+		[Access(AccessLevel.Radial)]
+		public ActionResult Which(long? id = null)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					
+					if (id == null)
+					{
+						var list = s.QueryOver<OrganizationModel>().Where(x => x.DeleteTime == null).Fetch(x => x.PaymentPlan).Eager.List().ToList();
+						foreach (var i in list)
+						{
+							var a = i.PaymentPlan.Id;
+						}
+
+						return View("WhichList", list);
+					}
+					
+					var perms =PermissionsUtility.Create(s, GetUser()).ManagingOrganization(id.Value);
+
+					var org = s.Get<OrganizationModel>(id);
+
+					ViewBag.Members = OrganizationAccessor.GetOrganizationMembersLookup(s, perms, id.Value, false);
+					return View(org);
+
+				}
+			}
+		}
+		[Access(AccessLevel.Radial)]
+		public JsonResult Delete(long id)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					PermissionsUtility.Create(s, GetUser()).ManagingOrganization(id);
+
+					var org = s.Get<OrganizationModel>(id);
+					org.DeleteTime = DateTime.UtcNow;
+					
+					tx.Commit();
+					s.Flush();
+
+					return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
 		[HttpPost]
 		[Access(AccessLevel.Any)]
-		public ActionResult Create(String name,bool enableL10,bool enableReview) {
+		public ActionResult Create(String name, bool enableL10, bool enableReview)
+		{
 			Boolean managersCanEdit = false;
 			var user = GetUserModel();
 			//var basicPlan=_PaymentAccessor.BasicPaymentPlan();
-			var localizedName=new LocalizedStringModel() { Standard = name };
+			var localizedName = new LocalizedStringModel() { Standard = name };
 			long newRoleId;
 
-            var plan= PaymentOptions.MonthlyPlan(10m,4m,DateTime.UtcNow.AddMonths(1),2);
+			var plan = PaymentOptions.MonthlyPlan(12m, 4m, DateTime.UtcNow.AddMonths(1), 2);
 
 			var organization = _OrganizationAccessor.CreateOrganization(
-                user, 
-                localizedName, 
-                managersCanEdit, 
-                plan,
-                DateTime.UtcNow,
-                out newRoleId,
-                enableL10,
-                enableReview
-            );
+				user,
+				localizedName,
+				managersCanEdit,
+				plan,
+				DateTime.UtcNow,
+				out newRoleId,
+				enableL10,
+				enableReview
+			);
 			return RedirectToAction("SetRole", "Account", new { id = newRoleId });
 		}
 
@@ -66,7 +120,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Products()
 		{
-			_PermissionsAccessor.Permitted(GetUser(),x=>x.ManagingOrganization(GetUser().Organization.Id));
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 			return View(GetUser().Organization);
 		}
 
@@ -74,7 +128,8 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Products(OrganizationModel model)
 		{
-			if (ModelState.IsValid){
+			if (ModelState.IsValid)
+			{
 				_OrganizationAccessor.UpdateProducts(GetUser(), model.Settings.EnableReview, model.Settings.EnableL10, model.Settings.EnableSurvey, model.Settings.Branding);
 				return RedirectToAction("Index", "Manage");
 			}
@@ -82,7 +137,8 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Any)]
-		public ActionResult Join(String id=null) {
+		public ActionResult Join(String id = null)
+		{
 			if (String.IsNullOrWhiteSpace(id))
 				throw new PermissionsException("Id cannot be empty.");
 
@@ -97,23 +153,27 @@ namespace RadialReview.Controllers {
 			var orgId = int.Parse(nexus.GetArgs()[0]);
 			var placeholderUserId = long.Parse(nexus.GetArgs()[2]);
 			if (user == null)
-				return RedirectToAction("Login", "Account", new{returnUrl = "Organization/Join/" + id});
-			try{
+				return RedirectToAction("Login", "Account", new { returnUrl = "Organization/Join/" + id });
+			try
+			{
 				var userOrg = GetUser(placeholderUserId);
-				if (!user.IsRadialAdmin){
+				if (!user.IsRadialAdmin)
+				{
 					throw new RedirectException(ExceptionStrings.AlreadyMember);
 				}
-				else{
+				else
+				{
 					throw new OrganizationIdException();
 				}
 			}
-			catch (OrganizationIdException){
+			catch (OrganizationIdException)
+			{
 				//We want to hit this exception.
 				new Cache().Invalidate(CacheKeys.ORGANIZATION_ID);
 				//Session["OrganizationId"] = null;
 				var org = _OrganizationAccessor.JoinOrganization(user, nexus.ByUserId, placeholderUserId);
 				_NexusAccessor.Execute(nexus);
-				return RedirectToAction("Index", "Home", new{message = String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name)});
+				return RedirectToAction("Index", "Home", new { message = String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name) });
 			}
 		}
 		/*
@@ -159,15 +219,19 @@ namespace RadialReview.Controllers {
 		}*/
 
 		[Access(AccessLevel.Any)]
-		public ActionResult Begin(int? count = null) {
+		public ActionResult Begin(int? count = null)
+		{
 			ViewBag.Count = count;
 			int[] roundUp = new int[] { 10, 15, 25, 50, 100, 500 };
 			double[] prices = new double[] { 0, 199, 499, 999, 1999, 3999, Double.MaxValue };
 
-			if (count != null) {
+			if (count != null)
+			{
 				ViewBag.Price = prices[0];
-				for (int i = 0; i < roundUp.Length; i++) {
-					if (count > roundUp[i]) {
+				for (int i = 0; i < roundUp.Length; i++)
+				{
+					if (count > roundUp[i])
+					{
 						ViewBag.Price = prices[i + 1];
 					}
 				}
@@ -176,7 +240,8 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Any)]
-		public ActionResult Redirect(int organizationId, string returnUrl) {
+		public ActionResult Redirect(int organizationId, string returnUrl)
+		{
 			if (returnUrl.Contains("?"))
 				return RedirectToLocal(returnUrl + "&organizationId=" + organizationId);
 			else
@@ -185,22 +250,26 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Tree(string type = "cartesian") {
-			if (type.ToLower() == "radial") {
+		public ActionResult Tree(string type = "cartesian")
+		{
+			if (type.ToLower() == "radial")
+			{
 				return View("RadialTree", GetUser().Organization.Id);
 			}
-			else if (type.ToLower() == "forcedirected") {
+			else if (type.ToLower() == "forcedirected")
+			{
 				return View("ForceDirected", GetUser().Organization.Id);
 			}
-			else {
+			else
+			{
 				return View("Tree", GetUser().Organization.Id);
 			}
 		}
 
 		[Access(AccessLevel.Manager)]
-        public PartialViewResult ResendJoin(long id)
-        {
-			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false,PermissionType.EditEmployeeDetails);
+		public PartialViewResult ResendJoin(long id)
+		{
+			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
@@ -210,7 +279,8 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		[HttpPost]
-		public async Task<JsonResult> ResendJoin(long id, TempUserModel model, long TempId) {
+		public async Task<JsonResult> ResendJoin(long id, TempUserModel model, long TempId)
+		{
 			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
@@ -221,12 +291,13 @@ namespace RadialReview.Controllers {
 			var prefix = "Resent";
 			if (model.LastSent == null)
 				prefix = "Sent";
-			return Json(result.ToResults(prefix+" invite to " + model.Name() + "."));
+			return Json(result.ToResults(prefix + " invite to " + model.Name() + "."));
 		}
 
 
 		#region Uploads
-		public class UploadVM {
+		public class UploadVM
+		{
 			public long OrganizationId { get; set; }
 			public HttpPostedFileBase File { get; set; }
 			public Guid Guid { get; set; }
@@ -235,22 +306,26 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		[HttpGet]
-		public ActionResult Upload() {
+		public ActionResult Upload()
+		{
 			var orgId = GetUser().Organization.Id;
 
-			return View(new UploadVM() {
+			return View(new UploadVM()
+			{
 				OrganizationId = orgId,
 			});
 		}
 
-		public static Dictionary<Guid,String> CSVs = new Dictionary<Guid, String>();
+		public static Dictionary<Guid, String> CSVs = new Dictionary<Guid, String>();
 
 		[Access(AccessLevel.Manager)]
 		[HttpPost]
-		public ActionResult Upload(UploadVM model) {
+		public ActionResult Upload(UploadVM model)
+		{
 			var file = model.File;
 
-			if (file != null && file.ContentLength > 0) {
+			if (file != null && file.ContentLength > 0)
+			{
 				var guid = Guid.NewGuid();
 				CSVs[guid] = file.InputStream.ReadToEnd();
 				return RedirectToAction("Fields", new { id = guid.ToString() });
@@ -259,7 +334,8 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("Upload");
 		}
 
-		public class FieldsVM {
+		public class FieldsVM
+		{
 			public Guid Guid { get; set; }
 			public string[] Fields { get; set; }
 			public String FirstNameColumn { get; set; }
@@ -272,18 +348,22 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Manager)]
-		public ActionResult Fields(string id = null) {
-			try {
+		public ActionResult Fields(string id = null)
+		{
+			try
+			{
 				var guid = Guid.Parse(id);
 
 				var data = CSVs[guid];
-				using (var sr = new StreamReader(data.ToStream())) {
+				using (var sr = new StreamReader(data.ToStream()))
+				{
 					var csv = new CsvReader(sr);
-					while (csv.Read()) {}
+					while (csv.Read()) { }
 
 					var headers = csv.FieldHeaders.ToList();
-					
-					var model = new FieldsVM() {
+
+					var model = new FieldsVM()
+					{
 						Guid = guid,
 						Fields = headers.ToArray(),
 					};
@@ -292,7 +372,8 @@ namespace RadialReview.Controllers {
 				}
 
 			}
-			catch (Exception e) {
+			catch (Exception e)
+			{
 				ViewBag.Message = "An error has occurred.";
 				return RedirectToAction("Upload");
 			}
@@ -301,22 +382,24 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		[HttpPost]
 		public async Task<ActionResult> Fields(FieldsVM model)
-	    {
-		    var nexus = new NexusController();
+		{
+			var nexus = new NexusController();
 
-		    var existingPositions = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
-		    var existingUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id,false,false);
+			var existingPositions = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
+			var existingUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 			var pos = _PositionAccessor.AllPositions().First();
-			
+
 			var data = CSVs[model.Guid];
 
 			var managerLookup = new Dictionary<long, string[]>();
 
 			var errors = new CounterSet<String>();
 
-		    using (var sr = new StreamReader(data.ToStream())){
-			    var csv = new CsvReader(sr);
-			    while (csv.Read()){
+			using (var sr = new StreamReader(data.ToStream()))
+			{
+				var csv = new CsvReader(sr);
+				while (csv.Read())
+				{
 					var email = csv.GetField(model.EmailColumn).Trim();
 					var firstName = csv.GetField(model.FirstNameColumn).Trim();
 					var lastName = csv.GetField(model.LastNameColumn).Trim();
@@ -324,12 +407,13 @@ namespace RadialReview.Controllers {
 					var managerFirst = csv.GetField(model.ManagerFirstNameColumn).Trim();
 					var managerLast = csv.GetField(model.ManagerLastNameColumn).Trim();
 
-				    if ((new[]{email, firstName, lastName, position, managerFirst, managerLast}.All(string.IsNullOrWhiteSpace))){
+					if ((new[] { email, firstName, lastName, position, managerFirst, managerLast }.All(string.IsNullOrWhiteSpace)))
+					{
 						//Empty row
 						continue;
-				    }
+					}
 
-				    var positionFound =existingPositions.FirstOrDefault(x => x.CustomName == position);
+					var positionFound = existingPositions.FirstOrDefault(x => x.CustomName == position);
 
 					if (positionFound == null && !String.IsNullOrWhiteSpace(position))
 					{
@@ -338,49 +422,57 @@ namespace RadialReview.Controllers {
 						positionFound = newPosition;
 					}
 
-				    var vm = new CreateUserOrganizationViewModel(){
+					var vm = new CreateUserOrganizationViewModel()
+					{
 						Email = email,
 						FirstName = firstName,
 						LastName = lastName,
 						OrgId = GetUser().Organization.Id,
 						ManagerId = -4,
-						Position = new UserPositionViewModel(){
+						Position = new UserPositionViewModel()
+						{
 							CustomPosition = null,
-							PositionId = positionFound!=null?positionFound.Id:-2
+							PositionId = positionFound != null ? positionFound.Id : -2
 						},
-				    };
-				    try{
-					    var user = (await _UserAccessor.CreateUser(GetUser(), vm)).Item2;
+					};
+					try
+					{
+						var user = (await _UserAccessor.CreateUser(GetUser(), vm)).Item2;
 
-					    existingUsers.Add(user);
-					    managerLookup.Add(user.Id, new[]{managerFirst, managerLast});
-				    }
-				    catch (PermissionsException e){
-					    errors.Add(e.Message);
-				    }
-					catch (Exception e) {
+						existingUsers.Add(user);
+						managerLookup.Add(user.Id, new[] { managerFirst, managerLast });
+					}
+					catch (PermissionsException e)
+					{
+						errors.Add(e.Message);
+					}
+					catch (Exception e)
+					{
 						errors.Add("An error has occurred.");
-				    }
-			    }
-		    }
+					}
+				}
+			}
 			var now = DateTime.UtcNow;
-			foreach (var m in managerLookup){
-				var foundManager =existingUsers.FirstOrDefault(x => x.GetFirstName() == m.Value[0] && x.GetLastName() == m.Value[1]);
-				if (foundManager == null){
+			foreach (var m in managerLookup)
+			{
+				var foundManager = existingUsers.FirstOrDefault(x => x.GetFirstName() == m.Value[0] && x.GetLastName() == m.Value[1]);
+				if (foundManager == null)
+				{
 					errors.Add("Could not find manager " + m.Value[0] + " " + m.Value[1] + ".");
 					continue;
 				}
-				if (!foundManager.IsManager()){
-					_UserAccessor.EditUser(GetUser(),foundManager.Id,true);
+				if (!foundManager.IsManager())
+				{
+					_UserAccessor.EditUser(GetUser(), foundManager.Id, true);
 					foundManager.ManagerAtOrganization = true;
 				}
 
 				_UserAccessor.AddManager(GetUser(), m.Key, foundManager.Id, now);
 			}
 			ViewBag.Message = String.Join("\n", errors.Select(x => x.Key));
-			return RedirectToAction("Members","Manage");
+			return RedirectToAction("Members", "Manage");
 
-	    }
+		}
 		#endregion
 
 

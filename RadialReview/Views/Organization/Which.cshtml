@@ -1,0 +1,107 @@
+﻿@using RadialReview.Models.UserModels
+@model RadialReview.Models.OrganizationModel
+@{
+	ViewBag.Title = "Which";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model != null)
+{
+	<h1 class="pull-left">Which</h1>
+	<h1 style="color: orange" class="pull-left"><b> @Model.GetName() [@Model.Id]</b></h1>
+	<div class="clearfix"></div>
+	<a class="pull-right" href="/Organization/Which">Back to Listing...</a>
+	<h4 class="pull-left">Server Time</h4>
+	<h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
+	<div class="clearfix"></div>
+
+
+	<h4 class="pull-left">Count</h4>
+	<h4 style="color: orange" class="pull-left"><b> @(((List<UserLookup>)ViewBag.Members).Count())</b></h4>
+	<div class="clearfix"></div>
+
+	
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th class="alignCenter">Last Login</th>
+				<th class="alignCenter">Invite Sent</th>
+				<th class="alignCenter">Joined</th>
+				<th class="alignCenter">UserId</th>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Login</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var m in (List<UserLookup>)ViewBag.Members)
+			{
+				<tr>
+					<td class="alignCenter" style="color:@(m.LastLogin.NotNull(x =>{
+						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
+						                         {
+													 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(7)))
+													 {
+														 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))){
+															 return "green";
+														 }
+														 return "lightgreen";
+							                         }
+													 return "yellow";
+						                         }
+						                         return "red";
+					                         })??"darkred")">@m.LastLogin.NotNull(x=>x.ToString())</td>
+					<td class="alignCenter">@m.HasSentInvite.GetIcon()</td>
+					<td class="alignCenter">@m.HasJoined.GetIcon()</td>
+					<td class="alignCenter">@m.UserId</td>
+					<td><a href="/Manage/UserDetails/@m.UserId">@m.Name</a></td>
+					<td>@m.Email</td>
+					<td class="alignCenter"><a href="/Account/SetRole/@(m.UserId)?ReturnUrl=%2FDashboard">login</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+
+}
+else
+{
+	<h1 class="pull-left">Which</h1>
+	<h1 style="color: #D0D0D0" class="pull-left"><b> NULL</b></h1>
+	<div class="clearfix"></div>
+	<h4 class="pull-left">Server Time</h4>
+	<h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
+}
+<hr />
+
+@using (Html.BeginScripts()){
+	<script>
+	      $("table").tablesorter({
+              sortForce: [[0, 1]],
+              sortStable: true,
+          });
+	</script>
+}
+
+@using (Html.BeginStyles())
+{
+	<style>
+		.alignRight .display-label {
+			padding-right: 0px;
+		}
+
+		.display-label {
+			padding-right: 10px;
+			font-weight: bold;
+		}
+
+		.display-field {
+			height: 20px;
+		}
+
+		.grayed {
+			color: #888;
+		}
+
+	</style>
+}

@@ -66,7 +66,7 @@ namespace RadialReview.Models
 
     public class RegisterViewModel
     {
-        /*
+	    /*
         [Required]
         [Display(Name = "username", ResourceType = typeof(DisplayNameStrings))]
         public string UserName { get; set; }
@@ -95,8 +95,10 @@ namespace RadialReview.Models
         [Required]
         public string lname {get;set;}
 
+		public bool IsClient { get; set; }
+
         public string ReturnUrl { get; set; }
 
-
+	    public string OrganizationName { get; set; }
     }
 }

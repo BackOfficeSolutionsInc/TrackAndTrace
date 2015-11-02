@@ -135,7 +135,7 @@ namespace RadialReview.Controllers
 
 
                 var message = "Successfully added " + model.FirstName + " " + model.LastName + ".";
-                if (GetUser().Organization.SendEmailImmediately)
+                if (model.SendEmail)
                 {
                     message += " An invitation has been sent to " + model.Email + ".";
 					return Json(ResultObject.Create(null, message).ForceRefresh());

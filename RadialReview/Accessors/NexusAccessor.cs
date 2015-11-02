@@ -24,7 +24,7 @@ namespace RadialReview.Accessors
     {
         //public static UrlAccessor _UrlAccessor = new UrlAccessor();
 
-        public TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName,out UserOrganizationModel createdUser)
+        public TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName,out UserOrganizationModel createdUser, bool isClient,string organizationName)
         {
             if (!Emailer.IsValid(email))
                 throw new RedirectException(ExceptionStrings.InvalidEmail);
@@ -62,8 +62,9 @@ namespace RadialReview.Accessors
                         if (!(caller.ManagerAtOrganization || caller.ManagingOrganization) || !(manager.ManagerAtOrganization || manager.ManagingOrganization))
                             throw new PermissionsException();
 
-                    }
-
+					}
+					newUser.ClientOrganizationName = organizationName;
+					newUser.IsClient = isClient;
                     newUser.ManagerAtOrganization = isManager;
                     newUser.Organization = caller.Organization;
                     newUser.EmailAtOrganization = email;
@@ -136,7 +137,7 @@ namespace RadialReview.Accessors
                         ForUserId = newUserId,
                     };
 
-                    nexus.SetArgs(new string[] { "" + caller.Organization.Id, email, "" + newUserId, firstName, lastName });
+                    nexus.SetArgs(new string[] { "" + caller.Organization.Id, email, "" + newUserId, firstName, lastName,""+isClient });
                     id = nexus.Id;
                     db.SaveOrUpdate(nexus);
                     //var newUser=db.Get<UserOrganizationModel>(newUserId);
@@ -150,13 +151,13 @@ namespace RadialReview.Accessors
             return tempUser;
         }
 
-        public async Task<Tuple<string,UserOrganizationModel>> JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName)
+        public async Task<Tuple<string,UserOrganizationModel>> JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, bool isClient,bool sendEmail,string organizationName)
         {
-            var sendEmail = caller.Organization.SendEmailImmediately;
+            //var sendEmail = caller.Organization.SendEmailImmediately;
 
             UserOrganizationModel createdUser;
 
-            var tempUser = CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName,out createdUser);
+            var tempUser = CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName,out createdUser, isClient, organizationName);
             if (sendEmail)
             {
                 var mail=CreateJoinEmailToGuid(caller, tempUser);

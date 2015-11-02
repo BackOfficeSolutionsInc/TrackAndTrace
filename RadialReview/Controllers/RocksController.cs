@@ -100,7 +100,7 @@ namespace RadialReview.Controllers
 			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 			var userId = id;
 			var rocks = _RockAccessor.GetAllRocks(GetUser(), userId);
-			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x=>x.Name,x=>x.Id);
+			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).OrderByDescending(x=>x.EndTime).ToSelectList(x=>x.Name,x=>x.Id);
 			ViewBag.Periods = periods;
 			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
 		}

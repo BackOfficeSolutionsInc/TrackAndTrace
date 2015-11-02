@@ -23,7 +23,12 @@ namespace RadialReview.Models.ViewModels
         public bool StrictlyHierarchical { get; set; }
         public long ManagerId { get; set; }
         public List<SelectListItem> PotentialManagers { get; set; }
-    }
+
+		public string OrganizationName { get; set; }
+		public bool IsClient { get; set; }
+
+		public bool SendEmail { get; set; }
+	}
 
     public class EditUserOrganizationViewModel
     {

@@ -189,13 +189,13 @@ namespace RadialReview.Accessors
 		[Obsolete("Unsafe")]
 		public async Task<bool> SendReceipt(PaymentResult result, InvoiceModel invoice)
 		{
-			if (result.email != null && invoice.PaidTime!=null){
+			if (invoice.PaidTime!=null){
 				var ProductName=Config.ProductName(invoice.Organization);
 				var SupportEmail=ProductStrings.SupportEmail;
 				var OrgName=invoice.Organization.GetName();
 				var Charged = invoice.AmountDue;
-				var CardLast4=result.card_number;
-				var TransactionId=result.id;
+				var CardLast4=result.card_number??"NA";
+				var TransactionId=result.id??"NA";
 				var ChargeTime = invoice.PaidTime;
 				var ServiceThroughDate=invoice.ServiceEnd.ToString("yyyy-MM-dd");
 				var Address = ProductStrings.Address;
@@ -203,11 +203,13 @@ namespace RadialReview.Accessors
 				var localChargeTime = invoice.Organization.ConvertFromUTC(ChargeTime.Value);
 				var lctStr = localChargeTime.ToString("dd MMM yyyy hh:mmtt")+" "+invoice.Organization.GetTimeZoneId(localChargeTime);
 
-				var email = MailModel
-					.To(result.email).AddBcc(ProductStrings.PaymentReceiptEmail)
-					.SubjectPlainText("[" + ProductName + "] Payment Receipt for " + invoice.Organization.GetName())
+				var email = MailModel.Bcc(ProductStrings.PaymentReceiptEmail);
+				if (result.email != null){
+					email = email.AddBcc(result.email);
+				}
+				var toSend = email.SubjectPlainText("[" + ProductName + "] Payment Receipt for " + invoice.Organization.GetName())
 					.Body(EmailStrings.PaymentReceipt_Body, ProductName, SupportEmail, OrgName, String.Format("{0:C}",Charged), CardLast4, TransactionId, lctStr, ServiceThroughDate, Address);
-				await Emailer.SendEmail(email);
+				await Emailer.SendEmail(toSend);
 				return true;
 			}
 			return false;
@@ -293,6 +295,7 @@ namespace RadialReview.Accessors
 			if (amount == 0){
 				return new PaymentResult(){
 					amount_settled = 0,
+					
 				};
 			}
 
@@ -554,10 +557,13 @@ namespace RadialReview.Accessors
 							.List().FirstOrDefault();
 					}
 
+
 					return (PaymentPlanModel)s.GetSessionImplementation().PersistenceContext.Unproxy(plan);
 
 				}
 			}
 		}
 	}
+
+	
 }

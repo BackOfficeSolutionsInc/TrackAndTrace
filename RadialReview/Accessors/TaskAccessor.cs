@@ -51,7 +51,9 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					//var all = s.QueryOver<ScheduledTask>().List().ToList();
-					return s.QueryOver<ScheduledTask>().Where(x => x.Executed == null && x.Started == null && now.AddMinutes(2) > x.Fire && x.DeleteTime == null && x.ExceptionCount <= 11).List().ToList();
+					return s.QueryOver<ScheduledTask>().Where(x => x.Executed == null && x.Started == null && now > x.Fire && x.DeleteTime == null && x.ExceptionCount <= 11).List()
+						.Where(x=>x.ExceptionCount<(x.MaxException??12))
+						.ToList();
 				}
 			}
 		}

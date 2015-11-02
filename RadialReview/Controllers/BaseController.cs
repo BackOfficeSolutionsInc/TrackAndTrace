@@ -14,6 +14,7 @@ using RadialReview.Exceptions;
 using System.Web.Routing;
 using RadialReview.Models.Angular;
 using RadialReview.Models.Angular.Base;
+using RadialReview.Models.UserModels;
 using RadialReview.Properties;
 using log4net;
 using System.Threading;
@@ -408,160 +409,163 @@ namespace RadialReview.Controllers
 		}
 		protected override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					//DataCollection.CommentMarkProfile(2, "Validation");
-					//Secure hidden fields
-					ValidationCollection = filterContext.RequestContext.HttpContext.Request.Form;
-					foreach (var f in ValidationCollection.AllKeys)
-					{
-						if (f != null && f.EndsWith(SecuredValueFieldNameComputer.NameSuffix))
-						{
-							ToValidate.Add(f.Substring(0, f.Length - SecuredValueFieldNameComputer.NameSuffix.Length));
+			try{
+				using (var s = HibernateSession.GetCurrentSession()){
+					using (var tx = s.BeginTransaction()){
+						//DataCollection.CommentMarkProfile(2, "Validation");
+						//Secure hidden fields
+						ValidationCollection = filterContext.RequestContext.HttpContext.Request.Form;
+						foreach (var f in ValidationCollection.AllKeys){
+							if (f != null && f.EndsWith(SecuredValueFieldNameComputer.NameSuffix)){
+								ToValidate.Add(f.Substring(0, f.Length - SecuredValueFieldNameComputer.NameSuffix.Length));
+							}
 						}
-					}
-					//DataCollection.CommentMarkProfile(2, "Attribute");
+						//DataCollection.CommentMarkProfile(2, "Attribute");
 
 
-					//Access Level Filtering
-					var accessAttributes = filterContext.ActionDescriptor.GetCustomAttributes(typeof(AccessAttribute), false).Cast<AccessAttribute>();
-					if (accessAttributes.Count() == 0)
-						throw new NotImplementedException("Access attribute missing.");
+						//Access Level Filtering
+						var accessAttributes = filterContext.ActionDescriptor.GetCustomAttributes(typeof (AccessAttribute), false).Cast<AccessAttribute>();
+						if (accessAttributes.Count() == 0)
+							throw new NotImplementedException("Access attribute missing.");
 
-					switch ((AccessLevel)accessAttributes.Min(x => (int)x.AccessLevel))
-					{
-						case AccessLevel.SignedOut:
-							{
-								if (Request.IsAuthenticated)
-								{
+						switch((AccessLevel) accessAttributes.Min(x => (int) x.AccessLevel)){
+							case AccessLevel.SignedOut:{
+								if (Request.IsAuthenticated){
 									SignOut();
 									//HttpContext.User.Identity = null;
 									//throw new LoginException(Request.Url.PathAndQuery);
 								}
 							}
-							break;
-						case AccessLevel.Any:
-							break;
-						case AccessLevel.User:
-							GetUserModel(s);
-							break;
-						case AccessLevel.UserOrganization:
-							GetUser(s);
-							break;
-						case AccessLevel.Manager:
-							if (!GetUser(s).IsManager()) throw new PermissionsException("You must be a manager to view this resource.");
-							break;
-						case AccessLevel.Radial:
-							if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin)) throw new PermissionsException("You must be a Radial Admin to view this resource.");
-							break;
-						default:
-							throw new Exception("Unknown Access Type");
-					}
-
-
-
-
-					// eat the cookie (if any) and set the culture
-					if (Request.Cookies["lang"] != null)
-					{
-						HttpCookie cookie = Request.Cookies["lang"];
-						string lang = cookie.Value;
-						var culture = new System.Globalization.CultureInfo(lang);
-						Thread.CurrentThread.CurrentCulture = culture;
-						Thread.CurrentThread.CurrentUICulture = culture;
-					}
-
-					filterContext.Controller.ViewBag.IsLocal = Config.IsLocal();
-
-					filterContext.Controller.ViewBag.HasBaseController = true;
-
-					//DataCollection.CommentMarkProfile(2, "ViewBag");
-					if (IsLoggedIn())
-					{
-						var userOrgsCount = GetUserOrganizationCounts(s, Request.Url.PathAndQuery);
-						UserOrganizationModel oneUser = null;
-						var hints = true;
-						try
-						{
-							oneUser = GetUser(s);
-						}
-						catch (OrganizationIdException)
-						{
-						}
-						catch (NoUserOrganizationException)
-						{
+								break;
+							case AccessLevel.Any:
+								break;
+							case AccessLevel.User:
+								GetUserModel(s);
+								break;
+							case AccessLevel.UserOrganization:
+								var u1 = GetUser(s);
+								if (u1.DeleteTime != null)
+									throw new PermissionsException("You do not have access to this resource.");
+								if (u1.Organization.DeleteTime != null)
+									throw new PermissionsException("This organization no longer exists.");
+								break;
+							case AccessLevel.Manager:
+								var u2 = GetUser(s);
+								if (u2.DeleteTime != null)
+									throw new PermissionsException("You do not have access to this resource.");
+								if (u2.Organization.DeleteTime != null)
+									throw new PermissionsException("This organization no longer exists.");
+								if (!u2.IsManager()) 
+									throw new PermissionsException("You must be a manager to view this resource.");
+								break;
+							case AccessLevel.Radial:
+								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin)) throw new PermissionsException("You must be a Radial Admin to view this resource.");
+								break;
+							default:
+								throw new Exception("Unknown Access Type");
 						}
 
-						filterContext.Controller.ViewBag.UserName = MessageStrings.User;
-						filterContext.Controller.ViewBag.UserImage = "/img/placeholder";
-						filterContext.Controller.ViewBag.UserInitials = "";
-						filterContext.Controller.ViewBag.UserColor = 0;
-						filterContext.Controller.ViewBag.IsManager = false;
-						filterContext.Controller.ViewBag.ShowL10 = false;
-						filterContext.Controller.ViewBag.ShowReview = false;
-						filterContext.Controller.ViewBag.ShowSurvey = false;
-						filterContext.Controller.ViewBag.Organizations = userOrgsCount;
-						filterContext.Controller.ViewBag.Hints = true;
-						filterContext.Controller.ViewBag.ManagingOrganization = false;
-						filterContext.Controller.ViewBag.Organization = null;
-						filterContext.Controller.ViewBag.UserId = 0L;
 
-						if (oneUser != null)
-						{
-							var name = new HtmlString(oneUser.GetName());
 
-							if (userOrgsCount > 1)
-							{
-								name = new HtmlString(oneUser.GetNameAndTitle(1));
-								try
-								{
-									name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate() + "</span>");
-								}
-								catch (Exception e)
-								{
-									log.Error(e);
-								}
+
+						// eat the cookie (if any) and set the culture
+						if (Request.Cookies["lang"] != null){
+							HttpCookie cookie = Request.Cookies["lang"];
+							string lang = cookie.Value;
+							var culture = new System.Globalization.CultureInfo(lang);
+							Thread.CurrentThread.CurrentCulture = culture;
+							Thread.CurrentThread.CurrentUICulture = culture;
+						}
+
+						filterContext.Controller.ViewBag.IsLocal = Config.IsLocal();
+
+						filterContext.Controller.ViewBag.HasBaseController = true;
+
+						//DataCollection.CommentMarkProfile(2, "ViewBag");
+						if (IsLoggedIn()){
+							var userOrgsCount = GetUserOrganizationCounts(s, Request.Url.PathAndQuery);
+							UserOrganizationModel oneUser = null;
+							var hints = true;
+							try{
+								oneUser = GetUser(s);
+								var lu = s.Get<UserLookup>(oneUser.Cache.Id);
+								lu.LastLogin = DateTime.UtcNow;
+								s.Update(lu);
 							}
-							//DataCollection.CommentMarkProfile(2, "ViewBagPop");
-							filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._img);
-							filterContext.Controller.ViewBag.UserInitials = oneUser.GetInitials();
-							filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
-							filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
+							catch (OrganizationIdException){
+							}
+							catch (NoUserOrganizationException){
+							}
 
-							filterContext.Controller.ViewBag.UserOrganization = oneUser;
+							filterContext.Controller.ViewBag.UserName = MessageStrings.User;
+							filterContext.Controller.ViewBag.UserImage = "/img/placeholder";
+							filterContext.Controller.ViewBag.UserInitials = "";
+							filterContext.Controller.ViewBag.UserColor = 0;
+							filterContext.Controller.ViewBag.IsManager = false;
+							filterContext.Controller.ViewBag.ShowL10 = false;
+							filterContext.Controller.ViewBag.ShowReview = false;
+							filterContext.Controller.ViewBag.ShowSurvey = false;
+							filterContext.Controller.ViewBag.Organizations = userOrgsCount;
+							filterContext.Controller.ViewBag.Hints = true;
+							filterContext.Controller.ViewBag.ManagingOrganization = false;
+							filterContext.Controller.ViewBag.Organization = null;
+							filterContext.Controller.ViewBag.UserId = 0L;
 
-							filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
-							//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
-							filterContext.Controller.ViewBag.UserName = name;
-							filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
-							filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview;
-							filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
-							var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
-							filterContext.Controller.ViewBag.IsManager = isManager;
-							filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
-							filterContext.Controller.ViewBag.UserId = oneUser.Id;
-							filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
-							filterContext.Controller.ViewBag.Organization = oneUser.Organization;
-							filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
+							if (oneUser != null){
+								var name = new HtmlString(oneUser.GetName());
 
+								if (userOrgsCount > 1){
+									name = new HtmlString(oneUser.GetNameAndTitle(1));
+									try{
+										name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate() + "</span>");
+									}
+									catch (Exception e){
+										log.Error(e);
+									}
+								}
+								//DataCollection.CommentMarkProfile(2, "ViewBagPop");
+								filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._img);
+								filterContext.Controller.ViewBag.UserInitials = oneUser.GetInitials();
+								filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
+								filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
+
+								filterContext.Controller.ViewBag.UserOrganization = oneUser;
+
+								filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
+								//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
+								filterContext.Controller.ViewBag.UserName = name;
+								filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
+								filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview;
+								filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
+								var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+								filterContext.Controller.ViewBag.IsManager = isManager;
+								filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+								filterContext.Controller.ViewBag.UserId = oneUser.Id;
+								filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
+								filterContext.Controller.ViewBag.Organization = oneUser.Organization;
+								filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
+
+							}
+							else{
+								var user = GetUserModel(s);
+								filterContext.Controller.ViewBag.Hints = user.Hints;
+								filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
+								filterContext.Controller.ViewBag.UserColor = user.GetUserHashCode();
+							}
+
+							// ViewBag.OrganizationId = Session["OrganizationId"];
 						}
-						else
-						{
-							var user = GetUserModel(s);
-							filterContext.Controller.ViewBag.Hints = user.Hints;
-							filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
-							filterContext.Controller.ViewBag.UserColor = user.GetUserHashCode();
-						}
-
-						// ViewBag.OrganizationId = Session["OrganizationId"];
 					}
 				}
+				//DataCollection.CommentMarkProfile(2, "End");
+				base.OnActionExecuting(filterContext);
 			}
-			//DataCollection.CommentMarkProfile(2, "End");
-			base.OnActionExecuting(filterContext);
+			catch (PermissionsException e){
+				filterContext.Result = RedirectToAction("Index","Error",new{
+					message=e.Message,
+					redirectUrl = e.RedirectUrl
+				});
+			}
 		}
 		protected override void OnActionExecuted(ActionExecutedContext filterContext)
 		{

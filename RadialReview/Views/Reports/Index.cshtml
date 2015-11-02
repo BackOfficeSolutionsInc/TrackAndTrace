@@ -90,7 +90,7 @@
 							{
 								<tr class="@(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
 									<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
-									<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
+									<td class="table-hover-underline"><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
 									<td class="alignCenter">
 										<a style="border-bottom: 1px dotted" href="/Prereview/Update/@review.Id">Edit</a>
 									</td>
@@ -137,7 +137,7 @@
 									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
 									<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
 										<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
-										<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
+										<td class="table-hover-underline"><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
 										<td class="alignCenter" style="width: 30px;">
 											<a data-sort="@(review.ClientReview.Visible ? "1" : "2")">@review.ClientReview.Visible.GetIcon()</a>
 										</td>
@@ -188,7 +188,7 @@
 									<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
 										<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
 										<td style="cursor: pointer" onclick=" $(this).find('* > input').prop('checked', function(i, v) { return !v; }) "><input type="checkbox" class="userCheck clickThrough @(review.GetCompletion().GetPercentage() < 1 ? "incomplete" : "") @(review.GetCompletion().GetPercentage() <= 0 ? "unstarted" : "")" name="user_@review.ForUserId" data-id="@review.ForUserId" /></td>
-										<td class="table-hover-underline"><a href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
+										<td class="table-hover-underline"><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
 										<td class="alignCenter">
 											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete)) /
 											@Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count())

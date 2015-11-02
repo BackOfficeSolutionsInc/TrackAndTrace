@@ -31,6 +31,7 @@ namespace RadialReview.Accessors
 	public class OrganizationAccessor : BaseAccessor
 	{
 
+
 		public OrganizationModel CreateOrganization(UserModel user, LocalizedStringModel name, Boolean managersCanAddQuestions, PaymentPlanModel paymentPlan, DateTime now, out long newUserId, bool enableL0, bool enableReview)
 		{
 			UserOrganizationModel userOrgModel;
@@ -815,27 +816,33 @@ namespace RadialReview.Accessors
 			}
 		}
 
+		public static List<UserLookup> GetOrganizationMembersLookup(ISession s,PermissionsUtility perms, long organizationId, bool populatePersonallyManaging, PermissionType? type = null)
+		{
+			var caller = perms.GetCaller();
+			perms.ViewOrganization(organizationId);
+			var users = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
+			if (populatePersonallyManaging)
+			{
+				var subs = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id, type);
+
+				var orgManager = PermissionsAccessor.AnyTrue(s, caller, type, x => x.ManagingOrganization);
+
+
+				var isRadialAdmin = perms.IsPermitted(x => x.RadialAdmin());
+				users.ForEach(u =>
+					u._PersonallyManaging = (isRadialAdmin || (orgManager && u.OrganizationId == organizationId) || subs.Contains(u.UserId)));
+			}
+
+			return users;
+		}
+
 		public List<UserLookup> GetOrganizationMembersLookup(UserOrganizationModel caller, long organizationId, bool populatePersonallyManaging, PermissionType? type = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction())
-				{
-					var perms = PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-					var users = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
-					if (populatePersonallyManaging)
-					{
-						var subs = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id, type);
-
-						var orgManager = PermissionsAccessor.AnyTrue(s, caller, type, x => x.ManagingOrganization);
-
-
-						var isRadialAdmin = perms.IsPermitted(x => x.RadialAdmin());
-						users.ForEach(u =>
-							u._PersonallyManaging = (isRadialAdmin || (orgManager && u.OrganizationId == organizationId) || subs.Contains(u.UserId)));
-					}
-
-					return users;
+				using (var tx = s.BeginTransaction()){
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetOrganizationMembersLookup(s, perms, organizationId, populatePersonallyManaging, type);
 				}
 			}
 		}

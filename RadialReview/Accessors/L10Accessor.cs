@@ -71,6 +71,27 @@ namespace RadialReview.Accessors
 			};
 		}
 
+
+		public static string GetDefaultStartPage(L10Recurrence recurrence)
+		{
+			var p = "segue";
+			if (recurrence.SegueMinutes > 0)
+				p = "segue";
+			else if (recurrence.ScorecardMinutes > 0)
+				p = "scorecard";
+			else if (recurrence.RockReviewMinutes > 0)
+				p = "rocks";
+			else if (recurrence.HeadlinesMinutes > 0)
+				p = "headlines";
+			else if (recurrence.TodoListMinutes > 0)
+				p = "todo";
+			else if (recurrence.IDSMinutes > 0)
+				p = "ids";
+			else
+				p = "conclusion";
+			return p;
+		}
+
 		#region Load Members
 		public static void _LoadMeetingLogs(ISession s, params L10Meeting[] meetings)
 		{

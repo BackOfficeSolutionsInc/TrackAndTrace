@@ -1561,7 +1561,7 @@ textarea.reason {
 	pointer-events: none;
 }
 
-.body-full-width #alerts {   
+.body-full-width #alerts:not(:empty) {   
 	 margin-top: 15px;
 }
 

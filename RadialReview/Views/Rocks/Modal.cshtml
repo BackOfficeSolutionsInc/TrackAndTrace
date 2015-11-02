@@ -1,4 +1,5 @@
-﻿@model RadialReview.Controllers.RocksController.RockVM
+﻿@using RadialReview.Models.Periods
+@model RadialReview.Controllers.RocksController.RockVM
 
 
 <div class="form">
@@ -13,8 +14,8 @@
 				<br />
 				<ul class="nav nav-tabs nav-tabs-line" role="tablist">
 					@{ var first = true;}
-					@foreach (var q in Model.Rocks.Select(x => x.Period).Distinct(x => x.Id).OrderByDescending(x => x.EndTime)){
-						<li role="presentation" class="@(first?"active":"")"><a href="#period_@(q.Id)" aria-controls="period_@(q.Id)" role="tab" data-toggle="tab">@(q.Name)</a></li>
+					@foreach (var q in ((List<SelectListItem>)ViewBag.Periods)){
+						<li role="presentation" class="@(first?"active":"")"><a href="#period_@(q.Value)" aria-controls="period_@(q.Value)" role="tab" data-toggle="tab">@(q.Text)</a></li>
 						first = false;
 					}
 				</ul>
@@ -23,9 +24,11 @@
 				<!-- Tab panes -->
 				<div class="tab-content">
 					@{ first = true;}
-					@foreach (var q in Model.Rocks.Select(x => x.Period).Distinct(x => x.Id).OrderByDescending(x => x.EndTime)){
-						<div role="tabpanel" class="tab-pane @(first?"active":"")" id="period_@(q.Id)">
-							@foreach (var r in Model.Rocks.Where(x => x.Period.Id == q.Id)){
+					@foreach (var q in ((List<SelectListItem>)ViewBag.Periods))
+					{
+						<div role="tabpanel" class="tab-pane @(first?"active":"")" id="period_@(q.Value)">
+							@foreach (var r in Model.Rocks.Where(x => x.Period.Id+"" == q.Value))
+							{
 								Html.RenderPartial("_RockRow", r, new ViewDataDictionary(ViewData) { { "HidePeriod",true } });
 							}
 						</div>

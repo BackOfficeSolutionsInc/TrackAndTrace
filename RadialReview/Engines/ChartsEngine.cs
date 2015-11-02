@@ -1047,7 +1047,7 @@ namespace RadialReview.Engines
 				return (roles.IsValid() || values.IsValid());
 			}
 
-			protected static Ratio ScoreRole(Ratio getIt,Ratio wantIt,Ratio hasCapacity)
+			public static Ratio ScoreRole(Ratio getIt,Ratio wantIt,Ratio hasCapacity)
 			{
 				var r = new Ratio();
 				r.Merge(getIt);

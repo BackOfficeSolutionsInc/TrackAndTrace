@@ -384,7 +384,7 @@ namespace RadialReview.Accessors
 					}
 				case TeamType.AllMembers:
 					{
-						var users = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id && x.DeleteTime == null);
+						var users = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id && x.DeleteTime == null && !x.IsClient);
 						return users.Select(x => new TeamDurationModel()
 						{
 							Id = -2,
@@ -398,7 +398,7 @@ namespace RadialReview.Accessors
 					}
 				case TeamType.Managers:
 					{
-						var managers = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id && (x.ManagerAtOrganization || x.ManagingOrganization) && x.DeleteTime == null);
+						var managers = s.Where<UserOrganizationModel>(x => x.Organization.Id == team.Organization.Id && (x.ManagerAtOrganization || x.ManagingOrganization) && x.DeleteTime == null && !x.IsClient);
 						return managers.Select(x => new TeamDurationModel()
 						{
 							Id = -2,

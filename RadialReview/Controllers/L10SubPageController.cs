@@ -81,8 +81,12 @@ namespace RadialReview.Controllers
 						throw new Exception("Handled above");
 					case "":{
 						var meetingPage = L10Accessor.GetCurrentL10MeetingLeaderPage(GetUser(), model.Meeting.Id);
-						if (String.IsNullOrEmpty(meetingPage))
-							return RedirectToAction("Load", new{id = id, page = "segue"});
+						if (String.IsNullOrEmpty(meetingPage)){
+
+							var p = L10Accessor.GetDefaultStartPage(recurrence);
+							
+							return RedirectToAction("Load", new{id = id, page = p});
+						}
 						return RedirectToAction("Load", new{id = id, page = meetingPage});
 					}
 					default:
@@ -131,7 +135,9 @@ namespace RadialReview.Controllers
 
 				var attendees = allMembers.Where(x => model.Attendees.Contains(x.Id)).ToList();
 				L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees);
-				return RedirectToAction("Load", new { id = model.Recurrence.Id, page = "Segue" });
+				var tempRecur = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, false);
+				var p = L10Accessor.GetDefaultStartPage(tempRecur);
+				return RedirectToAction("Load", new { id = model.Recurrence.Id, page = p });
 			}
 
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);

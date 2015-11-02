@@ -18,6 +18,7 @@ body {
 	padding: 5px 5px;
 	/* border: 1px solid #E8E8E8; */
 	/* border-left: 1px solid #E8E8E8; */
+	margin-bottom: 5px;
 }
 
 	.component.flash {
@@ -112,6 +113,7 @@ body {
 
 #main-window {
 	margin: 5px 10px;
+	padding-bottom: 20px;
 }
 
 .full {
@@ -406,4 +408,8 @@ profile-image {
     color: #E6E6E6;
     text-shadow: 0px -1px 0px #FFF;
     -webkit-transition: opacity .75s;
+}
+
+.start-meeting .btn-default{
+	width:140px;
 }

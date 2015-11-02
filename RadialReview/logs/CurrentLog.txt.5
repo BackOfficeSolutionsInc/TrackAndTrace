@@ -1,4 +1,4 @@
-ERROR 2015-10-29 23:14:13,161 [8] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
+ERROR 2015-11-01 12:31:50,827 [11] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
 
 >>
 FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
@@ -32,71 +32,28 @@ FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete conf
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
 
 
-ERROR 2015-10-29 23:14:53,324 [8] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
-
->>
-FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
-
- ---> FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
-
- ---> System.UnauthorizedAccessException: Access to the path 'C:\Users\Clay\Desktop\temp\mysql\RadialReview.Models.AnswerModel.hbm.xml' is denied.
-   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
-   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
-   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
-   at FluentNHibernate.PersistenceModel.<>c__DisplayClass5.<WriteMappingsTo>b__4(HibernateMapping mapping)
-   at FluentNHibernate.PersistenceModel.WriteMappingsTo(Func`2 writerBuilder, Boolean shouldDispose)
-   at FluentNHibernate.PersistenceModel.WriteMappingsTo(String folder)
-   at FluentNHibernate.Cfg.FluentMappingsContainer.Apply(PersistenceModel model)
-   at FluentNHibernate.Cfg.MappingConfiguration.Apply(Configuration cfg)
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
-   --- End of inner exception stack trace ---
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
-   --- End of inner exception stack trace ---
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
-   at RadialReview.Utilities.HibernateSession.GetDatabaseSessionFactory() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 115
-   at RadialReview.Utilities.HibernateSession.GetCurrentSession(Boolean singleSession) in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 199
-   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 412
-   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
-
-
-ERROR 2015-10-29 23:14:57,996 [8] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
-
->>
-FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
-
- ---> FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
-
- ---> System.UnauthorizedAccessException: Access to the path 'C:\Users\Clay\Desktop\temp\mysql\RadialReview.Models.AnswerModel.hbm.xml' is denied.
-   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
-   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
-   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
-   at FluentNHibernate.PersistenceModel.<>c__DisplayClass5.<WriteMappingsTo>b__4(HibernateMapping mapping)
-   at FluentNHibernate.PersistenceModel.WriteMappingsTo(Func`2 writerBuilder, Boolean shouldDispose)
-   at FluentNHibernate.PersistenceModel.WriteMappingsTo(String folder)
-   at FluentNHibernate.Cfg.FluentMappingsContainer.Apply(PersistenceModel model)
-   at FluentNHibernate.Cfg.MappingConfiguration.Apply(Configuration cfg)
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
-   --- End of inner exception stack trace ---
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
-   --- End of inner exception stack trace ---
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
-   at RadialReview.Utilities.HibernateSession.GetDatabaseSessionFactory() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 115
-   at RadialReview.Utilities.HibernateSession.GetCurrentSession(Boolean singleSession) in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 199
-   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 412
-   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
-
-
+INFO  2015-11-01 14:58:37,820 [182] BaseAccessor           - Charged Card: {"class":"transaction","id":"fdb3cd4314","created_at":"2015-11-01T20:58:39+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":60,"amount_refunded":0,"amount_settled":60,"amount_failed":0,"transaction_type":"sale","reference_number":"8360749","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"9207d2","receipt":null,"company":"Traction Tools","website":"","card_owner_name":"Clay Upton","email":"clay.upton@radialreview.com","first_name":"Clay","last_name":"Upton","address_1":"9122 s 29th street","address_2":"","city":"Lincoln","state":"Ne","zip":"68516","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
+INFO  2015-11-01 14:58:37,831 [186] BaseAccessor           - Charged Card: {"class":"transaction","id":"b2ceddb364","created_at":"2015-11-01T20:58:39+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":60,"amount_refunded":0,"amount_settled":60,"amount_failed":0,"transaction_type":"sale","reference_number":"6005629","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"9207d2","receipt":null,"company":"Traction Tools","website":"","card_owner_name":"Clay Upton","email":"clay.upton@radialreview.com","first_name":"Clay","last_name":"Upton","address_1":"9122 s 29th street","address_2":"","city":"Lincoln","state":"Ne","zip":"68516","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
+INFO  2015-11-01 15:26:34,333 [180] BaseAccessor           - Charged Card: {"class":"transaction","id":"d9ac39a603","created_at":"2015-11-01T21:26:36+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":50400,"amount_refunded":0,"amount_settled":50400,"amount_failed":0,"transaction_type":"sale","reference_number":"5399254","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"10","card_exp_year":"2016","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"8fcd2b","receipt":null,"company":"Firespring","website":"","card_owner_name":"Clay Upton","email":"","first_name":"Clay","last_name":"Upton","address_1":"a","address_2":"a","city":"Alamo","state":"CA","zip":"94507","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
+INFO  2015-11-01 16:53:08,217 [171] BaseController         - Organization: [/Dashboard] --> [/Dashboard]
+INFO  2015-11-01 16:56:07,832 [179] BaseAccessor           - Charged Card: {"class":"transaction","id":"07ae71a80f","created_at":"2015-11-01T22:56:09+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":60,"amount_refunded":0,"amount_settled":60,"amount_failed":0,"transaction_type":"sale","reference_number":"4464146","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"9207d2","receipt":null,"company":"Traction Tools","website":"","card_owner_name":"Clay Upton","email":"clay.upton@radialreview.com","first_name":"Clay","last_name":"Upton","address_1":"9122 s 29th street","address_2":"","city":"Lincoln","state":"Ne","zip":"68516","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
+INFO  2015-11-01 18:04:18,570 [200] BaseController         - Organization: [/Dashboard] --> [/Dashboard]
+ERROR 2015-11-01 18:45:06,242 [184] BaseController         - Error: [/organization/Which?Length=12]<<c:\repos\Radial\RadialReview\RadialReview\Views\Organization\WhichList.cshtml(33): error CS1729: 'string' does not contain a constructor that takes 0 arguments>>
+System.Web.HttpCompileException (0x80004005): c:\repos\Radial\RadialReview\RadialReview\Views\Organization\WhichList.cshtml(33): error CS1729: 'string' does not contain a constructor that takes 0 arguments
+   at System.Web.Compilation.AssemblyBuilder.Compile()
+   at System.Web.Compilation.BuildProvidersCompiler.PerformBuild()
+   at System.Web.Compilation.BuildManager.CompileWebFile(VirtualPath virtualPath)
+   at System.Web.Compilation.BuildManager.GetVPathBuildResultInternal(VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
+   at System.Web.Compilation.BuildManager.GetVPathBuildResultWithNoAssert(HttpContext context, VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
+   at System.Web.Compilation.BuildManager.GetVirtualPathObjectFactory(VirtualPath virtualPath, HttpContext context, Boolean allowCrossApp, Boolean throwIfNotFound)
+   at System.Web.Compilation.BuildManager.GetCompiledType(VirtualPath virtualPath)
+   at System.Web.Compilation.BuildManager.GetCompiledType(String virtualPath)
+   at System.Web.Mvc.BuildManagerWrapper.System.Web.Mvc.IBuildManager.GetCompiledType(String virtualPath)
+   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
+   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
+   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)

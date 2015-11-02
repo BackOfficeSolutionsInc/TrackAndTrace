@@ -112,7 +112,8 @@ namespace RadialReview
 					"~/Content/L10/L10IDS.v2.css",
 					"~/Content/L10/L10Scorecard.css",
 					"~/Content/L10/L10Notes.css",
-					"~/Content/L10/L10Transcribe.css"
+					"~/Content/L10/L10Transcribe.css",
+					"~/Content/L10/L10ChatLog.css"
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/L10").Include(
@@ -129,6 +130,7 @@ namespace RadialReview
 					"~/Scripts/L10/sortable.js",
 					"~/Scripts/speechrecog.js",
 					"~/Scripts/L10/L10Transcribe.js",
+					"~/Scripts/L10/L10ChatLog.js",
 					"~/Scripts/L10/rtL10.js"//Ensure last
 				));
 
