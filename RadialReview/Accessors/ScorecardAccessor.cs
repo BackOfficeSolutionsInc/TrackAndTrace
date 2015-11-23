@@ -57,7 +57,7 @@ namespace RadialReview.Accessors
 				}
 				else
 				{
-					return GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers, false);
+					return GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers, false,true);
 				}
 			}
 
@@ -130,12 +130,17 @@ namespace RadialReview.Accessors
 
 
 
-		public static List<MeasurableModel> GetUserMeasurables(ISession s, PermissionsUtility perms, long userId, bool loadUsers,bool ordered)
+		public static List<MeasurableModel> GetUserMeasurables(ISession s, PermissionsUtility perms, long userId, bool loadUsers,bool ordered,bool includeAdmin)
 		{
 			perms.ViewUserOrganization(userId, false);
-			var found = s.QueryOver<MeasurableModel>()
-				.Where(x => x.AccountableUserId == userId && x.DeleteTime == null)
-				.List().ToList();
+			var foundQuery = s.QueryOver<MeasurableModel>().Where(x=>x.DeleteTime==null);
+
+            if (includeAdmin)
+                foundQuery = foundQuery.Where(x=>x.AdminUserId == userId || x.AccountableUserId==userId);
+            else
+                foundQuery = foundQuery.Where(x => x.AccountableUserId == userId);
+
+			var found = foundQuery.List().ToList();
 
 			if (ordered){
 				var measuableIds = found.Select(x => x.Id).ToList();
@@ -177,14 +182,14 @@ namespace RadialReview.Accessors
 
 
 
-		public static List<MeasurableModel> GetUserMeasurables(UserOrganizationModel caller, long userId,bool ordered=false)
+		public static List<MeasurableModel> GetUserMeasurables(UserOrganizationModel caller, long userId,bool ordered=false,bool includeAdmin=false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetUserMeasurables(s, perms, userId, true, ordered);
+					return GetUserMeasurables(s, perms, userId, true, ordered, includeAdmin);
 				}
 			}
 		}
@@ -276,14 +281,23 @@ namespace RadialReview.Accessors
 
 		}
 
-		public static List<ScoreModel> GetUserScores(UserOrganizationModel caller, long userId, DateTime sd, DateTime ed)
+		public static List<ScoreModel> GetUserScores(UserOrganizationModel caller, long userId, DateTime sd, DateTime ed,bool includeAdmin=false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
-					return s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == userId && x.DeleteTime == null && x.DateDue >= sd && x.DateDue <= ed).List().ToList();
+					var query = s.QueryOver<ScoreModel>().Where(x=> x.DeleteTime == null && x.DateDue >= sd && x.DateDue <= ed);
+
+
+                    if (includeAdmin){
+                        var measurables = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && (x.AdminUserId == userId || x.AccountableUserId == userId)).Select(x => x.Id).List<long>().ToList();
+                        query = query.WhereRestrictionOn(x=>x.MeasurableId).IsIn(measurables);
+                    }else{
+                        query = query.Where(x => x.AccountableUserId == userId);
+                    }
+                    return query.List().ToList();
 				}
 			}
 		}

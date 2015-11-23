@@ -33,10 +33,10 @@ namespace RadialReview.Controllers
 			var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
 
 			//Scorecard
-			var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), GetUser().Id,ordered:true);
+			var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), GetUser().Id,ordered:true, includeAdmin:true);
 
 			
-			var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, DateTime.UtcNow.AddDays(-7 * 13), DateTime.UtcNow.AddDays(14));
+			var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, DateTime.UtcNow.AddDays(-7 * 13), DateTime.UtcNow.AddDays(14),includeAdmin:true);
 			var sc = new AngularScorecard(
 				GetUser().Organization.Settings.WeekStart,
 				GetUser().Organization.GetTimezoneOffset(),

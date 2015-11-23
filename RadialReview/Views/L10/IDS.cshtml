@@ -25,22 +25,22 @@
                     </div>
 					<div class="btn-group">
 						<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-							<span class="icon fontastic-icon-sort-alpha-two"></span> <span class="sort-button">Sort </span>
+							<span class="icon fontastic-icon-sort-alpha-two"></span> <span class="sort-button">Sort</span>
 						</a> 
 						<ul class="dropdown-menu pull-right" role="menu">
                             <li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-priority','Priority',-1)"> By Priority</a></li>
-							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-message','Issue')"> By Issue</a></li>
+							@*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-message','Issue')"> By Issue</a></li>*@
 							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-owner','Owner')"> By Owner</a></li>
 							@*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-duedate','Due Date',-1)"> By Due Date</a></li>*@
-							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',1)"> By Date Created Ascending</a></li>
-							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',-1)"> By Date Created Descending</a></li>
+							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',1)"> By Date Created (Asc)</a></li>
+							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',-1)"> By Date Created (Desc)</a></li>
 
 						</ul>
 					</div>
-					<div class="btn-group ">
+					@*<div class="btn-group ">
 						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
 						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
-					</div>
+					</div>*@
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
 				<h2>IDS <small>Identify. Discuss. Solve.</small></h2>
@@ -125,7 +125,7 @@
 				}
 			}
 		});
-		oldIssueList = $(".issues-list").clone(true);
+		oldIssueList = getIssueOrder();//$(".issues-list").clone(true);
 	});
 	//$('.sortable').sortable({
 	//	//handle: '.move-icon',

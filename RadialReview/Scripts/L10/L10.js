@@ -38,7 +38,7 @@ function initL10() {
 	$(window).resize(resizing);
 
 
-	$(".agenda a").click(function () {
+	$(".agenda .agenda-items a").click(function () {
 		var loc = $(this).data("location");
 		loadPage(loc);
 	});
@@ -70,7 +70,10 @@ function highlight(item) {
 		item.addClass("editable-bg-transition");
 		setTimeout(function () {
 			item.css("background-color", "rgba(0,0,0,0)");
-			setTimeout(function () { item.removeClass("editable-bg-transition"); }, 1700);
+			setTimeout(function () {
+			    item.removeClass("editable-bg-transition");
+			    item.css("background-color", "rgba(0,0,0,0)");
+			}, 1700);
 		}, 15);
 		item.css("background-color", "#FFFF80");
 	}
@@ -87,21 +90,21 @@ function setFollowLeader(val) {
 
 function resetClickables() {
 	console.log("resetClickables");
-	$(".agenda a").removeClass("clickable");
-	$(".agenda a").removeClass("lockedPointer");
-	$(".agenda a").prop("title", "");
-	$(".agenda a").prop("href", "#");
+	$(".agenda .agenda-items a").removeClass("clickable");
+	$(".agenda .agenda-items a").removeClass("lockedPointer");
+	$(".agenda .agenda-items a").prop("title", "");
+	$(".agenda .agenda-items a").prop("href", "#");
 	if (isLeader || !followLeader || !meetingStart) {
-		$(".agenda a").addClass("clickable");
-		$(".agenda a").each(function () {
+	    $(".agenda .agenda-items a").addClass("clickable");
+	    $(".agenda .agenda-items a").each(function () {
 			$(this).prop("href", "#" + $(this).data("location"));
 		});
 
-		$(".agenda a").prop("title", "");
+	    $(".agenda .agenda-items a").prop("title", "");
 	} else {
 		if (meetingStart) {
-			$(".agenda a").prop("title", "You are following the meeting leader. Unlock to change the page.");
-			$(".agenda a").addClass("lockedPointer");
+		    $(".agenda .agenda-items a").prop("title", "You are following the meeting leader. Unlock to change the page.");
+		    $(".agenda .agenda-items a").addClass("lockedPointer");
 		}
 	}
 }
@@ -124,30 +127,34 @@ function ms2Time(ms) {
 
 var lessThan10 = true;
 
+var lastS;
 function updateTime() {
-	var now = new Date();
-	var h = now.getHours() % 12 || 12;
-	lessThan10 = h < 10;
-	$(".current-time .hour").html(h);
-	$(".current-time .minute").html(pad(now.getMinutes(), 2));
-	$(".current-time .second").html(pad(now.getSeconds(), 2));
+    var now = new Date();
+    if (now.getSeconds() != lastS) {
+        lastS = now.getSeconds();
+        var h = now.getHours() % 12 || 12;
+        lessThan10 = h < 10;
+        $(".current-time .hour").html(h);
+        $(".current-time .minute").html(pad(now.getMinutes(), 2));
+        $(".current-time .second").html(pad(now.getSeconds(), 2));
 
-	if (typeof startTime != 'undefined') {
-		var elapsed = ms2Time(now - startTime);
-		$(".elapsed-time .hour").html(elapsed.hours);
-		$(".elapsed-time .minute").html(pad(elapsed.minutes, 2));
-		$(".elapsed-time .second").html(pad(elapsed.seconds, 2));
-		$(".elapsed-time").show();
-	} else {
-		$(".elapsed-time").hide();
-	}
+        if (typeof startTime != 'undefined') {
+            var elapsed = ms2Time(now - startTime);
+            $(".elapsed-time .hour").html(elapsed.hours);
+            $(".elapsed-time .minute").html(pad(elapsed.minutes, 2));
+            $(".elapsed-time .second").html(pad(elapsed.seconds, 2));
+            $(".elapsed-time").show();
+        } else {
+            $(".elapsed-time").hide();
+        }
 
 
-	var nowUtc = new Date().getTime();
-	if (typeof currentPage != 'undefined' && currentPage != null) {
-		var ee = ms2Time(nowUtc - currentPageStartTime);
-		setPageTime(currentPage, (ee.minutes + ee.hours * 60 + currentPageBaseMinutes + ee.seconds / 60));
-	}
+        var nowUtc = new Date().getTime();
+        if (typeof currentPage != 'undefined' && currentPage != null) {
+            var ee = ms2Time(nowUtc - currentPageStartTime);
+            setPageTime(currentPage, (ee.minutes + ee.hours * 60 + currentPageBaseMinutes + ee.seconds / 60));
+        }
+    }
 
 }
 
@@ -294,9 +301,11 @@ function fixSidebar() {
 $(document).scroll(fixSidebar);
 $(document).resize(fixSidebar);
 
-$(document).on("click", ".arrowkey", function () {
-	var that = this;
-	setTimeout(function () {
+
+$(document).on("scroll-to", ".arrowkey", function () {
+    var that = this;
+    setTimeout(function () {
+        console.log("scroll-to");
 		if ($(that).position().top < $(window).scrollTop() || $(that).position().top + $(that).height() > $(window).scrollTop() + (window.innerHeight || document.documentElement.clientHeight)) {
 			//scroll up
 			var scr = $(that).offset().top - (window.innerHeight || document.documentElement.clientHeight) / 2.0;
@@ -331,15 +340,15 @@ $(document).keydown(function (event) {
 	var f1 = $(".arrowkey.selected,.arrowkey.selected");
 	if (event.which == 38) {
 		if (f1.length > 0) {
-			f1.prev(".arrowkey").click();
+			f1.prev(".arrowkey").click().trigger("scroll-to");
 		} else {
-			$(".arrowkey").last().click();
+		    $(".arrowkey").last().click().trigger("scroll-to");
 		}
 	} else if (event.which == 40) {
 		if (f1.length > 0) {
-			f1.next(".arrowkey").click();
+		    f1.next(".arrowkey").click().trigger("scroll-to");
 		} else {
-			$(".arrowkey").first().click();
+		    $(".arrowkey").first().click().trigger("scroll-to");
 		}
 	} else if (event.which == 32 || event.which == 13) {
 		$(f1).find(".todo-checkbox,.issue-checkbox").click();

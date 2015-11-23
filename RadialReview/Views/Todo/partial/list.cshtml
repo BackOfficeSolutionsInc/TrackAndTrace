@@ -21,67 +21,87 @@
 				<div id="Todo" class="tab-pane todo-pane scrollbox pull-left">
 					<div></div>
 					<div ng-repeat="(key,value) in model.Todos | transform:this | groupBy: 'Owner.Name' ">
-						<table width="100%" class="component table-hover" ng-show="(value | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length">
-							<thead>
-								<tr class="table-header" ng-show="$first">
-									<th></th>
-									<th class="picture-column"></th>
-									<th>To-Do</th>
-									<th class="alignCenter hidden-width-1">Due Date</th>
-									<th class="empty-cell"></th>
-									@if (completion)
-									{
-										<th class="hidden-width-1">Completed</th>
-									}
-								</tr>
-							</thead>
-							@*| orderBy: ['Complete','-CompleteTime','Name']*@
-							<tbody>
-								<tr id="todo_{{todo.Id}}"  @*'Complete','-CompleteTime','DueDate'*@
-									ng-repeat-start="todo in value | orderBy: ['DueDate'] | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate) track by $index"
-									ng-class="{grayRow: todo.Complete}"
-									ng-hide="model.Selected==todo.Key"
-									class="clickable">
-									<td class="todo-checkbox-container" style="min-width: 25px;text-align: center;">
-										<input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" />
-									</td>
-									<td class="picture-column"><profile-image user="todo.Owner"></profile-image></td>
-									<td class="todo-text" style="width:100%" ng-click="model.Selected = todo.Key">{{todo.Name}}</td>
-									<td class="alignCenter hidden-width-1" style="min-width: 85px;vertical-align: top;"><input ng-class="todo.Complete?(''):(todo.DueDate>now? 'green' : 'red')" class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
-									<td class="empty-cell" style="min-width: 15px;"></td>
-									@if (completion)
-									{
-										<td class="alignCenter" style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
-									}
-								</tr>
-								<tr id="todo_{{todo.Id}}" ng-show="model.Selected==todo.Key" ng-class="{grayRow: todo.Complete}">
-									<td style="min-width: 25px;text-align: center;"><input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" /></td>
-									<td class="picture-column"><profile-image user="todo.Owner"></profile-image></td>
-									<td style="width:100%" class="todo-text">
-										<input ng-model-options="{debounce: 200}" type="text" ng-model="todo.Name" class="fullWidth" ng-change="functions.sendUpdate(todo)" />
-									</td>
-									<td class="alignCenter hidden-width-1" style="min-width: 85px;vertical-align: top;"><input class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
-									<td class="empty-cell" style="min-width: 15px;"></td>
-									@if (completion)
-									{
-										<td class="alignCenter hidden-width-1" style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
-									}
-								</tr>
-								<tr ng-repeat-end style="color:gray" ng-show="model.Selected==todo.Key" ng-class="{grayRow: todo.Complete}">
-									<td></td>
-									<td class="picture-column"></td>
-									<td><textarea ng-model-options="{debounce: 200}" class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter to-do details..." style="min-height: 100px;" ng-change="functions.sendUpdate(todo)"></textarea></td>
-									<td class="hidden-width-1 alignCenter gray" style="vertical-align: top;">
-										<a class="" ng-show="todo.Link!=null" target="_blank" href="{{todo.Link}}"><span class="glyphicon glyphicon-comment"></span></a>
-									</td>
-									<td class="empty-cell"></td>
-									@if (completion)
-									{
-										<td class="hidden-width-1"></td>
-									}
-								</tr>
-							</tbody>
-						</table>
+                        <table width="100%" class="component table-hover" ng-show="(value | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length" click-anywhere-but-here="model.Selected = -1">
+                            <thead>
+                                <tr class="table-header" ng-show="$first">
+                                    <td>
+                                        <table class="fullWidth">
+                                            <tr>
+                                                <th></th>
+                                                <th class="picture-column"></th>
+                                                <th>To-Do</th>
+                                                <th class="alignCenter hidden-width-1">Due Date</th>
+                                                <th class="empty-cell"></th>
+                                                @if (completion)
+                                                {
+                                                    <th class="hidden-width-1">Completed</th>
+                                                }
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </thead>
+                            @*| orderBy: ['Complete','-CompleteTime','Name']*@
+                            <tbody>
+                                <tr id="todo_{{todo.Id}}" @*'Complete','-CompleteTime','DueDate'*@
+                                    ng-repeat="todo in value | orderBy: ['DueDate'] | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate) track by $index"
+                                    ng-class="{grayRow: todo.Complete}"
+                                    class="clickable">
+                                    <td>
+                                        <table class="fullWidth">
+                                            <tr ng-hide="model.Selected==todo.Key">
+                                                <td class="todo-checkbox-container clickable" style="min-width: 25px;text-align: center;">
+                                                    <input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" />
+                                                </td>
+                                                <td class="picture-column"><profile-image user="todo.Owner"></profile-image></td>
+                                                <td class="todo-text" style="width:100%" ng-click="model.Selected = todo.Key">{{todo.Name}}</td>
+                                                <td class="alignCenter hidden-width-1" style="min-width: 85px;vertical-align: top;"><input ng-class="todo.Complete?(''):(todo.DueDate>now? 'green' : 'red')" class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
+                                                <td class="empty-cell" style="min-width: 15px;"></td>
+                                                @if (completion)
+                                                {
+                                                    <td class="alignCenter" style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
+                                                }
+                                            </tr>
+                                            <tr id="todo_{{todo.Id}}" ng-show="model.Selected==todo.Key" ng-class="{grayRow: todo.Complete}">
+                                                <td style="min-width: 25px;text-align: center;"><input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" /></td>
+                                                <td class="picture-column"><profile-image user="todo.Owner"></profile-image></td>
+                                                <td style="width:100%" class="todo-text">
+                                                    <input ng-model-options="{debounce: 200}" type="text" ng-model="todo.Name" class="fullWidth" ng-change="functions.sendUpdate(todo)" />
+                                                </td>
+                                                <td class="alignCenter hidden-width-1" style="min-width: 85px;vertical-align: top;"><input class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
+                                                <td class="empty-cell" style="min-width: 15px;"></td>
+                                                @if (completion)
+                                                {
+                                                    <td class="alignCenter hidden-width-1" style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
+                                                }
+                                            </tr>
+                                            <tr style="color:gray" ng-show="model.Selected==todo.Key" ng-class="{grayRow: todo.Complete}">
+                                                <td></td>
+                                                <td class="picture-column"></td>
+                                                <td><textarea ng-model-options="{debounce: 200}" class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter to-do details..." style="min-height: 100px;" ng-change="functions.sendUpdate(todo)"></textarea></td>
+                                                <td class="hidden-width-1 alignCenter gray" style="vertical-align: top;">
+                                                    <a class="" ng-show="todo.Link!=null" target="_blank" href="{{todo.Link}}"><span class="glyphicon glyphicon-comment"></span></a>
+                                                </td>
+                                                <td class="empty-cell"></td>
+                                                @if (completion)
+                                                {
+                                                    <td class="hidden-width-1"></td>
+                                                }
+                                            </tr>
+                                        </table>
+                                    </td>
+
+
+
+                                </tr>
+                                @*<tr>
+                    <td  colspan="@(completion?"6":"5")>
+
+                    </td>
+                </tr>*@
+
+                            </tbody>
+                        </table>
 					</div>
 					<div class="gray no-todos" style="padding: 30px 15px;" ng-show="(model.Todos | transform:this | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length==0">
 						No to-dos fit your search criteria.

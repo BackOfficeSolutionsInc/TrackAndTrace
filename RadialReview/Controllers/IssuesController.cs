@@ -105,7 +105,8 @@ namespace RadialReview.Controllers
 			ValidateValues(model, x => x.ParentIssue_RecurrenceId,x=>x.IssueId);
 			IssuesAccessor.CopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
 			model.PossibleRecurrences = L10Accessor.GetAllL10RecurrenceAtOrganization(GetUser(), GetUser().Organization.Id);
-			
+
+            L10Accessor.UpdateIssue(GetUser(), model.ParentIssue_RecurrenceId, DateTime.UtcNow, complete: true, connectionId: "");
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
 

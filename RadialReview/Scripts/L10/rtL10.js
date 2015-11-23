@@ -62,11 +62,13 @@ $(function () {
 	meetingHub.client.updateTodoDetails = updateTodoDetails;
 	meetingHub.client.updateTodoAccountableUser = updateTodoAccountableUser;
 	meetingHub.client.updateTodoDueDate = updateTodoDueDate;
+    meetingHub.client.setTodoOrder      = setTodoOrder;
 
 	meetingHub.client.updateIssueMessage  = updateIssueMessage;
 	meetingHub.client.updateIssueDetails  = updateIssueDetails;
 	meetingHub.client.updateIssueOwner    = updateIssueOwner;
 	meetingHub.client.updateIssuePriority = updateIssuePriority;
+	meetingHub.client.setIssueOrder       = setIssueOrder;
 
 	meetingHub.client.createNote = createNote;
 	meetingHub.client.updateNoteName = updateNoteName;
@@ -81,8 +83,12 @@ $(function () {
 	meetingHub.client.addLogRow = addLogRow;
 	meetingHub.client.editLogRow = editLogRow;
 	meetingHub.client.addOrEditLogRow = addOrEditLogRow;
-	
+
 	meetingHub.client.addTranscription = addTranscription;
+
+
+	meetingHub.client.userEnterMeeting = userEnterMeeting;
+	meetingHub.client.userExitMeeting = userExitMeeting;
 
 	//meetingHub.client.setLeader = setLeader;
 
@@ -174,8 +180,9 @@ function rejoin(callback) {
 					showAlert("Reconnected.", "alert-success", "Success");
 				}
 				disconnected = false;
-			}).fail(function() {
+			}).fail(function (d) {
 				console.error('Could not connect. Join failed');
+			    console.error(d);
 				showAlert("Join meeting failed. Could not connect with server.","alert-danger","Error");
 			});
 		}
@@ -222,6 +229,14 @@ function updateTextContents(id, contents) {
 }
 
 
+function userEnterMeeting(id, connectionId, name, url, initials) {
+    $("user-status-container-" + id).append("<span class='user-status-" + connectionId + " icon fontastic-icon-monitor green' />")
+    $("user-picture-container").append("<span class='user-picture-" + connectionId + "'>" + profilePicture(url, name, initials) + "</span>");
+}
+function userExitMeeting(connectionId) {
+    $("user-status-" + connectionId).remove();
+    $("user-picture-" + connectionId).remove();
+}
 /*
 function insert(newUserMeeting, index, characters, id) {
 	userMeeting = newUserMeeting;

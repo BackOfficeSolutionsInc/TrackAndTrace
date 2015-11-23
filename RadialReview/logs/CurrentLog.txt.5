@@ -1,59 +1,112 @@
-ERROR 2015-11-01 12:31:50,827 [11] BaseController         - Error: [/]<<An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
-
->>
-FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
-
- ---> FluentNHibernate.Cfg.FluentConfigurationException: An invalid or incomplete configuration was used while creating a SessionFactory. Check PotentialReasons collection, and InnerException for more detail.
-
- ---> System.UnauthorizedAccessException: Access to the path 'C:\Users\Clay\Desktop\temp\mysql\RadialReview.Models.AnswerModel.hbm.xml' is denied.
-   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
-   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
-   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
-   at FluentNHibernate.PersistenceModel.<>c__DisplayClass5.<WriteMappingsTo>b__4(HibernateMapping mapping)
-   at FluentNHibernate.PersistenceModel.WriteMappingsTo(Func`2 writerBuilder, Boolean shouldDispose)
-   at FluentNHibernate.PersistenceModel.WriteMappingsTo(String folder)
-   at FluentNHibernate.Cfg.FluentMappingsContainer.Apply(PersistenceModel model)
-   at FluentNHibernate.Cfg.MappingConfiguration.Apply(Configuration cfg)
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
+INFO  2015-11-12 08:59:51,350 [7] MeetingHub             - Meeting.Join (24, c11d93c8-708d-4f32-ace8-2ab73e8fe4c9)
+INFO  2015-11-12 09:00:22,294 [8] MeetingHub             - Meeting.Join (-3, a3bf9e96-ace7-4a0b-a226-1f296bb932a5)
+INFO  2015-11-12 09:01:23,241 [8] MeetingHub             - Meeting.Join (24, 6b88bbf4-ac5d-4088-96cd-48352bde0c1d)
+INFO  2015-11-12 09:14:51,383 [36] MeetingHub             - Meeting.Join (24, 82f351b5-5736-4e6b-a955-47ff6a14b353)
+INFO  2015-11-12 09:22:32,257 [45] MeetingHub             - Meeting.Join (24, e9b5a126-142d-4a6c-8217-5d9937774080)
+INFO  2015-11-12 09:32:50,750 [60] MeetingHub             - Meeting.Join (24, d21e3891-be0a-4686-9a4e-9e051c0167bf)
+INFO  2015-11-12 09:35:32,509 [56] MeetingHub             - Meeting.Join (24, 3abde802-fc1a-4ad1-a990-42fdc7e00fb6)
+INFO  2015-11-12 12:52:31,497 [13] MeetingHub             - Meeting.Join (-3, 957a2802-46a8-4701-8137-ee1e8c3d3970)
+INFO  2015-11-12 12:53:25,232 [11] MeetingHub             - Meeting.Join (-3, 377b349f-091f-46c6-85fd-2f03383a458b)
+ERROR 2015-11-13 19:36:44,990 [120] AdoTransaction         - Commit failed
+MySql.Data.MySqlClient.MySqlException (0x80004005): Fatal error encountered during command execution. ---> System.IO.IOException: Unable to write data to the transport connection: An established connection was aborted by the software in your host machine. ---> System.Net.Sockets.SocketException: An established connection was aborted by the software in your host machine
+   at System.Net.Sockets.Socket.Send(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Write(Byte[] buffer, Int32 offset, Int32 size)
    --- End of inner exception stack trace ---
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildConfiguration()
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
+   at MySql.Data.Common.MyNetworkStream.HandleOrRethrowException(Exception e)
+   at MySql.Data.Common.MyNetworkStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.TimedStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.SendPacket(MySqlPacket packet)
+   at MySql.Data.MySqlClient.NativeDriver.ExecutePacket(MySqlPacket packetToExecute)
+   at MySql.Data.MySqlClient.NativeDriver.SendQuery(MySqlPacket queryPacket)
+   at MySql.Data.MySqlClient.Driver.SendQuery(MySqlPacket p)
+   at MySql.Data.MySqlClient.Statement.ExecuteNext()
+   at MySql.Data.MySqlClient.PreparableStatement.ExecuteNext()
+   at MySql.Data.MySqlClient.Statement.Execute()
+   at MySql.Data.MySqlClient.PreparableStatement.Execute()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at MySql.Data.MySqlClient.MySqlTransaction.Commit()
+   at NHibernate.Transaction.AdoTransaction.Commit()
+ERROR 2015-11-13 19:36:45,222 [118] BaseController         - Error: [/Scheduler/EmailTodos?currentTime=0&taskId=2475]<<Fatal error encountered during command execution.>>
+MySql.Data.MySqlClient.MySqlException (0x80004005): Fatal error encountered during command execution. ---> System.IO.IOException: Unable to write data to the transport connection: An established connection was aborted by the software in your host machine. ---> System.Net.Sockets.SocketException: An established connection was aborted by the software in your host machine
+   at System.Net.Sockets.Socket.Send(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Write(Byte[] buffer, Int32 offset, Int32 size)
    --- End of inner exception stack trace ---
-   at FluentNHibernate.Cfg.FluentConfiguration.BuildSessionFactory()
-   at RadialReview.Utilities.HibernateSession.GetDatabaseSessionFactory() in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 115
-   at RadialReview.Utilities.HibernateSession.GetCurrentSession(Boolean singleSession) in c:\repos\Radial\RadialReview\RadialReview\Utilities\NHibernate\HibernateSession.cs:line 199
-   at RadialReview.Controllers.BaseController.OnActionExecuting(ActionExecutingContext filterContext) in c:\repos\Radial\RadialReview\RadialReview\Controllers\BaseController.cs:line 412
-   at System.Web.Mvc.Controller.System.Web.Mvc.IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.InvokeActionMethodFilterAsynchronouslyRecursive(Int32 filterIndex)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2e(AsyncCallback asyncCallback, Object asyncState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallBeginDelegate(AsyncCallback callback, Object callbackState)
-   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.Begin(AsyncCallback callback, Object state, Int32 timeout)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.BeginInvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters, AsyncCallback callback, Object state)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__16(AsyncCallback asyncCallback, Object asyncState)
-
-
-INFO  2015-11-01 14:58:37,820 [182] BaseAccessor           - Charged Card: {"class":"transaction","id":"fdb3cd4314","created_at":"2015-11-01T20:58:39+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":60,"amount_refunded":0,"amount_settled":60,"amount_failed":0,"transaction_type":"sale","reference_number":"8360749","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"9207d2","receipt":null,"company":"Traction Tools","website":"","card_owner_name":"Clay Upton","email":"clay.upton@radialreview.com","first_name":"Clay","last_name":"Upton","address_1":"9122 s 29th street","address_2":"","city":"Lincoln","state":"Ne","zip":"68516","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
-INFO  2015-11-01 14:58:37,831 [186] BaseAccessor           - Charged Card: {"class":"transaction","id":"b2ceddb364","created_at":"2015-11-01T20:58:39+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":60,"amount_refunded":0,"amount_settled":60,"amount_failed":0,"transaction_type":"sale","reference_number":"6005629","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"9207d2","receipt":null,"company":"Traction Tools","website":"","card_owner_name":"Clay Upton","email":"clay.upton@radialreview.com","first_name":"Clay","last_name":"Upton","address_1":"9122 s 29th street","address_2":"","city":"Lincoln","state":"Ne","zip":"68516","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
-INFO  2015-11-01 15:26:34,333 [180] BaseAccessor           - Charged Card: {"class":"transaction","id":"d9ac39a603","created_at":"2015-11-01T21:26:36+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":50400,"amount_refunded":0,"amount_settled":50400,"amount_failed":0,"transaction_type":"sale","reference_number":"5399254","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"10","card_exp_year":"2016","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"8fcd2b","receipt":null,"company":"Firespring","website":"","card_owner_name":"Clay Upton","email":"","first_name":"Clay","last_name":"Upton","address_1":"a","address_2":"a","city":"Alamo","state":"CA","zip":"94507","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
-INFO  2015-11-01 16:53:08,217 [171] BaseController         - Organization: [/Dashboard] --> [/Dashboard]
-INFO  2015-11-01 16:56:07,832 [179] BaseAccessor           - Charged Card: {"class":"transaction","id":"07ae71a80f","created_at":"2015-11-01T22:56:09+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":60,"amount_refunded":0,"amount_settled":60,"amount_failed":0,"transaction_type":"sale","reference_number":"4464146","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"11","card_exp_year":"2015","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"9207d2","receipt":null,"company":"Traction Tools","website":"","card_owner_name":"Clay Upton","email":"clay.upton@radialreview.com","first_name":"Clay","last_name":"Upton","address_1":"9122 s 29th street","address_2":"","city":"Lincoln","state":"Ne","zip":"68516","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
-INFO  2015-11-01 18:04:18,570 [200] BaseController         - Organization: [/Dashboard] --> [/Dashboard]
-ERROR 2015-11-01 18:45:06,242 [184] BaseController         - Error: [/organization/Which?Length=12]<<c:\repos\Radial\RadialReview\RadialReview\Views\Organization\WhichList.cshtml(33): error CS1729: 'string' does not contain a constructor that takes 0 arguments>>
-System.Web.HttpCompileException (0x80004005): c:\repos\Radial\RadialReview\RadialReview\Views\Organization\WhichList.cshtml(33): error CS1729: 'string' does not contain a constructor that takes 0 arguments
-   at System.Web.Compilation.AssemblyBuilder.Compile()
-   at System.Web.Compilation.BuildProvidersCompiler.PerformBuild()
-   at System.Web.Compilation.BuildManager.CompileWebFile(VirtualPath virtualPath)
-   at System.Web.Compilation.BuildManager.GetVPathBuildResultInternal(VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
-   at System.Web.Compilation.BuildManager.GetVPathBuildResultWithNoAssert(HttpContext context, VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
-   at System.Web.Compilation.BuildManager.GetVirtualPathObjectFactory(VirtualPath virtualPath, HttpContext context, Boolean allowCrossApp, Boolean throwIfNotFound)
-   at System.Web.Compilation.BuildManager.GetCompiledType(VirtualPath virtualPath)
-   at System.Web.Compilation.BuildManager.GetCompiledType(String virtualPath)
-   at System.Web.Mvc.BuildManagerWrapper.System.Web.Mvc.IBuildManager.GetCompiledType(String virtualPath)
-   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
-   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
+   at MySql.Data.Common.MyNetworkStream.HandleOrRethrowException(Exception e)
+   at MySql.Data.Common.MyNetworkStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.TimedStream.Write(Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.SendPacket(MySqlPacket packet)
+   at MySql.Data.MySqlClient.NativeDriver.ExecutePacket(MySqlPacket packetToExecute)
+   at MySql.Data.MySqlClient.NativeDriver.SendQuery(MySqlPacket queryPacket)
+   at MySql.Data.MySqlClient.Driver.SendQuery(MySqlPacket p)
+   at MySql.Data.MySqlClient.Statement.ExecuteNext()
+   at MySql.Data.MySqlClient.PreparableStatement.ExecuteNext()
+   at MySql.Data.MySqlClient.Statement.Execute()
+   at MySql.Data.MySqlClient.PreparableStatement.Execute()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteNonQuery()
+   at MySql.Data.MySqlClient.MySqlTransaction.Rollback()
+   at MySql.Data.MySqlClient.MySqlTransaction.Dispose()
+   at NHibernate.Transaction.AdoTransaction.Dispose(Boolean isDisposing)
+   at NHibernate.Transaction.AdoTransaction.Dispose()
+   at RadialReview.Controllers.SchedulerController.<EmailTodos>d__2f.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Controllers\SchedulerController.cs:line 222
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.GetResult()
+   at lambda_method(Closure , Task )
+   at System.Threading.Tasks.TaskHelpersExtensions.ThrowIfFaulted(Task task)
+   at System.Web.Mvc.Async.TaskAsyncActionDescriptor.EndExecute(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass34.<BeginInvokeAsynchronousActionMethod>b__33(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3c()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass45.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3e()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass30.<BeginInvokeActionMethodWithFilters>b__2f(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+ERROR 2015-11-13 19:36:48,967 [120] BaseAccessor           - Scheduled task error. 2475
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__6.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 129
+INFO  2015-11-13 19:47:04,200 [92] BaseController         - Organization: [/Dashboard] --> [/Dashboard]
+INFO  2015-11-13 19:47:15,636 [105] MeetingHub             - Meeting.Join (-3, 87dff329-3237-44e0-9af6-953770e2b0b2)
+INFO  2015-11-13 19:47:42,242 [96] MeetingHub             - Meeting.Join (79, edd7e299-92a5-442b-8850-43686f53a299)
+INFO  2015-11-13 19:51:13,140 [92] MeetingHub             - Meeting.Join (79, 60c9d730-d68e-4c57-904a-9d298442c193)
+INFO  2015-11-13 19:51:35,616 [105] MeetingHub             - Meeting.Join (79, 0fa98b13-c90e-44e0-886b-2141f11390a2)
+INFO  2015-11-13 19:52:53,911 [94] MeetingHub             - Meeting.Join (79, 606b09b0-b8c1-4818-a777-fadd95497d37)
+INFO  2015-11-13 19:53:36,437 [105] BaseController         - Organization: [/L10/Load/79?page=startmeeting&connection=606b09b0-b8c1-4818-a777-fadd95497d37&_clientTimestamp=1447473215283] --> [/L10/Load/79?page=startmeeting&connection=606b09b0-b8c1-4818-a777-fadd95497d37&_clientTimestamp=1447473215283]
+INFO  2015-11-13 19:53:46,649 [105] BaseController         - Organization: [/L10/Meeting/79] --> [/L10/Meeting/79]
+INFO  2015-11-13 19:54:04,551 [113] MeetingHub             - Meeting.Join (79, 38bcce8a-9fe4-4952-b8e1-e89ffea959f0)
+INFO  2015-11-13 20:28:57,521 [115] MeetingHub             - Meeting.Join (79, 1926d487-9f59-4936-9005-44634972fe61)
+INFO  2015-11-14 12:57:41,409 [13] BaseController         - Organization: [/Dashboard] --> [/Dashboard]
+INFO  2015-11-14 13:06:33,331 [19] MeetingHub             - Meeting.Join (-3, efaebc0b-1224-4ab4-a98f-620464d48eab)
+ERROR 2015-11-14 21:21:06,434 [1] SchemaUpdate           - could not get database metadata
+MySql.Data.MySqlClient.MySqlException (0x80004005): Unable to connect to any of the specified MySQL hosts.
+   at MySql.Data.MySqlClient.NativeDriver.Open()
+   at MySql.Data.MySqlClient.Driver.Open()
+   at MySql.Data.MySqlClient.Driver.Create(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.MySqlPool.CreateNewPooledConnection()
+   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnection()
+   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriver()
+   at MySql.Data.MySqlClient.MySqlPool.GetConnection()
+   at MySql.Data.MySqlClient.MySqlConnection.Open()
+   at NHibernate.Connection.DriverConnectionProvider.GetConnection()
+   at NHibernate.Tool.hbm2ddl.ManagedProviderConnectionHelper.Prepare()
+   at NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(Action`1 scriptAction, Boolean doUpdate)

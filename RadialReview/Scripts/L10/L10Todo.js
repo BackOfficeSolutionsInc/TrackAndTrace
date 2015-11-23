@@ -164,7 +164,7 @@ function fixTodoDetailsBoxSize() {
 		var st = $(window).scrollTop();
 		var footerH = wh;
 		try {
-			footerH = $(".footer-bar .footer-bar-container").last().offset().top;
+		    footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
 		} catch (e) {}
 		$(".details.todo-details").height(footerH - 20 - 140 - pos.top  );
 	}
@@ -331,8 +331,28 @@ function constructTodoRow(todo) {
 			'</li>';
 }
 
+function setTodoOrder(order) {
+    var items = $(".todo-list li");
+    items.detach();
+
+    var len = order.length,
+        temp = [];
+
+    for (var i = 0; i < len; i++) {
+        var found = $(items).filter("[data-todo="+order[i]+"]");
+        temp.push(found);
+    }
+
+    $(".todo-list").append(temp);
+}
+
+function getTodoOrder() {
+    return $.map($(".todo-list").sortable('serialize').toArray(), function (v) { return v.todo; });
+}
+
 function updateTodoList(recurrenceId, todoRow) {
-	var d = { todos: $(todoRow).sortable('serialize').toArray(), connectionId: $.connection.hub.id };
+    var order = getTodoOrder();
+    var d = { todos: order, connectionId: $.connection.hub.id };
 	console.log(d);
 	var that = todoRow;
 	$.ajax({
@@ -342,13 +362,14 @@ function updateTodoList(recurrenceId, todoRow) {
 		method: "POST",
 		success: function (d) {
 			if (!d.Error) {
-				oldTodoList = $(".todo-list").clone(true);
+			    oldTodoList = order;//$(".todo-list").clone(true);
 			} else {
 				showJsonAlert(d, false, true);
-				$(that).html("");
+				//$(that).html("");
 				setTimeout(function () {
-					$('.todo-container').html(oldTodoList);
-					oldTodoList = $(".todo-list").clone(true);
+				    setTodoOrder(oldTodoList);
+					//$('.todo-container').html(oldTodoList);
+					//oldTodoList = $(".todo-list").clone(true);
 					refreshCurrentTodoDetails();
 				}, 1);
 			}
@@ -356,10 +377,12 @@ function updateTodoList(recurrenceId, todoRow) {
 		error: function (a, b) {
 			clearAlerts();
 			showAlert(a.statusText || b);
-			$('.dd').html("");
+			//$('.dd').html("");
 			setTimeout(function () {
-				$('.dd').html(oldTodoList);
-				oldTodoList = $(".todo-list").clone(true);
+
+			    setTodoOrder(oldTodoList);
+				//$('.dd').html(oldTodoList);
+				//oldTodoList = $(".todo-list").clone(true);
 				refreshCurrentTodoDetails();
 			}, 1);
 		}

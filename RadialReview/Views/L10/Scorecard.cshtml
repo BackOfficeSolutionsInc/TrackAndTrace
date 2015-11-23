@@ -19,11 +19,6 @@
 							<span class="icon fontastic-icon-zoom-out-2"></span>
 						</div>
 					</div>
-					<div class="btn-group">
-						<div class="btn btn-default btn-xs @(Model.CanEdit?"":"disabled")" onclick="@(Model.CanEdit?Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/"):new HtmlString(""))">
-							<span class="icon fontastic-icon-science-laboratory"></span> Add Measurable
-						</div>
-					</div>
 					@Html.Partial("partial/ButtonBar", Model, new ViewDataDictionary(){{"Links",new Dictionary<string,string>{
 						{"href","/L10/ExportScorecard/"+Model.Recurrence.Id+"?type=csv"},
 						{"text","Export Scorecard (.csv)"},
@@ -47,11 +42,17 @@
 						<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm resizable Flipped" : "")">
 							<thead class="Content">
 								<tr>
-									<th>&nbsp;</th>
-									<th>&nbsp;</th>
-									<th>&nbsp;</th>
-									<th>&nbsp;</th>
-									<th>&nbsp;</th>
+									<th colspan="5">
+                                        <div class="btn-group" style="margin:2px 2px;">
+                                            <div class="btn btn-link btn-xs @(Model.CanEdit?"":"disabled") gray" onclick="@(Model.CanEdit?Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/"):new HtmlString(""))">
+                                                @*<span class="icon fontastic-icon-science-laboratory"></span>*@Add Measurable
+                                            </div>
+                                        </div>
+                                    </th>
+									@*<th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>*@
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
@@ -167,10 +168,11 @@
 						if (i == 0)
 						{
 							@:</div>
-						}
-					}
+                    	}
+                    }
 				</div>
 			</div>
+           
 		</div>
 	</div>
 </div>

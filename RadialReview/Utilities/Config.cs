@@ -198,8 +198,8 @@ namespace RadialReview.Utilities
 		{
 			switch (GetEnv())
 			{
-				case Env.local_mysql:	return false;
-				case Env.local_sqlite:	return false;
+				case Env.local_mysql:	return GetAppSetting("SendEmail_Debug","false").ToBooleanJS();
+                case Env.local_sqlite:  return GetAppSetting("SendEmail_Debug", "false").ToBooleanJS();
 				case Env.production:	return true;
 				default:				throw new ArgumentOutOfRangeException();
 			}
@@ -252,9 +252,19 @@ namespace RadialReview.Utilities
 			return GetAppSetting("Mandrill_GoogleAnalyticsDomain", null);
 		}
 
-		internal static string PaymentEmail()
+		/*internal static string PaymentEmail()
 		{
 			throw new NotImplementedException();
-		}
-	}
+		} */
+        public static string GetAccessLogDir()
+        {
+            switch (GetEnv())
+            {
+                case Env.local_mysql: return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)+@"\IISExpress\Logs\RadialReview\";
+                case Env.local_sqlite: return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
+                case Env.production: return @"C:\inetpub\logs\LogFiles\W3SVC1\";
+                default: throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
 }

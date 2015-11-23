@@ -413,3 +413,19 @@ profile-image {
 .start-meeting .btn-default{
 	width:140px;
 }
+
+.btn.settings-button{
+    color:#CAC4BE;
+    border-color:transparent;
+}
+
+.btn.settings-button:hover{
+    border-color: #CAC4BE;
+    /*color: #F7F7F7;*/
+    background-color: transparent;
+
+}
+
+.btn.settings-button .glyphicon{
+    top:3px;
+}

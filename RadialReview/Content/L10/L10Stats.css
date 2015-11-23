@@ -104,4 +104,5 @@
 .meeting-stats .todo-list .message {
 	left: 0;
 	display: inline-block;
+    text-align: left;
 }

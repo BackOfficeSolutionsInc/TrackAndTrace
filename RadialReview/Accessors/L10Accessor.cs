@@ -68,6 +68,7 @@ namespace RadialReview.Accessors
 				Goal = 90,
 				GoalDirection = LessGreater.GreaterThan,
 				UnitType = UnitType.Percent,
+                
 			};
 		}
 
@@ -204,10 +205,16 @@ namespace RadialReview.Accessors
 						{
 							try
 							{
-								u.Measurable.AccountableUser.GetName();
-								u.Measurable.AccountableUser.ImageUrl();
-								u.Measurable.AdminUser.GetName();
-								u.Measurable.AdminUser.ImageUrl();
+                                if (u.Measurable.AccountableUser != null)
+                                {
+                                    u.Measurable.AccountableUser.GetName();
+                                    u.Measurable.AccountableUser.ImageUrl();
+                                }
+                                if (u.Measurable.AdminUser != null)
+                                {
+                                    u.Measurable.AdminUser.GetName();
+                                    u.Measurable.AdminUser.ImageUrl();
+                                }
 							}
 							catch (Exception e)
 							{
@@ -1147,14 +1154,14 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public static void UpdateTodos(UserOrganizationModel caller, long recurrenceId, TodoDataList model)
+        public static void UpdateTodos(UserOrganizationModel caller, long recurrenceId, L10Controller.UpdateTodoVM model)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perm = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
-					var ids = model.GetAllIds();
+                    var ids = model.todos;// model.GetAllIds();
 					var existingTodos = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.ForRecurrenceId == recurrenceId)
 						.WhereRestrictionOn(x => x.Id).IsIn(ids)
 						.List().ToList();
@@ -1167,10 +1174,10 @@ namespace RadialReview.Accessors
 						throw new PermissionsException("Unreachable.");
 
 					//var recurrenceIssues = existingTodos.ToList();
-
-					foreach (var e in model.GetIssueEdits())
+                    var i = 0;
+					foreach (var e in model.todos)
 					{
-						var f = existingTodos.First(x => x.Id == e.TodoId);
+						var f = existingTodos.First(x => x.Id == e);
 						var update = false;
 						/*if (f..NotNull(x => x.Id) != e.ParentRecurrenceIssueId)
 						{
@@ -1178,13 +1185,14 @@ namespace RadialReview.Accessors
 							update = true;
 						}*/
 
-						if (f.Ordering != e.Order)
+						if (f.Ordering != i)
 						{
-							f.Ordering = e.Order;
+							f.Ordering = i;
 							update = true;
 						}
 						if (update)
 							s.Update(f);
+                        i++;
 					}
 
 					var json = Json.Encode(model);
@@ -1192,10 +1200,11 @@ namespace RadialReview.Accessors
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), model.connectionId);
 
-					group.deserializeTodos(".todo-list", model);
+					//group.deserializeTodos(".todo-list", model);
+                    group.setTodoOrder(model.todos);
 
-					group.update(new AngularRecurrence(recurrenceId)
-					{
+
+					group.update(new AngularRecurrence(recurrenceId){
 						Todos = existingTodos.OrderBy(x => x.Ordering).Select(x => new AngularTodo(x)).ToList()
 					});
 
@@ -1205,7 +1214,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public static void UpdateIssues(UserOrganizationModel caller, long recurrenceId, IssuesDataList model)
+        public static void UpdateIssues(UserOrganizationModel caller, long recurrenceId, /*IssuesDataList*/L10Controller.IssuesListVm model)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -1260,8 +1269,8 @@ namespace RadialReview.Accessors
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), model.connectionId);
 
-					group.deserializeIssues(".issues-list", model);
-
+					//group.deserializeIssues(".issues-list", model);
+                    group.setIssueOrder(model.issues);
 					var issues = GetAllIssuesForRecurrence(s, perm, recurrenceId)
 						.OrderBy(x => x.Ordering)
 						.Select(x => new AngularIssue(x))
@@ -1683,7 +1692,8 @@ namespace RadialReview.Accessors
 						new PermissionsAccessor().Permitted(caller, x => x.ViewL10Recurrence(recurrenceId));
 						hub.Groups.Add(connectionId, MeetingHub.GenerateMeetingGroupId(recurrenceId));
 						Audit.L10Log(s, caller, recurrenceId, "JoinL10Meeting", ForModel.Create(caller));
-
+                        var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                        meetingHub.userEnterMeeting(caller.Id, connectionId,caller.GetName(),caller.ImageUrl(true));
 					}
 				}
 			}

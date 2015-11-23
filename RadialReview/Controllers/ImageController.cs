@@ -1,7 +1,10 @@
 ﻿using ImageResizer;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
+using RadialReview.Models.Todo;
 using RadialReview.Properties;
+using RadialReview.Utilities;
+using RadialReview.Utilities.Encrypt;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -17,6 +20,41 @@ namespace RadialReview.Controllers
     public class ImageController : BaseController
     {                    
         public static readonly byte[] TrackingGif = { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x1, 0x0, 0x1, 0x0, 0x80, 0x0, 0x0, 0xff, 0xff, 0xff, 0x0, 0x0, 0x0, 0x2c, 0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x1, 0x0, 0x0, 0x2, 0x2, 0x44, 0x1, 0x0, 0x3b };
+
+        [Access(AccessLevel.Any)]
+        public ActionResult TodoCompletion(string id,long userId=-1)
+        {
+            // Construct absolute image path
+            try
+            {
+                long tryId = -1;
+                Response.AppendHeader("Cache-Control", "no-cache, max-age=0");
+
+                if (long.TryParse(Crypto.DecryptStringAES(id, TodoAccessor._SharedSecretTodoPrefix(userId)), out tryId) && tryId > 0)
+                {
+                    using (var s = HibernateSession.GetCurrentSession())
+                    {
+                        using (var tx = s.BeginTransaction())
+                        {
+                            var todo = s.Get<TodoModel>(tryId);
+
+                            if (todo == null || todo.AccountableUserId!=userId)
+                                return File(TrackingGif, "image/gif");
+                            if (todo.CompleteTime == null)
+                                return File("~/Content/email/Unchecked.png", "image/png");
+                            else
+                                return File("~/Content/email/Checked.png", "image/png");
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                var o = "";
+            }
+            
+            return File(TrackingGif, "image/gif");
+        }
 
         //
         // GET: /Img/

@@ -67,6 +67,12 @@ namespace RadialReview.Controllers
 				}).ToList();
 			}
 
+            if (model != null && model.Recurrence != null)
+            {
+                model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+                model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+            }
+
 
 			return View(model);
 		}
@@ -86,7 +92,8 @@ namespace RadialReview.Controllers
 				{
 					CreateTime = DateTime.UtcNow,
 					OrganizationId = GetUser().Organization.Id,
-					VideoId = Guid.NewGuid().ToString()
+					VideoId = Guid.NewGuid().ToString(),
+                    EnableTranscription=false,
 				},
 				PossibleMeasurables = allMeasurables,
 				PossibleMembers = allMembers,
@@ -168,15 +175,19 @@ namespace RadialReview.Controllers
 				ModelState.AddModelError("Name","Meeting name is required");
 			}
 
-			var existing = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
-
 			var allRocks = RockAccessor.GetAllVisibleRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
 			var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
 			var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
-			allRocks.AddRange(existing._DefaultRocks.Where(x => x.Id > 0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
-			allMeasurables.AddRange(existing._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y.Id != x.Measurable.Id)).Select(x => x.Measurable));
-
+            if (model.Recurrence.Id!=0){
+			    var existing = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
+			    allRocks.AddRange(existing._DefaultRocks.Where(x => x.Id > 0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
+			    allMeasurables.AddRange(existing._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y.Id != x.Measurable.Id)).Select(x => x.Measurable));
+            }
+            else
+            {
+                _PermissionsAccessor.Permitted(GetUser(), x => x.CreateL10Recurrence(model.Recurrence.OrganizationId));
+            }
 			if (ModelState.IsValid){
 				model.Recurrence.OrganizationId = GetUser().Organization.Id;
 				model.Recurrence._DefaultAttendees = allMembers.Where(x => model.SelectedMembers.Any(y => y == x.Id))

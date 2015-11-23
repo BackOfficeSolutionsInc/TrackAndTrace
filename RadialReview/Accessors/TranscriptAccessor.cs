@@ -24,7 +24,7 @@ namespace RadialReview.Accessors
 					if (recurrenceId != null){
 						perms.EditL10Recurrence(recurrenceId.Value);
 					}
-					if (meetingId != null){
+					if (meetingId != null && meetingId.Value!=-1){
 						perms.ViewL10Meeting(meetingId.Value);
 					}
 

@@ -20,24 +20,5 @@
 		</div>
 	</div>
 
-	<div class="btn-group">
-		<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-			<span class="glyphicon glyphicon-cog"></span>
-		</a> 
-		<ul class="dropdown-menu pull-right" role="menu">
-			@if (ViewBag.Links != null){
-				foreach (var link in ViewBag.Links){
-					 <li><a href="@(link["href"])" target="_blank"><span class="@(link["class"])"></span> @(link["text"])</a></li>
-				 }
-			}
 
-			<li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})"  target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
-			<li class="divider"></li>
-			@if (Model.CanAdmin){
-				<li><a href="@Url.Action("Edit", new{id = Model.Recurrence.Id, @return = "meeting"})" onclick=" skipBeforeUnload = true " ><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-			}
-			<li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank" ><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
-
-		</ul>
-	</div>
 </span>

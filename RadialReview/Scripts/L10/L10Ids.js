@@ -24,13 +24,13 @@ $(function () {
 
 		var detailsList = $(issueRow).find(">.dd-list").clone();
 		$("#issueDetails").html("");
-		$("#issueDetails").append(
+		/*$("#issueDetails").append(
 			"<span class='expandContract btn-group pull-right'>" +
 				"<span class='btn btn-default btn-xs contractButton' title='Hide details'><span class='glyphicon glyphicon-resize-small'></span></span>" +
 				"<span class='btn btn-default btn-xs expandButton'  title='Show details'><span class='glyphicon glyphicon-resize-full'></span></span>" +
 			"</span>");
 		$("#issueDetails").append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
-
+        */
 		$("#issueDetails").append("<div class='heading'><h4 class='message-holder clickable' data-recurrence_issue='" + recurrence_issue + "'><span class='message editable-text' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
 		$("#issueDetails").append(detailsList);
 		$("#issueDetails").append("<textarea class='details issue-details' data-recurrence_issue='" + recurrence_issue + "'>" + details + "</textarea>");
@@ -40,12 +40,12 @@ $(function () {
 				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Resolved</span>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
-			"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + MeetingId + "'><span class='icon fontastic-icon-forward-1'></span> Copy To</span>" +
+			"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + MeetingId + "'><span class='icon fontastic-icon-forward-1' title='Move issue to another L10'></span> Move To</span>" +
 			"<span class='btn btn-default btn-xs createTodoButton todoModal' data-method='CreateTodoFromIssue' data-meeting='"+meetingId+"' data-issue='"+issueId+"' data-recurrence='"+MeetingId+"' ><span class='glyphicon glyphicon-unchecked todoButton'></span> To-Do</span>" +
 			"</span>" +
 			"</div>"+
 			"<span class='clearfix'></span>" +
-			"<span class='gray' style='width:75px;display:inline-block'>Assigned to:</span>"+
+			"<span class='gray' style='width:75px;display:inline-block'>Owned By:</span>"+
 			"<span>"+
 				"<span style='width:250px;padding-left:10px;' class='assignee' data-accountable='" + accountable + "' data-recurrence_issue='" + recurrence_issue + "'  >"+
 					"<span data-recurrence_issue='" + recurrence_issue + "' class='btn btn-link owner'>" + ownerStr + "</span>"+
@@ -74,6 +74,7 @@ $(function () {
 	$("body").on("click", ".issueDetails .message", function () { $(this).siblings(".issue-details-container").slideToggle(400); });
 	$("body").on("click", ".issueDetails .expandButton", function () { $(".issueDetails .issue-details-container").slideDown(400); });
 	$("body").on("click", ".issueDetails .contractButton", function () { $(".issueDetails .issue-details-container").slideUp(400); });
+	$("body").on("click", ".issueDetails .doneButton input", function () { e.preventDefault(); });
 	$("body").on("click", ".issueDetails .doneButton", function () { $(this).find(">input").trigger("click"); });
 
 	$("body").on("change", ".issue-checkbox", function () {
@@ -153,7 +154,7 @@ function fixIssueDetailsBoxSize() {
 		var st = $(window).scrollTop();
 		var footerH = wh;
 		try {
-			footerH = $(".footer-bar .footer-bar-container").last().offset().top;
+		    footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
 		} catch (e) {
 
 		}
@@ -208,10 +209,16 @@ function sortIssueBy(recurrenceId, issueList,sortBy,title,mult) {
 
 	//$(".sort-button").html("Sort by " + title);
 
-	$(issueList).children().detach().sort(function(a, b) {
-		if ($(a).attr(sortBy)===$(b).attr(sortBy))
-			return mult*$(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
-		return mult*$(a).attr(sortBy).localeCompare($(b).attr(sortBy));
+    $(issueList).children().detach().sort(function (a, b) {
+        if (sortBy == "data-priority") {
+            if ($(a).data("priority") === $(b).data("priority"))
+                return mult * $(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
+            return mult * ($(a).data("priority")-$(b).data("priority"));
+        } else {
+            if ($(a).attr(sortBy) === $(b).attr(sortBy))
+                return mult * $(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
+            return mult * $(a).attr(sortBy).localeCompare($(b).attr(sortBy));
+        }
 	}).appendTo($(issueList));
 	updateIssuesList(recurrenceId, issueList, sortBy);
 	refreshCurrentIssueDetails();
@@ -236,7 +243,7 @@ function appendIssue(selector, issue, order) {
 	if (typeof(order) !== "undefined") {
 		if (order == "data-priority") {
 			var found = $(">li", selector).filter(function() {
-				return +$(this).attr("data-priority") > 0;
+				return +$(this).data("priority") > 0;
 			}).last();
 			if (found.length == 0) {
 				$(selector).prepend(li);
@@ -294,8 +301,60 @@ function constructRow(issue) {
 		+ '</li>';
 }
 
-function updateIssuesList(recurrenceId, issueRow,orderby) {
-	var d = { issues: $(issueRow).sortable('serialize').toArray(), connectionId: $.connection.hub.id,orderby:orderby };
+function _detatchAllIssues() {
+    var items = $(".issues-list li");
+    items.detach();
+    for (var i = 0; i < items.length; i++) {
+        items.find("ol li").remove()
+    }
+    return items;
+}
+
+function _setIssueOrder(parentSelector,parentOrders, all) {
+    //var ouput = [];
+    for (var i = 0; i < parentOrders.length; i++) {
+        var p = $(all).filter("[data-recurrence_issue=" + parentOrders[i].id + "]");
+        var ol = p.find("ol");
+        var children = _setIssueOrder(ol,parentOrders[i].children,all);
+        /*for (var j = 0; j < children.length; j++) {
+            ol.append(children[j]);
+        }*/
+        parentSelector.append(p);
+    }
+}
+
+function setIssueOrder(order) {
+    //var items = $(".issues-list li");
+    //items.detach();
+    debugger;
+    var allIssues = _detatchAllIssues();
+    _setIssueOrder($(".issues-list"),order,allIssues);
+}
+
+function _getIssueOrder(issue) {
+    var children = [];
+    for (var i = 0; i < issue.children.length; i++) {
+        children.push(_getIssueOrder(issue.children[i]));
+    }
+    return {
+        id: issue.recurrence_issue,
+        children:children
+    };
+}
+
+function getIssueOrder() {
+    var items = $(".issues-list").sortable('serialize').toArray()
+    var output = [];
+    for (var i = 0; i < items.length; i++) {
+        output.push(_getIssueOrder(items[i]));
+    }
+    debugger;
+    return output;
+}
+
+function updateIssuesList(recurrenceId, issueRow, orderby) {
+    var order = getIssueOrder();
+	var d = { issues: order, connectionId: $.connection.hub.id,orderby:orderby };
 	console.log(d);
 	var that = issueRow;
 	$.ajax({
@@ -305,13 +364,14 @@ function updateIssuesList(recurrenceId, issueRow,orderby) {
 		method: "POST",
 		success: function (d) {
 			if (!d.Error) {
-				oldIssueList = $(".issues-list").clone(true);
+			    oldIssueList = order;//$(".issues-list").clone(true);
 			} else {
 				showJsonAlert(d, false, true);
 				$(that).html("");
 				setTimeout(function () {
-					$('.issues-container').html(oldIssueList);
-					oldIssueList = $(".issues-list").clone(true);
+				    setIssueOrder(oldIssueList);
+					//$('.issues-container').html(oldIssueList);
+					//oldIssueList = $(".issues-list").clone(true);
 					refreshCurrentIssueDetails();
 				}, 1);
 			}
@@ -319,10 +379,11 @@ function updateIssuesList(recurrenceId, issueRow,orderby) {
 		error: function (a, b) {
 			clearAlerts();
 			showAlert(a.statusText || b);
-			$('.dd').html("");
+			//$('.dd').html("");
 			setTimeout(function () {
-				$('.dd').html(oldIssueList);
-				oldIssueList = $(".issues-list").clone(true);
+			    //$('.dd').html(oldIssueList);
+                setTodoOrder(oldTodoList);
+				//oldIssueList = $(".issues-list").clone(true);
 				refreshCurrentIssueDetails();
 			}, 1);
 		}
@@ -330,7 +391,39 @@ function updateIssuesList(recurrenceId, issueRow,orderby) {
 }
 
 
+function refreshPriority(priorityDom) {
+
+    var p = $(priorityDom).data("priority");
+    $(priorityDom).removeClass("multiple");
+    $(priorityDom).removeClass("none");
+    $(priorityDom).removeClass("single");
+    $(priorityDom).removeClass("single-1");
+    $(priorityDom).removeClass("single-2");
+    $(priorityDom).removeClass("single-3");
+
+    $(priorityDom).parents(".issue-row").toggleClass("prioritize", p > 0);
+
+    if (p > 3) {
+	    $(priorityDom).addClass("multiple");
+	    $(priorityDom).html("<span class='icon fontastic-icon-star-3'></span> x" +p);
+    } else if (p > 0 && p<=3) {
+	    $(priorityDom).addClass("single");
+	    $(priorityDom).addClass("single-"+p);
+	    var str = "";
+	    for (var i = 0; i < p; i++) {
+	        str += "<span class='icon fontastic-icon-star-3'></span>";
+	    }
+	    if (p == 1)
+		    str += "<span class='hoverable'>+</span>";
+	    $(priorityDom).html(str);
+    } else if (p == 0) {
+	    $(priorityDom).addClass("none");
+	    $(priorityDom).html("<span class='icon fontastic-icon-star-empty'></span>");
+    }
+}
+
 function refreshCurrentIssueDetails() {
+    console.log("called refreshCurrentIssueDetails")
 	$(".issue-row[data-recurrence_issue=" + currentIssuesDetailsId + "]")
 		.closest(".issues-list>.issue-row").find(">.message")
 		.trigger("click");
@@ -342,34 +435,7 @@ function refreshCurrentIssueDetails() {
 	});
 
 	$(".issues-list > .issue-row > .number-priority > .priority").each(function (i) {
-	    var p = $(this).attr("data-priority");
-	    $(this).removeClass("multiple");
-	    $(this).removeClass("none");
-	    $(this).removeClass("single");
-	    $(this).removeClass("single-1");
-	    $(this).removeClass("single-2");
-	    $(this).removeClass("single-3");
-
-	    $(this).parents(".issue-row").toggleClass("prioritize", p > 0);
-
-	    if (p > 3) {
-	        $(this).addClass("multiple");
-	        $(this).html("<span class='icon fontastic-icon-star-3'></span> x" +p);
-	    } else if (p > 0 && p<=3) {
-	        $(this).addClass("single");
-	        $(this).addClass("single-"+p);
-	        var str = "";
-	        for (var i = 0; i < p; i++) {
-	            str += "<span class='icon fontastic-icon-star-3'></span>";
-	        }
-		    if (p == 1)
-			    str += "<span class='hoverable'>+</span>";
-	        $(this).html(str);
-	    } else if (p == 0) {
-	        $(this).addClass("none");
-	        $(this).html("<span class='icon fontastic-icon-star-empty'></span>");
-	    }
-
+	    refreshPriority(this);
 	});
 }
 
@@ -440,39 +506,64 @@ function updateIssueOwner(id, userId, name, image) {
 }
 
 function updateIssuePriority(id, priority) {
-    $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .priority").attr("data-priority", priority)
+    $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .priority").data("priority", priority)
     var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
-    $(row).attr("data-priority", priority);
+    $(row).data("priority", priority);
 }
 
 $("body").on("contextmenu", ".issue-row .priority", function (e) {
     e.preventDefault();
     return false;
 });
-$("body").on("mousedown", ".issue-row .priority", function (e) {
+
+/*$(document).on("click", ".issue-row .priority", function (e) {
     debugger;
-    var p = +$(this).attr("data-priority");
-    if (e.button==0){
-        p += 1;
-    }else if (e.button==2){
-        p -= 1;
-        p = Math.max(0, p);
-    }else {
-        return false;
-    }
-    $(this).attr("data-priority", p);
-    var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
-    updateIssuePriority(id,p);
-    refreshCurrentIssueDetails();
-    var d = { priority: p,time:new Date().getTime() };
-    $.ajax({
-        url: "/L10/UpdateIssue/" + id,
-        data: d,
-        method: "POST",
-        success: function (d) {
-            showJsonAlert(d);
-        }
-    });
     e.preventDefault();
     return false;
+});
+*/
+$(function () {
+
+    var timer = {};
+    $("body").on("mousedown", ".issue-row .priority", function (e) {
+        var p = +$(this).data("priority");
+        console.log("current priority:"+p)
+        if (e.button==0){
+            p += 1;
+        }else if (e.button==2){
+            p -= 1;
+            p = Math.max(0, p);
+        }else {
+            return false;
+        }
+       // $(this).data("priority", p);
+        console.log("new priority:" + p)
+        var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
+
+        updateIssuePriority(id,p);
+        //refreshCurrentIssueDetails();
+        refreshPriority(this);
+
+        ////DEBOUNCE
+        if (timer[id]) {
+            clearTimeout(timer);
+        }
+        var that = this;
+        timer[id] = setTimeout(function () {
+            var pp = +$(that).data("priority");
+            var d = { priority: pp, time: new Date().getTime() };
+            $.ajax({
+                url: "/L10/UpdateIssue/" + id,
+                data: d,
+                method: "POST",
+                success: function (d) {
+                    showJsonAlert(d);
+                }
+            });
+        }, 2000);
+       
+        e.preventDefault();
+        return false;
+    });
+
 });

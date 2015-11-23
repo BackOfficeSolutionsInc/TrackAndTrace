@@ -141,6 +141,7 @@ namespace RadialReview
 				"~/Scripts/Angular/Helpers/Libraries/angular-daterangepicker.js", 
 				"~/Scripts/Angular/Helpers/transform.js", 
 				"~/Scripts/Angular/Helpers/signalR.js",
+				"~/Scripts/Angular/Helpers/Directives/AnywhereButHere.js", 
 				"~/Scripts/Angular/Helpers/Directives/bindUnsafeHtml.js",
 				"~/Scripts/Angular/Helpers/Directives/ImageTemplates.js",
 				"~/Scripts/Angular/Helpers/angular-timer.min.js",

@@ -29,8 +29,9 @@ namespace RadialReview.Models
         //public virtual String IdMapping { get; set; }
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
-        public virtual string Email { get { return UserName;  } }
+        public virtual string Email { get { return UserName; } }
         public virtual bool Hints { get; set; }
+        public virtual bool ConsoleLog { get; set; }
         public virtual long CurrentRole { get; set; }
         public virtual string ImageGuid { get; set; }
         public virtual GenderType? Gender { get; set; }
@@ -60,6 +61,7 @@ namespace RadialReview.Models
             Hints = true;
 	        SendTodoTime = 10;
 			Roles = new List<UserRoleModel>();
+            ConsoleLog = false;
         }
 
         public virtual long? GetCurrentRole()
@@ -97,8 +99,9 @@ namespace RadialReview.Models
 				Map(x => x.IsRadialAdmin);
 				Map(x => x.DeleteTime);
 				Map(x => x.ImageGuid);
-				Map(x => x.Gender);
-				Map(x => x.UserOrganizationCount);
+                Map(x => x.Gender);
+                Map(x => x.UserOrganizationCount);
+                Map(x => x.ConsoleLog);
 				HasMany(x => x.UserOrganization).LazyLoad().Cascade.SaveUpdate();
 				HasMany(x => x.Logins).Cascade.SaveUpdate();
 				HasMany(x => x.Roles).Cascade.SaveUpdate();

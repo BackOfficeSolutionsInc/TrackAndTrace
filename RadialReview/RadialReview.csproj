@@ -15,7 +15,7 @@
     <RootNamespace>RadialReview</RootNamespace>
     <AssemblyName>RadialReview</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <MvcBuildViews>true</MvcBuildViews>
+    <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -322,6 +322,7 @@
     <Compile Include="Controllers\AccountabilityController.cs" />
     <Compile Include="Controllers\CallbackController.cs" />
     <Compile Include="Controllers\CompanyValuesController.cs" />
+    <Compile Include="Controllers\ConsoleController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DropDownController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
@@ -335,6 +336,7 @@
     <Compile Include="Controllers\L10DataController.cs" />
     <Compile Include="Controllers\L10DetailsController.cs" />
     <Compile Include="Controllers\L10SubPageController.cs" />
+    <Compile Include="Controllers\LogStreamController.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
     <Compile Include="Controllers\MeetingController.cs" />
     <Compile Include="Controllers\MeetingDataController.cs" />
@@ -709,6 +711,7 @@
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
     <Compile Include="Utilities\Config.cs" />
     <Compile Include="Utilities\DbUtil.cs" />
+    <Compile Include="Utilities\Encrypt\Crypto.cs" />
     <Compile Include="Utilities\Extensions\AuditExtensions.cs" />
     <Compile Include="Utilities\Extensions\ExpressionExtensions.cs" />
     <Compile Include="Utilities\Extensions\IssuesExtensions.cs" />
@@ -780,6 +783,12 @@
     <Compile Include="Utilities\TimingUtility.cs" />
     <Compile Include="Utilities\ViewUtility.cs" />
     <Compile Include="Models\Audit\LogModel.cs" />
+    <Content Include="Content\email\Checked.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\email\Unchecked.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\img\ajax-loader-ob.gif" />
     <Content Include="Content\img\ajax-loader-orange.gif" />
     <Content Include="Content\L10\L10ChatLog.css">
@@ -789,14 +798,16 @@
       <DependentUpon>L10ChatLog.css</DependentUpon>
     </Content>
     <Content Include="Content\L10\L10Transcribe.css" />
+    <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
     <Content Include="Scripts\L10\L10ChatLog.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
     <Content Include="Scripts\speechrecog.js" />
-    <Content Include="Scripts\video\FileBufferReader.js" />
+    <Content Include="Scripts\video\Obsolete\FileBufferReader.js" />
     <Content Include="Scripts\video\hark.js" />
-    <Content Include="Scripts\video\RTCMultiConnection.js" />
-    <Content Include="Scripts\video\socket.io.js" />
+    <Content Include="Scripts\video\Obsolete\RTCMultiConnection.js" />
+    <Content Include="Scripts\video\Obsolete\socket.io.js" />
+    <Content Include="Scripts\video\video.js" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />
@@ -1540,6 +1551,7 @@
     <Content Include="Views\Organization\WhichList.cshtml" />
     <Content Include="Views\Invoice\List.cshtml" />
     <Content Include="Views\Invoice\Details.cshtml" />
+    <Content Include="Views\LogStream\Index.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1581,12 +1593,7 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -1833,9 +1840,11 @@
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="Content\NewFolder1\" />
     <Folder Include="External\" />
+    <Folder Include="logs\" />
     <Folder Include="Models\Rocks\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Views\Admin\" />
+    <Folder Include="Views\Console\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\Img\" />
@@ -1997,6 +2006,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptMapRoot>~\Scripts\</TypeScriptMapRoot>
@@ -2020,6 +2032,9 @@
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <servers defaultServer="SelfHostServer">
+            <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:2200/" workingDir="" />
+          </servers>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>

@@ -501,7 +501,22 @@ body {
 	right: -60px;
 	margin: 2px;
 }
+@media screen and (max-width: 768px)
+{
+    .navbar .picture-container{    
+	    right: 0px;
+    }
 
+    .nav.navbar-nav .btn-group.heading a.heading{
+        max-width: inherit !important;
+    }
+
+    .nav.navbar-nav .btn-group.heading{
+        width:70%;
+        width: calc(100% - 66px);
+    }
+
+}
 
 
 .navbar-inverse-COMMENT {
@@ -1464,6 +1479,7 @@ textarea.reason {
 		top: calc(50% - 10px);
 		font-weight: bold;
 		font-size: 13px;
+        line-height: 21px;
 		/* vertical-align: middle; */
 		/* display: table-cell; */
 	}

@@ -187,9 +187,16 @@ namespace RadialReview.Controllers
 			/**/
 			if (userOrganizationId == null)
 			{
-				var orgIdParam = Request.Params.Get("organizationId");
-				if (orgIdParam != null)
-					userOrganizationId = long.Parse(orgIdParam);
+                try
+                {
+                    var orgIdParam = Request.Params.Get("organizationId");
+                    if (orgIdParam != null)
+                        userOrganizationId = long.Parse(orgIdParam);
+                }
+                catch (Exception e)
+                {
+                    var o = false;
+                }
 			}
 			var cache = new Cache();
 
@@ -311,7 +318,6 @@ namespace RadialReview.Controllers
 		#region Overrides
 		private static MethodInfo GetActionMethod(ExceptionContext filterContext)
 		{
-
 			Type controllerType = filterContext.Controller.GetType();// Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(x => x.Name == requestContext.RouteData.Values["controller"].ToString());
 			ControllerContext controllerContext = new ControllerContext(filterContext.RequestContext, Activator.CreateInstance(controllerType) as ControllerBase);
 			ControllerDescriptor controllerDescriptor = new ReflectedControllerDescriptor(controllerType);
@@ -459,7 +465,7 @@ namespace RadialReview.Controllers
 									throw new PermissionsException("You must be a manager to view this resource.");
 								break;
 							case AccessLevel.Radial:
-								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin)) throw new PermissionsException("You must be a Radial Admin to view this resource.");
+                                if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin)) throw new PermissionsException("You do not have access to this resource.");
 								break;
 							default:
 								throw new Exception("Unknown Access Type");
@@ -508,8 +514,9 @@ namespace RadialReview.Controllers
 							filterContext.Controller.ViewBag.Organizations = userOrgsCount;
 							filterContext.Controller.ViewBag.Hints = true;
 							filterContext.Controller.ViewBag.ManagingOrganization = false;
-							filterContext.Controller.ViewBag.Organization = null;
-							filterContext.Controller.ViewBag.UserId = 0L;
+                            filterContext.Controller.ViewBag.Organization = null;
+                            filterContext.Controller.ViewBag.UserId = 0L;
+                            filterContext.Controller.ViewBag.ConsoleLog = false;
 
 							if (oneUser != null){
 								var name = new HtmlString(oneUser.GetName());
@@ -529,13 +536,14 @@ namespace RadialReview.Controllers
 								filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
 								filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
 
-								filterContext.Controller.ViewBag.UserOrganization = oneUser;
+                                filterContext.Controller.ViewBag.UserOrganization = oneUser;
+                                filterContext.Controller.ViewBag.ConsoleLog = oneUser.User.NotNull(x=>x.ConsoleLog);
 
 								filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
 								//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
 								filterContext.Controller.ViewBag.UserName = name;
 								filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
-								filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview;
+								filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview && !oneUser.IsClient;
 								filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
 								var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
 								filterContext.Controller.ViewBag.IsManager = isManager;

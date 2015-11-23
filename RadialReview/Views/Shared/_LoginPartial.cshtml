@@ -14,11 +14,12 @@
 			{ "Color", ViewBag.UserColor }
 		})
         <ul class="nav navbar-nav navbar-right">
+            
             <li>
 	            <div class="btn-group heading" style="padding:8px;">
 		            <a href="@Url.Action("Details", "User", new { id = ViewBag.UserId })"
 		               style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap;max-width: 246px;"
-		               class="btn btn-default heading hidden-xs hidden-sm">
+		               class="btn btn-default heading ">
 			            @(ViewBag.UserName ?? "Manage")
 		            </a>
 		            <button type="button" class="btn btn-default heading dropdown-toggle" data-toggle="dropdown">
@@ -26,6 +27,16 @@
 			            <span class="sr-only">Toggle Dropdown</span>
 		            </button>
 		            <ul class="dropdown-menu" role="menu">
+                        @if (ViewBag.IsManager ?? false)
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "Manage")">
+                                    Manage @(Html.Organization().NotNull(x=>x.GetName())??"Organization")
+                                    <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                </a>
+                            </li>
+			                <li class="divider"></li>
+                        }
 			            <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")">
 				            @if (((int?)ViewBag.Organizations ?? 0) > 1)
 				            {
@@ -37,11 +48,11 @@
 				            }
 			            </li>
 			            <li>@Html.ActionLink("Settings", "Manage", "Account")</li>
-			            <li>
+			            @*<li>
 				            <a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
 					            Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
 				            </a>
-			            </li>
+			            </li>*@
 			            <li class="divider"></li>
 			            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
 		            </ul>

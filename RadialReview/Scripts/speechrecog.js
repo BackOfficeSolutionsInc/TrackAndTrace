@@ -5,8 +5,9 @@
 	this.available = ('webkitSpeechRecognition' in window);
 	this.ignore_onend;
 	this.start_timestamp;
-	this.recognition=false;
+	this.recognition = false;
 	this.wasAborted = false;
+	this.forceQuit = false;
 	
 	this.onstart			= function (event)	{ };
 	this.onerror			= function (event)	{ };
@@ -18,6 +19,12 @@
 	var first_char = /\S/;
 	this.capitalize = function capitalize(s) {
 		return s.replace(first_char, function (m) { return m.toUpperCase(); });
+	};
+
+	this.Stop = function () {
+	    var originalIgnoreOnEnd = this.ignore_onend;
+	    this.forceQuit = true;
+	    this.recognition.stop();
 	};
 
 	this.Init = function () {
@@ -97,7 +104,7 @@
 			this.recognition.onend = function (event) {
 				console.log("SpeechRecog: onend");
 				_self.recognizing = false;
-				if (_self.ignore_onend) {
+				if (_self.ignore_onend && _self.forceQuit==false) {
 					console.log("SpeechRecog: restarting");
 					_self.recognition.start();
 					return;
@@ -115,6 +122,7 @@
 					range.selectNode(document.getElementById('final_span'));
 					window.getSelection().addRange(range);
 				}*/
+				this.forceQuit = false;
 				_self.onend(event);
 			};
 

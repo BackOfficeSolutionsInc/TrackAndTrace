@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * Bootstrap v3.3.5 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -4963,7 +4963,6 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-right {
     float: right !important;
     margin-right: -15px;
-    margin-right: 4px;
   }
   .navbar-right ~ .navbar-right {
     margin-right: 0;
@@ -5443,7 +5442,7 @@ a.badge:focus {
   padding-top: 30px;
   padding-bottom: 30px;
   margin-bottom: 30px;
-  color: white;
+  color: #ffffff;
   background-color: #ef7622;
   height: 85px;
   margin-bottom: -51px;
@@ -7331,6 +7330,7 @@ select:-webkit-autofill:focus {
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 10000;
 }
 .footer-bar .footer-bar-container {
   position: absolute;
@@ -7754,4 +7754,7 @@ select:-webkit-autofill:focus {
 .rock-completion option {
   color: black;
   background-color: white;
+}
+.todo-heading .clickable:hover .glyphicon-unchecked:before {
+  content: "\e067";
 }

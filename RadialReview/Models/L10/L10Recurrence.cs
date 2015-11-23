@@ -64,7 +64,7 @@ namespace RadialReview.Models.L10
 			ConclusionMinutes	= 5;
 			IncludeIndividualTodos = true;
 			IncludeAggregateTodoCompletion = true;
-			EnableTranscription = true;
+			EnableTranscription = false;
 		}
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>

@@ -18,7 +18,7 @@ namespace RadialReview.Controllers
     {
 
 		[Access(AccessLevel.UserOrganization)]
-		public object Details(long id,bool complete=false)
+		public ActionResult Details(long id,bool complete=false)
 		{
 			return View(id);
 

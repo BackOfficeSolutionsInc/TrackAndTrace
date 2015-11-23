@@ -27,6 +27,16 @@ namespace RadialReview.Hubs
 				_CurrentUser = s.Get<UserOrganizationModel>(user.CurrentRole);
 			else
 			{
+                if (user.CurrentRole == 0)
+                {
+                    if (user.UserOrganizationIds!=null && user.UserOrganizationIds.Count()==1){
+                        user.CurrentRole = user.UserOrganizationIds[0];
+                        s.Update(user);
+                    }else{
+                        throw new OrganizationIdException();
+                    }
+                }
+
 				var found = s.Get<UserOrganizationModel>(user.CurrentRole);
 				if (found.DeleteTime != null || found.User.Id == userId)
 				{

@@ -22,6 +22,7 @@
 
 .transcript-container .footer-bar-tab {
 	background-color: #1B1B1B;
+        z-index: 1000;
 }
 
 .transcript-container .transcript-bar {

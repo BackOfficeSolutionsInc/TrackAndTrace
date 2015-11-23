@@ -94,67 +94,13 @@
 		<script src="@Html.VideoConferenceUrl("/dev/FileBufferReader.js")"></script>
 		<script src="@Html.VideoConferenceUrl("/socket.io/socket.io.js")"></script>
 		<script src="/Scripts/video/hark.js"></script>
-		@*@Scripts.Render("~/bundles/Video")*@
+        <script src="~/Scripts/video/video.js"></script>
+    	@*@Scripts.Render("~/bundles/Video")*@
 
 		<script>
-			function noop() {
-				return "";
-			}
-
-			$('body').on("click",'.start-video',function (e) {
-				this.disabled = true;
-				$(this).addClass("hidden");
-				//debugger;
-				connection.leave();
-				connection.session.oneway = false;
-				connection.openOrJoin();
-				jQuery.dequeue($("#main-window"), "fx");
-			});
-
-			// ................FileSharing/TextChat Code.............
-			$('body').on('click', '.video-container', function () {
-				$(".video-overlay").addClass("fade1");
-				var self = this;
-				setTimeout(function () {
-					console.log("FIVE");
-					$(".video-overlay video").attr("src", $(self).find("video").attr("src"));
-					$(".video-overlay video")[0].muted = $(self).find("video")[0].muted;
-					$(".video-overlay").removeClass("hidden1");
-					setTimeout(function () {
-						$(".video-overlay").removeClass("fade1");
-					}, 100);
-				}, 150);
-			});
-			$('.video-overlay').click(function () {
-				$(".video-overlay").addClass("hidden1");
-				$(".video-overlay video").attr("src", "");
-			});
-			$('body').on('click', '.start-video:not(.disabled)', function () {
-				$(".start-video").addClass("disabled");
-				//TODO Start video
-			});
-			/*$('body').on('click', '.uncollapser .clicker', function () {
-				$(".video-bar").toggleClass("shifted");
-				$(this).parent().toggleClass("shifted");
-			});*/
-
-			$("body").on("click", ".share-file", function(e) {
-				var fileSelector = new FileSelector();
-				fileSelector.selectSingleFile(function(file) {
-					connection.send(file);
-				});
-			});
-
-			$("body").on("keyup", ".input-text-chat", function(e) {
-				if (e.keyCode != 13) return;
-				// removing trailing/leading whitespace
-				this.value = this.value.replace(/^\s+|\s+$/g, '');
-				if (!this.value.length) return;
-				connection.send(this.value);
-				appendDIV(this.value);
-				this.value = '';
-			});
-
+            function noop() {
+                return "";
+            }
 			var chatContainer = document.querySelector('.chat-output');
 
 			var connection = new RTCMultiConnection("@MM.RoomId");
@@ -164,6 +110,10 @@
 			connection.extra = {name: "@ViewBag.UsersName"};
 			connection.session = {audio: true, video: true, data: true};
 			connection.sdpConstraints.mandatory = {OfferToReceiveAudio: true,OfferToReceiveVideo: true};
+            
+			connection.bandwidth = {
+			    video: 256,    // 256kbps
+			};
 
 			connection.onstream = function(event) {
 				event.mediaElement.controls = false;
@@ -172,7 +122,7 @@
 				if (event.extra && event.extra.name){
 					name = event.extra.name;
 				}
-				var container = $("<div class='video-container streamid_" + streamId + "'>"+/*"<video src='' height='116px' autoplay/>"+*/"<div class='video-name'>" + name + "</div><div class='volume'></div></div>");
+				var container = $("<div class='video-container streamid_" + streamId + "'>"+/*"<video src='' height='116px' autoplay/>"+*/"<div class='video-name'>" + name + "</div><div class='volume'></div><div class='no-mic-icon icon fontastic-icon-mic-no'></div></div>");
 				$(".video-bar").append(container);
 
 				var otherVideo = $(".video-container.streamid_" + streamId + " video")[0];
@@ -181,6 +131,10 @@
 					container.prepend(event.mediaElement);
 					container.addClass("mine");
 					container.find(".video-name").html("You");
+					$(".videoconference-container .sendVideo").removeClass("fontastic-icon-eye-slash-close");
+					$(".videoconference-container .sendAudio").removeClass("fontastic-icon-mic-no");
+					$(".videoconference-container .sendVideo").addClass("fontastic-icon-eye-2");
+					$(".videoconference-container .sendAudio").addClass("fontastic-icon-mic");
 				}else{
 					container.append(event.mediaElement);
 				}

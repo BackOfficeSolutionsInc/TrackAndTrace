@@ -1,0 +1,85 @@
+﻿@model List<RadialReview.Controllers.LogStreamController.LogLineUserGroups>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    
+}
+
+
+<style>
+    .body-content {
+        width: 100% !important;
+    }
+
+    .userList {
+        display: inline-block;
+        width: 400px;
+        height: 400px;
+        float: left;
+        font-size: 10px;
+        position: relative;
+        border: 1px dotted gray;
+    }
+
+        .userList:hover {
+            border: 1px solid gray;
+        }
+
+        .userList ol {
+            overflow: auto;
+            height: calc(100% - 33px);
+        }
+
+        .userList h4 {
+            font-weight: bold;
+            background-color: white;
+            font-size: 12px;
+            padding-left: 10px;
+            font-weight: bold;
+            color: orange;
+        }
+
+    ul {
+        color: gray;
+        padding-left: 14px;
+    }
+
+    ol > li {
+        font-weight: bold;
+    }
+
+    .recent {
+        color: white;
+        background-color: green;
+    }
+</style>
+@*<script>
+    var sec = 30;
+    var dec = sec;
+    setInterval(function () { window.location.reload(); }, sec*1000);
+    setInterval(function () { dec -= 1; $(".seconds").html(dec+"s"); }, 1000);
+</script>*@
+
+<h2>Current Time : @DateTime.UtcNow.ToLongTimeString() <small class="seconds"></small></h2>
+
+
+
+@foreach (var userGroupLines in Model)
+{
+    <div class="userList">
+        <h4>@userGroupLines.Actions.First().Parent.NotNull(x=>x.csUsername) &nbsp;</h4>
+        <ol class="">
+            @foreach (var actions in userGroupLines.Actions)
+            {
+                <li>@actions.Parent.NotNull(x => x.csUriStem)  <span class="pull-right @(actions.Parent.NotNull(x => (DateTime.UtcNow-x.Date).TotalMinutes<6)?"recent":"")">@actions.Parent.NotNull(x => x.Date.ToLongTimeString())</span></li>
+                <ul>
+                    @foreach (var line in actions.Lines)
+                    {
+                        <li>@line.NotNull(x => x.csUriStem)  <span class="pull-right @(line.NotNull(x => (DateTime.UtcNow-x.Date).TotalMinutes<6)?"recent":"")">@line.NotNull(x => x.Date.ToLongTimeString())</span></li>
+                    }
+                </ul>
+            }
+        </ol> 
+    </div>
+}
+

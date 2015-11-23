@@ -85,7 +85,7 @@
 
 									if (((int?)ViewBag.Organizations ?? 0) > 0)
 									{
-										<li>
+										@*<li>
 											<a href="@Url.Action("Index", "Tasks")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
 												To-Dos
 												@if (ViewBag.TaskCount > 0)
@@ -94,7 +94,7 @@
 												}
 												<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
 											</a>
-										</li>
+										</li>*@
 										if (ViewBag.ShowL10 ?? false)
 										{
 											<li>
@@ -129,15 +129,6 @@
 												<span id="ReviewsNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
 											</a>
 										</li>*@
-									}
-									if (ViewBag.IsManager ?? false)
-									{
-										<li>
-											<a href="@Url.Action("Index", "Manage")">
-												Manage
-												<span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
-											</a>
-										</li>
 									}
 								}
 								else
@@ -197,6 +188,29 @@
 			<p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName</p>
 			@{ Html.RenderPartial("Partial/Footer"); }
 		</div>
+        @*@if (ViewBag.ConsoleLog ?? false) { 
+            <script>
+                var oldLog = console.log;
+                console.log = function (message) {
+                    try {
+                        $.ajax({ url: "/console/log",method:"POST", data: { type: "log", message: encodeURI(message) } });
+                    } catch (e) {
+                        oldError.apply(console, e);
+                    }
+                    oldLog.apply(console, arguments);
+                };
+
+                var oldError = console.error;
+                console.error = function (message) {
+                    try {
+                        $.ajax({ url: "/console/log", method: "POST", data: { type: "error", message: encodeURI(message) } });
+                    } catch (e) {
+                        oldError.apply(console, e);
+                    }
+                    oldError.apply(console, arguments);
+                };
+            </script>
+        }*@
 		@RenderSection("bottomSection", required: false)
 		@Scripts.Render("~/bundles/jquery")
 		<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
@@ -216,8 +230,6 @@
 			ga('create', 'UA-68333423-1',{'userId':@(ViewBag.UserId??-1L)});
 			ga('set', 'dimension1', @(ViewBag.UserId??-1L));
 			ga('send', 'pageview');
-		
-
 		</script>
 
 		@if (!(ViewBag.FullWidth ?? false))

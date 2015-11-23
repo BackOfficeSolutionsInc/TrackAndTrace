@@ -24,7 +24,7 @@ function fixChatLogBoxSize(time) {
 			var st = $(window).scrollTop();
 			var footerH = wh;
 			try {
-				footerH = $(".footer-bar .footer-bar-container").last().offset().top;
+			    footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
 			} catch (e) {
 
 			}

@@ -229,6 +229,7 @@ body.dragging, body.dragging * {
 	border-left: 2px solid #EFEFEF;
 	padding-left: 13px;
 	margin-left: -14px;
+    min-height:60px;
 }
 
 .todoDetails .button-bar {

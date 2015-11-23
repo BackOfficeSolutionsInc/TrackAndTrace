@@ -218,6 +218,7 @@ namespace RadialReview.Accessors
 					tx.Commit();
 					s.Flush();
 					LoadPermItem(s,pi.AsList());
+                    model.Id = pi.Id;
 					return model;
 				}
 			}

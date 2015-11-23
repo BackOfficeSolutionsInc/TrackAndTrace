@@ -35,6 +35,17 @@
 	-webkit-transition: box-shadow .2s linear;
 	transition: box-shadow .2s linear;
 }
+    .video-container .no-mic-icon {
+        display:none;
+        top: 0;
+        right: 0;
+        position: absolute;
+        color:#BD0000;
+    }
+
+    .video-container.no-mic .no-mic-icon{
+        display:block;
+    }
 
 	.video-container video {
 		max-width: 100%;

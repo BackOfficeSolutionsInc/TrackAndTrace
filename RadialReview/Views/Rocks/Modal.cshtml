@@ -2,70 +2,72 @@
 @model RadialReview.Controllers.RocksController.RockVM
 
 
-<div class="form">
-	@Html.HiddenFor(x => x.UserId)
-	<div class="">
-		<div class="row">
-			<div class="col-sm-2">
-				<label>@Html.Organization().Settings.RockName:</label>
-			</div>
-			<div class="col-sm-8" id="allRows">
-				<br />
-				<br />
-				<ul class="nav nav-tabs nav-tabs-line" role="tablist">
-					@{ var first = true;}
-					@foreach (var q in ((List<SelectListItem>)ViewBag.Periods)){
-						<li role="presentation" class="@(first?"active":"")"><a href="#period_@(q.Value)" aria-controls="period_@(q.Value)" role="tab" data-toggle="tab">@(q.Text)</a></li>
-						first = false;
-					}
-				</ul>
-				
-				<br />
-				<!-- Tab panes -->
-				<div class="tab-content">
-					@{ first = true;}
-					@foreach (var q in ((List<SelectListItem>)ViewBag.Periods))
-					{
-						<div role="tabpanel" class="tab-pane @(first?"active":"")" id="period_@(q.Value)">
-							@foreach (var r in Model.Rocks.Where(x => x.Period.Id+"" == q.Value))
-							{
-								Html.RenderPartial("_RockRow", r, new ViewDataDictionary(ViewData) { { "HidePeriod",true } });
-							}
-						</div>
-						first = false;
-					}
-				</div>
-			</div>
-			<div class="col-sm-2">
-				<div class="btn btn-default clickable" onclick="addRow();">Add Rock</div>
-			</div>
-		</div>
-	</div> 
-	<label>Update Outstanding Reviews: </label> @Html.CheckBoxFor(x=>x.UpdateOutstandingReviews)
+<div class="form rock-modal">
+    @Html.HiddenFor(x => x.UserId)
+    <div class="">
+        <div class="row">
+            <div class="col-sm-2">
+                <label>@Html.Organization().Settings.RockName:</label>
+            </div>
+            <div class="col-sm-8" id="allRows">
+                <br />
+                <br />
+                <ul class="nav nav-tabs nav-tabs-line" role="tablist">
+                    @{ var first = true;}
+                    @foreach (var q in ((List<SelectListItem>)ViewBag.Periods))
+                    {
+                        <li role="presentation" class="@(first?"active":"")"><a href="#periodModal_@(q.Value)" aria-controls="period_@(q.Value)" role="tab" data-toggle="tab">@(q.Text)</a></li>
+                        first = false;
+                    }
+                </ul>
+
+                <br />
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    @{ first = true;}
+                    @foreach (var q in ((List<SelectListItem>)ViewBag.Periods))
+                    {
+                        <div role="tabpanel" class="tab-pane @(first?"active":"")" id="periodModal_@(q.Value)">
+                            @foreach (var r in Model.Rocks.Where(x => x.Period != null && x.Period.Id + "" == q.Value))
+                            {
+                                Html.RenderPartial("_RockRow", r, new ViewDataDictionary(ViewData) { { "HidePeriod", true } });
+                            }
+                        </div>
+                            first = false;
+                    }
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="btn btn-default clickable" onclick="addRow();">Add Rock</div>
+            </div>
+        </div>
+    </div>
+    <label>Update Outstanding Reviews: </label> @Html.CheckBoxFor(x => x.UpdateOutstandingReviews)
 
 </div>
 <script>
-	function addRow() {
-		var active = $(".tab-pane.active");
-		var periodId = active.attr("id").substring(7);
+    function addRow() {
+        debugger;
+        var active = $(".rock-modal .tab-pane.active");
+        var periodId = active.attr("id").substring(active.attr("id").indexOf("_")+1);
 
-		$.ajax({
-			url: "/Rocks/BlankEditorRow?periodId="+periodId+"&hideperiod=true",
-			cache: false,
-			success: function(html) {
-				$(active).append(html);
-			}
-		});
-		return false;
-	}
+        $.ajax({
+            url: "/Rocks/BlankEditorRow?periodId=" + periodId + "&hideperiod=true",
+            cache: false,
+            success: function (html) {
+                $(active).append(html);
+            }
+        });
+        return false;
+    }
 
-	$(function () {
-		$(document).on("click","span.deleteRow", function () {
-			$(this).parents("div.roleRow:first").hide();
-			$(this).parents("div.roleRow:first").find("[name*='DeleteTime']").val("@Model.CurrentTime.ToString()");
-			return false;
-		});
-	});
+    $(function () {
+        $(document).on("click", "span.deleteRow", function () {
+            $(this).parents("div.roleRow:first").hide();
+            $(this).parents("div.roleRow:first").find("[name*='DeleteTime']").val("@Model.CurrentTime.ToString()");
+            return false;
+        });
+    });
 
 
 </script>

@@ -1,53 +1,35 @@
-INFO  2015-10-30 21:54:24,634 [2002] BaseController         - Permissions: [/payment/setcard?submit=true] --> []
-INFO  2015-10-30 21:58:09,533 [1997] BaseAccessor           - Charged Card: {"class":"transaction","id":"c0b837c26e","created_at":"2015-10-31T02:58:16+00:00","merchant_id":"8bf5e5bcf65f_test","amount_authorized":50400,"amount_refunded":0,"amount_settled":50400,"amount_failed":0,"transaction_type":"sale","reference_number":"5583896","description":null,"card_type":"visa","card_number":"************1111","card_exp_month":"10","card_exp_year":"2016","authorized":true,"settled":true,"refunded":false,"voided":false,"system_trace":null,"status":"SETTLED","customer_id":"8fcd2b","receipt":null,"company":"Firespring","website":"","card_owner_name":"Clay Upton","email":"","first_name":"Clay","last_name":"Upton","address_1":"a","address_2":"a","city":"Alamo","state":"CA","zip":"94507","country":"United States","phone":"","fax":"","csc_check":0,"avs_address_check":0}
-ERROR 2015-10-31 01:31:31,981 [60] BaseController         - Error: [/Rocks/Modal/1285?_clientTimestamp=1446273026885]<<The ViewData item that has the key 'PeriodId' is of type 'System.Int64' but must be of type 'IEnumerable<SelectListItem>'.>>
-System.InvalidOperationException: The ViewData item that has the key 'PeriodId' is of type 'System.Int64' but must be of type 'IEnumerable<SelectListItem>'.
-   at System.Web.Mvc.Html.SelectExtensions.GetSelectData(HtmlHelper htmlHelper, String name)
-   at System.Web.Mvc.Html.SelectExtensions.SelectInternal(HtmlHelper htmlHelper, ModelMetadata metadata, String optionLabel, String name, IEnumerable`1 selectList, Boolean allowMultiple, IDictionary`2 htmlAttributes)
-   at System.Web.Mvc.Html.SelectExtensions.DropDownListHelper(HtmlHelper htmlHelper, ModelMetadata metadata, String expression, IEnumerable`1 selectList, String optionLabel, IDictionary`2 htmlAttributes)
-   at System.Web.Mvc.Html.SelectExtensions.DropDownListFor[TModel,TProperty](HtmlHelper`1 htmlHelper, Expression`1 expression, IEnumerable`1 selectList, String optionLabel, IDictionary`2 htmlAttributes)
-   at System.Web.Mvc.Html.SelectExtensions.DropDownListFor[TModel,TProperty](HtmlHelper`1 htmlHelper, Expression`1 expression, IEnumerable`1 selectList, Object htmlAttributes)
-   at ASP._Page_Views_Rocks__RockRow_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\Rocks\_RockRow.cshtml:line 34
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
-   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
-   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
-   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
-   at System.Web.Mvc.HtmlHelper.RenderPartialInternal(String partialViewName, ViewDataDictionary viewData, Object model, TextWriter writer, ViewEngineCollection viewEngineCollection)
-   at System.Web.Mvc.Html.RenderPartialExtensions.RenderPartial(HtmlHelper htmlHelper, String partialViewName, Object model, ViewDataDictionary viewData)
-   at ASP._Page_Views_Rocks_Modal_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\Rocks\Modal.cshtml:line 29
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
-   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
-   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
-   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
-   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
-ERROR 2015-10-31 01:34:10,570 [67] BaseController         - Error: [/Rocks/Modal/1285?_clientTimestamp=1446273077983]<<The ViewData item that has the key 'PeriodId' is of type 'System.Int64' but must be of type 'IEnumerable<SelectListItem>'.>>
-System.InvalidOperationException: The ViewData item that has the key 'PeriodId' is of type 'System.Int64' but must be of type 'IEnumerable<SelectListItem>'.
-   at System.Web.Mvc.Html.SelectExtensions.GetSelectData(HtmlHelper htmlHelper, String name)
-   at System.Web.Mvc.Html.SelectExtensions.SelectInternal(HtmlHelper htmlHelper, ModelMetadata metadata, String optionLabel, String name, IEnumerable`1 selectList, Boolean allowMultiple, IDictionary`2 htmlAttributes)
-   at System.Web.Mvc.Html.SelectExtensions.DropDownListHelper(HtmlHelper htmlHelper, ModelMetadata metadata, String expression, IEnumerable`1 selectList, String optionLabel, IDictionary`2 htmlAttributes)
-   at System.Web.Mvc.Html.SelectExtensions.DropDownListFor[TModel,TProperty](HtmlHelper`1 htmlHelper, Expression`1 expression, IEnumerable`1 selectList, String optionLabel, IDictionary`2 htmlAttributes)
-   at System.Web.Mvc.Html.SelectExtensions.DropDownListFor[TModel,TProperty](HtmlHelper`1 htmlHelper, Expression`1 expression, IEnumerable`1 selectList, Object htmlAttributes)
-   at ASP._Page_Views_Rocks__RockRow_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\Rocks\_RockRow.cshtml:line 34
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
-   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
-   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
-   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
-   at System.Web.Mvc.HtmlHelper.RenderPartialInternal(String partialViewName, ViewDataDictionary viewData, Object model, TextWriter writer, ViewEngineCollection viewEngineCollection)
-   at System.Web.Mvc.Html.RenderPartialExtensions.RenderPartial(HtmlHelper htmlHelper, String partialViewName, Object model, ViewDataDictionary viewData)
-   at ASP._Page_Views_Rocks_Modal_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\Rocks\Modal.cshtml:line 29
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
-   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
-   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
+ERROR 2015-11-09 12:04:43,021 [10] BaseAccessor           - Scheduled task error. 2370
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__6.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 129
+ERROR 2015-11-09 12:04:55,944 [11] BaseAccessor           - Scheduled task error. 2366
+System.Net.WebException: The remote server returned an error: (500) Internal Server Error.
+   at System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)
+   at System.Net.WebClient.GetWebResponse(WebRequest request, IAsyncResult result)
+   at System.Net.WebClient.DownloadBitsResponseCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at RadialReview.Accessors.TaskAccessor.<ExecuteTask>d__6.MoveNext() in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\TaskAccessor.cs:line 129
+ERROR 2015-11-09 12:05:17,185 [11] BaseController         - Error: [/Account/Login]<<c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Views\Account\Login.cshtml(2): error CS0103: The name 'model' does not exist in the current context>>
+System.Web.HttpCompileException (0x80004005): c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Views\Account\Login.cshtml(2): error CS0103: The name 'model' does not exist in the current context
+   at System.Web.Compilation.AssemblyBuilder.Compile()
+   at System.Web.Compilation.BuildProvidersCompiler.PerformBuild()
+   at System.Web.Compilation.BuildManager.CompileWebFile(VirtualPath virtualPath)
+   at System.Web.Compilation.BuildManager.GetVPathBuildResultInternal(VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
+   at System.Web.Compilation.BuildManager.GetVPathBuildResultWithNoAssert(HttpContext context, VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
+   at System.Web.Compilation.BuildManager.GetVirtualPathObjectFactory(VirtualPath virtualPath, HttpContext context, Boolean allowCrossApp, Boolean throwIfNotFound)
+   at System.Web.Compilation.BuildManager.GetVirtualPathObjectFactory(VirtualPath virtualPath, HttpContext context, Boolean allowCrossApp)
+   at System.Web.Compilation.BuildManager.GetCompiledType(VirtualPath virtualPath)
+   at System.Web.Compilation.BuildManager.GetCompiledType(String virtualPath)
+   at System.Web.Mvc.BuildManagerWrapper.System.Web.Mvc.IBuildManager.GetCompiledType(String virtualPath)
    at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
    at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
    at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
@@ -56,31 +38,54 @@ System.InvalidOperationException: The ViewData item that has the key 'PeriodId' 
    at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
    at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
-ERROR 2015-10-31 01:35:44,859 [45] BaseController         - Error: [/Rocks/Modal/1285?_clientTimestamp=1446273079911]<<The ViewData item that has the key 'PeriodId' is of type 'System.Int64' but must be of type 'IEnumerable<SelectListItem>'.>>
-System.InvalidOperationException: The ViewData item that has the key 'PeriodId' is of type 'System.Int64' but must be of type 'IEnumerable<SelectListItem>'.
-   at System.Web.Mvc.Html.SelectExtensions.GetSelectData(HtmlHelper htmlHelper, String name)
-   at System.Web.Mvc.Html.SelectExtensions.SelectInternal(HtmlHelper htmlHelper, ModelMetadata metadata, String optionLabel, String name, IEnumerable`1 selectList, Boolean allowMultiple, IDictionary`2 htmlAttributes)
-   at System.Web.Mvc.Html.SelectExtensions.DropDownListHelper(HtmlHelper htmlHelper, ModelMetadata metadata, String expression, IEnumerable`1 selectList, String optionLabel, IDictionary`2 htmlAttributes)
-   at System.Web.Mvc.Html.SelectExtensions.DropDownListFor[TModel,TProperty](HtmlHelper`1 htmlHelper, Expression`1 expression, IEnumerable`1 selectList, String optionLabel, IDictionary`2 htmlAttributes)
-   at System.Web.Mvc.Html.SelectExtensions.DropDownListFor[TModel,TProperty](HtmlHelper`1 htmlHelper, Expression`1 expression, IEnumerable`1 selectList, Object htmlAttributes)
-   at ASP._Page_Views_Rocks__RockRow_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\Rocks\_RockRow.cshtml:line 34
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
-   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
-   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
-   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
-   at System.Web.Mvc.HtmlHelper.RenderPartialInternal(String partialViewName, ViewDataDictionary viewData, Object model, TextWriter writer, ViewEngineCollection viewEngineCollection)
-   at System.Web.Mvc.Html.RenderPartialExtensions.RenderPartial(HtmlHelper htmlHelper, String partialViewName, Object model, ViewDataDictionary viewData)
-   at ASP._Page_Views_Rocks_Modal_cshtml.Execute() in c:\repos\Radial\RadialReview\RadialReview\Views\Rocks\Modal.cshtml:line 29
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
-   at System.Web.Mvc.WebViewPage.ExecutePageHierarchy()
-   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
-   at System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance)
-   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
-   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
+INFO  2015-11-09 14:00:20,190 [6] MeetingHub             - Meeting.Join (24, e88caf03-0f5d-4f89-904f-4e3363a4956b)
+INFO  2015-11-09 14:01:21,914 [14] MeetingHub             - Meeting.Join (-3, 38c24bf5-d862-4e29-b8ee-79e9f8ea442d)
+INFO  2015-11-09 14:01:38,316 [15] MeetingHub             - Meeting.Join (24, a4750ffb-6ec8-4828-b43f-15c3b5d91ca9)
+INFO  2015-11-09 14:03:58,592 [12] MeetingHub             - Meeting.Join (24, e701e5d4-cf2b-4075-93e9-3a153ea16e99)
+INFO  2015-11-09 14:05:32,403 [15] MeetingHub             - Meeting.Join (24, febacc06-0321-4ae6-bbed-090e7ce2a8e7)
+INFO  2015-11-09 14:05:59,813 [25] MeetingHub             - Meeting.Join (24, 2a4ae4bd-3edd-4ece-a77e-b46eff0383ca)
+INFO  2015-11-09 14:06:08,558 [27] MeetingHub             - Meeting.Join (24, a62b1e7d-3bc8-49cd-a7da-243c749df158)
+INFO  2015-11-09 14:06:39,568 [23] MeetingHub             - Meeting.Join (24, 983e9e81-e623-4fc7-9f1b-cab8d29f56ae)
+INFO  2015-11-09 14:08:21,599 [8] BaseController         - Login: [/L10/Meeting/24] --> [/L10/Meeting/24]
+INFO  2015-11-09 14:08:39,306 [8] BaseController         - AntiForgery: [/Account/Login?ReturnUrl=%2FL10%2FMeeting%2F24] --> []
+INFO  2015-11-09 14:08:51,682 [23] BaseController         - AntiForgery: [/Account/Login] --> []
+INFO  2015-11-09 14:09:04,162 [23] BaseController         - AntiForgery: [/Account/Login] --> []
+INFO  2015-11-09 14:12:43,318 [3] BaseController         - AntiForgery: [/Account/Login] --> []
+INFO  2015-11-09 14:12:50,107 [36] MeetingHub             - Meeting.Join (-3, 9a204987-8316-4cef-9471-d50582cf2083)
+INFO  2015-11-09 14:21:24,634 [38] MeetingHub             - Meeting.Join (24, 6ffb822a-4863-4dd6-8e0c-4f2e96ffd127)
+INFO  2015-11-09 15:03:37,078 [77] MeetingHub             - Meeting.Join (24, 97c1781e-283e-4abe-aded-d75378d5b466)
+INFO  2015-11-09 15:16:57,441 [69] MeetingHub             - Meeting.Join (24, 5c350dcc-8755-4b60-9671-5146aa7b91fa)
+INFO  2015-11-09 15:26:45,769 [11] MeetingHub             - Meeting.Join (24, dc019a87-365e-4de8-b017-c3560e60ad2c)
+INFO  2015-11-09 15:27:47,770 [13] MeetingHub             - Meeting.Join (-3, ffd635b0-26a3-434b-a5c8-be520a6a7386)
+INFO  2015-11-09 15:28:23,355 [24] MeetingHub             - Meeting.Join (24, 76e37d43-ee51-440e-9850-cfa4793222b6)
+INFO  2015-11-09 15:30:04,153 [23] MeetingHub             - Meeting.Join (24, cfeb99ab-c5e8-4de6-a996-bef2d7bb4273)
+INFO  2015-11-09 15:33:23,846 [34] MeetingHub             - Meeting.Join (24, 1c119630-687a-42a6-b4e1-168befbc5f27)
+INFO  2015-11-09 15:33:51,694 [28] MeetingHub             - Meeting.Join (24, ab6cbac5-f69e-4304-b4b4-b7ac6b8a73e2)
+INFO  2015-11-09 15:37:04,789 [9] MeetingHub             - Meeting.Join (24, 49559857-3593-46ef-8948-74eb1dfe8d6f)
+INFO  2015-11-09 15:37:04,789 [34] MeetingHub             - Meeting.Join (24, b893ba70-0b48-412e-9a14-39ee511a96c4)
+INFO  2015-11-09 15:40:39,291 [30] MeetingHub             - Meeting.Join (24, af54fdee-f5c5-45f6-a7ea-ed3701e7601a)
+INFO  2015-11-09 16:02:41,761 [5] MeetingHub             - Meeting.Join (24, f508e000-cf34-4a56-9a73-e4d62d99a9be)
+INFO  2015-11-09 16:02:42,473 [7] MeetingHub             - Meeting.Join (24, 6ec7ed73-b70e-42a7-907d-ded6cfe2bfba)
+INFO  2015-11-09 16:03:58,758 [6] MeetingHub             - Meeting.Join (-3, e2e5203d-7ab7-4d3a-9032-a3f0dd8be2a5)
+ERROR 2015-11-09 16:03:58,902 [6] MeetingHub             - Meeting.Join  (-3, e2e5203d-7ab7-4d3a-9032-a3f0dd8be2a5)
+NHibernate.QueryException: could not resolve property: caller of: RadialReview.Models.L10.L10Recurrence+L10Recurrence_Attendee
+   at NHibernate.Persister.Entity.AbstractPropertyMapping.ToType(String propertyName)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.GetSubclassPropertyTableNumber(String propertyPath)
+   at NHibernate.Persister.Entity.BasicEntityPropertyMapping.ToColumns(String alias, String propertyName)
+   at NHibernate.Persister.Entity.AbstractEntityPersister.ToColumns(String alias, String propertyName)
+   at NHibernate.Loader.Criteria.CriteriaQueryTranslator.GetColumns(ICriteria subcriteria, String propertyName)
+   at NHibernate.Loader.Criteria.CriteriaQueryTranslator.GetColumnsUsingProjection(ICriteria subcriteria, String propertyName)
+   at NHibernate.Criterion.CriterionUtil.GetColumnNamesUsingPropertyName(ICriteriaQuery criteriaQuery, ICriteria criteria, String propertyName)
+   at NHibernate.Criterion.CriterionUtil.GetColumnNames(String propertyName, IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria, IDictionary`2 enabledFilters)
+   at NHibernate.Criterion.PropertyExpression.ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary`2 enabledFilters)
+   at NHibernate.Criterion.LogicalExpression.ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary`2 enabledFilters)
+   at NHibernate.Loader.Criteria.CriteriaQueryTranslator.GetWhereCondition(IDictionary`2 enabledFilters)
+   at NHibernate.Loader.Criteria.CriteriaJoinWalker..ctor(IOuterJoinLoadable persister, CriteriaQueryTranslator translator, ISessionFactoryImplementor factory, ICriteria criteria, String rootEntityName, IDictionary`2 enabledFilters)
+   at NHibernate.Loader.Criteria.CriteriaLoader..ctor(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria, String rootEntityName, IDictionary`2 enabledFilters)
+   at NHibernate.Impl.SessionImpl.List(CriteriaImpl criteria, IList results)
+   at NHibernate.Impl.CriteriaImpl.List(IList results)
+   at NHibernate.Impl.CriteriaImpl.List[T]()
+   at NHibernate.Criterion.QueryOver`1.List[U]()
+   at NHibernate.Criterion.QueryOver`1.NHibernate.IQueryOver<TRoot>.List[U]()
+   at RadialReview.Accessors.L10Accessor.JoinL10Meeting(UserOrganizationModel caller, Int64 recurrenceId, String connectionId) in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Accessors\L10Accessor.cs:line 1680
+   at RadialReview.Hubs.MeetingHub.Join(Int64 meetingId, String connectionId) in c:\Users\Lynnea\Documents\GitHub\RadialReview\RadialReview\Hubs\MeetingHub.cs:line 75

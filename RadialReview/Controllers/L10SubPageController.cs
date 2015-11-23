@@ -37,7 +37,12 @@ namespace RadialReview.Controllers
 				Recurrence = recurrence,
 				EnableTranscript = recurrence.EnableTranscription
 			};
+            if (model != null && model.Recurrence != null)
+			{
+				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 
+			}
 			//Dont need the meeting 
 			switch(page){
 				case "stats":
@@ -52,12 +57,7 @@ namespace RadialReview.Controllers
 			try{
 				model.Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
 
-				if (model != null && model.Recurrence != null)
-				{
-					model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
-					model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
-
-				}
+				
 				
 				switch (page)
 				{

@@ -19,11 +19,19 @@ using RadialReview.Models.L10.VM;
 using RadialReview.Models.Todo;
 using RadialReview.Utilities;
 using RadialReview.Accessors.TodoIntegrations;
+using RadialReview.Utilities.Encrypt;
+using RadialReview.Controllers;
 
 namespace RadialReview.Accessors
 {
 	public class TodoAccessor : BaseAccessor
 	{
+
+        public static string _SharedSecretTodoPrefix(long userId)
+        {
+            return "402F5DE7-DB3C-40D3-B634-42EF5E7D9118+" + userId;
+        }
+
 
 		public static StringBuilder BuildTodoTable(List<TodoModel> todos,string title=null)
 		{
@@ -40,8 +48,8 @@ namespace RadialReview.Accessors
 					var now = todos.FirstOrDefault().NotNull(x => x.Organization.ConvertFromUTC(DateTime.UtcNow).Date);
 					foreach (var todo in todos.OrderBy(x => x.DueDate.Date).ThenBy(x => x.Message)){
 						var color = todo.DueDate.Date <= now ? "color:#F22659;" : "color: #34AD00;";
-
-						table.Append(@"<tr><td width=""8px""></td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
+                        var completionIcon = Config.BaseUrl(org) +@"Image/TodoCompletion?id="+HttpUtility.UrlEncode(Crypto.EncryptStringAES(""+todo.Id,_SharedSecretTodoPrefix(todo.AccountableUserId)))+"&userId="+todo.AccountableUserId;
+						table.Append(@"<tr><td width=""16px""><img src='").Append(completionIcon).Append("' width='15' height='15'/>").Append(@"</td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
 							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List?todo="+todo.Id+@""">")
 							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" style=""" + color + @""">")
 							.Append(todo.DueDate.ToShortDateString()).Append("</td></tr>");

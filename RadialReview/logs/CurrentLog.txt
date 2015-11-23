@@ -1,26 +1,24 @@
-INFO  2015-11-02 14:44:08,373 [1712] BaseController         - Login: [/User/EditModal/1657?_clientTimestamp=1446497048327] --> [/User/EditModal/1657?_clientTimestamp=1446497048327]
-INFO  2015-11-02 14:51:47,057 [1723] BaseController         - Login: [/User/AddModal?isClient=true&_clientTimestamp=1446497507050] --> [/User/AddModal?isClient=true&_clientTimestamp=1446497507050]
-INFO  2015-11-02 14:51:58,523 [1712] BaseController         - Login: [/Manage/Members] --> [/Manage/Members]
-ERROR 2015-11-02 14:52:09,113 [1712] BaseController         - Error: [/User/AddModal?isClient=true&_clientTimestamp=1446497527376]<<c:\repos\Radial\RadialReview\RadialReview\Views\User\AddModal.cshtml(19): error CS1061: 'RadialReview.Models.ViewModels.CreateUserOrganizationViewModel' does not contain a definition for 'OrganizationName' and no extension method 'OrganizationName' accepting a first argument of type 'RadialReview.Models.ViewModels.CreateUserOrganizationViewModel' could be found (are you missing a using directive or an assembly reference?)>>
-System.Web.HttpCompileException (0x80004005): c:\repos\Radial\RadialReview\RadialReview\Views\User\AddModal.cshtml(19): error CS1061: 'RadialReview.Models.ViewModels.CreateUserOrganizationViewModel' does not contain a definition for 'OrganizationName' and no extension method 'OrganizationName' accepting a first argument of type 'RadialReview.Models.ViewModels.CreateUserOrganizationViewModel' could be found (are you missing a using directive or an assembly reference?)
-   at System.Web.Compilation.AssemblyBuilder.Compile()
-   at System.Web.Compilation.BuildProvidersCompiler.PerformBuild()
-   at System.Web.Compilation.BuildManager.CompileWebFile(VirtualPath virtualPath)
-   at System.Web.Compilation.BuildManager.GetVPathBuildResultInternal(VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
-   at System.Web.Compilation.BuildManager.GetVPathBuildResultWithNoAssert(HttpContext context, VirtualPath virtualPath, Boolean noBuild, Boolean allowCrossApp, Boolean allowBuildInPrecompile, Boolean throwIfNotFound, Boolean ensureIsUpToDate)
-   at System.Web.Compilation.BuildManager.GetVirtualPathObjectFactory(VirtualPath virtualPath, HttpContext context, Boolean allowCrossApp, Boolean throwIfNotFound)
-   at System.Web.Compilation.BuildManager.GetCompiledType(VirtualPath virtualPath)
-   at System.Web.Compilation.BuildManager.GetCompiledType(String virtualPath)
-   at System.Web.Mvc.BuildManagerWrapper.System.Web.Mvc.IBuildManager.GetCompiledType(String virtualPath)
-   at System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer)
-   at System.Web.Mvc.ViewResultBase.ExecuteResult(ControllerContext context)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResult(ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultFilterRecursive(IList`1 filters, Int32 filterIndex, ResultExecutingContext preContext, ControllerContext controllerContext, ActionResult actionResult)
-   at System.Web.Mvc.ControllerActionInvoker.InvokeActionResultWithFilters(ControllerContext controllerContext, IList`1 filters, ActionResult actionResult)
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<>c__DisplayClass28.<BeginInvokeAction>b__19()
-   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass1e.<BeginInvokeAction>b__1b(IAsyncResult asyncResult)
-INFO  2015-11-02 15:04:21,477 [1723] BaseController         - Login: [/TileData/UserProfile2?_clientTimestamp=1446498257445] --> [/TileData/UserProfile2?_clientTimestamp=1446498257445]
-INFO  2015-11-02 15:04:27,158 [1723] BaseController         - Login: [/Dashboard] --> [/Dashboard]
-INFO  2015-11-02 15:15:51,370 [1712] BaseController         - Permissions: [/User/Positions/1658] --> []
-INFO  2015-11-02 15:15:51,389 [1710] BaseController         - Permissions: [/User/Managers/1658] --> []
+INFO  2015-11-17 08:11:14,941 [7] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=8&taskId=2764] --> []
+INFO  2015-11-17 08:11:16,384 [5] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=8&taskId=2765] --> []
+INFO  2015-11-17 08:11:22,428 [8] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=9&taskId=2766] --> []
+INFO  2015-11-17 08:11:27,678 [14] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=12&taskId=2769] --> []
+INFO  2015-11-17 08:11:28,209 [11] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=11&taskId=2768] --> []
+INFO  2015-11-17 08:11:30,949 [9] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=14&taskId=2772] --> []
+INFO  2015-11-17 08:11:40,381 [13] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=13&taskId=2771] --> []
+INFO  2015-11-17 08:11:44,386 [13] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=15&taskId=2774] --> []
+INFO  2015-11-17 08:11:44,536 [9] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=13&taskId=2770] --> []
+INFO  2015-11-17 08:11:44,567 [11] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=10&taskId=2776] --> []
+INFO  2015-11-17 08:11:44,611 [8] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=13&taskId=2780] --> []
+INFO  2015-11-17 08:11:45,002 [14] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=12&taskId=2778] --> []
+INFO  2015-11-17 08:11:45,098 [7] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=9&taskId=2775] --> []
+INFO  2015-11-17 08:11:45,098 [5] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=13&taskId=2779] --> []
+INFO  2015-11-17 08:11:45,103 [15] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=14&taskId=2781] --> []
+INFO  2015-11-17 08:11:45,298 [13] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=16&taskId=2784] --> []
+INFO  2015-11-17 08:11:45,480 [11] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=15&taskId=2783] --> []
+INFO  2015-11-17 08:11:45,878 [14] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=16&taskId=2787] --> []
+INFO  2015-11-17 08:11:45,881 [8] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=16&taskId=2785] --> []
+INFO  2015-11-17 08:11:46,011 [7] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=15&taskId=2773] --> []
+INFO  2015-11-17 08:11:46,121 [5] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=15&taskId=2782] --> []
+INFO  2015-11-17 08:11:46,122 [15] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=16&taskId=2786] --> []
+INFO  2015-11-17 08:11:46,204 [6] BaseController         - Permissions: [/Scheduler/EmailTodos?currentTime=11&taskId=2777] --> []
+INFO  2015-11-17 08:11:48,602 [6] MeetingHub             - Meeting.Join (-3, ae12bbb4-262b-43dc-8116-c253c0d51f1c)

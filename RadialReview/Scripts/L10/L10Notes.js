@@ -1,6 +1,7 @@
 ﻿$(function () {
 
-	$("body").on("click", ".notes .tab:not(.add)", function () {
+    $("body").on("click", ".notes .tab:not(.add)", function () {
+        fixNotesHeight();
 		$(".notes .active").removeClass("active");
 		
 		$(".notes textarea").data("id", "");
@@ -53,6 +54,29 @@
 
 	$("body").on("keyup", ".notes textarea:not(.disabled)", $.throttle(250, sendNoteContents));
 
+});
+
+function fixNotesHeight() {
+    var wh = $(window).height();
+    var pos = $(".notes textarea").offset();
+    var st = $(window).scrollTop();
+    var footerH = wh;
+    try {
+        footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
+    } catch (e) {
+
+    }
+
+    //$(".details.issue-details").height(wh - pos.top + st - footerH - 110);
+    $(".notes textarea").height(footerH - 30 - pos.top);
+
+    //$(".notes textarea").height($(window).height() - 80);
+
+}
+
+$(window).on("resize", fixNotesHeight);
+$(window).on("footer-resize", function () {
+    setTimeout(fixNotesHeight, 250);
 });
 
 function sendNoteContents() {

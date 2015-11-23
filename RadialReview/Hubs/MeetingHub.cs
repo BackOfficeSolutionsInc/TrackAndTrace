@@ -13,11 +13,15 @@ using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.AV;
 using RadialReview.Utilities;
+using log4net;
 
 namespace RadialReview.Hubs
 {
 	public class MeetingHub : BaseHub
 	{
+
+        protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 		/*public void Hello()
 		{
 			Clients.All.hello();
@@ -61,13 +65,22 @@ namespace RadialReview.Hubs
 
 		public void Join(long meetingId, string connectionId)
 		{
-			//var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), meetingId);
-			if (connectionId != Context.ConnectionId)
-				throw new PermissionsException("Ids do not match");
+            log.Info("Meeting.Join (" + meetingId + ", " + connectionId + ")");
+            try
+            {
+                //var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), meetingId);
+                if (connectionId != Context.ConnectionId)
+                    throw new PermissionsException("Ids do not match");
 
-			var conn = L10Accessor.JoinL10Meeting(GetUser(), meetingId, Context.ConnectionId);
-			//return new UserMeetingModel(conn);
-			//SendUserListUpdate();
+               var conn = L10Accessor.JoinL10Meeting(GetUser(), meetingId, Context.ConnectionId);
+                //return new UserMeetingModel(conn);
+                //SendUserListUpdate();
+            }
+            catch (Exception e)
+            {
+                log.Error("Meeting.Join  (" + meetingId + ", " + connectionId + ")",e);
+                throw;
+            }
 			return;
 		}
 
@@ -263,8 +276,9 @@ namespace RadialReview.Hubs
 
 				// Send a hang up message to each user in the call, if there is one
 				var g = Clients.Group(MeetingHub.GenerateMeetingGroupId(currentRecurrence), callingUser.ConnectionId);
+                var gAll = Clients.Group(MeetingHub.GenerateMeetingGroupId(currentRecurrence));
 				g.callEnded(callingUser.ConnectionId, string.Format("{0} has hung up.", callingUser.User.GetName()));
-
+                gAll.userExitMeeting(Context.ConnectionId);
 				// Remove the call from the list if there is only one (or none) person left.  This should
 				// always trigger now, but will be useful when we implement conferencing.
 
@@ -287,7 +301,8 @@ namespace RadialReview.Hubs
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
-				{
+                {
+
 					_HangUp(s, DateTime.UtcNow);
 					tx.Commit();
 					s.Flush();

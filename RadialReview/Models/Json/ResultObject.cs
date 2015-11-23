@@ -87,11 +87,14 @@ namespace RadialReview.Models.Json
 				if (_Refresh != null)
 					return _Refresh.Value;
 				try{
-					var requestRefresh = System.Web.HttpContext.Current.Request.Params["refresh"];
-					if (requestRefresh != null && requestRefresh.ToLower() == "true")
-						return true;
-					if (requestRefresh != null && requestRefresh.ToLower() == "false")
-						return false;
+                    if (System.Web.HttpContext.Current != null)
+                    {
+                        var requestRefresh = System.Web.HttpContext.Current.Request.Params["refresh"];
+                        if (requestRefresh != null && requestRefresh.ToLower() == "true")
+                            return true;
+                        if (requestRefresh != null && requestRefresh.ToLower() == "false")
+                            return false;
+                    }
 				}
 				catch (Exception e){
 					var ops = true;

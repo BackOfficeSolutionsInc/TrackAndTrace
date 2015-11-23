@@ -393,6 +393,41 @@ function setVal(selector, val) {
 	self.change();
 }
 
+function profilePicture(url, name, initials) {
+    var picture ="";
+    if (url !== "/i/userplaceholder") {
+        picture = "<span class='picture' style='background: url(" + url + ") no-repeat center center;'></span>";
+    } else {
+        var hash = 0;
+        if (typeof (name) === "undefined") {
+            name = "";
+        }
+        if (name.length != 0) {
+            for (var i = 0; i < name.length; i++) {
+                {
+                    var chr = name.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + chr;
+                    hash |= 0; // Convert to 32bit integer
+                }
+            }
+            hash = hash % 360;
+
+            if (typeof (initials) === "undefined") {
+                initials = name.match(/\b\w/g).join(' ');
+            }
+            picture = "<span class='picture' style='background-color:hsla(" + hash + ", 36%, 49%, 1);color:hsla(" + hash + ", 36%, 72%, 1)'><span class='initials'>" + initials + "</span></span>";
+
+        }
+    }
+
+        return "<span class='profile-picture'>" +
+            "<span class='picture-container' title='" + escapeString(name) + "'>" +
+                picture
+        "</span>"+
+	"</span>";
+}
+
+
 (function ($) {
 	$.fn.setCursorToTextEnd = function () {
 		var $initialVal = this.val();
@@ -526,6 +561,8 @@ $(function () {
 		$(this).fadeIn();
 		$(this).addClass("loaded");
 	});*/
+
+ 
 	$(".footer-bar-container").each(function () {
 		var h = parseInt($(this).attr("data-height"));
 		$(this).find(".footer-bar-contents").css("bottom",/*-h+*/"0px");
@@ -533,10 +570,11 @@ $(function () {
 		$(this).find(".footer-bar-contents").css("height", h + "px");
 	});
 
-	$("body").on("click", ".footer-bar-tab", function () {
-		var on = !$(this).hasClass("shifted");
-		$(this).toggleClass("shifted", on);
-		var parent = $(this).parent(".footer-bar-container");
+	$("body").on("click", ".footer-bar-tab .clicker", function () {
+	    var tab = $(this).parent(".footer-bar-tab");
+	    var on = !$(tab).hasClass("shifted");
+	    $(tab).toggleClass("shifted", on);
+		var parent = $(tab).parent(".footer-bar-container");
 		parent.toggleClass("shifted", on);
 		parent.find(".footer-bar-contents").toggleClass("shifted", on);
 

@@ -828,5 +828,34 @@ namespace RadialReview.Controllers
 			}
 			return "" + f;
 		}
+
+        [Access(AccessLevel.Radial)]
+        public string M11_05_2015()
+        {
+            var f = 0;
+          /*  using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    //Fix TempUser userIds
+
+                    var u = s.QueryOver<UserOrganizationModel>().Where(x=>x.IsClient!=true).List().ToList();
+                    foreach (var o in u)
+                    {
+                        o.IsClient=false;
+                        f++;
+                        s.Update(o);
+                        /*
+                        if (!(o.AccessorType == PermItem.AccessType.Creator && o.AccessorId == -2 && o.ResType == PermItem.ResourceType.L10Recurrence))
+                            continue;
+                        o.AccessorId = s.Get<L10Recurrence>(o.ResId).CreatedById;*
+                    }
+                    tx.Commit();
+                    s.Flush();
+                }
+            }*/
+            return "Run the following:  update `userorganizationmodel` set IsClient=false where IsClient is Null;";
+            //return "IsClient fixed for " + f;
+        }
 	}
 }
