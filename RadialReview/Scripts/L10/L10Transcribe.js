@@ -172,7 +172,7 @@ $(document).ready(function () {
     var selectingTranscription = false;
 
     $(document).mouseup(function (e) {
-        if (selectingTranscription) {
+        if (selectingTranscription && shouldStartTranscribe) {
             selectingTranscription = false;
 
             var selected = getSelectedTextWithin($(".transcription-contents")[0]);

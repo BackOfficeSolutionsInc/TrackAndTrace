@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Amazon.S3;
@@ -13,9 +14,11 @@ using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Dashboard;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.Reviews;
 using RadialReview.Models.Tests;
+using RadialReview.Models.Todo;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Models.Responsibilities;
@@ -857,5 +860,52 @@ namespace RadialReview.Controllers
             return "Run the following:  update `userorganizationmodel` set IsClient=false where IsClient is Null;";
             //return "IsClient fixed for " + f;
         }
+
+		[Access(AccessLevel.Radial)]
+		public async Task<string> M12_07_2015()
+		{
+			var f = 0;
+			var g = 0;
+			var h = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    //Fix TempUser userIds
+
+					var u = s.QueryOver<TodoModel>().Where(x => x.PadId == null || x.PadId == "").List().ToList();
+					var v = s.QueryOver<L10Note>().Where(x => x.PadId == null || x.PadId == "").List().ToList();
+					var w = s.QueryOver<IssueModel>().Where(x => x.PadId == null || x.PadId == "").List().ToList();
+	                foreach (var o in u){
+		                o.PadId = Guid.NewGuid().ToString();
+		                await PadAccessor.CreatePad(o.PadId, o.Details);
+		                s.Update(o);
+		                f++;
+	                }
+
+					foreach (var o in v)
+					{
+						o.PadId = Guid.NewGuid().ToString();
+						await PadAccessor.CreatePad(o.PadId, o.Contents);
+						s.Update(o);
+						g++;
+					}
+
+					foreach (var o in w)
+					{
+						o.PadId = Guid.NewGuid().ToString();
+						await PadAccessor.CreatePad(o.PadId, o.Description);
+						s.Update(o);
+						h++;
+					}
+	                tx.Commit();
+                    s.Flush();
+                }
+				
+            }
+				return "" + f+", "+g+", "+h;
+
+		}
+
 	}
 }

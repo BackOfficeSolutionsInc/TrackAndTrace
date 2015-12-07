@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using NHibernate;
 using RadialReview.Exceptions;
@@ -19,7 +20,7 @@ namespace RadialReview.Accessors
 	public class IssuesAccessor
 	{
 
-		public static void CreateIssue(UserOrganizationModel caller,long recurrenceId,long ownerId, IssueModel issue)
+		public static async Task<bool> CreateIssue(UserOrganizationModel caller,long recurrenceId,long ownerId, IssueModel issue)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -55,6 +56,13 @@ namespace RadialReview.Accessors
 					issue.MeetingRecurrence = s.Get<L10Recurrence>(issue.MeetingRecurrenceId);
 					issue.CreatedBy = s.Get<UserOrganizationModel>(issue.CreatedById);
 					*/
+
+					if (String.IsNullOrWhiteSpace(issue.PadId))
+						issue.PadId = Guid.NewGuid().ToString();
+
+					await PadAccessor.CreatePad(issue.PadId, issue.Description);
+
+
 					s.Save(issue);
 					var r = s.Get<L10Recurrence>(recurrenceId);
 
@@ -92,6 +100,7 @@ namespace RadialReview.Accessors
 					updates.Issues = new List<AngularIssue>() { new AngularIssue(recur) };
 					meetingHub.update(updates);
 					Audit.L10Log(s, caller, recurrenceId, "CreateIssue",ForModel.Create(issue), issue.NotNull(x => x.Message));
+					return true;
 				}
 			}
 		}

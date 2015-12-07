@@ -7,6 +7,7 @@ using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Angular.Users;
+using RadialReview.Models.Application;
 using RadialReview.Models.Dashboard;
 using RadialReview.Models.Json;
 using RadialReview.Models.Permissions;
@@ -35,14 +36,20 @@ namespace RadialReview.Controllers
 			//Scorecard
 			var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), GetUser().Id,ordered:true, includeAdmin:true);
 
-			
-			var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, DateTime.UtcNow.AddDays(-7 * 13), DateTime.UtcNow.AddDays(14),includeAdmin:true);
+			var start = TimingUtility.PeriodsAgo(DateTime.UtcNow,13, GetUser().Organization.Settings.ScorecardPeriod);
+
+
+
+			var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, start, DateTime.UtcNow.AddDays(14), includeAdmin: true);
 			var sc = new AngularScorecard(
 				GetUser().Organization.Settings.WeekStart,
 				GetUser().Organization.GetTimezoneOffset(),
 				measurables.Select(x => new AngularMeasurable(x){}),
 				scores.ToList(),
-				DateTime.UtcNow);
+				DateTime.UtcNow,
+				GetUser().Organization.Settings.ScorecardPeriod,
+				new YearStart(GetUser().Organization)
+				);
 			var now = DateTime.UtcNow;
 			var currentPeriods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime);
 

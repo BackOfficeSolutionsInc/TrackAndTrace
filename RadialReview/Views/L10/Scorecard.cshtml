@@ -1,5 +1,7 @@
 ﻿@using NHibernate.Util
+@using RadialReview.Models.L10.VM
 @using RadialReview.Models.ViewModels
+@using RadialReview.Utilities
 @model RadialReview.Models.L10.VM.L10MeetingVM
 @{
 	ViewBag.Title = "Scorecard";
@@ -61,7 +63,7 @@
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-												@r.DisplayDate.AddDays(0).ToString("MMM d")
+												@r.DisplayDate.AddDays(0).ToString(TimingUtility.ScorecardFormat1(Model.ScorecardType))
 											</th>
 											@*if (r.IsCurrentWeek){
 													<th class="date current buttonColumn"></th>
@@ -82,7 +84,7 @@
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-												@r.DisplayDate.AddDays(6).ToString("MMM d")
+												@TimingUtility.ScorecardRangeEnd(Model.ScorecardType, r.DisplayDate).ToString(TimingUtility.ScorecardFormat2(Model.ScorecardType))
 											</th>
 											@*if (r.IsCurrentWeek){
 													<th class="date current buttonColumn"></th>

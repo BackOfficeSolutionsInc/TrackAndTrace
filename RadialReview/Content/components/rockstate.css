@@ -201,7 +201,7 @@
 }
 
 .toText.AtRisk:after {
-	content: "At Risk";
+	content: "Off Track";
 }
 
 .toText.OnTrack:after {

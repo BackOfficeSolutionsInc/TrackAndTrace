@@ -121,7 +121,7 @@ namespace RadialReview.Models.L10
 				var name = "'" + ForRock.Rock + "'";
 				switch(Completion){
 					case RockState.Indeterminate:	return name;
-					case RockState.AtRisk:			return name + " is marked 'At Risk'";
+					case RockState.AtRisk:			return name + " is marked 'Off Track'";
 					case RockState.OnTrack:			return name + " is marked 'On Track'";
 					case RockState.Complete:		return name + " is marked 'Complete'";
 					default:throw new ArgumentOutOfRangeException();

@@ -14,6 +14,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Periods;
 using RadialReview.Models.Permissions;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Models.Scorecard;
 using RadialReview.Models.VTO;
 using RadialReview.Utilities;
 using System;
@@ -401,7 +402,10 @@ namespace RadialReview.Accessors
 																			string rockName = null,
 																			bool? onlySeeRockAndScorecardBelowYou = null,
 																			string timeZoneId = null,
-																			DayOfWeek? weekStart = null
+																			DayOfWeek? weekStart = null,
+																			ScorecardPeriod? scorecardPeriod = null,
+																			Month? startOfYearMonth = null,
+																			DateOffset? startOfYearOffset = null
 			)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -444,6 +448,9 @@ namespace RadialReview.Accessors
 					if (onlySeeRockAndScorecardBelowYou != null)
 						org.Settings.OnlySeeRocksAndScorecardBelowYou = onlySeeRockAndScorecardBelowYou.Value;
 
+					if (scorecardPeriod != null)
+						org.Settings.ScorecardPeriod = scorecardPeriod.Value;
+
 					if (managersCanCreateSurvey != null)
 						org.Settings.ManagersCanCreateSurvey = managersCanCreateSurvey.Value;
 
@@ -455,7 +462,11 @@ namespace RadialReview.Accessors
 
 					if (weekStart != null)
 						org.Settings.WeekStart = weekStart.Value;
+					if (startOfYearMonth != null)
+						org.Settings.StartOfYearMonth = startOfYearMonth.Value;
 
+					if (startOfYearOffset != null)
+						org.Settings.StartOfYearOffset = startOfYearOffset.Value;
 
 					s.Update(org);
 

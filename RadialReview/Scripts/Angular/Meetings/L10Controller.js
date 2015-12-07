@@ -1,5 +1,6 @@
-﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId',"meetingCallback","$compile",
-function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetingCallback,$compile) {
+﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId',"meetingCallback","$compile","$sce",
+function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetingCallback,$compile,$sce) {
+	 $scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
 	if (meetingId == null)
 		throw Error("MeetingId was empty");
 	$scope.disconnected = false;
@@ -239,7 +240,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 
 	$scope.now = moment();
 
-	$scope.rockstates = [{ name: 'At Risk', value: 'AtRisk' }, { name: 'On Track', value: 'OnTrack' }, { name: 'Complete', value: 'Complete' }];
+	$scope.rockstates = [{ name: 'Off Track', value: 'AtRisk' }, { name: 'On Track', value: 'OnTrack' }, { name: 'Complete', value: 'Complete' }];
 
 	$scope.opts = {
 		ranges: {
@@ -261,7 +262,9 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	$scope.filters.byRange = function (fieldName, minValue, maxValue, forceMin) {
 		if (minValue === undefined) minValue = Number.MIN_VALUE;
 		if (maxValue === undefined) maxValue = Number.MAX_VALUE;
-		if (forceMin !== undefined) minValue = Math.min(minValue, maxValue - 13 * 7 * 24 * 60 * 60 * 1000);
+		if (forceMin !== undefined) {
+			minValue = Math.min(minValue, maxValue - forceMin * 24 * 60 * 60 * 1000);
+		}
 
 		return function predicateFunc(item) {
 			var d = item[fieldName];

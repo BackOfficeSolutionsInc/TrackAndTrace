@@ -5,7 +5,7 @@
 
 
 <div ng-repeat="(key,value) in model.Todos | transform:this | groupBy: 'Owner.Name'">
-	<table width="100%" class="component" ng-show="(value | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length">
+	<table width="100%" class="component" ng-show="(value | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length" click-anywhere-but-here="model.Selected = -1">
 		<tr ng-show="$first">
 			<td></td>
 			<td></td>
@@ -15,7 +15,7 @@
 			<th>Completed</th>
 		</tr>
 		@*| orderBy: ['Complete','-CompleteTime','Name']*@
-		<tr ng-repeat-start="todo in value | orderBy: ['-DueDate','Name'] | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate) "
+		<tr ng-repeat-start="todo in value | orderBy: ['-DueDate','Name'] | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)"
 			ng-class="{grayRow: todo.Complete}"
 			ng-hide="model.Selected==todo.Key"
 			class="clickable">
@@ -25,7 +25,7 @@
 					<profile-image user="todo.Owner"></profile-image>
 				</a>
 			</td>
-			<td style="width:100%" ng-click="model.Selected = todo.Key">{{todo.Name}}</td>
+			<td style="width:100%" ng-click="todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key">{{todo.Name}}</td>
 			<td class="alignCenter" style="min-width: 75px;"><input class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy' :'UTC'}}" /></td>
 			<td style="min-width: 15px;"></td>
 			<td class="alignCenter" style="min-width: 75px;">{{todo.CompleteTime | date:'MM/dd/yy' :'UTC'}}</td>
@@ -39,7 +39,7 @@
 				</a>
 			</td>
 			<td style="width:100%">
-				<input ng-model-options="{debounce: 200}" type="text" ng-model="todo.Name" class="fullWidth" ng-change="functions.sendUpdate(todo)" />
+				<input ng-model-options="{debounce: 400}" type="text" ng-model="todo.Name" class="fullWidth" ng-change="functions.sendUpdate(todo)" />
 			</td>
 			<td class="alignCenter" style="min-width: 75px;"><input class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy' :'UTC'}}" /></td>
 			<td style="min-width: 15px;"></td>
@@ -48,7 +48,11 @@
 		<tr ng-repeat-end style="color:gray" ng-show="model.Selected==todo.Key" ng-class="{grayRow: todo.Complete}">
 			<td></td>
 			<td></td>
-			<td><textarea ng-model-options="{debounce: 200}" class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter to-do details..." style="min-height: 100px;" ng-change="functions.sendUpdate(todo)"></textarea></td>
+			 <td>
+		        @*<td><textarea ng-model-options="{debounce: 400}" class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter to-do details..." style="min-height: 100px;" ng-change="functions.sendUpdate(todo)"></textarea></td>*@
+				<iframe style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
+	        </td>
+			
 			<td></td>
 			<td></td>
 			<td></td>

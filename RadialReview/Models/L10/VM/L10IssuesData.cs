@@ -17,7 +17,8 @@ namespace RadialReview.Models.L10.VM
 		public bool @checked { get; set; }
 		public String owner { get; set; }
 		public long? accountable { get; set; }
-		public String imageUrl{ get; set; }
+		public String imageUrl { get; set; }
+		public String padid { get; set; }
         public long? createdDuringMeetingId { get; set; }
         public int priority { get; set; }
 
@@ -31,6 +32,7 @@ namespace RadialReview.Models.L10.VM
 				message = recur.Issue.Message,
 				recurrence_issue = recur.Id,
 				issue = recur.Issue.Id,
+				padid = recur.Issue.PadId,
 				owner = recur.Owner.NotNull(x => x.GetName()),
 				imageUrl	= recur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._64))??"/i/placeholder",
 				createdDuringMeetingId = recur.Issue.CreatedDuringMeetingId

@@ -18,7 +18,17 @@
                 </div>
                 <div class="row smallBreak2">
                     <div class="col-md-3">
-                        <label for="cc_number">Credit Card Number</label>
+	                    <label for="cc_number">Credit Card Number</label>
+						 <div style="padding-top:10px;">
+                            <div class="pull-left" style="padding-bottom:5px">
+                                <img title="American Express" alt="American Express" class="cardImg" src="~/Content/creditcard_icon/amex.png" />
+                                <img title="Discover" alt="Discover" class="cardImg" src="~/Content/creditcard_icon/discover.png" />
+                            </div>
+                            <div class="pull-left" style="padding-bottom:5px">
+                                <img title="Mastercard" alt="Mastercard" class="cardImg" src="~/Content/creditcard_icon/mastercard.png" />
+                                <img title="Visa" alt="Visa" class="cardImg" src="~/Content/creditcard_icon/visa.png" />
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <input class="form-control" id="cc_number" name="cc_number" type="text" placeholder="Credit card number">
@@ -118,6 +128,10 @@
         label {
             top: 6px;
             position: relative;
+        }
+
+		 .cardImg {
+            height: 30px;
         }
     </style>
 }

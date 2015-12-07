@@ -54,7 +54,7 @@
                                                     <input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" />
                                                 </td>
                                                 <td class="picture-column"><profile-image user="todo.Owner"></profile-image></td>
-                                                <td class="todo-text" style="width:100%" ng-click="model.Selected = todo.Key">{{todo.Name}}</td>
+                                                <td class="todo-text" style="width:100%" ng-click="todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key;">{{todo.Name}}</td>
                                                 <td class="alignCenter hidden-width-1" style="min-width: 85px;vertical-align: top;"><input ng-class="todo.Complete?(''):(todo.DueDate>now? 'green' : 'red')" class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
                                                 <td class="empty-cell" style="min-width: 15px;"></td>
                                                 @if (completion)
@@ -66,7 +66,7 @@
                                                 <td style="min-width: 25px;text-align: center;"><input type="checkbox" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" /></td>
                                                 <td class="picture-column"><profile-image user="todo.Owner"></profile-image></td>
                                                 <td style="width:100%" class="todo-text">
-                                                    <input ng-model-options="{debounce: 200}" type="text" ng-model="todo.Name" class="fullWidth" ng-change="functions.sendUpdate(todo)" />
+                                                    <input ng-model-options="{debounce: 400}" type="text" ng-model="todo.Name" class="fullWidth" ng-change="functions.sendUpdate(todo)" />
                                                 </td>
                                                 <td class="alignCenter hidden-width-1" style="min-width: 85px;vertical-align: top;"><input class="due-date" data-todo="{{todo.Id}}" type="text" value="{{todo.DueDate | date:'MM/dd/yyyy'}}" /></td>
                                                 <td class="empty-cell" style="min-width: 15px;"></td>
@@ -78,7 +78,10 @@
                                             <tr style="color:gray" ng-show="model.Selected==todo.Key" ng-class="{grayRow: todo.Complete}">
                                                 <td></td>
                                                 <td class="picture-column"></td>
-                                                <td><textarea ng-model-options="{debounce: 200}" class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter to-do details..." style="min-height: 100px;" ng-change="functions.sendUpdate(todo)"></textarea></td>
+	                                            <td class="hidden-width-1">
+		                                            @*<textarea ng-model-options="{debounce: 400}" class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter to-do details..." style="min-height: 100px;" ng-change="functions.sendUpdate(todo)"></textarea>*@
+													<iframe style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
+	                                            </td>
                                                 <td class="hidden-width-1 alignCenter gray" style="vertical-align: top;">
                                                     <a class="" ng-show="todo.Link!=null" target="_blank" href="{{todo.Link}}"><span class="glyphicon glyphicon-comment"></span></a>
                                                 </td>

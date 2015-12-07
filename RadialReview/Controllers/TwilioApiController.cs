@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using FluentNHibernate.Conventions;
@@ -96,10 +97,10 @@ namespace RadialReview.Controllers
 
 	
 		[Access(AccessLevel.Any)]
-		public ContentResult ReceiveText_53B006C3B7ED45C58EE31DBFA85D75BA()
+		public async Task<ContentResult> ReceiveText_53B006C3B7ED45C58EE31DBFA85D75BA()
 		{
 			try{
-				return PhoneContent(PhoneAccessor.ReceiveText(
+				return PhoneContent(await PhoneAccessor.ReceiveText(
 					Request["From"].ToLong(),
 					Request["Body"],
 					Request["To"].ToLong())

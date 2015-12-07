@@ -212,7 +212,7 @@
 	color: #CCCCCC;
 }
 .table-io.rocks .fill.AtRisk:after, .gwc-details-square .AtRisk:after, .roleTable .AtRisk:after {
-	content: "AT RISK";
+	content: "OFF TRACK";
 }
 .table-io.rocks .fill.OnTrack:after, .gwc-details-square .OnTrack:after, .roleTable .OnTrack:after {
 	content: "ON TRACK";

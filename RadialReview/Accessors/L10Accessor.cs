@@ -1620,7 +1620,7 @@ namespace RadialReview.Accessors
 								var user = personTodos.First().AccountableUser;
 								var email = user.GetEmail();
 
-								var table = TodoAccessor.BuildTodoTable(personTodos.ToList());
+								var table = await TodoAccessor.BuildTodoTable(personTodos.ToList());
 								/*var table = new StringBuilder();
 								table.Append(@"<table width=""100%""  border=""0"" cellpadding=""0"" cellspacing=""0"">");
 								table.Append(@"<tr><th colspan=""2"" align=""left"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;"">To-do</th><th align=""right"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;"">Due Date</th></tr>");
@@ -2684,9 +2684,12 @@ namespace RadialReview.Accessors
 						//	scores=weekData
 						//};
 
-						var sow = current.Organization.Settings.WeekStart;
+						var settings = current.Organization.Settings;
+						var sow = settings.WeekStart;
 						var offset = current.Organization.GetTimezoneOffset();
-						var weeks = TimingUtility.GetWeeks(sow, offset, now, current.StartTime, l10Scores, false);
+						var scorecardType = settings.ScorecardPeriod;
+						
+						var weeks = TimingUtility.GetPeriods(sow, offset, now, current.StartTime, l10Scores, false, scorecardType,new YearStart(current.Organization));
 
 						var rowId = l10Scores.GroupBy(x => x.MeasurableId).Count();
 
@@ -2772,7 +2775,15 @@ namespace RadialReview.Accessors
 						});
 					}
 
-					recur.Scorecard = new AngularScorecard(caller.Organization.Settings.WeekStart, caller.Organization.GetTimezoneOffset(), measurables, scores, DateTime.UtcNow);
+					recur.Scorecard = new AngularScorecard(
+						caller.Organization.Settings.WeekStart,
+						caller.Organization.GetTimezoneOffset(),
+						measurables,
+						scores,
+						DateTime.UtcNow,
+						caller.Organization.Settings.ScorecardPeriod,
+						new YearStart(caller.Organization)
+					);
 					recur.Rocks = recurrence._DefaultRocks.Select(x => new AngularRock(x.ForRock)).ToList();
 					recur.Todos = GetAllTodosForRecurrence(s, perms, recurrenceId).Select(x => new AngularTodo(x)).ToList();
 					recur.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId).Select(x => new AngularIssue(x)).ToList();

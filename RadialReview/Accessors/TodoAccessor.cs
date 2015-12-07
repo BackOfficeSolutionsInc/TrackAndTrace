@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using FluentNHibernate.Utils;
 using Microsoft.AspNet.SignalR;
@@ -33,7 +34,7 @@ namespace RadialReview.Accessors
         }
 
 
-		public static StringBuilder BuildTodoTable(List<TodoModel> todos,string title=null)
+		public static async Task<StringBuilder> BuildTodoTable(List<TodoModel> todos,string title=null)
 		{
 			title = title.NotNull(x => x.Trim()) ?? "To-do";
 			var table = new StringBuilder();
@@ -53,8 +54,14 @@ namespace RadialReview.Accessors
 							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List?todo="+todo.Id+@""">")
 							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" style=""" + color + @""">")
 							.Append(todo.DueDate.ToShortDateString()).Append("</td></tr>");
-						if (!String.IsNullOrWhiteSpace(todo.Details)){
-							table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">").Append(todo.Details).Append("</a></i></td><td></td></tr>");
+
+
+						var details = await PadAccessor.GetHtml(todo.PadId);
+
+						if (!String.IsNullOrWhiteSpace(details.ToHtmlString())){
+
+
+							table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">").Append(details.ToHtmlString()).Append("</a></i></td><td></td></tr>");
 						}
 
 						i++;
@@ -67,7 +74,7 @@ namespace RadialReview.Accessors
 			return table;
 		}
 
-		public static void CreateTodo(UserOrganizationModel caller, long recurrenceId, TodoModel todo)
+		public static async Task<bool> CreateTodo(UserOrganizationModel caller, long recurrenceId, TodoModel todo)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -110,6 +117,11 @@ namespace RadialReview.Accessors
 					var r = s.Get<L10Recurrence>(recurrenceId);
 					ExternalTodoAccessor.AddLink(s, perms, ForModel.Create(r), todo.AccountableUserId, todo);
 
+					if (String.IsNullOrWhiteSpace(todo.PadId))
+						todo.PadId = Guid.NewGuid().ToString();
+
+					await PadAccessor.CreatePad(todo.PadId, todo.Details);
+
 					todo.ForRecurrenceId = recurrenceId;
 					todo.ForRecurrence = r;
 
@@ -130,6 +142,7 @@ namespace RadialReview.Accessors
 
 					Audit.L10Log(s, caller, recurrenceId, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));
 
+					return true;
 				}
 			}
 		}

@@ -11,6 +11,7 @@
     data-owner="@Model.Owner.NotNull(x=>x.GetName())"
     data-accountable="@Model.Owner.NotNull(x => x.Id)"
     data-priority="@Model.Priority"
+    data-padid="@Model.Issue.PadId"
 >
 	<input data-recurrence_issue="@Model.Id" class="issue-checkbox" type="checkbox" @(Model.CloseTime == null ? "" : "checked") />
 	<div class="move-icon noselect dd-handle">

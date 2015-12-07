@@ -275,6 +275,7 @@
     <Compile Include="Accessors\NexusAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
+    <Compile Include="Accessors\PadAccessor.cs" />
     <Compile Include="Accessors\PaymentAccessor.cs" />
     <Compile Include="Accessors\PdfAccessor.cs" />
     <Compile Include="Accessors\PeriodAccessor.cs" />
@@ -436,6 +437,7 @@
     <Compile Include="Models\Angular\VTO\AngularVTO.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Application\MailModel.cs" />
+    <Compile Include="Models\Application\YearStart.cs" />
     <Compile Include="Models\Askables\AboutCompanyAskable.cs" />
     <Compile Include="Models\Askables\RockModel.cs" />
     <Compile Include="Models\Askables\CompanyValueModel.cs" />
@@ -456,11 +458,13 @@
     <Compile Include="Models\Enums\AttachType.cs" />
     <Compile Include="Models\Enums\BrandingType.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
+    <Compile Include="Models\Enums\DateOffset.cs" />
     <Compile Include="Models\Enums\DateRangeType.cs" />
     <Compile Include="Models\Enums\Env.cs" />
     <Compile Include="Models\Enums\ExternalTodoType.cs" />
     <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Enums\LessGreater.cs" />
+    <Compile Include="Models\Enums\Month.cs" />
     <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
     <Compile Include="Models\Enums\RepeatsType.cs" />
     <Compile Include="Models\Enums\RockState.cs" />
@@ -502,6 +506,7 @@
     <Compile Include="Models\Permissions\PermissionDropdownVM.cs" />
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
     <Compile Include="Models\PhoneModel.cs" />
+    <Compile Include="Models\Scorecard\ScorecardType.cs" />
     <Compile Include="Models\Survey\SurveyContainerModel.cs" />
     <Compile Include="Models\Survey\SurveyResultVMs.cs" />
     <Compile Include="Models\Survey\SurveyTake.cs" />
@@ -783,6 +788,19 @@
     <Compile Include="Utilities\TimingUtility.cs" />
     <Compile Include="Utilities\ViewUtility.cs" />
     <Compile Include="Models\Audit\LogModel.cs" />
+    <Content Include="Content\bootstrap-duallistbox.css" />
+    <Content Include="Content\creditcard_icon\amex.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\creditcard_icon\discover.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\creditcard_icon\mastercard.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\creditcard_icon\visa.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\email\Checked.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -799,6 +817,8 @@
     </Content>
     <Content Include="Content\L10\L10Transcribe.css" />
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
+    <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
+    <Content Include="Scripts\jquery\jquery.attrchange.js" />
     <Content Include="Scripts\L10\L10ChatLog.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
@@ -2027,12 +2047,12 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:2200/</IISUrl>
+          <IISUrl>https://localhost:44300/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-          <servers defaultServer="SelfHostServer">
+          <servers defaultServer="">
             <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:2200/" workingDir="" />
           </servers>
         </WebProjectProperties>

@@ -9,6 +9,7 @@ using RadialReview.Models.Angular;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Users;
+using RadialReview.Models.Application;
 using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
@@ -53,8 +54,10 @@ namespace RadialReview.Controllers
 
 				var sow = GetUser().Organization.Settings.WeekStart;
 				var offset = GetUser().Organization.GetTimezoneOffset();
+			    var period = GetUser().Organization.Settings.ScorecardPeriod;
 
-			    scorecard.Weeks = TimingUtility.GetWeeks(sow,offset, DateTime.UtcNow, current.StartTime, scores,true).Select(x=>new AngularWeek(x)).ToList();
+
+				scorecard.Weeks = TimingUtility.GetPeriods(sow, offset, DateTime.UtcNow, current.StartTime, scores, true, period, new YearStart(GetUser().Organization)).Select(x => new AngularWeek(x)).ToList();
 			    scorecard.Scores = scores.Select(x => new AngularScore(x)).ToList();
 
 				model.AgendaItems.Add(scorecard);

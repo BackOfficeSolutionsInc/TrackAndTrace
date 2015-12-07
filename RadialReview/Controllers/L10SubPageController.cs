@@ -10,6 +10,7 @@ using RadialReview.Exceptions;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Application;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
@@ -162,7 +163,9 @@ namespace RadialReview.Controllers
 			var sow = GetUser().Organization.Settings.WeekStart;
 			var offset = GetUser().Organization.GetTimezoneOffset();
 
-			model.Weeks = TimingUtility.GetWeeks(sow,offset, DateTime.UtcNow, model.MeetingStart, model.Scores,false);
+			var scorecardType = GetUser().Organization.Settings.ScorecardPeriod;
+			model.ScorecardType = scorecardType;
+			model.Weeks = TimingUtility.GetPeriods(sow, offset, DateTime.UtcNow, model.MeetingStart, model.Scores, false, scorecardType, new YearStart(GetUser().Organization));
 			return PartialView("Scorecard", model);
 			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
 			model.EndDate = ordered.LastOrDefault().NotNull(x => DateTime.UtcNow).AddDays(7);

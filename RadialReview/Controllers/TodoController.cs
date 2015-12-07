@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Accessors;
@@ -61,14 +62,14 @@ namespace RadialReview.Controllers
 	    }
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult CreateTodoRecurrence(TodoVM model)
+		public async Task<JsonResult> CreateTodoRecurrence(TodoVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId,x=>x.AccountabilityId);
 			if (model.MeetingId != -1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 
-			TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
+			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
 			{
 				CreatedById = GetUser().Id,
 				ForRecurrenceId = model.RecurrenceId,
@@ -112,14 +113,14 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult CreateTodo(TodoVM model)
+		public async Task<JsonResult> CreateTodo(TodoVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId);
 			if (model.MeetingId!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 		
 
-			TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
+			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
 			{
 				CreatedById = GetUser().Id,
 				ForRecurrenceId = model.RecurrenceId,
@@ -166,12 +167,12 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult CreateScorecardTodo(ScoreCardTodoVM model)
+		public async Task<JsonResult> CreateScorecardTodo(ScoreCardTodoVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
+			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
 			{
 				CreatedById = GetUser().Id,
 				ForRecurrenceId = model.RecurrenceId,
@@ -218,12 +219,12 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult CreateRockTodo(RockTodoVM model)
+		public async Task<JsonResult> CreateRockTodo(RockTodoVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RockId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
+			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
 			{
 				CreatedById = GetUser().Id,
 				ForRecurrenceId = model.RecurrenceId,
@@ -274,13 +275,13 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult CreateTodoFromIssue(TodoFromIssueVM model)
+		public async Task<JsonResult> CreateTodoFromIssue(TodoFromIssueVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId,x=>x.IssueId);
 			if (model.MeetingId!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
+			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
 			{
 				CreatedById = GetUser().Id,
 				ForRecurrenceId = model.RecurrenceId,

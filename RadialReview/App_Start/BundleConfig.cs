@@ -14,6 +14,7 @@ namespace RadialReview
 				.Include("~/Scripts/jquery-{version}.js")
 				.Include("~/Scripts/jquery.unobtrusive-ajax.js")
 				.Include("~/Scripts/jquery/jquery.qtip.js")
+				//.Include("~/Scripts/jquery/jquery.attrchange.js")
 				);
 
 			bundles.Add(new ScriptBundle("~/bundles/animations")

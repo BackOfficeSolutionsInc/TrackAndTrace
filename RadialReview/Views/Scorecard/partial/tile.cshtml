@@ -20,7 +20,7 @@
 									   data-col="{{$index}}"
 									   type="text"
 									   placeholder="N/A"
-									   ng-model-options="{debounce: 200}"
+									   ng-model-options="{debounce: 400}"
 									   ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured"
 									   class="grid rt zover {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}"
 									   data-scoreid="{{Id}}"

@@ -393,7 +393,8 @@ profile-image {
     -webkit-transform:rotateX(180deg); /* Safari and Chrome *
 }*/
 
-.empty-holder:after {
+.empty-holder:after,
+.empty-holder:before {
 	opacity: 1;
     padding-left: 0px;
     margin-left: -10px;

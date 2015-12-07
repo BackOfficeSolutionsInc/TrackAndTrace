@@ -34,11 +34,14 @@ namespace RadialReview.Models.Todo
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
 
+		public virtual String PadId { get; set; }
+
 		public TodoModel()
 		{
 			CreateTime = DateTime.UtcNow;
 			DueDate = CreateTime.AddDays(7);
 			Ordering = -CreateTime.Ticks;
+			PadId = Guid.NewGuid().ToString();
 		}
 
 		public class IssueMap : ClassMap<TodoModel>
@@ -55,6 +58,8 @@ namespace RadialReview.Models.Todo
 
 				Map(x => x.ForModel);
 				Map(x => x.ForModelId);
+
+				Map(x => x.PadId);
 
 				Map(x => x.Message).Length(10000);
 				Map(x => x.Details).Length(10000);

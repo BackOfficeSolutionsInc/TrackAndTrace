@@ -12,6 +12,8 @@ $(function () {
 		var owner = $(todoRow).data("name");
 		var message = $(todoRow).data("message");
 		var details = $(todoRow).data("details");
+		var padId = $(todoRow).data("padid");
+		debugger;
 		//var issueId = $(todoRow).data("issue");
 		var todo = $(todoRow).data("todo");
 
@@ -24,7 +26,9 @@ $(function () {
 		$("#todoDetails").append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
 
 		$("#todoDetails").append("<div class='heading'><h4 class='message-holder clickable' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message editable-text'>" + message + "</span></h4></div>");
-		$("#todoDetails").append("<textarea id='todoDetailsField' class='details todo-details' data-todo='" + todo + "'>" + details + "</textarea>");
+		//$("#todoDetails").append("<textarea id='todoDetailsField' class='details todo-details' data-todo='" + todo + "'>" + details + "</textarea>");
+		$("#todoDetails").append("<iframe class='details todo-details' name='embed_readwrite' src='https://notes.traction.tools/p/"+padId+"?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName="+encodeURI(UserName)+"' width='100%' height='100%'></iframe>");
+
 		$("#todoDetails").append(
 			"<div class='button-bar'>" +
 				"<div style='height:28px'>"+
@@ -306,6 +310,7 @@ function constructTodoRow(todo) {
 			'data-imageurl="' + todo.imageurl + '" ' +
 			'data-name="' + todo.accountableUser + '" ' +
 			'data-accountable="' + todo.accountableUserId + '" ' +
+			'data-padid="' + todo.padId + '" ' +
 			'data-todo="' + todo.todo + '" ' +
 			'data-message="' + todo.message + '" ' +
 			'data-details="' + todo.details + '">' +

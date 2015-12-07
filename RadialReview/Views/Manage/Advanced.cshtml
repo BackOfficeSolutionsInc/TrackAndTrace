@@ -306,12 +306,32 @@
 					<div class="col-sm-4">
 						@Html.DropDownListFor(x => x.TimeZone, Model.TimeZones, new { @class = "form-control" })
 					</div>
-				</div>	<div class="row">
+				</div>	
+				<div class="row">
 					<div class="col-sm-4 ttt">
 						<label class="control-label">Week start:</label>
 					</div>
 					<div class="col-sm-4">
 						@Html.EnumDropDownListFor(x => x.WeekStart, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Year Start:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.EnumDropDownListFor(x => x.StartOfYearMonth, new { @class = "form-control" })
+					</div>
+					<div class="col-sm-4">
+						@Html.EnumDropDownListFor(x => x.StartOfYearOffset, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Scorecard Period:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.EnumDropDownListFor(x => x.ScorecardPeriod, new { @class = "form-control" })
 					</div>
 				</div>
 				<br />

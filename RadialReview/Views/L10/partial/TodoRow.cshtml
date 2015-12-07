@@ -9,6 +9,7 @@
 	data-details="@Model.Details.EscapeHtml()"
     data-name="@Model.AccountableUser.GetName()" 
     data-accountable="@Model.AccountableUser.Id" 
+	data-padid = "@Model.PadId"
     data-imageurl="@Model.AccountableUser.ImageUrl(true,ImageSize._64)"
 >
 	<input data-todo="@Model.Id" class="todo-checkbox" type="checkbox" @(Model.CompleteTime == null ? "" : "checked") />

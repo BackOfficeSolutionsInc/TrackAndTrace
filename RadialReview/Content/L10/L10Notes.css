@@ -90,9 +90,18 @@
 			top: 2px;
 		}
 
-	.notes textarea {
+	.notes textarea,
+	.notes iframe {
 		padding: 2px 5px;
 		border: transparent;
 		outline: none !important;
 		font-size: 18px;
+	}
+
+	.notes iframe {
+		padding: 0;
+	}
+
+	.notes .container {
+		margin: 0px;
 	}

@@ -290,6 +290,16 @@
 
 
 
+.scorecard-empty-holder:before {
+    content: "\2190";
+    font-size: 60px;
+    position: absolute;
+    left: 15px;
+    text-align: left;
+    top: 82px;
+    margin-top: 0px;
+}
+
 .scorecard-empty-holder:after {
-    content: "Click 'Add Measurable' to create a scorecard item";
+	content: "To add a scorecard item, click the settings button";
 }

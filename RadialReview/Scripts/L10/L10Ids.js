@@ -17,6 +17,7 @@ $(function () {
 		var checked = $(issueRow).find(".issue-checkbox").prop("checked");
 		var accountable = $(issueRow).attr("data-accountable");
 		var owner = $(issueRow).attr("data-owner");
+		var padid = $(issueRow).data("padid");
 
 		var ownerStr = owner;
 		if (!owner || owner.trim() === "")
@@ -33,7 +34,9 @@ $(function () {
         */
 		$("#issueDetails").append("<div class='heading'><h4 class='message-holder clickable' data-recurrence_issue='" + recurrence_issue + "'><span class='message editable-text' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
 		$("#issueDetails").append(detailsList);
-		$("#issueDetails").append("<textarea class='details issue-details' data-recurrence_issue='" + recurrence_issue + "'>" + details + "</textarea>");
+		//$("#issueDetails").append("<textarea class='details issue-details' data-recurrence_issue='" + recurrence_issue + "'>" + details + "</textarea>");
+		$("#issueDetails").append("<iframe class='details issue-details' name='embed_readwrite' src='https://notes.traction.tools/p/"+padid+"?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName="+encodeURI(UserName)+"' width='100%' height='100%'></iframe>");
+
 		$("#issueDetails").append("<div class='button-bar'>" +
 			"<div style='height:28px;'>"+
 			"<span class='btn-group pull-right'>" +
@@ -272,7 +275,7 @@ function constructRow(issue) {
 	if (issue.details)
 		details = issue.details;
 
-	return '<li class="issue-row dd-item arrowkey" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '">\n'
+	return '<li class="issue-row dd-item arrowkey" data-padid="'+issue.padid+'" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '">\n'
 		+ '	<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>\n'
 		+ '	<div class="move-icon noselect dd-handle">\n'
 		+ '		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>\n'

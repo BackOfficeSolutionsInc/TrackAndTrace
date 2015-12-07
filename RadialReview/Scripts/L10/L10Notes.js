@@ -4,30 +4,38 @@
         fixNotesHeight();
 		$(".notes .active").removeClass("active");
 		
-		$(".notes textarea").data("id", "");
-		$(".notes textarea").attr("disabled", true);
-		$(".notes textarea").animate({"background-color":"#ddd","color":"transparent"},150,function() {
-			$(".notes textarea").val("");
+		$(".notes iframe").data("id", "");
+		$(".notes iframe").attr("disabled", true);
+		$(".notes iframe").animate({"background-color":"#ddd","color":"transparent"},150,function() {
+			$(".notes iframe").val("");
 		});
 
+		
+		var padid = $(this).data("padid");
+
+	    $(".notes iframe").attr("src", notesUrl + "p/" + padid + "?showControls=true&showChat=false");
+		$(".notes iframe").data("id",  $(this).data("id"));
+		$(this).addClass("active");
+		//$(".notes iframe").data("name", data.Object.Name);
+	    /*
 		var that = this;
 		$.ajax({
 			url: "/L10/Note/" + $(this).data("id"),
 			success: function (data) {
 				showJsonAlert(data, false, true);
 				if (!data.Error) {
-					$(".notes textarea").data("id", data.Object.NoteId);
-					$(".notes textarea").data("name", data.Object.Name);
+					$(".notes iframe").data("id", data.Object.NoteId);
+					$(".notes iframe").data("name", data.Object.Name);
 					$(that).addClass("active");
-					$(".notes textarea").attr("disabled", false);
-					$(".notes textarea").stop().animate({"background-color":"#fff","color":"black"},150);
-					$(".notes textarea");
-					$(".notes textarea").val(data.Object.Contents);
+					$(".notes iframe").attr("disabled", false);
+					$(".notes iframe").stop().animate({"background-color":"#fff","color":"black"},150);
+					$(".notes iframe");
+					$(".notes iframe").val(data.Object.Contents);
 				}
 			}
 			
-		});
-	});
+		});*/
+    });
 	
 	$("body").on("click", ".notes .tab.add", function () {
 		showModal("Add page", "/L10/CreateNote?recurrence=" + MeetingId, "/L10/CreateNote");
@@ -45,20 +53,20 @@
 		var found = $(".notes .tab:not(.add):first");
 		
 		if ($(found).length == 0) {
-			$(".notes textarea").attr("disabled", true);
+			$(".notes iframe").attr("disabled", true);
 		} else {
 			$(found).trigger("click");
 		}
 	});
 
 
-	$("body").on("keyup", ".notes textarea:not(.disabled)", $.throttle(250, sendNoteContents));
+	//$("body").on("keyup", ".notes textarea:not(.disabled)", $.throttle(250, sendNoteContents));
 
 });
 
 function fixNotesHeight() {
     var wh = $(window).height();
-    var pos = $(".notes textarea").offset();
+    var pos = $(".notes iframe").offset();
     var st = $(window).scrollTop();
     var footerH = wh;
     try {
@@ -68,7 +76,7 @@ function fixNotesHeight() {
     }
 
     //$(".details.issue-details").height(wh - pos.top + st - footerH - 110);
-    $(".notes textarea").height(footerH - 30 - pos.top);
+    $(".notes iframe").height(footerH - 30 - pos.top);
 
     //$(".notes textarea").height($(window).height() - 80);
 
@@ -111,10 +119,10 @@ function createNote(id, name) {
 	$(".notes .active").removeClass("active");
 	$(".notes .tabs").append(row);
 	$(row).addClass("active");
-	$(".notes textarea").val("");
-	$(".notes textarea").data("id", id);
-	$(".notes textarea").data("name", name);
-	$(".notes textarea").attr("disabled", false);
+	$(".notes iframe").val("");
+	$(".notes iframe").data("id", id);
+	$(".notes iframe").data("name", name);
+	$(".notes iframe").attr("disabled", false);
 
 }
 function updateNoteName(id, name) {

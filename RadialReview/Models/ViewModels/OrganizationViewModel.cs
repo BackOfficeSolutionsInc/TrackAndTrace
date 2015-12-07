@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Payments;
+using RadialReview.Models.Scorecard;
 
 namespace RadialReview.Models.ViewModels
 {
@@ -25,6 +27,9 @@ namespace RadialReview.Models.ViewModels
 		public DayOfWeek WeekStart { get; set; }
 		public string TimeZone { get; set; }
 		public bool OnlySeeRockAndScorecardBelowYou { get; set; }
+		public ScorecardPeriod ScorecardPeriod { get; set; }
+		public Month StartOfYearMonth { get; set; }
+		public DateOffset StartOfYearOffset { get; set; }
 
 		public List<SelectListItem> TimeZones
 		{

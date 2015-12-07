@@ -11,6 +11,7 @@ using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Json;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -20,6 +21,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Details(long id,bool complete=false)
 		{
+			ViewBag.NumberOfWeeks = (int)Math.Ceiling(TimingUtility.ApproxDurationOfPeriod(GetUser().Organization.Settings.ScorecardPeriod).TotalDays)*13;
 			return View(id);
 
 			//switch (id.ToLower())

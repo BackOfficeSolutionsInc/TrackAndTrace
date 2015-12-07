@@ -1,5 +1,5 @@
 ﻿@{
-	var forceMin = (ViewBag.ForceMin == null || ((bool)ViewBag.ForceMin) == true) ? ",true" : "";
+	var forceMin = ViewBag.ForceMin == null?"":","+((int)ViewBag.ForceMin);
 }
 
 <div class="btn-group pull-right" style="padding: 5px 3px;">
@@ -27,7 +27,7 @@
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
 									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
-										{{functions.subtractDays(week.DisplayDate,0) | date:'MMM dd'}}
+										{{functions.subtractDays(week.DisplayDate,0) | date:(model.Scorecard|transform:this).DateFormat1}}
 									</th>
 
 								</tr>
@@ -38,7 +38,7 @@
 									<th class="heading measurable">Measurable</th>
 									<th class="heading target" colspan="2">Goal</th>
 									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
-										{{functions.subtractDays(week.DisplayDate,-6) | date:'MMM dd'}}
+										{{functions.subtractDays(week.DisplayDate,-6) | date:(model.Scorecard|transform:this).DateFormat2}}
 									</th>
 								</tr>
 							</thead>
@@ -87,7 +87,7 @@
 											   type="text"
 											   ng-hide="measurable.Id<0"
 											   placeholder="N/A"
-											   ng-model-options="{debounce: 200}"
+											   ng-model-options="{debounce: 400}"
 											   ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured"
 											   class="grid rt {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}"
 											   data-scoreid="{{Id}}"

@@ -1,4 +1,5 @@
-﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+﻿@using ImageResizer.Configuration
+@model RadialReview.Models.L10.VM.L10MeetingVM
 @{
     ViewBag.Title = "Meeting";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -51,15 +52,15 @@
             userId = @(ViewBag.UserId);
             @if (Model.Meeting != null){
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-            																															@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
+            	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
 
 				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
 					@:setPageTime("@i.Item1",@i.Item2);
-            																															}
+            	}
 			}
 			else{
 				@:isLeader =false;
-            																														}
+            }
             initL10();
             try {
                 resetClickables();
@@ -213,7 +214,8 @@
     <div class="row">
         <div class="col-xs-9 noPadLeft noPadRight">
             <div class="container main">
-                <textarea cols="9" class="verticalOnly"></textarea>
+	            @*<textarea cols="9" class="verticalOnly"></textarea>*@
+				<iframe class="" style="background-color: white" width="100%" src="about:blank"></iframe>
             </div>
         </div>
         <div class="col-xs-3 noPadRight">
@@ -223,7 +225,7 @@
                 {
                     foreach (var t in Model.Recurrence._MeetingNotes)
                     {
-                        <div data-id="@t.Id" class="tab">@t.Name</div>
+                        <div data-id="@t.Id" data-padid="@t.PadId" class="tab">@t.Name</div>
                     }
                 }
             </div>
@@ -240,8 +242,11 @@
         @if (Model.EnableTranscript)
 		{
 		@:shouldStartTranscribe = true;
-        				}
+        }
 
+		
+
+        var notesUrl = "@RadialReview.Utilities.Config.NotesUrl()";
 
 
         $(function() {

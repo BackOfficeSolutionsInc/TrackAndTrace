@@ -180,7 +180,7 @@
 		</ul>
 
 		<div class="tab-content">
-			<div id="Scorecard" class="tab-pane active">@Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", true } })</div>
+			<div id="Scorecard" class="tab-pane active">@Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", ViewBag.NumberOfWeeks } })</div>
 			<div id="Todo" class="tab-pane">@Html.Partial("~/Views/L10/Details/todo.cshtml")</div>
 			<div id="Issues" class="tab-pane">@Html.Partial("~/Views/L10/Details/issues.cshtml")</div>
 			<div id="Notes" class="tab-pane">@Html.Partial("~/Views/L10/Details/notes.cshtml")</div>

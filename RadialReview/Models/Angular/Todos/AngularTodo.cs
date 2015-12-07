@@ -1,10 +1,13 @@
-﻿using RadialReview.Models.Angular.Base;
+﻿using System.Net;
+using ImageResizer.Configuration;
+using RadialReview.Models.Angular.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Todo;
+using Config = RadialReview.Utilities.Config;
 
 namespace RadialReview.Models.Angular.Todos
 {
@@ -13,6 +16,8 @@ namespace RadialReview.Models.Angular.Todos
 		public AngularTodo(TodoModel todo) : base(todo.Id)
 		{
 			Name = todo.Message;
+			DetailsUrl = Config.NotesUrl() + "p/" + todo.PadId + "?showControls=true&showChat=false";
+		
 			Details = todo.Details;
 			DueDate = todo.DueDate;
 			Owner = AngularUser.CreateUser(todo.AccountableUser);
@@ -35,6 +40,7 @@ namespace RadialReview.Models.Angular.Todos
 
 		public string Name { get; set; }
 		public string Details { get; set; }
+		public string DetailsUrl { get; set; }
 		public DateTime? DueDate { get; set; }
 		public AngularUser Owner { get; set; }
 		public DateTime? CompleteTime { get; set; }

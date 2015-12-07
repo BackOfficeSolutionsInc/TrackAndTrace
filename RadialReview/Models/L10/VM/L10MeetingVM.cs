@@ -17,6 +17,10 @@ namespace RadialReview.Models.L10.VM
 		public List<IssueModel.IssueModel_Recurrence> Issues { get; set; }
 		public List<TodoModel> Todos { get; set; }
 		public List<L10Meeting.L10Meeting_Rock> Rocks { get; set; }
+
+		public ScorecardPeriod ScorecardType { get; set; }
+
+
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 
@@ -28,6 +32,12 @@ namespace RadialReview.Models.L10.VM
 			public DateTime DisplayDate { get; set; }
 			public DateTime ForWeek { get; set; }
 			public bool IsCurrentWeek { get; set; }
+			public int NumPeriods { get; set; }
+
+			public WeekVM()
+			{
+				NumPeriods = 1;
+			}
 		}
 
 		public List<WeekVM> Weeks { get; set; }

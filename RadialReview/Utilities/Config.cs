@@ -266,5 +266,15 @@ namespace RadialReview.Utilities
                 default: throw new ArgumentOutOfRangeException();
             }
         }
-    }
+
+		public static string NotesUrl()
+		{
+			return GetAppSetting("NotesServer", "https://notes.traction.tools");
+		}
+
+		internal static string NoteApiKey()
+		{
+			return GetAppSetting("NotesServer_ApiKey");
+		}
+	}
 }

@@ -205,7 +205,12 @@ namespace RadialReview.Controllers
 
 				OnlySeeRockAndScorecardBelowYou = user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou,
 
-				PaymentPlan = _PaymentAccessor.GetPlan(GetUser(),GetUser().Organization.Id)
+				PaymentPlan = _PaymentAccessor.GetPlan(GetUser(),GetUser().Organization.Id),
+
+				ScorecardPeriod = user.Organization.Settings.ScorecardPeriod,
+
+				StartOfYearMonth = user.Organization.Settings.StartOfYearMonth,
+				StartOfYearOffset = user.Organization.Settings.StartOfYearOffset
 
 			};
 
@@ -244,7 +249,10 @@ namespace RadialReview.Controllers
 				model.RockName,
 				model.OnlySeeRockAndScorecardBelowYou,
 				model.TimeZone,
-				model.WeekStart);
+				model.WeekStart,
+				model.ScorecardPeriod,
+				model.StartOfYearMonth,
+				model.StartOfYearOffset);
 			ViewBag.Success = "Successfully Saved.";
 
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)

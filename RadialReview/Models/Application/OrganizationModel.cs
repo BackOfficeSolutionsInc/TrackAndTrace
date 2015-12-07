@@ -5,6 +5,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Models.Scorecard;
 using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,8 @@ namespace RadialReview.Models
 				}
 			}*/
 
+			public virtual ScorecardPeriod ScorecardPeriod { get; set; }
+
 			public virtual BrandingType Branding { get; set; }
 			
 			public virtual string TimeZoneId { get; set; }
@@ -55,6 +58,8 @@ namespace RadialReview.Models
 			{
 				TimeZoneId = "Central Standard Time";
 				WeekStart= DayOfWeek.Sunday;
+
+				ScorecardPeriod = ScorecardPeriod.Weekly;
 
 				EmployeesCanViewScorecard = false;
 				ManagersCanViewScorecard = true;
@@ -111,12 +116,18 @@ namespace RadialReview.Models
 					Map(x => x.RockName);
 
 					Map(x => x.Branding).CustomType<BrandingType>();
+					Map(x => x.ScorecardPeriod).CustomType<ScorecardPeriod>();
+					Map(x => x.StartOfYearMonth).CustomType<Month>();
+					Map(x => x.StartOfYearOffset).CustomType<DateOffset>();
 				}
 			}
 
 			public virtual bool EmployeesCanCreateSurvey { get; set; }
 
 			public virtual bool ManagersCanCreateSurvey { get; set; }
+
+			public virtual Month StartOfYearMonth { get; set; }
+			public virtual DateOffset StartOfYearOffset { get; set; }
 		}
 
 		/// <summary>

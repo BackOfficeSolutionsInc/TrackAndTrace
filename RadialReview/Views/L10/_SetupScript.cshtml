@@ -16,6 +16,8 @@
 		var recurrenceId = @Model.Recurrence.Id;
 		var meetingId = -1;
 
+		var UserName = "@Html.UserOrganization().GetName()";
+
 		@if (Model.Meeting != null){
 			@:var isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
 			@:var currentPage = "@Model.Meeting._MeetingLeaderCurrentPage";

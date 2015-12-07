@@ -193,9 +193,9 @@ namespace RadialReview.Controllers
 									var email = user.GetEmail();
 
 									var builder = new StringBuilder();
-									foreach (var t in userTodos.Value.Where(x => x.CompleteTime == null || x.DueDate.Date > nowUtc.Date).GroupBy(x => x.ForRecurrenceId))
-									{
-										builder.Append(TodoAccessor.BuildTodoTable(t.ToList(), t.First().ForRecurrence.NotNull(x => x.Name + " To-do")));
+									foreach (var t in userTodos.Value.Where(x => x.CompleteTime == null || x.DueDate.Date > nowUtc.Date).GroupBy(x => x.ForRecurrenceId)){
+										var table = await TodoAccessor.BuildTodoTable(t.ToList(), t.First().ForRecurrence.NotNull(x => x.Name + " To-do"));
+										builder.Append(table);
 										builder.Append("<br/>");
 									}
 

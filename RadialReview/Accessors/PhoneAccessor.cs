@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using Amazon.IdentityManagement.Model;
 using FluentNHibernate.Utils;
@@ -41,7 +42,7 @@ namespace RadialReview.Accessors
 		
 		}
 
-		public static string ReceiveText(long fromNumber, string body, long systemNumber)
+		public static async Task<string> ReceiveText(long fromNumber, string body, long systemNumber)
 		{
 			var rnd = new Random();
 			PhoneActionMap found;
@@ -103,7 +104,7 @@ namespace RadialReview.Accessors
 			}
 			switch (found.Action)
 			{
-				case "todo": TodoAccessor.CreateTodo(found.Caller, found.ForId, new TodoModel(){
+				case "todo": await TodoAccessor.CreateTodo(found.Caller, found.ForId, new TodoModel(){
 					AccountableUser = found.Caller,
 					AccountableUserId = found.Caller.Id,
 					CreatedBy = found.Caller,
@@ -119,7 +120,7 @@ namespace RadialReview.Accessors
 					ForModelId = -2,
 				});
 				return "Added todo.";
-				case "issue": IssuesAccessor.CreateIssue(found.Caller, found.ForId, found.Caller.Id, new IssueModel(){
+				case "issue": await IssuesAccessor.CreateIssue(found.Caller, found.ForId, found.Caller.Id, new IssueModel(){
 					CreatedById = found.Caller.Id,
 					CreatedDuringMeetingId = null,
 					Message = body,

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Amazon.ElasticTranscoder.Model;
@@ -50,7 +51,7 @@ namespace RadialReview.Controllers
 		}
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult IssueFromTodo(IssueVM model)
+		public async Task<JsonResult> IssueFromTodo(IssueVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId, x => x.ForId);
 			_PermissionsAccessor.Permitted(GetUser(), x =>
@@ -59,7 +60,7 @@ namespace RadialReview.Controllers
 			);
 
 
-			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId,model.OwnerId, new IssueModel(){
+			await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId,model.OwnerId, new IssueModel(){
 				CreatedById = GetUser().Id,
 				//MeetingRecurrenceId = model.RecurrenceId,
 				CreatedDuringMeetingId = model.MeetingId,
@@ -168,10 +169,10 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult CreateIssueRecurrence(IssueVM model)
+		public async Task<JsonResult> CreateIssueRecurrence(IssueVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.OwnerId, x => x.ForId);
-			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel()
+			await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel()
 			{
 				CreatedById = GetUser().Id,
 				//MeetingRecurrenceId = model.RecurrenceId,
@@ -188,13 +189,13 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 	    [Access(AccessLevel.UserOrganization)]
-		public JsonResult CreateIssue(IssueVM model)
+		public async Task<JsonResult> CreateIssue(IssueVM model)
 	    {
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x=>x.RecurrenceId,x=>x.ForId);
 			if (model.MeetingId!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId,model.OwnerId, new IssueModel()
+			await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId,model.OwnerId, new IssueModel()
 			{
 				CreatedById = GetUser().Id,
 				//MeetingRecurrenceId = model.RecurrenceId,
@@ -241,12 +242,12 @@ namespace RadialReview.Controllers
 		}
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Modal(ScoreCardIssueVM model)
+		public async Task<JsonResult> Modal(ScoreCardIssueVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			IssuesAccessor.CreateIssue(GetUser(),model.RecurrenceId,model.OwnerId, new IssueModel(){
+			await IssuesAccessor.CreateIssue(GetUser(),model.RecurrenceId,model.OwnerId, new IssueModel(){
 				CreatedById = GetUser().Id,
 				//MeetingRecurrenceId = model.RecurrenceId,
 				CreatedDuringMeetingId = model.MeetingId,
@@ -292,12 +293,12 @@ namespace RadialReview.Controllers
 		}
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult CreateRockIssue(RockIssueVM model)
+		public async Task<JsonResult> CreateRockIssue(RockIssueVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RockId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId,model.OwnerId, new IssueModel()
+			await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId,model.OwnerId, new IssueModel()
 			{
 				CreatedById = GetUser().Id,
 				//MeetingRecurrenceId = model.RecurrenceId,

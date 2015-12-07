@@ -15,6 +15,12 @@ namespace RadialReview.Models.L10
 		public virtual String Name { get; set; }
 		public virtual L10Recurrence Recurrence { get; set; }
 		public virtual String Contents { get; set; }
+		public virtual String PadId { get; set; }
+
+		public L10Note()
+		{
+			PadId = Guid.NewGuid().ToString();
+		}
 
 		public class L10NoteMap : ClassMap<L10Note>
 		{
@@ -23,9 +29,11 @@ namespace RadialReview.Models.L10
 				Id(x => x.Id);
 				Map(x => x.Contents).Length(10000);
 				Map(x => x.Name);
+				Map(x => x.PadId);
 				Map(x => x.DeleteTime);
 				References(x => x.Recurrence).Column("RecurrenceId");
 			}
 		}
+
 	}
 }

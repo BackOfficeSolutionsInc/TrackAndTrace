@@ -16,6 +16,7 @@ namespace RadialReview.Models.Issues
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual string Message { get; set; }
 		public virtual string Description { get; set; }
+		public virtual string PadId { get; set; }
 		public virtual long CreatedById { get; set; }
 		public virtual UserOrganizationModel CreatedBy { get; set; }
 		public virtual long? CreatedDuringMeetingId { get; set; }
@@ -48,6 +49,7 @@ namespace RadialReview.Models.Issues
 		{
 			CreateTime = DateTime.UtcNow; 
 			_Order = -CreateTime.Ticks;
+			PadId = Guid.NewGuid().ToString();
 		}
 
 		public class IssueMap : ClassMap<IssueModel>
@@ -61,6 +63,8 @@ namespace RadialReview.Models.Issues
 
 				Map(x => x.ForModel);
 				Map(x => x.ForModelId);
+
+				Map(x => x.PadId);
 
 				Map(x => x.Message).Length(10000);
 				Map(x => x.Description).Length(10000);
