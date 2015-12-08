@@ -684,6 +684,7 @@ namespace RadialReview.Accessors
 
 			var r = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
 			var measurables = r.Distinct(x => x.Measurable.Id).Select(x => x.Measurable.Id).ToList();
+			
 
 			var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.MeasurableId).IsIn(measurables).List().ToList();
 
@@ -2371,7 +2372,7 @@ namespace RadialReview.Accessors
 			foreach (var recurrenceId in measurableRecurs)
 			{
 				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-				var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+				var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId),connectionId);
 				var update = new AngularRecurrence(recurrenceId);
 				update.Scorecard = new AngularScorecard();
 				//score.Measured = score.Measured ?? Removed.Decimal();
@@ -2759,8 +2760,7 @@ namespace RadialReview.Accessors
 					recur.Attendees = recurrence._DefaultAttendees.Select(x => AngularUser.CreateUser(x.User)).ToList();
 
 					var scores = L10Accessor.GetScoresForRecurrence(s, perms, recurrenceId);
-					var measurables = recurrence._DefaultMeasurables.Select(x =>
-					{
+					var measurables = recurrence._DefaultMeasurables.Select(x =>{
 						var m = new AngularMeasurable(x.Measurable);
 						m.Ordering = x._Ordering;
 						m.RecurrenceId = x.L10Recurrence.Id;

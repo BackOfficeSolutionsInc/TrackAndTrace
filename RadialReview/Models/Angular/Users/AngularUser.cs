@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Proxy;
 
 namespace RadialReview.Models.Angular.Users
 {
@@ -17,10 +18,11 @@ namespace RadialReview.Models.Angular.Users
 			if (user == null)
 				return NoUser();
 
+
 			return new AngularUser(user.Id){
-				Name = user.NotNull(x => x.GetName()),
-				ImageUrl = user.NotNull(x => x.ImageUrl(true, imageSize)),
-				Initials = user.NotNull(x => x.GetInitials()),
+				Name = user.GetName(),
+				ImageUrl = user.ImageUrl(true, imageSize),
+				Initials = user.GetInitials(),
 				Managing = managing
 			};
 		}
@@ -31,9 +33,9 @@ namespace RadialReview.Models.Angular.Users
 
 			return new AngularUser(user.UserId)
 			{
-				Name = user.NotNull(x => x.Name),
-				ImageUrl = user.NotNull(x => x.ImageUrl(imageSize)),
-				Initials = user.NotNull(x => x.GetInitials()),
+				Name = user.Name,
+				ImageUrl = user.ImageUrl(imageSize),
+				Initials = user.GetInitials(),
 				Managing = managing
 			};
 		}

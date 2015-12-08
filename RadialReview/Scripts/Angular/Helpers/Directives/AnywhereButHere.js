@@ -33,7 +33,13 @@ angular.module('anywhereButHere', []).factory('clickAnywhereButHereService', ["$
             }
         }
         var handler = function () {
-            $scope.$apply(expr);
+
+	        if ($document.AnywhereButHereStatus == "Active") {
+		        $scope.$apply(expr);
+				
+	            $document.AnywhereButHereStatus = "Inactive";
+	        }
+
         };
 
         $document.on('click', handler);
@@ -52,6 +58,7 @@ angular.module('anywhereButHere', []).factory('clickAnywhereButHereService', ["$
         restrict: 'A',
         link: function (scope, elem, attr, ctrl) {
             var handler = function (e) {
+	            $document.AnywhereButHereStatus = "Active";
                 e.stopPropagation();
             };
             elem.on('click', handler);

@@ -37,12 +37,12 @@
 @{
 	ViewBag.Title = "Meeting Details";
 	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.FullWidth = false;
+	ViewBag.FullWidth = true;
 
 }
 @using (Html.BeginStyles())
 {
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 	@Styles.Render("~/styles/L10")
 	@Styles.Render("~/styles/meeting")

@@ -10,7 +10,7 @@ namespace RadialReview.Models.Angular.Scorecard
 {
 	public class AngularScore : BaseAngular
 	{
-		public AngularScore(ScoreModel score) : base(score.Id)
+		public AngularScore(ScoreModel score,bool skipUser=true) : base(score.Id)
 		{
 			Week = DateTime.SpecifyKind(score.ForWeek,DateTimeKind.Utc);
 			ForWeek = TimingUtility.GetWeekSinceEpoch(Week);
@@ -18,7 +18,7 @@ namespace RadialReview.Models.Angular.Scorecard
 				Id = score.MeasurableId - ForWeek;
 
 
-			Measurable = new AngularMeasurable(score.Measurable);
+			Measurable = new AngularMeasurable(score.Measurable, skipUser);
 			Measured = score.Measured;
 			DateEntered = score.DateEntered;
 		}

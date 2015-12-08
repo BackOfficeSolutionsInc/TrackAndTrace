@@ -101,13 +101,26 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 		}
 	};
 
+	function updateScorecard(data) {
+		var lu = data.Lookup;
+		if (lu != null) {
+			for (var key in lu) {
+				var value = lu[key];
+				if (value != null && value.Type == "AngularScore") {
+					$scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = value.Key;
+				}
+			}
+		}
+	};
+
 	function update(data, status) {
 
 		console.log("update:");
 		console.log(data);
 		//angular.merge($scope.model, data);
 		baseExtend($scope.model, [data], true);
-		
+
+		updateScorecard(data);
 
 		convertDates($scope.model);
 		removeDeleted($scope.model);
@@ -195,16 +208,82 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 
 	$scope.proxyLookup = {};
 
-	$scope.functions.lookupScore = function (week, measurableId) {
+	$scope.ScoreIdLookup =null;
+
+	//debugger;
+	//for(var i =0;i<scope.model.)
+
+	$scope.functions.getFcsa = function(measurable) {
+		if (measurable.Modifiers == "Dollar") {
+			return { prepend: "$" };
+		}else if (measurable.Modifiers == "Percent") {
+			return { append: "%" };
+		}
+	};
+
+	$scope.functions.lookupScoreFull = function(week, measurableId) {
 		var scorecard = $scope.model.Lookup[$scope.model.Scorecard.Key];
 		var scores = scorecard.Scores;
 		for (var s in scores) {
 			var score = $scope.model.Lookup[scores[s].Key];
 			if (score.ForWeek == week && score.Measurable.Id == measurableId) {
+				if (!(week in $scope.ScoreLookup))
+					$scope.ScoreLookup[week] = {};
+				$scope.ScoreLookup[week][measurableId] = scores[s].Key;
 
-				return score;
+				return  scores[s].Key;
 			}
 		}
+		return null;
+	};
+
+	$scope.functions.lookupScore = function (week, measurableId) {
+
+		if ($scope.ScoreLookup == null) {
+			$scope.ScoreLookup = {};
+			var scorecard = $scope.model.Lookup[$scope.model.Scorecard.Key];
+			//var scores = scorecard.Scores;
+			for (var w in scorecard.Weeks) {
+				var wn = scorecard.Weeks[w].ForWeekNumber;
+				$scope.ScoreLookup[wn] = {};
+				for (var m in scorecard.Measurables) {
+					var mn = scorecard.Measurables[m].Id;
+					$scope.ScoreLookup[wn][mn] = $scope.functions.lookupScoreFull(wn, mn);
+				}
+			}
+		}
+
+		//for (var s in scores) {
+		//		var score = $scope.model.Lookup[scores[s].Key];
+		//		if (!(week in $scope.ScoreLookup))
+		//			$scope.ScoreLookup[week] = {};
+		//		$scope.ScoreLookup[week][measurableId] = score;
+		//	}
+		//}
+		
+		if (week in $scope.ScoreLookup && measurableId in $scope.ScoreLookup[week]) {
+			var lu = $scope.model.Lookup[$scope.ScoreLookup[week][measurableId]];
+			if (lu != null)
+				return lu;
+		}
+			
+
+		//console.log("miss ls " + week + " " + measurableId);
+
+		//var lu = $scope.functions.lookupScoreFull(week, measurableId);
+		//if (lu != null)
+		//	return $scope.model.Lookup[$scope.ScoreLookup[week][measurableId]];
+		//for (var s in scores) {
+		//	var score = $scope.model.Lookup[scores[s].Key];
+		//	if (score.ForWeek == week && score.Measurable.Id == measurableId) {
+		//		if (!(week in $scope.ScoreLookup))
+		//			$scope.ScoreLookup[week] = {};
+		//		$scope.ScoreLookup[week][measurableId] = score;
+
+		//		return score;
+		//	}
+		//}
+
 		var wKey = week;
 		if (!(wKey in $scope.proxyLookup))
 			$scope.proxyLookup[wKey] = {};
@@ -258,7 +337,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 		opens: 'left'
 	};
 
-
+	
 	$scope.filters.byRange = function (fieldName, minValue, maxValue, forceMin) {
 		if (minValue === undefined) minValue = Number.MIN_VALUE;
 		if (maxValue === undefined) maxValue = Number.MAX_VALUE;

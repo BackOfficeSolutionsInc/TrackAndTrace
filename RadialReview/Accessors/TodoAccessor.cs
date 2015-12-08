@@ -67,10 +67,10 @@ namespace RadialReview.Accessors
 						i++;
 					}
 				}
-				table.Append("</table>");
 			}catch (Exception e){
 				log.Error(e);
 			}
+			table.Append("</table>");
 			return table;
 		}
 

@@ -15,10 +15,11 @@ namespace RadialReview.Models.Angular.Scorecard
 	
 	public class AngularMeasurable : BaseAngular
 	{
-		public AngularMeasurable(MeasurableModel measurable):base(measurable.Id)
+		public AngularMeasurable(MeasurableModel measurable,bool skipUser=false):base(measurable.Id)
 		{
-			Owner = AngularUser.CreateUser(measurable.AccountableUser);
-			Admin = AngularUser.CreateUser(measurable.AdminUser);
+
+			Owner = AngularUser.CreateUser(skipUser?null : measurable.AccountableUser);
+			Admin = AngularUser.CreateUser(skipUser ? null : measurable.AdminUser);
 			Name = measurable.Title;
 			Target = measurable.Goal;
 			Direction = measurable.GoalDirection;

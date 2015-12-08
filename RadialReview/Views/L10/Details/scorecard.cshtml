@@ -10,7 +10,7 @@
 </div>
 
 
-<div id="ScorecardContainer" class="scorecard meeting-page" style="clear: both;">
+<div id="ScorecardContainer" class="scorecard meeting-page scorecard-angular" style="clear: both;">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="component">
@@ -27,7 +27,7 @@
 									<th>&nbsp;</th>
 									<th>&nbsp;</th>
 									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
-										{{functions.subtractDays(week.DisplayDate,0) | date:(model.Scorecard|transform:this).DateFormat1}}
+										{{functions.subtractDays(week.DisplayDate,0) | date:model.Lookup[model.Scorecard.Key].DateFormat1}}
 									</th>
 
 								</tr>
@@ -38,7 +38,7 @@
 									<th class="heading measurable">Measurable</th>
 									<th class="heading target" colspan="2">Goal</th>
 									<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 2 : 1}}">
-										{{functions.subtractDays(week.DisplayDate,-6) | date:(model.Scorecard|transform:this).DateFormat2}}
+										{{functions.subtractDays(week.DisplayDate,-6) | date:model.Lookup[model.Scorecard.Key].DateFormat2}}
 									</th>
 								</tr>
 							</thead>
@@ -79,22 +79,25 @@
 
 
 									<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="score" ng-class="{current:week.IsCurrentWeek}">
-										<div ng-show="measurable.Id<0" class="grid gray {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}">{{functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured}}</div>
-										<input data-goal="{{measurable.Target}}"
-											   data-goal-dir="{{measurable.Direction}}"
-											   data-row="{{$parent.$index}}"
-											   data-col="{{$index}}"
-											   type="text"
-											   ng-hide="measurable.Id<0"
-											   placeholder="N/A"
-											   ng-model-options="{debounce: 400}"
-											   ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured"
-											   class="grid rt {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}"
-											   data-scoreid="{{Id}}"
-											   data-measurable="{{measurable.Id}}"
-											   data-week="{{week.ForWeekNumber}}"
-											   ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id))"
-											   id="{{functions.scorecardId(functions.lookupScore(week.ForWeekNumber,measurable.Id),$parent.$index,$index)}}" />
+										<div ng-show="measurable.Id<0" class="grid gray {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}">{{model.Measured}}</div>
+											<input data-goal="{{measurable.Target}}"
+											       data-goal-dir="{{measurable.Direction}}"
+											       data-row="{{$parent.$index}}"
+											       data-col="{{$index}}"
+											       type="text"
+											       ng-hide="measurable.Id<0"
+											       placeholder="N/A"
+											       ng-model-options="{debounce: 75}"
+											       ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured"
+											       class="grid rt {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}"
+											       data-scoreid="{{Id}}"
+											       data-measurable="{{measurable.Id}}"
+											       data-week="{{week.ForWeekNumber}}"
+												   
+											       fcsa-number="{{functions.getFcsa(measurable)}}"
+
+											       ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id))"
+											       id="{{functions.scorecardId(model,$parent.$index,$index)}}" />
 									</td>
 								</tr>
 							</tbody>

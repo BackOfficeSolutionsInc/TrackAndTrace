@@ -16,7 +16,7 @@ namespace RadialReview.Models.Angular.Scorecard
 		{
 			Weeks = TimingUtility.GetPeriods(weekstart, timezoneOffset, DateTime.UtcNow, currentWeek.NotNull(x => x.Value.AddDays(7)), scores, true, scorecardPeriod,yearStart).Select(x => new AngularWeek(x)).ToList();
 			Measurables = measurables.ToList();
-			Scores = scores.Select(x => new AngularScore(x)).ToList();
+			Scores = scores.Select(x => new AngularScore(x,false)).ToList();
 
 			DateFormat1 = TimingUtility.ScorecardFormat1(scorecardPeriod);
 			DateFormat2 = TimingUtility.ScorecardFormat2(scorecardPeriod);

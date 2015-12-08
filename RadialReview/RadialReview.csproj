@@ -817,6 +817,7 @@
     </Content>
     <Content Include="Content\L10\L10Transcribe.css" />
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\fcsaNumber.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
     <Content Include="Scripts\L10\L10ChatLog.js" />

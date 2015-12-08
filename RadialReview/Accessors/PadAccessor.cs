@@ -58,7 +58,7 @@ namespace RadialReview.Accessors
 				}
 
 				var html = (string)(Json.Decode(result).data.html);
-				html = html.Substring("<!DOCTYPE HTML><html><body>".Length, html.Length - ("</body></html>".Length - "<!DOCTYPE HTML><html><body>".Length));
+				html = html.Substring("<!DOCTYPE HTML><html><body>".Length, html.Length - ("</body></html>".Length + "<!DOCTYPE HTML><html><body>".Length));
 				return new HtmlString(html);
 			}
 		}

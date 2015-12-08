@@ -29,6 +29,7 @@ using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.Periods;
 using RadialReview.Models.Reviews;
+using RadialReview.Models.Scorecard;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.Todo;
 using RadialReview.Models.UserModels;
@@ -110,7 +111,7 @@ namespace RadialReview.Utilities
 						case Env.local_mysql:
 							{
 								var c = new Configuration();
-								c.SetInterceptor(new NHSQLInterceptor());
+								//c.SetInterceptor(new NHSQLInterceptor());
 								//SetupAudit(c);
 								factory = Fluently.Configure(c).Database(
 											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
@@ -268,6 +269,8 @@ namespace RadialReview.Utilities
 
 			enversConf.Audit<TodoModel>();
 			enversConf.Audit<IssueModel>();
+			enversConf.Audit<ScoreModel>();
+			enversConf.Audit<MeasurableModel>();
 			enversConf.Audit<L10Meeting>();
 			enversConf.Audit<L10Recurrence>();
 

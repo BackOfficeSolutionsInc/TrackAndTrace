@@ -303,3 +303,9 @@
 .scorecard-empty-holder:after {
 	content: "To add a scorecard item, click the settings button";
 }
+
+.scorecard-angular .scorecard-table .score input {
+	font-family: inherit;
+    font-size: 13px;
+	width: 80px;
+}

@@ -145,6 +145,7 @@ namespace RadialReview
 				"~/Scripts/Angular/Helpers/Directives/AnywhereButHere.js", 
 				"~/Scripts/Angular/Helpers/Directives/bindUnsafeHtml.js",
 				"~/Scripts/Angular/Helpers/Directives/ImageTemplates.js",
+				"~/Scripts/Angular/Helpers/Directives/fcsaNumber.js",
 				"~/Scripts/Angular/Helpers/angular-timer.min.js",
 				"~/Scripts/Angular/helpers.js", 
 			};

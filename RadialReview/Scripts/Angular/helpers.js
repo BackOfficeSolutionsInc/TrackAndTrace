@@ -1,1 +1,1 @@
-﻿angular.module('helpers', ['angular.filter', 'transformModule', 'signalRModule', 'clock', 'timer', 'imageTemplates', 'daterangepicker', 'ajaxHtml', 'anywhereButHere']);
+﻿angular.module('helpers', ['angular.filter', 'transformModule', 'signalRModule', 'clock', 'timer', 'imageTemplates', 'daterangepicker', 'ajaxHtml', 'anywhereButHere','fcsa-number']);
