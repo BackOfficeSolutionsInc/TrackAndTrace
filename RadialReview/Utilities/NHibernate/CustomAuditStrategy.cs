@@ -50,7 +50,7 @@ namespace RadialReview.Utilities.NHibernate
 
                 addEndRevisionNullRestriction(_auditConfiguration, qb);
 
-                var l = qb.ToQuery(session).SetLockMode(QueryConstants.MiddleEntityAlias, LockMode.Upgrade).List();
+                var l = qb.ToQuery(session)/*.SetLockMode(QueryConstants.MiddleEntityAlias, LockMode.Upgrade)*/.List();
 
                 updateLastRevision(session, _auditConfiguration, l, id, auditedEntityName, revision, (!reuseEntityIdentifier || !revisionTypeIsAdded));
             }

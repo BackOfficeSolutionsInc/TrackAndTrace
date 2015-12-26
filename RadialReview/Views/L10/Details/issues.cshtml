@@ -8,16 +8,16 @@
 	<tr>
 		<th></th>
 		<th></th>
-		<th>Issue</th>
+		<th style="padding-left: 4px;">Issue</th>
 		@*<th></th>
 		<th></th>*@
 		<th>Completed</th>
 	</tr>
-	<tr ng-repeat-start="issue in model.Issues | transform:this | orderBy: ['Complete','Name']  | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate) "
+	<tr ng-repeat-start="issue in (model.Issues | transform:this)  | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)"
 		ng-class="{grayRow: issue.Complete}"
 		ng-hide="model.Selected==issue.Key"
 		class="clickable">
-		<td style="vertical-align: top;min-width: 25px;text-align: center">
+		<td style="vertical-align: top;min-width: 25px;text-align: center;top:5px;position: relative">
 			<input type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />
 		</td>
 		<td style="vertical-align: top">
@@ -27,7 +27,7 @@
 		</td>
 
 
-		<td style="width:100%" ng-click="issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key">
+		<td style="width:100%;padding-left:2px" ng-click="issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key">
 			<div style="height: 32px;padding-top: 6px;">{{issue.Name}}</div>
 			<table>
 				<tr ng-repeat="sub in issue.Children" class="gray">
@@ -41,7 +41,7 @@
 		<td class="alignCenter" style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
 	</tr>
 	<tr ng-show="model.Selected==issue.Key" ng-class="{grayRow: issue.Complete}">
-		<td style="vertical-align: top;min-width: 25px;text-align: center">
+		<td style="vertical-align: top;min-width: 25px;text-align: center;top:5px;position: relative">
 			<input ng-model-options="{debounce: 400}" type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />
 		</td>
 		<td style="width:1px;">
@@ -75,6 +75,6 @@
 	</tr>
 </table>
 
-<div class="gray" style="padding: 30px 15px;" ng-show="(model.Issues | transform:this | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length==0">
+<div class="gray scrollbox" style="padding: 30px 15px;width: 100%" ng-show="(model.Issues | transform:this | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length==0">
 	No issues fit your search criteria.
 </div>

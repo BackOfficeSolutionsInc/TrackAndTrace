@@ -73,7 +73,7 @@
 				</label>
 
 				<label class="btn btn-default simple-btn" title="Supervisors review direct reports and vise versa">
-					<input type="radio" name="review_type" id="review_S2D_D2S" autocomplete="off" > Supervisor <b>&hArr;</b> Direct Report
+					<input type="radio" name="review_type" id="review_S2D_D2S" autocomplete="off"> Supervisor <b>&hArr;</b> Direct Report
 				</label>
 				<label class="btn btn-default simple-btn">
 					<input type="radio" name="review_type" id="review_S2D" autocomplete="off" title="Supervisors review direct reports only">Supervisor <b>&rArr;</b> Direct Report
@@ -96,7 +96,7 @@
 
 		</div>
 		<div role="tabpanel" class="tab-pane" id="advanced">
-			<br/>
+			<br />
 			<div class="row">
 				<div class="col-sm-5 col-sm-push-7">
 					<div class="well">
@@ -147,7 +147,7 @@
 								}
 								first = false;
 							}
-							@for (int i = Model.Subordinates.Count; i < Model.AllReviewees.Count-1; i++)
+							@for (int i = Model.Subordinates.Count; i < Model.AllReviewees.Count - 1; i++)
 							{
 								<div id="" class="">
 									<div class="pull-left counter">&nbsp;</div>
@@ -161,7 +161,7 @@
 						@foreach (var firstUser in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
 						{
 							<div id="second_@firstUser.Id" class="col-xs-6 noPad alignLeft customize hideable @(first ? "selected" : "hide")">
-								@foreach (var secondUser in Model.AllReviewees.OrderBy(x=>x.GetGroupType()).ThenBy(x => x.GetName()))
+								@foreach (var secondUser in Model.AllReviewees.OrderBy(x => x.GetGroupType()).ThenBy(x => x.GetName()))
 								{
 									var classes = new HashSet<String>();
 									foreach (var s in Model.Selectors)
@@ -178,13 +178,13 @@
 									<div class="selected isAll @String.Join(" ",classes)">
 										<label class="noMargin" style="padding-left:15px;">
 											<input data-original="@(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")" @(Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id) ? "checked" : "")
-											       class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.Id)" data-parent="first_@(firstUser.Id)" type="checkbox" name="customize_@(firstUser.Id)_@secondUser.Id" />
+												   class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.Id)" data-parent="first_@(firstUser.Id)" type="checkbox" name="customize_@(firstUser.Id)_@secondUser.Id" />
 											@secondUser.GetNameExtended()
 										</label>
 									</div>
 								}
 							</div>
-							first = false;
+								first = false;
 						}
 					</div>
 				</div>
@@ -194,27 +194,24 @@
 </div>
 <script>
 
-	$(document).off("change", ".simple-btn input");
-	$(document).on("change", ".simple-btn input", function() {
-		UpdateSimple();
-	});
+
 
 	function UpdateSimple() {
-			var rtype = $(" [name='review_type']:checked").attr("id");
+		var rtype = $(" [name='review_type']:checked").attr("id");
 		var rself = $(" [name='self_review']:checked").attr("id");
 
 		debugger;
-		$(".customizeBoxes").attr("checked",null);
-		
-		switch(rtype) {
-			case"review_360": $(".isDefault input, .isOrganization input").prop("checked", true);break;
-			case"review_S2D_D2S": $(".isSupervisors input, .isDirectReports input, .isOrganization input").prop("checked", true);break;
-			case"review_S2D": $(".isDirectReports input, .isOrganization input").prop("checked", true);break;
+		$(".customizeBoxes").attr("checked", null);
+
+		switch (rtype) {
+			case "review_360": $(".isDefault input, .isOrganization input").prop("checked", true); break;
+			case "review_S2D_D2S": $(".isSupervisors input, .isDirectReports input, .isOrganization input").prop("checked", true); break;
+			case "review_S2D": $(".isDirectReports input, .isOrganization input").prop("checked", true); break;
 		}
-		
-		switch(rself) {
-			case"review_self": $(".isSelf input").prop("checked", "checked");break;
-			case"review_notself":$(".isSelf input").prop("checked", null);break;
+
+		switch (rself) {
+			case "review_self": $(".isSelf input").prop("checked", "checked"); break;
+			case "review_notself": $(".isSelf input").prop("checked", null); break;
 		}
 
 		updateAll();
@@ -232,7 +229,18 @@
 
 	function start_Customize() {
 		setTimeout(function () {
-			UpdateSimple();
+			$(document).off("change", ".simple-btn input");
+			$(document).on("change", ".simple-btn input", function () {
+				UpdateSimple();
+			});
+
+
+			@if (!Model.Selected.Any()){
+				@:UpdateSimple();
+			}
+			else{
+				@:$('.customizeSelection a[href="#advanced"]').tab('show');
+			}
 			$(".quickSelect a").hover(function () {
 				var parent = $(this).parent().get(0);
 				var clss = $(parent).data("checkclass");

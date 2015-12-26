@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FluentNHibernate.Conventions.AcceptanceCriteria;
+using Mandrill;
+using RadialReview.Accessors;
 using RadialReview.Models.UserModels;
 
 namespace RadialReview.Models.ViewModels
@@ -14,12 +16,14 @@ namespace RadialReview.Models.ViewModels
 
 		public bool ManagingOrganization { get; set; }
 
-        public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserLookup> members,OrganizationModel organization)
+        public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserLookup> members,OrganizationModel organization,bool hasAdminDelete)
         {
 	        ManagingOrganization = caller.ManagingOrganization;
             Organization = organization;
-            Users = members.ToListAlive().Select(x => new OrgMemberViewModel(x)).ToList();
+			Users = members.ToListAlive().Select(x => new OrgMemberViewModel(x, hasAdminDelete)).ToList();
         }
+
+		public List<MessageAccessor.ManageMembersMessage> Messages { get; set; } 
     }
 
     public class OrgMemberViewModel
@@ -30,6 +34,7 @@ namespace RadialReview.Models.ViewModels
         public bool Verified { get; set; }
         public bool Manager { get; set; }
         public bool EmailSent { get; set; }
+		public WebHookEventType? EmailEvent { get; set; }
         public int NumIndividualResponsibilities { get; set; }
         public int NumTotalResponsibilities { get; set; }
         //public int NumTeams { get; set; }
@@ -43,7 +48,7 @@ namespace RadialReview.Models.ViewModels
 
 	    public bool IsClient { get; set; }
 
-        public OrgMemberViewModel(UserOrganizationModel userOrg)
+        public OrgMemberViewModel(UserOrganizationModel userOrg,bool forceCanDelete)
         {
             Id = userOrg.Id;
             Name = userOrg.GetName();
@@ -55,13 +60,16 @@ namespace RadialReview.Models.ViewModels
             ManagersTitles = userOrg.ManagedBy.ToListAlive().Select(x => x.Manager.GetName()).ToList();
             NumIndividualResponsibilities = userOrg.Responsibilities.ToListAlive().Count();
 
+	        EmailEvent = userOrg.TempUser.EmailStatus;
+
 	        IsClient = userOrg.IsClient;
             EmailSent=true;
             if (userOrg.TempUser != null && userOrg.TempUser.LastSent == null)
                 EmailSent = false;
             Admin = userOrg.ManagingOrganization;
 
-            Managing = userOrg.GetPersonallyManaging();
+			Managing = userOrg.GetPersonallyManaging();
+			ForceCanDelete = forceCanDelete;
 
             //PositionTitle = userOrg.Positions.ToListAlive().FirstOrDefault().NotNull(x => x.Position.CustomName);
 
@@ -76,7 +84,7 @@ namespace RadialReview.Models.ViewModels
 	        //NumMeasurables = userOrg.NumMeasurables;
         }
 
-		public OrgMemberViewModel(UserLookup u)
+		public OrgMemberViewModel(UserLookup u, bool forceCanDelete)
 		{
 			Id = u.UserId;
 			Name = u.Name;
@@ -91,6 +99,7 @@ namespace RadialReview.Models.ViewModels
 			IsClient = u.IsClient;
 			Managing = u._PersonallyManaging;
 
+			EmailEvent = u.EmailStatus;
 			//PositionTitle = userOrg.Positions.ToListAlive().FirstOrDefault().NotNull(x => x.Position.CustomName);
 
 			/* NumTotalResponsibilities =
@@ -101,6 +110,7 @@ namespace RadialReview.Models.ViewModels
 			NumRocks = u.NumRocks;
 			NumRoles = u.NumRoles;
 			NumMeasurables = u.NumMeasurables;
+			ForceCanDelete = forceCanDelete;
 		}
 
 
@@ -109,5 +119,7 @@ namespace RadialReview.Models.ViewModels
 
 		public int NumRoles { get; set; }
 		public int NumMeasurables { get; set; }
+
+		public bool ForceCanDelete { get; set; }
 	}
 }

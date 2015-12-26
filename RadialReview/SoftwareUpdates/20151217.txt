@@ -1,0 +1,13 @@
+﻿Document Upload
+---------------
+Upload documents in the Issues and To-Do details panel
+
+
+Added "Quick Links" Tile
+------------------------
+Quickly add a new to-do, or issue. View your responsibilities in detail, or edit your personal settings.
+
+
+Added "Traction Tools Updates" Tile
+-----------------------------
+Tile displays the latest updates to the software.

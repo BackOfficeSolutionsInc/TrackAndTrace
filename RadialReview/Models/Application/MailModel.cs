@@ -13,48 +13,48 @@ namespace RadialReview.Models.Application
 		bcc,
 	}
 
-    public class MailModel
+    public class Mail
     {
         public class MailIntermediate2
         {
-            protected MailModel Email {get;set;}
+            protected Mail Email {get;set;}
             
-            public MailIntermediate2(MailModel email)
+            public MailIntermediate2(Mail email)
             {
                 Email=email;
             }
-            public MailModel Body(String htmlBodyFormat, params String[] args)
+            public Mail Body(String htmlBodyFormat, params String[] args)
             {
                 Email.HtmlBody = String.Format(htmlBodyFormat, args);
                 return Email;
             }
 
-
-			public MailModel BodyPlainText(string body)
+			public Mail BodyPlainText(string body)
 			{
 				Email.HtmlBody = body;
 				return Email;
 			}
 		}
-        public class MailIntermediate1 {
-            protected MailModel Email { get; set; }
-            public MailIntermediate1(MailModel email)
-            {
-                Email=email;
-            }
+		public class MailIntermediate1
+		{
+			protected Mail Email { get; set; }
+			public MailIntermediate1(Mail email)
+			{
+				Email = email;
+			}
 
-	        public MailIntermediate1 AddBcc(string email)
-	        {
+			public MailIntermediate1 AddBcc(string email)
+			{
 				Email.BccList.Add(email);
-		        return this;
-	        }
+				return this;
+			}
 
-            public MailIntermediate2 Subject(String subjectFormat, params String[] args)
-            {
-                var unformatted=String.Format(subjectFormat, args);
-                Email.Subject = Regex.Replace(unformatted, @"[^A-Za-z0-9 \.\,&]", "");
-                return new MailIntermediate2(Email);
-            }
+			public MailIntermediate2 Subject(String subjectFormat, params String[] args)
+			{
+				var unformatted = String.Format(subjectFormat, args);
+				Email.Subject = Regex.Replace(unformatted, @"[^A-Za-z0-9 \.\,&]", "");
+				return new MailIntermediate2(Email);
+			}
 
 			public MailIntermediate2 SubjectPlainText(string subject)
 			{
@@ -65,28 +65,34 @@ namespace RadialReview.Models.Application
 
 
         public string ToAddress { get; set; }
-
+		public string EmailType { get; set; }
 		public List<String> BccList { get; set; } 
         public string HtmlBody { get; set; }
         public string Subject { get; set; }
         //public virtual bool Send {get;set;}
         //public virtual DateTime? CompleteTime {get;set;}
 
-        protected MailModel(){
+        protected Mail(){
 			BccList = new List<string>();
         }
 
-		public static MailIntermediate1 To(String toAddress)
+		public static MailIntermediate1 To(String emailType,String toAddress)
 		{
-			return new MailIntermediate1(new MailModel() { ToAddress = toAddress });
+			return new MailIntermediate1(new Mail(){
+				EmailType = emailType,
+				ToAddress = toAddress
+			});
 		}
-		public static MailIntermediate1 Bcc(String toAddress)
+		public static MailIntermediate1 Bcc(String emailType, String toAddress)
 		{
-			return new MailIntermediate1(new MailModel(){
+			return new MailIntermediate1(new Mail()
+			{
+				EmailType = emailType,
 				BccList = toAddress.AsList(),
 				ToAddress = "",
 			});
 		}
+
     }
 
     

@@ -1,5 +1,8 @@
 ﻿var mode = "scan";
 
+var canMoveCells = true;
+
+
 $(function () {
 
 	/*window.onbeforeunload = function(e) {
@@ -16,12 +19,13 @@ $(function () {
 
 	};*/
 
-	$(".main-window-container").on("change", ".score input", function (e, d) {
+	/*$(".main-window-container").on("change", ".score input", function (e, d) {
+		console.log("CHANGE");
 		updateScore(this);
 		if (!d) {
 			updateServerScore(this);
 		}
-	});
+	});*/
 	$('.main-window-container').on('keydown', ".grid", changeInput);
 	$('.main-window-container').on('click', ".grid", function (e, d) { if (!d) mode = "scan"; });
 	$('.main-window-container').on('change', ".grid", function (e, d) { if (!d) mode = "type"; });
@@ -36,31 +40,161 @@ $(function () {
 	});*/
 
 });
+function blurChangeTimeout(key, self, d, i) {
+	if ($(self).attr("data-isformatted") == "true") {
+		console.error("!canMoveCells " + $(self).val());
+		if (i < 10) {
+			blurChange.timeout[key] = setTimeout(function () { blurChangeTimeout(key, self, d, i += 1); }, i * 5);
+		}
+	} else {
+		var val = $(self).val();
+		if (val.indexOf("$") != -1)
+			debugger;
+
+		setScoreTransform(self, val);
+		updateScore(self);
+		if (!d) {
+			if ($(self).attr("data-oldval") != val) {
+				updateServerScore(self);
+			} else {
+				//console.error("Value not updated"+$(self).attr("data-value"));
+			}
+		}
+	}
+}
+
+function blurChange(e, d) {
+	var self = this;
+	if (typeof (blurChange.timeout) === "undefined")
+		blurChange.timeout = {};
+	var key = $(self).attr("id");
+	clearTimeout(blurChange.timeout[key]);
+	blurChange.timeout[key] = setTimeout(function () {
+		blurChangeTimeout(key, self, d, 1);
+	}, 5);
+}
+
+$('body').on('blur change', ".scorecard-table .score input", blurChange);
+$('body').on('focus', ".scorecard-table input", function (e) {
+	//console.log("Called focus");
+	//console.log(this);
+	var val = getScoreTransform(this);
+	//console.log(val);
+	canMoveCells = false;
+	$(this).val(val);
+	//this.value = val;
+	//$(this).attr("value",val);
+	$(this).attr("data-isformatted", "false");
+	canMoveCells = true;
+	e.preventDefault();
+	//console.log(this);
+});
+
+function transformNumber(value, units) {
+	if (typeof (units) === "undefined")
+		return value;
+	units = units.toLowerCase();
+	var addCommasToInteger = function (val) {
+		var commas, decimals, wholeNumbers;
+		decimals = val.indexOf('.') == -1 ? '' : val.replace(/^-?\d+(?=\.)/, '');
+		wholeNumbers = val.replace(/(\.\d+)$/, '');
+		commas = wholeNumbers.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+		return "" + commas + decimals;
+	};
+
+	var regex = /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/;
+	if (!regex.test(value)) {
+		return value;
+	}
+
+	if (units == "dollars" || units == "dollar") {
+		var post = "";
+		if (value >= 1000000) {
+			post = "M";
+			value = "" + (Math.round(value / 10000.0) / 100);
+		}
+
+		return "$" + addCommasToInteger(value) + post;
+	}
+
+	if (units == "%" || units == "percent") {
+		return addCommasToInteger(value) + "%";
+	}
+
+	var post = "";
+	if (value >= 1000000) {
+		post = "M";
+		value = "" + (Math.round(value / 10000.0) / 100);
+	}
+
+	return addCommasToInteger(value) + post;
+}
+
+function setScoreTransform(self, value) {
+	$(self).attr("data-value", value);
+	var unitType = $(self).closest("tr").find(".unit").html();
+	var transf = transformNumber(value, unitType);
+	//console.log("Setting value:" + transf);
+	$(self).val(transf);
+	$(self).attr("data-isformatted", "true");
+
+}
+
+function getScoreTransform(self) {
+	if (!$(self)[0].hasAttribute("data-isformatted")) {
+		$(self).attr("data-isformatted", "false");
+	}
+
+	if (!$(self)[0].hasAttribute("data-value")) {
+		$(self).attr("data-value", $(self).val());
+	}
+
+	if ($(self).attr("data-isformatted") == "true") {
+		var val = $(self).attr("data-value");
+		if (val.indexOf("$") != -1)
+			debugger;
+
+		return val;
+	}
+	var val = $(self).val();
+	if (val.indexOf("$") != -1)
+		debugger;
+	return val;
+
+}
+
+
+
+
+
+
 var zoomLevel = 1;
 function zoomIn() {
 	zoomLevel *= 1.10;
-	$(".zoomable").css("zoom", ""+(zoomLevel*100)+"%");
-	
+	$(".zoomable").css("zoom", "" + (zoomLevel * 100) + "%");
+
 }
 function zoomOut() {
 	zoomLevel /= 1.10;
-	$(".zoomable").css("zoom", ""+(zoomLevel*100)+"%");
+	$(".zoomable").css("zoom", "" + (zoomLevel * 100) + "%");
 }
 
 function updateServerScore(self) {
 	var m = $(self).data("measurable");
 	var w = $(self).data("week");
 	var id = $(self).data("scoreid");
-	var val = $(self).val();
+	var val = getScoreTransform(self);//$(self).attr("data-value");//.val();
 	var dom = $(self).attr("id");
 	var oldVal = $(self).attr("data-oldval");
-	debugger;
+	//debugger;
 	$.ajax({
-		url: "/l10/UpdateScore/" + MeetingId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val + "&dom=" + dom,
+		url: "/l10/UpdateScore/" + MeetingId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val + "&dom=" + dom + "&connection=" + $.connection.hub.id,
 		success: function (data) {
 			if (data.Error) {
 				showJsonAlert(data);
-				$(self).val(oldVal);
+				//$(self).attr("data-value", oldVal);
+				setScoreTransform(self, oldVal);
+				//$(self).val(oldVal);
 			} else {
 				$(self).attr("data-oldval", val);
 			}
@@ -70,7 +204,7 @@ function updateServerScore(self) {
 				$(self).val("");
 			}*/
 		},
-		error:function(data) {
+		error: function (data) {
 			$(self).val(oldVal);
 			updateScore(self);
 		}
@@ -81,11 +215,49 @@ function makeXEditable_Scorecard(selector) {
 	$(selector).editable({
 		savenochange: true,
 		validate: function (value) {
+			if ($(this).hasClass("numeric")) {
+				var regex = /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/;
+				if (!regex.test(value)) {
+					return 'This field must be a number';
+				}
+			}
 			if ($.trim(value) == '') {
 				return 'This field is required';
 			}
 		},
-		success: function (data) {
+		display: function(value, sourceData) {
+			if ($(this).hasClass("unit")) {
+				var parent = $(this).closest(".target.value");
+
+				if ((value != null && (value.toLowerCase() == "dollar" || value.toLowerCase() == "dollars" || value == "$")) ||
+					(value == null && ($(this).text().toLowerCase() == "dollar"|| $(this).text().toLowerCase() == "dollars" ||  $(this).text().toLowerCase()=="$"))
+				) {
+					//Only edit dollars
+					$(this).text("$");
+					$(parent.find(".unit")).insertBefore(parent.find(".numeric"));
+				} else {
+					if ((value != null && (value.toLowerCase() == "percent" || value.toLowerCase() == "percentage" || value == "%")) ||
+						(value == null && ($(this).text().toLowerCase() == "percent" || $(this).text().toLowerCase() == "percentage" || $(this).text().toLowerCase() == "%"))
+					) {
+						$(this).text("%");
+					}
+
+					if (value != null && (value.toLowerCase() == "none" )) {
+						$(this).text(" units");
+					}
+
+					$(parent.find(".numeric")).insertBefore(parent.find(".unit"));
+
+				}
+			}
+
+			if ($(this).hasClass("target-value")) {
+				$(this).text(transformNumber(value, ""));
+			}
+
+			return null;
+		},
+		success: function (data, newVal) {
 
 			var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
 
@@ -94,9 +266,50 @@ function makeXEditable_Scorecard(selector) {
 			} else if ($(this).data("name") == "target") {
 				$(items).attr("data-goal", $(this).attr("data-value"));
 			}
+			var isUnit = $(this).hasClass("unit");
+
+			if (isUnit) {
+				$("[data-measurable=" + $(this).data("measurable") + "] .unit").html((newVal|| "").toLowerCase());
+			}
+
+			//var isGoal = $(this).hasClass("target-value"); 
+			/*if (isUnit || isGoal) {
+				var parent = $(this).closest(".target.value");
+				var units = parent.find(".unit");
+				var goal = parent.find(".numeric");
+				var a = transformNumber(goal.html(), "");
+				var unitsVal = units.html();
+				if (unitsVal == "dollar" || unitsVal == "dollars" || unitsVal == "$") {
+					$(units).insertBefore(goal);
+					console.log("bb");
+					if (isUnit) {
+						newVal = "$";
+						debugger;
+					}
+				} else {
+					$(goal).insertBefore(units);
+					console.log("aa");
+				}*/
+				/*$(goal).html(a);
+				$(units).html(unitsVal);
+
+				if (isGoal) {
+					newVal = a;
+					debugger;
+				}
+			}*/
+
 			$(items).each(function (d) {
 				updateScore(this);
+				if (isUnit) {
+					setScoreTransform(this, getScoreTransform(this));
+				}
+
 			});
+
+			/*return {
+				newValue: newVal
+			};*/
 		}
 	});
 }
@@ -138,14 +351,14 @@ function updateMeasurable(id, name, text, value) {
 	highlight(sel);
 
 
-	$($("tr[data-meetingmeasurable='"+id+"'] .score input")).each(function (d) {
+	$($("tr[data-meetingmeasurable='" + id + "'] .score input")).each(function (d) {
 
 		if (name == "target")
 			$(this).attr("data-goal", value);
-		if(name=="direction")
+		if (name == "direction")
 			$(this).attr("data-goal-dir", value);
 
-		updateScore(this,false);
+		updateScore(this, false);
 	});
 }
 
@@ -158,7 +371,7 @@ function updateScore(self, skipChart) {
 
 	var goal = $(self).attr("data-goal");
 	var dir = $(self).attr("data-goal-dir");
-	var v = $(self).val();
+	var v = getScoreTransform(self);//$(self).val();
 	var id = $(self).attr("data-measurable");
 
 	var r1 = "";
@@ -193,7 +406,8 @@ function updateScore(self, skipChart) {
 	var max = goal;
 
 	row.find("td.score").each(function (i) {
-		var v = parseFloat($(this).find("input").val());
+		//var v = parseFloat($(this).find("input").val());
+		var v = parseFloat(getScoreTransform($(this).find("input")));
 		if (myIsNaN(v))
 			arr.push(null);
 		else {
@@ -288,15 +502,37 @@ function changeInput() {
 			//found = $(".grid[data-col=" + (curColumn - 1) + "][data-row=" + curRow + "]");
 			goingLeft = true;
 		} else if (event.which == 38) { //up
-			found = $(".grid[data-row=" + (+$(this).data("row") - 1) + "][data-col=" + $(this).data("col") + "]");
+			var curRow = (+$(this).data("row") - 1);
+			while (true) {
+				var $row = $("tr[data-row=" + curRow + "]");
+				if ($row.length > 0 && !$row.hasClass("divider")) {
+					found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
+					break;
+				}
+				if ($row.length == 0) {
+					break;
+				}
+				curRow -= 1;
+			}
 			//found = $(".grid[data-row=" + (curRow - 1) + "][data-col=" + curColumn + "]");
 		} else if (event.which == 39) { //right
 			found = $(".grid[data-col=" + (+$(this).data("col") + 1) + "][data-row=" + $(this).data("row") + "]");
 			//found = $(".grid[data-col=" + (curColumn + 1) + "][data-row=" + curRow + "]");
 			goingRight = true;
 		} else if (event.which == 40 || event.which == 13) { //down
-			found = $(".grid[data-row=" + (+$(this).data("row") + 1) + "][data-col=" + $(this).data("col") + "]");
-			//found = $(".grid[data-row=" + (curRow + 1) + "][data-col=" + curColumn + "]");
+			var curRow = (+$(this).data("row") + 1);
+			while (true) {
+				var $row = $("tr[data-row=" + curRow + "]");
+				if ($row.length > 0 && !$row.hasClass("divider")) {
+					found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
+					break;
+				}
+				if ($row.length == 0) {
+					break;
+				}
+				curRow += 1;
+			}
+			//found = $(".grid[data-row=" + (+$(this).data("row") + 1) + "][data-col=" + $(this).data("col") + "]");
 		}
 		var keycode = event.which;
 		var validPrintable =
@@ -329,37 +565,49 @@ function changeInput() {
 
 	if (found) {
 		if ($(found)[0]) {
-			var scrollPosition = [$(found).parents(".table-responsive").scrollLeft(), $(found).parents(".table-responsive").scrollTop()];
-
-			//var visible = isElementInViewport(found[0]);
-			var parent = $(found).parents(".table-responsive");
-			var parentWidth = $(parent).width();
-			var foundWidth = $(found).width();
-			var foundPosition = $(found).position();
-			var scale = parent.find("table").width() / parentWidth;
-
-			$(found).focus();
-			curColumn = $(found).data("col");
-			curRow = $(found).data("row");
-
-			setTimeout(function () {
-				$(found).select();
-				//$(found).ScrollTo({ onlyIfOutside: true });
-				/*if (goingRight) {
-					console.log("right: " + (foundPosition.left + foundWidth ) + ", " + scrollPosition[0]);
-					$(parent).scrollLeft(Math.max((foundPosition.left + foundWidth)*scale , scrollPosition[0]));
-				}
-				if (goingLeft) {
-					console.log("left:  " + (foundPosition.left ) + ", " + scrollPosition[0]);
-					$(parent).scrollLeft(Math.max((foundPosition.left) * scale, scrollPosition[0]));
-				}*/
-
-				updateScore(input);
-
+			clearTimeout(changeInput.timeout);
+			changeInput.timeout = setTimeout(function () {
+				changeCells(found, input);
 			}, 1);
 		}
 	}
 }
+
+function changeCells(found, input) {
+	/*if (!canMoveCells) {
+		setTimeout(changeCells, 1);
+	} else {*/
+	var scrollPosition = [$(found).parents(".table-responsive").scrollLeft(), $(found).parents(".table-responsive").scrollTop()];
+
+	//var visible = isElementInViewport(found[0]);
+	var parent = $(found).parents(".table-responsive");
+	var parentWidth = $(parent).width();
+	var foundWidth = $(found).width();
+	var foundPosition = $(found).position();
+	var scale = parent.find("table").width() / parentWidth;
+
+	$(found).focus();
+	curColumn = $(found).data("col");
+	curRow = $(found).data("row");
+	clearTimeout(changeCells.timeout);
+	changeCells.timeout = setTimeout(function () {
+		$(found).select();
+		//$(found).ScrollTo({ onlyIfOutside: true });
+		/*if (goingRight) {
+			console.log("right: " + (foundPosition.left + foundWidth ) + ", " + scrollPosition[0]);
+			$(parent).scrollLeft(Math.max((foundPosition.left + foundWidth)*scale , scrollPosition[0]));
+		}
+		if (goingLeft) {
+			console.log("left:  " + (foundPosition.left ) + ", " + scrollPosition[0]);
+			$(parent).scrollLeft(Math.max((foundPosition.left) * scale, scrollPosition[0]));
+		}*/
+
+		updateScore(input);
+
+	}, 1);
+	//}
+}
+
 //Table
 //http://stackoverflow.com/questions/7433377/keeping-the-row-title-and-column-title-of-a-table-visible-while-scrolling
 function moveScroll(table, window) {
@@ -429,40 +677,71 @@ function reorderMeasurables(order) {
 	for (var i = 0; i < order.length; i++) {
 		var found = $("tr[data-meetingmeasurable='" + order[i] + "']");
 		$(found).attr("data-order", i);
+		$(found).find(".grid").data("row", i);
+		$(found).closest("tr").data("row", i);
 		$(found).find(".grid").attr("data-row", i);
+		$(found).closest("tr").attr("data-row", i);
 	}
-	$(".scorecard-table").each(function() {
-		$(this).find("tbody").children("tr").detach().sort(function(a, b) {
+	$(".scorecard-table").each(function () {
+		$(this).find("tbody").children("tr").detach().sort(function (a, b) {
 			if ($(a).attr("data-order") == $(b).attr("data-order"))
 				return $(b).attr("data-measurable") - $(a).attr("data-measurable");
 
-			return $(a).attr("data-order")-$(b).attr("data-order");
+			return $(a).attr("data-order") - $(b).attr("data-order");
 		}).appendTo($(this));
 	});
 	updateScorecardNumbers();
 }
 
 function reorderRecurrenceMeasurables(order) {
+	console.log("reorderRecurrenceMeasurables");
 	for (var i = 0; i < order.length; i++) {
 		var found = $("tr[data-measurable='" + order[i] + "']");
 		$(found).attr("data-order", i);
+		$(found).find(".grid").data("row", i);
+		$(found).closest("tr").data("row", i);
 		$(found).find(".grid").attr("data-row", i);
+		$(found).closest("tr").attr("data-row", i);
 	}
-	$(".scorecard-table").each(function() {
-		$(this).find("tbody").children("tr").detach().sort(function(a, b) {
+	$(".scorecard-table").each(function () {
+		$(this).find("tbody").children("tr").detach().sort(function (a, b) {
 			if ($(a).attr("data-order") == $(b).attr("data-order"))
 				return $(b).attr("data-measurable") - $(a).attr("data-measurable");
 
-			return $(a).attr("data-order")-$(b).attr("data-order");
+			return $(a).attr("data-order") - $(b).attr("data-order");
 		}).appendTo($(this));
 	});
 	updateScorecardNumbers();
 }
 
 function updateScorecardNumbers() {
-	$(".scorecard-table").each(function() {
-		$(this).find("tbody").find("tr").each(function(i) {
+	$(".scorecard-table").each(function () {
+		$(this).find("tbody").find("tr:not(.divider)").each(function (i) {
 			$(this).find(".number").html(i + 1);
 		});
 	});
 }
+
+function addDivider(id) {
+	$.ajax({
+		url: "/L10/AddMeasurableDivider?recurrence=" + id,
+	});
+}
+
+
+function deleteDivider(id) {
+	console.log("deleteDivider" + id);
+	$.ajax({
+		url: "/L10/RemoveMeasurableDivider/" + id,
+	});
+}
+
+function removeMeasurable(id) {
+	console.log(id);
+	$("tr[data-meetingmeasurable='" + id + "']").remove();
+}
+
+/*
+$('body').on('DOMNodeInserted', 'input', function () {
+
+});*/

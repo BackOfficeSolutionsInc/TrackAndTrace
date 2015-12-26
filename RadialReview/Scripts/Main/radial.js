@@ -604,7 +604,7 @@ $(function () {
 		var picture = $(this);
 		var bg = $(picture).css('background-image');
 		if (bg && bg != "none") {
-			$(picture).hide();
+			$(picture).fadeToggle();
 			var src = bg.replace(/(^url\()|(\)$|[\"\'])/g, '');
 			var $img = $('<img>').attr('src', src).on('load', function () {
 				// do something, maybe:
@@ -612,4 +612,27 @@ $(function () {
 			});
 		}
 	});
+});
+
+
+$(document).ready(function() {
+	var event = new CustomEvent("jquery-loaded", {});
+	document.dispatchEvent(event);
+});
+
+$(function() {
+	//Adds links to hash nav buttons
+	var updateFromHash = function() {
+		var hash = window.location.hash;
+		hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+	};
+	updateFromHash();
+	window.addEventListener("hashchange", updateFromHash, false);
+
+	$(document).on("click",'.nav a', function (e) {
+    $(this).tab('show');
+    var scrollmem = $('body').scrollTop();
+    window.location.hash = this.hash;
+    $('html,body').scrollTop(scrollmem);
+  });
 });

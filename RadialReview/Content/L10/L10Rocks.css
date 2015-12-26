@@ -84,3 +84,40 @@
 .rock-empty-holder:after {
     content: "Click 'Add Rock' to create a rock";
 }
+
+.completion-percentage .ratio,
+.completion-percentage .percentage {
+	width: 40px;
+    font-size: 16px;
+    display: inline-block;
+	font-weight: bold;
+	color: #444;
+}
+.company-rocks-heading {
+    font-weight: bold;
+    text-transform: uppercase;
+	font-size: 20px;
+	height: 22px;
+	position: relative;
+	top: -6px;
+}
+
+.company-rocks-heading-container {
+	height: 28px;
+}
+.completion-percentage .percentage{
+	text-align: right;
+}
+
+.company-rock-container .component {
+    background-color: #F7EFD5;
+    border-color: #CFC89C;
+    color: #897000;
+    border: 1px solid;
+    border-radius: 2px;
+}
+
+/*.company-rock-container {
+	padding-left: 35px;
+	padding-right:35px;
+}*/

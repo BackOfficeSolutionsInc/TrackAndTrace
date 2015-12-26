@@ -111,7 +111,10 @@ namespace RadialReview.Controllers
 			//var user = GetUser().Hydrate().ManagingUsers(true).Execute();
 
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
-			//var members = 
+
+			var hasAdminDelete=_PermissionsAccessor.AnyTrue(GetUser(),PermissionType.DeleteEmployees,x=>x.ManagingOrganization);
+
+			var messages = MessageAccessor.GetManageMembers_Messages(GetUser(), GetUser().Organization.Id);
 
 			for (int i = 0; i < members.Count(); i++)
 			{
@@ -120,7 +123,8 @@ namespace RadialReview.Controllers
 				//var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
 				//members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Managers().Execute();
 			}
-			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization);
+			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization, hasAdminDelete);
+			model.Messages = messages;
 			return View(model);
 		}
 

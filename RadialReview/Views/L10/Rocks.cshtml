@@ -1,4 +1,5 @@
-﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+﻿@using FluentNHibernate.Utils
+@model RadialReview.Models.L10.VM.L10MeetingVM
 <div class="rocks meeting-page">
 	<div class="row">
 		<div class="col-md-12">
@@ -17,6 +18,11 @@
 			<div class="empty-holder rock-empty-holder @(Model.Meeting._MeetingRocks.Any() ? "hidden" : "")"></div>
 
 			<div class="rocks-container  @(Model.Meeting._MeetingRocks.Any() ? "" : "hidden")" style="padding-bottom: 20px;">
+				
+				<div class="company-rock-container">
+					@Html.Partial("partial/CompanyRockGroup",Model.Rocks.Where(x=>x.ForRock.CompanyRock).ToList())
+				</div>
+				<hr />
 
 				@Html.Partial("partial/RockGroup",Model.Rocks)
 

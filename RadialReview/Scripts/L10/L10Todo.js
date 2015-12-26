@@ -13,7 +13,6 @@ $(function () {
 		var message = $(todoRow).data("message");
 		var details = $(todoRow).data("details");
 		var padId = $(todoRow).data("padid");
-		debugger;
 		//var issueId = $(todoRow).data("issue");
 		var todo = $(todoRow).data("todo");
 
@@ -67,7 +66,8 @@ $(function () {
 			var todo = $(this).data("todo");
 			$(this).datepickerX({
 				format: 'm/d/yyyy',
-				todayBtn:true
+				todayBtn:true,
+				orientation:"top left"
 			}).on('changeDate', function (ev) {
 				var data = { date: (ev.date).valueOf() };
 				$.ajax({
@@ -100,7 +100,6 @@ $(function () {
 
 					for (var i = 0; i < data.Object.length; i++) {
 						var d = data.Object[i];
-						debugger;
 						var selected = $(that).attr("data-accountable") == d.id ? "selected" : "";
 						$(input).append("<option " + selected + " data-img='" + d.imageUrl + "' value='" + d.id + "'>" + d.name + "</option>");
 					}

@@ -187,8 +187,13 @@
 
 			$(function() {
 				setTimeout(function() {
-					connection.session.oneway = true;
-					connection.join();
+					try {
+						connection.session.oneway = true;
+						connection.join();
+					} catch(e) {
+						showAlert("Could not connect to video conferencing server.");
+						console.error(e);
+					}
 				},100);
 			});
 

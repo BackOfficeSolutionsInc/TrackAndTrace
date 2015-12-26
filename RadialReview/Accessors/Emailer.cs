@@ -274,6 +274,9 @@ namespace RadialReview.Accessors
 
 		//}
 
+
+
+
 		public class MandrillModel
 		{
 			public String FirstName { get; set; }
@@ -310,6 +313,13 @@ namespace RadialReview.Accessors
 			};
 		}
 
+		private static async Task<List<Mandrill.EmailResult>> SendMessage(MandrillApi api, EmailModel email)
+		{
+			var result = await api.SendMessageAsync(CreateMandrillMessage(email));
+			email.MandrillId = result.FirstOrDefault().NotNull(x=>x.Id);
+			return result;
+		}
+
 		public static async Task<int> SendMandrillEmails(List<EmailModel> emails, EmailResult result, bool forceSend = false)
 		{
 
@@ -318,14 +328,10 @@ namespace RadialReview.Accessors
 
 			if (!emails.Any())
 				return 1;
-			if (Config.SendEmails() || forceSend)
-			{
-				results = (await Task.WhenAll(emails.Select(email => api.SendMessageAsync(CreateMandrillMessage(email))))).SelectMany(x => x).ToList();
-			}
-			else
-			{
-				results = emails.Select(x => new Mandrill.EmailResult()
-				{
+			if (Config.SendEmails() || forceSend){
+				results = (await Task.WhenAll(emails.Select(email => SendMessage(api,email)))).SelectMany(x => x).ToList();
+			}else{
+				results = emails.Select(x => new Mandrill.EmailResult(){
 					Status = EmailResultStatus.Sent,
 					Email = x.ToAddress,
 				}).ToList();
@@ -377,17 +383,17 @@ namespace RadialReview.Accessors
 			return 1;
 		}
 
-		public static async Task<EmailResult> SendEmail(MailModel email,bool forceSend=false)
+		public static async Task<EmailResult> SendEmail(Mail email,bool forceSend=false)
 		{
 			return await SendEmails(email.AsList(),forceSend);
 		}
 
-		public static async Task<EmailResult> SendEmails(IEnumerable<MailModel> emails, bool forceSend = false)
+		public static async Task<EmailResult> SendEmails(IEnumerable<Mail> emails, bool forceSend = false)
 		{
 			return await SendEmailsWrapped(emails, forceSend);
 		}
 
-		private static async Task<EmailResult> SendEmailsWrapped(IEnumerable<MailModel> emails, bool forceSend = false,int? tableWidth=null)
+		private static async Task<EmailResult> SendEmailsWrapped(IEnumerable<Mail> emails, bool forceSend = false,int? tableWidth=null)
 		{
 			//Register emails
 			var unsentEmails = new List<EmailModel>();
@@ -406,7 +412,8 @@ namespace RadialReview.Accessors
 							Subject = email.Subject,
 							ToAddress = email.ToAddress,
 							Bcc = String.Join(",",email.BccList),
-							SentTime = now
+							SentTime = now,
+							EmailType = email.EmailType
 						};
 						s.Save(unsent);
 						unsentEmails.Add(unsent);
@@ -422,16 +429,16 @@ namespace RadialReview.Accessors
 
 			//And... Go.
 			var threads = await SendMandrillEmails(unsentEmails, result,forceSend);
-
-
+			
 			result.TimeTaken = DateTime.UtcNow - startSending;
 
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					foreach (var email in unsentEmails)
+					foreach (var email in unsentEmails){
 						s.Update(email);
+					}
 					tx.Commit();
 					s.Flush();
 				}

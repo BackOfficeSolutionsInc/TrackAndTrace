@@ -170,20 +170,7 @@ namespace RadialReview.Controllers
             }
         }
 
-        public string[] WriteSafeReadAllLines(String path)
-        {
-            using (var csv = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (var sr = new StreamReader(csv))
-            {
-                List<string> file = new List<string>();
-                while (!sr.EndOfStream)
-                {
-                    file.Add(sr.ReadLine());
-                }
-
-                return file.ToArray();
-            }
-        }
+        
 
         private List<LogLine> GetLines()
         {
@@ -192,7 +179,7 @@ namespace RadialReview.Controllers
             if (file == null)
                 throw new Exception("No log exists");
 
-            var text = WriteSafeReadAllLines(file).Skip(4);
+            var text = FileUtilities.WriteSafeReadAllLines(file).Skip(4);
             var o = new List<LogLine>();
             foreach (var line in text)
             {

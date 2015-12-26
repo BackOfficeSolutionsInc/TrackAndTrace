@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
@@ -32,7 +33,7 @@ namespace RadialReview.Models.Scorecard
 			_Editable = true;
 		}
 
-		public virtual string GetIssueMessage()
+		public virtual async Task<string> GetIssueMessage()
 		{
 			var name = "'" + Measurable.Title + "'";
 
@@ -55,7 +56,7 @@ namespace RadialReview.Models.Scorecard
 			}
 		}
 
-		public virtual string GetIssueDetails()
+		public virtual async Task<string> GetIssueDetails()
 		{
 			var week = ForWeek.AddDays(-7).ToString("d");
 			var accountable = Measurable.AccountableUser.GetName();
@@ -63,7 +64,7 @@ namespace RadialReview.Models.Scorecard
 			if (admin != accountable){
 				accountable += "/" + admin;
 			}
-			var footer = "Week of " + week + "\nOwner: " + accountable;
+			var footer = "Week: " + week + "\nOwner: " + accountable;
 			if (Measured.HasValue){
 
 				var goal = "GOAL: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.Goal.ToString("0.####");
@@ -73,7 +74,7 @@ namespace RadialReview.Models.Scorecard
 			return footer ;
 		}
 
-		public virtual string GetTodoMessage()
+		public virtual async Task<string> GetTodoMessage()
 		{
 			var name = "'" + Measurable.Title + "'";
 
@@ -99,7 +100,7 @@ namespace RadialReview.Models.Scorecard
 			}
 		}
 
-		public virtual string GetTodoDetails()
+		public virtual async Task<string> GetTodoDetails()
 		{
 			var week = ForWeek.AddDays(-7).ToString("d");
 			var accountable = Measurable.AccountableUser.GetName();
@@ -108,7 +109,7 @@ namespace RadialReview.Models.Scorecard
 			{
 				accountable += "/" + admin;
 			}
-			var footer = "Week of " + week + "\nOwner: " + accountable;
+			var footer = "Week:" + week + "\nOwner: " + accountable;
 			if (Measured.HasValue)
 			{
 

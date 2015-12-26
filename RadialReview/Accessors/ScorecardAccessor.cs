@@ -340,7 +340,7 @@ namespace RadialReview.Accessors
 		}
 
 
-		public static ScoreModel UpdateScoreInMeeting(ISession s, PermissionsUtility perms, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom)
+		public static ScoreModel UpdateScoreInMeeting(ISession s, PermissionsUtility perms, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom,string connectionId)
 		{
 			var now = DateTime.UtcNow;
 			DateTime? nowQ = now;
@@ -387,7 +387,7 @@ namespace RadialReview.Accessors
 				//See if we can find it given week.
 				score = existingScores.OrderBy(x => x.Id).FirstOrDefault(x => (x.ForWeek == week));
 
-				if (score != null)
+				if (score != null && score.Measured != value)
 				{
 					//Found it with false id
 					SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(score.Id));
@@ -429,6 +429,7 @@ namespace RadialReview.Accessors
 						}
 						curr.DateEntered = (value == null) ? null : nowQ;
 						curr.Measured = value;
+						score = curr;
 					}
 					else if (week < minDate)
 					{
@@ -455,6 +456,7 @@ namespace RadialReview.Accessors
 
 							//m.NextGeneration = nextDue;
 							n = nextDue.AddDays(7).StartOfWeek(DayOfWeek.Sunday);
+							score = curr;
 						}
 					}
 					else
@@ -471,18 +473,19 @@ namespace RadialReview.Accessors
 							DateEntered = (value == null) ? null : nowQ
 						};
 						s.Save(curr);
+						score = curr;
 					}
 					s.Update(m);
 				}
 			}
 			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).updateTextContents(dom, value);
+			hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting),connectionId).updateTextContents(dom, value);
 
 			Audit.L10Log(s, perms.GetCaller(), recurrenceId, "UpdateScoreInMeeting",ForModel.Create(score), score.NotNull(x => x.Measurable.NotNull(y => y.Title)) + " updated to " + value);
 			return score;
 		}
 
-		public static ScoreModel UpdateScoreInMeeting(UserOrganizationModel caller, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom)
+		public static ScoreModel UpdateScoreInMeeting(UserOrganizationModel caller, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom,string connectionId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -490,7 +493,7 @@ namespace RadialReview.Accessors
 				{
 
 					var perms = PermissionsUtility.Create(s, caller);
-					var output = UpdateScoreInMeeting(s, perms, recurrenceId, scoreId, week, measurableId, value, dom);
+					var output = UpdateScoreInMeeting(s, perms, recurrenceId, scoreId, week, measurableId, value, dom,connectionId);
 
 					tx.Commit();
 					s.Flush();

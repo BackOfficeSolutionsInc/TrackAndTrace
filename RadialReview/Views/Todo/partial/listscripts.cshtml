@@ -34,7 +34,7 @@
 @using (Html.BeginScripts())
 {
 	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
-	<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+	@*<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>*@
 
 	@*<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
 	  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
@@ -116,15 +116,16 @@
             showModal('Add Measurable', '/L10/AddMeasurable/' + m, '/L10/AddMeasurable/');
         });
 
-        $("body").on('click', "input.due-date", function () {
+        /*$(document).on('focus', ".due-date", function () {
             if (!$(this).attr("init")) {
                 var now = new Date();
-                var todo = $(this).data("todo");
+                var todo = $(this).attr("data-todo");
                 $(this).datepickerX({
                     format: 'mm/dd/yyyy',
-                    todayBtn: true
+                    //todayBtn: true
                 }).on('changeDate', function (ev) {
                     var data = { date: ev.date.valueOf() };
+	                $("[data-todo=" + todo + "]").val(moment(ev.date).format('MM/DD/YYYY'));
                     $.ajax({
                         method: "POST",
                         data: data,
@@ -141,7 +142,7 @@
                     $(that).datepickerX("show");
                 }, 10);
             }
-        });
+        });*/
     });
 	</script>
 }

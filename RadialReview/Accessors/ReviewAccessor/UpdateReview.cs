@@ -335,7 +335,7 @@ namespace RadialReview.Accessors
 		#region Update
 		public async Task<ResultObject> AddUserToReviewContainer(HttpContext context, UserOrganizationModel caller, long reviewContainerId, long userOrganizationId, bool sendEmails)
 		{
-			var unsent = new List<MailModel>();
+			var unsent = new List<Mail>();
 			String userBeingReviewed = null;
 			try
 			{

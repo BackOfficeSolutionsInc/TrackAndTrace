@@ -1,0 +1,35 @@
+﻿@model List<RadialReview.Controllers.TileDataController.SoftwareUpdateGroup>
+
+@{
+	Func<DateTime,bool,string> lookupDate = (date,isShort) => {
+		if (Html.Organization() != null){
+			if (date.Date == Html.Organization().ConvertFromUTC(DateTime.UtcNow).Date)
+				return "Today";
+
+			if (date.Date == Html.Organization().ConvertFromUTC(DateTime.UtcNow.AddDays(-1)).Date)
+				return "Yesterday";
+		}
+		if (isShort)
+			return date.ToShortDateString();
+		
+		return date.ToLongDateString();
+	};
+	
+}
+
+
+<div class="review smallBreak2 loading tiny" style2="min-height:30px;">
+	<div class="heading" @*="margin:7px;"*@>Traction Tools Update:</div>
+	<div class="tile">
+		<div class="software-updates">
+		@foreach (var g in Model.OrderByDescending(x=>x.Date))
+		{
+			<h1 class="hidden-width-1">** Update for @lookupDate(g.Date,false)@(String.IsNullOrWhiteSpace(g.Title) ? "" : " - ")@g.Title **</h1>
+			<h1 class="visible-width-1">** Update @lookupDate(g.Date,true)@(String.IsNullOrWhiteSpace(g.Title) ? "" : " - ")@g.Title **</h1>
+			<blockquote>
+				@g.Markup
+			</blockquote>
+		}
+		</div>
+	</div>
+</div>

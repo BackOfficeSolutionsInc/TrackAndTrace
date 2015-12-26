@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using Amazon.ElasticTranscoder.Model;
 using ImageResizer.Configuration.Issues;
@@ -44,7 +45,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static byte[] TodoList(UserOrganizationModel caller, long recurrenceId)
+		public static async Task<byte[]> TodoList(UserOrganizationModel caller, long recurrenceId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -52,8 +53,9 @@ namespace RadialReview.Accessors
 				{
 					var todos = L10Accessor.GetAllTodosForRecurrence(s, PermissionsUtility.Create(s, caller), recurrenceId);
 					var csv = new Csv();
-					foreach (var t in todos)
-					{
+					foreach (var t in todos){
+						var padDetails =await PadAccessor.GetText(t.PadId);
+
 						csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x=>x.GetName()));
 						csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
 						csv.Add("" + t.Id, "Due Date", t.DueDate.ToShortDateString());
@@ -62,7 +64,7 @@ namespace RadialReview.Accessors
 							time = t.CompleteTime.Value.ToShortDateString();
 						csv.Add("" + t.Id, "Completed", time);
 						csv.Add("" + t.Id, "To-Do", "" + t.Message);
-						csv.Add("" + t.Id, "Details", "" + t.Details);
+						csv.Add("" + t.Id, "Details", "" + padDetails);
 					}
 
 					return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(false));

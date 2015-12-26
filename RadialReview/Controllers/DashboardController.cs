@@ -17,6 +17,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Controllers
 {
@@ -26,21 +27,22 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		//[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
 		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-		public JsonResult Data2(long id, bool completed = true, string name = null)
+		public JsonResult Data2(long id, bool completed = false, string name = null)
 		{
 			var userId = id;
 			//Todos
-			var todos = TodoAccessor.GetTodosForUser(GetUser(), id, !completed).Where(x=>x.CompleteTime==null).Select(x => new AngularTodo(x));
+			var todos = TodoAccessor.GetTodosForUser(GetUser(), id, !completed).Select(x => new AngularTodo(x));
 			var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
 
 			//Scorecard
 			var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), GetUser().Id,ordered:true, includeAdmin:true);
 
 			var start = TimingUtility.PeriodsAgo(DateTime.UtcNow,13, GetUser().Organization.Settings.ScorecardPeriod);
+			var end = DateTime.UtcNow.AddDays(14);
 
 
 
-			var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, start, DateTime.UtcNow.AddDays(14), includeAdmin: true);
+			var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, start,end, includeAdmin: true);
 			var sc = new AngularScorecard(
 				GetUser().Organization.Settings.WeekStart,
 				GetUser().Organization.GetTimezoneOffset(),
@@ -50,6 +52,9 @@ namespace RadialReview.Controllers
 				GetUser().Organization.Settings.ScorecardPeriod,
 				new YearStart(GetUser().Organization)
 				);
+
+
+
 			var now = DateTime.UtcNow;
 			var currentPeriods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime);
 
@@ -71,13 +76,23 @@ namespace RadialReview.Controllers
 				directReports = directReports.Where(x => managingIds.Contains(x.Id)).ToList();
 			//}
 
+			if (completed){
+				start = DateTime.UtcNow.AddDays(-1);
+				end = DateTime.UtcNow.AddDays(2);
+			}
+
 			return Json(new DashboardController.ListDataVM(id)
 			{
 				Name = name,
-				Todos = todos,
+				Todos = todos.OrderByDescending(x=>x.CompleteTime??DateTime.MaxValue).ThenBy(x=>x.DueDate),
 				Scorecard = sc,
 				Rocks = rocks,
-				Members = directReports
+				Members = directReports,
+				date = new AngularDateRange(){
+						startDate = start,
+						endDate = end,
+				}
+
 				//Name = "All to-dos for " + m.GetName()
 			}, JsonRequestBehavior.AllowGet);
 		}
@@ -92,6 +107,15 @@ namespace RadialReview.Controllers
 			public AngularScorecard Scorecard { get; set; }
 			public IEnumerable<AngularRock> Rocks { get; set; }
 			public IEnumerable<AngularUser> Members { get; set; }
+
+			public AngularDateRange date { get; set; }
+
+	        public class DateVM
+			{
+				public DateTime startDate { get; set; }
+				public DateTime endDate { get; set; }
+	        }
+
             public ListDataVM(long id) : base(id) { }
         }
 

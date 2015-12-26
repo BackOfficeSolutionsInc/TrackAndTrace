@@ -52,6 +52,9 @@
     <Reference Include="Common.Logging">
       <HintPath>..\packages\Common.Logging.2.1.1\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
+    <Reference Include="CommonMark">
+      <HintPath>..\packages\CommonMark.NET.0.10.0\lib\net45\CommonMark.dll</HintPath>
+    </Reference>
     <Reference Include="CsvHelper">
       <HintPath>..\packages\CsvHelper.2.8.2\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
@@ -144,6 +147,10 @@
       <HintPath>..\packages\System.Data.SQLite.1.0.88.0\lib\net45\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.0.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -151,6 +158,14 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Http, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.0.0\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.0.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
@@ -258,6 +273,7 @@
     <Compile Include="Accessors\AttachAccessor.cs" />
     <Compile Include="Accessors\BaseAccessor.cs" />
     <Compile Include="Accessors\CategoryAccessor.cs" />
+    <Compile Include="Accessors\CustomizeAccessor.cs" />
     <Compile Include="Accessors\DashboardAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
     <Compile Include="Accessors\DbWrapper.cs" />
@@ -272,6 +288,8 @@
     <Compile Include="Accessors\IssuesAccessor.cs" />
     <Compile Include="Accessors\KeyValueAccessor.cs" />
     <Compile Include="Accessors\L10Accessor.cs" />
+    <Compile Include="Accessors\MandrillAccessor.cs" />
+    <Compile Include="Accessors\MessageAccessor.cs" />
     <Compile Include="Accessors\NexusAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
@@ -320,6 +338,9 @@
     <Compile Include="App_Start\FluentConfigs.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\CustomizeController.cs" />
+    <Compile Include="Controllers\WebhookController.cs" />
     <Compile Include="Controllers\AccountabilityController.cs" />
     <Compile Include="Controllers\CallbackController.cs" />
     <Compile Include="Controllers\CompanyValuesController.cs" />
@@ -409,6 +430,7 @@
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
+    <Compile Include="Hubs\MessageHub.cs" />
     <Compile Include="Hubs\MeetingHub.cs" />
     <Compile Include="Hubs\VtoHub.cs" />
     <Compile Include="Hubs\WebRtcHub.cs" />
@@ -452,6 +474,7 @@
     <Compile Include="Models\Completion\MultibarCompletion.cs" />
     <Compile Include="Models\Components\Completion.cs" />
     <Compile Include="Models\Components\ForModel.cs" />
+    <Compile Include="Models\Customize\CustomL10.cs" />
     <Compile Include="Models\Dashboard\DashboardModel.cs" />
     <Compile Include="Models\Dashboard\TileModel.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
@@ -690,6 +713,12 @@
       <DependentUpon>ExceptionStrings.resx</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="Properties\EmailTypes.Designer.cs">
+      <DependentUpon>EmailTypes.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Properties\ProductStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -723,6 +752,7 @@
     <Compile Include="Utilities\Extensions\Math2.cs" />
     <Compile Include="Utilities\Audit.cs" />
     <Compile Include="Utilities\Extensions\TimespanExtensions.cs" />
+    <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
@@ -818,8 +848,10 @@
     <Content Include="Content\L10\L10Transcribe.css" />
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\fcsaNumber.js" />
+    <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
+    <Content Include="Scripts\jquery\jquery.autoNumeric.min.js" />
     <Content Include="Scripts\L10\L10ChatLog.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
@@ -829,6 +861,7 @@
     <Content Include="Scripts\video\Obsolete\RTCMultiConnection.js" />
     <Content Include="Scripts\video\Obsolete\socket.io.js" />
     <Content Include="Scripts\video\video.js" />
+    <Content Include="SoftwareUpdates\20151216.txt" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />
@@ -1316,7 +1349,7 @@
     <Content Include="Radial_files\widgets.js" />
     <Content Include="Scatter.html" />
     <Content Include="Scripts\animations\circles.js" />
-    <Content Include="Scripts\bootstrap-datepicker.js" />
+    <Content Include="Scripts\bootstrap-datepicker-old.js" />
     <Content Include="Scripts\bootstrap-slider.js" />
     <Content Include="Scripts\bootstrap-switch.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -1573,6 +1606,9 @@
     <Content Include="Views\Invoice\List.cshtml" />
     <Content Include="Views\Invoice\Details.cshtml" />
     <Content Include="Views\LogStream\Index.cshtml" />
+    <Content Include="Views\Customize\EditModal.cshtml" />
+    <Content Include="Views\Customize\Index.cshtml" />
+    <Content Include="Views\L10\partial\CompanyRockGroup.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1855,6 +1891,8 @@
     <Content Include="Views\UnitTest\Video.cshtml" />
     <Content Include="Views\Video\Join.cshtml" />
     <Content Include="Views\UnitTest\SpeechRecog.cshtml" />
+    <Content Include="Views\TileData\UserButtons.cshtml" />
+    <Content Include="Views\TileData\SoftwareUpdates.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1880,6 +1918,7 @@
     <Folder Include="Views\Transcript\" />
     <Folder Include="Views\Url\" />
     <Folder Include="Views\VtoData\" />
+    <Folder Include="Views\Webhook\" />
     <Folder Include="Views\WebRtc\" />
   </ItemGroup>
   <ItemGroup>
@@ -1932,6 +1971,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\EmailTypes.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>EmailTypes.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -1956,6 +2001,7 @@
     <TypeScriptCompile Include="Scripts\Models\Charts.ts" />
     <TypeScriptCompile Include="Scripts\typings\d3\d3.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\d3\plugins\d3.superformula.d.ts" />
+    <Content Include="SoftwareUpdates\20151217.txt" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

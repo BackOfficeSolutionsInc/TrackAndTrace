@@ -15,6 +15,7 @@ using System.Web;
 using RadialReview.Models.L10;
 using RadialReview.Utilities;
 using TrelloNet;
+using RadialReview.Accessors;
 
 namespace RadialReview.Models.Todo
 {
@@ -31,7 +32,7 @@ namespace RadialReview.Models.Todo
 		public virtual ForModel AssociatedWith { get; set; }
 		public virtual String AccountName { get; set; }
 
-		public abstract void AddTodo(ISession s, TodoModel details);
+		public abstract Task<bool> AddTodo(ISession s, TodoModel details);
 		public abstract String GetServiceName();
 
 		
@@ -64,7 +65,7 @@ namespace RadialReview.Models.Todo
 		//public virtual string BoardId { get; set; }
 		public virtual string ListId { get; set; }
 
-		public override void AddTodo(ISession s, TodoModel todo)
+		public override async Task<bool> AddTodo(ISession s, TodoModel todo)
 		{
 			var trello = new Trello(Config.GetTrelloKey());
 			trello.Authorize(Token);
@@ -72,6 +73,7 @@ namespace RadialReview.Models.Todo
 			var card = new NewCard(todo.Message, list);
 			card.Desc = todo.Details;
 			trello.Cards.Add(card);
+			return true;
 		}
 
 		public override String GetServiceName()
@@ -103,7 +105,7 @@ namespace RadialReview.Models.Todo
 		public virtual string BasecampAssigneeId { get; set; }
 		public virtual string ApiUrl { get; set; }
 
-		public override void AddTodo(ISession s, TodoModel todo)
+		public override async Task<bool> AddTodo(ISession s, TodoModel todo)
 		{
 			var accessToken = Token;
 			var httpWebRequest = (HttpWebRequest)WebRequest.Create(ApiUrl+ "projects/" + ProjectId + "/todolists/" + ListId + "/todos.json");
@@ -115,7 +117,7 @@ namespace RadialReview.Models.Todo
 
 			using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream())){
 				var json = @"{
-				  ""content"": """+todo.Message+@""",
+				  ""content"": """+todo.Message.EscapeJSONString()+@""",
 				  ""due_at"": """+string.Concat(todo.DueDate.ToString("s"), "Z")+@""",
 				  ""assignee"": {
 					""id"": "+BasecampAssigneeId+@",
@@ -145,9 +147,11 @@ namespace RadialReview.Models.Todo
 				httpWebRequest2.Method = "POST";
 				httpWebRequest2.UserAgent = Config.Basecamp.GetUserAgent();
 
-				using (var streamWriter = new StreamWriter(httpWebRequest2.GetRequestStream()))
-				{
-					var json = @"{""content"": """ + todo.Details + @""",""subject"": ""Details""}";
+				using (var streamWriter = new StreamWriter(httpWebRequest2.GetRequestStream())){
+					
+					var padDetails =await PadAccessor.GetText(todo.PadId);
+
+					var json = @"{""content"": """ + padDetails.EscapeJSONString()/*todo.Details*/ + @""",""subject"": ""Details""}";
 					streamWriter.Write(json);
 					streamWriter.Flush();
 					streamWriter.Close();
@@ -160,6 +164,7 @@ namespace RadialReview.Models.Todo
 					var a = true;
 				}
 			}
+			return true;
 
 
 		}

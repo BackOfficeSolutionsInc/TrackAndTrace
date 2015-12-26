@@ -202,7 +202,7 @@ namespace RadialReview.Hubs
 					//us.FocusId = domId;
 					tx.Commit();
 					s.Flush();
-					Clients.OthersInGroup(GenerateMeetingGroupId(meetingId /*us.L10Meeting*/))
+					Clients.Group(GenerateMeetingGroupId(meetingId), Context.ConnectionId)
 						.UpdateUserFocus(domId, GetUser(s).Id /*us.User.Id*/);
 					return ResultObject.SilentSuccess();
 				}
@@ -216,7 +216,7 @@ namespace RadialReview.Hubs
 				using (var tx = s.BeginTransaction())
 				{
 					//var us = GetUserStatus(s,meetingId);
-					Clients.OthersInGroup(GenerateMeetingGroupId( /*us.L10Meeting*/meetingId))
+					Clients.Group(GenerateMeetingGroupId(meetingId), Context.ConnectionId)
 						.updateTextContents(domId, contents);
 					return ResultObject.SilentSuccess();
 				}

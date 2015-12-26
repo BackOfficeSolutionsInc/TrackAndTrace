@@ -8,7 +8,7 @@ namespace RadialReview.Models.Interfaces
 {
 	public interface ITodo
 	{
-		string GetTodoMessage();
-		string GetTodoDetails();
+		Task<string> GetTodoMessage();
+		Task<string> GetTodoDetails();
 	}
 }

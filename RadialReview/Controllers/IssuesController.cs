@@ -16,7 +16,7 @@ namespace RadialReview.Controllers
 	{
 		#region From Todo
 		[Access(AccessLevel.UserOrganization)]
-        public PartialViewResult IssueFromTodo(long recurrence, long todo, long meeting)
+        public async Task<PartialViewResult> IssueFromTodo(long recurrence, long todo, long meeting)
 		{
 			//var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
 			//copyto = copyto ?? i.Recurrence.Id;
@@ -39,8 +39,8 @@ namespace RadialReview.Controllers
 			{
 				//IssueId = i.Issue.Id,
 				RecurrenceId = recurrence,
-				Message = todoModel.NotNull(x=>x.GetIssueMessage()),
-				Details = todoModel.NotNull(x=>x.GetIssueDetails()),
+				Message = await todoModel.NotNull(async x => await x.GetIssueMessage()),
+				Details = await todoModel.NotNull(async x => await x.GetIssueDetails()),
 				ByUserId = GetUser().Id,
 				MeetingId = meeting,
 				ForId = todo,
@@ -211,7 +211,7 @@ namespace RadialReview.Controllers
 	    }
 
 	    [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult Modal(long meeting, long recurrence, long measurable, long score)
+        public async Task<PartialViewResult> Modal(long meeting, long recurrence, long measurable, long score)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -230,8 +230,8 @@ namespace RadialReview.Controllers
 			var model = new ScoreCardIssueVM()
 			{
 				ByUserId = GetUser().Id,
-				Message = s.NotNull(x=>x.GetIssueMessage()),
-				Details = s.NotNull(x=>x.GetIssueDetails()),
+				Message = await s.NotNull(async x=>await x.GetIssueMessage()),
+				Details = await s.NotNull(async x=>await x.GetIssueDetails()),
 				MeasurableId = measurable,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
@@ -262,7 +262,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateRockIssue(long meeting, long rock)
+        public async Task<PartialViewResult> CreateRockIssue(long meeting, long rock)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -281,8 +281,8 @@ namespace RadialReview.Controllers
 			var model = new RockIssueVM()
 			{
 				ByUserId = GetUser().Id,
-				Message = s.NotNull(x=>x.GetIssueMessage()),
-				Details = s.NotNull(x=>x.GetIssueDetails()),
+				Message = await s.NotNull(async x=>await x.GetIssueMessage()),
+				Details = await s.NotNull(async x=>await x.GetIssueDetails()),
 				MeetingId = meeting,
 				RockId = rock,
 				RecurrenceId =  s.ForRecurrence.Id,

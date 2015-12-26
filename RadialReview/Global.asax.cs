@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using System.Web.Http;
 using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 using RadialReview.Accessors;
@@ -23,12 +24,14 @@ namespace RadialReview
     {
         protected async void Application_Start()
         {
+			//GlobalConfiguration.Configure(WebApiConfig.Register);
             AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
 
             //AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
 
             ServerUtility.RegisterCacheEntry();
             ServerUtility.Reschedule();
@@ -43,7 +46,8 @@ namespace RadialReview
 
 			ViewEngines.Engines.Clear(); 
 			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new [] { "cshtml" } };
-			ViewEngines.Engines.Add(razorEngine);  
+			ViewEngines.Engines.Add(razorEngine);
+
             
         }
 

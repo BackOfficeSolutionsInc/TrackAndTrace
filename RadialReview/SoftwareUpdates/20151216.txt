@@ -1,0 +1,7 @@
+﻿Measurable Dividers
+-------------------
+Add dividers to measurables during meeting and from the meeting archive
+
+Custom Subheadings
+------------------
+Edit Segue and Customer/Employee Headlines subheadings

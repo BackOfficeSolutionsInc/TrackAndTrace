@@ -8,7 +8,7 @@ namespace RadialReview.Models.Interfaces
 {
 	public interface IIssue
 	{
-		string GetIssueMessage();
-		string GetIssueDetails();
+		Task<string> GetIssueMessage();
+		Task<string> GetIssueDetails();
 	}
 }

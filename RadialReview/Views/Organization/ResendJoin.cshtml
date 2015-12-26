@@ -21,9 +21,12 @@
 { 
     <div class="row">
         <div class="col-xs-12">
-            <h4 style="color: #CC2424">Last sent : @Model.LastSent.Value.ToShortDateString() @Model.LastSent.Value.ToShortTimeString()</h4>
+            <h4 style="color: #CC2424">Last sent : @Html.Organization().ConvertFromUTC(Model.LastSent.Value).ToShortDateString() @Html.Organization().ConvertFromUTC(Model.LastSent.Value).ToShortTimeString()</h4>
         </div>
     </div>
 }
-@Html.Hidden("TempId",""+Model.Id)
+@Html.Hidden("TempId", "" + Model.Id)
 @Html.HiddenFor(x => x.Guid)
+@Html.HiddenFor(x => x.EmailStatus)
+@Html.HiddenFor(x => x.EmailStatusUnseen)
+@Html.HiddenFor(x => x.LastSentByUserId)

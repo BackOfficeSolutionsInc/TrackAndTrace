@@ -1,9 +1,27 @@
-﻿@model RadialReview.Models.ViewModels.OrgMembersViewModel
+﻿@using Mandrill
+@model RadialReview.Models.ViewModels.OrgMembersViewModel
 
 @{
     ViewBag.Title = "Members";
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Page = "Members";
+
+
+	var lookup = new Dictionary<WebHookEventType, Tuple<string,string,int>>(){
+		{WebHookEventType.Click,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+		{WebHookEventType.Deferral,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+		{WebHookEventType.Hard_bounce,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
+		{WebHookEventType.Inbound,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+		{WebHookEventType.Open,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+		{WebHookEventType.Reject,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
+		{WebHookEventType.Send,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+		{WebHookEventType.Soft_bounce,Tuple.Create("Awaiting Response. Resend Email?","strokeRed resendEmail red",2)},
+		{WebHookEventType.Spam,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
+		{WebHookEventType.Unsub,Tuple.Create("Email address invalid. Click here to fix.","strokeOrange invalidEmail",0)},
+	};
+
+	var invalidCount = Model.Users.Count(x => x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail"));
+	var resendCount = Model.Users.Count(x => !x.Verified && !(x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail")));
 }
 
 @section top{
@@ -22,6 +40,16 @@
             These can be questions unique to the individual or shared with their teams, positions, or the company as a whole.
             During the review process, peers, teammates, supervisors and direct reports answer questions of the employee to gauge how well they are fulfilling their responsibilities.
             To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
+}*@
+
+@if (invalidCount>0)
+{
+	@Html.AlertBoxDismissable(@"Invitations could not be delivered to "+invalidCount+" user".Pluralize(invalidCount)+". Email addresses were incorrect. Click <span class='strokeOrange invalidEmail glyphicon glyphicon-envelope'></span> to try another address.", "alert-danger", "Warning:")
+}
+
+@*@if (resendCount > 0)
+{
+	@Html.AlertBoxDismissable(@"One or more email employees have not joined. ( <span class='strokeOrange resendEmail glyphicon glyphicon-envelope' style='padding-left:1px;'></span> ) ", "alert-info", "Info:")
 }*@
 
 @using (Html.BeginStyles())
@@ -73,6 +101,16 @@
     <script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
     <script src="~/Scripts/jquery/jquery.filtertable.min.js"></script>
     <script>
+
+	    $(function() {
+
+		    //All Scripts loaded
+		    /*var meetingHub = $.connection.manageHub;
+		    meetingHub.client.showAlert = function(data, showSuccess) { showJsonAlert(data, showSuccess); };
+			
+			$.connection.hub.start().done(initConnection);
+		    meetingHub.server.join(MeetingId, $.connection.hub.id);*/
+	    });
 
         function SendEmails() {
             $("#send").prop("disabled", true);
@@ -176,18 +214,20 @@
                                 <button type="button" class="btn btn-default dropdown-toggle plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="send">
                                     Send invites <span class="caret"></span>
                                 </button>
-                                <ul class="dropdown-menu alignRight dropdown-menu-right">
+                                <ul class="dropdown-menu alignRight dropdown-menu-right" style="width:320px;">
                                     <li>
-                                        <a href="#" id="resendButton" class="" onclick="ResendEmails()">
-                                            Email uninvited members
-                                        </a>
+	                                    <a href="#" id="resendButton" class="" onclick="SendEmails()">
+		                                    <span class="glyphicon glyphicon-envelope unsentEmail pull-left"></span>
+		                                    Invite all yet-to-be invited users
+	                                    </a>
                                     </li>
                                     @if (Model.Users.Any(p => p.EmailSent) || !Model.Organization.SendEmailImmediately)
                                     {
                                         <li>
-                                            <a href="#" id="sendButton" class="" onclick="SendEmails()">
-                                                Email members that have not joined
-                                            </a>
+	                                        <a href="#" id="sendButton" class="" onclick="ResendEmails()">
+		                                        <span class="glyphicon glyphicon-envelope resendEmail pull-left"></span>
+		                                        Resend invite to users that have not joined
+	                                        </a>
                                         </li>
                                     }
 
@@ -228,7 +268,7 @@
                     <th style="min-width:10px" class="NalignCenter">Managers</th>
                     @*<th style="width:10px" class="NalignCenter">Roles</th>*@
                     @*<th style="width:10px" class="NalignCenter">Questions</th>*@
-                    @if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization)
+                    @if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization || Model.Users.Any(x=>x.ForceCanDelete))
                     {
                         <th style="width:10px" class="alignCenter"></th>
                     }
@@ -267,22 +307,29 @@
 							{
 								if (p.Verified)
 								{
-                                    <span title="Joined." class="glyphicon glyphicon-ok-sign strokeGray gray" data-sort="4"></span>
+                                    <span title="Joined." class="glyphicon glyphicon-ok-sign strokeGray gray" data-sort="6"></span>
 								}
 								else
 								{
-                                    <span title="Has not joined." class="glyphicon glyphicon-envelope strokeGray gray" data-sort="3"></span>
+                                    <span title="Has not joined." class="glyphicon glyphicon-envelope strokeGray gray" data-sort="5"></span>
 								}
 							}
 							else
 							{
 								if (p.EmailSent)
 								{
-                                    <span data-sort="2" title="Resend Email" class="glyphicon glyphicon-envelope strokeRed red clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+									if (p.EmailEvent.HasValue)
+									{										
+										<span data-sort="@(lookup[p.EmailEvent.Value].Item3)" title="@(lookup[p.EmailEvent.Value].Item1)" class="glyphicon glyphicon-envelope @(lookup[p.EmailEvent.Value].Item2) clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+									}
+									else
+									{
+										<span data-sort="2" title="Awaiting Response. Click here to resend email." class="glyphicon glyphicon-envelope strokeRed resendEmail red clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+									}
 								}
 								else
 								{
-                                    <span data-sort="1" class="glyphicon glyphicon-exclamation-sign red strokeRed clickable icon" title="Invitation not sent." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+                                    <span data-sort="1" class="glyphicon glyphicon-envelope glyphicon-exclamation-sign1 red strokeRed unsentEmail clickable icon" title="Invitation not sent. Click here to send." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
 								}
 							}
                         </td>
@@ -333,10 +380,10 @@
 
                                 </a>
                             </td>*@
-                        @if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization)
+                        @if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization || p.ForceCanDelete)
 						{
                             <td>
-                                @if (p.Managing || Model.ManagingOrganization)
+                                @if (p.Managing || Model.ManagingOrganization || p.ForceCanDelete)
 								{
                                     <span data-sort="1" onclick="@(Html.ShowModal("Remove " + p.Name + " from the organization?", "/User/Remove/" + p.Id, "/User/Remove", onCompleteFunction: "function(){$('.row_" + p.Id + "').remove();UnstoreJsonAlert();}"))"
                                           class="glyphicon glyphicon-trash clickable">

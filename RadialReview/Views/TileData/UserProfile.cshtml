@@ -1,8 +1,9 @@
 ﻿@model RadialReview.Models.UserModel
 
-<div class="userprofile">
+<div class="userprofile heading">
 	@{ Html.RenderPartial("~/Views/Shared/_UserModel.cshtml", Model); }
 	@*, new ViewDataDictionary() { { "onclick", "window.location='" + Url.Action("Manage", "Account") + "'" } }*@
+	
 </div>
 
 <style>

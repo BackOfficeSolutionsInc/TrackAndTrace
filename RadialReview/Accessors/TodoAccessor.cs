@@ -54,13 +54,10 @@ namespace RadialReview.Accessors
 							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List?todo="+todo.Id+@""">")
 							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" style=""" + color + @""">")
 							.Append(todo.DueDate.ToShortDateString()).Append("</td></tr>");
-
-
+						
 						var details = await PadAccessor.GetHtml(todo.PadId);
 
 						if (!String.IsNullOrWhiteSpace(details.ToHtmlString())){
-
-
 							table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">").Append(details.ToHtmlString()).Append("</a></i></td><td></td></tr>");
 						}
 

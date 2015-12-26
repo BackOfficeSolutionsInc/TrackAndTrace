@@ -79,6 +79,7 @@ html, body {
 	.alignLeft-md {
 		text-align: left;
 	}
+
 	.alignCenter-md {
 		text-align: center;
 	}
@@ -211,6 +212,21 @@ html, body {
 	-webkit-box-shadow: 0px 0px 10px 0px #bebebe;
 	box-shadow: 0px 0px 10px 0px #bebebe;
 }
+/*
+.body-full-width .alert {
+	position: fixed;
+    z-index: 100000;
+    top: 40px;
+    left: 10px;
+    right: 10px;
+    box-shadow: 0px 0px 9px 3px rgba(0, 0, 0, 0.39), 0px 0px 50px 0px rgba(0, 0, 0, 0.73);
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}*/
 
 .alert {
 	margin-bottom: 0px;
@@ -501,21 +517,20 @@ body {
 	right: -60px;
 	margin: 2px;
 }
-@media screen and (max-width: 768px)
-{
-    .navbar .picture-container{    
-	    right: 0px;
-    }
 
-    .nav.navbar-nav .btn-group.heading a.heading{
-        max-width: inherit !important;
-    }
+@media screen and (max-width: 768px) {
+	.navbar .picture-container {
+		right: 0px;
+	}
 
-    .nav.navbar-nav .btn-group.heading{
-        width:70%;
-        width: calc(100% - 66px);
-    }
+	.nav.navbar-nav .btn-group.heading a.heading {
+		max-width: inherit !important;
+	}
 
+	.nav.navbar-nav .btn-group.heading {
+		width: 70%;
+		width: calc(100% - 66px);
+	}
 }
 
 
@@ -533,7 +548,7 @@ body {
 }
 
 .navbar-inverse .navbar-nav > li > a, .navbar-inverse .navbar-brand {
-	 /*color: #F1F1F1;#D5E8FF;*/
+	/*color: #F1F1F1;#D5E8FF;*/
 	-webkit-transition: .15s linear !important;
 	-moz-transition: .15s linear !important;
 	-ms-transition: .15s linear !important;
@@ -773,7 +788,7 @@ input[type="checkbox"].input-validation-error {
 .btn.heading:not(.open) {
 	background-color: transparent;
 	border-color: transparent;
-	color: #fff;/* #98C7FF;*/
+	color: #fff; /* #98C7FF;*/
 	/*text-shadow: 0px -1px 10px #286D9B;
     filter: dropshadow(color=#286D9B, offx=0, offy=-1);*/
 }
@@ -857,6 +872,14 @@ tr.danger .strikable {
 	-webkit-text-stroke-color: #BFA970;
 }
 
+.strokeOrange {
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: #BF8F90;
+	color: #FFA500;
+}
+
+
+
 .strokeBlue {
 	-webkit-text-stroke-width: 1px;
 	-webkit-text-stroke-color: #859BAD;
@@ -908,6 +931,45 @@ tr.danger .strikable {
 	cursor: pointer;
 }
 
+.unsentEmail {    
+	width: 16.5px;
+    background-color: #FFA500;
+    color: #FFDDA0;
+    -webkit-text-stroke-color: transparent;
+    text-align: center;
+	box-shadow: 0 0 3px 1px #FFDDA0; 
+}
+
+.resendEmail {    
+	width: 16.5px;
+    -webkit-text-stroke-color: transparent;
+    background-color: #9FAEBB;
+    color: #BAD9F3;
+    text-align: center;
+}
+
+
+.invalidEmail {
+	width: 16.5px;
+    background-color: #CC8384;
+    color: #FFBFC0;
+    -webkit-text-stroke-color: transparent;
+	box-shadow: 0 0 3px 1px #FFBFC0; 
+    text-align: center;
+}
+
+.unsentEmail:hover {
+	    color: #FFBF4B;
+    background-color: #c69232;
+}
+.resendEmail:hover {
+	color: #79a9cf;
+	background-color: #49789f;
+}
+.invalidEmail:hover {
+	color: #CC8384;
+	background-color: #b06869;
+}
 /*
 .team {
     background-color: rgba(235, 235, 235, 0.42);
@@ -1056,9 +1118,9 @@ tr.danger .strikable {
 }
 
 
-.headerButton:hover {
-	color: white;
-}
+	.headerButton:hover {
+		color: white;
+	}
 
 
 
@@ -1479,42 +1541,42 @@ textarea.reason {
 		top: calc(50% - 10px);
 		font-weight: bold;
 		font-size: 13px;
-        line-height: 21px;
+		line-height: 21px;
 		/* vertical-align: middle; */
 		/* display: table-cell; */
 	}
 
-	/*
+/*
 .body-full-width .navbar {
 	height: 30px;
 	min-height: 30px;
 }*/
 
-	.body-full-width .navbar {
-		min-height: 30px;
-	}
+.body-full-width .navbar {
+	min-height: 30px;
+}
 
-	.body-full-width .navbar-brand{
-		height: 30px;
-	}
+.body-full-width .navbar-brand {
+	height: 30px;
+}
 
-	.body-full-width .navbar .picture-container {
-		height: 26px;
-		width: 26px;
-		left: -30px;
-		margin: 1px;
-	}
+.body-full-width .navbar .picture-container {
+	height: 26px;
+	width: 26px;
+	left: -30px;
+	margin: 1px;
+}
 
 .body-full-width .navbar-brand {
 	padding: 0px 15px;
 }
 
-.body-full-width .navbar-brand img {
-	width: 30px;
-	height: 30px;
-	top: 1px;
-    position: relative;
-}
+	.body-full-width .navbar-brand img {
+		width: 30px;
+		height: 30px;
+		top: 1px;
+		position: relative;
+	}
 
 .body-full-width .navbar-nav > li > a {
 	padding: 4px 15px;
@@ -1577,8 +1639,10 @@ textarea.reason {
 	pointer-events: none;
 }
 
-.body-full-width #alerts:not(:empty) {   
-	 margin-top: 15px;
+.body-full-width #alerts:not(:empty) {
+	margin-top: 15px;
+	margin-top: -5px;
+	margin-bottom: 6px;
 }
 
 .body-full-width #local {
@@ -1625,10 +1689,11 @@ textarea {
 	color: #777;
 	padding: 0 3px;
 }
-.template-link:not(.job-description-link) {
-	float: left;
-    margin-left: -39px;
-}
+
+	.template-link:not(.job-description-link) {
+		float: left;
+		margin-left: -39px;
+	}
 
 .fontastic-icon-checklist:before {
 	/*line-height: 0 !important;

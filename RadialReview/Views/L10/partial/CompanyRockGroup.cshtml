@@ -1,0 +1,44 @@
+﻿@model List<RadialReview.Models.L10.L10Meeting.L10Meeting_Rock>
+
+<div class="component">
+	<div class="alignRight company-rocks-heading-container">
+		<span class="pull-left company-rocks-heading">Company Rocks</span>
+		<span class="completion-percentage alignCenter"><span class="ratio"></span><span class="percentage"></span></span>
+	</div>
+	<div class="table-responsive ">
+		<table style="width: 100%">
+			@*<tr>
+					<th style="width: 46px"></th>
+					<th style="width: 1px"></th>
+					<th>Company Rocks</th>
+					<th>Who</th>
+				</tr>*@
+			@foreach (var i in Model)
+			{
+				<tr class="user-id-@i.ForRock.AccountableUser.Id">
+					<td class="buttonHolder currentBlue">
+						<span class="icon fontastic-icon-pinboard issuesButton issuesModal"
+							  data-meeting="@i.L10Meeting.Id"
+							  data-recurrence="@i.ForRecurrence.Id"
+							  data-rock="@(i.ForRock.Id)"
+							  data-method="CreateRockIssue"></span>
+						<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+							  data-meeting="@i.L10Meeting.Id"
+							  data-recurrence="@i.ForRecurrence.Id"
+							  data-rock="@(i.ForRock.Id)"
+							  data-method="CreateRockTodo">
+						</span>
+					</td>
+					<td class="" style="width:1px">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
+					<td class="message">@i.ForRock.Rock</td>
+					<td style="white-space: nowrap">
+						@Html.Partial("_Picture", i.ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
+						<span class="owner">
+							@i.ForRock.AccountableUser.GetName()
+						</span>
+					</td>
+				</tr>
+			}
+		</table>
+	</div>
+</div>

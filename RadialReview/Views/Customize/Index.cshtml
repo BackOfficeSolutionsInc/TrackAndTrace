@@ -1,0 +1,37 @@
+﻿@model IEnumerable<RadialReview.Models.Customize.CustomText>
+@{
+	ViewBag.Title = "Customization";
+}
+
+
+<p>
+	<div class="btn btn-primary btn-invert pull-right" onclick="@Html.ShowModal("Create Customized Text", "/Customize/EditModal/", "/Customize/EditModal")">Create Customization</div>
+</p>
+<table class="table table-striped table-condensed table-hover">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.PropertyName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NewText)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        
+        <td>
+            @Html.DisplayFor(modelItem => item.PropertyName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NewText)
+        </td>
+	    <td style="width: 150px;text-align: right">
+		    <a class="btn btn-link btn-xs" href="#"  onclick="@Html.ShowModal("Customize Text", "/Customize/EditModal/" + item.Id, "/Customize/EditModal")">Edit</a>
+		    <a class="btn btn-link btn-xs" href="@Url.Action("Delete", new { id = item.Id})">Delete</a>
+	    </td>
+    </tr>
+}
+
+</table>

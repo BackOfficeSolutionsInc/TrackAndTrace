@@ -26,7 +26,7 @@ namespace RadialReview.Accessors {
     public partial class ReviewAccessor : BaseAccessor {
 		
         #region Create
-        public List<MailModel> CreateReviewFromPrereview(
+        public List<Mail> CreateReviewFromPrereview(
 			HttpContext context,
             DataInteraction dataInteraction, PermissionsUtility perms,
             UserOrganizationModel caller, ReviewsModel reviewContainer,
@@ -34,7 +34,7 @@ namespace RadialReview.Accessors {
             IHubContext hub = null, String userId = null, int total = 0) {
             int count = 0;
 
-            var unsentEmails = new List<MailModel>();
+            var unsentEmails = new List<Mail>();
 	        var nw = DateTime.UtcNow;
 			var range = new DateRange(nw,nw);
 	        var reviewerIds = whoReviewsWho.Select(x => x.Item1).Distinct().ToList();
@@ -65,7 +65,7 @@ namespace RadialReview.Accessors {
 					var org = reviewContainer.ForOrganization;
 					var productName = Config.ProductName(org);
                     unsentEmails.Add(
-                            MailModel.To(user.GetEmail())
+							Mail.To(EmailTypes.NewReviewIssued, user.GetEmail())
                             .Subject(EmailStrings.NewReview_Subject, organizationName)
 							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToShortDateString(), Config.BaseUrl(org) + "n/" + guid, Config.BaseUrl(org) + "n/" + guid, productName, reviewContainer.ReviewName)
 						);
@@ -97,7 +97,7 @@ namespace RadialReview.Accessors {
 			UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, bool anonFeedback,
 			List<Tuple<long, long>> whoReviewsWho, long periodId, long nextPeriodId)
 		{
-            var unsentEmails = new List<MailModel>();
+            var unsentEmails = new List<Mail>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 ReviewsModel reviewContainer;
                 var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
@@ -243,7 +243,7 @@ namespace RadialReview.Accessors {
             }
         }
 
-        private static List<MailModel> AddUserToReview(
+        private static List<Mail> AddUserToReview(
 			HttpContext context,
             UserOrganizationModel caller,
             bool updateOthers, DateTime dueDate,
@@ -252,7 +252,7 @@ namespace RadialReview.Accessors {
             UserOrganizationModel beingReviewedUser,
             List<UserOrganizationModel> accessibleUsers,
 			DateRange range) {
-            var unsentEmails = new List<MailModel>();
+            var unsentEmails = new List<Mail>();
             try {
 				var askables = GetAskablesBidirectional(
 					dataInteraction, perms, caller, beingReviewedUser,
@@ -269,8 +269,8 @@ namespace RadialReview.Accessors {
                     };
                     NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
 					var url = Config.BaseUrl(organization) + "n/" + guid;
-                    unsentEmails.Add(MailModel
-                        .To(beingReviewedUser.GetEmail())
+                    unsentEmails.Add(Mail
+                        .To(EmailTypes.NewReviewIssued,beingReviewedUser.GetEmail())
                         .Subject(EmailStrings.NewReview_Subject, organization.Name.Translate())
                         .Body(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), (dueDate.AddDays(-1)).ToShortDateString(),url,url, ProductStrings.ProductName,reviewContainer.ReviewName)
                     );

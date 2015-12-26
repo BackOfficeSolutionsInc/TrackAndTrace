@@ -3,7 +3,8 @@
 	ViewBag.Title = "To-do List";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	var dict = new ViewDataDictionary(ViewBag);
-	dict.Add(new KeyValuePair<string, object>("SetName","All To-Dos"));
+	dict.Add(new KeyValuePair<string, object>("SetName", "All To-Dos"));
+	dict.Add(new KeyValuePair<string, object>("IncludeComplete", true));
 }
 @Html.Partial("~/Views/Todo/Partial/list.cshtml")
 @Html.Partial("~/Views/Todo/Partial/listscripts.cshtml",Model,dict)

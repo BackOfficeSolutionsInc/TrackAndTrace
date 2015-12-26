@@ -5,6 +5,7 @@ using System.Web;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
+using Mandrill;
 
 namespace RadialReview.Models.UserModels
 {
@@ -38,6 +39,8 @@ namespace RadialReview.Models.UserModels
 		public virtual string _ImageUrlSuffix { get; set; }
 
 		public virtual bool IsClient { get; set; }
+
+		public virtual WebHookEventType? EmailStatus { get; set; }
 
 		public virtual string ImageUrl(ImageSize size = ImageSize._32)
 		{
@@ -79,10 +82,12 @@ namespace RadialReview.Models.UserModels
 				Map(x => x.HasJoined);
 				Map(x => x.LastLogin);
 				Map(x => x.HasSentInvite);
+				Map(x => x.EmailStatus).Nullable().CustomType<WebHookEventType>();
 				Map(x => x.OrganizationId).Index("UserLookup_OrganizationId_IDX");
 				Map(x => x._ImageUrlSuffix);
 			}
 		}
+
 
 	}
 }

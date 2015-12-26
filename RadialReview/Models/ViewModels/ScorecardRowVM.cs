@@ -15,6 +15,7 @@ namespace RadialReview.Models.ViewModels
 		public List<L10MeetingVM.WeekVM> Weeks { get; set; }
 		public List<ScoreModel> Scores { get; set; }
 		public L10Meeting.L10Meeting_Measurable MeetingMeasurable { get; set; }
-
+		
+		public bool IsDivider { get; set; }
 	}
 }

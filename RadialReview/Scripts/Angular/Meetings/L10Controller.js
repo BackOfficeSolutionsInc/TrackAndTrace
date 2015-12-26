@@ -107,7 +107,10 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 			for (var key in lu) {
 				var value = lu[key];
 				if (value != null && value.Type == "AngularScore") {
-					$scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = value.Key;
+					if (!(value.ForWeek in $scope.ScoreLookup))
+						$scope.ScoreLookup[value.ForWeek] = {};
+
+					$scope.ScoreLookup[value.ForWeek][value.Measurable.Reference.Id] = value.Key;
 				}
 			}
 		}
@@ -140,6 +143,15 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	.success(function (data, status) {
 		convertDates(data);
 		$scope.model = data;
+		/*var sevenMin = moment().subtract('days',7).toDate();
+		var sevenMax = moment().add('days',9).toDate();
+
+		debugger;
+		if (!$scope.model)
+			$scope.model = {};
+		$scope.model.date = { startDate: sevenMin, endDate: sevenMax };
+		*/
+
 		if (meetingCallback) {
 			setTimeout(function(){
 				meetingCallback();
@@ -272,7 +284,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 
 		//var lu = $scope.functions.lookupScoreFull(week, measurableId);
 		//if (lu != null)
-		//	return $scope.model.Lookup[$scope.ScoreLookup[week][measurableId]];
+		//	return $scope.model.Lookup[$scope.ScoreLookup[week][measurableId]];d
 		//for (var s in scores) {
 		//	var score = $scope.model.Lookup[scores[s].Key];
 		//	if (score.ForWeek == week && score.Measurable.Id == measurableId) {
@@ -309,14 +321,8 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	//var sevenMin = moment().subtract('days', 6).toDate();
 	//var sevenMax = moment().add('days', 2).toDate();
 
-	var sevenMin = moment().subtract('days',7).toDate();
-	var sevenMax = moment().add('days', 9).toDate();
-
-
-	if (!$scope.model)
-		$scope.model = {};
-	$scope.model.date = { startDate: sevenMin, endDate: sevenMax };
-
+	
+	
 	$scope.now = moment();
 
 	$scope.rockstates = [{ name: 'Off Track', value: 'AtRisk' }, { name: 'On Track', value: 'OnTrack' }, { name: 'Complete', value: 'Complete' }];
@@ -339,9 +345,9 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 
 	
 	$scope.filters.byRange = function (fieldName, minValue, maxValue, forceMin) {
-		if (minValue === undefined) minValue = Number.MIN_VALUE;
+		if (minValue === undefined) minValue = -Number.MAX_VALUE;
 		if (maxValue === undefined) maxValue = Number.MAX_VALUE;
-		if (forceMin !== undefined) {
+		if (typeof (forceMin) !== "undefined") {
 			minValue = Math.min(minValue, maxValue - forceMin * 24 * 60 * 60 * 1000);
 		}
 
@@ -351,7 +357,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 			if (d instanceof Date) d = d.getTime();
 			if (minValue instanceof Date) minValue = minValue.getTime();
 			if (maxValue instanceof Date) maxValue = maxValue.getTime();
-			return minValue <= d && d <= maxValue;
+			return minValue <= d && d <= maxValue || moment(d).format("MMDDYYYY")==moment(maxValue).format("MMDDYYYY");
 		};
 	};
 

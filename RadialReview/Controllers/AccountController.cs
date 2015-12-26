@@ -67,7 +67,7 @@ namespace RadialReview.Controllers
                 var result = _NexusAccessor.Put(nexus);
 
                 await Emailer.SendEmail(
-                        MailModel.To(user.Email)
+						Mail.To(EmailTypes.ResetPassword,user.Email)
                         .Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
 						.Body(EmailStrings.PasswordReset_Body, user.Name(), Config.BaseUrl(null) + "n/" + token, Config.BaseUrl(null) + "n/" + token, Config.ProductName(null))
                     );

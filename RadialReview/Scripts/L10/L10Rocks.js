@@ -10,7 +10,7 @@
 			data: { rockId: rockId, state: $(this).val(), connectionId: $.connection.hub.id },
 			success: function (data) {
 				showJsonAlert(data, false, true);
-				$(selector).val((!data.Error ? data.Object : "Indeterminate"));
+				//$(selector).val((!data.Error ? data.Object : "Indeterminate"));
 			},
 			error: function () {
 				$(selector).val("Indeterminate");

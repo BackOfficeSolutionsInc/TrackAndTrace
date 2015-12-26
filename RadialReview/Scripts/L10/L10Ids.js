@@ -308,7 +308,7 @@ function _detatchAllIssues() {
     var items = $(".issues-list li");
     items.detach();
     for (var i = 0; i < items.length; i++) {
-        items.find("ol li").remove()
+	    items.find("ol li").remove();
     }
     return items;
 }
@@ -332,6 +332,7 @@ function setIssueOrder(order) {
     debugger;
     var allIssues = _detatchAllIssues();
     _setIssueOrder($(".issues-list"),order,allIssues);
+	refreshCurrentIssueDetails();
 }
 
 function _getIssueOrder(issue) {
@@ -375,7 +376,7 @@ function updateIssuesList(recurrenceId, issueRow, orderby) {
 				    setIssueOrder(oldIssueList);
 					//$('.issues-container').html(oldIssueList);
 					//oldIssueList = $(".issues-list").clone(true);
-					refreshCurrentIssueDetails();
+					//refreshCurrentIssueDetails();
 				}, 1);
 			}
 		},
@@ -509,9 +510,10 @@ function updateIssueOwner(id, userId, name, image) {
 }
 
 function updateIssuePriority(id, priority) {
-    $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .priority").data("priority", priority)
+	var dom = $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .priority").data("priority", priority);
     var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
     $(row).data("priority", priority);
+	refreshPriority(dom);
 }
 
 $("body").on("contextmenu", ".issue-row .priority", function (e) {
@@ -530,7 +532,7 @@ $(function () {
     var timer = {};
     $("body").on("mousedown", ".issue-row .priority", function (e) {
         var p = +$(this).data("priority");
-        console.log("current priority:"+p)
+	    console.log("current priority:" + p);
         if (e.button==0){
             p += 1;
         }else if (e.button==2){
@@ -540,16 +542,16 @@ $(function () {
             return false;
         }
        // $(this).data("priority", p);
-        console.log("new priority:" + p)
+	    console.log("new priority:" + p);
         var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
 
         updateIssuePriority(id,p);
         //refreshCurrentIssueDetails();
-        refreshPriority(this);
+        //refreshPriority(this);
 
         ////DEBOUNCE
         if (timer[id]) {
-            clearTimeout(timer);
+            clearTimeout(timer[id]);
         }
         var that = this;
         timer[id] = setTimeout(function () {
@@ -563,7 +565,7 @@ $(function () {
                     showJsonAlert(d);
                 }
             });
-        }, 2000);
+        }, 500);
        
         e.preventDefault();
         return false;

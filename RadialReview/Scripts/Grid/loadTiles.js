@@ -178,7 +178,7 @@
 			minHeight: 200,
 			widthHeightRatio: Grid.ratio,
 			onChange: Grid.callback
-		});
+		},{handle:".heading"});
 		if (!first) {
 			Grid.container.gridList('resize', Grid.currentSize);
 		}

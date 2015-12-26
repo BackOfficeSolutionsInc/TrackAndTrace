@@ -63,5 +63,27 @@ namespace RadialReview.Accessors
 			}
 		}
 
+
+		public static async Task<String> GetText(string padid)
+		{
+			var client = new HttpClient();
+			var baseUrl = Config.NotesUrl() + "api/1/getText?apikey=" + Config.NoteApiKey() + "&padID=" + padid;
+			HttpResponseMessage response = await client.GetAsync(baseUrl);
+			HttpContent responseContent = response.Content;
+			using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
+			{
+				var result = await reader.ReadToEndAsync();
+				int code = Json.Decode(result).code;
+				string message = Json.Decode(result).message;
+				if (code != 0)
+				{
+					throw new PermissionsException("Error " + code + ": " + message);
+				}
+
+				return (string)(Json.Decode(result).data.text);
+				/*html = html.Substring("<!DOCTYPE HTML><html><body>".Length, html.Length - ("</body></html>".Length + "<!DOCTYPE HTML><html><body>".Length));
+				return new HtmlString(html);*/
+			}
+		}
 	}
 }

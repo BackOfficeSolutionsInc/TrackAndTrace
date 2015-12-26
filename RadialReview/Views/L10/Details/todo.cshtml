@@ -4,7 +4,7 @@
 </div>
 
 
-<div ng-repeat="(key,value) in model.Todos | transform:this | groupBy: 'Owner.Name'">
+@*<div ng-repeat="(key,value) in model.Todos | transform:this | groupBy: 'Owner.Name'">
 	<table width="100%" class="component" ng-show="(value | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length" click-anywhere-but-here="model.Selected = -1">
 		<tr ng-show="$first">
 			<td></td>
@@ -14,7 +14,7 @@
 			<th></th>
 			<th>Completed</th>
 		</tr>
-		@*| orderBy: ['Complete','-CompleteTime','Name']*@
+		@*| orderBy: ['Complete','-CompleteTime','Name']*.@
 		<tr ng-repeat-start="todo in value | orderBy: ['-DueDate','Name'] | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)"
 			ng-class="{grayRow: todo.Complete}"
 			ng-hide="model.Selected==todo.Key"
@@ -49,7 +49,7 @@
 			<td></td>
 			<td></td>
 			 <td>
-		        @*<td><textarea ng-model-options="{debounce: 400}" class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter to-do details..." style="min-height: 100px;" ng-change="functions.sendUpdate(todo)"></textarea></td>*@
+		        @*<td><textarea ng-model-options="{debounce: 400}" class="fullWidth verticalOnly" ng-model="todo.Details" placeholder="Enter to-do details..." style="min-height: 100px;" ng-change="functions.sendUpdate(todo)"></textarea></td>*.@
 				<iframe style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
 	        </td>
 			
@@ -63,4 +63,12 @@
 
 <div class="gray" style="padding: 30px 15px;" ng-show="(model.Todos | transform:this | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length==0">
 	No to-dos fit your search criteria.
-</div>
+</div>*@
+
+
+@{ Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary(){
+		{"AddHeaders", false},
+		{"AddController", false},
+		{"AddCompletion", true},
+		{"AddDatePicker", false},
+	}); }

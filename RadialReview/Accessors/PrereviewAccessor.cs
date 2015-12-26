@@ -80,7 +80,7 @@ namespace RadialReview.Accessors
             if (preReviewDue >= dueDate)
                 throw new PermissionsException("The pre-review due date must be before the review due date.");
 
-            var unsentEmails = new List<MailModel>();
+            var unsentEmails = new List<Mail>();
             using (var s = HibernateSession.GetCurrentSession())
             {
                 var createReviewGuid = Guid.NewGuid();
@@ -164,7 +164,7 @@ namespace RadialReview.Accessors
 								var url = Config.BaseUrl(caller.Organization) + "n/" + guid;
 	                            var productName = Config.ProductName(caller.Organization);
                                 unsentEmails.Add(
-                                    MailModel.To(manager.GetEmail())
+									Mail.To(EmailTypes.NewPrereviewIssued, manager.GetEmail())
                                     .Subject(EmailStrings.Prereview_Subject,caller.Organization.GetName())
 									.Body(EmailStrings.Prereview_Body, manager.GetName(), reviewName, preReviewDue.Subtract(TimeSpan.FromDays(1)).ToShortDateString(), url, url, productName)
                                     );

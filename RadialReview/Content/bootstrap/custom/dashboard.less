@@ -257,11 +257,13 @@
 	text-align: justify;
 	-ms-text-justify: distribute-all-lines;
 	text-justify: distribute-all-lines;
-	height: 48px;
+	/*height: 48px;*/
+
+
 }
 
 .dashboard .button-container .button {
-	height: 32px;
+	/*height: 32px;
 	width: 32px;
 	display: inline-table;
 	padding: 5px;
@@ -276,7 +278,23 @@
 	cursor: pointer;
 	position: relative;
 	transition: color .15s,background-color .15s;
-	font-size: 18px;
+	font-size: 18px;*/
+
+	    height: 42px;
+    width: 42px;
+    display: inline-table;
+    padding: 5px;
+    vertical-align: top;
+    display: inline-block;
+    zoom: 1;
+    border: 1px solid #D1D1D1;
+    background-color: #FCFCFC;
+    text-align: center;
+    color: #AAA8B6;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.15s, background-color 0.15s;
+    font-size: 25px;
 }
 
 .dashboard .button-container .button.glyphicon {
@@ -301,14 +319,39 @@
 .dashboard .button-container .button.empty {
 	border: none;
 	background-color: transparent;
+	width:16px;
 }
 
-.dashboard .button-container span {
+.dashboard .button-container .span {
 	width: 100%;
 	display: inline-block;
 	font-size: 0;
 	line-height: 0;
 	margin-top: -9px;
+}
+
+.dashboard .button-container .no-split{
+	white-space:nowrap;
+}
+
+.dashboard .button-container {
+	padding: 15px;
+	margin: 0;
+	list-style: none;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-flow: row wrap;
+	-ms-flex-flow: row wrap;
+	flex-flow: row wrap;
+	justify-content: space-around;
+	align-items: flex-start;
+	/*padding-top: 10px;*/
+}
+.dashboard .button-container .button{
+	margin:7px;
 }
 
 .dashboard .thumbnaill h3 {
@@ -420,4 +463,76 @@
 
 .todo-heading .clickable:hover .glyphicon-unchecked:before {
     content:"\e067";
+}
+
+
+.dashboard .software-updates{
+
+	top: 0;
+    position: relative;
+    bottom: 0;
+    min-height: 100% !important;
+
+	padding: 7px 11px;
+
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f7f7f7+0,f7f7f7+82,ffffff+94 */
+	background: #f7f7f7; /* Old browsers */
+	background: -moz-linear-gradient(left,  #f7f7f7 0%, #f7f7f7 82%, #ffffff 94%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(left,  #f7f7f7 0%,#f7f7f7 82%,#ffffff 94%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to right,  #f7f7f7 0%,#f7f7f7 82%,#ffffff 94%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
+
+	h1{
+		margin: 0;
+		font-size: 14px;
+		color: #6D645D;
+		font-weight: bold;
+		text-transform: uppercase;
+		white-space:nowrap;
+	}
+	h2{
+		margin: 0;
+		font-size: 14px;
+		color: #444;
+	}
+	p{
+		margin: 0;
+		font-size: 12px;
+		margin-bottom:6px;
+		color:darkgray;
+		margin-left:6px;
+	}
+
+	blockquote{
+		/*padding: 10px 17px;
+		margin: 0 0 20px;
+		font-size: 17.5px;
+		border-left: 15px solid #EEE;*/
+		padding: 5px 15px;
+		margin-bottom:10px;
+		/*border-left: 5px solid #D0D0D0;*/
+		border-left:4px solid #D0D0D0;
+	}
+	
+}
+.dashboard .width_1 .software-updates{
+	padding: 5px;
+
+	blockquote{
+		padding: 4px 4px;
+		margin: 0 0 20px;
+		font-size: 17.5px;
+		/*border-left: 4px solid #EEE;*/
+	}
+	h1{
+		margin-left: -1px;
+	}
+	h2{
+		margin: 0;
+		font-size: 12px;
+		color: #444;
+	}
+	p{
+		font-size:10px;
+	}
 }

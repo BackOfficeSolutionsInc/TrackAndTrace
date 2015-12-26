@@ -115,7 +115,7 @@ namespace RadialReview.Accessors
 					OrganizationId = found.Caller.Organization.Id,
 					DueDate = now.AddDays(7),
 					ForRecurrenceId = found.ForId,
-					Details = "",
+					Details = "-sent from phone",
 					ForModel = "TodoModel",
 					ForModelId = -2,
 				});
@@ -124,7 +124,7 @@ namespace RadialReview.Accessors
 					CreatedById = found.Caller.Id,
 					CreatedDuringMeetingId = null,
 					Message = body,
-					Description = "",
+					Description = "-sent from phone",
 					//ForRecurrenceId = found.ForId,
 					ForModel = "IssueModel",
 					ForModelId = -2,

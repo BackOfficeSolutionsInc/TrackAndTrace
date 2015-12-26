@@ -169,7 +169,7 @@ namespace RadialReview.Engines
 
 			        var whoReviewsWho = _PrereviewAccessor.GetAllMatchesForReview(admin, reviewContainerId, defaultCustomize);
 			        var organization = _OrganizationAccessor.GetOrganization(admin, reviewContainer.ForOrganizationId);
-			        var unsentEmail = new List<MailModel>();
+			        var unsentEmail = new List<Mail>();
 
 
 

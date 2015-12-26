@@ -54,7 +54,7 @@
 	<div class="panel-body numbers">
 		@if (Model.CompanyRocks.Any())
 		{
-			foreach (var rg in Model.CompanyRocks.GroupBy(x => x.PeriodId).OrderByDescending(x => x.First().Period.EndTime))
+			foreach (var rg in Model.CompanyRocks.GroupBy(x => x.PeriodId).OrderByDescending(x => x.First().Period.NotNull(y=>y.EndTime)))
 			{
 				<b>@rg.First().Period.NotNull(x => x.Name):</b>
 				<ul>

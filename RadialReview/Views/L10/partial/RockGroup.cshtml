@@ -6,6 +6,7 @@
 		<span class="owner">
 			@person.First().ForRock.AccountableUser.GetName()
 		</span>
+		<span data-accountable="@person.First().ForRock.AccountableUser.Id" class="pull-right completion-percentage"><span class="ratio"></span><span class="percentage"></span></span>
 		<div class="table-responsive">
 			<table style="width: 100%">
 				<tr>
@@ -14,7 +15,7 @@
 					<th></th>
 				</tr>
 				@foreach (var i in person){
-					<tr>
+					<tr class="user-id-@i.ForRock.AccountableUser.Id">
 						<td class="buttonHolder currentBlue">
 							<span class="icon fontastic-icon-pinboard issuesButton issuesModal"
 							      data-meeting="@person.First().L10Meeting.Id"

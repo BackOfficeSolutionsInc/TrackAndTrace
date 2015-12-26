@@ -79,7 +79,8 @@ $(function () {
 	meetingHub.client.addMeasurable = addMeasurable;
 	meetingHub.client.reorderMeasurables = reorderMeasurables;
 	meetingHub.client.reorderRecurrenceMeasurables = reorderRecurrenceMeasurables;
-	
+	meetingHub.client.removeMeasurable = removeMeasurable;
+
 	meetingHub.client.addLogRow = addLogRow;
 	meetingHub.client.editLogRow = editLogRow;
 	meetingHub.client.addOrEditLogRow = addOrEditLogRow;

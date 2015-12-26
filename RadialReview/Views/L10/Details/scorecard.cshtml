@@ -43,63 +43,73 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr data-measurable="{{measurable.Id}}" class="reorderable" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
-									<td><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
-									<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>
-									<td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
-									<td class="measurable first1" title="{{measurable.Name}}">
+								<tr  ng-class="{IsDivider: measurable.IsDivider}" data-measurable="{{measurable.Id}}" class="reorderable" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
+									<td class="handle-cell"  ng-class="{handle: measurable.IsDivider}" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
+									<td class="who first1 alignRight"  ng-class="{handle: measurable.IsDivider}">{{measurable.Owner.Name}}</td>
+									<td class="who first1 alignLeft"  ng-class="{handle: measurable.IsDivider}"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
+									<td class="measurable first1" title="{{measurable.Name}}"  ng-class="{handle: measurable.IsDivider}">
 										<span class="inlineEdit"
-											  data-type="text"
-											  data-name="title"
-											  data-measurable="{{measurable.Id}}"
-											  data-pk="{{measurable.Id}}_{{meetingId}}"
-											  data-url="/L10/UpdateArchiveMeasurable">{{measurable.Name}}</span>
+										      data-type="text"
+										      data-name="title"
+										      data-measurable="{{measurable.Id}}"
+										      data-pk="{{measurable.Id}}_{{meetingId}}"
+										      data-url="/L10/UpdateArchiveMeasurable">{{measurable.Name}}</span>
 									</td>
-									<td class="target direction" data-measurable="{{measurable.Id}}">
+									<td class="target direction" data-measurable="{{measurable.Id}}"  ng-class="{handle: measurable.IsDivider}">
 										<span class="inlineEdit direction_{{measurable.Direction}}"
-											  data-type="select"
-											  data-name="direction"
-											  data-measurable="{{measurable.Id}}"
-											  data-pk="{{measurable.Id}}_{{meetingId}}"
-											  data-url="/L10/UpdateArchiveMeasurable"
-											  data-source="/Dropdown/Type/lessgreater"
-											  data-title="Select target direction"
-											  data-value="{{measurable.Direction}}"></span>
+										      data-type="select"
+										      data-name="direction"
+										      data-measurable="{{measurable.Id}}"
+										      data-pk="{{measurable.Id}}_{{meetingId}}"
+										      data-url="/L10/UpdateArchiveMeasurable"
+										      data-source="/Dropdown/Type/lessgreater"
+										      data-title="Select target direction"
+										      data-value="{{measurable.Direction}}"></span>
 									</td>
-									<td class="target value" data-measurable="{{measurable.Id}}">
-										<span class="inlineEdit modifiers {{measurable.Modifiers}}"
-											  data-type="number"
-											  data-name="target"
-											  data-measurable="{{measurable.Id}}"
-											  data-pk="{{measurable.Id}}_{{meetingId}}"
-											  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+									<td class="target value" data-measurable="{{measurable.Id}}"  ng-class="{handle: measurable.IsDivider}">
+										<span class="numeric inlineEdit modifiers {{measurable.Modifiers}}"
+										      data-type="text"
+										      data-name="target"
+										      data-measurable="{{measurable.Id}}"
+										      data-pk="{{measurable.Id}}_{{meetingId}}"
+										      data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
 										<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
 
 									</td>
 
 
-									<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="score" ng-class="{current:week.IsCurrentWeek}">
+									<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="score" ng-class="{current:week.IsCurrentWeek}"  ng-class="{handle: measurable.IsDivider}">
 										<div ng-show="measurable.Id<0" class="grid gray {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}">{{model.Measured}}</div>
-											<input data-goal="{{measurable.Target}}"
-											       data-goal-dir="{{measurable.Direction}}"
-											       data-row="{{$parent.$index}}"
-											       data-col="{{$index}}"
-											       type="text"
-											       ng-hide="measurable.Id<0"
-											       placeholder="N/A"
-											       ng-model-options="{debounce: 75}"
-											       ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured"
-											       class="grid rt {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}"
-											       data-scoreid="{{Id}}"
-											       data-measurable="{{measurable.Id}}"
-											       data-week="{{week.ForWeekNumber}}"
+										<input data-goal="{{measurable.Target}}"
+										       data-goal-dir="{{measurable.Direction}}"
+										       data-row="{{$parent.$index}}"
+										       data-col="{{$index}}"
+										       type="text"
+										       ng-hide="measurable.Id<0"
+										       placeholder="N/A"
+										       ng-model-options="{debounce: 75}"
+										       ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured"
+										       class="grid rt {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}"
+										       data-scoreid="{{Id}}"
+										       data-measurable="{{measurable.Id}}"
+										       data-week="{{week.ForWeekNumber}}"
 												   
-											       fcsa-number="{{functions.getFcsa(measurable)}}"
+										       fcsa-number="{{functions.getFcsa(measurable)}}"
 
-											       ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id))"
-											       id="{{functions.scorecardId(model,$parent.$index,$index)}}" />
+										       ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id))"
+										       id="{{functions.scorecardId(model,$parent.$index,$index)}}" />
 									</td>
 								</tr>
+								@*<tr  data-isvisible="{{measurable.IsDivider}}" data-measurable="{{measurable.Id}}"  class="reorderable divider" ng-repeat-end ng-show="measurable.IsDivider">
+									<td colspan="2" class="divider-icon handle">
+										<span class="glyphicon glyphicon-remove deleteDivider"></span>
+									</td>
+									<td class="who first1 alignRight handle"></td>
+									<td class="who first1 alignLeft handle"></td>
+									<td class="measurable first1 handle"></td>
+									<td class="target value handle"></td>
+									<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="score" ng-class="{current:week.IsCurrentWeek}"></td>
+								</tr>*@
 							</tbody>
 						</table>
 					</div>
@@ -122,39 +132,49 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr data-measurable="{{measurable.Id}}" class="reorderable" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
-								<td><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
-								<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>
-								<td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
-								<td class="measurable first1" title="{{measurable.Name}}">
+							<tr ng-class="{IsDivider: measurable.IsDivider}" data-measurable="{{measurable.Id}}" class="reorderable" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']" >
+								<td class="handle-cell" ng-class="{handle: measurable.IsDivider}"><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
+								<td class="who first1 alignRight" ng-class="{handle: measurable.IsDivider}">{{measurable.Owner.Name}}</td>
+								<td class="who first1 alignLeft" ng-class="{handle: measurable.IsDivider}"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
+								<td class="measurable first1" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
 									<span class="inlineEdit"
-										  data-type="text"
-										  data-name="title"
-										  data-measurable="{{measurable.Id}}"
-										  data-pk="{{measurable.Id}}_{{meetingId}}"
-										  data-url="/L10/UpdateArchiveMeasurable">{{measurable.Name}}</span>
+									      data-type="text"
+									      data-name="title"
+									      data-measurable="{{measurable.Id}}"
+									      data-pk="{{measurable.Id}}_{{meetingId}}"
+									      data-url="/L10/UpdateArchiveMeasurable">{{measurable.Name}}</span>
 								</td>
-								<td class="target direction" data-measurable="{{measurable.Id}}">
+								<td class="target direction" data-measurable="{{measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
 									<span class="inlineEdit direction_{{measurable.Direction}}"
-										  data-type="select"
-										  data-name="direction"
-										  data-measurable="{{measurable.Id}}"
-										  data-pk="{{measurable.Id}}_{{meetingId}}"
-										  data-url="/L10/UpdateArchiveMeasurable"
-										  data-source="/Dropdown/Type/lessgreater"
-										  data-title="Select target direction"
-										  data-value="{{measurable.Direction}}"></span>
+									      data-type="select"
+									      data-name="direction"
+									      data-measurable="{{measurable.Id}}"
+									      data-pk="{{measurable.Id}}_{{meetingId}}"
+									      data-url="/L10/UpdateArchiveMeasurable"
+									      data-source="/Dropdown/Type/lessgreater"
+									      data-title="Select target direction"
+									      data-value="{{measurable.Direction}}"></span>
 								</td>
-								<td class="target value" data-measurable="{{measurable.Id}}">
-									<span class="inlineEdit modifiers {{measurable.Modifiers}}"
-										  data-type="number"
-										  data-name="target"
-										  data-measurable="{{measurable.Id}}"
-										  data-pk="{{measurable.Id}}_{{meetingId}}"
-										  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+								<td class="target value" data-measurable="{{measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
+									<span class="numeric inlineEdit modifiers {{measurable.Modifiers}}"
+									      data-type="text"
+									      data-name="target"
+									      data-measurable="{{measurable.Id}}"
+									      data-pk="{{measurable.Id}}_{{meetingId}}"
+									      data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
 									<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
 
 								</td>
+							</tr>
+							@*<tr data-isvisible="{{measurable.IsDivider}}" data-measurable="{{measurable.Id}}"  class="reorderable divider" ng-repeat-end ng-show="measurable.IsDivider">
+									<td colspan="2" class="divider-icon handle">
+										<span class="glyphicon glyphicon-remove deleteDivider"></span>
+									</td>
+									<td class="who first1 alignRight handle"></td>
+									<td class="who first1 alignLeft handle"></td>
+									<td class="measurable first1 handle"></td>
+									<td class="target value handle"></td>
+								</tr>*@
 						</tbody>
 					</table>
 				</div>
@@ -190,11 +210,18 @@
 			if (!$(this).attr("editable")) {
 				$(this).editable({
 					savenochange: true,
-					validate: function (value) {
+					validate: function(value) {
+						if ($(this).hasClass("numeric")){
+							var regex = /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/;
+							if(! regex.test(value)) {
+								return 'This field must be a number';
+							}
+						}
 						if ($.trim(value) == '') {
 							return 'This field is required';
 						}
 					},
+					placement: "left",
 					success: function (data) {
 
 						/*var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
@@ -228,7 +255,9 @@
 				var order = [];
 				var i = 0;
 				$('tr', ui.item.parent()).each(function (i) {
-					order.push(+$(this).attr("data-measurable"));
+					//if ($(this).attr("data-isvisible")=="true"){
+						order.push(+$(this).attr("data-measurable"));
+					//}
 				});
 
 				var data = {
@@ -239,7 +268,10 @@
 					url: "/L10/UpdateRecurrenceMeasurableOrdering",
 					method: "POST",
 					data: $.param(data, true),
-					success: function (d) { showJsonAlert(d); }
+					success: function(d) {
+						showJsonAlert(d);
+						angular.element(document.querySelector('#ScorecardContainer')).scope().$apply();
+					}
 				});
 			};
 

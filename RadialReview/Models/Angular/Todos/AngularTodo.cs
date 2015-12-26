@@ -18,7 +18,7 @@ namespace RadialReview.Models.Angular.Todos
 			Name = todo.Message;
 			DetailsUrl = Config.NotesUrl() + "p/" + todo.PadId + "?showControls=true&showChat=false";
 		
-			Details = todo.Details;
+			//Details = todo.Details;
 			DueDate = todo.DueDate;
 			Owner = AngularUser.CreateUser(todo.AccountableUser);
 			CompleteTime = todo.CompleteTime;
@@ -39,7 +39,7 @@ namespace RadialReview.Models.Angular.Todos
 		}
 
 		public string Name { get; set; }
-		public string Details { get; set; }
+		//public string Details { get; set; }
 		public string DetailsUrl { get; set; }
 		public DateTime? DueDate { get; set; }
 		public AngularUser Owner { get; set; }

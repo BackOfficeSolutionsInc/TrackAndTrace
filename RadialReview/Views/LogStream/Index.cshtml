@@ -66,20 +66,24 @@
 
 @foreach (var userGroupLines in Model)
 {
-    <div class="userList">
-        <h4>@userGroupLines.Actions.First().Parent.NotNull(x=>x.csUsername) &nbsp;</h4>
-        <ol class="">
-            @foreach (var actions in userGroupLines.Actions)
-            {
-                <li>@actions.Parent.NotNull(x => x.csUriStem)  <span class="pull-right @(actions.Parent.NotNull(x => (DateTime.UtcNow-x.Date).TotalMinutes<6)?"recent":"")">@actions.Parent.NotNull(x => x.Date.ToLongTimeString())</span></li>
-                <ul>
-                    @foreach (var line in actions.Lines)
-                    {
-                        <li>@line.NotNull(x => x.csUriStem)  <span class="pull-right @(line.NotNull(x => (DateTime.UtcNow-x.Date).TotalMinutes<6)?"recent":"")">@line.NotNull(x => x.Date.ToLongTimeString())</span></li>
-                    }
-                </ul>
-            }
-        </ol> 
-    </div>
+	<div class="userList">
+		@{
+			var name = userGroupLines.Actions.First().Parent.NotNull(x => x.csUsername);
+			name = name ?? userGroupLines.Actions.First().Lines.FirstOrDefault().NotNull(x => x.csUsername);
+		}
+		<h4>@name &nbsp;</h4>
+		<ol class="">
+			@foreach (var actions in userGroupLines.Actions)
+			{
+				<li title = "@actions.Parent.NotNull(x => x.csUriQuery)">@actions.Parent.NotNull(x => x.csUriStem)  <span class="pull-right @(actions.Parent.NotNull(x => (DateTime.UtcNow-x.Date).TotalMinutes<6)?"recent":"")">@actions.Parent.NotNull(x => x.Date.ToLongTimeString())</span></li>
+				<ul>
+					@foreach (var line in actions.Lines)
+					{
+						<li title = "@line.NotNull(x => x.csUriQuery)">@line.NotNull(x => x.csUriStem)  <span class="pull-right @(line.NotNull(x => (DateTime.UtcNow-x.Date).TotalMinutes<6)?"recent":"")">@line.NotNull(x => x.Date.ToLongTimeString())</span></li>
+					}
+				</ul>
+			}
+		</ol> 
+	</div>
 }
 

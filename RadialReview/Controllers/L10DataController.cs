@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Ionic.Zip;
@@ -31,7 +32,7 @@ namespace RadialReview.Controllers
 		#region Scorecard
 		// GET: L10Data
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateScore(long id, long s, long w, long m, string value, string dom)
+		public JsonResult UpdateScore(long id, long s, long w, long m, string value, string dom,string connection)
 		{
 			var recurrenceId = id;
 			var scoreId = s;
@@ -45,7 +46,7 @@ namespace RadialReview.Controllers
 				val = measured;
 				output = value;
 			}
-			ScorecardAccessor.UpdateScoreInMeeting(GetUser(), recurrenceId, scoreId, week, measurableId, val, dom);
+			ScorecardAccessor.UpdateScoreInMeeting(GetUser(), recurrenceId, scoreId, week, measurableId, val, dom, connection);
 
 
 			return Json(ResultObject.SilentSuccess(output), JsonRequestBehavior.AllowGet);
@@ -128,7 +129,7 @@ namespace RadialReview.Controllers
 			//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
 			var members = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
-			var already = recurrence._DefaultMeasurables.Select(x => x.Measurable.Id).ToList();
+			var already = recurrence._DefaultMeasurables.Where(x=>x.Measurable!=null).Select(x => x.Measurable.Id).ToList();
 
 			var addableMeasurables = allMeasurables
 				.Where(x => members.Contains(x.AccountableUserId) || members.Contains(x.AdminUserId))
@@ -147,6 +148,20 @@ namespace RadialReview.Controllers
 			am.AvailableMeasurables.Add(new SelectListItem(){Text = "<Create Measurable>", Value = "-3"});
 
 			return PartialView(am);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult AddMeasurableDivider(long recurrence)
+		{
+			L10Accessor.CreateMeasurableDivider(GetUser(), recurrence);
+			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult RemoveMeasurableDivider(long id)
+		{
+			L10Accessor.DeleteMeetingMeasurableDivider(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -220,7 +235,7 @@ namespace RadialReview.Controllers
 
 
 	    [Access(AccessLevel.UserOrganization)]
-	    public FileStreamResult ExportAll(long id)
+	    public async Task<FileStreamResult> ExportAll(long id)
 	    {
 			/*Response.Clear();
 			Response.BufferOutput = false; // false = stream immediately
@@ -236,7 +251,7 @@ namespace RadialReview.Controllers
 			using (var zip = new ZipFile())
 			{
 				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id));
-				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), ExportAccessor.TodoList(GetUser(), id));
+				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), await ExportAccessor.TodoList(GetUser(), id));
 				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), ExportAccessor.IssuesList(GetUser(), id));
 				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));

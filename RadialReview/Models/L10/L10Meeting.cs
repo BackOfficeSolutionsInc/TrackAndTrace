@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using FluentNHibernate.Mapping;
 using Microsoft.AspNet.SignalR;
@@ -103,20 +104,20 @@ namespace RadialReview.Models.L10
 				}
 			}
 
-			public virtual string GetTodoMessage()
+			public virtual async Task<string> GetTodoMessage()
 			{
 				return  "'" + ForRock.Rock + "'";
 			}
 
-			public virtual string GetTodoDetails()
+			public virtual async Task<string> GetTodoDetails()
 			{
 				var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
 				var accountable = ForRock.AccountableUser.GetName();
-				var footer = "Week of " + week + "\nOwner: " + accountable;
+				var footer = "Week: " + week + "\nOwner: " + accountable;
 				return footer;
 			}
 
-			public virtual string GetIssueMessage()
+			public virtual async Task<string> GetIssueMessage()
 			{
 				var name = "'" + ForRock.Rock + "'";
 				switch(Completion){
@@ -128,11 +129,11 @@ namespace RadialReview.Models.L10
 				}
 			}
 
-			public virtual string GetIssueDetails()
+			public virtual async Task<string> GetIssueDetails()
 			{
 				var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
 				var accountable = ForRock.AccountableUser.GetName();
-				var footer = "Week of " + week + "\nOwner: " + accountable;
+				var footer = "Week:" + week + "\nOwner: " + accountable;
 				return footer;
 			}
 
@@ -147,6 +148,11 @@ namespace RadialReview.Models.L10
 			public virtual L10Meeting L10Meeting { get; set; }
 			public virtual MeasurableModel Measurable { get; set; }
 			public virtual int _Ordering { get; set; }
+			public virtual bool IsDivider { get; set; }
+			public L10Meeting_Measurable()
+			{
+
+			}
 			public class L10Meeting_MeasurableMap : ClassMap<L10Meeting_Measurable>
 			{
 				public L10Meeting_MeasurableMap()
@@ -154,12 +160,15 @@ namespace RadialReview.Models.L10
 					Id(x => x.Id);
 					Map(x => x.DeleteTime);
 					Map(x => x._Ordering);
+					Map(x => x.IsDivider);
 					References(x => x.Measurable).Column("MeasurableId");//.Not.LazyLoad().ReadOnly();
 					References(x => x.L10Meeting).Column("L10MeetingId");//.LazyLoad().ReadOnly();
 					//Map(x => x.UserId).Column("UserId");
 					//Map(x => x.L10MeetingId).Column("L10MeetingId");
 				}
 			}
+
+			public virtual bool _WasModified { get; set; }
 		}
 		public class L10Meeting_Log : IDeletable, ILongIdentifiable
 		{

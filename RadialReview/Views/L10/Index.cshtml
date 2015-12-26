@@ -27,7 +27,7 @@
 	</div>
 	@if (Model.Recurrences.Any())
 	{
-			<table class="table startHiddenGroup table-condensed table-hover table-condensed">
+			<table class="table startHiddenGroup2 table-condensed table-hover table-condensed">
 				<thead>
 					<tr>
 						<th style="width:30px;padding:0"></th>
@@ -41,7 +41,7 @@
 				<tbody>
 					@foreach (var meeting in Model.Recurrences.OrderByDescending(x=>x.IsAttendee))
 					{
-						<tr class="startHidden clickable imageRow @(meeting.IsAttendee??false?"":"grayRow")" >
+						<tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow")" >
 							<td onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
 								@if (meeting.Recurrence.MeetingInProgress!=null){
 									<div class="label label-success hoverable" style = "height:16px; width: 80px;display: inline-block">in-progress</div>

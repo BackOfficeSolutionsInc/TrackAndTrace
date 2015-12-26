@@ -1,4 +1,5 @@
-﻿using RadialReview.Models.Interfaces;
+﻿using System.Threading.Tasks;
+using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
 using System;
 using System.Collections.Generic;
@@ -9,19 +10,19 @@ namespace RadialReview
 {
 	public static class IssuesExtensions
 	{
-		public static string IssueMessage(this IIssue self)
+		public async static Task<string> IssueMessage(this IIssue self)
 		{
 			if (self == null)
 				return "Not entered.";
-			return self.GetIssueMessage();
+			return await self.GetIssueMessage();
 
 		}
 
-		public static string IssueDetails(this IIssue self)
+		public async static Task<string> IssueDetails(this IIssue self)
 		{
 			if (self == null)
 				return "Not entered.";
-			return self.GetIssueDetails();
+			return await self.GetIssueDetails();
 		}
 	}
 }

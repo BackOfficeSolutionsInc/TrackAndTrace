@@ -203,7 +203,7 @@ namespace RadialReview.Accessors
 				var localChargeTime = invoice.Organization.ConvertFromUTC(ChargeTime.Value);
 				var lctStr = localChargeTime.ToString("dd MMM yyyy hh:mmtt")+" "+invoice.Organization.GetTimeZoneId(localChargeTime);
 
-				var email = MailModel.Bcc(ProductStrings.PaymentReceiptEmail);
+				var email = Mail.Bcc(EmailTypes.Receipt, ProductStrings.PaymentReceiptEmail);
 				if (result.email != null){
 					email = email.AddBcc(result.email);
 				}

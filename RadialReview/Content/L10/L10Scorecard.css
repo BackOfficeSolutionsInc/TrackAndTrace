@@ -12,7 +12,7 @@
 		height: 26px;
 	}
 
-#ScorecardTable_Over tr:not(.ui-sortable-helper):last-child td {
+#ScorecardTable_Over tr:not(.ui-sortable-helper):not(.divider):last-child td {
 	border-bottom: 3px solid white;
 }
 
@@ -57,9 +57,10 @@
 	padding-left: 5px;
 	padding-right: 10px;
 }
-.scorecard-table .target.value {
-	text-align: left;
-}
+
+	.scorecard-table .target.value {
+		text-align: left;
+	}
 	/*
 	.scorecard-table .heading.measurable {
 		text-align: right !important;
@@ -75,9 +76,9 @@
 		padding-left: 10px;
 	}
 
-	.scorecard-table .unit {
-		font-size: 14px;
-	}
+.scorecard-table .unit {
+	font-size: 14px;
+}
 
 
 .scorecard-table .date {
@@ -180,11 +181,15 @@
 		text-align: center;
 		width: 70px;
 		height: 100%;
+		font-family: monospace;
+		font-size: 14px;
+		/*margin-top: -2px;
+		margin-bottom: -2px;*/
 	}
 
 		.scorecard-table .score input:focus, .scorecard-table .score input:active {
 			outline: #CCC auto 1px;
-			border: 1px solid #DDD;
+			/*border: 1px solid #DDD;*/
 		}
 
 
@@ -214,7 +219,7 @@
 	#ScorecardTable_Over td, #ScorecardTable_Over th {
 		/*border-left: 1px solid #FFFFFF;*/
 	}
-	
+
 .direction_1:empty:before,
 .direction_GreaterThan:empty:before {
 	content: "≥";
@@ -224,7 +229,7 @@
 	content: "<";
 }
 
-.modifiers.Dollar:before, 
+.modifiers.Dollar:before,
 .modifiers.dollar:before {
 	content: "$";
 }
@@ -247,11 +252,12 @@
 }
 
 
+
 .modifiers-0:before {
 	content: "units";
 }
 
-.modifiers-1:after{
+.modifiers-1:after {
 	content: "dollars";
 }
 
@@ -291,13 +297,13 @@
 
 
 .scorecard-empty-holder:before {
-    content: "\2190";
-    font-size: 60px;
-    position: absolute;
-    left: 15px;
-    text-align: left;
-    top: 82px;
-    margin-top: 0px;
+	content: "\2190";
+	font-size: 60px;
+	position: absolute;
+	left: 15px;
+	text-align: left;
+	top: 82px;
+	margin-top: 0px;
 }
 
 .scorecard-empty-holder:after {
@@ -306,6 +312,105 @@
 
 .scorecard-angular .scorecard-table .score input {
 	font-family: inherit;
-    font-size: 13px;
+	font-size: 13px;
 	width: 80px;
 }
+
+.scorecard-table .divider,
+.scorecard-table .divider td {
+	height: 4px;
+	background-color: #BDBDBD;/*#E8E8E8;*/
+}
+
+#ScorecardTable_Over.scorecard-table .divider{    
+	border-top: 2px solid #FFF;
+	/*height: 4px;
+	top: 2px;*/
+}
+
+
+	.scorecard-table .divider .icon:before,
+	.scorecard-table .divider .glyphicon:before {
+		color: #999999;
+	}
+
+	.scorecard-table .divider .glyphicon {
+		top: 2.75px;
+		cursor: pointer;
+	}
+
+
+.scorecard-table .deleteDivider {
+	position: absolute;
+	left: 22px;   
+	top: -4px !important;
+	font-size: 10px;
+	opacity: 0;
+	z-index: 10000;
+}
+
+.scorecard-table .divider .handle {
+	top: 0px;
+}
+
+.meeting-page .scorecard-table .divider .handle {
+	top: 1px;
+}
+
+.scorecard-table .divider .icon,
+.scorecard-table .divider .glyphicon {
+	display: inline-block;
+}
+
+.scorecard-table .divider td:nth-child(0):hover .icon,
+.scorecard-table .divider td:nth-child(1):hover .icon,
+.scorecard-table .divider td:nth-child(0):hover .glyphicon,
+.scorecard-table .divider td:nth-child(1):hover .glyphicon {
+	opacity: 1;
+}
+
+.scorecard-table td:first-child:hover .divider-icon {
+	border-top: 1px solid red;
+}
+
+.scorecard-table .divider.xsortable-placeholder {
+	font-size: 1px;
+}
+
+
+
+.scorecard-table .divider .current-divider-left {
+	border-left: 2px solid #2c77ba;
+	background-color: #2c77ba;
+    border-top: 2px solid #2c77ba;
+	    top: 0px !important;
+}
+
+.scorecard-table .divider .current-divider-right {
+	border-right: 2px solid #2c77ba;
+	background-color: #2c77ba;
+    border-top: 2px solid #2c77ba;
+	    top: 0px !important;
+}
+
+.scorecard-table tr:nth-last-child(1) .current-divider-right,
+.scorecard-table tr:nth-last-child(1) .current-divider-left {
+	background-color: #2c77ba;
+}
+
+	.scorecard-table .IsDivider td * {
+		display: none;
+	}
+	
+	.scorecard-table .IsDivider td {
+		margin: 0;
+		padding: 0;
+		background-color: #BDBDBD;/*#E8E8E8;*/
+		cursor: move;
+		height: 4px;
+		top: 0;
+	}
+
+	.scorecard-table .IsDivider td.current {
+		background-color:#2c77ba;
+	}

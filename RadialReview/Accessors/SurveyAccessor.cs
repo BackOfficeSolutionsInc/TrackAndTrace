@@ -7,6 +7,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Survey;
+using RadialReview.Properties;
 using RadialReview.Utilities;
 
 namespace RadialReview.Accessors
@@ -329,7 +330,7 @@ namespace RadialReview.Accessors
 					var sqs = s.QueryOver<SurveyQuestionModel>().Where(x => x.DeleteTime == null && x.ForQuestionGroupId == surveyContainer.QuestionGroup.Id).List().ToList();
 					var srs = s.QueryOver<SurveyRespondentModel>().Where(x => x.DeleteTime == null && x.ForRespondentGroupId == surveyContainer.RespondentGroup.Id).List().ToList();
 
-					var emails = new List<MailModel>();
+					var emails = new List<Mail>();
 
 					foreach (var r in srs){
 						var survey = new SurveyTake(){
@@ -356,7 +357,7 @@ namespace RadialReview.Accessors
 						var url = Config.BaseUrl(caller.Organization) + "Survey/Take/" + r.LookupGuid;
 
 						emails.Add(
-							MailModel.To(r.Email)
+							Mail.To(EmailTypes.SurveyIssued,r.Email)
 								.SubjectPlainText(surveyContainer.EmailSubject)
 								.BodyPlainText(surveyContainer.EmailBody + "<br/><a href=" + url + ">" + url+"</a>")
 							);

@@ -45,11 +45,19 @@
 							<thead class="Content">
 								<tr>
 									<th colspan="5">
-                                        <div class="btn-group" style="margin:2px 2px;">
-                                            <div class="btn btn-link btn-xs @(Model.CanEdit?"":"disabled") gray" onclick="@(Model.CanEdit?Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/"):new HtmlString(""))">
-                                                @*<span class="icon fontastic-icon-science-laboratory"></span>*@Add Measurable
-                                            </div>
-                                        </div>
+										<div class="btn-group" style="margin:2px 2px;">
+											<button type="button" class="btn btn-link btn-xs dropdown-toggle gray" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+												<span class="caret"></span> Edit 
+											  </button>
+											  <ul class="dropdown-menu">
+												<li><a href="#" onclick="@(Model.CanEdit?new HtmlString("addDivider("+Model.Recurrence.Id+")"):new HtmlString(""))">Add Divider</a></li>
+												<li><a href="#" onclick="@(Model.CanEdit?Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/"):new HtmlString(""))">Add Measurable</a></li>
+											  </ul>
+											@*<div class="btn btn-link btn-xs @(Model.CanEdit?"":"disabled") gray" onclick="@(Model.CanEdit?Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/"):new HtmlString(""))">
+												*<span class="icon fontastic-icon-science-laboratory"></span>*Add Measurable
+											</div>
+											<div class="btn btn-link btn-xs @(Model.CanEdit?"":"disabled") gray"  onclick="@(Model.CanEdit?new HtmlString("addDivider("+Model.Recurrence.Id+")"):new HtmlString(""))">Add Divider</div>*@
+										</div>
                                     </th>
 									@*<th>&nbsp;</th>
                                     <th>&nbsp;</th>
@@ -97,7 +105,7 @@
 								@{
 						var row = 0;
 								}
-								@foreach (var m in Model.Meeting._MeetingMeasurables.OrderBy(x => x._Ordering).ThenBy(x => x.Measurable.AccountableUser.NotNull(y=>y.GetName())).ThenByDescending(x=>x.Measurable.Id))
+								@foreach (var m in Model.Meeting._MeetingMeasurables.OrderBy(x => x._Ordering).ThenBy(x => x.Measurable.NotNull(z=>z.AccountableUser.NotNull(y=>y.GetName()))).ThenByDescending(x=>x.Measurable.NotNull(y=>y.Id)))
 								{
 									ViewBag.Row = row;
 									@Html.Partial("partial/ScorecardRow", new ScorecardRowVM()
@@ -107,6 +115,7 @@
 									   RecurrenceId = m.L10Meeting.L10RecurrenceId,
 									   Scores = Model.Scores,
 									   Weeks = Model.Weeks,
+									   IsDivider = m.IsDivider
 								   }, new ViewDataDictionary() { { "ShowRow", (i == 0) }, { "Row", row } })
 									@*<tr>
 											<td class="who first1 alignRight">
@@ -196,7 +205,16 @@
 </style>
 
 <script>
-	$(".score input").each(function() { updateScore(this, true); });
+	$(".score input").each(function() {
+		updateScore(this,true);
+		setScoreTransform(this,getScoreTransform(this));
+	});
+	/*
+	$("#ScorecardTable tr").each(function() {
+		var input = $(this).first("input");
+		updateScore(input,true);
+	});
+	*/
 
 	$(function() {
 		var fixHelperModified = function(e, tr) {
@@ -232,12 +250,19 @@
 			handle:".handle",
 			helper: fixHelperModified,
 			stop: updateIndex,
-			placeholder:"xsortable-placeholder"
+			placeholder:"xsortable-placeholder",
+			start: function(event, ui) {
+				var plus ='';
+				if(ui.item.hasClass('divider')) 
+					plus = 'divider';
+				ui.placeholder.addClass(plus);
+			}
 		}).disableSelection();
 	});
 
 
 	makeXEditable_Scorecard(".inlineEdit");
+
 
 	function fixHandle() {
 		$(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());

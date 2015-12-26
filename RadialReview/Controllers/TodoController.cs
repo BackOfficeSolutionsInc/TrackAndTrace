@@ -137,7 +137,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateScorecardTodo(long meeting, long recurrence, long measurable, long score, long? accountable = null)
+        public async Task<PartialViewResult> CreateScorecardTodo(long meeting, long recurrence, long measurable, long score, long? accountable = null)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -147,8 +147,8 @@ namespace RadialReview.Controllers
 			var model = new ScoreCardTodoVM(recur.DefaultTodoOwner)
 			{
 				ByUserId = GetUser().Id,
-				Message = s.NotNull(x=>x.GetTodoMessage()),
-				Details = s.NotNull(x=>x.GetTodoDetails()),
+				Message = await s.NotNull(async x=>await x.GetTodoMessage()),
+				Details = await s.NotNull(async x=>await x.GetTodoDetails()),
 				MeasurableId = measurable,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
@@ -189,7 +189,7 @@ namespace RadialReview.Controllers
 			//return PartialView("ScorecardIssueModal", model);
 		}
 		[Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateRockTodo(long meeting, long recurrence, long rock, long? accountable = null)
+        public async Task<PartialViewResult> CreateRockTodo(long meeting, long recurrence, long rock, long? accountable = null)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -199,8 +199,8 @@ namespace RadialReview.Controllers
 			var model = new RockTodoVM(recur.DefaultTodoOwner)
 			{
 				ByUserId = GetUser().Id,
-				Message = s.NotNull(x=>x.GetTodoMessage()),
-				Details = s.NotNull(x=>x.GetTodoDetails()),
+				Message = await s.NotNull(async x=>await x.GetTodoMessage()),
+				Details = await s.NotNull(async x=>await x.GetTodoDetails()),
 				RockId = rock,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
@@ -223,7 +223,7 @@ namespace RadialReview.Controllers
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RockId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
-
+			
 			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
 			{
 				CreatedById = GetUser().Id,
@@ -243,7 +243,7 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateTodoFromIssue(long issue, long recurrence, long? meeting = null)
+        public async Task<PartialViewResult> CreateTodoFromIssue(long issue, long recurrence, long? meeting = null)
 		{
 			if (meeting!=null)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting.Value));
@@ -254,8 +254,8 @@ namespace RadialReview.Controllers
 
 			var model = new TodoFromIssueVM(recur.DefaultTodoOwner)
 			{
-				Message = i.NotNull(x=>x.GetTodoMessage()),
-				Details = i.NotNull(x=>x.GetTodoDetails()),
+				Message = await i.NotNull(async x=>await x.GetTodoMessage()),
+				Details = await i.NotNull(async x=>await x.GetTodoDetails()),
 				ByUserId = GetUser().Id,
 				MeetingId = meeting??-1,
 				IssueId = issue,

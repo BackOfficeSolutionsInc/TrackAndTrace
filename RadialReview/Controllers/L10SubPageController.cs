@@ -151,6 +151,8 @@ namespace RadialReview.Controllers
 		#region Segue
 		private PartialViewResult Segue(L10MeetingVM model)
 		{
+			ViewBag.Segue_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.Segue_Subheading,"Share your best professional and best personal news.");
+			
 			return PartialView("Segue", model);
 		}
 		#endregion
@@ -212,6 +214,8 @@ namespace RadialReview.Controllers
 		#region Headlines
 		private PartialViewResult Headlines(L10MeetingVM model)
 		{
+			ViewBag.CEH_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share all news about the people in your business. Good news is good. Add bad news to the Issues List.");
+
 			return PartialView("Headlines", model);
 		}
 		#endregion

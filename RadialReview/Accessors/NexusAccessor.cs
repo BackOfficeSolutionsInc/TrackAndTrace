@@ -76,6 +76,8 @@ namespace RadialReview.Accessors
                         Guid = nexusId.ToString(),
                         LastSent = null,
                         OrganizationId = caller.Organization.Id,
+						LastSentByUserId = caller.Id,
+						EmailStatus = null
                     };
                     newUser.TempUser = tempUser;
 					
@@ -168,14 +170,14 @@ namespace RadialReview.Accessors
 
         public async Task<EmailResult> ResendAllEmails(UserOrganizationModel caller, long organizationId)
         {
-            var unsentEmails=new List<MailModel>();
+            var unsentEmails=new List<Mail>();
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
 
-                    var toSend = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.TempUser != null && x.DeleteTime==null).Fetch(x=>x.TempUser).Eager.List().ToList();
+                    var toSend = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.TempUser != null && x.DeleteTime==null && x.User==null).Fetch(x=>x.TempUser).Eager.List().ToList();
                     foreach (var user in toSend)
                     {
                        unsentEmails.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser));
@@ -191,7 +193,7 @@ namespace RadialReview.Accessors
 
         public async Task<EmailResult> SendAllJoinEmails(UserOrganizationModel caller, long organizationId)
         {
-            var unsent = new List<MailModel>();
+            var unsent = new List<Mail>();
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
@@ -223,7 +225,7 @@ namespace RadialReview.Accessors
             }
         }
         
-        public MailModel CreateJoinEmailToGuid(UserOrganizationModel caller, TempUserModel tempUser)
+        public Mail CreateJoinEmailToGuid(UserOrganizationModel caller, TempUserModel tempUser)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -242,7 +244,7 @@ namespace RadialReview.Accessors
             }
         }
 		[Obsolete("Update userOrganization cache",false)]
-        public static MailModel CreateJoinEmailToGuid(DataInteraction s, UserOrganizationModel caller, TempUserModel tempUser)
+        public static Mail CreateJoinEmailToGuid(DataInteraction s, UserOrganizationModel caller, TempUserModel tempUser)
         {
             var emailAddress = tempUser.Email;
             var firstName = tempUser.FirstName;
@@ -260,7 +262,7 @@ namespace RadialReview.Accessors
             //var body = String.Format(;
             //subject = ;
 			var productName = Config.ProductName(caller.Organization);
-            return MailModel.To(emailAddress)
+			return Mail.To(EmailTypes.JoinOrganization, emailAddress)
 				.Subject(EmailStrings.JoinOrganizationUnderManager_Subject, firstName, caller.Organization.Name.Translate(), productName)
 				.Body(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, productName, id.ToUpper());
 

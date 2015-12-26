@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using FluentNHibernate.Mapping;
+using RadialReview.Accessors;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.L10;
 
@@ -30,16 +32,20 @@ namespace RadialReview.Models.Issues
 		public virtual OrganizationModel Organization { get; set; }
 
 		//public virtual long _RecurrenceIssueId { get; set; }
-		public virtual string GetTodoMessage()
+		public virtual async Task<string> GetTodoMessage()
 		{
 			return "";
 		}
 
-		public virtual string GetTodoDetails()
+		public virtual async Task<string> GetTodoDetails()
 		{
+
+			var padDetails = await PadAccessor.GetText(PadId);
+
 			var header = "RESOLVE ISSUE: " + Message;
-			if (!String.IsNullOrWhiteSpace(Description)){
-				header += "\n\n" + Description;
+			if (!String.IsNullOrWhiteSpace(padDetails))
+			{
+				header += "\n\n" + padDetails;
 			}
 			return header;
 		}

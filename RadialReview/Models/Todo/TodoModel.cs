@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using FluentNHibernate.Mapping;
+using RadialReview.Accessors;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -87,7 +89,7 @@ namespace RadialReview.Models.Todo
 			}
 		}
 
-		public virtual string GetIssueMessage()
+		public virtual async Task<string> GetIssueMessage()
 		{
 			if (CreatedDuringMeeting != null){
 				if (CreatedDuringMeeting.StartTime.HasValue && !CreatedDuringMeeting.CompleteTime.HasValue && CreateTime > CreatedDuringMeeting.StartTime.Value && CompleteTime == null){
@@ -109,15 +111,16 @@ namespace RadialReview.Models.Todo
 			return "";
 		}
 
-		public virtual string GetIssueDetails()
+		public virtual async Task<string> GetIssueDetails()
 		{
 			var week = CreateTime.ToString("d");
 			var accountable = AccountableUser.GetName();
 		
-			var footer = "Week of " + week + "\nOwner: " + accountable;
+			var footer = "Week: " + week + "\nOwner: " + accountable;
 
+			var padDetails =await PadAccessor.GetText(PadId);
 
-			return "MESSAGE: " + Message + "\nDETAILS: " + Details + "\n\n" + footer;
+			return "MESSAGE: " + Message + "\nDETAILS: " + padDetails + "\n\n" + footer;
 
 		}
 	}

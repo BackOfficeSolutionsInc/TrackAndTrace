@@ -1,0 +1,22 @@
+﻿
+<div class="review smallBreak2 loading tiny" style2="min-height:30px;">
+	<div class="heading" @*="margin:7px;"*@>Quick Links:</div>
+	<div class="tile">
+		@if (ViewBag.UserId != null && ViewBag.UserId != 0){
+			<div class="button-container uid_@ViewBag.UserId">
+				<div onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")" class="button icon fontastic-icon-checkbox" title="Create new to-do"></div>
+				<a href="/User/Details/@ViewBag.UserId" class="button icon fontastic-icon-torso" title="View Details"></a>
+
+				@if (((int?)ViewBag.Organizations ?? 0) > 1){
+					<a href="/Account/Role?ReturnUrl=%2F" class="button icon fontastic-icon-torsos" title="Change Roles"></a>
+				}
+				@if (ViewBag.ShowL10 as bool? == true){
+					<div onclick="@Html.ShowModal("Create Issue", "/Issues/CreateIssueRecurrence/", "/Issues/CreateIssueRecurrence/")" class="button icon fontastic-icon-pinboard" title="Create an Issue"></div>
+				}
+				<a href="/Account/Manage" class="button icon fontastic-icon-cog" title="Edit Settings"></a>
+
+				@*<span class="span"></span>*@
+			</div>
+		}
+	</div>
+</div>

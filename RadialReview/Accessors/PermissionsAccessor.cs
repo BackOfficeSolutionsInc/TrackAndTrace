@@ -118,7 +118,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-
+		
 		public static void LoadPermItem(ISession s, IEnumerable<PermItem> items)
 		{
 			var permItems = items as IList<PermItem> ?? items.ToList();

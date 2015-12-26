@@ -86,7 +86,7 @@ namespace RadialReview.Controllers
 			var organization = GetUser().Organization.GetName();
 			
 			var result = await Emailer.SendEmails(uniqueReviews.Select(x =>
-				MailModel.To(x.ForUser.GetEmail())
+				Mail.To(EmailTypes.ReviewReminder,x.ForUser.GetEmail())
 				.Subject(EmailStrings.ReminderReview_Subject, organization)
 				.Body(EmailStrings.RemindReview_Body,
 					x.ForUser.GetFirstName(),

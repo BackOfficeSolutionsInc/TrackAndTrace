@@ -139,17 +139,17 @@ namespace RadialReview.Controllers
 
 
 			allRocks.AddRange(r._DefaultRocks.Where(x => x.Id>0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
-			allMeasurables.AddRange(r._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y.Id != x.Measurable.Id)).Select(x => x.Measurable));
+			allMeasurables.AddRange(r._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y =>y!=null && y.Id != x.Measurable.NotNull(z=>z.Id))).Select(x => x.Measurable));
 
 			var model = new L10EditVM()
 			{
 				Recurrence = r,
 
-				PossibleMeasurables = allMeasurables,
+				PossibleMeasurables = allMeasurables.Where(x => x != null).ToList(),
 				PossibleMembers = allMembers,
 				PossibleRocks = allRocks,
 
-				SelectedMeasurables = r._DefaultMeasurables.Select(x => x.Measurable.Id).ToArray(),
+				SelectedMeasurables = r._DefaultMeasurables.Where(x=>x.Measurable!=null).Select(x => x.Measurable.Id).ToArray(),
 				SelectedMembers = r._DefaultAttendees.Select(x => x.User.Id).ToArray(),
 				SelectedRocks = r._DefaultRocks.Select(x => x.ForRock.Id).ToArray(),
 				Return = @return
@@ -182,7 +182,7 @@ namespace RadialReview.Controllers
             if (model.Recurrence.Id!=0){
 			    var existing = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
 			    allRocks.AddRange(existing._DefaultRocks.Where(x => x.Id > 0 && allRocks.All(y => y.Id != x.ForRock.Id)).Select(x => x.ForRock));
-			    allMeasurables.AddRange(existing._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y.Id != x.Measurable.Id)).Select(x => x.Measurable));
+				allMeasurables.AddRange(existing._DefaultMeasurables.Where(x => x.Id > 0 && allMeasurables.All(y => y != null && y.Id != x.Measurable.NotNull(z => z.Id))).Select(x => x.Measurable));
             }
             else
             {
@@ -195,7 +195,7 @@ namespace RadialReview.Controllers
 					L10Recurrence = model.Recurrence,
 					User = x
 				}).ToList();
-				model.Recurrence._DefaultMeasurables = allMeasurables.Where(x => model.SelectedMeasurables.Any(y => y == x.Id))
+				model.Recurrence._DefaultMeasurables = allMeasurables.Where(x => model.SelectedMeasurables.Any(y => x!=null && y == x.Id ))
 				.Select(x => new L10Recurrence.L10Recurrence_Measurable(){
 					L10Recurrence = model.Recurrence,
 					Measurable = x
@@ -220,7 +220,8 @@ namespace RadialReview.Controllers
 
 			model.PossibleRocks = allRocks;
 			model.PossibleMembers = allMembers;
-			model.PossibleMeasurables = allMeasurables;
+			model.PossibleMeasurables = allMeasurables.Where(x => x != null).ToList();
+			
 
 			model.SelectedRocks = model.SelectedRocks ?? new long[0];
 			model.SelectedMembers = model.SelectedMembers ?? new long[0];

@@ -27,12 +27,24 @@ namespace RadialReview.Models.Angular.Scorecard
 			if (measurable.Id < 0)
 				Disabled = true;
 			Ordering = measurable._Ordering;
+			IsDivider = false;
+		}
+
+		public static AngularMeasurable CreateDivider(int ordering,long id)
+		{
+			return new AngularMeasurable(){
+				Ordering = ordering,
+				IsDivider = true,
+				Id = -id
+			};
 		}
 
 		public AngularMeasurable()
 		{
 			
 		}
+
+		public bool IsDivider { get; set; }
 
 		public AngularUser Owner { get; set; }
 		public AngularUser Admin { get; set; }

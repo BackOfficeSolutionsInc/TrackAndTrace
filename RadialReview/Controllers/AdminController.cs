@@ -18,6 +18,7 @@ using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Reviews;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.Application;
+using RadialReview.Properties;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Query;
 using RadialReview.Models.UserModels;
@@ -385,7 +386,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Radial)]
         public async Task<JsonResult> Emails(int id)
         {
-            var emails = Enumerable.Range(0, id).Select(x => MailModel.To("clay.upton@gmail.com").Subject("TestBulk").Body("Email #{0}", "" + x));
+            var emails = Enumerable.Range(0, id).Select(x => Mail.To(EmailTypes.Test,"clay.upton@gmail.com").Subject("TestBulk").Body("Email #{0}", "" + x));
             var result = (await Emailer.SendEmails(emails));
             result.Errors = null;
 

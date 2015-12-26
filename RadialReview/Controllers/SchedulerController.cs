@@ -59,7 +59,7 @@ namespace RadialReview.Controllers
 				try{
 					var orgName = capturedPaymentException.OrganizationName + "(" + capturedPaymentException.OrganizationId + ")";
 					var trace = capturedPaymentException.StackTrace.NotNull(x => x.Replace("\n", "</br>"));
-					var email = MailModel.To(ProductStrings.PaymentExceptionEmail)
+					var email = Mail.To(EmailTypes.PaymentException,ProductStrings.PaymentExceptionEmail)
 						.Subject(EmailStrings.PaymentException_Subject, orgName)
 						.Body(EmailStrings.PaymentException_Body,capturedPaymentException.Message,"<b>" + capturedPaymentException.Type + "</b> for '" + orgName + "'  ($" + capturedPaymentException.ChargeAmount + ") at " + capturedPaymentException.OccurredAt + " [TaskId=" + taskId + "]", trace);
 
@@ -80,7 +80,7 @@ namespace RadialReview.Controllers
 				log.Error("Exception during Payment", capturedException);
 				try{
 					var trace = capturedException.StackTrace.NotNull(x => x.Replace("\n", "</br>"));
-					var email = MailModel.To(ProductStrings.ErrorEmail)
+					var email = Mail.To(EmailTypes.PaymentException, ProductStrings.ErrorEmail)
 						.Subject(EmailStrings.PaymentException_Subject, "<Non-payment exception>")
 						.Body(EmailStrings.PaymentException_Body, capturedException.NotNull(x=>x.Message), "<Non-payment>", trace);
 
@@ -106,7 +106,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Any)]
 		public async Task<string> EmailTodos(int currentTime)
 		{
-			var unsent = new List<MailModel>();
+			var unsent = new List<Mail>();
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
@@ -199,7 +199,7 @@ namespace RadialReview.Controllers
 										builder.Append("<br/>");
 									}
 
-									var mail = MailModel.To(email)
+									var mail = Mail.To(EmailTypes.DailyTodo,email)
 										.Subject(EmailStrings.TodoReminder_Subject, subject)
 										.Body(EmailStrings.TodoReminder_Body,
 											user.GetName(),

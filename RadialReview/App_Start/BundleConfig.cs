@@ -175,11 +175,12 @@ namespace RadialReview
 
 			bundles.Add(new ScriptBundle("~/bundles/main").Include(
 					  "~/Scripts/Main/radial.js",
-					//"~/Scripts/jquery.signalR-{version}.js",
+					  /*"~/Scripts/jquery.signalR-{version}.js",Was deleted*/
 					  "~/Scripts/jquery/jquery.tablesorter.js",
 					  "~/Scripts/Main/finally.js",
 					  "~/Scripts/Main/intercom.min.js",
-					  "~/Scripts/L10/jquery-ui.color.js"
+					  "~/Scripts/L10/jquery-ui.color.js"/*,
+					  "~/Scripts/Main/realtime.js"*/
 			));
 
 			bundles.Add(new ScriptBundle("~/bundles/DashboardGrid").Include(

@@ -203,7 +203,8 @@ namespace RadialReview.Models.L10
 			public virtual L10Recurrence L10Recurrence { get; set; }
 
 			public virtual int _Ordering { get; set; }
-
+			
+			public virtual bool IsDivider { get; set; }
 			public L10Recurrence_Measurable()
 			{
 				CreateTime = DateTime.UtcNow;
@@ -213,6 +214,7 @@ namespace RadialReview.Models.L10
 				public L10Recurrence_MeasurableMap()
 				{
 					Id(x => x.Id);
+					Map(x => x.IsDivider);
 					Map(x => x.CreateTime);
 					Map(x => x.DeleteTime);
 					Map(x => x._Ordering);
@@ -220,13 +222,16 @@ namespace RadialReview.Models.L10
 					References(x => x.L10Recurrence, "L10RecurrenceId");
 
 					//Map(x => x.MeasurableId).Column("MeasurableId");
-					References(x => x.Measurable, "MeasurableId");
+					References(x => x.Measurable, "MeasurableId").Nullable();
 				}
 			}
 			public virtual object UniqueKey()
 			{
-				return Tuple.Create(Measurable.Id, L10Recurrence.Id, DeleteTime);
+				return Tuple.Create(Measurable.NotNull(x=>x.Id), L10Recurrence.Id, DeleteTime);
 			}
+
+			/*Hack: Treats all dividers as the same. WasModfided indicates that the ordering has already been set.*/
+			public virtual bool _WasModified { get; set; }
 		}
 
 

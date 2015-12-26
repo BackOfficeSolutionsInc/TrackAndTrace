@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using Mandrill;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,9 @@ namespace RadialReview.Models.UserModels
 		public virtual long UserOrganizationId { get; set; }
 
         public virtual String Guid { get; set; }
+		public virtual WebHookEventType? EmailStatus { get; set; }
+		public virtual bool EmailStatusUnseen { get; set; }
+		public virtual long LastSentByUserId { get; set; }
 
         public virtual string Name()
         {
@@ -51,6 +55,10 @@ namespace RadialReview.Models.UserModels
 			Map(x => x.LastSent);
 			Map(x => x.OrganizationId);
 			Map(x => x.UserOrganizationId);
+
+			Map(x => x.LastSentByUserId);
+			Map(x => x.EmailStatusUnseen);
+			Map(x => x.EmailStatus).Nullable().CustomType<WebHookEventType>();
         }
     }
 }

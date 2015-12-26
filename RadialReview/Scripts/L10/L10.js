@@ -341,14 +341,18 @@ $(document).keydown(function (event) {
 	if (event.which == 38) {
 		if (f1.length > 0) {
 			f1.prev(".arrowkey").click().trigger("scroll-to");
+			event.preventDefault();
 		} else {
 		    $(".arrowkey").last().click().trigger("scroll-to");
+			event.preventDefault();
 		}
 	} else if (event.which == 40) {
 		if (f1.length > 0) {
 		    f1.next(".arrowkey").click().trigger("scroll-to");
+			event.preventDefault();
 		} else {
 		    $(".arrowkey").first().click().trigger("scroll-to");
+			event.preventDefault();
 		}
 	} else if (event.which == 32 || event.which == 13) {
 		$(f1).find(".todo-checkbox,.issue-checkbox").click();
