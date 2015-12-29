@@ -1,5 +1,6 @@
 ﻿@{
 	var forceMin = ViewBag.ForceMin == null?"":","+((int)ViewBag.ForceMin);
+	//var reorderable= ViewBag.Reorderable as bool?);
 }
 
 <div class="btn-group pull-right" style="padding: 5px 3px;">
@@ -11,11 +12,18 @@
 
 
 <div id="ScorecardContainer" class="scorecard meeting-page scorecard-angular" style="clear: both;">
+	
+	
+	@*Insert Parial Here
+	Viewbag.Reorderable = true*@
+	
+	
+
 	<div class="row">
 		<div class="col-md-12">
 			<div class="component">
 				<div class="clearfix"></div>
-				<div style="position: relative;">
+				<div style="position: relative;" >
 					<div class="table-responsive scroll-right" style="min-height: 100px;">
 						<table id="ScorecardTable" class="scorecard-table">
 							<thead>
@@ -45,8 +53,22 @@
 							<tbody>
 								<tr  ng-class="{IsDivider: measurable.IsDivider}" data-measurable="{{measurable.Id}}" class="reorderable" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
 									<td class="handle-cell"  ng-class="{handle: measurable.IsDivider}" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
-									<td class="who first1 alignRight"  ng-class="{handle: measurable.IsDivider}">{{measurable.Owner.Name}}</td>
-									<td class="who first1 alignLeft"  ng-class="{handle: measurable.IsDivider}"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
+									<td class="who first1 alignRight inlineEdit"  ng-class="{handle: measurable.IsDivider}"
+									    data-source="/Dropdown/MeetingMembers/{{meetingId}}?userId=true" 
+									    data-placement="right"
+									    data-url="/L10/UpdateArchiveMeasurable" 
+									    data-type="select" 
+									    data-name="accountable" 
+									    data-pk="{{measurable.Id}}_{{meetingId}}" 
+										>{{measurable.Owner.Name}}</td>
+									<td class="who first1 alignLeft" ng-class="{handle: measurable.IsDivider}"><span class="newLine gray inlineEdit" 
+									                                                                                 data-placement="right"
+									                                                                                 data-source="/Dropdown/MeetingMembers/{{meetingId}}?userId=true" 
+									                                                                                 data-url="/L10/UpdateArchiveMeasurable" 
+									                                                                                 data-type="select" 
+									                                                                                 data-name="admin" 
+									                                                                                 data-pk="{{measurable.Id}}_{{meetingId}}" 
+										                                                                           >/{{measurable.Admin.Name}}</span></td>
 									<td class="measurable first1" title="{{measurable.Name}}"  ng-class="{handle: measurable.IsDivider}">
 										<span class="inlineEdit"
 										      data-type="text"
@@ -134,8 +156,23 @@
 						<tbody>
 							<tr ng-class="{IsDivider: measurable.IsDivider}" data-measurable="{{measurable.Id}}" class="reorderable" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']" >
 								<td class="handle-cell" ng-class="{handle: measurable.IsDivider}"><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
-								<td class="who first1 alignRight" ng-class="{handle: measurable.IsDivider}">{{measurable.Owner.Name}}</td>
-								<td class="who first1 alignLeft" ng-class="{handle: measurable.IsDivider}"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
+								<td class="who first1 alignRight inlineEdit"  ng-class="{handle: measurable.IsDivider}"
+								    data-source="/Dropdown/MeetingMembers/{{meetingId}}?userId=true" 
+								    data-placement="right"
+								    data-url="/L10/UpdateArchiveMeasurable" 
+								    data-type="select" 
+								    data-name="accountable" 
+								    data-pk="{{measurable.Id}}_{{meetingId}}" 
+									>{{measurable.Owner.Name}}</td>
+								<td class="who first1 alignLeft" ng-class="{handle: measurable.IsDivider}"><span class="newLine gray inlineEdit" 
+								                                                                                 data-source="/Dropdown/MeetingMembers/{{meetingId}}?userId=true" 
+								                                                                                 data-url="/L10/UpdateArchiveMeasurable" 
+								                                                                                 data-placement="right"
+								                                                                                 data-type="select" 
+								                                                                                 data-name="admin" 
+								                                                                                 data-pk="{{measurable.Id}}_{{meetingId}}" 
+									                                                                           >/{{measurable.Admin.Name}}</span></td>
+
 								<td class="measurable first1" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
 									<span class="inlineEdit"
 									      data-type="text"
@@ -208,6 +245,7 @@
 
 		$("body").on('click', ".inlineEdit", function () {
 			if (!$(this).attr("editable")) {
+				var placement = $(this).attr("data-placement")||"left";
 				$(this).editable({
 					savenochange: true,
 					validate: function(value) {
@@ -221,7 +259,7 @@
 							return 'This field is required';
 						}
 					},
-					placement: "left",
+					placement: placement,
 					success: function (data) {
 
 						/*var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");

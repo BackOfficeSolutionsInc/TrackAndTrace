@@ -284,6 +284,9 @@ namespace RadialReview.Utilities
 		public static List<L10MeetingVM.WeekVM> GetPeriods(DayOfWeek weekStart,int timezoneOffset, DateTime now, DateTime? meetingStart, List<ScoreModel> scores,
 			bool includeNextWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart )
 		{
+
+			scores = scores ?? new List<ScoreModel>();
+
 			switch(scorecardPeriod){
 				case ScorecardPeriod.Weekly:
 					return GetWeeks(weekStart, timezoneOffset, now, meetingStart, scores, includeNextWeek);

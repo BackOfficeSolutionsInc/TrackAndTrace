@@ -2,12 +2,13 @@
 <div class="review smallBreak2 loading tiny" style2="min-height:30px;">
 	<div class="scorecard-heading heading">
 		Scorecard:<a href="/todo/list" class="gray"></a>
-	</div><div class="specialDiv tile hidden-width-1">@{ Html.RenderPartial("~/Views/Scorecard/Partial/list.cshtml", new ViewDataDictionary(){
-		                                          {"AddHeaders", false},
-		                                          {"AddController", false},
-		                                          {"DisableName", true}
-	                                          }); }</div><div class="tile visible-width-1">@{Html.RenderPartial("~/Views/Scorecard/Partial/tile.cshtml", new ViewDataDictionary(){
-	{"AddHeaders",false},
-	{"AddController",false},
-	{"DisableName",true}
-});}</div></div>
+	</div><div class="specialDiv tile hidden-width-1">@{ Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary(){
+		                                                     {"AddHeaders", false},
+		                                                     {"AddController", false},
+		                                                     {"DisableName", true}
+	                                                     }); }</div><div class="tile visible-width-1">@{Html.RenderPartial("~/Views/Scorecard/Partial/tile.cshtml", new ViewDataDictionary(){
+		                                                                                                    {"AddHeaders",false},
+		                                                                                                    {"AddController",false},
+		                                                                                                    {"DisableName",true}
+	                                                                                                    });}</div></div>
+

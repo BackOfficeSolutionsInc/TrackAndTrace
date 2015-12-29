@@ -18,11 +18,12 @@
 			<div class="empty-holder rock-empty-holder @(Model.Meeting._MeetingRocks.Any() ? "hidden" : "")"></div>
 
 			<div class="rocks-container  @(Model.Meeting._MeetingRocks.Any() ? "" : "hidden")" style="padding-bottom: 20px;">
-				
-				<div class="company-rock-container">
-					@Html.Partial("partial/CompanyRockGroup",Model.Rocks.Where(x=>x.ForRock.CompanyRock).ToList())
-				</div>
-				<hr />
+				@if (Model.Rocks.Where(x => x.ForRock.CompanyRock).Any()){
+					<div class="company-rock-container">
+						@Html.Partial("partial/CompanyRockGroup", Model.Rocks.Where(x => x.ForRock.CompanyRock).ToList())
+					</div>
+					<hr />
+				}
 
 				@Html.Partial("partial/RockGroup",Model.Rocks)
 

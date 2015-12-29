@@ -45,7 +45,7 @@ namespace RadialReview.Utilities.Synchronize
 				throw new SyncException(clientTimestamp);
 		}*/
 
-		public static void EnsureStrictlyAfter(UserOrganizationModel caller, ISession s, SyncAction action)
+		public static void EnsureStrictlyAfter(UserOrganizationModel caller, ISession s, SyncAction action,bool noSyncException=false)
 		{
 			try{
 				var now = DateTime.UtcNow;
@@ -77,7 +77,8 @@ namespace RadialReview.Utilities.Synchronize
 				}
 			}
 			catch (SyncException){
-				throw;
+				if (!noSyncException)
+					throw;
 			}catch (Exception e){
 				throw new SyncException("Sync Exception: "+e.Message,null);
 			}

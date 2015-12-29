@@ -40,8 +40,8 @@
 
 .todo-list-container {
 	text-align: left;
-	display:inline-block;
-	width:100%;
+	display: inline-block;
+	width: 100%;
 }
 
 .todo-list-container .name {
@@ -56,12 +56,12 @@
 	display: none;
 }
 
-.dashboard .imageContainer{
-	height:200px;
+.dashboard .imageContainer {
+	height: 200px;
 }
 
-.dashboard .component{
-	padding:0px;
+.dashboard .component {
+	padding: 0px;
 }
 /*
 .dashboard .jumbotron {
@@ -114,6 +114,10 @@
 
 .dashboard .scorecard .component {
 	margin: 0px;
+}
+
+.dashboard .scorecard input {
+	font-size: 12px !important;
 }
 
 .dashboard .scorecard .table-responsive {
@@ -202,19 +206,20 @@
 
 .dashboard .tiny > .heading {
 	font-weight: bold;
-	background-color:  lighten(@traction-gray,17%); //#F7F7F7;
+	background-color: lighten(@traction-gray,17%); //#F7F7F7;
 	text-align: left;
 	padding: 0 5px;
 	color: lighten(@traction-black,17%); //#666;
 	font-size: 13px;
 	border-bottom: 1px solid #D1D1D1;
-	padding: 2px 6px; 
+	padding: 2px 6px;
 }
 
 .dashboard .tiny > .heading a {
 	font-size: 10px;
 	color: lighten(@traction-black,17%)k;
 }
+
 .dashboard .tiny > .heading .clickable {
 	color: lighten(@traction-black,17%);
 }
@@ -228,8 +233,8 @@
 
 .dashboard .tiny > .heading .new:hover {
 	/*color: rgba(118, 127, 153, 1);*/
-	text-decoration:underline;
-	color:@traction-orange;
+	text-decoration: underline;
+	color: @traction-orange;
 }
 
 .dashboard .todo-list-container .empty-cell {
@@ -258,8 +263,6 @@
 	-ms-text-justify: distribute-all-lines;
 	text-justify: distribute-all-lines;
 	/*height: 48px;*/
-
-
 }
 
 .dashboard .button-container .button {
@@ -279,22 +282,21 @@
 	position: relative;
 	transition: color .15s,background-color .15s;
 	font-size: 18px;*/
-
-	    height: 42px;
-    width: 42px;
-    display: inline-table;
-    padding: 5px;
-    vertical-align: top;
-    display: inline-block;
-    zoom: 1;
-    border: 1px solid #D1D1D1;
-    background-color: #FCFCFC;
-    text-align: center;
-    color: #AAA8B6;
-    cursor: pointer;
-    position: relative;
-    transition: color 0.15s, background-color 0.15s;
-    font-size: 25px;
+	height: 42px;
+	width: 42px;
+	display: inline-table;
+	padding: 5px;
+	vertical-align: top;
+	display: inline-block;
+	zoom: 1;
+	border: 1px solid #D1D1D1;
+	background-color: #FCFCFC;
+	text-align: center;
+	color: #AAA8B6;
+	cursor: pointer;
+	position: relative;
+	transition: color 0.15s, background-color 0.15s;
+	font-size: 25px;
 }
 
 .dashboard .button-container .button.glyphicon {
@@ -319,7 +321,7 @@
 .dashboard .button-container .button.empty {
 	border: none;
 	background-color: transparent;
-	width:16px;
+	width: 16px;
 }
 
 .dashboard .button-container .span {
@@ -330,8 +332,8 @@
 	margin-top: -9px;
 }
 
-.dashboard .button-container .no-split{
-	white-space:nowrap;
+.dashboard .button-container .no-split {
+	white-space: nowrap;
 }
 
 .dashboard .button-container {
@@ -350,8 +352,9 @@
 	align-items: flex-start;
 	/*padding-top: 10px;*/
 }
-.dashboard .button-container .button{
-	margin:7px;
+
+.dashboard .button-container .button {
+	margin: 7px;
 }
 
 .dashboard .thumbnaill h3 {
@@ -462,77 +465,96 @@
 }
 
 .todo-heading .clickable:hover .glyphicon-unchecked:before {
-    content:"\e067";
+	content: "\e067";
 }
 
 
-.dashboard .software-updates{
-
+.dashboard .software-updates {
 	top: 0;
-    position: relative;
-    bottom: 0;
-    min-height: 100% !important;
-
+	position: relative;
+	bottom: 0;
+	min-height: 100% !important;
 	padding: 7px 11px;
-
 	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f7f7f7+0,f7f7f7+82,ffffff+94 */
 	background: #f7f7f7; /* Old browsers */
-	background: -moz-linear-gradient(left,  #f7f7f7 0%, #f7f7f7 82%, #ffffff 94%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(left,  #f7f7f7 0%,#f7f7f7 82%,#ffffff 94%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(to right,  #f7f7f7 0%,#f7f7f7 82%,#ffffff 94%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	background: -moz-linear-gradient(left, #f7f7f7 0%, #f7f7f7 82%, #ffffff 94%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(left, #f7f7f7 0%,#f7f7f7 82%,#ffffff 94%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to right, #f7f7f7 0%,#f7f7f7 82%,#ffffff 94%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
-
-	h1{
+	h1 {
 		margin: 0;
 		font-size: 14px;
 		color: #6D645D;
 		font-weight: bold;
 		text-transform: uppercase;
-		white-space:nowrap;
+		white-space: nowrap;
 	}
-	h2{
+
+	h2 {
 		margin: 0;
 		font-size: 14px;
 		color: #444;
 	}
-	p{
+
+	p {
 		margin: 0;
 		font-size: 12px;
-		margin-bottom:6px;
-		color:darkgray;
-		margin-left:6px;
+		margin-bottom: 6px;
+		color: darkgray;
+		margin-left: 6px;
 	}
 
-	blockquote{
+
+	ul {
+		padding-left: 6px;
+		font-size: 9px;
+		color: #A9A9A9;
+		list-style: none;
+
+		> li {
+			padding-left: 1.1m;
+			text-indent: -.7em;
+		}
+
+		> li:before {
+			content: "• ";
+			color: #999; /* or whatever color you prefer */
+		}
+	}
+
+	blockquote {
 		/*padding: 10px 17px;
 		margin: 0 0 20px;
 		font-size: 17.5px;
 		border-left: 15px solid #EEE;*/
 		padding: 5px 15px;
-		margin-bottom:10px;
+		margin-bottom: 10px;
 		/*border-left: 5px solid #D0D0D0;*/
-		border-left:4px solid #D0D0D0;
+		border-left: 4px solid #D0D0D0;
 	}
-	
 }
-.dashboard .width_1 .software-updates{
+
+.dashboard .width_1 .software-updates {
 	padding: 5px;
 
-	blockquote{
+	blockquote {
 		padding: 4px 4px;
 		margin: 0 0 20px;
 		font-size: 17.5px;
 		/*border-left: 4px solid #EEE;*/
 	}
-	h1{
+
+	h1 {
 		margin-left: -1px;
 	}
-	h2{
+
+	h2 {
 		margin: 0;
 		font-size: 12px;
 		color: #444;
 	}
-	p{
-		font-size:10px;
+
+	p {
+		font-size: 10px;
 	}
 }

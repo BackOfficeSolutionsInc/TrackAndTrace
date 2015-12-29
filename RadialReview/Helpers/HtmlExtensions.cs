@@ -256,6 +256,8 @@ namespace System.Web
         private class ScriptBlock : IDisposable
         {
             private const string scriptsKey = "scripts";
+
+			private string UniqueKey = null;
             public static List<string> pageScripts
             {
                 get
@@ -266,59 +268,91 @@ namespace System.Web
                 }
             }
 
+			public static List<string> uniqueKeys
+			{
+				get
+				{
+					if (HttpContext.Current.Items[scriptsKey + "_uniqueKeys"] == null)
+						HttpContext.Current.Items[scriptsKey + "_uniqueKeys"] = new List<string>();
+					return (List<string>)HttpContext.Current.Items[scriptsKey + "_uniqueKeys"];
+				}
+			}
+
+
             WebViewPage webPageBase;
 
-            public ScriptBlock(WebViewPage webPageBase)
+			public ScriptBlock(WebViewPage webPageBase, string uniqueKey)
             {
                 this.webPageBase = webPageBase;
-                this.webPageBase.OutputStack.Push(new StringWriter());
+				this.webPageBase.OutputStack.Push(new StringWriter());
+				this.UniqueKey = uniqueKey;
             }
 
             public void Dispose()
             {
-                pageScripts.Add(((StringWriter)this.webPageBase.OutputStack.Pop()).ToString());
+	            if (UniqueKey == null || !uniqueKeys.Contains(UniqueKey)){
+		            if (UniqueKey != null)
+			            uniqueKeys.Add(UniqueKey);
+		            pageScripts.Add(((StringWriter) this.webPageBase.OutputStack.Pop()).ToString());
+	            }
             }
         }
 
         private class StyleBlock : IDisposable
         {
             private const string styleKey = "styles";
-            public static List<string> pageStyles
-            {
-                get
-                {
-                    if (HttpContext.Current.Items[styleKey] == null)
-                        HttpContext.Current.Items[styleKey] = new List<string>();
-                    return (List<string>)HttpContext.Current.Items[styleKey];
-                }
-            }
+			private string UniqueKey = null;
+			public static List<string> pageStyles
+			{
+				get
+				{
+					if (HttpContext.Current.Items[styleKey] == null)
+						HttpContext.Current.Items[styleKey] = new List<string>();
+					return (List<string>)HttpContext.Current.Items[styleKey];
+				}
+			}
+
+			public static List<string> uniqueKeys
+			{
+				get
+				{
+					if (HttpContext.Current.Items[styleKey + "_uniqueKeys"] == null)
+						HttpContext.Current.Items[styleKey + "_uniqueKeys"] = new List<string>();
+					return (List<string>)HttpContext.Current.Items[styleKey + "_uniqueKeys"];
+				}
+			}
 
             WebViewPage webPageBase;
 
-            public StyleBlock(WebViewPage webPageBase)
+            public StyleBlock(WebViewPage webPageBase,string uniqueKey)
             {
                 this.webPageBase = webPageBase;
                 this.webPageBase.OutputStack.Push(new StringWriter());
+	            this.UniqueKey = uniqueKey;
             }
 
             public void Dispose()
             {
-                pageStyles.Add(((StringWriter)this.webPageBase.OutputStack.Pop()).ToString());
+	            if (UniqueKey == null || !uniqueKeys.Contains(UniqueKey)){
+					if (UniqueKey!=null)
+						uniqueKeys.Add(UniqueKey);
+		            pageStyles.Add(((StringWriter) this.webPageBase.OutputStack.Pop()).ToString());
+	            }
             }
         }
 
-        public static IDisposable BeginScripts(this HtmlHelper helper)
+		public static IDisposable BeginScripts(this HtmlHelper helper, string uniqueKey = null)
         {
-            return new ScriptBlock((WebViewPage)helper.ViewDataContainer);
+            return new ScriptBlock((WebViewPage)helper.ViewDataContainer, uniqueKey);
         }
 
         public static MvcHtmlString PageScripts(this HtmlHelper helper)
         {
             return MvcHtmlString.Create(string.Join(Environment.NewLine, ScriptBlock.pageScripts.Select(s => s.ToString())));
         }
-        public static IDisposable BeginStyles(this HtmlHelper helper)
+        public static IDisposable BeginStyles(this HtmlHelper helper,string uniqueKey=null)
         {
-            return new StyleBlock((WebViewPage)helper.ViewDataContainer);
+            return new StyleBlock((WebViewPage)helper.ViewDataContainer,uniqueKey);
         }
 
         public static MvcHtmlString PageStyles(this HtmlHelper helper)

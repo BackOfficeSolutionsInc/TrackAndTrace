@@ -1,0 +1,29 @@
+﻿Developer API (beta)
+---------------
+Beta API has been established.
+* List Users
+* List Scorecard Measurables
+* List and Edit Scores
+
+
+Rocks
+---------------
+* Company rocks are indicated within the L10 Rock Review page
+* Rock completion and percentage are indicated within the L10 Rock Review page
+
+
+Edit Measurable Admin and Accountable
+---------------
+* Click on the name or initials of the scorecard item to edit the owner.
+* You can also edit them from the meeting archive.
+
+
+Scorecard format
+---------------
+* Scorecard goal is now correctly formatted.
+* Dashboard format is not correct
+
+
+Bug Fixes
+---------------
+* IE <=11 issue with fade in and custom event triggers.

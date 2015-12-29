@@ -100,7 +100,7 @@ namespace RadialReview.Accessors
 				{
 
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetOrganizationMeasurables(s, perms, caller.Id, loadUsers);
+					return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
 
 				}
 			}
@@ -530,6 +530,32 @@ namespace RadialReview.Accessors
 						return score;
 					}
 					return null;
+				}
+			}
+		}
+
+
+
+		public static MeasurableModel GetMeasurable(UserOrganizationModel caller, long id)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					PermissionsUtility.Create(s,caller).ViewMeasurable(id);
+					return s.Get<MeasurableModel>(id);
+				}
+			}
+		}
+
+		public static ScoreModel GetScore(UserOrganizationModel caller, long id)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var found = s.Get<ScoreModel>(id);
+					PermissionsUtility.Create(s, caller).ViewMeasurable(found.MeasurableId);
+					return found;
 				}
 			}
 		}

@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Runtime.Serialization;
 using System.Web;
+using Amazon.IdentityManagement.Model;
 using FluentNHibernate.Mapping;
 using NHibernate;
 using NHibernate.Linq;
@@ -18,6 +20,7 @@ using System.Linq;
 namespace RadialReview.Models
 {
 	[DebuggerDisplay("{User}")]
+	[DataContract]
     public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable/*, IAngularizer<UserOrganizationModel>*/
     {
         public static long ADMIN_ID = -7231398885982031L;
@@ -28,6 +31,11 @@ namespace RadialReview.Models
         };
 		
 		public virtual long? _ClientTimestamp { get; set; }
+
+		[DataMember]
+		public virtual string Name { get { return GetName(); } }
+		[DataMember]
+		public virtual string UserName { get { return GetUsername(); } }
 
 
         public virtual TempUserModel TempUser { get; set; }
@@ -299,6 +307,29 @@ namespace RadialReview.Models
 
 
 		public virtual string ClientOrganizationName { get; set; }
+
+
+		public virtual DataContract GetUserDataContract(){
+			return new DataContract(this);
+		}
+
+		[DataContract]
+		public class DataContract
+		{
+			[DataMember]
+			public virtual long Id { get; set; }
+			[DataMember]
+			public virtual String Name { get; set; }
+			[DataMember]
+			public virtual String Username { get; set; }
+
+			public DataContract(UserOrganizationModel self)
+			{
+				Id = self.Id;
+				Name = self.GetName();
+				Username = self.GetUsername();
+			}
+		}
 	}
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>

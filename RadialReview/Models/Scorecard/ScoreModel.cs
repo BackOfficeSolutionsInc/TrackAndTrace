@@ -1,26 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Web;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
+using RadialReview.Utilities;
 
 namespace RadialReview.Models.Scorecard
 {
+	[DataContract]
 	public class ScoreModel : ILongIdentifiable, IDeletable, IIssue,ITodo
 	{
+		[DataMember(Order = 0)]
 		public virtual long Id { get; set; }
+		[DataMember(Name = "MeasurableId", Order = 1)]
+		public virtual long MeasurableId { get; set; }
+		[DataMember(Name = "ForWeekNumber",Order = 2)]	
+		public virtual long DataContract_ForWeek{get { return TimingUtility.GetWeekSinceEpoch(ForWeek); }}
+		[DataMember(Name = "Value", Order = 3)]
+		public virtual decimal? Measured { get; set; }
+
+
+		public virtual DateTime ForWeek { get; set; }
 		public virtual DateTime? DateEntered { get; set; }
 		public virtual DateTime DateDue { get; set; }
-		public virtual DateTime ForWeek { get; set; }
-		public virtual long MeasurableId { get; set; }
+
+
+
 		public virtual MeasurableModel Measurable { get; set; }
 		public virtual long OrganizationId { get; set; }
 		public virtual long AccountableUserId { get; set; }
 		public virtual UserOrganizationModel AccountableUser { get; set; }
-		public virtual decimal? Measured { get; set; }
+		
 
 		public virtual DateTime? DeleteTime { get; set; }
 
@@ -155,7 +169,24 @@ namespace RadialReview.Models.Scorecard
 		}
 
 
+		public class DataContract
+		{
+			public virtual long Id { get; set; }
+			public virtual decimal? Value { get; set; }
+			public virtual long ForWeek { get; set; }
+			public virtual MeasurableModel Measurable { get; set; }
 
+			public virtual UserOrganizationModel.DataContract AccountableUser { get { return Measurable.AccountableUser.GetUserDataContract(); } }
+			public virtual UserOrganizationModel.DataContract AdminUser { get { return Measurable.AdminUser.GetUserDataContract(); } }
+
+			public DataContract(ScoreModel self)
+			{
+				Id = self.Id;
+				Value = self.Measured;
+				ForWeek = self.DataContract_ForWeek;
+				Measurable = self.Measurable;
+			}
+		}
 		
 	}
 }

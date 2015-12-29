@@ -2219,7 +2219,7 @@ namespace RadialReview.Accessors
 			}
 		}*/
 
-		public static void UpdateScore(UserOrganizationModel caller, long scoreId, decimal? measured, string connectionId = null)
+		public static void UpdateScore(UserOrganizationModel caller, long scoreId, decimal? measured, string connectionId = null,bool noSyncException=false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -2229,7 +2229,8 @@ namespace RadialReview.Accessors
 					if (score == null)
 						throw new PermissionsException("Score does not exist.");
 
-					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateScore(scoreId));
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateScore(scoreId),noSyncException);
+					
 
 					PermissionsUtility.Create(s, caller).EditScore(scoreId);
 
@@ -2261,7 +2262,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static ScoreModel _UpdateScore(ISession s, PermissionsUtility perms, long measurableId, long weekNumber, decimal? measured, string connectionId)
+		public static ScoreModel _UpdateScore(ISession s, PermissionsUtility perms, long measurableId, long weekNumber, decimal? measured, string connectionId, bool noSyncException = false)
 		{
 			var now = DateTime.UtcNow;
 			DateTime? nowQ = now;
@@ -2285,7 +2286,7 @@ namespace RadialReview.Accessors
 
 			if (score != null)
 			{
-				SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(score.Id));
+				SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(score.Id),noSyncException);
 				//Found it with false id
 				score.Measured = measured;
 				score.DateEntered = (measured == null) ? null : nowQ;
@@ -2398,14 +2399,14 @@ namespace RadialReview.Accessors
 			return score;
 		}
 
-		public static void UpdateScore(UserOrganizationModel caller, long measurableId, long weekNumber, decimal? measured, string connectionId)
+		public static void UpdateScore(UserOrganizationModel caller, long measurableId, long weekNumber, decimal? measured, string connectionId,bool noSyncException=false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perms = PermissionsUtility.Create(s, caller);
-					_UpdateScore(s, perms, measurableId, weekNumber, measured, connectionId);
+					_UpdateScore(s, perms, measurableId, weekNumber, measured, connectionId, noSyncException);
 					tx.Commit();
 					s.Flush();
 				}
@@ -2568,22 +2569,32 @@ namespace RadialReview.Accessors
 					{
 						perms.ViewUserOrganization(accountableId.Value, false);
 						var user = s.Get<UserOrganizationModel>(accountableId.Value);
-						if (user != null)
-							user.UpdateCache(s);
+						var oldUser = s.Get<UserOrganizationModel>(measurable.Measurable.AccountableUserId);
+						if (user == null)
+							throw new PermissionsException("Cannot Update User");
+						user.UpdateCache(s);
+						if (oldUser != null)
+							oldUser.UpdateCache(s);
 
 						measurable.Measurable.AccountableUserId = accountableId.Value;
 						group.updateMeasurable(meeting_measurableId, "accountable", user.NotNull(x => x.GetName()), accountableId.Value);
 						updateText.Add("Accountable: " + user.NotNull(x => x.GetName()));
+						s.Update(measurable.Measurable);
 					}
-					if (adminId != null && measurable.Measurable.AccountableUserId != accountableId.Value)
+					if (adminId != null && measurable.Measurable.AdminUserId != adminId.Value)
 					{
 						perms.ViewUserOrganization(adminId.Value, false);
 						var user = s.Get<UserOrganizationModel>(adminId.Value);
-						if (user != null)
-							user.UpdateCache(s);
+						var oldUser = s.Get<UserOrganizationModel>(measurable.Measurable.AdminUserId);
+						if (user == null)
+							throw new PermissionsException("Cannot Update User");
+						user.UpdateCache(s);
+						if (oldUser != null)
+							oldUser.UpdateCache(s);
 						measurable.Measurable.AdminUserId = adminId.Value;
 						group.updateMeasurable(meeting_measurableId, "admin", user.NotNull(x => x.GetName()), adminId.Value);
 						updateText.Add("Admin: " + user.NotNull(x => x.GetName()));
+						s.Update(measurable.Measurable);
 					}
 
 					var updatedText = "Updated Measurable: \"" + measurable.Measurable.Title + "\" \n " + String.Join("\n", updateText);

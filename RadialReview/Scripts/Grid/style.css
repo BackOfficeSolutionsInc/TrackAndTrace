@@ -19,16 +19,16 @@ html {
 	-webkit-transition: width 0.2s;
 }
 
-	.grid li {
+	.grid > li {
 		position: absolute;
 		z-index: 1;
 		-webkit-transition: top 0.2s, left 0.2s, width 0.2s, height 0.2s, font-size 0.2s, line-height 0.2s;
 	}
-	.grid li .heading {
+	.grid > li .heading {
 		cursor: pointer;
 	}
 
-		.grid li .inner {
+		.grid > li .inner {
 			position: absolute;
 			background: #fff;
 			border: 1px solid #bbb;
@@ -40,20 +40,20 @@ html {
 			z-index: 2;
 		}
 
-		.grid li.changed .inner {
+		.grid > li.changed .inner {
 			background: #ffff66;
 			-webkit-transition: none;
 		}
 
-		.grid li.ui-draggable-dragging {
+		.grid > li.ui-draggable-dragging {
 			-webkit-transition: none;
 		}
 
-		.grid li.position-highlight {
+		.grid > li.position-highlight {
 			-webkit-transition: none;
 		}
 
-			.grid li.position-highlight .inner {
+			.grid > li.position-highlight .inner {
 				border: none;
 				background: #ccc;
 			}
@@ -107,7 +107,7 @@ html {
 		.grid .controls .resize:hover {
 		}
 
-	.grid li .settings {
+	.grid > li .settings {
 		-webkit-transition: opacity 0.3s,right 0.3s;
 		position: absolute;
 		/* top: 4px; */
@@ -122,26 +122,26 @@ html {
 		z-index: 5;
 	}
 
-	.grid li .icon.resize-control {
+	.grid >li .icon.resize-control {
 		top: 17px;
 	}
 
-	.grid li:hover .settings {
+	.grid >li:hover .settings {
 		opacity: 1;
 		right: -13px;
 	}
 
-	.grid li .settings ~ .controls {
+	.grid >li .settings ~ .controls {
 		display: none;
 		top: 15px;
 	}
 
-	.grid li .settings.resize-control:hover ~ .controls {
+	.grid >li .settings.resize-control:hover ~ .controls {
 		opacity: 1;
 		display: block;
 	}
 
-	.grid li .controls:hover {
+	.grid >li .controls:hover {
 		display: block;
 		opacity: 1;
 	}
@@ -159,7 +159,7 @@ html {
 		padding: 0;
 	}
 
-	.grid li .content {
+	.grid >li .content {
 		position: absolute;
 		left: 0;
 		right: 0;
@@ -167,7 +167,7 @@ html {
 		top: 0;
 	}
 
-		.grid li .content .review {
+		.grid> li .content .review {
 			/*padding: 4px;
 			bottom: 0;
 			top: 0;

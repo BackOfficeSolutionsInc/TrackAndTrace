@@ -1,20 +1,26 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 
 namespace RadialReview.Models.Scorecard
 {
+	[DataContract]
 	public class MeasurableModel :ILongIdentifiable,IDeletable
 	{
+		[DataMember]
 		public virtual long Id { get; set; }
 		public virtual long? FromTemplateItemId { get; set; }
+		[DataMember]
 		public virtual string Title { get; set; }
 		public virtual long AccountableUserId { get; set; }
 		public virtual UserOrganizationModel AccountableUser { get; set; }
 		public virtual long AdminUserId { get; set; }
 		public virtual UserOrganizationModel AdminUser { get; set; }
+		[DataMember]
 		public virtual LessGreater GoalDirection { get; set; }
+		[DataMember]
 		public virtual decimal Goal { get; set; }
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
@@ -25,10 +31,17 @@ namespace RadialReview.Models.Scorecard
 		public virtual DayOfWeek DueDate { get; set; }
 		public virtual TimeSpan DueTime { get; set; }
 
+		[DataMember]
 		public virtual UnitType UnitType { get; set; }
 
 		public virtual bool _Editable { get; set; }
 		public virtual int? _Ordering { get; set; }
+
+		[DataMember(Name = "AccountableUser")]
+		public virtual UserOrganizationModel.DataContract DataContract_AccountableUser { get { return AccountableUser.GetUserDataContract(); } }
+
+		[DataMember(Name = "AdminUser")]
+		public virtual UserOrganizationModel.DataContract DataContract_AdminUser { get { return AdminUser.GetUserDataContract(); }}
 
 		public MeasurableModel()
 		{

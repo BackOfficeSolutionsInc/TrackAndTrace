@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Antlr.Runtime.Tree;
 using FluentNHibernate.Mapping;
 using Microsoft.AspNet.Identity;
@@ -54,7 +55,17 @@ namespace RadialReview.Models
         }
 
         public virtual IList<UserRoleModel> Roles { get; set; }
-        
+
+		public virtual async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<UserModel> manager, string authenticationType)
+		{
+			// Note the authenticationType must match the one defined in 
+			// CookieAuthenticationOptions.AuthenticationType
+			var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
+			// Add custom user claims here
+			return userIdentity;
+		}
+
+
         public UserModel()
         {
             UserOrganization = new List<UserOrganizationModel>();

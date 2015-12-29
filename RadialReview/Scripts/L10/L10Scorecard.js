@@ -212,6 +212,8 @@ function updateServerScore(self) {
 }
 
 function makeXEditable_Scorecard(selector) {
+	
+    var placement = $(this).attr("data-placement")||"left";
 	$(selector).editable({
 		savenochange: true,
 		validate: function (value) {
@@ -225,6 +227,7 @@ function makeXEditable_Scorecard(selector) {
 				return 'This field is required';
 			}
 		},
+		placement: placement,
 		display: function(value, sourceData) {
 			if ($(this).hasClass("unit")) {
 				var parent = $(this).closest(".target.value");
@@ -254,7 +257,10 @@ function makeXEditable_Scorecard(selector) {
 			if ($(this).hasClass("target-value")) {
 				$(this).text(transformNumber(value, ""));
 			}
-
+			if ($(this).hasClass("who") && $(this).hasClass("accountable"))
+				$(this).text(getInitials($(this).text()));
+			if ($(this).hasClass("adminSelection"))
+				$(this).text("/"+getInitials($(this).text()));
 			return null;
 		},
 		success: function (data, newVal) {

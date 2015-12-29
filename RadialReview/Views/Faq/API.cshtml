@@ -1,0 +1,336 @@
+﻿@model List<RadialReview.Controllers.FaqController.ApiSection>
+
+@using RadialReview.Properties
+@{
+	ViewBag.Title = "API";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+	<div class="col-md-9">
+		<h1 id="Overview">Overview</h1>
+		<div class="doc-section">
+			<h2 id="Basic-API-Info">Basic API Information</h2>
+
+			<p>To use the API you must first authenticate yourself. You will not be able to edit information you do not control when logged in to the standard web application.</p>
+			<p>The API is in <b>early beta</b>. It is recommended that you upgrade to the latest verison when it comes out.</p>
+
+
+			<h3 id="Current-Version">Current Version</h3>
+			<figure class="highlight">
+				<div>
+					<b>v0</b>
+					<br />
+					<i>12/28/2015</i>
+				</div>
+			</figure>
+
+			<h3 id="Guarantee">Guarantee</h3>
+			<p>We make no guarantee about the stability of v0. Your applications may break at any time in the future. Use at your own risk. If you find any errors please contact us at <a href="mailto:support@mytractiontools.com">support@mytractiontools.com</a></p>
+		</div>
+
+		<h1 id="Before-Making-a-Request">Making a Request</h1>
+		<div class="doc-section">
+			<h2 id="Generating-a-Token">Generating a Token</h2>
+			<p>To interact with the API you'll need to request a token. This is done with a post request to the server. Tokens are only valid for 2 weeks. After which, new one must be generated.</p>
+
+			<p>
+				The post request requires three paramemters.
+				<ol>
+					<li><b>grant_type</b> which is always "password"</li>
+					<li><b>userName</b> which is your login email</li>
+					<li><b>password</b> which is your login password</li>
+				</ol>
+			</p>
+			<p>The post request is delivered to <b>@(ProductStrings.BaseUrl2)Token</b>. The following is a curl.</p>
+			<figure class="highlight">
+				<code>curl -i -X POST -d "grant_type=password" -d "userName=<b>YOUR_USERNAME_HERE</b>" -d "password=<b>YOUR_PASSWORD_HERE</b>" '@(ProductStrings.BaseUrl2)Token'</code>
+			</figure>
+
+			<p>This will return json that looks similar to the following:</p>
+			<pre style="overflow-x:auto; word-wrap: normal;">
+{
+  "access_token":"qriivcbIB143adasdVuweqweasdVidi-wqfayefGFa63IiaJasdf325salo10asdf0vaxcve0awRUPph-KDSgqweascvoxzxf-OadsfIadoasdfoc-asdfic_qeisicpapdladsKdiadsioqwekl78VjptVop7aretuasdfkNQIOWNFO123459zxcvasdf6r9shB6BYpyowiGJLMHi3yB3Es5aAYQ2pGstqAJ58XNshdXlW4WhHsbxJ2ggO3hnX4yMKbv4ieEBuZNN7zA8n4KG676RyqfRx_MLUjdYCnslOqEGUf8Ole5a8krPX5EWLcs3qwDB6EH6Icc7Bk48hHdDMeuAn3s5kvGsBK14Fel7p228W9_bdXKhG9ylVZF7mjmcunTa7UijA2nX7pp60tcOVa4jkdZlyui6sqAejGHv-avB2L0n8fVpjHi8nVWlReG",
+  "token_type":"bearer",
+  "expires_in":1209599,
+  "userName":"user@organization.com",
+  ".issued":"Mon, 28 Dec 2015 07:05:37 GMT",
+  ".expires":"Mon, 11 Jan 2016 07:05:37 GMT"
+}</pre>
+
+			<p>The <b>access_token</b> will be used in all future requests. Notice the <b>token_type</b>. It indicates that this access_token is a <b>Bearer</b> token.</p>
+
+
+			<h3 id="Formatting-a-Request">Formating a Request</h3>
+			<p>Once you have your Bearer token. You must add it to the header of all future requests.</p>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">Example: GET a listing scorecard items</div>
+				<div class="panel-body">
+					<code>curl -i -X GET -H "Authorization:Bearer <b>YOUR_BEARER_TOKEN_HERE</b>" '@(ProductStrings.BaseUrl2)api/v0/scorecard/items/'</code>
+				</div>
+			</div>
+		</div>
+
+		@foreach (var s in Model)
+		{
+			<h1 id="@s.Anchor">@s.Name</h1>
+			foreach (var func in s.Functions)
+			{
+				<div class="doc-section">
+					<h2 id="@func.Anchor">@func.Name</h2>
+					@foreach (var url in func.URL)
+					{
+						<h3><code>@url</code></h3>
+					}
+					<p>@func.Details</p>
+
+					<div class="panel-group" id="accordion-@func.Anchor" role="tablist" aria-multiselectable="true">
+
+						@if (func.Parameters.Any())
+						{
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="@(func.Anchor)-parameters-heading">
+									<h4 class="panel-title">
+										<a role="button" data-toggle="collapse" data-parent="#accordion-@func.Anchor" href="#@(func.Anchor)-parameters-collapse" aria-controls="@(func.Anchor)-parameters-collapse">
+											Parameters
+										</a>
+									</h4>
+								</div>
+								<div id="@(func.Anchor)-parameters-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="@(func.Anchor)-parameters-heading">
+									<div class="panel-body">
+										<table class="table table-condensed table-striped">
+											@foreach (var row in func.Parameters)
+											{
+												<tr><td class="monospace">@row.Name</td><td>@row.Details</td></tr>
+											}
+										</table>
+									</div>
+								</div>
+							</div>
+						}
+						<div class="panel panel-default">
+							<div class="panel-heading" role="tab" id="@(func.Anchor)-request-heading">
+								<h4 class="panel-title">
+									<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-@func.Anchor" href="#@(func.Anchor)-request-collapse" aria-expanded="false" aria-controls="@(func.Anchor)-request-collapse">
+										Sample Request
+									</a>
+								</h4>
+							</div>
+							<div id="@(func.Anchor)-request-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="@(func.Anchor)-request-heading">
+								<div class="panel-body">
+									<code>@func.Request</code>
+								</div>
+							</div>
+						</div>
+						<div class="panel panel-default">
+							<div class="panel-heading" role="tab" id="@(func.Anchor)-response-heading">
+								<h4 class="panel-title">
+									<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-@func.Anchor" href="#@(func.Anchor)-response-collapse" aria-expanded="false" aria-controls="@(func.Anchor)-response-collapse">
+										Expected Response
+									</a>
+								</h4>
+							</div>
+							<div id="@(func.Anchor)-response-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="@(func.Anchor)-response-heading">
+								<div class="panel-body">
+									<pre>@func.Response</pre>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+		}
+
+		<div style="height:500px;"></div>
+	</div>
+	<div class="col-md-3">
+		<nav class="doc-sidebar hidden-print hidden-xs hidden-sm affix">
+			<ul class="nav doc-sidenav">
+				<li>
+					<a href="#Overview">Overview</a>
+					<ul class="nav">
+						<li><a href="#Basic-API-Info">Basic API Information</a></li>
+						<li><a href="#Current-Version">Current Version</a></li>
+						<li><a href="#Guarantee">Guarantee</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#Before-Making-a-Request">Before Making a Request</a>
+					<ul class="nav">
+						<li><a href="#Generating-a-Token">Generating a Token</a></li>
+						<li><a href="#Formatting-a-Request">Formating a Request</a></li>
+					</ul>
+				</li>
+
+				@foreach (var s in Model)
+				{
+					<li>
+						<a href="#@(s.Anchor)">@s.Name</a>
+						<ul class="nav">
+							@foreach (var f in s.Functions)
+							{
+								<li><a href="#@(f.Anchor)">@(f.Name)</a></li>
+							}
+						</ul>
+					</li>
+				}
+			</ul> <a class="back-to-top" href="#top"> Back to top </a>
+		</nav>
+	</div>
+</div>
+
+@using (Html.BeginScripts())
+{
+	<script>
+		$('.affix').affix({
+			offset: {
+				top: -10,
+				bottom: function () {
+					return (this.bottom = $('.footer').outerHeight(true));
+				}
+			}
+		});
+		$('body').scrollspy({ target: '.doc-sidenav' });
+
+	</script>
+}
+
+<style>
+	.monospace {
+		font-family: monospace;
+	}
+
+	pre {
+		overflow-x: auto;
+		word-wrap: normal;
+	}
+
+	.table {
+		margin-bottom: 0px;
+	}
+
+	h1[id]:before,
+	h2[id]:before,
+	h3[id]:before,
+	h4[id]:before,
+	h5[id]:before,
+	h6[id]:before {
+		display: block;
+		content: " ";
+		margin-top: -55px;
+		height: 55px;
+		visibility: hidden;
+	}
+
+	h1 {
+		margin-left: -60px;
+		margin-right: -20px;
+		padding-bottom: 6px;
+		font-weight: bold;
+		background-color: #ef7622;
+		color: #FFF;
+		padding-left: 15px;
+		padding-top: 10px;
+		text-transform: uppercase;
+	}
+
+	h3 {
+		margin: 0px;
+		margin-bottom: 5px;
+		font-size: 18px;
+	}
+
+		h3 code {
+			color: #424242;
+			background-color: transparent;
+		}
+
+	.doc-section > h3:last-of-type {
+		margin-bottom: 20px;
+	}
+
+	.doc-section {
+		margin-bottom: 40px;
+		border: 1px solid #E4E4E4;
+		padding: 5px 20px;
+		border-radius: 7px;
+	}
+
+	.doc-sidenav {
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+
+	.highlight {
+		padding: 9px 14px;
+		margin-bottom: 14px;
+		background-color: #f7f7f9;
+		border: 1px solid #e1e1e8;
+		border-radius: 4px;
+	}
+
+	.doc-sidebar .nav > .active > ul {
+		display: block;
+	}
+
+	.doc-sidebar .nav .nav {
+		display: none;
+		padding-bottom: 10px;
+	}
+
+	.doc-sidebar .nav > li > a {
+		display: block;
+		padding: 4px 20px;
+		font-size: 13px;
+		font-weight: 500;
+		color: #767676;
+	}
+
+	.doc-sidebar .nav .nav > li > a:focus,
+	.doc-sidebar .nav .nav > li > a:hover {
+		padding-left: 29px;
+	}
+
+	.doc-sidebar .nav > li > a {
+		display: block;
+		padding: 4px 20px;
+		font-size: 13px;
+		font-weight: 500;
+		color: #767676;
+	}
+
+	.doc-sidebar .nav .nav > li > a {
+		padding-top: 1px;
+		padding-bottom: 1px;
+		padding-left: 30px;
+		font-size: 12px;
+		font-weight: 400;
+	}
+
+	.doc-sidebar .nav .nav > .active:focus > a,
+	.doc-sidebar .nav .nav > .active:hover > a,
+	.doc-sidebar .nav .nav > .active > a {
+		padding-left: 28px;
+		font-weight: 500;
+	}
+
+	.doc-sidebar .nav > li > a:focus,
+	.doc-sidebar .nav > li > a:hover {
+		padding-left: 19px;
+		color: #EF7622;
+		text-decoration: none;
+		background-color: rgba(0, 0, 0, 0);
+		border-left: 1px solid #EF7622;
+	}
+
+	.doc-sidebar .nav > .active:focus > a,
+	.doc-sidebar .nav > .active:hover > a,
+	.doc-sidebar .nav > .active > a {
+		padding-left: 18px;
+		font-weight: 700;
+		color: #EF7622;
+		background-color: rgba(0, 0, 0, 0);
+		border-left: 2px solid #EF7622;
+	}
+</style>

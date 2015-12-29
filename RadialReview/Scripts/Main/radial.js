@@ -53,6 +53,19 @@ function escapeString(str) {
 
 })(jQuery);
 
+/*(function () {
+  function CustomEvent ( event, params ) {
+    params = params || { bubbles: false, cancelable: false, detail: undefined };
+    var evt = document.createEvent( 'CustomEvent' );
+    evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+    return evt;
+   }
+
+  CustomEvent.prototype = window.Event.prototype;
+
+  window.CustomEvent = CustomEvent;
+})();*/
+
 function qtip() {
 	$('[title]').qtip({
 		position: {
@@ -393,6 +406,18 @@ function setVal(selector, val) {
 	self.change();
 }
 
+function getInitials(name, initials) {
+	if (typeof (name) === "undefined" || name == null) {
+			name = "";
+	}
+
+	if (typeof (initials) === "undefined") {
+		var m = name.match(/\b\w/g) || [];
+		initials = m.join(' ');
+	}
+	return initials;
+}
+
 function profilePicture(url, name, initials) {
 	var picture = "";
 	if (url !== "/i/userplaceholder") {
@@ -412,9 +437,8 @@ function profilePicture(url, name, initials) {
 			}
 			hash = hash % 360;
 
-			if (typeof (initials) === "undefined") {
-				initials = name.match(/\b\w/g).join(' ');
-			}
+			initials = getInitials(name, initials);
+				//initials = name.match(/\b\w/g).join(' ');
 			picture = "<span class='picture' style='background-color:hsla(" + hash + ", 36%, 49%, 1);color:hsla(" + hash + ", 36%, 72%, 1)'><span class='initials'>" + initials + "</span></span>";
 
 		}

@@ -7506,6 +7506,9 @@ select:-webkit-autofill:focus {
 .dashboard .scorecard .component {
   margin: 0px;
 }
+.dashboard .scorecard input {
+  font-size: 12px !important;
+}
 .dashboard .scorecard .table-responsive {
   margin-bottom: 0px;
   min-height: 0px !important;
@@ -7833,6 +7836,21 @@ select:-webkit-autofill:focus {
   margin-bottom: 6px;
   color: darkgray;
   margin-left: 6px;
+}
+.dashboard .software-updates ul {
+  padding-left: 6px;
+  font-size: 9px;
+  color: #A9A9A9;
+  list-style: none;
+}
+.dashboard .software-updates ul > li {
+  padding-left: 1.1m;
+  text-indent: -0.7em;
+}
+.dashboard .software-updates ul > li:before {
+  content: "• ";
+  color: #999;
+  /* or whatever color you prefer */
 }
 .dashboard .software-updates blockquote {
   /*padding: 10px 17px;

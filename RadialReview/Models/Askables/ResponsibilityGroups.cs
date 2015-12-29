@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
@@ -7,8 +8,10 @@ using RadialReview.Properties;
 
 namespace RadialReview.Models.Askables
 {
+	[DataContract]
     public abstract class ResponsibilityGroupModel : ILongIdentifiable, IDeletable
     {
+		[DataMember]
         public virtual long Id { get; set; }
         public abstract String GetName();
 

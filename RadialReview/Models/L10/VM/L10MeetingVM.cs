@@ -6,6 +6,8 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
+using System.Runtime.Serialization;
+using RadialReview.Utilities;
 
 namespace RadialReview.Models.L10.VM
 {
@@ -27,9 +29,16 @@ namespace RadialReview.Models.L10.VM
 		public bool CanEdit { get; set; }
 		public bool CanAdmin { get; set; }
 
+		[DataContract]
 		public class WeekVM
 		{
+			[DataMember(Name="StartDate")]
 			public DateTime DisplayDate { get; set; }
+			[DataMember(Name = "EndDate")]
+			public DateTime DataContract_EndDate { get { return DisplayDate.AddDays(7); } }
+			[DataMember(Name = "ForWeek")]
+			public long DataContract_Weeks { get { return TimingUtility.GetWeekSinceEpoch(ForWeek); } }
+
 			public DateTime ForWeek { get; set; }
 			public bool IsCurrentWeek { get; set; }
 			public int NumPeriods { get; set; }
@@ -68,6 +77,8 @@ namespace RadialReview.Models.L10.VM
 			Weeks = new List<WeekVM>();
 			CurrentTranscript=new List<MeetingTranscriptVM>();
 		}
+
+		//public bool AutoPrioritize { get; set; }
 	}
 
 	public class MeetingTranscriptVM

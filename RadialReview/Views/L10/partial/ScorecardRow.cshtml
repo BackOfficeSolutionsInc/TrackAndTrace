@@ -43,11 +43,11 @@
 			    <div class="icon fontastic-icon-three-bars icon-rotate handle"></div>
 		    }</td>
 		<td><div class="number"></div></td>
-		<td class="who first1 alignRight" title="@Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetName())">
+		<td class="who first1 alignRight @inlineEdit accountable" data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-url="/L10/UpdateMeasurable" data-type="select" data-name="accountable" data-pk="@Model.MeetingMeasurable.Id" title="@Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetName())">
 			@(Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetInitials()) ?? "Auto")
 		</td>
 		<td class="who first1 alignLeft" >
-			<span class="newLine gray" title="@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName()) ?? "Auto-Generated")">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetInitials()) ?? "Auto")</span>
+			<span class="newLine gray @inlineEdit adminSelection"  data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-type="select" data-name="admin" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" title="@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName()) ?? "Auto-Generated")">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetInitials()) ?? "Auto")</span>
 		</td>
 		<td class="measurable first1" title="@Model.MeetingMeasurable.Measurable.Title"><span class="@inlineEdit" data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span></td>
 		<td class="target direction" data-measurable="@Model.MeetingMeasurable.Id"><span class="@inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" data-title="Select goal direction" data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
