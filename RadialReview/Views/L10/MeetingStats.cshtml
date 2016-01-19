@@ -44,17 +44,19 @@
 			<div class="row">
 				<div class="col-xs-6 smallPad smallBreak2">
 					<div class="stats">
-						<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="font-size: 32px;margin-top: 37px;margin-bottom: 34px;">
-							@join
+						<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="font-size: 52px;margin-top: 27px;margin-bottom: 24px;">
+							@(double.IsNaN(Model.AverageRating)?"N/A":(Math.Round(Model.AverageRating*10.0)/10.0)+"")
 						</h1>
-
-						<h6>Meeting Time</h6>
+						<h6>Average Rating</h6>
 					</div>
 				</div>
 				<div class="col-xs-6 smallPad smallBreak2">
 					<div class="stats">
-						<h1 id="optionalAnswered" class="scramble resize1" data-range="200" style="font-size: 32px;margin-top: 37px;margin-bottom: 34px;">@duration</h1>
-						<h6>Meeting Duration</h6>
+						<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="font-size: 32px;margin-top: 37px;margin-bottom: 34px;">
+							@join
+						</h1>
+						<h6 >@duration</h6>
+						@*<h6>Meeting Duration</h6>*@
 					</div>
 				</div>
 			</div>

@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using NHibernate;
 using NHibernate.Envers;
 using NHibernate.Linq;
+using RadialReview.Controllers;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Application;
@@ -81,7 +82,7 @@ namespace RadialReview.Accessors
 			public string card_number { get; set; }
 		}
 
-		public async Task<PaymentResult> ChargeOrganization(long organizationId, long taskId, bool forceUseTest = false)
+		public static async Task<PaymentResult> ChargeOrganization(long organizationId, long taskId, bool forceUseTest = false)
 		{
 			PaymentResult result = null;
 			InvoiceModel invoice = null;
@@ -94,13 +95,16 @@ namespace RadialReview.Accessors
 					if (org == null)
 						throw new NullReferenceException("Organization does not exist");
 
+					if(org.DeleteTime!=null)
+						throw new PermissionsException("Organization was deleted.");
+
 					var plan = org.PaymentPlan;
 
 					if (plan.Task == null)
 						throw new PermissionsException("Task was null.");
 					if (plan.Task.OriginalTaskId == 0)
 						throw new PermissionsException("PaymentPlan OriginalTaskId was 0.");
-
+					
 					var task = s.Get<ScheduledTask>(taskId);
 
 					if (task.OriginalTaskId == 0)
@@ -133,7 +137,7 @@ namespace RadialReview.Accessors
 		}
 
 
-		public InvoiceModel CreateInvoice(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime, IEnumerable<Itemized> items)
+		public static InvoiceModel CreateInvoice(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime, IEnumerable<Itemized> items)
 		{
 			var invoice = new InvoiceModel()
 			{
@@ -171,7 +175,7 @@ namespace RadialReview.Accessors
 		}
 
 		[Obsolete("Unsafe")]
-		public async Task<PaymentResult> ExecuteInvoice(ISession s, InvoiceModel invoice, bool useTest = false)
+		public static async Task<PaymentResult> ExecuteInvoice(ISession s, InvoiceModel invoice, bool useTest = false)
 		{
 			//invoice = s.Get<InvoiceModel>(invoice.Id);
 			if (invoice.PaidTime != null)
@@ -187,7 +191,7 @@ namespace RadialReview.Accessors
 		}
 
 		[Obsolete("Unsafe")]
-		public async Task<bool> SendReceipt(PaymentResult result, InvoiceModel invoice)
+		public static async Task<bool> SendReceipt(PaymentResult result, InvoiceModel invoice)
 		{
 			if (invoice.PaidTime!=null){
 				var ProductName=Config.ProductName(invoice.Organization);
@@ -216,7 +220,7 @@ namespace RadialReview.Accessors
 		}
 
 
-		public List<Itemized> CalculateCharge(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime)
+		public static List<Itemized> CalculateCharge(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime)
 		{
 			var itemized = new List<Itemized>();
 
@@ -290,7 +294,7 @@ namespace RadialReview.Accessors
 
 
 		[Obsolete("Unsafe")]
-		public async Task<PaymentResult> ChargeOrganizationAmount(ISession s, long organizationId, decimal amount, bool useTest = false)
+		public static async Task<PaymentResult> ChargeOrganizationAmount(ISession s, long organizationId, decimal amount, bool useTest = false)
 		{
 			if (amount == 0){
 				return new PaymentResult(){
@@ -346,6 +350,10 @@ namespace RadialReview.Accessors
 				if (Json.Decode(result).@class != "transaction")
 					throw new PermissionsException("Response must be of type 'transaction'.");
 
+				var org = s.Get<OrganizationModel>(organizationId);
+				if (org.AccountType == AccountType.Demo)
+					org.AccountType = AccountType.Paying;
+
 				return new PaymentResult
 				{
 					id = Json.Decode(result).id,
@@ -366,17 +374,20 @@ namespace RadialReview.Accessors
 		}
 
 		[Obsolete("Unsafe")]
-		public async Task<PaymentResult> ChargeOrganizationAmount(long organizationId, decimal amount, bool useTest = false)
+		public static async Task<PaymentResult> ChargeOrganizationAmount(long organizationId, decimal amount, bool useTest = false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
-					return await ChargeOrganizationAmount(s, organizationId, amount, useTest);
+					var charged = await ChargeOrganizationAmount(s, organizationId, amount, useTest);
+					tx.Commit();
+					s.Flush();
+					return charged;
 				}
 			}
 		}
 
-		public List<CreditCardVM> GetCards(UserOrganizationModel caller, long organizationId)
+		public static List<CreditCardVM> GetCards(UserOrganizationModel caller, long organizationId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -401,7 +412,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public async Task<CreditCardVM> SetCard(UserOrganizationModel caller,long organizationId,string tokenId,string @class,
+		public static async Task<CreditCardVM> SetCard(UserOrganizationModel caller,long organizationId,string tokenId,string @class,
 			string cardType,string cardOwnerName,string last4,int expireMonth,int expireYear,String address_1,String address_2,
 			String city,String state,string zip,string phone,string website,string country,string email,bool active)
 		{
@@ -539,7 +550,7 @@ namespace RadialReview.Accessors
 			return plan;
 		}
 
-		public PaymentPlanModel GetPlan(UserOrganizationModel caller, long organizationId)
+		public static PaymentPlanModel GetPlan(UserOrganizationModel caller, long organizationId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -562,6 +573,30 @@ namespace RadialReview.Accessors
 
 				}
 			}
+		}
+
+		[Obsolete("Unsafe",false)]
+		public static List<long> GetPayingOrganizations(ISession s)
+		{
+			var scheduledToPay = s.QueryOver<ScheduledTask>().Where(x => x.TaskName == ScheduledTask.MonthlyPaymentPlan && x.DeleteTime == null && x.Executed == null)
+				.List().ToList().Select(x=>x.Url.Split('/').Last().ToLong());
+			var hasTokens = s.QueryOver<PaymentSpringsToken>().Where(x => x.Active && x.DeleteTime == null).List().ToList();
+
+			var hasTokens_scheduledToPay = hasTokens.Select(x => x.OrganizationId).Intersect(scheduledToPay);
+			return hasTokens_scheduledToPay.ToList();
+		}
+
+
+		[Obsolete("Unsafe", false)]
+		public static decimal CalculateTotalCharge(ISession s,List<long> orgIds)
+		{
+			var orgs = s.QueryOver<OrganizationModel>().WhereRestrictionOn(x => x.Organization.Id).IsIn(orgIds.Distinct().ToList()).List().ToList();
+
+			return orgs.Sum(o => 
+					CalculateCharge(s, o, o.PaymentPlan, DateTime.UtcNow)
+						.Sum(x => x.Total())
+				);
+
 		}
 	}
 

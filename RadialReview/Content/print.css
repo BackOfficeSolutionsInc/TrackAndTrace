@@ -646,3 +646,29 @@ font-size: 9px;
 
 
 @page {size: letter}
+
+.score.fill:before {
+    border: 8px solid;
+    border-radius: 0px;
+    left: 0;
+    right: 0;
+    width: 32px;
+}
+
+.score.fill {
+    width: 32px !important;
+    /* width: 30px; */
+}
+
+.table-io.companyValues .fill:after {
+    padding-top: 6px;
+}
+
+.table-io.companyValues .fill.Indeterminate:after, .valueTable .fill.Indeterminate:after{
+   color: #000 !important;
+}
+
+.table-io.companyValues .fill:before{
+	opacity:.25;
+	-ms-opacity:.25;
+}

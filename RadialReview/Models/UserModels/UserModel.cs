@@ -77,6 +77,9 @@ namespace RadialReview.Models
 
         public virtual long? GetCurrentRole()
         {
+	        if (IsRadialAdmin)
+		        return CurrentRole;
+
             if (UserOrganizationIds!=null && UserOrganizationIds.Any(x => x == CurrentRole))
                 return CurrentRole;
             return null;

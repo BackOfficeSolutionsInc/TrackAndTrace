@@ -32,6 +32,8 @@ namespace RadialReview.Models.Angular.Meeting
 		public IEnumerable<AngularTodo> Todos { get; set; }
 		public IEnumerable<AngularIssue> Issues { get; set; } 
 		public AngularDateRange date { get; set; }
+
+		public string HeadlinesUrl { get; set; }
 	}
 
 

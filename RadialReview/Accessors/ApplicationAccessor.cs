@@ -6,8 +6,10 @@ using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Dashboard;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Log;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Tasks;
+using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Query;
 using System;
@@ -203,27 +205,55 @@ namespace RadialReview.Accessors
         }
 
 		public const string DAILY_EMAIL_TODO_TASK = "DAILY_EMAIL_TODO_TASK";
+		public const string DAILY_TASK = "DAILY_TASK";
 
 	    public void ConstructApplicationTasks(ISession s)
 	    {
 		    var found =s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == DAILY_EMAIL_TODO_TASK).List().ToList();
-		    if (!found.Any()){
-			    for (var i = 0; i < 23; i++){
-				    var b = DateTime.UtcNow.Date.AddHours(i).AddMinutes(3);
+		    for (var i = 0; i < 24; i++){
+			    var url = "/Scheduler/EmailTodos?currentTime=" + i;
+			    var count = found.Count(x => x.Url == url);
+			    if (count == 0){
+					var b = DateTime.UtcNow.Date.AddHours(i).AddMinutes(3);
 				    var task = new ScheduledTask(){
 					    MaxException = 1,
-					    Url = "/Scheduler/EmailTodos?currentTime=" + i,
+					    Url = url,
 					    NextSchedule = TimeSpan.FromDays(1),
 					    Fire = b,
 					    FirstFire = b,
 					    TaskName = DAILY_EMAIL_TODO_TASK,
 
 				    };
-					s.Save(task);
+				    s.Save(task);
 				    task.OriginalTaskId = task.Id;
-					s.Update(task);
+				    s.Update(task);
+			    }else if (count > 1){
+				    foreach (var f in found.Where(x => x.Url == url).Skip(1)){
+					    f.Executed = DateTime.MinValue;
+						s.Update(f);
+				    }
 			    }
 		    }
+
+
+		    var foundDaily = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == DAILY_TASK).List().ToList();
+			if (!foundDaily.Any())
+			{
+					var b = DateTime.UtcNow.Date.AddMinutes(3);
+					var task = new ScheduledTask()
+					{
+						MaxException = 1,
+						Url = "/Scheduler/Daily",
+						NextSchedule = TimeSpan.FromDays(1),
+						Fire = b,
+						FirstFire = b,
+						TaskName = DAILY_TASK,
+
+					};
+					s.Save(task);
+					task.OriginalTaskId = task.Id;
+					s.Update(task);
+			}
 	    }
 
 		public List<long> AllowedPhoneNumbers = new List<long>(){
@@ -377,5 +407,159 @@ namespace RadialReview.Accessors
         {
             return session.QueryOver<QuestionCategoryModel>().Where(x => x.OriginId == APPLICATION_ID && x.OriginType == OriginType.Application).List().ToList();
         }
+
+
+	    public class AppStat
+	    {
+		    public decimal? DemoClientsHaveLoggedInThisWeek { get; set; }
+		    public decimal? DemoClientsHaventLoggedInThisWeek { get; set; }
+		    public decimal? SupportHoursTotal_Demo { get; set; }
+		    public decimal? SupportHoursTotal_Paying { get; set; }
+		    public decimal? CustomFeatureDevHoursTotal { get; set; }
+		    public decimal? AverageSupportHoursPerClientInLast90Days { get; set; }
+		    public decimal? SupportMinsPerDemoClient { get; set; }
+		    public decimal? NumberOfSupportCalls { get; set; }
+		    public decimal? AverageSupportCallTime_min { get; set; }
+		    public decimal? MRR { get; set; }
+		    public decimal? ImplementerLogins { get; set; }
+	    }
+
+		public static AppStat Stats()
+	    {
+		    using (var s = HibernateSession.GetCurrentSession())
+			{
+			    using (var tx = s.BeginTransaction()){
+				    var thisWeek = DateTime.UtcNow; //.StartOfWeek(DayOfWeek.Sunday);
+				    var lastWeek = thisWeek.AddDays(-7);
+				    var nintyDays = DateTime.UtcNow.AddDays(-90);
+
+
+				    var orgs = s.QueryOver<OrganizationModel>()
+					    .Where(x => x.DeleteTime == null)
+					    .List().ToList();
+				    var demoOrgs = orgs.Where(x => x.AccountType == AccountType.Demo).ToList();
+
+				    //UserLookup userLookup = null;
+				    var usersLoggedInThisWeek = s.QueryOver<UserLookup>().Where(x => x.LastLogin != null && x.LastLogin >= lastWeek && x.LastLogin < thisWeek && x.IsRadialAdmin == false).List().ToList();
+
+				    var loggedInThisWeek = usersLoggedInThisWeek.GroupBy(x => x.OrganizationId)
+					    .Select(x => x.Key).Distinct()
+					    .Intersect(demoOrgs.Select(y => y.Id))
+					    .Count();
+
+				    var haventLoggedInThisWeek = demoOrgs.Count - loggedInThisWeek;
+
+
+				    var interactionsLastNintyDays = s.QueryOver<InteractionLogItem>().Where(x => x.DeleteTime == null && x.LogDate >= nintyDays).List().ToList();
+				    var interactions = interactionsLastNintyDays.Where(x => x.LogDate >= lastWeek && x.LogDate < thisWeek).ToList();
+
+				    var interactionUsers = interactionsLastNintyDays.Where(x => x.UserId != null).Select(x => x.UserId).Distinct().ToList();
+
+				    var interaction_userId_OrgId = s.QueryOver<UserOrganizationModel>()
+					    .WhereRestrictionOn(x => x.Id).IsIn(interactionUsers)
+					    .Select(x => x.Id, x => x.Organization.Id)
+					    .List<object[]>().Select(x => new{
+						    userId = (long) x[0],
+						    orgId = (long) x[1]
+					    }).ToList();
+
+				    /*var orgLookup = s.QueryOver<OrganizationModel>()
+						.WhereRestrictionOn(x => x.Id).IsIn(userId_OrgId.Select(x=>x.orgId).Distinct().ToList())
+						.List().ToDictionary(x=>x.Id,x=>x);*/
+
+				    var orgLookup = orgs.ToDictionary(x => x.Id, x => x);
+				    var orgLookupByUser = interaction_userId_OrgId.ToDictionary(x => x.userId, x => orgLookup[x.orgId]);
+
+
+				    var supportInteractions = interactions.Where(x => InteractionUtility.IsSupport(x.InteractionType)).ToList();
+				    var devInteractions = interactions.Where(x => InteractionUtility.IsDev(x.InteractionType)).ToList();
+
+
+				    var supportHoursTotal_Demo = supportInteractions.Where(x => x.UserId != null && InteractionUtility.IsDemo(orgLookupByUser[x.UserId.Value].AccountType))
+					    .Select(x => x.Duration).Sum()/60.0m;
+
+				    var customFeatureDevHoursTotal = devInteractions.Select(x => x.Duration).Sum()/60m;
+
+				    var MRR = PaymentAccessor.CalculateTotalCharge(s, PaymentAccessor.GetPayingOrganizations(s));
+
+
+				    var implementerLogins = usersLoggedInThisWeek.Count(x => orgLookup[x.OrganizationId].AccountType == AccountType.Implementer);
+				    var numberOfDemoClients = demoOrgs.Count();
+
+
+				    //var interactionsLastNintyDays = s.QueryOver<InteractionLogItem>().Where(x => x.DeleteTime == null && x.LogDate >= nintyDays && x.UserId!=null).List().ToList();
+
+
+				    decimal? averageSupportCallTime = null;
+				    if (supportInteractions.Any())
+					    averageSupportCallTime = supportInteractions.Select(x => x.Duration).Average();
+
+				    var numberOfSupportCalls = supportInteractions.Count();
+
+
+				    var support_InteractionsLastNintyDays = interactionsLastNintyDays
+					    .Where(x => x.UserId != null && orgLookupByUser[x.UserId.Value].CreationTime >= nintyDays && InteractionUtility.IsSupport(x.InteractionType))
+					    //.Where(x => orgLookupByUser[x.UserId.Value].AccountType == AccountType.Demo)
+					    .ToList();
+
+				    decimal? avgSupportHours_last90Days_perClient = null;
+				    if (support_InteractionsLastNintyDays.Any()){
+					    var count = support_InteractionsLastNintyDays.Select(x => orgLookupByUser[x.UserId.Value].Id).Distinct().Count();
+					    if (count > 0){
+						    avgSupportHours_last90Days_perClient = support_InteractionsLastNintyDays.Sum(x => x.Duration)/count/60m;
+					    }
+				    }
+
+				    var supportHoursTotal_Paying = interactions.Where(x => x.AccountType == AccountType.Paying && InteractionUtility.IsSupport(x.InteractionType)).Sum(x => x.Duration)/60m;
+
+				    /*
+					
+					Number of prospects in demo period 6
+					Number of prospects in demo period 5
+					Number of prospects in demo period 4
+					Number of prospects in demo period 3
+					Number of prospects in demo period 2
+					Number of prospects in demo period 1
+					*/
+
+				    /*
+					Ave support hours per clients in first 90 days
+					support hours total -- paying
+					Cash on hand
+					support hours/demo client
+					custom feature dev time
+					number of support calls
+					Avg support call time
+					MRR
+					Demo clients that HAVEN'T logged in that week
+					Demo clients that logged in that week
+					Implementer Logins	
+					Support Hours Total --Demo
+					
+					*/
+				    decimal? supportMin_per_demoClient = null;
+				    if (demoOrgs.Any())
+					    supportMin_per_demoClient = supportHoursTotal_Demo*60m/demoOrgs.Count();
+
+					return new AppStat{
+					    DemoClientsHaveLoggedInThisWeek = loggedInThisWeek,
+					    DemoClientsHaventLoggedInThisWeek = haventLoggedInThisWeek,
+					    SupportHoursTotal_Demo = supportHoursTotal_Demo,
+					    SupportHoursTotal_Paying = supportHoursTotal_Paying,
+					    CustomFeatureDevHoursTotal = customFeatureDevHoursTotal,
+
+					    AverageSupportHoursPerClientInLast90Days = avgSupportHours_last90Days_perClient,
+
+					    SupportMinsPerDemoClient = supportMin_per_demoClient,
+
+
+					    NumberOfSupportCalls = numberOfSupportCalls,
+					    AverageSupportCallTime_min = averageSupportCallTime,
+					    MRR = MRR,
+					    ImplementerLogins = implementerLogins,
+				    };
+			    }
+		    }
+		}
     }
 }

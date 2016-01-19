@@ -27,17 +27,17 @@ namespace RadialReview
 			//GlobalConfiguration.Configure(WebApiConfig.Register);
             AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
 
-			AreaRegistration.RegisterAllAreas();
-
+			//AreaRegistration.RegisterAllAreas();
             //AreaRegistration.RegisterAllAreas();
+
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 	        GlobalConfiguration.Configure(WebApiConfig.Register);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
 
-            ServerUtility.RegisterCacheEntry();
-            ServerUtility.Reschedule();
+            //ServerUtility.RegisterCacheEntry();
+            //ServerUtility.Reschedule();
 			
 			//Add Angular serializer to SignalR
 			var serializerSettings = new JsonSerializerSettings();

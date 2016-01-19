@@ -72,7 +72,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static byte[] IssuesList(UserOrganizationModel caller, long recurrenceId)
+		public static async Task<byte[]> IssuesList(UserOrganizationModel caller, long recurrenceId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -97,7 +97,7 @@ namespace RadialReview.Accessors
 					var id = 0;
 					foreach (var i in issues){
 						id++;
-						RecurseIssue(sb, id, i, 0);
+						await RecurseIssue(sb, id, i, 0);
 					}
 
 					return new System.Text.UTF8Encoding().GetBytes(sb.ToString());
@@ -105,13 +105,15 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static List<Tuple<string, byte[]>> Notes(UserOrganizationModel caller, long recurrenceId)
+		public async static Task<List<Tuple<string, byte[]>>> Notes(UserOrganizationModel caller, long recurrenceId)
 		{
 			var recur = L10Accessor.GetL10Recurrence(caller, recurrenceId, true);
 			var lists = new List<Tuple<string, byte[]>>();
 			var existing = new Dictionary<string, int>();
-			foreach (var note in recur._MeetingNotes){
-				var bytes = new System.Text.UTF8Encoding().GetBytes(note.Contents);
+			foreach (var note in recur._MeetingNotes)
+			{
+				var padDetails = await PadAccessor.GetText(note.PadId);
+				var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
 				var append = "";
 				if (!existing.ContainsKey(note.Name))
 					existing.Add(note.Name, 1);
@@ -182,7 +184,7 @@ namespace RadialReview.Accessors
 			
 		}
 
-		public static void RecurseIssue(StringBuilder sb,int index,IssueModel.IssueModel_Recurrence parent, int depth)
+		public static async Task RecurseIssue(StringBuilder sb,int index,IssueModel.IssueModel_Recurrence parent, int depth)
 		{
 			var time = "";
 			if (parent.CloseTime != null)
@@ -195,10 +197,15 @@ namespace RadialReview.Accessors
 	/*		for (var d = 0; d < depth - 1; d++)
 				sb.Append(",");*/
 			sb.Append(Csv.CsvQuote(parent.Issue.Message)).Append(",");
-			sb.Append(Csv.CsvQuote(parent.Issue.Description));
+
+
+			var padDetails = await PadAccessor.GetText(parent.Issue.PadId);
+			//var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
+
+			sb.Append(Csv.CsvQuote(padDetails));
 			sb.AppendLine();
 			foreach(var child in parent._ChildIssues)
-				RecurseIssue(sb, index, child,depth+1);
+				await RecurseIssue(sb, index, child,depth+1);
 		}
 	
 		

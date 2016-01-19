@@ -108,7 +108,7 @@ namespace RadialReview
 		public void InvalidateForUser(string userId, String key)
 		{
 			var ikey = _invalidateKey(userId, key);
-			_Push(ikey, true, LifeTime.AppDomain, null);
+			_Push(ikey, true, LifeTime.Request/*AppDomain*/, null);
 		}
 		public void InvalidateForUser(UserOrganizationModel user, String key)
 		{

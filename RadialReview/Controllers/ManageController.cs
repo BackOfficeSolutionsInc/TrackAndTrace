@@ -65,7 +65,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult Positions()
 		{
-			new Cache().Push(CacheKeys.MANAGE_PAGE, "Positions", LifeTime.Session);
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Positions", LifeTime.Request/*Session*/);
 			var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
 
 			var positions = orgPos.Select(x =>
@@ -82,7 +82,7 @@ namespace RadialReview.Controllers
 		public ActionResult Teams()
 		{
 
-			new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Session);
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Request/*Session*/);
 			var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
 			var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = 0,TemplateId = x.TemplateId}).ToList();
 
@@ -107,7 +107,7 @@ namespace RadialReview.Controllers
 		[OutputCache(NoStore = true,Duration = 0)]
 		public ActionResult Members()
 		{
-			new Cache().Push(CacheKeys.MANAGE_PAGE, "Members", LifeTime.Session);
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Members", LifeTime.Request/*Session*/);
 			//var user = GetUser().Hydrate().ManagingUsers(true).Execute();
 
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
@@ -139,7 +139,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult Reorganize()
 		{
-			new Cache().Push(CacheKeys.MANAGE_PAGE, "Reorganize", LifeTime.Session);
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Reorganize", LifeTime.Request/*Session*/);
 			var orgId = GetUser().Organization.Id;
 			var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), orgId, false, false);
 			var allManagers = _OrganizationAccessor.GetOrganizationManagerLinks(GetUser(), orgId).ToListAlive();
@@ -205,11 +205,11 @@ namespace RadialReview.Controllers
 				RockName = user.Organization.Settings.RockName,
 				TimeZone = user.Organization.Settings.TimeZoneId,
 				WeekStart = user.Organization.Settings.WeekStart,
-                Cards = _PaymentAccessor.GetCards(GetUser(),GetUser().Organization.Id),
+                Cards = PaymentAccessor.GetCards(GetUser(),GetUser().Organization.Id),
 
 				OnlySeeRockAndScorecardBelowYou = user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou,
 
-				PaymentPlan = _PaymentAccessor.GetPlan(GetUser(),GetUser().Organization.Id),
+				PaymentPlan = PaymentAccessor.GetPlan(GetUser(),GetUser().Organization.Id),
 
 				ScorecardPeriod = user.Organization.Settings.ScorecardPeriod,
 
@@ -264,7 +264,7 @@ namespace RadialReview.Controllers
 				.ToList();
 
 			model.CompanyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
-			model.Cards = _PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id);
+			model.Cards = PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id);
 
 			model.CompanyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 

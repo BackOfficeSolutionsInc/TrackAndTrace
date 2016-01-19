@@ -1,6 +1,8 @@
 ﻿@using RadialReview.Models.Periods
 @model RadialReview.Controllers.RocksController.RockVM
-
+@{
+	var showCompany = true;
+}
 
 <div class="form rock-modal">
     @Html.HiddenFor(x => x.UserId)
@@ -24,13 +26,14 @@
                 <br />
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    @{ first = true;}
+	                @{ first = true;}
+	                <div class="pull-right" style="margin-bottom: 3px;margin-top: -16px;"><b>Company Rock</b></div>
                     @foreach (var q in ((List<SelectListItem>)ViewBag.Periods))
                     {
                         <div role="tabpanel" class="tab-pane @(first?"active":"")" id="periodModal_@(q.Value)">
                             @foreach (var r in Model.Rocks.Where(x => x.Period != null && x.Period.Id + "" == q.Value))
                             {
-                                Html.RenderPartial("_RockRow", r, new ViewDataDictionary(ViewData) { { "HidePeriod", true } });
+								Html.RenderPartial("_RockRow", r, new ViewDataDictionary(ViewData) { { "HidePeriod", true }, { "ShowCompany", showCompany } });
                             }
                         </div>
                             first = false;
@@ -52,7 +55,7 @@
         var periodId = active.attr("id").substring(active.attr("id").indexOf("_")+1);
 
         $.ajax({
-            url: "/Rocks/BlankEditorRow?periodId=" + periodId + "&hideperiod=true",
+            url: "/Rocks/BlankEditorRow?periodId=" + periodId + "&hideperiod=true&showCompany=@(showCompany)",
             cache: false,
             success: function (html) {
                 $(active).append(html);

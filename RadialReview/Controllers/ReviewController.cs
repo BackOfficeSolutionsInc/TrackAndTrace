@@ -2,6 +2,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Web.UI;
 using Microsoft.AspNet.SignalR;
+using NHibernate.Linq.Functions;
 using NHibernate.Util;
 using RadialReview.Accessors;
 using RadialReview.Engines;
@@ -346,11 +347,20 @@ namespace RadialReview.Controllers
 
 			var existingUsers = _ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, id).SelectMany(x => x.Answers.Select(y => y.AboutUserId).Distinct()).Distinct();
 
+			var orgRGM = OrganizationAccessor.GetOrganizationResponsibilityGroupModels(GetUser(), GetUser().Organization.Id);
 
+			var permittedUsers = orgRGM.Where(orgUser => existingUsers.All(existingUserId => existingUserId != orgUser.Id)).Where(x=>x is OrganizationTeamModel && ((OrganizationTeamModel)x).Type!=TeamType.Subordinates || !(x is OrganizationTeamModel));
 
-			var permittedUsers = organizationUsers.Where(orgUser => existingUsers.All(existingUserId => existingUserId != orgUser.Id));
-
-			var selectList = permittedUsers.OrderBy(x => x.GetName()).Select(x => new SelectListItem() { Text = x.GetNameAndTitle(), Value = "" + x.Id }).ToList();
+			var selectList = permittedUsers.OrderBy(x => x.GetName()).Select(x =>{
+				var text = x.GetName();
+				if (x is OrganizationTeamModel){
+					text =  text + " (All members)";
+				}
+				else if (x is OrganizationPositionModel){
+					text = "" + text + " (Everyone in this position) ";
+				}
+				return new SelectListItem(){Text = text, Value = "" + x.Id};
+			}).ToList();
 
 			var model = new AdditionalReviewViewModel()
 			{
@@ -371,14 +381,36 @@ namespace RadialReview.Controllers
 				return RedirectToAction("Index","Home");
 			}
 
-			foreach (var userId in model.Users)
+			var orgRGM = OrganizationAccessor.GetOrganizationResponsibilityGroupModels(GetUser(), GetUser().Organization.Id);
+
+			var intersection = orgRGM.Where(rgm => model.Users.Contains(rgm.Id)).ToList();
+			var additionalGroups = intersection.Where(x => !(x is UserOrganizationModel)).Select(x => x.Id).ToList();
+
+			var users = intersection.Where(x => (x is UserOrganizationModel)).Select(x => x.Id).ToList();
+
+			if (additionalGroups.Any()){
+				using (var s = HibernateSession.GetCurrentSession()){
+					using (var tx = s.BeginTransaction()){
+						users.AddRange(additionalGroups.SelectMany(x =>
+							ResponsibilitiesAccessor.GetResponsibilityGroupMembers(s, PermissionsUtility.Create(s, GetUser()), x)
+								.Select(y => y.Id)
+							)
+							);
+					}
+				}
+			}
+
+
+
+
+			foreach (var userId in users)
 			{
 				_ReviewAccessor.AddToReview(GetUser(), GetUser().Id, model.Id, userId);
 			}
 
 			var reviews = _ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, model.Id);
 			var pages = GetPages(GetUser().Id, reviews);
-			var found = pages.Select((x, i) => Tuple.Create(x.Key, i)).FirstOrDefault(x => x.Item1 == model.Users.FirstOrDefault());
+			var found = pages.Select((x, i) => Tuple.Create(x.Key, i)).FirstOrDefault(x => x.Item1 == users.FirstOrDefault());
 			var pageNum = (pages.Count - 1);
 			if (found != null)
 				pageNum = found.Item2;

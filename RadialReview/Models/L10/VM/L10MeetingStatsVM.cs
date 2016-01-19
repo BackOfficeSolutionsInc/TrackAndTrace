@@ -17,6 +17,7 @@ namespace RadialReview.Models.L10.VM
 
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }
+		public double AverageRating { get; set; }
 
 	}
 }

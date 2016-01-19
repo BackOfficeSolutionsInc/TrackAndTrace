@@ -63,6 +63,8 @@ namespace RadialReview.Models.L10.VM
 			}
 		}
 
+		public string HeadlinesId { get; set; }
+
 		public long[] Attendees { get; set; }
 		public bool SendEmail { get; set; }
 

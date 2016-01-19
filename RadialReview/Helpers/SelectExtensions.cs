@@ -51,9 +51,11 @@ namespace System.Web
             //return htmlHelper.DropDownListFor(expression,ToSelectList(typeof(TProperty), value.ToString()));
             return htmlHelper.DropDownList(inputName, ToSelectList(typeof(TProperty), value.ToString()), htmlAttributes);
         }
-        public static MvcHtmlString EnumDropDownList<TModel,TEnum>(this HtmlHelper<TModel> htmlHelper,String name, TEnum selected) where TModel : class where TEnum : struct, IConvertible
+		public static MvcHtmlString EnumDropDownList<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, String name, TEnum selected, object htmlAttributes = null)
+			where TModel : class
+			where TEnum : struct, IConvertible
         {
-            return htmlHelper.DropDownList(name, ToSelectList(typeof(TEnum), selected.ToString()));
+            return htmlHelper.DropDownList(name, ToSelectList(typeof(TEnum), selected.ToString()),htmlAttributes);
         }
 
         public static List<SelectListItem> ToSelectList(Type enumType, string selectedItem)

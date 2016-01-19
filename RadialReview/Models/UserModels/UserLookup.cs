@@ -18,7 +18,8 @@ namespace RadialReview.Models.UserModels
 		public virtual long UserId { get; set; }
 		public virtual DateTime AttachTime { get; set; }
 		public virtual DateTime CreateTime { get; set; }
-		public virtual DateTime? DeleteTime{ get; set; }
+		public virtual DateTime? DeleteTime { get; set; }
+		public virtual bool IsRadialAdmin { get; set; }
 		public virtual string Name { get; set; }
 		public virtual int NumRocks { get; set; }
 		public virtual int NumMeasurables { get; set; }
@@ -31,6 +32,7 @@ namespace RadialReview.Models.UserModels
 		public virtual bool IsAdmin { get; set; }
 		public virtual bool HasJoined { get; set; }
 		public virtual bool HasSentInvite { get; set; }
+		public virtual bool IsImplementer { get; set; }
 		public virtual long OrganizationId { get; set; }
 
 		public virtual DateTime? LastLogin { get; set; }
@@ -71,6 +73,8 @@ namespace RadialReview.Models.UserModels
 				Map(x => x.Name);
 				Map(x => x.NumRocks);
 				Map(x => x.IsClient);
+				Map(x => x.IsImplementer);
+				Map(x => x.IsRadialAdmin);
 				Map(x => x.NumMeasurables);
 				Map(x => x.NumRoles);
 				Map(x => x.Email);

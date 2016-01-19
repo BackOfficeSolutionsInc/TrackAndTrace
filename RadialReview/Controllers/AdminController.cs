@@ -1,7 +1,13 @@
-﻿using FluentNHibernate.Utils;
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
+using FluentNHibernate.Utils;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.SignalR;
+using NHibernate.Criterion;
 using NHibernate.Hql.Ast.ANTLR;
 using RadialReview.Accessors;
+using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
 using System;
@@ -14,6 +20,8 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Log;
+using RadialReview.Models.Payments;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Reviews;
 using RadialReview.Models.Tasks;
@@ -26,8 +34,111 @@ using WebGrease.Css.Extensions;
 
 namespace RadialReview.Controllers
 {
+
+
+
     public partial class AccountController : BaseController
     {
+		[Access(AccessLevel.Radial)]
+
+		public ActionResult Headers()
+		{
+			return View();
+		}
+
+
+
+		[Access(AccessLevel.Radial)]
+
+		public JsonResult GetRedis()
+		{
+			return Json(Config.Redis("CHANNEL"),JsonRequestBehavior.AllowGet);
+		}
+
+
+		[Access(AccessLevel.Radial)]
+	    public ActionResult Version()
+	    {
+
+			var version = Assembly.GetExecutingAssembly().GetName().Version;
+			var date = new DateTime(2000, 1, 1)
+				.AddDays(version.Build)
+				.AddSeconds(version.Revision * 2);
+
+			//var server = NetworkAccessor.GetPublicIP();//Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+			var server = Amazon.EC2.Util.EC2Metadata.InstanceId.ToString();
+			return Content(version.ToString()+" <br/> "+date.ToString("U")+" <br/><br/> "+server);
+	    }
+
+
+	    [Access(AccessLevel.Radial)]
+		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
+
+	    public ActionResult FixEmail()
+	    {
+		    return View();
+	    }
+		
+	    [Access(AccessLevel.Radial)]
+		[HttpPost]
+	    public ActionResult FixEmail(FormCollection form)
+	    {
+		    var user = GetUser();
+			
+			if (user.GetEmail()!=form["oldEmail"] || user.Id!=form["userId"].ToLong())
+				throw new PermissionsException("Incorrect User.");
+
+			if (!IsValidEmail(form["newEmail"]))
+				throw new PermissionsException("Email invalid.");
+
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					s.Evict(user);
+					user = s.Get<UserOrganizationModel>(user.Id);
+					user.EmailAtOrganization = form["newEmail"];
+
+					if (user.User != null)
+					{
+						//s.Evict(user.User);
+						user.User.UserName = form["newEmail"];
+						//s.Update(user.User);
+					}
+
+					if (user.TempUser != null)
+					{
+						//s.Evict(user.TempUser);
+						user.TempUser.Email = form["newEmail"];
+						//s.Update(user.TempUser);
+					}
+					user.UpdateCache(s);
+					var c =new Cache();
+					c.InvalidateForUser(user, CacheKeys.USERORGANIZATION);
+					c.InvalidateForUser(user, CacheKeys.USER);
+					s.Update(user);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		    ViewBag.InfoAlert = "Make sure to email this person with their new login.";
+			return RedirectToAction("FixEmail");
+	    }
+		private bool IsValidEmail(string email){
+			try{
+				var addr = new System.Net.Mail.MailAddress(email);
+				return addr.Address == email;
+			}catch{
+				return false;
+			}
+		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult Stats()
+		{
+			return Json(ApplicationAccessor.Stats(), JsonRequestBehavior.AllowGet);
+		}
+
+
         [Access(AccessLevel.Radial)]
         public String TempDeep(long id)
         {
@@ -307,7 +418,35 @@ namespace RadialReview.Controllers
 				}
 			}
 	    }
+		
 
+	    [Access(AccessLevel.Radial)]
+	    public JsonResult AdminAllUserLookups(string search)
+	    {
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var users = s.QueryOver<UserLookup>()
+						.Where(x => x.DeleteTime == null)
+						.WhereRestrictionOn(c => c.Email).IsLike("%" + search + "%")
+						.Select(x=>x.Email, x=>x.UserId,x=>x.Name,x=>x.OrganizationId)
+						.List<object[]>().ToList();
+					var orgs = s.QueryOver<OrganizationModel>()
+						.Where(x => x.DeleteTime == null)
+						.WhereRestrictionOn(x => x.Id).IsIn(users.Select(x => (long) x[3]).ToList())
+						.List().ToDictionary(x => x.Id, x => x.GetName());
+
+					return Json(new{
+						results = users.Select(x =>new {
+							text=""+x[0],
+							value= ""+ x[1],
+							name = ""+x[2],
+							organization = ""+orgs.GetOrDefault((long)x[3],"")
+						}).ToArray()
+					}, JsonRequestBehavior.AllowGet);
+				}
+			}
+	    }
 
 	    [Access(AccessLevel.Radial)]
         public String FixScatterChart(bool delete=false)
@@ -337,8 +476,7 @@ namespace RadialReview.Controllers
             return ""+i;
         }
 
-
-        [Access(AccessLevel.Radial)]
+	    [Access(AccessLevel.Radial)]
         public String FixAnswers(long id)
         {
             var reviewContainerId = id;
@@ -595,7 +733,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Radial)]
         public async Task<JsonResult> ChargeToken(long id,decimal amt)
         {
-            return Json(await _PaymentAccessor.ChargeOrganizationAmount(id, amt, true),JsonRequestBehavior.AllowGet);
+            return Json(await PaymentAccessor.ChargeOrganizationAmount(id, amt, true),JsonRequestBehavior.AllowGet);
         }
 
 		[Access(AccessLevel.Radial)]

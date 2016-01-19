@@ -119,7 +119,7 @@ namespace RadialReview.Utilities
 								   {
 									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
 										   .Conventions.Add<StringColumnLengthConvention>();
-									   // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+									   m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
 
 									   ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
 									   ////m.AutoMappings.Add(CreateAutomappings);
@@ -328,11 +328,15 @@ namespace RadialReview.Utilities
         {
 	        var sw = Stopwatch.StartNew();
             //UPDATE DATABASE:
-            var su = new SchemaUpdate(config);
-			su.Execute(false, true);
+	        var updates = new List<string>();
+	        //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(1);
+			var su = new SchemaUpdate(config);
+			//Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(2);
+			su.Execute(updates.Add, true);
+			//Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(3);
 
 	        var end =sw.Elapsed;
-
+			
 			var auditEvents = new AuditEventListener();
 			config.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { auditEvents };
 			config.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { auditEvents };

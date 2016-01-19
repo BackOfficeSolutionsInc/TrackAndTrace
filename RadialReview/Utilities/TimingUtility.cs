@@ -110,7 +110,7 @@ namespace RadialReview.Utilities
 			}
 		}
 
-	    private static List<L10MeetingVM.WeekVM> GetWeeks(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, List<ScoreModel> scores, bool includeNextWeek)
+		private static List<L10MeetingVM.WeekVM> GetWeeks(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, List<ScoreModel> scores, bool includeNextWeek, bool useWeekstartForWeekNumber = false)
 	    {
 
 			var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
@@ -119,6 +119,12 @@ namespace RadialReview.Utilities
 
 			//var s = StartDate.StartOfWeek(weekStart).AddDays(-7 * 4);
 			//var e = EndDate.StartOfWeek(weekStart).AddDays(7 * 4);
+
+
+			var weekNumber_StartOfWeek = DayOfWeek.Sunday;
+			if (useWeekstartForWeekNumber)
+				weekNumber_StartOfWeek = weekStart;
+
 
 			var s = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday).AddDays(-7 * 13);
 			var e = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday);
@@ -138,7 +144,7 @@ namespace RadialReview.Utilities
 				var currWeek = false;
 				var next = s.AddDays(7);
 				var s1 = s;
-				if (meetingStart.NotNull(x => s1 <= x.Value && x.Value < next))
+				if (meetingStart.NotNull(x => s1.AddDays(7.0).StartOfWeek(weekNumber_StartOfWeek) <= x.Value && x.Value < next.AddDays(7.0).StartOfWeek(weekNumber_StartOfWeek)))
 					currWeek = true;
 				//var j = s.AddDays(-7);
 
@@ -156,7 +162,7 @@ namespace RadialReview.Utilities
 		    return weeks;
 	    }
 
-		private static List<L10MeetingVM.WeekVM> GetMonths(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, List<ScoreModel> scores, bool includeNextWeek)
+		private static List<L10MeetingVM.WeekVM> GetMonths(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, List<ScoreModel> scores, bool includeNextWeek, bool useWeekstartForWeekNumber = false)
 		{
 
 			var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
@@ -168,6 +174,10 @@ namespace RadialReview.Utilities
 
 			//var s = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday).AddDays(-7 * 13);
 			//var e = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday);
+			var weekNumber_StartOfWeek = DayOfWeek.Sunday;
+			if (useWeekstartForWeekNumber)
+				weekNumber_StartOfWeek = weekStart;
+
 
 			var ed = (meetingStart ?? now);
 			var sd = ed.AddMonths(-13);
@@ -191,7 +201,7 @@ namespace RadialReview.Utilities
 				var n = s.AddMonths(1);
 				var next = new DateTime(n.Year, n.Month, 1).AddDays(6).StartOfWeek(DayOfWeek.Sunday);
 				var s1 = s;
-				if (meetingStart.NotNull(x => s1 <= x.Value && x.Value < next))
+				if (meetingStart.NotNull(x => s1.AddDays(7.0).StartOfWeek(weekNumber_StartOfWeek) <= x.Value && x.Value < next.AddDays(7.0).StartOfWeek(weekNumber_StartOfWeek)))
 					currWeek = true;
 				//var j = s.AddDays(-7);
 
@@ -225,7 +235,7 @@ namespace RadialReview.Utilities
 			}
 	    }
 
-		private static List<L10MeetingVM.WeekVM> GetQuarters(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, List<ScoreModel> scores, bool includeNextWeek, YearStart yearStart)
+		private static List<L10MeetingVM.WeekVM> GetQuarters(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, List<ScoreModel> scores, bool includeNextWeek, YearStart yearStart, bool useWeekstartForWeekNumber = false)
 		{
 
 			var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
@@ -238,6 +248,10 @@ namespace RadialReview.Utilities
 			//var s = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday).AddDays(-7 * 13);
 			//var e = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday);
 
+
+			var weekNumber_StartOfWeek = DayOfWeek.Sunday;
+			if (useWeekstartForWeekNumber)
+				weekNumber_StartOfWeek = weekStart;
 
 
 
@@ -263,7 +277,7 @@ namespace RadialReview.Utilities
 				var n = s.AddDays(13*7);
 				var next = n.AddDays(6).StartOfWeek(DayOfWeek.Sunday);
 				var s1 = s;
-				if (meetingStart.NotNull(x => s1 <= x.Value && x.Value < next))
+				if (meetingStart.NotNull(x => s1.AddDays(7.0).StartOfWeek(weekNumber_StartOfWeek) <= x.Value && x.Value < next.AddDays(7.0).StartOfWeek(weekNumber_StartOfWeek)))
 					currWeek = true;
 				//var j = s.AddDays(-7);
 
@@ -282,18 +296,18 @@ namespace RadialReview.Utilities
 		}
 
 		public static List<L10MeetingVM.WeekVM> GetPeriods(DayOfWeek weekStart,int timezoneOffset, DateTime now, DateTime? meetingStart, List<ScoreModel> scores,
-			bool includeNextWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart )
+			bool includeNextWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart,bool useWeekstartForWeekNumber=false)
 		{
 
 			scores = scores ?? new List<ScoreModel>();
 
 			switch(scorecardPeriod){
 				case ScorecardPeriod.Weekly:
-					return GetWeeks(weekStart, timezoneOffset, now, meetingStart, scores, includeNextWeek);
+					return GetWeeks(weekStart, timezoneOffset, now, meetingStart, scores, includeNextWeek, useWeekstartForWeekNumber);
 				case ScorecardPeriod.Monthly:
-					return GetMonths(weekStart, timezoneOffset, now, meetingStart, scores, includeNextWeek);
+					return GetMonths(weekStart, timezoneOffset, now, meetingStart, scores, includeNextWeek, useWeekstartForWeekNumber);
 				case ScorecardPeriod.Quarterly:
-					return GetQuarters(weekStart, timezoneOffset, now, meetingStart, scores, includeNextWeek, yearStart);
+					return GetQuarters(weekStart, timezoneOffset, now, meetingStart, scores, includeNextWeek, yearStart, useWeekstartForWeekNumber);
 				default:
 					throw new ArgumentOutOfRangeException("scorecardPeriod");
 			}

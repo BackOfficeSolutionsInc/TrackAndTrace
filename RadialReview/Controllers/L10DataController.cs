@@ -252,11 +252,11 @@ namespace RadialReview.Controllers
 			{
 				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id));
 				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), await ExportAccessor.TodoList(GetUser(), id));
-				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), ExportAccessor.IssuesList(GetUser(), id));
+				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), await ExportAccessor.IssuesList(GetUser(), id));
 				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));
 
-				foreach (var note in ExportAccessor.Notes(GetUser(), id))
+				foreach (var note in await ExportAccessor.Notes(GetUser(), id))
 					zip.AddEntry(String.Format("{2}", time, recur.Name, note.Item1), note.Item2);
 
 				zip.Save(memoryStream);
@@ -515,7 +515,7 @@ namespace RadialReview.Controllers
 
 			if (cache.Get(CacheKeys.LAST_SEND_NOTE_TIME) == null || model.SendTime > (long)cache.Get(CacheKeys.LAST_SEND_NOTE_TIME))
 			{
-				cache.Push(CacheKeys.LAST_SEND_NOTE_TIME, model.SendTime, LifeTime.Session);
+				cache.Push(CacheKeys.LAST_SEND_NOTE_TIME, model.SendTime, LifeTime.Request/*Session*/);
 				L10Accessor.EditNote(GetUser(), model.NoteId, model.Contents, model.Name, model.ConnectionId);
 				return Json(ResultObject.SilentSuccess(model).NoRefresh());
 			}

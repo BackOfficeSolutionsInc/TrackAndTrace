@@ -74,8 +74,9 @@ function blurChange(e, d) {
 	}, 5);
 }
 
-$('body').on('blur change', ".scorecard-table .score input", blurChange);
-$('body').on('focus', ".scorecard-table input", function (e) {
+//THESE ONLY WORK ON NON-ANGULAR FORMS
+$('body').on('blur change', ".scorecard-table .score:not(.ng-scope) input", blurChange);
+$('body').on('focus', ".scorecard-table .score:not(.ng-scope) input", function (e) {
 	//console.log("Called focus");
 	//console.log(this);
 	var val = getScoreTransform(this);

@@ -94,6 +94,7 @@ namespace RadialReview.Controllers
 					OrganizationId = GetUser().Organization.Id,
 					VideoId = Guid.NewGuid().ToString(),
                     EnableTranscription=false,
+					HeadlinesId = Guid.NewGuid().ToString(),
 				},
 				PossibleMeasurables = allMeasurables,
 				PossibleMembers = allMembers,
@@ -125,11 +126,14 @@ namespace RadialReview.Controllers
 	    }
 
 	    [Access(AccessLevel.UserOrganization)]
-		public ActionResult Edit(long id,string @return=null)
-		{
-			var recurrenceId = id;
+		public ActionResult Edit(long? id=null,string @return=null)
+	    {
+		    if (id == null)
+			    return RedirectToAction("Create");
 
-			_PermissionsAccessor.Permitted(GetUser(),x=>x.CanAdmin(PermItem.ResourceType.L10Recurrence, id));
+			var recurrenceId = id.Value;
+
+			_PermissionsAccessor.Permitted(GetUser(),x=>x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
 
 			var r = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
 
@@ -169,6 +173,7 @@ namespace RadialReview.Controllers
 				x => x.Recurrence.MeetingInProgress,
 				x => x.Recurrence.CreatedById,
 				x => x.Recurrence.VideoId,
+				x => x.Recurrence.HeadlinesId,
 				x => x.Recurrence.OrderIssueBy);
 
 			if (String.IsNullOrWhiteSpace(model.Recurrence.Name)){
@@ -187,6 +192,7 @@ namespace RadialReview.Controllers
             else
             {
                 _PermissionsAccessor.Permitted(GetUser(), x => x.CreateL10Recurrence(model.Recurrence.OrganizationId));
+	            ViewBag.InfoAlert = "You only need to create one L10 meeting per weekly meeting. In other words, you don't need to create a new L10 each week.";
             }
 			if (ModelState.IsValid){
 				model.Recurrence.OrganizationId = GetUser().Organization.Id;

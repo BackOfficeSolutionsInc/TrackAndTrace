@@ -84,6 +84,12 @@ namespace RadialReview.Models.Askables
         {
             return CustomName;
         }
+
+		public override string GetNameExtended()
+		{
+			return base.GetNameExtended() + "(Position)";
+		}
+
         public override string GetGroupType()
         {
             return DisplayNameStrings.position;
@@ -116,7 +122,13 @@ namespace RadialReview.Models.Askables
         {
             return Name;
         }
-        public override string GetGroupType()
+
+	    public override string GetNameExtended()
+	    {
+		    return base.GetNameExtended() +"(Team)";
+	    }
+
+	    public override string GetGroupType()
         {
             return DisplayNameStrings.team;
         }

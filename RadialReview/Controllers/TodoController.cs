@@ -14,6 +14,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Json;
 using RadialReview.Models.Permissions;
+using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
 
 namespace RadialReview.Controllers
@@ -141,14 +142,52 @@ namespace RadialReview.Controllers
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
-			var s = ScorecardAccessor.GetScoreInMeeting(GetUser(), score, recurrence);
+			ScoreModel s = null;
+
+			try{
+				if (score == 0 && accountable.HasValue){
+					var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.StartOfWeek(DayOfWeek.Sunday);
+					var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.Id == score && x.AccountableUserId == accountable.Value && x.ForWeek == week);
+					s = scores.FirstOrDefault();
+				}else{
+					s = ScorecardAccessor.GetScoreInMeeting(GetUser(), score, recurrence);
+				}
+			}catch (Exception e){
+				log.Error("Issues/Modal", e);
+			}
+			//var s = ScorecardAccessor.GetScoreInMeeting(GetUser(), score, recurrence);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+
+			bool useMessage = true;
+
+			if (s != null && score == 0 && accountable.HasValue)
+			{
+				var possibleUsers = recur._DefaultAttendees.Select(x => x.User).ToList();
+				s.AccountableUser = possibleUsers.FirstOrDefault(x => x.Id == s.AccountableUserId);
+				s.Measurable.AccountableUser = s.AccountableUser;
+				s.Measurable.AdminUser = s.AccountableUser;
+				if (s.Measured == null)
+					useMessage = false;
+			}
+
+			string message = null;
+			if (s != null && useMessage)
+			{
+				message = await s.GetIssueMessage();
+			}
+			string details = null;
+			if (s != null && useMessage)
+			{
+				details = await s.GetIssueDetails();
+			}
+
+
 
 			var model = new ScoreCardTodoVM(recur.DefaultTodoOwner)
 			{
 				ByUserId = GetUser().Id,
-				Message = await s.NotNull(async x=>await x.GetTodoMessage()),
-				Details = await s.NotNull(async x=>await x.GetTodoDetails()),
+				Message = message,//await s.NotNull(async x=>await x.GetTodoMessage()),
+				Details = details,//await s.NotNull(async x=>await x.GetTodoDetails()),
 				MeasurableId = measurable,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,

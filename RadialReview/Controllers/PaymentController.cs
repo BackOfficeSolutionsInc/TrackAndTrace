@@ -40,7 +40,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Plan()
 		{
-			var plan = _PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id);
+			var plan = PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id);
 			return View(plan);
 		}
 
@@ -56,7 +56,7 @@ namespace RadialReview.Controllers
 		{
 			var id = orgid ?? GetUser().Organization.Id;
 
-			var plan = _PaymentAccessor.GetPlan(GetUser(), id);
+			var plan = PaymentAccessor.GetPlan(GetUser(), id);
 			var org = _OrganizationAccessor.GetOrganization(GetUser(), id);
 			if (plan is PaymentPlan_Monthly){
 				var pr = (PaymentPlan_Monthly) plan;
@@ -262,7 +262,7 @@ namespace RadialReview.Controllers
 		[HttpPost]
 		public async Task<ActionResult> SetCard(bool submit)
 		{
-			await _PaymentAccessor.SetCard(
+			await PaymentAccessor.SetCard(
 				GetUser(),
 				GetUser().Organization.Id,
 				Request.Form["id"],

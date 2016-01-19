@@ -21,7 +21,8 @@ namespace RadialReview.Api.V0
 		public L10MeetingVM.WeekVM Get()
 		{
 			var org = GetUser().Organization;
-			var periods = TimingUtility.GetPeriods(org.Settings.WeekStart, org.GetTimezoneOffset(), DateTime.UtcNow, DateTime.UtcNow.AddDays(7), null, true, org.Settings.ScorecardPeriod, new YearStart(org));
+			var now = DateTime.UtcNow;
+			var periods = TimingUtility.GetPeriods(org.Settings.WeekStart, org.GetTimezoneOffset(), now, now.AddDays(7), null, true, org.Settings.ScorecardPeriod, new YearStart(org),true);
 
 
 			return periods.FirstOrDefault(x => x.IsCurrentWeek);

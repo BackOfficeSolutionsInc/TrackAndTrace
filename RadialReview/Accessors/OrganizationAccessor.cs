@@ -864,10 +864,10 @@ namespace RadialReview.Accessors
 			return s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId && x.DeleteTime==null).List().ToList();
 		}
 
-		public static List<UserOrganizationModel> GetUsersWithOrganizationPositions(ISession s, PermissionsUtility perm, long orgId)
+		public static List<UserOrganizationModel> GetUsersWithOrganizationPositions(ISession s, PermissionsUtility perm, long orgId,long orgPositionId)
 		{
 			perm.ViewOrganization(orgId);
-			var ids = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId && x.DeleteTime == null).Select(x=>x.UserId).List<long>().ToList();
+			var ids = s.QueryOver<PositionDurationModel>().Where(x=>x.DeleteTime==null).JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId && x.DeleteTime == null && x.Id == orgPositionId).Select(x => x.UserId).List<long>().ToList();
 
 			return s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(ids).List().ToList();
 		}

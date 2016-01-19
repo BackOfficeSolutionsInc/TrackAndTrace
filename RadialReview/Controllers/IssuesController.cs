@@ -9,6 +9,8 @@ using Amazon.IdentityManagement.Model;
 using RadialReview.Accessors;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Json;
+using RadialReview.Models.Scorecard;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -211,15 +213,27 @@ namespace RadialReview.Controllers
 	    }
 
 	    [Access(AccessLevel.UserOrganization)]
-        public async Task<PartialViewResult> Modal(long meeting, long recurrence, long measurable, long score)
+        public async Task<PartialViewResult> Modal(long meeting, long recurrence, long measurable, long score,long? userid=null)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
-			var s =ScorecardAccessor.GetScoreInMeeting(GetUser(), score,recurrence);
+		    ScoreModel s = null;
+
+		    try{
+			    if (score == 0 && userid.HasValue){
+				    var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.StartOfWeek(DayOfWeek.Sunday);
+				    var scores = L10Accessor.GetScoresForRecurrence(GetUser(),recurrence).Where(x=>x.Id==score && x.AccountableUserId==userid.Value && x.ForWeek == week);
+				    s = scores.FirstOrDefault();
+			    }else{
+				    s = ScorecardAccessor.GetScoreInMeeting(GetUser(), score, recurrence);
+			    }
+		    }catch (Exception e){
+				log.Error("Issues/Modal",e);   
+		    }
 
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
-			var possible = recur._DefaultAttendees
-				.Select(x => x.User)
+		    var possibleUsers = recur._DefaultAttendees.Select(x => x.User).ToList();
+			var possible = possibleUsers
 				.Select(x => new IssueVM.AccountableUserVM()
 				{
 					id = x.Id,
@@ -227,11 +241,33 @@ namespace RadialReview.Controllers
 					name = x.GetName()
 				}).ToList();
 
+			string message = null;
+
+		    bool useMessage = true;
+
+		    if (s!=null && score == 0 && userid.HasValue){
+			    s.AccountableUser = possibleUsers.FirstOrDefault(x => x.Id == s.AccountableUserId);
+				s.Measurable.AccountableUser = s.AccountableUser;
+				s.Measurable.AdminUser = s.AccountableUser;
+			    if (s.Measured == null)
+				    useMessage = false;
+		    }
+
+			if (s != null && useMessage)
+			{
+				message = await s.GetIssueMessage();
+			}
+			string details = null;
+			if (s != null && useMessage)
+			{
+				details = await s.GetIssueDetails();
+			}
+
 			var model = new ScoreCardIssueVM()
 			{
 				ByUserId = GetUser().Id,
-				Message = await s.NotNull(async x=>await x.GetIssueMessage()),
-				Details = await s.NotNull(async x=>await x.GetIssueDetails()),
+				Message = message,
+				Details = details,
 				MeasurableId = measurable,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,

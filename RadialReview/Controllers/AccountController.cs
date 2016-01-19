@@ -248,7 +248,8 @@ namespace RadialReview.Controllers
                     var nexus = _NexusAccessor.Get(guid);//[organizationId,EmailAddress,userOrgId,Firstname,Lastname]
 
                     model.Email = nexus.GetArgs()[1];
-                    if (nexus.DateExecuted != null)
+
+					if (nexus.DateExecuted != null || _UserAccessor.GetUserByEmail(model.Email) != null)
                     {
                         var userOrgId = nexus.GetArgs()[2].ToLong();
                         var uname = _UserAccessor.GetUserNameByUserOrganizationId(userOrgId);

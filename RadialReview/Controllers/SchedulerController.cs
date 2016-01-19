@@ -3,8 +3,10 @@ using System.Text;
 using log4net.Repository.Hierarchy;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
+using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Models.Payments;
+using RadialReview.Models.Periods;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.Todo;
 using RadialReview.Properties;
@@ -34,7 +36,7 @@ namespace RadialReview.Controllers
 			PaymentException capturedPaymentException = null;
 			Exception capturedException = null;
 			try{
-				await _PaymentAccessor.ChargeOrganization(id, taskId, false);
+				await PaymentAccessor.ChargeOrganization(id, taskId, false);
 			}catch (PaymentException e){
 				capturedPaymentException = e;
 			}catch (Exception e){
@@ -233,6 +235,65 @@ namespace RadialReview.Controllers
 		}
 
 
+		[Access(AccessLevel.Any)]
+		public async Task<bool> Daily()
+		{
+			var any = false;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var orgs = s.QueryOver<OrganizationModel>().Where(x => x.DeleteTime == null).List().ToList();
+
+					var tomorrow = DateTime.UtcNow.Date.AddDays(7);
+					foreach (var o in orgs){
+						var o1 = o;
+						var period = s.QueryOver<PeriodModel>().Where(x => x.OrganizationId == o1.Id && x.DeleteTime == null&& x.StartTime <= tomorrow && tomorrow <  x.EndTime ).List().ToList();
+
+						if (!period.Any()){
+
+							var startOfYear = (int) o.Settings.StartOfYearMonth;
+
+							if (startOfYear == 0)
+								startOfYear = 1;
+
+							var start = new DateTime(tomorrow.Year - 2, startOfYear, 1);
+
+							//var curM = (int)o.Settings.StartOfYearMonth;
+							//var curY = tomorrow.Year;
+							//var last = 
+							var quarter = 0;
+							var prev = start;
+							while (true){
+								start=start.AddMonths(3);
+								quarter += 1;
+								var tick = start.AddDateOffset(o.Settings.StartOfYearOffset);
+								if (tick > tomorrow){
+									break;
+								}
+								prev = start;
+							}
+
+							var p = new PeriodModel(){
+								StartTime = prev.AddDateOffset(o.Settings.StartOfYearOffset),
+								EndTime = start.AddDateOffset(o.Settings.StartOfYearOffset).AddDays(-1),
+								Name = prev.AddDateOffset(o.Settings.StartOfYearOffset).Year + " Q" + (((quarter+3)%4) + 1),// +3 same as -1
+								Organization = o,
+								OrganizationId = o.Id,
+							};
+
+							s.Save(p);
+							any = true;
+						}
+
+						
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return any;
+		}
 
 		[Access(AccessLevel.Any)]
 		public async Task<bool> Reschedule()
@@ -277,7 +338,9 @@ namespace RadialReview.Controllers
 
 			_TaskAccessor.UpdateScorecard(now);
 
-			return ServerUtility.RegisterCacheEntry();
+			var o = true;//ServerUtility.RegisterCacheEntry();
+
+			return o;
 		}
 	}
 }

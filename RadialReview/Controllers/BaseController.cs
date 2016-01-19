@@ -1,6 +1,9 @@
 ﻿using System.Collections.Specialized;
+using System.IO;
 using System.Linq.Expressions;
 using Microsoft.Ajax.Utilities;
+using MigraDoc.Rendering;
+using PdfSharp.Pdf;
 using RadialReview.Accessors;
 using RadialReview.Exceptions.MeetingExceptions;
 using RadialReview.Models;
@@ -32,6 +35,7 @@ using RadialReview.Utilities.Extensions;
 using RadialReview.Utilities.Serializers;
 using System.Text;
 using NHibernate.Context;
+using MigraDoc.DocumentObjectModel;
 
 
 namespace RadialReview.Controllers
@@ -86,7 +90,7 @@ namespace RadialReview.Controllers
 		{
 			return new Cache().GetOrGenerate(CacheKeys.USER, x =>
 			{
-				x.LifeTime = LifeTime.Session;
+				x.LifeTime = LifeTime.Request/*Session*/;
 				var id = User.Identity.GetUserId();
 				return _UserAccessor.GetUserById(s, id);
 			});
@@ -124,9 +128,9 @@ namespace RadialReview.Controllers
 				var found = _UserAccessor.GetUserOrganizations(s, id, userOrganizationId, redirectUrl);
 				if (found != null && found.User != null && !cache.Contains(CacheKeys.USER))
 				{
-					cache.Push(CacheKeys.USER, found.User, LifeTime.Session);
+					cache.Push(CacheKeys.USER, found.User, LifeTime.Request/*Session*/);
 				}
-				x.LifeTime = LifeTime.Session;
+				x.LifeTime = LifeTime.Request/*Session*/;
 				return found;
 			}, x => x.Id != userOrganizationId);
 		}
@@ -225,9 +229,13 @@ namespace RadialReview.Controllers
 				else if (found.Count() == 1)
 				{
 					var uo = found.First();
+					if (uo.User != null){
+						uo.User.CurrentRole = uo.Id;
+						s.Update(uo.User);
+					}
 					//_CurrentUserOrganizationId = uo.Id;
-					cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Session);
-					cache.Push(CacheKeys.USERORGANIZATION_ID, uo.Id, LifeTime.Session);
+					cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Request/*Session*/);
+					cache.Push(CacheKeys.USERORGANIZATION_ID, uo.Id, LifeTime.Request/*Session*/);
 					return uo;
 				}
 				else
@@ -237,8 +245,8 @@ namespace RadialReview.Controllers
 			{
 				var uo = GetUserOrganization(s, userOrganizationId.Value, Request.Url.PathAndQuery);
 				//_CurrentUserOrganizationId = uo.Id;
-				cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Session);
-				cache.Push(CacheKeys.USERORGANIZATION_ID, userOrganizationId.Value, LifeTime.Session);
+				cache.Push(CacheKeys.USERORGANIZATION, uo, LifeTime.Request/*Session*/);
+				cache.Push(CacheKeys.USERORGANIZATION_ID, userOrganizationId.Value, LifeTime.Request/*Session*/);
 				return uo;
 
 			}
@@ -293,6 +301,35 @@ namespace RadialReview.Controllers
 			else
 				throw new RedirectException("Return URL is invalid.");
 		}
+
+		protected FileResult Pdf(PdfDocument document,string name=null,bool inline=true)
+		{
+			var stream = new MemoryStream();
+			document.Save(stream, false);
+			name = name ??(Guid.NewGuid()+".pdf");
+			if (inline){
+				Response.AppendHeader("content-disposition", "inline; filename="+name);
+			}
+			return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
+		}
+
+		protected FileResult Pdf(Document document, string name = null, bool inline = true)
+		{
+			var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.Always);
+			pdfRenderer.Document = document;
+			pdfRenderer.RenderDocument();
+			
+			var stream = new MemoryStream();
+			pdfRenderer.Save(stream, false);
+			name = name ?? (Guid.NewGuid() + ".pdf");
+			if (inline)
+			{
+				Response.AppendHeader("content-disposition", "inline; filename=" + name);
+			}
+			return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
+		}
+
+
 		#endregion
 		#region User Status
 		protected void SignOut()
@@ -495,8 +532,10 @@ namespace RadialReview.Controllers
 							try{
 								oneUser = GetUser(s);
 								var lu = s.Get<UserLookup>(oneUser.Cache.Id);
-								lu.LastLogin = DateTime.UtcNow;
-								s.Update(lu);
+								if (!GetUserModel(s).IsRadialAdmin){
+									lu.LastLogin = DateTime.UtcNow;
+									s.Update(lu);
+								}
 							}
 							catch (OrganizationIdException){
 							}

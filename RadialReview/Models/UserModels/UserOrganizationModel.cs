@@ -43,6 +43,7 @@ namespace RadialReview.Models
 		public virtual Boolean ManagerAtOrganization { get; set; }
 		public virtual Boolean ManagingOrganization { get; set; }
         public virtual Boolean IsRadialAdmin { get; set; }
+		public virtual bool IsImplementer { get; set; }
         //public virtual String Title { get; set; }
         public virtual DateTime AttachTime { get; set; }
         public virtual DateTime? DetachTime { get; set; }
@@ -265,6 +266,7 @@ namespace RadialReview.Models
 			Cache.AttachTime = AttachTime;
 			Cache.CreateTime = CreateTime;
 			Cache.DeleteTime = DeleteTime;
+			Cache.IsRadialAdmin = this.IsRadialAdmin;
 			Cache.Email = this.GetEmail();
 			Cache.IsClient = this.IsClient;
 			Cache.HasJoined = User != null;
@@ -273,6 +275,8 @@ namespace RadialReview.Models
 			Cache.IsManager = this.IsManager();
 			Cache.Managers = String.Join(", ", ManagedBy.ToListAlive().Select(x => x.Manager.GetName()));
 			Cache.Positions = String.Join(", ", Positions.ToListAlive().Select(x => x.Position.CustomName));
+
+			Cache.IsImplementer = IsImplementer;
 
 			var teams = s.QueryOver<TeamDurationModel>().Where(x => x.DeleteTime == null && x.UserId == Id).Select(x => x.Team).List<OrganizationTeamModel>().ToList();
 
@@ -338,7 +342,8 @@ namespace RadialReview.Models
         {
             //Map(x => x.Title);
 
-            Map(x => x.IsRadialAdmin);
+			Map(x => x.IsRadialAdmin);
+			Map(x => x.IsImplementer);
             Map(x => x.CountPerPage).Default("10");
             Map(x => x.ManagingOrganization);
             Map(x => x.ManagerAtOrganization);

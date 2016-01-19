@@ -1,0 +1,23 @@
+﻿@{
+	ViewBag.Title = "Headers";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Headers</h2>
+
+@{
+	int loop1, loop2;
+	var coll = Request.Headers;
+
+	// Put the names of all keys into a string array.
+	String[] arr1 = coll.AllKeys;
+}
+<table>
+@for (loop1 = 0; loop1 < arr1.Length; loop1++)
+{
+	<tr>
+		<td>@arr1[loop1]</td>
+		<td>@string.Join(", ", coll.GetValues(arr1[loop1]))</td>
+	</tr>
+}
+</table>

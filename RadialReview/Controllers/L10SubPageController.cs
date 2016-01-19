@@ -215,7 +215,7 @@ namespace RadialReview.Controllers
 		private PartialViewResult Headlines(L10MeetingVM model)
 		{
 			ViewBag.CEH_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share all news about the people in your business. Good news is good. Add bad news to the Issues List.");
-
+			model.HeadlinesId=model.Recurrence.HeadlinesId;
 			return PartialView("Headlines", model);
 		}
 		#endregion

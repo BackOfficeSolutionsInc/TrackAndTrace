@@ -1,7 +1,7 @@
 ﻿@using RadialReview.Models
 @model RadialReview.Models.Askables.RockModel
 @{
-	var guid = Guid.NewGuid().ToString().Replace("-","");
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
 
 	var lockedClass = Model.FromTemplateItemId.HasValue ? "disable unlockRR-" + guid : " unlockRR-" + guid;
 }
@@ -9,17 +9,25 @@
 	@using (Html.BeginCollectionItem("Rocks"))
 	{
 		<div class="roww">
+			
 			<div style="width:calc( 100% - 52px );display:inline-block">
 				@Html.HiddenFor(x => x.Id)
-				@Html.TextBoxFor(x => x.Rock, new { @class = "form-control roleItem " + lockedClass, placeholder="Name" })
+				@Html.TextBoxFor(x => x.Rock, new { @class = "form-control roleItem " + lockedClass, placeholder = "Name" })
 				@Html.HiddenFor(x => x.DeleteTime)
 				@Html.HiddenFor(x => x.CreateTime)
 				@Html.HiddenFor(x => x.CompleteTime)
-				@Html.HiddenFor(x => x.CompanyRock)
 				@Html.HiddenFor(x => x.Completion)
-				@Html.HiddenFor(x => x.FromTemplateItemId,new{@class="templateId "+lockedClass})
+				@Html.HiddenFor(x => x.FromTemplateItemId, new { @class = "templateId " + lockedClass })
 			</div>
-			
+			@if (ViewBag.ShowCompany != null && ViewBag.ShowCompany == true)
+			{
+				@*<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>*@
+				@Html.CheckBoxFor(x => x.CompanyRock, new { @class = "", style = "margin-left: 4px;", title = "Company Rock" })
+			}
+			else
+			{
+				@Html.HiddenFor(x => x.CompanyRock)
+			}
 			@if (ViewBag.HideDelete == null || ViewBag.HideDelete == false)
 			{
 				<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>
@@ -36,8 +44,8 @@
 		if (ViewBag.PossibleUsers != null)
 		{
 			<div class="lineAfter" style="width: calc(100% - 52px); display: inline-block">
-				@Html.DropDownListFor(x=>x.ForUserId,((IEnumerable<UserOrganizationModel>)ViewBag.PossibleUsers).ToSelectList(x=>x.GetNameAndTitle(),x=>x.Id),
-				new { @class = "form-control " + lockedClass+ " "+((Model.FromTemplateItemId != null)?"disabled":""), style = "width: 100%;"})
+				@Html.DropDownListFor(x => x.ForUserId, ((IEnumerable<UserOrganizationModel>)ViewBag.PossibleUsers).ToSelectList(x => x.GetNameAndTitle(), x => x.Id),
+				new { @class = "form-control " + lockedClass + " " + ((Model.FromTemplateItemId != null) ? "disabled" : ""), style = "width: 100%;" })
 			</div>
 		}
 		else
@@ -55,11 +63,11 @@
 
 
 @*@if (ViewBag.PossibleUsers != null)
-{
-	<script>
-		$(".user-@guid").select2({
-			templateResult: formatState,
-			templateSelection: formatState
-		});
-	</script>
-}*@
+	{
+		<script>
+			$(".user-@guid").select2({
+				templateResult: formatState,
+				templateSelection: formatState
+			});
+		</script>
+	}*@

@@ -1,0 +1,23 @@
+﻿@{
+	ViewBag.Title = "Upload Profile Picture";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Upload Profile Picture</h2>
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Profile Image</h3>
+	</div>
+	<div class="panel-body alignCenter">
+		@Html.Partial("~/Views/Upload/Image.cshtml", new RadialReview.Models.ViewModels.ImageUploadViewModel(){
+			ForType = RadialReview.Models.Enums.UploadType.ProfileImage.ToString(),
+			ImageUrl = Html.UserOrganization().ImageUrl(true,ImageSize._img),
+			UploadUrl = "/upload/image/"+Html.UserOrganization().User.Id
+			/*Width  = 200,
+			  Height = 200,*/
+		})
+	</div>
+</div>
+
+

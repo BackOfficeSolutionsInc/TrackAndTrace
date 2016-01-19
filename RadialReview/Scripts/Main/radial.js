@@ -470,6 +470,16 @@ function profilePicture(url, name, initials) {
 		$(this).height(maxHeight);
 	});
 
+	var scrollTopModal=0;
+
+	 $("#modalForm").on("show.bs.modal", function () {
+		 scrollTopModal = $("body").scrollTop();
+	 }).on("hidden.bs.modal", function () {
+		 setTimeout(function() { $("body").scrollTop(scrollTopModal); }, 1);
+	 }).on("shown.bs.modal", function () {
+		 setTimeout(function() { $("body").scrollTop(scrollTopModal); }, 1000);
+	 });
+
 
 })(jQuery);
 

@@ -14,6 +14,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using TimeZoneNames;
+using Twilio;
 
 namespace RadialReview.Models
 {
@@ -38,6 +39,7 @@ namespace RadialReview.Models
 			public virtual ScorecardPeriod ScorecardPeriod { get; set; }
 
 			public virtual BrandingType Branding { get; set; }
+
 			
 			public virtual string TimeZoneId { get; set; }
 			public virtual bool EmployeesCanViewScorecard { get; set; }
@@ -203,7 +205,7 @@ namespace RadialReview.Models
 			}
 		}
 
-
+		public virtual AccountType AccountType { get; set; }
 		public virtual IList<UserOrganizationModel> Members { get; set; }
 		public virtual IList<PaymentModel> Payments { get; set; }
 		public virtual IList<InvoiceModel> Invoices { get; set; }
@@ -246,7 +248,7 @@ namespace RadialReview.Models
 			ManagersCanEditPositions = true;
 			ManagersCanEdit = false;
 			_Settings = new OrganizationSettings();
-
+			AccountType= AccountType.Demo;
 		}
 
 		public virtual List<IOrigin> OwnsOrigins()
@@ -286,6 +288,7 @@ namespace RadialReview.Models
 		{
 			public OrganizationModelMap()
 			{
+				Map(x => x.AccountType);
 				Map(x => x.ManagersCanEdit);
 				Map(x => x.DeleteTime);
 				Map(x => x.ImageUrl);

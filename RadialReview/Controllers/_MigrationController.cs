@@ -1038,5 +1038,37 @@ namespace RadialReview.Controllers
 			return "" + f + ", " + g + ", " + h + "   --   " + f2 + ", " + g2 + ", " + h2;
 		}
 
+
+		[Access(AccessLevel.Radial)]
+		public string M1_18_2016()
+		{
+			var f = 0;
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					//Fix TempUser userIds
+
+					var l10 = s.QueryOver<L10Recurrence>().List().ToList();
+					foreach (var o in l10)
+					{
+						if (String.IsNullOrWhiteSpace(o.HeadlinesId))
+						{
+							o.HeadlinesId = Guid.NewGuid().ToString();
+							f++;
+							s.Update(o);
+						}
+						/*
+						if (!(o.AccessorType == PermItem.AccessType.Creator && o.AccessorId == -2 && o.ResType == PermItem.ResourceType.L10Recurrence))
+							continue;
+						o.AccessorId = s.Get<L10Recurrence>(o.ResId).CreatedById;*/
+					}
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "" + f;
+		}
+
 	}
 }

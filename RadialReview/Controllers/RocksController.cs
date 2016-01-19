@@ -56,12 +56,14 @@ namespace RadialReview.Controllers
 		    return Json(ResultObject.SilentSuccess());
 	    }
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult BlankEditorRow(bool includeUsers=false,bool companyRock=false,long? periodId=null,bool hideperiod=false){
+		public PartialViewResult BlankEditorRow(bool includeUsers = false, bool companyRock = false, long? periodId = null, bool hideperiod = false, bool showCompany = false)
+		{
 			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
 			if (includeUsers)
 				ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
 			ViewBag.HidePeriod = hideperiod;
+			ViewBag.ShowCompany = showCompany;
 
 			return PartialView("_RockRow", new RockModel(){
 				CreateTime = DateTime.UtcNow,

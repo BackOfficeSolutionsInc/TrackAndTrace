@@ -35,7 +35,20 @@ namespace RadialReview.Utilities.Extensions
 				e = 1;
 			}
 
-			var revisionIds = self.GetRevisions(typeof (T), id).Where(x=> s<=x && x<=e).ToList();
+			var revisions = self.GetRevisions(typeof (T), id).ToList();
+			var revisionIds = revisions.Where(x => s <= x && x <= e).OrderBy(x=>x).ToList();
+
+			//     ----|--> ------> --->|
+			//----x----|---x-------x----|---x------
+
+			//Still need to add the one before the start.
+			var startId = long.MaxValue;
+			if (revisionIds.Any())
+				startId = revisionIds.First();
+			var additional = revisions.Where(x => x < startId).ToList();
+			if (additional.Any()){
+				revisionIds.Add(additional.Max());
+			}
 
 			return revisionIds.Select(x => new Revision<T>{
 				Date = self.GetRevisionDate(x),

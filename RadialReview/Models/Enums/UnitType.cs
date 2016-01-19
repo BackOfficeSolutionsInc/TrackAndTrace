@@ -35,5 +35,32 @@ public static class UnitTypeExtensions
 					throw new ArgumentOutOfRangeException("type");
 			}
 		}
+
+		public static string Format(this UnitType type, string value)
+		{
+			switch (type)
+			{
+				case UnitType.None: return string.Format("{0}", value);
+				case UnitType.Dollar: return string.Format("${0}", value);
+				case UnitType.Percent: return string.Format("{0}%", value);
+				default:
+					throw new ArgumentOutOfRangeException("type");
+			}
+		}
+
+		public static string Format(this UnitType type, decimal value)
+		{
+			return Format(type, string.Format("{0:#,##0.####}", value));
+			/*
+			switch (type)
+			{
+				case UnitType.None: return ;
+				case UnitType.Dollar: return string.Format("${0:#,##0.####}", value);
+				case UnitType.Percent: return string.Format("{0:#,##0.####}%", value);
+				default:
+					throw new ArgumentOutOfRangeException("type");
+			}*/
+
+		}
 	}
 }

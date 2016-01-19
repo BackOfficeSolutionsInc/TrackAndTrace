@@ -35,7 +35,7 @@ namespace RadialReview.Hubs
 					{
 					    var userId = _UserAccessor.GetUserIdByUsername(s,username);
 						var userOrgs = _UserAccessor.GetUserOrganizations(s,userId, "");
-						cache.Push(REGISTERED_KEY + username, userOrgs,LifeTime.AppDomain, now.AddDays(1));
+						cache.Push(REGISTERED_KEY + username, userOrgs,LifeTime.Request/*AppDomain*/, now.AddDays(1));
 					}
 				}
              

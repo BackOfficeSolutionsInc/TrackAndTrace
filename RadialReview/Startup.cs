@@ -1,5 +1,7 @@
-﻿using Microsoft.Owin;
+﻿using Microsoft.AspNet.SignalR;
+using Microsoft.Owin;
 using Owin;
+using RadialReview.Utilities;
 
 [assembly: OwinStartupAttribute(typeof(RadialReview.Startup))]
 namespace RadialReview
@@ -9,7 +11,11 @@ namespace RadialReview
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            app.MapSignalR();
+	        
+			var redis = Config.Redis("Radial-SignalR");
+			GlobalHost.DependencyResolver.UseRedis(redis.Server, redis.Port, redis.Password, redis.ChannelName  );
+			app.MapSignalR();
+
         }
     }
 }

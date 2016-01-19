@@ -52,9 +52,12 @@ namespace RadialReview.Models.L10
 		public virtual string OrderIssueBy { get; set; }
 		public virtual bool EnableTranscription { get; set; }
 
+		public virtual string HeadlinesId { get; set; }
+
 		public L10Recurrence()
 		{
 			VideoId = Guid.NewGuid().ToString();
+			HeadlinesId = Guid.NewGuid().ToString();
 			SegueMinutes		= 5;
 			ScorecardMinutes	= 5;
 			RockReviewMinutes	= 5;
@@ -74,6 +77,7 @@ namespace RadialReview.Models.L10
 				Id(x => x.Id);
 				Map(x => x.Name).Length(10000);
 				Map(x => x.VideoId);
+				Map(x => x.HeadlinesId);
 				Map(x => x.CreateTime);
 				Map(x => x.MeetingInProgress);
 				Map(x => x.DeleteTime);

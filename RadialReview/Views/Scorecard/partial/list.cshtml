@@ -72,7 +72,7 @@
 												  data-name="target"
 												  data-measurable="{{measurable.Id}}"
 												  data-pk="{{measurable.Id}}_{{meetingId}}"
-												  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+												  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1 | number}}</span>
 											<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
 										</td>
 
@@ -153,7 +153,7 @@
 											  data-name="target"
 											  data-measurable="{{measurable.Id}}"
 											  data-pk="{{measurable.Id}}_{{meetingId}}"
-											  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1}}</span>
+											  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1  | number}}</span>
 										<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
 									</td>
 								</tr>

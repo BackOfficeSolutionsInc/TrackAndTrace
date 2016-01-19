@@ -116,7 +116,7 @@ namespace RadialReview.Accessors
 		    }else if (found is OrganizationTeamModel){
 			    return TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perm, found.Id, true).Select(x => x.User).ToList();
 		    }else if (found is OrganizationPositionModel){
-				return OrganizationAccessor.GetUsersWithOrganizationPositions(s, perm, found.Organization.Id);
+				return OrganizationAccessor.GetUsersWithOrganizationPositions(s, perm, found.Organization.Id,rgmId);
 		    }else{
 				throw new ArgumentOutOfRangeException();
 		    }

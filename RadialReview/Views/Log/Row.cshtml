@@ -1,0 +1,16 @@
+﻿@model RadialReview.Models.Log.InteractionLogItem
+		   
+<tr data-model-id="@Model.Id">
+	<td>@Model.Id</td>
+	<td>@Model.InteractionType</td>
+	<td>@Model.InteractionMethod</td>
+	<td>@Model.LogDate.ToString("MM-dd-yyyy")</td>
+	<td>@Model.UserId</td>
+	<td>@Model.Name</td>
+	<td>@Model.Email</td>
+	<td>@Model.Company</td>
+	<td>@(Math.Round(Model.Duration*10.0m)/10.0m)</td>
+	<td>@Model.CreatedBy</td>
+	<td>@Model.Notes</td>
+	<td><span onclick="trash(@Model.Id)" class="glyphicon glyphicon-trash clickable"></span></td>
+</tr>

@@ -19,6 +19,15 @@
 					@*<textarea class="rt" id="segue"></textarea>*@
 				</div>
 			</div>
+			
+			
+			<div class="centered" style="width:85%; max-width: 850px;margin-top:22px;height: 430px">
+				<div class="component" style="padding: 0px">
+					<iframe style="width: 100%;height: 100%; border: 1px solid #CCCCCC;" src="https://notes.traction.tools/p/@(Model.HeadlinesId)?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=@(HttpContext.Current.Server.UrlEncode(Html.UserOrganization().GetName()))"></iframe>
+				</div>
+			</div>
 		</div>
 	</div>
-</div>
+</div>		
+
+

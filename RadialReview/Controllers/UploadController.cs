@@ -45,21 +45,36 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.User)]
-        public async Task<JsonResult> Image(HttpPostedFileBase file, String forType)
+        public async Task<JsonResult> Image(string id, HttpPostedFileBase file, String forType)
         {
-            var user = GetUserModel();
-            if (user == null)
+			var userModel = GetUserModel();
+            if (userModel == null)
                 throw new PermissionsException();
+
+			if (userModel.Id!=id && !userModel.IsRadialAdmin)
+				throw new PermissionsException("Id is not correct");
+
+	        if (userModel.IsRadialAdmin){
+		        userModel = GetUser().User;
+	        }
+
 
             //you can put your existing save code here
             if (file != null && file.ContentLength > 0)
             {
                 // extract only the fielname
                 var uploadType = forType.Parse<UploadType>();
-                var url=await _ImageAccessor.UploadImage(user, Server, file, uploadType);
+                var url=await _ImageAccessor.UploadImage(userModel, Server, file, uploadType);
                 return Json(ResultObject.Create(url));
             }
             return Json(new ResultObject(true,ExceptionStrings.SomethingWentWrong));            
         }
+
+	    [Access(AccessLevel.UserOrganization)]
+
+	    public ActionResult ProfilePicture()
+	    {
+		    return View();
+	    }
 	}
 }

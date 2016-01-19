@@ -70,7 +70,7 @@ namespace RadialReview.Engines
 					}
 
 					if (perms.IsPermitted(x => x.CanViewUserMeasurables(id))){
-						model.Measurables = ScorecardAccessor.GetUserMeasurables(s, perms, id, true, false, true);
+						model.Measurables = ScorecardAccessor.GetUserMeasurables(s, perms, id, true, false, false);
 						model.CanViewMeasurables = true;
 					}
 					//foundUser.PopulatePersonallyManaging(caller, caller.AllSubordinates);

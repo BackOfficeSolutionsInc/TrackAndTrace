@@ -9,6 +9,7 @@
 {
 	<h1 class="pull-left">Which</h1>
 	<h1 style="color: orange" class="pull-left"><b> @Model.GetName() [@Model.Id]</b></h1>
+	@Html.EnumDropDownListFor(x => x.AccountType, new { onchange = "changeAccountType(this," + Model.Id + ")", style = "float:right;top:30px;position: relative;" })
 	<div class="clearfix"></div>
 	<a class="pull-right" href="/Organization/Which">Back to Listing...</a>
 	<h4 class="pull-left">Server Time</h4>
@@ -22,7 +23,7 @@
 
 	
 	<table class="table table-hover">
-		<thead>
+		<thead style="background-color: orange">
 			<tr>
 				<th class="alignCenter">Last Login</th>
 				<th class="alignCenter">Invite Sent</th>
@@ -47,12 +48,12 @@
 														 }
 														 return "lightgreen";
 							                         }
-													 return "yellow";
+													 return "#ef7622";
 						                         }
 						                         return "red";
 					                         })??"darkred")">@m.LastLogin.NotNull(x=>x.ToString())</td>
-					<td class="alignCenter">@m.HasSentInvite.GetIcon()</td>
-					<td class="alignCenter">@m.HasJoined.GetIcon()</td>
+					<td class="alignCenter">@m.HasSentInvite.GetIcon() <span style="display: none">@(m.HasSentInvite?1:0)</span></td>
+					<td class="alignCenter">@m.HasJoined.GetIcon()<span style="display: none">@(m.HasJoined ? 1 : 0)</span></td>
 					<td class="alignCenter">@m.UserId</td>
 					<td><a href="/Manage/UserDetails/@m.UserId">@m.Name</a></td>
 					<td>@m.Email</td>
@@ -77,9 +78,13 @@ else
 @using (Html.BeginScripts()){
 	<script>
 	      $("table").tablesorter({
-              sortForce: [[0, 1]],
+             // sortForce: [[0, 1]],
               sortStable: true,
           });
+
+		function changeAccountType(self, id) {
+			$.ajax("/organization/setaccounttype/" + id + "?type=" + $(self).val());
+		}
 	</script>
 }
 

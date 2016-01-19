@@ -63,26 +63,26 @@ namespace RadialReview.Models.Scorecard
 				if (diff == 0)
 					return name + " goal was met at " +g;
 				if (v == Math.Floor(v) && g == Math.Floor(g))
-					return name + " goal was exceeded by " + ((v - g)*dir).ToString("0.####") ;
+					return name + " goal was exceeded by " + Measurable.UnitType.Format((v - g)*dir);
 				return name + " goal was exceeded by " + ((v - g)/g*dir*100).ToString("0.####") + "%";
 			}else{
-				return name + " goal was missed by "+ ((g - v) * dir).ToString("0.####");
+				return name + " goal was missed by " + Measurable.UnitType.Format((g - v) * dir);
 			}
 		}
 
 		public virtual async Task<string> GetIssueDetails()
 		{
 			var week = ForWeek.AddDays(-7).ToString("d");
-			var accountable = Measurable.AccountableUser.GetName();
-			var admin = Measurable.AdminUser.GetName();
+			var accountable = Measurable.AccountableUser.NotNull(x => x.GetName());
+			var admin = Measurable.AdminUser.NotNull(x=>x.GetName());
 			if (admin != accountable){
 				accountable += "/" + admin;
 			}
 			var footer = "Week: " + week + "\nOwner: " + accountable;
 			if (Measured.HasValue){
 
-				var goal = "GOAL: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.Goal.ToString("0.####");
-				var recorded = "RECORDED: " + Measured.Value.ToString("0.####");
+				var goal = "GOAL: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.UnitType.Format(Measurable.Goal);
+				var recorded = "RECORDED: " + Measurable.UnitType.Format(Measured.Value);
 				return goal + "\n" + recorded + "\n\n" + footer;
 			}
 			return footer ;
@@ -105,12 +105,12 @@ namespace RadialReview.Models.Scorecard
 				if (diff == 0)
 					return name + " goal was met at " + g;
 				if (v == Math.Floor(v) && g == Math.Floor(g))
-					return name + " goal was exceeded by " + ((v - g) * dir).ToString("0.####");
+					return name + " goal was exceeded by " + Measurable.UnitType.Format((v - g)*dir);
 				return name + " goal was exceeded by " + ((v - g) / g * dir * 100).ToString("0.####") + "%";
 			}
 			else
 			{
-				return name + " goal was missed by " + ((g - v) * dir).ToString("0.####");
+				return name + " goal was missed by " + Measurable.UnitType.Format((g - v) * dir);
 			}
 		}
 
@@ -127,8 +127,8 @@ namespace RadialReview.Models.Scorecard
 			if (Measured.HasValue)
 			{
 
-				var goal = "GOAL: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.Goal.ToString("0.####");
-				var recorded = "RECORDED: " + Measured.Value.ToString("0.####");
+				var goal = "GOAL: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.UnitType.Format(Measurable.Goal);
+				var recorded = "RECORDED: " + Measurable.UnitType.Format(Measured.Value);
 				return goal + "\n" + recorded + "\n\n" + footer;
 			}
 			return footer;

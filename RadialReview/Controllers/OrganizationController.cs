@@ -5,6 +5,7 @@ using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.Permissions;
 using RadialReview.Models.UserModels;
@@ -72,6 +73,27 @@ namespace RadialReview.Controllers
 				}
 			}
 		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult SetAccountType(long id,AccountType type)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction()){
+					var org = s.Get<OrganizationModel>(id);
+					org.AccountType = type;
+
+					s.Update(org);
+
+					tx.Commit();
+					s.Flush();
+
+					return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+				}
+			}
+
+		}
+
 		[Access(AccessLevel.Radial)]
 		public JsonResult Delete(long id)
 		{
@@ -176,6 +198,8 @@ namespace RadialReview.Controllers
 				return RedirectToAction("Index", "Home", new { message = String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name) });
 			}
 		}
+
+
 		/*
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult ManageList()

@@ -7,8 +7,10 @@ namespace RadialReview.Models.ViewModels
 {
     public class ImageUploadViewModel
     {
-        public String Url {protected get; set; }
+        public String ImageUrl {protected get; set; }
         public String ForType { get; set; }
+
+		public string UploadUrl { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
 
@@ -17,7 +19,7 @@ namespace RadialReview.Models.ViewModels
             var dim = "";
             /*if (Width != 0 && Height != 0)
                 dim= "?dim="+Width + "x" + Height;*/
-            return Url + dim;
+            return ImageUrl + dim;
 
         }
 

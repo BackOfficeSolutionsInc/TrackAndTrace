@@ -3,6 +3,7 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using ImageResizer;
 using NHibernate;
+using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
@@ -123,11 +124,18 @@ namespace RadialReview.Accessors
 								var old = user.ImageGuid;
 								user.ImageGuid = img.Id.ToString();
 								s.Update(user);
+								if (user.UserOrganization != null && user.UserOrganization.Any()){
+									foreach (var u in user.UserOrganization){
+										u.UpdateCache(s);
+									}
+								}
 							}; break;
 						default: throw new PermissionsException();
 					}
+					var cache = new Cache();
+					cache.InvalidateForUser(user.Id, CacheKeys.USER);
+					cache.InvalidateForUser(user.Id, CacheKeys.USERORGANIZATION);
 
-					new Cache().InvalidateForUser(user.Id, CacheKeys.USER);
 					tx.Commit();
 					s.Flush();
 				}

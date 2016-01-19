@@ -94,6 +94,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Redis">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Redis.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Redis.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
@@ -115,6 +118,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
+    <Reference Include="MigraDoc.DocumentObjectModel">
+      <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.DocumentObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.Rendering">
+      <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.Rendering.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.RtfRendering">
+      <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.RtfRendering.dll</HintPath>
+    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -135,12 +147,23 @@
     <Reference Include="OpenPop">
       <HintPath>..\packages\OpenPop.NET.2.0.4.369\lib\net20\OpenPop.dll</HintPath>
     </Reference>
+    <Reference Include="PdfSharp, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net">
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="StackExchange.Redis.StrongName">
+      <HintPath>..\packages\StackExchange.Redis.StrongName.1.0.322\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -292,6 +315,7 @@
     <Compile Include="Accessors\L10Accessor.cs" />
     <Compile Include="Accessors\MandrillAccessor.cs" />
     <Compile Include="Accessors\MessageAccessor.cs" />
+    <Compile Include="Accessors\NetworkAccessor.cs" />
     <Compile Include="Accessors\NexusAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
@@ -335,6 +359,7 @@
     <Compile Include="Accessors\UserAccessor.cs" />
     <Compile Include="Accessors\UserTemplateAccessor.cs" />
     <Compile Include="Accessors\VtoAccessor.cs" />
+    <Compile Include="Api\V0\Admin.cs" />
     <Compile Include="Api\V0\Users.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -364,6 +389,9 @@
     <Compile Include="Areas\RouteDebugger\RouteDebuggerAreaRegistration.cs" />
     <Compile Include="Areas\RouteDebugger\RouteDebuggerConfig.cs" />
     <Compile Include="Controllers\CustomizeController.cs" />
+    <Compile Include="Controllers\HealthCheckController.cs" />
+    <Compile Include="Controllers\LogController.cs" />
+    <Compile Include="Controllers\QuarterlyController.cs" />
     <Compile Include="Controllers\WebhookController.cs" />
     <Compile Include="Controllers\AccountabilityController.cs" />
     <Compile Include="Controllers\CallbackController.cs" />
@@ -502,6 +530,7 @@
     <Compile Include="Models\Dashboard\DashboardModel.cs" />
     <Compile Include="Models\Dashboard\TileModel.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
+    <Compile Include="Models\Enums\AccountType.cs" />
     <Compile Include="Models\Enums\AttachType.cs" />
     <Compile Include="Models\Enums\BrandingType.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
@@ -543,6 +572,7 @@
     <Compile Include="Models\L10\L10Note.cs" />
     <Compile Include="Models\L10\AV\AudioVideoUser.cs" />
     <Compile Include="Models\L10\Transcript.cs" />
+    <Compile Include="Models\Log\LogItem.cs" />
     <Compile Include="Models\Payments\CreditCardVM.cs" />
     <Compile Include="Models\Payments\Itemized.cs" />
     <Compile Include="Models\Payments\PaymentErrorLog.cs" />
@@ -781,6 +811,7 @@
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
+    <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PermissionItemHelper.cs" />
     <Compile Include="Utilities\RandomUtil.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
@@ -1644,6 +1675,12 @@
     <Content Include="Views\Faq\API.cshtml" />
     <Content Include="Areas\RouteDebugger\Views\RouteDebugger\Index.cshtml" />
     <Content Include="Areas\RouteDebugger\Views\Web.config" />
+    <Content Include="Views\Log\Row.cshtml" />
+    <Content Include="Views\Log\Index.cshtml" />
+    <Content Include="Views\Account\FixEmail.cshtml" />
+    <Content Include="Views\Account\Headers.cshtml" />
+    <Content Include=".ebextensions\SetupIIS.config" />
+    <Content Include="Views\L10\Details\headlines.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1928,6 +1965,7 @@
     <Content Include="Views\UnitTest\SpeechRecog.cshtml" />
     <Content Include="Views\TileData\UserButtons.cshtml" />
     <Content Include="Views\TileData\SoftwareUpdates.cshtml" />
+    <Content Include="Views\Upload\ProfilePicture.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1941,13 +1979,14 @@
     <Folder Include="Views\Console\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
+    <Folder Include="Views\HealthCheck\" />
     <Folder Include="Views\Img\" />
     <Folder Include="Views\L10Data\" />
     <Folder Include="Views\L10Details\" />
-    <Folder Include="Views\Log\" />
     <Folder Include="Views\MeetingData\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
+    <Folder Include="Views\Quarterly\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
     <Folder Include="Views\Transcript\" />

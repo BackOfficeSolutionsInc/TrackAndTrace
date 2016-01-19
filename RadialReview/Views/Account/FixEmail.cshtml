@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewBag.Title = "FixEmail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Fix Email</h2>
+
+<h3>@Html.UserOrganization().GetName()</h3>
+<h4>Current @Html.UserOrganization().GetEmail()</h4>
+
+
+@using (Html.BeginForm())
+{
+	<input name="newEmail" class="form-control" type="text" value="@Html.UserOrganization().GetEmail()"/>
+	<input name="oldEmail" type="hidden" value="@Html.UserOrganization().GetEmail()"/>
+	<input name="userId" type="hidden" value="@Html.UserOrganization().Id"/>
+	<br />
+	<button type="submit">Submit</button>
+}

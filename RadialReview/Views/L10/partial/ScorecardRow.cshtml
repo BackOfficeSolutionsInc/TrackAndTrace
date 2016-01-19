@@ -85,6 +85,7 @@
 						      data-recurrence="@Model.RecurrenceId"
 						      data-measurable="@found.NotNull(x => x.Measurable.Id)"
 						      data-score="@(found.NotNull(x => x.Id))"
+						      data-userid="@(found.NotNull(x => x.AccountableUserId))"
 							@*data-message="@found.IssueMessage().EscapeHtml()"
 							data-details="@found.IssueDetails().EscapeHtml()"*@>
 						</span>
