@@ -17,11 +17,14 @@ namespace RadialReview.Models.Angular.Meeting
 			Complete = rock.CompleteTime != null;
 			DueDate = rock.DueDate;
 			Completion = rock.Completion;
+            CompanyRock = rock.CompanyRock;
 		}
 		public string Name { get; set; }
 		public AngularUser Owner { get; set; }
 		public DateTime? DueDate { get; set; }
 		public bool? Complete { get; set; }
 		public RockState? Completion { get; set; }
+
+        public bool? CompanyRock { get; set; }
 	}
 }

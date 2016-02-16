@@ -1,0 +1,39 @@
+﻿@model RadialReview.Controllers.ManageController.DataVM
+
+@{
+    ViewBag.Title = "Data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Data";
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>Data</h1>
+    </div>
+}
+
+@section header{
+    @Html.Partial("Partial/manageheader")
+}
+<br />
+<div class="panel panel-default">
+    <div class="panel-heading">@Html.Organization().Settings.RockName</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-8">@Html.DropDownList("Period", Model.Periods, new { @class = "form-control" })</div>
+            <div class="col-sm-4"><div class="btn btn-primary " onclick="downloadRocks()">Download</div></div>
+        </div>
+        
+        
+    </div>
+</div>
+
+@using (Html.BeginScripts())
+{
+    <script>
+        function downloadRocks() {
+            var period = $("#Period").val();
+            window.open("/Rocks/Listing?period=" + period, "_blank");
+        }
+    </script>
+}

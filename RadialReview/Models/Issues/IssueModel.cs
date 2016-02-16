@@ -25,6 +25,7 @@ namespace RadialReview.Models.Issues
 		public virtual L10Meeting CreatedDuringMeeting { get; set; }
 		public virtual List<L10Recurrence> _MeetingRecurrences { get; set; }
 		public virtual long? _Order { get; set; }
+        public virtual int _Priority { get; set; }
 
 		public virtual String ForModel { get; set; }
 		public virtual long ForModelId { get; set; }
@@ -70,7 +71,7 @@ namespace RadialReview.Models.Issues
 				Map(x => x.ForModel);
 				Map(x => x.ForModelId);
 
-				Map(x => x.PadId);
+                Map(x => x.PadId);
 
 				Map(x => x.Message).Length(10000);
 				Map(x => x.Description).Length(10000);

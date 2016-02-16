@@ -8,6 +8,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.UserTemplate;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Controllers
 {
@@ -20,12 +21,14 @@ namespace RadialReview.Controllers
 			public List<RockModel> Rocks { get; set; }
 			public List<Models.UserTemplate.UserTemplate.UT_Rock> TemplateRocks { get; set; }
 			public DateTime CurrentTime { get; set; }
-			public bool Locked { get; set; }
-			public bool UpdateOutstandingReviews { get; set; }
+            public bool Locked { get; set; }
+            public bool UpdateOutstandingReviews { get; set; }
+            public bool UpdateAllL10s { get; set; }
 
 			public RockVM()
 			{
 				CurrentTime= DateTime.UtcNow;
+                UpdateAllL10s = true;
 			}
 
 		}
@@ -114,9 +117,16 @@ namespace RadialReview.Controllers
 			foreach (var r in model.Rocks){
 				r.ForUserId = model.UserId;
 			}
-			_RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks,model.UpdateOutstandingReviews);
+			_RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks,model.UpdateOutstandingReviews, model.UpdateAllL10s);
 			return Json(ResultObject.Create(model.Rocks.Select(x=>new { Session = x.Period.Name, Rock = x.Rock, Id =x.Id }),status:StatusType.Success));
 		}
+
+        [Access(AccessLevel.UserOrganization)]
+        public FileContentResult Listing(long period)
+        {
+            var csv=_RockAccessor.PeriodListing(GetUser(), period);
+            return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
+        }
 
 	    public class RockTable
 	    {

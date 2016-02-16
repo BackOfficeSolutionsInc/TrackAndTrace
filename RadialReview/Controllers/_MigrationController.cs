@@ -443,9 +443,8 @@ namespace RadialReview.Controllers
 			}
 			return c + "";
 		}
-		#endregion
-
-		[Access(AccessLevel.Radial)]
+		
+        [Access(AccessLevel.Radial)]
 		public string M4_24_2015()
 		{
 			var c = 0;
@@ -1037,6 +1036,8 @@ namespace RadialReview.Controllers
 			}
 			return "" + f + ", " + g + ", " + h + "   --   " + f2 + ", " + g2 + ", " + h2;
 		}
+
+		#endregion
 
 
 		[Access(AccessLevel.Radial)]

@@ -53,9 +53,9 @@ namespace RadialReview.Utilities
 				switch (org.Settings.Branding)
 				{
 					case BrandingType.RadialReview:
-						return GetAppSetting("ProductName_Review", "Traction Tools");
+						return GetAppSetting("ProductName_Review", "Traction® Tools");
 					case BrandingType.RoundTable:
-						return GetAppSetting("ProductName_Roundtable", "Traction Tools");
+                        return GetAppSetting("ProductName_Roundtable", "Traction® Tools");
 					default:
 						throw new ArgumentOutOfRangeException();
 				}

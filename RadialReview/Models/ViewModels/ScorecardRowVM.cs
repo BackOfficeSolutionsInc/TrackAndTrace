@@ -17,5 +17,7 @@ namespace RadialReview.Models.ViewModels
 		public L10Meeting.L10Meeting_Measurable MeetingMeasurable { get; set; }
 		
 		public bool IsDivider { get; set; }
-	}
+        public bool ShowAdmin { get;set; }
+        public bool ShowScorecardChart { get; set; }
+    }
 }

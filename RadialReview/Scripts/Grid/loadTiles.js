@@ -33,9 +33,8 @@
 		}
 
 		var classes = "";
+		classes += "width_" + w;
 
-		if (w == 1)
-			classes += "width_1";
 		var $item = $(
 				'<li class="' + classes + '">' +
 					'<div class="inner">' +
@@ -64,7 +63,7 @@
 			url: url,
 			success: function (data) {
 				console.log("received tile");
-				console.log(data);
+				//console.log(data);
 				try {
 					var dom = $item.find(".content");
 					var ctrl = $("[ng-controller=L10Controller]");
@@ -131,9 +130,12 @@
 				itemWidth = $(e.currentTarget).data('w'),
 				itemHeight = $(e.currentTarget).data('h');
 
-			itemElement.removeClass("width_1");
-			if (itemWidth == 1)
-				itemElement.addClass("width_1");
+			debugger;
+			for (var i = 1; i <= Grid.currentSize; i++) {
+			    itemElement.removeClass("width_"+i);
+			}
+
+			itemElement.addClass("width_"+itemWidth);
 
 			$(this).closest("li").find(".selected").removeClass("selected");
 			$(this).closest("li").find(".resize").filter(function () {

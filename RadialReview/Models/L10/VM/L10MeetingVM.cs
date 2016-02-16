@@ -22,7 +22,6 @@ namespace RadialReview.Models.L10.VM
 
 		public ScorecardPeriod ScorecardType { get; set; }
 
-
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 
@@ -67,6 +66,9 @@ namespace RadialReview.Models.L10.VM
 
 		public long[] Attendees { get; set; }
 		public bool SendEmail { get; set; }
+
+        public bool ShowAdmin { get; set; }
+        public bool ShowScorecardChart { get; set; }
 
 		public bool EnableTranscript { get; set; }
 

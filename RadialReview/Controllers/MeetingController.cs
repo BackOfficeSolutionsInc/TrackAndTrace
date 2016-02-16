@@ -57,7 +57,7 @@ namespace RadialReview.Controllers
 			    var period = GetUser().Organization.Settings.ScorecardPeriod;
 
 
-				scorecard.Weeks = TimingUtility.GetPeriods(sow, offset, DateTime.UtcNow, current.StartTime, scores, true, period, new YearStart(GetUser().Organization)).Select(x => new AngularWeek(x)).ToList();
+				scorecard.Weeks = TimingUtility.GetPeriods(sow, offset, DateTime.UtcNow, current.StartTime, /*scores,*/ true, period, new YearStart(GetUser().Organization)).Select(x => new AngularWeek(x)).ToList();
 			    scorecard.Scores = scores.Select(x => new AngularScore(x)).ToList();
 
 				model.AgendaItems.Add(scorecard);

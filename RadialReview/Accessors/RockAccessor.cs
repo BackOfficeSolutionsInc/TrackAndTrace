@@ -101,7 +101,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public void EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstanding)
+		public void EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews,bool updateAllL10s)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -124,11 +124,16 @@ namespace RadialReview.Accessors
 					orgId = user.Organization.Id;
 					//user.NumRocks = rocks.Count(x => x.DeleteTime == null);
 					s.SaveOrUpdate(user);
-					user.UpdateCache(s);
 					/*}else{
 						throw new PermissionsException("What?");
 					}*/
-					var outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, orgId);
+                    List<ReviewsModel> outstanding=null;
+                    if (updateOutstandingReviews)
+					    outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, orgId);
+
+                    List<L10Recurrence.L10Recurrence_Attendee> allL10s=null;
+                    if (updateAllL10s)
+                        allL10s = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.User.Id == userId).List().Where(x => x.L10Recurrence.DeleteTime == null).ToList();
 
 
 					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
@@ -142,7 +147,7 @@ namespace RadialReview.Accessors
 						var added = r.Id == 0;
 						s.SaveOrUpdate(r);
 
-						if (updateOutstanding && added)
+						if (updateOutstandingReviews && added)
 						{
 							var r1 = r;
 							foreach (var o in outstanding.Where(x => x.PeriodId == r1.PeriodId))
@@ -150,7 +155,19 @@ namespace RadialReview.Accessors
 								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perm, o.Id, userId, r.Id);
 							}
 						}
+                        if (updateAllL10s && added)
+                        {
+                            var r1 = r;
+                            foreach (var o in allL10s.Select(x=>x.L10Recurrence))
+                            {
+                                L10Accessor.AddRock(s,perm,o.Id,new Controllers.L10Controller.AddRockVm(){
+                                    RecurrenceId=o.Id,
+                                    SelectedRock = r1.Id,
+                                });
+                            }
+                        }
 					}
+					user.UpdateCache(s);
 
 					tx.Commit();
 					s.Flush();
@@ -302,5 +319,39 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-	}
+
+        public Csv PeriodListing(UserOrganizationModel caller, long period)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var p = s.Get<PeriodModel>(period);
+
+                    PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, caller.Organization.Id);
+
+                    
+
+                    var rocksQ = s.QueryOver<RockModel>()
+                        .Where(x => x.DeleteTime == null && x.PeriodId == period);
+                    if (!caller.ManagingOrganization && !caller.IsRadialAdmin){
+                        var subs =DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
+                        rocksQ= rocksQ.WhereRestrictionOn(x=>x.ForUserId).IsIn(subs);
+                    }
+                    var rocks = rocksQ.List().ToList();
+
+                    var csv = new Csv();
+                    csv.SetTitle(p.Name + " " + caller.Organization.Settings.RockName);
+                    
+                    foreach (var r in rocks)
+                    {
+                        csv.Add(r.Rock, "Owner", r.AccountableUser.GetName());
+                        csv.Add(r.Rock, "Manager", string.Join(" & ", r.AccountableUser.ManagedBy.Select(x => x.Manager.GetName())));
+                        csv.Add(r.Rock, "Status",  ""+r.Completion);
+                    }
+                    return csv;
+                }
+            }
+        }
+    }
 }

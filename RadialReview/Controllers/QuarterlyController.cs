@@ -18,10 +18,20 @@ namespace RadialReview.Controllers
         }
 
 		[Access(AccessLevel.UserOrganization)]
-	    public ActionResult Printout(long id)
+	    public ActionResult Printout(long id,bool issues=true,bool todos=true,bool scorecard=true,bool rocks=true)
 	    {
-		    var printout = PdfAccessor.GetScorecard(GetUser(), id);
-			return Pdf(printout,"QuarterlyPrintout.pdf");
+            var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
+            var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout");
+
+
+            if(scorecard) PdfAccessor.AddScorecard(doc, recur);
+            if(rocks)     PdfAccessor.AddRocks(GetUser(), doc, recur);
+            if(todos)     PdfAccessor.AddTodos(GetUser(), doc, recur);
+            if(issues)    PdfAccessor.AddIssues(GetUser(), doc, recur);
+
+            var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
+
+            return Pdf(doc,now+"_"+recur.Name+"_QuarterlyPrintout.pdf");
 	    }
     }
 }

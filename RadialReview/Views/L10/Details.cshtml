@@ -1,155 +1,174 @@
 ﻿@*@{
-		ViewBag.Title = "Details";
-		Layout = "~/Views/Shared/_Layout.cshtml";
-	}
-	<div style="height:28px"></div>
-	<ul class="nav nav-tabs tabs-up" id="friends">
-		<li><a href="/L10/Details/Todo" data-target="#Todo" class="media_node active span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
-		<li><a href="/L10/Details/Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
-		<li><a href="/L10/Details/Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
-		<li><a href="/L10/Details/Recent" data-target="#Recent" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Recent </a></li>
-	</ul>
+        ViewBag.Title = "Details";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    <div style="height:28px"></div>
+    <ul class="nav nav-tabs tabs-up" id="friends">
+        <li><a href="/L10/Details/Todo" data-target="#Todo" class="media_node active span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
+        <li><a href="/L10/Details/Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
+        <li><a href="/L10/Details/Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
+        <li><a href="/L10/Details/Recent" data-target="#Recent" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Recent </a></li>
+    </ul>
 
-	<div class="tab-content">
-		<div id="Todo"			class="tab-pane active"></div>
-		<div id="Issues"		class="tab-pane"></div>
-		<div id="Scorecard"		class="tab-pane"></div>
-		<div id="Recent"		class="tab-pane"></div>
-	</div>
+    <div class="tab-content">
+        <div id="Todo"			class="tab-pane active"></div>
+        <div id="Issues"		class="tab-pane"></div>
+        <div id="Scorecard"		class="tab-pane"></div>
+        <div id="Recent"		class="tab-pane"></div>
+    </div>
 
-	@using (Html.BeginScripts()){
-		<script>
-			$('[data-toggle="tabajax"]').click(function(e) {
-				var $this = $(this),
-					loadurl = $this.attr('href'),
-					targ = $this.attr('data-target');
+    @using (Html.BeginScripts()){
+        <script>
+            $('[data-toggle="tabajax"]').click(function(e) {
+                var $this = $(this),
+                    loadurl = $this.attr('href'),
+                    targ = $this.attr('data-target');
 
-				$.get(loadurl, function(data) {
-					$(targ).html(data);
-				});
+                $.get(loadurl, function(data) {
+                    $(targ).html(data);
+                });
 
-				$this.tab('show');
-				return false;
-			});
-		</script>
-	}*@
+                $this.tab('show');
+                return false;
+            });
+        </script>
+    }*@
 @model long
 @{
-	ViewBag.Title = "Meeting Details";
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.FullWidth = true;
+    ViewBag.Title = "Meeting Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.FullWidth = true;
 
 }
 @using (Html.BeginStyles())
 {
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-	@Styles.Render("~/styles/L10")
-	@Styles.Render("~/styles/meeting")
-	<style>
-		input.due-date {
-			border: none;
-			width: 80px;
-			text-decoration: underline;
-			color: #767F99;
-			text-align: center;
-			background-color: rgba(0, 0, 0, 0);
-			cursor: pointer;
-		}
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
-		.body-content {
-			max-width: 90%;
-		}
+    @Styles.Render("~/styles/L10")
+    @Styles.Render("~/styles/meeting")
+    <style>
+        input.due-date {
+            border: none;
+            width: 80px;
+            text-decoration: underline;
+            color: #767F99;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0);
+            cursor: pointer;
+        }
 
-		.meeting-archive .todo-list-container .picture-column {
-			display: block;
-		}
+        .body-content {
+            max-width: 90%;
+        }
 
-		/*.nav-tabs li a{
-			border-radius: 4px;
-			border-color: #DDD !important;
-		}
-		
-		.nav-tabs li.active a{
-			border-top-width: 2px; 
-			border-left-width: 2px; 
-			border-right-width: 2px; 
-		}*/
+        .meeting-archive .todo-list-container .picture-column {
+            display: block;
+        }
 
-	</style>
+        /*.nav-tabs li a{
+            border-radius: 4px;
+            border-color: #DDD !important;
+        }
+
+        .nav-tabs li.active a{
+            border-top-width: 2px;
+            border-left-width: 2px;
+            border-right-width: 2px;
+        }*/
+    </style>
 
 }
 @using (Html.BeginScripts())
 {
-	<script src="~/Scripts/L10/charts/sparklines.min.js"></script>
-	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
-	@*<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>*@
-	@Scripts.Render("~/bundles/meeting")
+    <script src="~/Scripts/L10/charts/sparklines.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
+    @*<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>*@
+    @Scripts.Render("~/bundles/meeting")
 
-	<script src="~/Scripts/L10/L10.js"></script>
-	<script>
-		angular.module('L10App')
+    <script src="~/Scripts/L10/L10.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+
+    <script>
+        angular.module('L10App')
 			.value('meetingId', @Model)
 			.value('date-range',"today")
 			.value('meetingDataUrlBase', '/L10/DetailsData/')
 			.value("meetingCallback",false);
-		$('#pages a').click(function(e) {
-			e.preventDefault();
-			$(this).tab('show');
-		});
+        $('#pages a').click(function(e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
 
-		$(function() {
+        $(function() {
+            $('a[data-toggle="tabajax"]').on('shown.bs.tab', function (e) {
+                var target = $(e.target).attr("href") // activated tab
+                //angular.element($('[ng-controller="L10Controller"]')).scope().model
+                //debugger;
+                setpage(target);
+            });
 
-			function fixHandle() {
-				$(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());
-			}
+            function setpage(page){
+                var $scope = angular.element($('[ng-controller="L10Controller"]')).scope();
+                $scope.$apply(function() {
+                    $scope.selectedTab = page;
+                });
+            }
+            if (window.location.hash)
+                setpage(window.location.hash);
+            else
+                setpage("#Scorecard");
 
-			setTimeout(function() {
-				$(".scroll-right").scrollLeft(4000);
+            function fixHandle() {
+                $(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());
+            }
+
+            setTimeout(function() {
+                $(".scroll-right").scrollLeft(4000);
 
 
-				$("#ScorecardTable_Over").resizable({
-					handles: 'e',
-				});
-				$("#ScorecardTable_Over").scroll(function(e) {
-					fixHandle();
-				});
-				var shift = 0;
-				$(".table-responsive").scroll(function(e) {
-					$("#ScorecardTable_Over").removeClass("hidden");
-					if ($(".table-responsive").scrollLeft() - shift < $("#ScorecardTable_Over").scrollLeft() ) {
-						$("#ScorecardTable_Over").addClass("hidden");
-					}
-				});
-				$("#ScorecardTable_Over").scrollLeft(10000).scrollLeft(0);
+                $("#ScorecardTable_Over").resizable({
+                    handles: 'e',
+                });
+                $("#ScorecardTable_Over").scroll(function(e) {
+                    fixHandle();
+                });
+                var shift = 0;
+                $(".table-responsive").scroll(function(e) {
+                    $("#ScorecardTable_Over").removeClass("hidden");
+                    if ($(".table-responsive").scrollLeft() - shift < $("#ScorecardTable_Over").scrollLeft() ) {
+                        $("#ScorecardTable_Over").addClass("hidden");
+                    }
+                });
+                $("#ScorecardTable_Over").scrollLeft(10000).scrollLeft(0);
 
-			}, 1000);
+            }, 1000);
 
-			$("body").on("click", ".issuesModal:not(.disabled)", function() {
-				var parm = $.param($(this).data());
-				var m = $(this).data("method");
-				if (!m)
-					m = "Modal";
-				showModal("Add an issue", "/Issues/" + m + "?" + parm, "/Issues/" + m);
-			});
+            $("body").on("click", ".issuesModal:not(.disabled)", function() {
+                var parm = $.param($(this).data());
+                var m = $(this).data("method");
+                if (!m)
+                    m = "Modal";
+                showModal("Add an issue", "/Issues/" + m + "?" + parm, "/Issues/" + m);
+            });
 
-			$("body").on("click", ".todoModal:not(.disabled)", function() {
-				var parm = $.param($(this).data());
-				var m = $(this).data("method");
-				if (!m)
-					m = "Modal";
-				showModal("Add a to-do", "/Todo/" + m + "?" + parm, "/Todo/" + m);
-			});
+            $("body").on("click", ".todoModal:not(.disabled)", function() {
+                var parm = $.param($(this).data());
+                var m = $(this).data("method");
+                if (!m)
+                    m = "Modal";
+                showModal("Add a to-do", "/Todo/" + m + "?" + parm, "/Todo/" + m);
+            });
 
-			$("body").on("click", ".measurableModal:not(.disabled)", function() {
-				var m = $(this).data("recurrence");
-				showModal('Add Measurable', '/L10/AddMeasurable/' + m, '/L10/AddMeasurable/');
-			});
+            $("body").on("click", ".measurableModal:not(.disabled)", function() {
+                var m = $(this).data("recurrence");
+                showModal('Add Measurable', '/L10/AddMeasurable/' + m, '/L10/AddMeasurable/');
+            });
 
-			/*$(document).on('focus', "input.due-date", function () {
+            /*$(document).on('focus', "input.due-date", function () {
 				if (!$(this).attr("init")) {
 					var now = new Date();
 					var todo = $(this).attr("data-todo");
@@ -176,34 +195,76 @@
 					}, 10);
 				}
 			});*/
-		});
-	</script>
+        });
+        $.fn.editable.defaults.mode = 'popup';
+
+        $("body").on('click', ".inlineEdit", function () {
+            debugger;
+            if (!$(this).attr("editable")) {
+                var placement = $(this).attr("data-placement")||"left";
+                $(this).editable({
+                    savenochange: true,
+                    validate: function(value) {
+                        if ($(this).hasClass("numeric")){
+                            var regex = /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/;
+                            if(! regex.test(value)) {
+                                return 'This field must be a number';
+                            }
+                        }
+                        if ($.trim(value) == '') {
+                            return 'This field is required';
+                        }
+                    },
+                    placement: placement,
+                    success: function (data) {
+
+                        /*var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
+
+						if ($(this).data("name") == "direction") {
+							$(items).attr("data-goal-dir", $(this).attr("data-value"));
+						} else if ($(this).data("name") == "target") {
+							$(items).attr("data-goal", $(this).attr("data-value"));
+						}
+						$(items).each(function (d) {
+							updateScore(this);
+						});
+						debugger;*/
+                    }
+                });
+                $(this).attr("editable", "1");
+                $(this).click();
+            }
+        });
+    </script>
 }
 <div ng-app="L10App" class="meeting-review ng-cloak meeting-archive">
-	<div ng-controller="L10Controller">
-		<div class="pull-left"><h3 style="margin-top: 5px;">{{model.Name}}</h3></div>
-		<div class="calendar-container pull-right" style="width:240px;">
-			<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-			<input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="model.date" options="opts" required placeholder="Select a date range..." />
-			<b class="caret"></b>
-		</div>
-		<div style="/*height:90px*/"></div>
+    <div ng-controller="L10Controller">
+        <div class="pull-left"><h3 style="margin-top: 5px;">{{::model.Name}}</h3></div>
+        <div class="calendar-container pull-right" style="width:240px;">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+            <input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="model.date" options="opts" required placeholder="Select a date range..." />
+            <b class="caret"></b>
+        </div>
+        <div style="/*height:90px*/"></div>
 
-		<ul class="nav nav-pills tabs-up" id="pages" style="clear:both">
-			<li class="active"><a href="#Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
+        <ul class="nav nav-pills tabs-up" id="pages" style="clear:both">
+            <li class="active"><a href="#Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
+            <li><a href="#Rocks" data-target="#Rocks" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> @(Html.Organization().Settings.RockName ?? "Rocks")</a></li>
+            <li><a href="#Headlines" data-target="#Headlines" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Headlines </a></li>
+            <li><a href="#Todo" data-target="#Todo" class="media_node span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
+            <li><a href="#Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
+            <li><a href="#Notes" data-target="#Notes" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Notes </a></li>
+        </ul>
 
-			<li><a href="#Todo" data-target="#Todo" class="media_node span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
-			<li><a href="#Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
-			<li><a href="#Headlines" data-target="#Headlines" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Headlines </a></li>
-			<li><a href="#Notes" data-target="#Notes" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Notes </a></li>
-		</ul>
-
-		<div class="tab-content">
-			<div id="Scorecard" class="tab-pane active">@Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", ViewBag.NumberOfWeeks } })</div>
-			<div id="Todo" class="tab-pane">@Html.Partial("~/Views/L10/Details/todo.cshtml")</div>
-			<div id="Issues" class="tab-pane">@Html.Partial("~/Views/L10/Details/issues.cshtml")</div>
-			<div id="Headlines" class="tab-pane">@Html.Partial("~/Views/L10/Details/headlines.cshtml")</div>
-			<div id="Notes" class="tab-pane">@Html.Partial("~/Views/L10/Details/notes.cshtml")</div>
-		</div>
-	</div>
+        <div class="tab-content">
+            <div id="Scorecard" class="tab-pane active"><div ng-if="selectedTab=='#Scorecard'">@Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", ViewBag.NumberOfWeeks } })</div></div>
+            <div id="Headlines" class="tab-pane"><div ng-if="selectedTab=='#Headlines'">@Html.Partial("~/Views/L10/Details/headlines.cshtml")</div></div>
+            <div id="Rocks" class="tab-pane"><div ng-if="selectedTab=='#Rocks'">@Html.Partial("~/Views/L10/Details/rocks.cshtml")</div></div>
+            <div id="Todo" class="tab-pane"><div ng-if="selectedTab=='#Todo'">@Html.Partial("~/Views/L10/Details/todo.cshtml")</div></div>
+            <div id="Issues" class="tab-pane"><div ng-if="(selectedTab=='#Issues')">@Html.Partial("~/Views/L10/Details/issues.cshtml")</div></div>
+            <div id="Notes" class="tab-pane"><div ng-if="(selectedTab=='#Notes')">@Html.Partial("~/Views/L10/Details/notes.cshtml")</div></div>
+        </div>
+        @*<input type="text" ng-model="selectedTab" />
+        <input type="text" ng-model="$$watchersCount" />*@
+    </div>
 </div>

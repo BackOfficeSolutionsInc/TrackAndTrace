@@ -34,8 +34,10 @@ namespace RadialReview.Models.Angular.VTO
 		public IEnumerable<AngularCompanyValue> Values { get; set; }
 		public IEnumerable<AngularVtoString> Issues { get; set; }
 
-		public String TenYearTarget { get; set; }
-
+        public String TenYearTarget { get; set; }
+        public String TenYearTargetTitle { get; set; }
+        public String CoreValueTitle { get; set; }
+        public String IssuesListTitle { get; set; }
 		public static AngularVTO Create(VtoModel vto)
 		{
 			return new AngularVTO(){
@@ -50,7 +52,10 @@ namespace RadialReview.Models.Angular.VTO
 				OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan),
 				QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
 				ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture),
-				Issues = AngularVtoString.Create(vto._Issues)
+                Issues = AngularVtoString.Create(vto._Issues),
+                TenYearTargetTitle = vto.TenYearTargetTitle ?? "10-YEAR TARGET™",
+                CoreValueTitle = vto.CoreValueTitle ?? "CORE VALUES",
+                IssuesListTitle = vto.IssuesListTitle ?? "ISSUES LIST"
 			};
 		}
 	}
@@ -133,6 +138,8 @@ namespace RadialReview.Models.Angular.VTO
 
 		public String Purpose { get; set; }
 		public String Niche { get; set; }
+        public string PurposeTitle { get; set; }
+        public string CoreFocusTitle { get; set; }
 
 		public static AngularCoreFocus Create(VtoModel.CoreFocusModel coreFocus)
 		{
@@ -140,6 +147,9 @@ namespace RadialReview.Models.Angular.VTO
 				Id=coreFocus.Id,
 				Niche = coreFocus.Niche,
 				Purpose = (coreFocus.Purpose),
+                PurposeTitle = coreFocus.PurposeTitle??"Purpose/Cause/Passion",
+                CoreFocusTitle = coreFocus.CoreFocusTitle ?? "CORE FOCUS™"
+
 			};
 		}
 	}
@@ -157,6 +167,7 @@ namespace RadialReview.Models.Angular.VTO
 		public String TargetMarket { get; set; }
 		public String ProvenProcess { get; set; }
 		public String Guarantee { get; set; }
+        public String MarketingStrategyTitle { get; set; }
 		public IEnumerable<AngularVtoString> Uniques { get; set; }
 
 		internal static AngularStrategy Create(VtoModel.MarketingStrategyModel marketingStrategyModel)
@@ -169,6 +180,7 @@ namespace RadialReview.Models.Angular.VTO
 				TargetMarket = (marketingStrategyModel.TargetMarket),
 				//TenYearTarget = (marketingStrategyModel.TenYearTarget),
 				Uniques = AngularVtoString.Create(marketingStrategyModel._Uniques),
+                MarketingStrategyTitle = marketingStrategyModel.MarketingStrategyTitle ?? "MARKETING STRATEGY",
 			};
 		}
 	}
@@ -186,6 +198,7 @@ namespace RadialReview.Models.Angular.VTO
 		public Decimal? Revenue { get; set; }
 		public Decimal? Profit { get; set; }
 		public String Measurables { get; set; }
+        public String ThreeYearPictureTitle { get; set; }
 		public IEnumerable<AngularVtoString> LooksLike { get; set; }
 
 		public static AngularThreeYearPicture Create(VtoModel.ThreeYearPictureModel threeYearPicture)
@@ -196,7 +209,8 @@ namespace RadialReview.Models.Angular.VTO
 				Measurables = (threeYearPicture.Measurables),
 				Profit = (threeYearPicture.Profit),
 				Revenue = (threeYearPicture.Revenue),
-				Id = threeYearPicture.Id
+				Id = threeYearPicture.Id,
+                ThreeYearPictureTitle = threeYearPicture.ThreeYearPictureTitle ?? "3-YEAR PICTURE™"
 			};
 		}
 	}
@@ -210,8 +224,9 @@ namespace RadialReview.Models.Angular.VTO
 		}
 		public DateTime? FutureDate { get; set; }
 		public Decimal? Revenue { get; set; }
-		public Decimal? Profit { get; set; }
-		public String Measurables { get; set; }
+        public Decimal? Profit { get; set; }
+        public String Measurables { get; set; }
+        public String OneYearPlanTitle { get; set; }
 		public IEnumerable<AngularVtoString> GoalsForYear { get; set; }
 
 		public static AngularOneYearPlan Create(VtoModel.OneYearPlanModel oneYearPlan)
@@ -223,6 +238,7 @@ namespace RadialReview.Models.Angular.VTO
 				Measurables = (oneYearPlan.Measurables),
 				Profit = (oneYearPlan.Profit),
 				Revenue = (oneYearPlan.Revenue),
+                OneYearPlanTitle = oneYearPlan.OneYearPlanTitle ?? "1-YEAR PLAN"
 			};
 		}
 	}
@@ -236,8 +252,9 @@ namespace RadialReview.Models.Angular.VTO
 		}
 		public DateTime? FutureDate { get; set; }
 		public Decimal? Revenue { get; set; }
-		public Decimal? Profit { get; set; }
-		public String Measurables { get; set; }
+        public Decimal? Profit { get; set; }
+        public String Measurables { get; set; }
+        public String RocksTitle { get; set; }
 		public IEnumerable<AngularVtoRock> Rocks { get; set; }
 
 		public static AngularQuarterlyRocks Create(VtoModel.QuarterlyRocksModel quarterlyRocksModel)
@@ -248,7 +265,8 @@ namespace RadialReview.Models.Angular.VTO
 				Measurables = (quarterlyRocksModel.Measurables),
 				Profit = (quarterlyRocksModel.Profit),
 				Revenue = (quarterlyRocksModel.Revenue),
-				Rocks = AngularVtoRock.Create(quarterlyRocksModel._Rocks)
+				Rocks = AngularVtoRock.Create(quarterlyRocksModel._Rocks),
+                RocksTitle = quarterlyRocksModel.RocksTitle ?? "ROCKS"
 			};
 		}
 	}

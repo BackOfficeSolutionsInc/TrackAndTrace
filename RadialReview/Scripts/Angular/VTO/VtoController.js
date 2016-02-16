@@ -144,8 +144,6 @@ function ($scope, $http, $timeout, signalR, vtoDataUrlBase, vtoId, vtoCallback) 
 	$scope.functions = {};
 	$scope.filters = {};
 
-
-
 	$scope.functions.subtractDays = function (date, days) {
 		var d = new Date(date);
 		d.setDate(d.getDate() - days);
@@ -157,7 +155,8 @@ function ($scope, $http, $timeout, signalR, vtoDataUrlBase, vtoId, vtoCallback) 
 	$scope.functions.sendUpdate = function (self) {
 		var dat = angular.copy(self);
 		var _clientTimestamp = new Date().getTime();
-		debugger;
+	    //debugger;
+        console.log(self)
 		$http.post("/VTO/Update" + self.Type + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
 			showJsonAlert(data, true, true);
 		});
@@ -209,4 +208,20 @@ function ($scope, $http, $timeout, signalR, vtoDataUrlBase, vtoId, vtoCallback) 
 			});
 		}
 	};
+}).directive('textareaResize',function(){
+    return {
+        link: function (scope, elem) {
+            if (elem.attr('isResized') !== "true") {
+                scope.resize =$(elem).autoResize();
+                elem.attr('isResized', 'true');
+            }
+
+            scope.$on(
+                "$destroy",
+                function handleDestroyEvent() {
+                    scope.resize.destroy();
+                }
+            );
+        }
+    };
 });

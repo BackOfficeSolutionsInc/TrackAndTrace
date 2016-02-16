@@ -9,6 +9,11 @@ namespace RadialReview
     public static class JavascriptExtensions
     {
 
+        public static string ToJavascript(this bool self)
+        {
+            return self ? "true" : "false";
+        }
+
         public static DateTime ToDateTime(this long timeSinceEpoch)
         {
 	        try{

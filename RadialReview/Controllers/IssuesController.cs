@@ -71,6 +71,7 @@ namespace RadialReview.Controllers
 				ForModel = "TodoModel",
 				ForModelId = model.ForId,
 				Organization = GetUser().Organization,
+                _Priority = model.Priority
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
@@ -183,7 +184,8 @@ namespace RadialReview.Controllers
 				Description = model.Details ?? "",
 				ForModel = "IssueModel",
 				ForModelId = -1,
-				Organization = GetUser().Organization,
+                Organization = GetUser().Organization,
+                _Priority = model.Priority
 
 			});
 			return Json(ResultObject.Success("Created issue").NoRefresh());
@@ -207,6 +209,7 @@ namespace RadialReview.Controllers
 				ForModel = model.ForModelType??"IssueModel",
 				ForModelId = model.ForModelId??-1,
 				Organization = GetUser().Organization,
+                _Priority = model.Priority
 				
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
@@ -291,7 +294,8 @@ namespace RadialReview.Controllers
 				Description = model.Details,
 				ForModel = "MeasurableModel",
 				ForModelId = model.MeasurableId,
-				Organization = GetUser().Organization
+				Organization = GetUser().Organization,
+                _Priority = model.Priority
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);
@@ -343,7 +347,8 @@ namespace RadialReview.Controllers
 				Description = model.Details,
 				ForModel = "RockModel",
 				ForModelId = model.RockId,
-				Organization = GetUser().Organization
+                Organization = GetUser().Organization,
+                _Priority = model.Priority
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);

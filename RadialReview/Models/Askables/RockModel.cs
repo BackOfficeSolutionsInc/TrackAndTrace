@@ -75,7 +75,7 @@ namespace RadialReview.Models.Askables {
 				Map(x => x.PeriodId).Column("PeriodId");
 				References(x => x.Period).Column("PeriodId").Not.LazyLoad().ReadOnly();
 				Map(x => x.ForUserId).Column("ForUserId");
-				References(x => x.AccountableUser).Column("ForUserId").LazyLoad().ReadOnly();
+				References(x => x.AccountableUser).Column("ForUserId").Not.LazyLoad().ReadOnly();
 			}
 		}
 		public virtual void Angularize(Angularizer<RockModel> angularizer)

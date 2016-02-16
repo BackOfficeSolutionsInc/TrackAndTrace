@@ -16,6 +16,10 @@ namespace RadialReview.Models.Dashboard
 		Rocks,
 		Manage,
 		Url,
+        L10Todos,
+        L10Scorecard,
+        L10Rocks,
+        L10Issues
 	}
 
 	public class TileModel : ILongIdentifiable, IHistorical
@@ -33,6 +37,7 @@ namespace RadialReview.Models.Dashboard
 		public virtual TileType Type { get; set; }
 		public virtual UserModel ForUser { get; set; }
 		public virtual Dashboard Dashboard { get; set; }
+        public virtual string KeyId { get; set; }
 
 		public TileModel()
 		{
@@ -43,8 +48,9 @@ namespace RadialReview.Models.Dashboard
 		{
 			public TileMap()
 			{
-				Id(x => x.Id);
-				Map(x => x.CreateTime);
+                Id(x => x.Id);
+                Map(x => x.KeyId);
+                Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.DataUrl);
 				Map(x => x.Hidden);
@@ -59,5 +65,6 @@ namespace RadialReview.Models.Dashboard
 
 			}
 		}
-	}
+
+    }
 }

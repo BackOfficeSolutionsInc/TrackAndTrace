@@ -24,13 +24,13 @@
 }
 
 .rocks-container .message {
-	/*font-weight: bold;*/
+	font-weight: bold;
 	font-size: 17px;
 	padding-left: 14px;
 	/*height: 90px;*/
-	  overflow: hidden;
-	  text-overflow: ellipsis;
-	  white-space: nowrap;
+	/*overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;*/
 }
 .rocks-container .rocks-item .owner {
 	text-align: right;
@@ -45,13 +45,15 @@
 .rocks-container .rocks-item .owner .lbl {
 	color: lightgray;
 }
-
 .rocks-container .owner {
-	font-size: 17px;
+	font-size: 19px;
 	position: relative;
 	top: -6px;
 	font-weight: bold;
 	text-transform: uppercase;
+}
+.company-rock-container .owner{
+	font-size: 17px;
 }
 .rocks-container .picture-container {
 	width: 30px;
@@ -73,8 +75,16 @@
 	border-bottom: 1px solid #2C77BA;
 	text-align: center;
 	width: 46px;
-	display: block;
+    min-width: 46px;
+	/*display: block;*/
 	padding: 6px;
+    vertical-align: top;
+    padding-top: 4px;
+}
+
+.rocks-container .rock-state-holder{
+    vertical-align:top;
+    line-height:1;
 }
 
 .rocks-container .component {

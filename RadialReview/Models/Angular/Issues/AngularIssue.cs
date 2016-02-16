@@ -25,6 +25,7 @@ namespace RadialReview.Models.Angular.Issues
 			Complete = recurrenceIssue.CloseTime != null;
 			if (recurrenceIssue.Owner!=null)
 				Owner = AngularUser.CreateUser(recurrenceIssue.Owner);
+            Priority = recurrenceIssue.Priority;
 		}
 		public AngularIssue()
 		{
@@ -39,6 +40,8 @@ namespace RadialReview.Models.Angular.Issues
 		public DateTime? CompleteTime { get; set; }
 		public DateTime? CreateTime { get; set; }
 		public bool? Complete { get; set; }
+        public int? Priority { get; set; }
 
-	}
+
+    }
 }

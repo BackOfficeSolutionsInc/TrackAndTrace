@@ -19,6 +19,8 @@ namespace RadialReview.Models.L10
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
 
+        public virtual bool CountDown { get; set; }
+
 		public virtual bool IncludeIndividualTodos { get; set; }
 		public virtual bool IncludeAggregateTodoCompletion { get; set; }
 
@@ -68,6 +70,7 @@ namespace RadialReview.Models.L10
 			IncludeIndividualTodos = true;
 			IncludeAggregateTodoCompletion = true;
 			EnableTranscription = false;
+            CountDown = false;
 		}
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>
@@ -79,8 +82,9 @@ namespace RadialReview.Models.L10
 				Map(x => x.VideoId);
 				Map(x => x.HeadlinesId);
 				Map(x => x.CreateTime);
-				Map(x => x.MeetingInProgress);
-				Map(x => x.DeleteTime);
+                Map(x => x.MeetingInProgress);
+                Map(x => x.DeleteTime);
+                Map(x => x.CountDown);
 
 				Map(x => x.EnableTranscription);
 

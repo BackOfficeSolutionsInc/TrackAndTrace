@@ -114,8 +114,8 @@ function sendNoteContents() {
 	});
 }
 
-function createNote(id, name) {
-	var row = $("<div class='tab' data-id='" + id + "'>" + name + "</div>");
+function createNote(id, name,padId) {
+	var row = $("<div class='tab' data-id='" + id + "' data-padid='"+padId+"'>" + name + "</div>");
 	$(".notes .active").removeClass("active");
 	$(".notes .tabs").append(row);
 	$(row).addClass("active");
@@ -123,6 +123,7 @@ function createNote(id, name) {
 	$(".notes iframe").data("id", id);
 	$(".notes iframe").data("name", name);
 	$(".notes iframe").attr("disabled", false);
+	$(row).click();
 
 }
 function updateNoteName(id, name) {

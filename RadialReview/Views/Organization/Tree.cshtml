@@ -74,21 +74,40 @@
         var width = 1224,
             height = 1224;
 
-        var tree = d3.layout.tree()
-            .size([height, width-250]);
+      
 
-        var diagonal = d3.svg.diagonal()
-            .projection(function (d) { return [d.y, d.x]; });
-
-        var svg = d3.select("#Chart").append("svg")
+        var svgRoot = d3.select("#Chart").append("svg")
             .attr("width", width)
-            .attr("height", height)
-          .append("g")
+            .attr("height", height);
+
+        var svg = svgRoot.append("g")
             .attr("transform", "translate(100,0)");
 
         d3.json("/Data/OrganizationHierarchy/@Model", function (error, json) {
+            var tempTree = d3.layout.tree().size([height, width - 250]);
+            var nodes = tempTree.nodes(json),
+                links = tempTree.links(nodes);
+
+            var layers = {};
+            var max = 0;
+            for (var i = 0; i < nodes.length; i++) {
+                var d = nodes[i].depth;
+                if (!(d in layers))
+                    layers[d] = 0;
+                layers[d] += 1;
+                max = Math.max(max, layers[d]);
+            }
+            var newH = 100 + max * 22;
+            //tree.size([newH, width - 250]);
+            svgRoot.attr("height", newH);
+            var tree = d3.layout.tree()
+                      .size([newH, width - 250]);
+
             var nodes = tree.nodes(json),
                 links = tree.links(nodes);
+
+            var diagonal = d3.svg.diagonal()
+                .projection(function (d) { return [d.y, d.x]; });
 
             var link = svg.selectAll("path.link")
                 .data(links)

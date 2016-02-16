@@ -78,30 +78,43 @@ namespace RadialReview.Controllers
 			return View(model);
 		}
 
-		[Access(AccessLevel.Manager)]
-		public ActionResult Teams()
-		{
+        [Access(AccessLevel.Manager)]
+        public ActionResult Teams()
+        {
 
-			new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Request/*Session*/);
-			var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
-			var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = 0,TemplateId = x.TemplateId}).ToList();
+            new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Request/*Session*/);
+            var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
+            var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = 0, TemplateId = x.TemplateId }).ToList();
 
-			for (int i = 0; i < orgTeams.Count(); i++)
-			{
-				try
-				{
-					teams[i].Team = teams[i].Team.HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
-					teams[i].Members = _TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id, false).ToListAlive().Count();
-				}
-				catch (Exception e)
-				{
-					log.Error(e);
-				}
+            for (int i = 0; i < orgTeams.Count(); i++)
+            {
+                try
+                {
+                    teams[i].Team = teams[i].Team.HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
+                    teams[i].Members = _TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id, false).ToListAlive().Count();
+                }
+                catch (Exception e)
+                {
+                    log.Error(e);
+                }
 
-			}
-			var model = new OrganizationTeamsViewModel() { Teams = teams };
-			return View(model);
-		}
+            }
+            var model = new OrganizationTeamsViewModel() { Teams = teams };
+            return View(model);
+        }
+        public class DataVM{
+            public List<SelectListItem> Periods { get; set; }
+        }
+        [Access(AccessLevel.Manager)]
+        public ActionResult Data()
+        {
+            new Cache().Push(CacheKeys.MANAGE_PAGE, "Data", LifeTime.Request/*Session*/);
+            var model = new DataVM(){
+                Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(y=>y.Name,y=>y.Id)
+            };
+
+            return View(model);
+        }
 
 		[Access(AccessLevel.Manager)]
 		[OutputCache(NoStore = true,Duration = 0)]

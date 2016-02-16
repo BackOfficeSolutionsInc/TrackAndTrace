@@ -26,14 +26,14 @@
                 <br />
                 <!-- Tab panes -->
                 <div class="tab-content">
-	                @{ first = true;}
-	                <div class="pull-right" style="margin-bottom: 3px;margin-top: -16px;"><b>Company Rock</b></div>
+                    @{ first = true;}
+                    <div class="pull-right" style="margin-bottom: 3px;margin-top: -16px;"><b>Company Rock</b></div>
                     @foreach (var q in ((List<SelectListItem>)ViewBag.Periods))
                     {
                         <div role="tabpanel" class="tab-pane @(first?"active":"")" id="periodModal_@(q.Value)">
                             @foreach (var r in Model.Rocks.Where(x => x.Period != null && x.Period.Id + "" == q.Value))
                             {
-								Html.RenderPartial("_RockRow", r, new ViewDataDictionary(ViewData) { { "HidePeriod", true }, { "ShowCompany", showCompany } });
+                                Html.RenderPartial("_RockRow", r, new ViewDataDictionary(ViewData) { { "HidePeriod", true }, { "ShowCompany", showCompany } });
                             }
                         </div>
                             first = false;
@@ -45,9 +45,14 @@
             </div>
         </div>
     </div>
-    <label>Update Outstanding Reviews: </label> @Html.CheckBoxFor(x => x.UpdateOutstandingReviews)
+    <div>
+        <label>Update Outstanding Reviews: </label>     @Html.CheckBoxFor(x => x.UpdateOutstandingReviews)
+    </div>
+    <div>
+        <label>Update All Level 10s: </label> @Html.CheckBoxFor(x => x.UpdateAllL10s)
+    </div>
 
-</div>
+    </div>
 <script>
     function addRow() {
         debugger;

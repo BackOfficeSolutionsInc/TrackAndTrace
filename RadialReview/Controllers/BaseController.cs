@@ -36,6 +36,8 @@ using RadialReview.Utilities.Serializers;
 using System.Text;
 using NHibernate.Context;
 using MigraDoc.DocumentObjectModel;
+using System.IO.Compression;
+using RadialReview.Models.Enums;
 
 
 namespace RadialReview.Controllers
@@ -44,9 +46,21 @@ namespace RadialReview.Controllers
 	{
 		#region Helpers
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        #region ViewBag
 
-		#region Engines
-		protected static UserEngine _UserEngine = new UserEngine();
+        protected void SetAlert(string status, AlertType type = AlertType.Info)
+        {
+            switch (type)
+            {
+                case AlertType.Info: ViewBag.InfoAlert = status; break;
+                case AlertType.Error: ViewBag.Alert = status; break;
+                case AlertType.Success: ViewBag.Success= status; break;
+                default: throw new ArgumentOutOfRangeException("AlertType:"+type);
+            }
+        }
+        #endregion
+        #region Engines
+        protected static UserEngine _UserEngine = new UserEngine();
 		protected static ChartsEngine _ChartsEngine = new ChartsEngine();
 		protected static ReviewEngine _ReviewEngine = new ReviewEngine();
 		#endregion
@@ -307,9 +321,9 @@ namespace RadialReview.Controllers
 			var stream = new MemoryStream();
 			document.Save(stream, false);
 			name = name ??(Guid.NewGuid()+".pdf");
-			if (inline){
-				Response.AppendHeader("content-disposition", "inline; filename="+name);
-			}
+            //if (inline){
+            //    Response.AppendHeader("content-disposition", "inline; filename=\""+name+"\"");
+            //}
 			return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
 		}
 
@@ -322,10 +336,10 @@ namespace RadialReview.Controllers
 			var stream = new MemoryStream();
 			pdfRenderer.Save(stream, false);
 			name = name ?? (Guid.NewGuid() + ".pdf");
-			if (inline)
-			{
-				Response.AppendHeader("content-disposition", "inline; filename=" + name);
-			}
+            //if (inline)
+            //{
+            //    Response.AppendHeader("content-disposition", "inline; filename=\"" + name +"\"");
+            //}
 			return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
 		}
 
@@ -364,7 +378,12 @@ namespace RadialReview.Controllers
 
 		protected override void OnException(ExceptionContext filterContext)
 		{
-			try{
+            try
+            {
+                var f=filterContext.HttpContext.Response.Filter;
+                filterContext.HttpContext.Response.Filter = null;
+                if (filterContext.HttpContext.Response.Headers.AllKeys.Any(x=>x=="Content-Encoding"))
+                    filterContext.HttpContext.Response.Headers.Remove("Content-Encoding");
 				var action = GetActionMethod(filterContext);
 
 				if (typeof (JsonResult).IsAssignableFrom(action.ReturnType)){
@@ -408,6 +427,7 @@ namespace RadialReview.Controllers
 					filterContext.HttpContext.Response.Clear();
 				}
 				else if (filterContext.Exception is PermissionsException){
+					filterContext.HttpContext.Response.Clear();
 					var returnUrl = ((RedirectException) filterContext.Exception).RedirectUrl;
 					log.Info("Permissions: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
 					ViewBag.Message = filterContext.Exception.Message;
@@ -418,7 +438,6 @@ namespace RadialReview.Controllers
 						filterContext.Result = View("~/Views/Error/Index.cshtml", filterContext.Exception);
 					}
 					filterContext.ExceptionHandled = true;
-					filterContext.HttpContext.Response.Clear();
 				}
 				else if (filterContext.Exception is MeetingException){
 					var type = ((MeetingException) filterContext.Exception).MeetingExceptionType;
@@ -450,6 +469,31 @@ namespace RadialReview.Controllers
 				filterContext.Result = Content(e.Message+"  "+e.StackTrace);
 			}
 		}
+
+        protected void CompressContent(ActionExecutedContext filterContext)
+        {
+            var encodingsAccepted = filterContext.HttpContext.Request.Headers["Accept-Encoding"];
+            if (filterContext.IsChildAction) return;
+
+            if (string.IsNullOrEmpty(encodingsAccepted)) return;
+
+            encodingsAccepted = encodingsAccepted.ToLowerInvariant();
+            var response = filterContext.HttpContext.Response;
+
+            if (encodingsAccepted.Contains("deflate"))
+            {
+                Response.Headers.Remove("Content-Encoding");
+                response.AppendHeader("Content-Encoding", "deflate");
+                response.Filter = new DeflateStream(response.Filter, CompressionMode.Compress);
+            }
+            else if (encodingsAccepted.Contains("gzip"))
+            {
+                Response.Headers.Remove("Content-Encoding");
+                response.AppendHeader("Content-Encoding", "gzip");
+                response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
+            }
+        }
+
 		protected override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
 			try{
@@ -607,7 +651,21 @@ namespace RadialReview.Controllers
 				//DataCollection.CommentMarkProfile(2, "End");
 				base.OnActionExecuting(filterContext);
 			}
-			catch (PermissionsException e){
+            catch (LoginException e)
+            {
+                var f = filterContext.HttpContext.Response.Filter;
+                filterContext.HttpContext.Response.Filter = null;
+                SignOut();
+                var redirectUrl = Request.Url.PathAndQuery;
+                log.Info("Login: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
+                filterContext.Result = RedirectToAction("Login", "Account", new { returnUrl = redirectUrl });
+                //filterContext.ExceptionHandled = true;
+                filterContext.HttpContext.Response.Clear();
+            }
+            catch (PermissionsException e)
+            {
+                var f = filterContext.HttpContext.Response.Filter;
+                filterContext.HttpContext.Response.Filter = null;
 				filterContext.Result = RedirectToAction("Index","Error",new{
 					message=e.Message,
 					redirectUrl = e.RedirectUrl
@@ -624,12 +682,15 @@ namespace RadialReview.Controllers
 			}
 
 			if (TempData["ModelState"] != null && !ModelState.Equals(TempData["ModelState"]))
-				ModelState.Merge((ModelStateDictionary)TempData["ModelState"]);
-			if (TempData["Message"] != null)
-				ViewBag.Message = TempData["Message"];
+                ModelState.Merge((ModelStateDictionary)TempData["ModelState"]);
+            if (TempData["Message"] != null)
+                ViewBag.Message = TempData["Message"];
+            if (TempData["InfoAlert"] != null)
+                ViewBag.InfoAlert = TempData["InfoAlert"];
 
 			HibernateSession.CloseCurrentSession();
 
+            CompressContent(filterContext);
 			base.OnActionExecuted(filterContext);
 		}
 		#region Angular Json Overrides

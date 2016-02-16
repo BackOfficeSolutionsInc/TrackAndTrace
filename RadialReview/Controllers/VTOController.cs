@@ -16,6 +16,11 @@ namespace RadialReview.Controllers
 		    public List<VtoModel> VTOs { get; set; } 
 	    }
 
+        public class VTOViewModel
+        {
+            public long Id { get; set; }
+        }
+
 
         // GET: VTO
 		[Access(AccessLevel.UserOrganization)]
@@ -42,7 +47,7 @@ namespace RadialReview.Controllers
 			}
 
 
-			return View(model);
+            return View(new VTOViewModel() { Id = model.Id });
 	    }
 
 		[Access(AccessLevel.UserOrganization)]

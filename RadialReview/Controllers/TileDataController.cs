@@ -53,12 +53,40 @@ namespace RadialReview.Controllers
 		{
 			return PartialView("UserProfile",GetUser().User);
 		}
-		
-		[Access(AccessLevel.User)]
-		public PartialViewResult UserButtons()
-		{
-			return PartialView("UserButtons");
-		}
+
+        [Access(AccessLevel.User)]
+        public PartialViewResult UserButtons()
+        {
+            return PartialView("UserButtons");
+        }
+        protected void SetupViewBag(long id)
+        {
+            ViewBag.HeadingStyle = "background-color: hsl("+( new Random(id.GetHashCode()).Next(0,360))+",32%,85%)";
+        }
+        [Access(AccessLevel.User)]
+        public PartialViewResult L10Todos(long id)
+        {
+            SetupViewBag(id);
+            return PartialView("L10Todos", id);
+        }
+        [Access(AccessLevel.User)]
+        public PartialViewResult L10Scorecard(long id)
+        {
+            SetupViewBag(id);
+            return PartialView("L10Scorecard",id);
+        }
+        [Access(AccessLevel.User)]
+        public PartialViewResult L10Issues(long id)
+        {
+            SetupViewBag(id);
+            return PartialView("L10Issues",id);
+        }
+        [Access(AccessLevel.User)]
+        public PartialViewResult L10Rocks(long id)
+        {
+            SetupViewBag(id);
+            return PartialView("L10Rocks", id);
+        }
 		[Access(AccessLevel.User)]
 		public PartialViewResult SoftwareUpdates(int days=14)
 		{

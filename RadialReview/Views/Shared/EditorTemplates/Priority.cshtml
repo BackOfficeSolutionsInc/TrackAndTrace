@@ -1,0 +1,162 @@
+﻿@model int
+@{
+    var guiD = Guid.NewGuid().ToString().Replace("-", "");
+    var fieldName = ViewData.TemplateInfo.HtmlFieldPrefix;
+}
+<div class="priority-@(guiD)">
+    <div class="number-priority">
+        @Html.Hidden("",Model)
+        <span class="priority" data-priority="@Model"></span>
+    </div>
+</div>
+
+<style>
+    .priority-@(guiD) .priority {
+        width: 70px;
+        height: 14px;
+        display: inline-block;
+        /*top: 10px;*/
+        position: relative;
+        left: -16px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 20px;
+        color: #666;
+        float: left;
+        cursor: pointer;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        .priority-@(guiD) .priority .hoverable {
+            opacity: .5;
+        }
+
+        .priority-@(guiD) .priority:hover .hoverable {
+            opacity: 1;
+            font-weight: bold;
+        }
+
+        .priority-@(guiD) .priority .icon {
+            font-size: 20px;
+            line-height: 10px;
+            color: rgb(205, 140, 0);
+        }
+
+        .priority-@(guiD) .priority.none .icon {
+            color: gray;
+        }
+
+        .priority-@(guiD) .priority.single-3 .icon {
+            font-size: 20px;
+        }
+
+
+    .priority-@(guiD) .priority {
+        font-size: 20px;
+    }
+</style>
+<script>
+    //function formatState(state) {
+    //	if (!state.id) {
+    //		return state.text;
+    //	}
+    //	var $state = $('<span><img style="max-width:32;max-height:32px" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+    //	return $state;
+    //};
+
+    //$(".select-user").select2({
+    //    templateResult: imageListFormat,
+    //    templateSelection: imageListFormat,
+    //});
+
+    $(".priority-@(guiD) .priority").on("contextmenu", function (e) {
+        e.preventDefault();
+        return false;
+    });
+
+    // var modalTimer = null;
+
+    function refreshModalPriority@(guiD)(p) {
+        debugger;
+
+        var dom = $(".priority-@(guiD) .number-priority > .priority").data("priority", p);
+        $(".priority-@(guiD) .number-priority > input").val(p);
+
+        //var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
+        //$(row).data("priority", p);
+        //Refresh Priority
+        var priorityDom = dom;
+        var p = $(priorityDom).data("priority");
+        $(priorityDom).removeClass("multiple");
+        $(priorityDom).removeClass("none");
+        $(priorityDom).removeClass("single");
+        $(priorityDom).removeClass("single-1");
+        $(priorityDom).removeClass("single-2");
+        $(priorityDom).removeClass("single-3");
+        //$(priorityDom).parents(".issue-row").toggleClass("prioritize", p > 0);
+
+        if (p > 3) {
+            $(priorityDom).addClass("multiple");
+            $(priorityDom).html("<span class='icon fontastic-icon-star-3'></span> x" + p);
+        } else if (p > 0 && p <= 3) {
+            $(priorityDom).addClass("single");
+            $(priorityDom).addClass("single-" + p);
+            var str = "";
+            for (var i = 0; i < p; i++) {
+                str += "<span class='icon fontastic-icon-star-3'></span>";
+            }
+            if (p == 1)
+                str += "<span class='hoverable'>+</span>";
+            $(priorityDom).html(str);
+        } else if (p == 0) {
+            $(priorityDom).addClass("none");
+            $(priorityDom).html("<span class='icon fontastic-icon-star-empty'></span>");
+        }
+    }
+
+    $(".priority-@(guiD) .priority").on("mousedown", function (e) {
+            var p = +$(this).data("priority");
+            console.log("current priority:" + p);
+            if (e.button == 0) {
+                p += 1;
+            } else if (e.button == 2) {
+                p -= 1;
+                p = Math.max(0, p);
+            } else {
+                return false;
+            }
+            // $(this).data("priority", p);
+            console.log("new priority:" + p);
+            //var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
+
+            refreshModalPriority@(guiD)(p);
+            //End RefreshPriority
+
+            ////DEBOUNCE
+            //if (modalTimer) {
+            //    clearTimeout(modalTimer);
+            //}
+            //var that = this;
+            //modalTimer = setTimeout(function () {
+            //    var pp = +$(that).data("priority");
+            //    var d = { priority: pp, time: new Date().getTime() };
+            //    $.ajax({
+            //        url: "/L10/UpdateIssue/" + id,
+            //        data: d,
+            //        method: "POST",
+            //        success: function (d) {
+            //            showJsonAlert(d);
+            //        }
+            //    });
+            //}, 500);
+
+            e.preventDefault();
+            return false;
+        });
+        refreshModalPriority@(guiD)(@Model);
+</script>

@@ -4,40 +4,185 @@
 @Html.SecuredHiddenFor(x => x.MeetingId)
 @Html.SecuredHiddenFor(x => x.RecurrenceId)
 @Html.SecuredHiddenFor(x => x.ForId)
-	
+
 <div class="form-group">
-	@Html.LabelFor(x => x.Message)
-	@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter the Issue" })
+    @Html.LabelFor(x => x.Message)
+    @Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter the Issue" })
 </div>
 <div class="form-group">
-	@Html.LabelFor(x => x.Details)
-	@Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
+    @Html.LabelFor(x => x.Details)
+    @Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
 </div>
 
 @Html.HiddenFor(x => x.ForModelId)
 @Html.HiddenFor(x => x.ForModelType)
 
-<div class="form-group">
-	@Html.LabelFor(x => x.OwnerId)
-	<select name="@Html.NameFor(x => x.OwnerId)" class="select-user form-control" style="width: 100%;height:64px;">
-		@foreach (var u in Model.PossibleUsers)
-		{
-			<option data-img="@u.imageUrl" value="@u.id" value="@u.id" @(u.id==Model.OwnerId?"selected":"")>@u.name</option>
-		}
-	</select>
+
+<div class="row">
+    <div class="col-sm-11">
+        <div class="form-group">
+            @Html.LabelFor(x => x.OwnerId)
+            <select name="@Html.NameFor(x => x.OwnerId)" class="select-user form-control" style="width: 100%;height:64px;">
+                @foreach (var u in Model.PossibleUsers)
+                {
+                    <option data-img="@u.imageUrl" value="@u.id" value="@u.id" @(u.id == Model.OwnerId ? "selected" : "")>@u.name</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="col-sm-1">
+        <div class="form-group">
+            <label>&nbsp;</label>            
+            @Html.EditorFor(x => x.Priority, "Priority")            
+        </div>
+    </div>
 </div>
+@*<style>
+    .modal-priority .priority {
+        width: 31px;
+        height: 14px;
+        display: inline-block;
+        /*top: 10px;*/
+        position: relative;
+        left: -16px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+        color: #666;
+        float: left;
+        cursor: pointer;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
 
+        .modal-priority .priority .hoverable {
+            opacity: .5;
+        }
+
+        .modal-priority .priority:hover .hoverable {
+            opacity: 1;
+            font-weight: bold;
+        }
+
+        .modal-priority .priority .icon {
+            font-size: 11px;
+            line-height: 10px;
+            color: rgb(205, 140, 0);
+        }
+
+        .modal-priority .priority.none .icon {
+            color: gray;
+        }
+
+        .modal-priority .priority.single-3 .icon {
+            font-size: 10px;
+        }
+
+
+    .modal-priority .priority {
+        font-size: 9px;
+    }
+</style>*@
 <script>
-	//function formatState(state) {
-	//	if (!state.id) {
-	//		return state.text;
-	//	}
-	//	var $state = $('<span><img style="max-width:32;max-height:32px" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
-	//	return $state;
-	//};
+    //function formatState(state) {
+    //	if (!state.id) {
+    //		return state.text;
+    //	}
+    //	var $state = $('<span><img style="max-width:32;max-height:32px" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+    //	return $state;
+    //};
 
-	$(".select-user").select2({
-		templateResult: imageListFormat,
-		templateSelection: imageListFormat,
-	});
+    $(".select-user").select2({
+        templateResult: imageListFormat,
+        templateSelection: imageListFormat,
+    });
 </script>
+
+    @*$(".modal-priority .priority").click(function (e) {
+        e.preventDefault();
+        return false;
+    });
+    function refreshModalPriority(p) {
+
+        var dom = $(".modal-priority .number-priority > .priority").data("priority", p);
+
+        //var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
+        //$(row).data("priority", p);
+        //Refresh Priority
+        var priorityDom = dom;
+        var p = $(priorityDom).data("priority");
+        $(priorityDom).removeClass("multiple");
+        $(priorityDom).removeClass("none");
+        $(priorityDom).removeClass("single");
+        $(priorityDom).removeClass("single-1");
+        $(priorityDom).removeClass("single-2");
+        $(priorityDom).removeClass("single-3");
+        $(priorityDom).parents(".issue-row").toggleClass("prioritize", p > 0);
+
+        if (p > 3) {
+            $(priorityDom).addClass("multiple");
+            $(priorityDom).html("<span class='icon fontastic-icon-star-3'></span> x" + p);
+        } else if (p > 0 && p <= 3) {
+            $(priorityDom).addClass("single");
+            $(priorityDom).addClass("single-" + p);
+            var str = "";
+            for (var i = 0; i < p; i++) {
+                str += "<span class='icon fontastic-icon-star-3'></span>";
+            }
+            if (p == 1)
+                str += "<span class='hoverable'>+</span>";
+            $(priorityDom).html(str);
+        } else if (p == 0) {
+            $(priorityDom).addClass("none");
+            $(priorityDom).html("<span class='icon fontastic-icon-star-empty'></span>");
+        }
+    }
+    // var modalTimer = null;
+
+    $(".modal-priority .priority").on("mousedown", function (e) {
+        var p = +$(this).data("priority");
+        console.log("current priority:" + p);
+        if (e.button == 0) {
+            p += 1;
+        } else if (e.button == 2) {
+            p -= 1;
+            p = Math.max(0, p);
+        } else {
+            return false;
+        }
+        // $(this).data("priority", p);
+        console.log("new priority:" + p);
+        //var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
+
+
+
+        refreshModalPriority(p);
+        //End RefreshPriority
+
+        ////DEBOUNCE
+        //if (modalTimer) {
+        //    clearTimeout(modalTimer);
+        //}
+        //var that = this;
+        //modalTimer = setTimeout(function () {
+        //    var pp = +$(that).data("priority");
+        //    var d = { priority: pp, time: new Date().getTime() };
+        //    $.ajax({
+        //        url: "/L10/UpdateIssue/" + id,
+        //        data: d,
+        //        method: "POST",
+        //        success: function (d) {
+        //            showJsonAlert(d);
+        //        }
+        //    });
+        //}, 500);
+
+        e.preventDefault();
+        return false;
+    });
+    refreshModalPriority(@Model.Priority);
+</script>*@

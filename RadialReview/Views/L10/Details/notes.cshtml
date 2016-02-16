@@ -7,19 +7,25 @@
 <div class="scorecard meeting-page" style="clear: both;">
 	<div class="row">
 		<div class="col-md-12" click-anywhere-but-here="model.Selected = -1">
-			<div class="component" ng-repeat="note in model.Notes | transform:this" style="padding:5px 10px;">
-				<div ng-hide="model.Selected==note.Key">
-					<div ng-click="note.DetailsUrl_Src=note.DetailsUrl;model.Selected = note.Key" class="clickable" style="padding: 5px 0 ;"><span class="glyphicon glyphicon-chevron-right  gray"></span> <b>{{note.Title}}</b></div>
-				</div>
-				<div ng-show="model.Selected==note.Key">
-					<div style="padding: 5px 0;" class=""><span class="glyphicon glyphicon-chevron-down gray"></span> <b>{{note.Title}}</b><span class="pull-right glyphicon glyphicon-trash clickable" ng-click="functions.showModal('Delete note?','/L10/DeleteNote/'+note.Id,'/L10/DeleteNote',null,null,alert('asdf'))"></span></div>
-					@*<div style="padding: 5px 5px;"class="pull-right"><span class="glyphicon glyphicon-trash"></span></div>*@
-					<div style="padding-left: 18px;">
-						@*<textarea ng-model-options="{debounce: 400}" ng-change="functions.sendUpdate(note)" ng-model="note.Contents" class="fullWidth verticalOnly" style="min-height: 200px; "></textarea>*@
-						<iframe style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(note.DetailsUrl_Src)}}" ng-data-src="{{note.DetailsUrl}}"></iframe>
-					</div>
-				</div>
-			</div>
+            <div class="component">
+                <div class="" ng-repeat="note in model.Notes | transform:this" style="padding:5px 10px;">
+                    <div ng-hide="model.Selected==note.Key">
+                        <div ng-click="note.DetailsUrl_Src=note.DetailsUrl;model.Selected = note.Key" class="clickable" style="padding: 5px 0 ;"><span class="glyphicon glyphicon-chevron-right  gray"></span> <b>{{note.Title}}</b></div>
+                    </div>
+                    <div ng-show="model.Selected==note.Key">
+                        <div style="padding: 5px 0;" class=""><span class="glyphicon glyphicon-chevron-down gray"></span> <b>{{note.Title}}</b><span class="pull-right glyphicon glyphicon-trash clickable" ng-click="functions.showModal('Delete note?','/L10/DeleteNote/'+note.Id,'/L10/DeleteNote',null,null,alert('asdf'))"></span></div>
+                        @*<div style="padding: 5px 5px;"class="pull-right"><span class="glyphicon glyphicon-trash"></span></div>*@
+                        <div style="padding-left: 18px;">
+                            @*<textarea ng-model-options="{debounce: 400}" ng-change="functions.sendUpdate(note)" ng-model="note.Contents" class="fullWidth verticalOnly" style="min-height: 200px; "></textarea>*@
+                            <iframe style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(note.DetailsUrl_Src)}}" ng-data-src="{{note.DetailsUrl}}"></iframe>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="gray no-todos" style="padding: 30px 15px;" ng-show="(model.Notes | transform:this).length==0">
+                    No notes exist.
+                </div>
+            </div>
 		</div>
 	</div>
 </div>

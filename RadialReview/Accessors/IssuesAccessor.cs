@@ -73,12 +73,13 @@ namespace RadialReview.Accessors
 						Recurrence = r,
 						CreateTime = issue.CreateTime,
 						Owner = s.Load<UserOrganizationModel>(ownerId),
+                        Priority = issue._Priority
 						
 					};
 					s.Save(recur);
 					if (r.OrderIssueBy == "data-priority"){
 						var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-							.Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Priority > 0 && x.ParentRecurrenceIssue==null)
+							.Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Priority > issue._Priority && x.ParentRecurrenceIssue==null)
 							.Select(x => x.Ordering).List<long?>().Where(x=>x!=null).ToList();
 						var max = -1L;
 						if (order.Any())

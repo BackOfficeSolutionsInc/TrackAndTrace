@@ -1,0 +1,16 @@
+﻿
+<div class="scorecard meeting-page" style="clear: both;">
+    <div class="row">
+        <div class="col-md-12" click-anywhere-but-here="model.Selected = -1">
+            <div class="component" ng-repeat1="note in model.HeadlinesUrl | transform:this" style="padding:5px 10px;">
+                @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml", new ViewDataDictionary(){
+		                           {"AddHeaders", false},
+                {"AddController", false},
+                {"AddDatePicker", false},
+                {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))},
+                {"Filter",""}
+                });}
+            </div>
+        </div>
+    </div>
+</div>

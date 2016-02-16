@@ -21,7 +21,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -511,6 +511,7 @@
     <Compile Include="Models\Angular\VTO\AngularVTO.cs" />
     <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Application\MailModel.cs" />
+    <Compile Include="Models\Application\NameId.cs" />
     <Compile Include="Models\Application\YearStart.cs" />
     <Compile Include="Models\Askables\AboutCompanyAskable.cs" />
     <Compile Include="Models\Askables\RockModel.cs" />
@@ -531,6 +532,7 @@
     <Compile Include="Models\Dashboard\TileModel.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\AccountType.cs" />
+    <Compile Include="Models\Enums\AlertType.cs" />
     <Compile Include="Models\Enums\AttachType.cs" />
     <Compile Include="Models\Enums\BrandingType.cs" />
     <Compile Include="Models\Enums\ChartDataSource.cs" />
@@ -806,6 +808,7 @@
     <Compile Include="Utilities\Extensions\Math2.cs" />
     <Compile Include="Utilities\Audit.cs" />
     <Compile Include="Utilities\Extensions\TimespanExtensions.cs" />
+    <Compile Include="Utilities\Extensions\ViewBagExtensions.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
@@ -905,15 +908,24 @@
       <DependentUpon>L10ChatLog.css</DependentUpon>
     </Content>
     <Content Include="Content\L10\L10Transcribe.css" />
+    <None Include="Resources\Checked.png" />
+    <None Include="Resources\star.png" />
+    <None Include="Resources\Unchecked.png" />
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\ElemReady.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\fcsaNumber.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\PriorityTemplates.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\RightClick.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\TableSort.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
     <Content Include="Scripts\jquery\jquery.autoNumeric.min.js" />
+    <Content Include="Scripts\jquery\jquery.autoresize.js" />
     <Content Include="Scripts\knockout-2.2.1.debug.js" />
     <Content Include="Scripts\knockout-2.2.1.js" />
     <Content Include="Scripts\L10\L10ChatLog.js" />
+    <Content Include="Scripts\L10\L10Headlines.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
     <Content Include="Scripts\speechrecog.js" />
@@ -923,7 +935,9 @@
     <Content Include="Scripts\video\Obsolete\socket.io.js" />
     <Content Include="Scripts\video\video.js" />
     <Content Include="SoftwareUpdates\20151216.txt" />
+    <Content Include="SoftwareUpdates\20160125.txt" />
     <Content Include="SoftwareUpdates\20151229.txt" />
+    <Content Include="SoftwareUpdates\20160201.txt" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />
@@ -1269,6 +1283,8 @@
     <Content Include="Scripts\L10\L10Todo.js" />
     <Content Include="Views\L10\partial\IssueRow.cshtml" />
     <Content Include="Views\UserTemplate\Edit.cshtml" />
+    <Content Include="Views\VTO\partial\editable.cshtml" />
+    <Content Include="Views\VTO\partial\pagescripts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1681,6 +1697,11 @@
     <Content Include="Views\Account\Headers.cshtml" />
     <Content Include=".ebextensions\SetupIIS.config" />
     <Content Include="Views\L10\Details\headlines.cshtml" />
+    <Content Include="Views\Issues\partial\list.cshtml" />
+    <Content Include="Views\L10\Details\rocks.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Priority.cshtml" />
+    <Content Include="Views\Organization\Stats.cshtml" />
+    <Content Include="Views\Manage\Data.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1941,7 +1962,7 @@
     <Content Include="Views\TwilioApi\Modal.cshtml" />
     <Content Include="Views\TwilioApi\_PhoneRow.cshtml" />
     <Content Include="Views\TwilioApi\Index.cshtml" />
-    <Content Include="Views\Scorecard\partial\list.cshtml" />
+    <Content Include="Views\Scorecard\partial\OLD - list.cshtml" />
     <Content Include="Views\Scorecard\partial\listscripts.cshtml" />
     <Content Include="Views\Rocks\partial\list.cshtml" />
     <Content Include="Views\Todo\CreateTodoRecurrence.cshtml" />
@@ -1966,6 +1987,10 @@
     <Content Include="Views\TileData\UserButtons.cshtml" />
     <Content Include="Views\TileData\SoftwareUpdates.cshtml" />
     <Content Include="Views\Upload\ProfilePicture.cshtml" />
+    <Content Include="Views\TileData\L10Rocks.cshtml" />
+    <Content Include="Views\TileData\L10Scorecard.cshtml" />
+    <Content Include="Views\TileData\L10Todos.cshtml" />
+    <Content Include="Views\TileData\L10Issues.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

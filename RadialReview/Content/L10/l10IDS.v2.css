@@ -700,3 +700,8 @@ body.dragging, body.dragging * {
 .ids .columns.triple .number-priority {
 	top: -2px;
 }
+
+.priority-column{
+    min-width:44px;
+    width:44px;
+}

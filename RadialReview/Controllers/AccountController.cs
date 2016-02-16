@@ -73,7 +73,7 @@ namespace RadialReview.Controllers
                     );
 
             }
-            TempData["Message"] = "Please check your inbox, an email has been sent with further instructions.";
+            TempData["InfoAlert"]=("Please check your inbox, an email has been sent with further instructions.");
             return RedirectToAction("Index", "Home");
         }
 

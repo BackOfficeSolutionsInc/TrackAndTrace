@@ -1,0 +1,63 @@
+﻿@model List<RadialReview.Controllers.OrganizationController.OrgStats>
+@{
+    ViewBag.FullWidth = true;
+}
+
+<div class="clearfix"></div>
+<h2 style="color: orange" class="pull-left"><b> Stats</b></h2>
+<div class="clearfix"></div>
+<h4 class="pull-left">Server Time</h4>
+<h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
+
+
+<table class="table table-condensed table-striped">
+    <thead>
+        <tr><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>LastLogin</th><th>CreateTime</th></tr>
+    </thead>
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.OrgId</td>
+            <td class="alignRight"><a href="/Organization/Which/@i.OrgId">@i.OrgName</a></td>
+            <td>@i.Username  </td>
+            <td>@i.Position</td>
+            <td class="alignRight" style="color:@(i.LastLogin.NotNull(x =>{
+						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
+						                         {
+													 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(7)))
+													 {
+														 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))){
+															 return "green";
+														 }
+														 return "lightgreen";
+							                         }
+													 return "#ef7622";
+						                         }
+						                         return "red";
+					                         })??"darkred")">
+                @i.LastLogin.NotNull(x => x.ToString())
+            </td>
+            <td>@i.OrgCreateTime</td>
+        </tr>
+    }
+</table>
+
+@using (Html.BeginScripts())
+{
+    <script>
+        $("table").tablesorter({
+            // sortForce: [[0, 1]],
+            sortStable: true,
+        });
+    </script>
+}
+
+<style>
+    td {
+        padding: 0 5px;
+    }
+
+    table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr :not(.tablesorter-headerUnSorted) .tablesorter-header-inner {
+        color: black;
+    }
+</style>

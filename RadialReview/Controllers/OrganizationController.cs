@@ -44,6 +44,42 @@ namespace RadialReview.Controllers
 			return View();
 		}
 
+        public class OrgStats
+        {
+            public long OrgId { get; set; }
+            public string OrgName {get;set;}
+            public string Username {get;set;}
+            public DateTime? LastLogin {get;set;}
+            public string Position { get; set; }
+            public DateTime? OrgCreateTime { get; set; }
+        }
+		[Access(AccessLevel.Radial)]
+        public ActionResult Stats()
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+
+                    var orgs = s.QueryOver<OrganizationModel>().Where(x => x.DeleteTime == null).List().ToList();
+                    var list = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && !x.IsRadialAdmin && x.Name!="Clay Upton" && x.Name!="Kathy Mayfield").List().ToList();
+                    var stats=    orgs.Select(x=>{
+                            var user = list.Where(y=>y.OrganizationId==x.Id).OrderByDescending(y=>y.LastLogin).FirstOrDefault();
+                            return new OrgStats()
+                            {OrgId = x.NotNull(y=>y.Id),
+                                OrgName = x.NotNull(y=>y.GetName()),
+                                Username = user.NotNull(y=>y.Name),
+                                Position = user.NotNull(y=>y.Positions),
+                                LastLogin = user.NotNull(y => y.LastLogin),
+                                OrgCreateTime = x.NotNull(u=>u.CreationTime)
+                            };
+                        }).ToList();
+                    return View(stats);
+
+                }
+            }
+        }
+
 		[Access(AccessLevel.Radial)]
 		public ActionResult Which(long? id = null)
 		{

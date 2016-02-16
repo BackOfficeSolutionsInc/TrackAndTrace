@@ -244,9 +244,13 @@ function deserializeIssues(selector, issueList) {
 function appendIssue(selector, issue, order) {
 	var li = $(constructRow(issue));
 	if (typeof(order) !== "undefined") {
-		if (order == "data-priority") {
+	    if (order == "data-priority") {
+	        debugger;
+	        var priority=issue.priority;
+	        if (typeof (priority) == "undefined")
+	            priority = 0;
 			var found = $(">li", selector).filter(function() {
-				return +$(this).data("priority") > 0;
+			    return +$(this).data("priority") > priority;
 			}).last();
 			if (found.length == 0) {
 				$(selector).prepend(li);

@@ -106,7 +106,7 @@ namespace RadialReview.Controllers
 			};
 
 
-
+            ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
 
 			return View("Edit", model);
 		}

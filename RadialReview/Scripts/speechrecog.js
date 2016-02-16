@@ -84,7 +84,7 @@
 					if (event.timeStamp - _self.start_timestamp < 100) { /*showInfo('info_blocked');*/
 					} else { /*showInfo('info_denied');*/
 					}
-					_self.ignore_onend = true;
+					_self.ignore_onend = false;
 				}
 				if (event.error == 'aborted') {
 					console.log("Aborted: "+new Date());

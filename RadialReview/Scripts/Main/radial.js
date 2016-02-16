@@ -262,12 +262,12 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
 }
 
 function UnstoreJsonAlert() {
-	clearAlerts();
 	var data = localStorage.getItem("Alert");
 	localStorage.setItem("Alert", null);
 
 	var alert = JSON.parse(data);
 	if (alert !== undefined && alert != null && alert != "null") {
+	    clearAlerts();
 		var type = alert.type;
 		var title = alert.title;
 		var message = alert.message;

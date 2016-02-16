@@ -222,7 +222,7 @@ namespace RadialReview.Accessors
 				});
 			}
 		}
-		public static void UpdateVto(UserOrganizationModel caller, long vtoId, String name = null, String tenYearTarget = null, string connectionId = null)
+        public static void UpdateVto(UserOrganizationModel caller, long vtoId, String name = null, String tenYearTarget = null, String tenYearTargetTitle = null, String coreValueTitle = null, String issuesListTitle = null, string connectionId = null)
 		{
 			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
 			var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
@@ -235,12 +235,22 @@ namespace RadialReview.Accessors
 					var vto = s.Get<VtoModel>(vtoId);
 
 					vto.Name = name;
-					vto.TenYearTarget = tenYearTarget;
+                    vto.TenYearTarget = tenYearTarget;
+                    vto.TenYearTargetTitle = tenYearTargetTitle;
+                    vto.CoreValueTitle = coreValueTitle;
+                    vto.IssuesListTitle = issuesListTitle;
+
 					s.Update(vto);
 
 					tx.Commit();
 					s.Flush();
-					group.update(new AngularVTO(vtoId) { Name = vto.Name, TenYearTarget = vto.TenYearTarget});
+					group.update(new AngularVTO(vtoId) { 
+                        Name = vto.Name, 
+                        TenYearTarget = vto.TenYearTarget,
+                        TenYearTargetTitle = vto.TenYearTargetTitle,
+                        CoreValueTitle = vto.CoreValueTitle,
+                        IssuesListTitle = vto.IssuesListTitle
+                    });
 				}
 			}
 		}
@@ -255,7 +265,7 @@ namespace RadialReview.Accessors
 			else if (model.Type == typeof(AngularVTO).Name)
 			{
 				var m = (AngularVTO)model;
-				UpdateVto(caller, m.Id, m.Name,m.TenYearTarget, connectionId);
+                UpdateVto(caller, m.Id, m.Name, m.TenYearTarget, m.TenYearTargetTitle, m.CoreValueTitle, m.IssuesListTitle, connectionId);
 			}
 			else if (model.Type == typeof(AngularCompanyValue).Name)
 			{
@@ -265,12 +275,12 @@ namespace RadialReview.Accessors
 			else if (model.Type == typeof(AngularCoreFocus).Name)
 			{
 				var m = (AngularCoreFocus)model;
-				UpdateCoreFocus(caller, m.Id, m.Purpose, m.Niche, connectionId);
+				UpdateCoreFocus(caller, m.Id, m.Purpose, m.Niche,m.PurposeTitle,m.CoreFocusTitle, connectionId);
 			}
 			else if (model.Type == typeof(AngularStrategy).Name)
 			{
 				var m = (AngularStrategy)model;
-				UpdateStrategy(caller, m.Id, m.TargetMarket, m.ProvenProcess,m.Guarantee, connectionId);
+				UpdateStrategy(caller, m.Id, m.TargetMarket, m.ProvenProcess,m.Guarantee,m.MarketingStrategyTitle, connectionId);
 			}
 			else if (model.Type == typeof(AngularVtoRock).Name)
 			{
@@ -280,23 +290,23 @@ namespace RadialReview.Accessors
 			else if (model.Type == typeof(AngularOneYearPlan).Name)
 			{
 				var m = (AngularOneYearPlan)model;
-				UpdateOneYearPlan(caller, m.Id, m.FutureDate, m.Revenue,m.Profit,m.Measurables, connectionId);
+				UpdateOneYearPlan(caller, m.Id, m.FutureDate, m.Revenue,m.Profit,m.Measurables,m.OneYearPlanTitle, connectionId);
 			}
 			else if (model.Type == typeof(AngularQuarterlyRocks).Name)
 			{
 				var m = (AngularQuarterlyRocks)model;
-				UpdateQuarterlyRocks(caller, m.Id, m.FutureDate, m.Revenue,m.Profit,m.Measurables, connectionId);
+				UpdateQuarterlyRocks(caller, m.Id, m.FutureDate, m.Revenue,m.Profit,m.Measurables,m.RocksTitle, connectionId);
 			}
 			else if (model.Type == typeof(AngularThreeYearPicture).Name)
 			{
 				var m = (AngularThreeYearPicture)model;
-				UpdateThreeYearPicture(caller, m.Id, m.FutureDate, m.Revenue,m.Profit,m.Measurables, connectionId);
+				UpdateThreeYearPicture(caller, m.Id, m.FutureDate, m.Revenue,m.Profit,m.Measurables,m.ThreeYearPictureTitle, connectionId);
 			}
 
 			
 		}
 
-		public static void UpdateThreeYearPicture(UserOrganizationModel caller, long id, DateTime? futuredate = null, decimal? revenue = null, decimal? profit = null, string measurables = null, string connectionId = null)
+		public static void UpdateThreeYearPicture(UserOrganizationModel caller, long id, DateTime? futuredate = null, decimal? revenue = null, decimal? profit = null, string measurables = null,string threeYearPictureTitle=null, string connectionId = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -315,6 +325,7 @@ namespace RadialReview.Accessors
 					threeYear.Revenue = revenue;
 					threeYear.Profit = profit;
 					threeYear.Measurables = measurables;
+                    threeYear.ThreeYearPictureTitle = threeYearPictureTitle;
 					s.Update(threeYear);
 
 					tx.Commit();
@@ -323,12 +334,13 @@ namespace RadialReview.Accessors
 						FutureDate = futuredate,
 						Revenue = revenue,
 						Profit = profit,
-						Measurables = measurables
+						Measurables = measurables,
+                        ThreeYearPictureTitle=threeYearPictureTitle
 					}});
 				}
 			}
 		}
-		public static void UpdateQuarterlyRocks(UserOrganizationModel caller, long id, DateTime? futuredate = null, decimal? revenue = null, decimal? profit = null, string measurables = null, string connectionId = null)
+		public static void UpdateQuarterlyRocks(UserOrganizationModel caller, long id, DateTime? futuredate = null, decimal? revenue = null, decimal? profit = null, string measurables = null,string rocksTitle=null, string connectionId = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
@@ -345,6 +357,7 @@ namespace RadialReview.Accessors
 					quarterlyRocks.Revenue = revenue;
 					quarterlyRocks.Profit = profit;
 					quarterlyRocks.Measurables = measurables;
+                    quarterlyRocks.RocksTitle = rocksTitle;
 					s.Update(quarterlyRocks);
 
 					tx.Commit();
@@ -353,13 +366,14 @@ namespace RadialReview.Accessors
 						FutureDate = futuredate,
 						Revenue = revenue,
 						Profit = profit,
-						Measurables = measurables
+						Measurables = measurables,
+                        RocksTitle=rocksTitle,
 					}});
 				}
 			}
 		}
 
-		public static void UpdateOneYearPlan(UserOrganizationModel caller, long id, DateTime? futuredate = null, decimal? revenue= null, decimal? profit = null, string measurables=null, string connectionId = null)
+		public static void UpdateOneYearPlan(UserOrganizationModel caller, long id, DateTime? futuredate = null, decimal? revenue= null, decimal? profit = null, string measurables=null,string oneYearPlanTitle=null, string connectionId = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -378,6 +392,7 @@ namespace RadialReview.Accessors
 					plan.Revenue = revenue;
 					plan.Profit = profit;
 					plan.Measurables = measurables;
+                    plan.OneYearPlanTitle = oneYearPlanTitle;
 					s.Update(plan);
 
 					tx.Commit();
@@ -386,13 +401,14 @@ namespace RadialReview.Accessors
 						FutureDate = futuredate,
 						Revenue = revenue,
 						Profit = profit,
-						Measurables = measurables
+						Measurables = measurables,
+                        OneYearPlanTitle=oneYearPlanTitle
 					}});
 				}
 			}
 		}
 
-		public static void UpdateStrategy(UserOrganizationModel caller, long strategyId, String targetMarket = null, String provenProcess = null, String guarantee = null, string connectionId = null)
+        public static void UpdateStrategy(UserOrganizationModel caller, long strategyId, String targetMarket = null, String provenProcess = null, String guarantee = null, String marketingStrategyTitle = null, string connectionId = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -409,6 +425,7 @@ namespace RadialReview.Accessors
 					strategy.ProvenProcess = provenProcess;
 					strategy.Guarantee = guarantee;
 					strategy.TargetMarket = targetMarket;
+                    strategy.MarketingStrategyTitle = marketingStrategyTitle;
 					s.Update(strategy);
 
 					tx.Commit();
@@ -417,12 +434,13 @@ namespace RadialReview.Accessors
 						ProvenProcess = provenProcess,
 						Guarantee = guarantee,
 						TargetMarket = targetMarket,
+                        MarketingStrategyTitle=marketingStrategyTitle,
 					}});
 				}
 			}
 		}
 
-		public static void UpdateCoreFocus(UserOrganizationModel caller, long coreFocusId, string purpose, string niche, string connectionId)
+		public static void UpdateCoreFocus(UserOrganizationModel caller, long coreFocusId, string purpose, string niche,string purposeTitle,string coreFocusTitle, string connectionId)
 		{
 			//var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
 			using (var s = HibernateSession.GetCurrentSession()){
@@ -432,6 +450,8 @@ namespace RadialReview.Accessors
 
 					coreFocus.Purpose = purpose;
 					coreFocus.Niche = niche;
+                    coreFocus.PurposeTitle = purposeTitle;
+                    coreFocus.CoreFocusTitle = coreFocusTitle;
 					s.Update(coreFocus);
 
 					var update = new AngularUpdate() {  AngularCoreFocus.Create(coreFocus)  };
@@ -450,7 +470,7 @@ namespace RadialReview.Accessors
 				using (var tx = s.BeginTransaction())
 				{
 					var companyValue = s.Get<CompanyValueModel>(companyValueId);
-					new PermissionsAccessor().Permitted(caller, x => x.EditCompanyValues(companyValue.OrganizationId));
+					PermissionsUtility.Create(s,caller).EditCompanyValues(companyValue.OrganizationId);
 
 					if (message != null)
 					{
@@ -555,7 +575,7 @@ namespace RadialReview.Accessors
 			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
 			using (var s = HibernateSession.GetCurrentSession()){
 				using (var tx = s.BeginTransaction()){
-					new PermissionsAccessor().Permitted(caller, x => x.ViewVTO(vtoId));
+                    PermissionsUtility.Create(s,caller).ViewVTO(vtoId);
 					hub.Groups.Add(connectionId, VtoHub.GenerateVtoGroupId(vtoId));
 					Audit.VtoLog(s, caller, vtoId, "JoinVto");
 				}

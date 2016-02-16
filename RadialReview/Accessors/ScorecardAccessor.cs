@@ -221,7 +221,7 @@ namespace RadialReview.Accessors
 			}
 		}*/
 
-		public static void EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables)
+		public static void EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables,bool updateAllL10s)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -230,10 +230,10 @@ namespace RadialReview.Accessors
 					if (measurables.Any(x => x.AccountableUserId != userId))
 						throw new PermissionsException("Measurable UserId does not match UserId");
 
-					PermissionsUtility.Create(s, caller).EditQuestionForUser(userId);
+					var perm = PermissionsUtility.Create(s, caller).EditQuestionForUser(userId);
 					var user = s.Get<UserOrganizationModel>(userId);
 					var orgId = user.Organization.Id;
-
+                    var added = measurables.Where(x => x.Id == 0).ToList();
 					foreach (var r in measurables)
 					{
 						r.OrganizationId = orgId;
@@ -252,6 +252,24 @@ namespace RadialReview.Accessors
 							s.Update(m);
 						}
 					}
+
+                    if (updateAllL10s)
+                    {
+                        var allL10s = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.User.Id == userId).List().Where(x => x.L10Recurrence.DeleteTime == null).ToList();
+
+                        foreach (var r in added)
+                        {
+                            var r1 = r;
+                            foreach (var o in allL10s.Select(x => x.L10Recurrence))
+                            {
+                                L10Accessor.AddMeasurable(s, perm, o.Id, new Controllers.L10Controller.AddMeasurableVm()
+                                {
+                                    RecurrenceId = o.Id,
+                                    SelectedMeasurable = r1.Id,
+                                });
+                            }
+                        }
+                    }
 
 					s.SaveOrUpdate(user);
 					user.UpdateCache(s);

@@ -161,8 +161,12 @@ function updateTime() {
 function setPageTime(pageName, minutes) {
 	var over = $(".page-" + pageName + " .page-time").data("over");
 	var sec = Math.floor(60 * (minutes - Math.floor(minutes)));
+	var displayMinutes = Math.floor(minutes);
+	if (countDown) {
+        displayMinutes = over - Math.floor(minutes);
+	}
 
-	$(".page-" + pageName + " .page-time").html(Math.floor(minutes) + "m<span class='second'>" + sec + "s</span>");
+	$(".page-" + pageName + " .page-time").html(displayMinutes + "m<span class='second'>" + sec + "s</span>");
 	//$(".page-time.page-" + pageName).prop("title", Math.floor(minutes) + "m" + pad(sec, 2) + "s");
 	if (minutes >= over) {
 		$(".page-" + pageName + " .page-time").addClass("over");
@@ -173,7 +177,10 @@ function setPageTime(pageName, minutes) {
 }
 function setupMeeting(_startTime, leaderId) {
 	console.log("setupmeeting");
-	$(".page-item .page-time").html("");
+	$(".page-item .page-time").each(function () {
+	    var o = $(this).data("over");
+        $(this).html("<span class='gray'>"+(Math.round(100*o)/100.0)+"m</span>")
+	});
 	meetingStart = true;
 	isLeader = (leaderId == userId);
 	startTime = _startTime;
@@ -184,6 +191,7 @@ function concludeMeeting() {
 	isLeader = false;
 	meetingStart = false;
 	resetClickables();
+	delete startTime;// = undefined;
 	loadPage("stats");
 }
 
@@ -282,10 +290,26 @@ function showLoader() {
 	replaceMainWindow("<div class='loader centered'><div class='component '><div>Loading</div><img src='/Content/select2-spinner.gif' /></div></div>");
 }
 
+function callWhenReady(selector, callback, scope) {
+    var self = this;
+    if ($(selector).length) {
+        callback.call(scope);
+    } else {
+        setTimeout(function () {
+            self.callWhenReady(selector, callback, scope);
+        }, 1);
+    }
+}
+
 function replaceMainWindow(html,callback) {
-	$("#main-window").fadeOut(200,function () {
-		$("#main-window").html(html);
-		$("#main-window").fadeIn(200,callback);
+    var a = $("#hiddenWindow").html(html);
+    $("#main-window").fadeOut(200, function () {
+        $("#main-window").html("");
+	    $("#main-window").append($(a).children());
+	    //callWhenReady("#main-window", function () {
+	    //   debugger;
+	    $("#main-window").fadeIn(200, callback);
+	    //});
 	});
 
 }

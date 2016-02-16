@@ -30,7 +30,7 @@ namespace RadialReview.Controllers
 		{
 			var recurrenceId = id;
 			page = page.NotNull(x=>x.ToLower());
-			if (!String.IsNullOrEmpty(page))
+			if (!String.IsNullOrEmpty(page) && page!="startmeeting")
 				L10Accessor.UpdatePage(GetUser(), GetUser().Id, recurrenceId, page, connection);
 
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
@@ -49,7 +49,12 @@ namespace RadialReview.Controllers
 				case "stats":
 					return MeetingStats(recurrenceId);
 				case "startmeeting":
-					return StartMeeting(model, true);
+                    if (recurrence.MeetingInProgress == null){
+                        return StartMeeting(model, true);
+                    }else{
+                        page = "";
+                        break;
+                    }
 				default:
 					break; //fall through
 			}
@@ -82,7 +87,7 @@ namespace RadialReview.Controllers
 						throw new Exception("Handled above");
 					case "":{
 						var meetingPage = L10Accessor.GetCurrentL10MeetingLeaderPage(GetUser(), model.Meeting.Id);
-						if (String.IsNullOrEmpty(meetingPage)){
+						if (String.IsNullOrEmpty(meetingPage) || meetingPage == "startmeeting"){
 
 							var p = L10Accessor.GetDefaultStartPage(recurrence);
 							
@@ -167,7 +172,7 @@ namespace RadialReview.Controllers
 
 			var scorecardType = GetUser().Organization.Settings.ScorecardPeriod;
 			model.ScorecardType = scorecardType;
-			model.Weeks = TimingUtility.GetPeriods(sow, offset, DateTime.UtcNow, model.MeetingStart, model.Scores, false, scorecardType, new YearStart(GetUser().Organization));
+			model.Weeks = TimingUtility.GetPeriods(sow, offset, DateTime.UtcNow, model.MeetingStart, /*model.Scores,*/ true, scorecardType, new YearStart(GetUser().Organization));
 			return PartialView("Scorecard", model);
 			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
 			model.EndDate = ordered.LastOrDefault().NotNull(x => DateTime.UtcNow).AddDays(7);
@@ -292,12 +297,13 @@ namespace RadialReview.Controllers
 					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues, model.SendEmail);
 
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(model.Recurrence.Id)).setHash("stats");
+					//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					//hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(model.Recurrence.Id)).setHash("stats");
 					 
 					//return RedirectToAction("Load", new { id = model.Recurrence.Id, page = "stats" });
-					return Json(ResultObject.SilentSuccess().NoRefresh());
+					//return Json(ResultObject.SilentSuccess().NoRefresh());
 					//return MeetingStats(model.Recurrence.Id);
+                    return Content("Please Wait");
 
 				}
 			}

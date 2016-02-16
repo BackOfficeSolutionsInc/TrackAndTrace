@@ -7,6 +7,9 @@
 		inlineEdit = "";
 	}
 	var auto = Model.MeetingMeasurable.Measurable.NotNull(x=>x.AccountableUser) == null;
+
+    var showAdmin = Model.ShowAdmin;
+    var showScorecardChart = Model.ShowScorecardChart;
 }	   
 
 @if (Model.IsDivider)
@@ -17,12 +20,15 @@
 			<span class="glyphicon glyphicon-remove deleteDivider" onclick="deleteDivider(@Model.MeetingMeasurable.Id)"></span>
 		</td>
 		<td class="who first1 alignRight handle"></td>
-		<td class="who first1 alignLeft handle"></td>
+		@if (showAdmin) { 
+        <td class="who first1 alignLeft handle"></td>
+        }
 		<td class="measurable first1 handle"></td>
 		<td class="target direction handle"></td>
 		<td class="target value handle"></td>
+        @if (showScorecardChart) {
 		<td class="handle"></td>
-
+        }
 		@if (ViewBag.ShowRow == null || ViewBag.ShowRow == true)
 		{
 			var col = 0;
@@ -46,46 +52,51 @@
 		<td class="who first1 alignRight @inlineEdit accountable" data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-url="/L10/UpdateMeasurable" data-type="select" data-name="accountable" data-pk="@Model.MeetingMeasurable.Id" title="@Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetName())">
 			@(Model.MeetingMeasurable.Measurable.AccountableUser.NotNull(x => x.GetInitials()) ?? "Auto")
 		</td>
-		<td class="who first1 alignLeft" >
-			<span class="newLine gray @inlineEdit adminSelection"  data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-type="select" data-name="admin" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" title="@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName()) ?? "Auto-Generated")">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetInitials()) ?? "Auto")</span>
-		</td>
-		<td class="measurable first1" title="@Model.MeetingMeasurable.Measurable.Title"><span class="@inlineEdit" data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span></td>
+        @if(showAdmin){		
+            <td class="who first1 alignLeft" >
+			    <span class="newLine gray @inlineEdit adminSelection"  data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-type="select" data-name="admin" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" title="@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName()) ?? "Auto-Generated")">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetInitials()) ?? "Auto")</span>
+		    </td>
+        }
+		<td class="measurable first1" title="@Model.MeetingMeasurable.Measurable.Title"><span class="@inlineEdit" data-placement='bottom' data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span></td>
 		<td class="target direction" data-measurable="@Model.MeetingMeasurable.Id"><span class="@inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" data-title="Select goal direction" data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
 		<td class="target value" data-measurable="@Model.MeetingMeasurable.Id">
 			<span class="@inlineEdit numeric target-value" data-type="text" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.#####")</span>
 			<span class="@inlineEdit gray unit" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.UnitType.ToTypeString()</span>
 		</td>
+        @if (Model.ShowScorecardChart) { 
 		<td class="" data-measurable="@Model.MeetingMeasurable.Measurable.Id"><span class="inlinesparkline"></span></td>
-
+        }
 		@if (ViewBag.ShowRow == null || ViewBag.ShowRow == true){
 			var col = 0;
 			foreach (var r in Model.Weeks){
 				var found = Model.Scores.FirstOrDefault(x => r.ForWeek == x.ForWeek && x.MeasurableId == Model.MeetingMeasurable.Measurable.Id);
 
 				<td class="score @(r.IsCurrentWeek ? "current" : "")">
-					<input @(inlineEdit == "" ? "disabled" : "")
-						data-goal="@(Model.MeetingMeasurable.Measurable.Goal)"
-						data-goal-dir="@(Model.MeetingMeasurable.Measurable.GoalDirection)"
-						data-row="@(ViewBag.Row)"
-						data-col="@(col)"
-						data-oldval="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
-						type="text"
-						placeholder="N/A"
-						value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
-						class="grid rt score-value"
-						data-scoreid="@(found.NotNull(x => x.Id))"
-						data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-						data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
-						id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />
+                    <form>
+                        <input @(inlineEdit == "" ? "disabled" : "")
+                               data-goal="@(Model.MeetingMeasurable.Measurable.Goal)"
+                               data-goal-dir="@(Model.MeetingMeasurable.Measurable.GoalDirection)"
+                               data-row="@(ViewBag.Row)"
+                               data-col="@(col)"
+                               data-oldval="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+                               type="text"
+                               placeholder="N/A"
+                               value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
+                               class="grid rt score-value"
+                               data-scoreid="@(found.NotNull(x => x.Id))"
+                               data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+                               data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
+                               id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />
+                    </form>
 				</td>
 				if (r.IsCurrentWeek){
 					<td class="buttonHolder">
 						<span class="icon fontastic-icon-pinboard issuesButton issuesModal"
 						      data-meeting="@Model.MeetingId"
 						      data-recurrence="@Model.RecurrenceId"
-						      data-measurable="@found.NotNull(x => x.Measurable.Id)"
+						      data-measurable="@Model.MeetingMeasurable.Measurable.Id"
 						      data-score="@(found.NotNull(x => x.Id))"
-						      data-userid="@(found.NotNull(x => x.AccountableUserId))"
+						      data-userid="@(Model.MeetingMeasurable.Measurable.AccountableUserId)"
 							@*data-message="@found.IssueMessage().EscapeHtml()"
 							data-details="@found.IssueDetails().EscapeHtml()"*@>
 						</span>
@@ -93,8 +104,8 @@
 						      data-method="CreateScorecardTodo"
 						      data-meeting="@Model.MeetingId"
 						      data-recurrence="@Model.RecurrenceId"
-						      data-measurable="@found.NotNull(x => x.Measurable.Id)"
-						      data-accountable="@found.NotNull(x => x.AccountableUserId)"
+						      data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+						      data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
 						      data-score="@(found.NotNull(x => x.Id))">
 						</span>
 					</td>

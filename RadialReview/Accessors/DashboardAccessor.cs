@@ -107,7 +107,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static TileModel CreateTile(ISession s, PermissionsUtility perms, long dashboardId, int h, int w, int x, int y, string dataUrl, string title, TileType type)
+		public static TileModel CreateTile(ISession s, PermissionsUtility perms, long dashboardId, int h, int w, int x, int y, string dataUrl, string title, TileType type,string keyId=null)
 		{
 			perms.EditDashboard(dashboardId);
 			if (type == TileType.Invalid)
@@ -130,20 +130,21 @@ namespace RadialReview.Accessors
 				Y = y,
 				Type = type,
 				Title = title,
+                KeyId = keyId,
 			});
 
 			s.Save(tile);
 			return tile;
 		}
 
-		public static TileModel CreateTile(UserOrganizationModel caller, long dashboardId, int h, int w, int x, int y, string dataUrl, string title, TileType type)
+		public static TileModel CreateTile(UserOrganizationModel caller, long dashboardId, int h, int w, int x, int y, string dataUrl, string title, TileType type,string keyId=null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
 
 					var perms = PermissionsUtility.Create(s, caller);
-					var tile = CreateTile(s, perms, dashboardId, h, w, x, y, dataUrl, title, type);
+					var tile = CreateTile(s, perms, dashboardId, h, w, x, y, dataUrl, title, type, keyId);
 					tx.Commit();
 					s.Flush();
 					return tile;

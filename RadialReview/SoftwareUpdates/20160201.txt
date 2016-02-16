@@ -1,0 +1,9 @@
+﻿Download Data
+---------------
+Download the completion status of Rocks from the Manage page under the Data tab.
+
+
+Issue Priority
+---------------
+Update issue priority from the Meeting archive.
+Set initial issue priority from the New Issue modal.

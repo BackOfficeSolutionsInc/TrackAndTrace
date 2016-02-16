@@ -31,6 +31,8 @@
 .scorecard-table .heading.who {
 	text-align: left;
 	min-width: 45px;
+    /*float:left;*/
+    width:1px;
 }
 
 	.scorecard-table .heading.who.alignRight {
@@ -43,7 +45,9 @@
 		font-size: 16px;*/
 	font-size: 70%;
 }
-
+.scorecard-table .measurable.heading{
+    padding-left:40px;
+}
 .scorecard-table .measurable {
 	text-align: right !important;
 	font-weight: bold;
@@ -167,6 +171,9 @@
 	color: #EFEFEF;
 	padding: 0px;
 }
+    .scorecard-table .score form{
+        display: table-cell;
+    }
 
 	.scorecard-table .score input::-webkit-input-placeholder {
 		color: #EFEFEF;

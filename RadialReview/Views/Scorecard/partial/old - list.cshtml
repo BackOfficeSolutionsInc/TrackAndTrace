@@ -1,0 +1,173 @@
+﻿
+@*
+    @{
+	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+	var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+}
+<div @(headers ? "ng-app=L10App" : "") class="scorecard meeting-page app" style="clear: both;">
+	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="component">
+					<div class="clearfix"></div>
+					<div style="position: relative;" ng-hide="(model.Scorecard|transform:this).Measurables.length==0">
+						<div class="table-responsive scroll-right" style1="min-height: 200px;">
+							<table id="ScorecardTable" class="scorecard-table ng-cloak"> 
+								<thead>
+									<tr>
+										@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
+										{
+											<th>&nbsp;</th>
+											<th>&nbsp;</th>
+										}
+										<th>&nbsp;</th>
+										<th>&nbsp;</th>
+										<th>&nbsp;</th>
+										<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate,true)" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 1 : 1}}">
+											{{functions.subtractDays(week.DisplayDate,0) | date: (model.Scorecard|transform:this).DateFormat1}}
+										</th>
+									</tr>
+									<tr>
+										@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
+										{
+											<th class="heading who alignRight">Accountable</th>
+											<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
+										}
+										<th class="heading measurable">Measurable</th>
+										<th class="heading target" colspan="2">Goal</th>
+										<th ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate,true)" class="date" ng-class="{current:week.IsCurrentWeek}" colspan="{{week.IsCurrentWeek ? 1 : 1}}">
+											{{functions.subtractDays(week.DisplayDate,-6) | date: (model.Scorecard|transform:this).DateFormat2}}
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="specialClass" ng-repeat="measurable in (model.Scorecard|transform:this).Measurables  | orderBy: ['Ordering']">
+										@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
+										{
+											<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>
+											<td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
+										}
+										<td class="measurable first1" title="{{measurable.Name}}">
+											<span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+												  data-type="text"
+												  data-name="title"
+												  data-measurable="{{measurable.Id}}"
+												  data-pk="{{measurable.Id}}_{{meetingId}}"
+												  data-url="/L10/UpdateArchiveMeasurable">{{measurable.Name}}</span>
+										</td>
+										<td class="target direction" data-measurable="{{measurable.Id}}">
+											<span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+												  class="direction_{{measurable.Direction}}"
+												  data-type="select"
+												  data-name="direction"
+												  data-measurable="{{measurable.Id}}"
+												  data-pk="{{measurable.Id}}_{{meetingId}}"
+												  data-url="/L10/UpdateArchiveMeasurable"
+												  data-source="/Dropdown/Type/lessgreater"
+												  data-title="Select target direction"
+												  data-value="{{measurable.Direction}}"></span>
+										</td>
+										<td class="target value" data-measurable="{{measurable.Id}}">
+											<span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+												  class="modifiers {{measurable.Modifiers}}"
+												  data-type="number"
+												  data-name="target"
+												  data-measurable="{{measurable.Id}}"
+												  data-pk="{{measurable.Id}}_{{meetingId}}"
+												  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1 | number}}</span>
+											<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
+										</td>
+
+										<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate)" class="score" ng-class="{current:week.IsCurrentWeek}">
+											<input ng-class="{'inlineEdit': measurable.Disabled!=true}"
+												   data-goal="{{measurable.Target}}"
+												   data-goal-dir="{{measurable.Direction}}"
+												   data-row="{{$parent.$index}}"
+												   data-col="{{$index}}"
+												   type="text"
+												   placeholder="N/A"
+												   ng-model-options="{debounce: 400}"
+												   ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id).Measured"
+												   class="grid rt {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}"
+												   data-scoreid="{{Id}}"
+												   data-measurable="{{measurable.Id}}"
+												   data-week="{{week.ForWeekNumber}}"
+												   ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id))"
+												   id="{{functions.scorecardId(functions.lookupScore(week.ForWeekNumber,measurable.Id),$parent.$index,$index)}}" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm ng-cloak">
+							<thead>
+								<tr>
+									@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
+									{
+										<th>&nbsp;</th>
+										<th>&nbsp;</th>
+									}
+									<th>&nbsp;</th>
+									<th>&nbsp;</th>
+									<th>&nbsp;</th>
+								</tr>
+								<tr>
+									@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
+									{
+										<th class="heading who alignRight">Accountable</th>
+										<th class="heading who alignLeft "><span class="newLine gray">/Admin</span></th>
+									}
+									<th class="heading measurable">Measurable</th>
+									<th class="heading target" colspan="2">Goal</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="measurable in (model.Scorecard|transform:this).Measurables | orderBy: ['Ordering']">
+									@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false)
+									{
+										<td class="who first1 alignRight">{{measurable.Owner.Name}}</td>
+										<td class="who first1 alignLeft"><span class="newLine gray">/{{measurable.Admin.Name}}</span></td>
+									}
+									<td class="measurable first1" title="{{measurable.Name}}">
+										<span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+											  data-type="text"
+											  data-name="title"
+											  data-measurable="{{measurable.Id}}"
+											  data-pk="{{measurable.Id}}_{{meetingId}}"
+											  data-url="/L10/UpdateArchiveMeasurable">{{measurable.Name}}</span>
+									</td>
+									<td class="target direction" data-measurable="{{measurable.Id}}">
+										<span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+											  class="direction_{{measurable.Direction}}"
+											  data-type="select"
+											  data-name="direction"
+											  data-measurable="{{measurable.Id}}"
+											  data-pk="{{measurable.Id}}_{{meetingId}}"
+											  data-url="/L10/UpdateArchiveMeasurable"
+											  data-source="/Dropdown/Type/lessgreater"
+											  data-title="Select target direction"
+											  data-value="{{measurable.Direction}}"></span>
+									</td>
+									<td class="target value" data-measurable="{{measurable.Id}}">
+										<span ng-class="{'inlineEdit': measurable.Disabled!=true}"
+											  class="modifiers {{measurable.Modifiers}}"
+											  data-type="number"
+											  data-name="target"
+											  data-measurable="{{measurable.Id}}"
+											  data-pk="{{measurable.Id}}_{{meetingId}}"
+											  data-url="/L10/UpdateArchiveMeasurable">{{(measurable.Target)*1  | number}}</span>
+										<span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{measurable.Id}}" data-pk="{{measurable.Id}}_{{meetingId}}" data-url="/L10/UpdateMeasurable"></span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="gray" style="padding: 30px 15px;" ng-show="(model.Scorecard|transform:this).Measurables.length==0">
+						No measurables fit your search criteria.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>*@

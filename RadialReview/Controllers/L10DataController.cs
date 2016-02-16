@@ -477,6 +477,7 @@ namespace RadialReview.Controllers
 			public long NoteId { get; set; }
 			public String ConnectionId { get; set; }
 			public long SendTime { get; set; }
+            public string PadId { get; set; }
 		}
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Note(long id)
@@ -500,7 +501,8 @@ namespace RadialReview.Controllers
 		{
 			ValidateValues(model,x=>x.RecurrenceId);
 			if (ModelState.IsValid){
-				L10Accessor.CreateNote(GetUser(), model.RecurrenceId, model.Name);
+				var padId = L10Accessor.CreateNote(GetUser(), model.RecurrenceId, model.Name);
+                model.PadId = padId;
 				return Json(ResultObject.SilentSuccess(model).NoRefresh());
 			}
 			return Json(ResultObject.CreateMessage(StatusType.Danger, "Error creating note").NoRefresh());

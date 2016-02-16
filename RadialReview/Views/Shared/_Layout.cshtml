@@ -95,8 +95,15 @@
 												<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
 											</a>
 										</li>*@
-										if (ViewBag.ShowL10 ?? false)
-										{
+                                        <li>
+                                            <a href="@Url.Action("Index", "Home")">
+                                                Workspace
+                                                <span id="DashboardNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                            </a>
+                                        </li>
+
+                                        if (ViewBag.ShowL10 ?? false)
+                                        {
 											<li>
 												<a href="@Url.Action("Index", "L10")">
 													L10

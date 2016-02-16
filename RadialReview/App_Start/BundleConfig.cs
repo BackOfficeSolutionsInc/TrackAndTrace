@@ -10,6 +10,28 @@ namespace RadialReview
 		// For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
 		public static void RegisterBundles(BundleCollection bundles)
 		{
+			var angularHelpers_Scripts = new[]{
+				"~/Scripts/Main/moment.min.js",
+				"~/Scripts/Angular/Helpers/Libraries/angular-filter.min.js", 
+				"~/Scripts/Angular/Helpers/Libraries/angular-daterangepicker.js", 
+				"~/Scripts/Angular/Helpers/transform.js", 
+				"~/Scripts/Angular/Helpers/signalR.js",
+				"~/Scripts/Angular/Helpers/Directives/AnywhereButHere.js", 
+				"~/Scripts/Angular/Helpers/Directives/TableSort.js", 
+				"~/Scripts/Angular/Helpers/Directives/RightClick.js", 
+				"~/Scripts/Angular/Helpers/Directives/ElemReady.js", 
+				"~/Scripts/Angular/Helpers/Directives/bindUnsafeHtml.js",
+				"~/Scripts/Angular/Helpers/Directives/ImageTemplates.js",
+				"~/Scripts/Angular/Helpers/Directives/PriorityTemplates.js",
+				"~/Scripts/Angular/Helpers/Directives/fcsaNumber.js",
+				"~/Scripts/Angular/Helpers/angular-timer.min.js",
+				"~/Scripts/Angular/helpers.js", 
+			};
+			var angularHelpers_Styles = new[]{
+				"~/Content/components/daterangepicker-bs3.css"
+			};
+
+
 			bundles.Add(new ScriptBundle("~/bundles/jquery")
 				.Include("~/Scripts/jquery-{version}.js")
 				.Include("~/Scripts/jquery.unobtrusive-ajax.js")
@@ -125,8 +147,9 @@ namespace RadialReview
 					"~/Scripts/L10/L10.js",
 					"~/Scripts/L10/L10Ids.js",
 					"~/Scripts/L10/L10Todo.js",
-					"~/Scripts/L10/L10Rocks.js",
-					"~/Scripts/L10/L10Scorecard.js",
+                    "~/Scripts/L10/L10Rocks.js",
+                    "~/Scripts/L10/L10Scorecard.js",
+                    "~/Scripts/L10/L10Headlines.js",
 					"~/Scripts/L10/L10Notes.js",
 					"~/Scripts/L10/sortable.js",
 					"~/Scripts/speechrecog.js",
@@ -136,22 +159,6 @@ namespace RadialReview
 				));
 
 
-			var angularHelpers_Scripts = new[]{
-				"~/Scripts/Main/moment.min.js",
-				"~/Scripts/Angular/Helpers/Libraries/angular-filter.min.js", 
-				"~/Scripts/Angular/Helpers/Libraries/angular-daterangepicker.js", 
-				"~/Scripts/Angular/Helpers/transform.js", 
-				"~/Scripts/Angular/Helpers/signalR.js",
-				"~/Scripts/Angular/Helpers/Directives/AnywhereButHere.js", 
-				"~/Scripts/Angular/Helpers/Directives/bindUnsafeHtml.js",
-				"~/Scripts/Angular/Helpers/Directives/ImageTemplates.js",
-				"~/Scripts/Angular/Helpers/Directives/fcsaNumber.js",
-				"~/Scripts/Angular/Helpers/angular-timer.min.js",
-				"~/Scripts/Angular/helpers.js", 
-			};
-			var angularHelpers_Styles = new[]{
-				"~/Content/components/daterangepicker-bs3.css"
-			};
 
 
 
@@ -165,7 +172,8 @@ namespace RadialReview
 				));
 			bundles.Add(new ScriptBundle("~/bundles/vto")
 				.Include(angularHelpers_Scripts)
-				.Include(
+                .Include(
+                    "~/Scripts/jquery/jquery.autoresize.js",
 					"~/Scripts/Angular/VTO/VtoApp.js",
 					"~/Scripts/Angular/VTO/VtoController.js"
 				));

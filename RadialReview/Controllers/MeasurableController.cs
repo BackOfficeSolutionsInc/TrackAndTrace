@@ -23,6 +23,11 @@ namespace RadialReview.Controllers
 
 			public List<UserTemplate.UT_Measurable> TemplateMeasurables { get; set; }
 			public long TemplateId { get; set; }
+            public bool UpdateAllL10s { get; set; }
+            public MeasurableVM()
+            {
+                UpdateAllL10s = true;
+            }
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -60,7 +65,7 @@ namespace RadialReview.Controllers
 				if (!avail.Contains(r.AdminUserId))
 					throw new PermissionsException();
 			}
-			ScorecardAccessor.EditMeasurables(GetUser(), model.UserId, model.Measurables);
+			ScorecardAccessor.EditMeasurables(GetUser(), model.UserId, model.Measurables,model.UpdateAllL10s);
 			return Json(ResultObject.SilentSuccess());
 		}
 

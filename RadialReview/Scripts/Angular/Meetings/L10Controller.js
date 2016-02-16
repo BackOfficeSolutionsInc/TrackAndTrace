@@ -139,34 +139,44 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 
 	meetingHub.on('update', update);
 
-	$http({ method: 'get', url: meetingDataUrlBase + $scope.meetingId })
-	.success(function (data, status) {
-		convertDates(data);
-		$scope.model = data;
-		/*var sevenMin = moment().subtract('days',7).toDate();
-		var sevenMax = moment().add('days',9).toDate();
-
-		debugger;
-		if (!$scope.model)
-			$scope.model = {};
-		$scope.model.date = { startDate: sevenMin, endDate: sevenMax };
-		*/
-
-		if (meetingCallback) {
-			setTimeout(function(){
-				meetingCallback();
-			},1);
-		}
-
-		//update(data, status);
-	}).error(function (data, status) {
-		//$scope.model = {};
-		console.log("Error");
-		console.error(data);
-	});
+	
 	$scope.functions = {};
 	$scope.filters = {};
+	$scope.functions.reload = function (reload) {
+	    if (typeof (reload) == "undefined") {
+	        reload = true;
+	    }
+	    if (reload) {
+	        console.log("reloading...");
+	        $http({ method: 'get', url: meetingDataUrlBase + $scope.meetingId })
+            .success(function (data, status) {
+                convertDates(data);
+                $scope.model = data;
+                /*var sevenMin = moment().subtract('days',7).toDate();
+                var sevenMax = moment().add('days',9).toDate();
+    
+                debugger;
+                if (!$scope.model)
+                    $scope.model = {};
+                $scope.model.date = { startDate: sevenMin, endDate: sevenMax };
+                */
 
+                if (meetingCallback) {
+                    setTimeout(function () {
+                        meetingCallback();
+                    }, 1);
+                }
+
+                //update(data, status);
+            }).error(function (data, status) {
+                //$scope.model = {};
+                console.log("Error");
+                console.error(data);
+            });
+	    }
+    }
+
+    $scope.functions.reload(true);
 
 	$scope.functions.setHtml = function(element,data) {
 		var newstuff = element.html(data);
@@ -233,8 +243,8 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 		}
 	};
 
-	$scope.functions.lookupScoreFull = function(week, measurableId) {
-		var scorecard = $scope.model.Lookup[$scope.model.Scorecard.Key];
+	$scope.functions.lookupScoreFull = function(week, measurableId,scorecardKey) {
+	    var scorecard = $scope.model.Lookup[scorecardKey];
 		var scores = scorecard.Scores;
 		for (var s in scores) {
 			var score = $scope.model.Lookup[scores[s].Key];
@@ -249,18 +259,18 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 		return null;
 	};
 
-	$scope.functions.lookupScore = function (week, measurableId) {
+	$scope.functions.lookupScore = function (week, measurableId,scorecardKey) {
 
 		if ($scope.ScoreLookup == null) {
 			$scope.ScoreLookup = {};
-			var scorecard = $scope.model.Lookup[$scope.model.Scorecard.Key];
+			var scorecard = $scope.model.Lookup[scorecardKey];
 			//var scores = scorecard.Scores;
 			for (var w in scorecard.Weeks) {
 				var wn = scorecard.Weeks[w].ForWeekNumber;
 				$scope.ScoreLookup[wn] = {};
 				for (var m in scorecard.Measurables) {
 					var mn = scorecard.Measurables[m].Id;
-					$scope.ScoreLookup[wn][mn] = $scope.functions.lookupScoreFull(wn, mn);
+					$scope.ScoreLookup[wn][mn] = $scope.functions.lookupScoreFull(wn, mn, scorecardKey);
 				}
 			}
 		}

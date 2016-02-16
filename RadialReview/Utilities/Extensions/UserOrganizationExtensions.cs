@@ -214,7 +214,7 @@ namespace RadialReview
 			return "/i/" + self.User.ImageGuid;*/
 			var user = self.NotNull(x => x.User);
 			if (user == null)
-				return self.Cache.NotNull(x => x.ImageUrl(size)) ?? "/i/userplaceholder";
+				return self.NotNull(a=>a.Cache.NotNull(x => x.ImageUrl(size))) ?? "/i/userplaceholder";
 			else
 				return ImageUrl(user, awsFaster, size);
 		}

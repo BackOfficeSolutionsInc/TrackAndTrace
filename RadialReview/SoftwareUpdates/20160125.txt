@@ -1,0 +1,25 @@
+﻿L10 Tiles
+---------------
+Add tiles based on any L10 you attend to your dashboard.
+* Scorecard
+* Rocks
+* To-dos
+* Issues
+
+
+Headlines Notes
+---------------
+Headlines page now has a notes page built in.
+* Also added to archive 
+
+
+Agenda Timer Count-down
+---------------
+Agenda timer can be set to count down from the meeting settings page.
+* Click the 'Page Durations' tab
+* Choose 'Count Down'
+
+
+Meeting Archive Rocks
+---------------
+Added a page for rocks on the meeting archive

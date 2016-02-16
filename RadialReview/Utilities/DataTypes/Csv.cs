@@ -34,7 +34,10 @@ namespace RadialReview.Utilities.DataTypes
 	    {
 		    Title = title;
 	    }
-
+        public byte[] ToBytes()
+        {
+            return new System.Text.UTF8Encoding().GetBytes(this.ToCsv());
+        }
 
         public String ToCsv(bool showRowTitle = true)
         {
