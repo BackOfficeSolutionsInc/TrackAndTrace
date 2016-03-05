@@ -38,6 +38,7 @@ using NHibernate.Context;
 using MigraDoc.DocumentObjectModel;
 using System.IO.Compression;
 using RadialReview.Models.Enums;
+using RadialReview.Utilities.Productivity;
 
 
 namespace RadialReview.Controllers
@@ -113,9 +114,12 @@ namespace RadialReview.Controllers
 		#region GetUser
 		private long? _CurrentUserOrganizationId = null;
 
+        private UserOrganizationModel MockUser = null;
+
 		private UserOrganizationModel PopulateUserData(UserOrganizationModel user)
 		{
-			if (user != null){
+            if (user != null && Request != null)
+            {
 				user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
 			}
 			return user;
@@ -152,10 +156,15 @@ namespace RadialReview.Controllers
 		// ReSharper disable once RedundantOverload.Local
 		private UserOrganizationModel _GetUser(ISession s)
 		{
+            if (MockUser != null)
+                return MockUser;
+
 			return _GetUser(s, null);
 		}
 		private UserOrganizationModel _GetUser()
-		{
+        {
+            if (MockUser != null)
+                return MockUser;
 			long? userOrganizationId = null;
 
 			if (userOrganizationId == null)
@@ -186,7 +195,9 @@ namespace RadialReview.Controllers
 			}
 		}
 		private UserOrganizationModel _GetUser(long userOrganizationId)
-		{
+        {
+            if (MockUser != null && MockUser.Id==userOrganizationId)
+                return MockUser;
 			var cache = new Cache();
 
 			if (cache.Get(CacheKeys.USERORGANIZATION) is UserOrganizationModel && userOrganizationId == ((UserOrganizationModel)cache.Get(CacheKeys.USERORGANIZATION)).Id)
@@ -201,7 +212,8 @@ namespace RadialReview.Controllers
 			}
 		}
 		private UserOrganizationModel _GetUser(ISession s, long? userOrganizationId = null)//long? organizationId, Boolean full = false)
-		{
+        {
+            
 			/**/
 			if (userOrganizationId == null)
 			{
@@ -290,8 +302,11 @@ namespace RadialReview.Controllers
 		#region Validation
 		private List<String> ToValidate = new List<string>();
 		private NameValueCollection ValidationCollection;
+        private bool SkipValidation = false;
 		protected void ValidateValues<T>(T model, params Expression<Func<T, object>>[] selectors)
 		{
+            if (SkipValidation)
+                return;
 			foreach (var e in selectors)
 			{
 				//var meta = ModelMetadata.FromLambdaExpression(e, new ViewDataDictionary<T>());
@@ -336,11 +351,20 @@ namespace RadialReview.Controllers
 			var stream = new MemoryStream();
 			pdfRenderer.Save(stream, false);
 			name = name ?? (Guid.NewGuid() + ".pdf");
-            //if (inline)
-            //{
-            //    Response.AppendHeader("content-disposition", "inline; filename=\"" + name +"\"");
-            //}
-			return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
+            //var file = File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
+            if (inline)
+            {
+                //Response.Headers.Remove("Content-Disposition");
+                //var f = Response.Filter;
+                //Response.Filter = null;
+                //if (Response.Headers.AllKeys.Any(x => x == "Content-Encoding"))
+                //    Response.Headers.Remove("Content-Encoding");
+                //Response.AppendHeader("Content-Disposition", "inline; filename=output.pdf");
+                //Response.AppendHeader("Cache-Control", "private");
+
+            }
+            return new FileStreamResult(stream, System.Net.Mime.MediaTypeNames.Application.Pdf);
+            //return file;
 		}
 
 
@@ -380,6 +404,7 @@ namespace RadialReview.Controllers
 		{
             try
             {
+                ChromeExtensionComms.SendCommand("pageError");
                 var f=filterContext.HttpContext.Response.Filter;
                 filterContext.HttpContext.Response.Filter = null;
                 if (filterContext.HttpContext.Response.Headers.AllKeys.Any(x=>x=="Content-Encoding"))
@@ -473,9 +498,11 @@ namespace RadialReview.Controllers
         protected void CompressContent(ActionExecutedContext filterContext)
         {
             var encodingsAccepted = filterContext.HttpContext.Request.Headers["Accept-Encoding"];
+            var contentType = filterContext.HttpContext.Request.Headers["Content-Type"];
             if (filterContext.IsChildAction) return;
 
             if (string.IsNullOrEmpty(encodingsAccepted)) return;
+            if (contentType!=null && contentType.ToLower().Contains("pdf")) return;
 
             encodingsAccepted = encodingsAccepted.ToLowerInvariant();
             var response = filterContext.HttpContext.Response;
@@ -674,6 +701,7 @@ namespace RadialReview.Controllers
 		}
 		protected override void OnActionExecuted(ActionExecutedContext filterContext)
 		{
+			HibernateSession.CloseCurrentSession();
 			if (ToValidate.Any())
 			{
 				var err = "Didn't validate: " + String.Join(",", ToValidate);
@@ -688,7 +716,6 @@ namespace RadialReview.Controllers
             if (TempData["InfoAlert"] != null)
                 ViewBag.InfoAlert = TempData["InfoAlert"];
 
-			HibernateSession.CloseCurrentSession();
 
             CompressContent(filterContext);
 			base.OnActionExecuted(filterContext);

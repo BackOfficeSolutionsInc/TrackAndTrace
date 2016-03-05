@@ -9,7 +9,8 @@ using RadialReview.Models.VTO;
 
 namespace RadialReview.Controllers
 {
-	public partial class VTOController : BaseController
+	public partial class 
+        VTOController : BaseController
     {
 	    public class VTOListingVM
 	    {
@@ -19,6 +20,8 @@ namespace RadialReview.Controllers
         public class VTOViewModel
         {
             public long Id { get; set; }
+
+            public bool IsPartial { get; set; }
         }
 
 
@@ -34,20 +37,35 @@ namespace RadialReview.Controllers
         }
 
 		[Access(AccessLevel.UserOrganization)]
-	    public ActionResult Edit(long id=0)
-		{
+        public ActionResult Edit(long id = 0, bool noheading = false, bool? vision = null,bool? traction=null)
+        {
 
 			VtoModel model;
 			if (id == 0){
 				model =VtoAccessor.CreateVTO(GetUser(), GetUser().Organization.Id);
 				model.Name = "<no name>";
-				return RedirectToAction("Edit", new{id = model.Id});
+				return RedirectToAction("Edit", new{id = model.Id,noheading=noheading,vision=vision,traction=traction});
 			}else{
 				model = VtoAccessor.GetVTO(GetUser(), id);
 			}
 
+            var defaultVision = false;
+            var defaultTraction = true;
 
-            return View(new VTOViewModel() { Id = model.Id });
+            if (model.L10Recurrence != null)
+            {
+                defaultVision = L10Accessor.GetL10Recurrence(GetUser(), model.L10Recurrence.Value, false).IsLeadershipTeam;
+            }else{
+                defaultVision = true;
+            }
+
+            ViewBag.HideVision = !(vision ?? defaultVision);
+            ViewBag.HideTraction = !(traction ?? defaultTraction);
+
+            var vm = new VTOViewModel() { Id = model.Id, IsPartial = noheading };
+            if (noheading)
+                return PartialView(vm);
+            return View(vm);
 	    }
 
 		[Access(AccessLevel.UserOrganization)]

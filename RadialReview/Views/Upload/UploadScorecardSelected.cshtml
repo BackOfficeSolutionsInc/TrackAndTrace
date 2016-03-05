@@ -1,0 +1,70 @@
+﻿@model RadialReview.Controllers.UploadController.UploadScorecardSelectedDataVM
+
+
+<div class="row">
+    <div class="col-md-3">
+        <h3>Users</h3>
+        <ol>
+            @foreach (var r in Model.Users) {
+                Tuple<string,string,long> res = Tuple.Create("","",-1L);
+                Model.UserLookup[r].TryResolveOne(ref res);
+                <li> @r => @res.Item1 @res.Item2 @res.Item3 </li>
+            }
+        </ol>
+    </div>
+    <div class="col-md-3">
+        <h3>Measurables</h3>
+        <ol>
+            @foreach (var r in Model.Measurables)
+            {
+                <li>@r</li>
+            }
+        </ol>
+    </div>
+    <div class="col-md-3">
+        <h3>Goal</h3>
+        <ol>
+            @foreach (var r in Model.Goals)
+            {
+                <li>@r</li>
+            }
+        </ol>
+    </div>
+    <div class="col-md-3">
+        <h3>Weeks</h3>
+        <ol>
+            @foreach (var r in Model.Dates)
+            {
+                <li>@r</li>
+            }
+        </ol>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+<table class="table table-bordered">
+    <tr>
+        <td>Owner</td>
+        <td>Measurable</td>
+        <td>Goal</td>
+        @foreach (var d in Model.Dates) {
+            <td>@d.ToShortDateString()</td>
+        }
+
+    </tr>
+    @{var i = 0;}
+    @foreach (var row in Model.Scores) {
+        var user = Model.UserLookup[Model.Users[i]].ResolveOne();
+        var measurable = Model.Measurables[i];
+        var goal = Model.Goals[i];
+        <tr>
+            <td>@user.Item1 @user.Item2  (@user.Item3)</td>
+            <td>@measurable</td>
+            <td>@goal</td>
+            @foreach(var c in row){
+                <td>@c</td>   
+            }
+        </tr>
+        i++;
+    }
+</table>

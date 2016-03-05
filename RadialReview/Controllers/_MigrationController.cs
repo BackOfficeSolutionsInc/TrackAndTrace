@@ -23,6 +23,7 @@ using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Models.VTO;
 
 namespace RadialReview.Controllers
 {
@@ -1071,5 +1072,81 @@ namespace RadialReview.Controllers
 			return "" + f;
 		}
 
+        [Access(AccessLevel.Radial)]
+        public string M2_17_2016()
+        {
+            var f = 0;
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    //Fix TempUser userIds
+
+                    var l10 = s.QueryOver<L10Recurrence>().List().ToList();
+                    foreach (var o in l10)
+                    {
+                        if (o.VtoId==0)
+                        {
+                            var model = VtoAccessor.CreateRecurrenceVTO(s,PermissionsUtility.Create(s,GetUser()),o.Id);
+
+                            f++;
+                            //s.Update(o);
+                        }
+                        /*
+                        if (!(o.AccessorType == PermItem.AccessType.Creator && o.AccessorId == -2 && o.ResType == PermItem.ResourceType.L10Recurrence))
+                            continue;
+                        o.AccessorId = s.Get<L10Recurrence>(o.ResId).CreatedById;*/
+                    }
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return "" + f;
+        }
+
+        [Access(AccessLevel.Radial)]
+        public string M2_21_2016()
+        {
+            var f = 0;
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    //Fix TempUser userIds
+
+                    var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null).List().ToList();
+                    var vtoRocks = s.QueryOver<VtoModel.Vto_Rocks>().Where(x =>x.DeleteTime == null).List().ToList();
+                    var perm =  PermissionsUtility.Create(s, GetUser());
+                    var now = DateTime.UtcNow;
+                    foreach (var rock in rocks)
+                    {
+                        if (!vtoRocks.Any(vto => vto.Rock.Id == rock.ForRock.Id))
+                        {
+                            var recur = s.Get<L10Recurrence>(rock.L10Recurrence.Id);
+                            if (recur.VtoId != 0)
+                            {
+                                rock.ForRock._AddedToL10 = false;
+                                rock.ForRock._AddedToVTO = false;
+                                var vto = s.Get<VtoModel>(recur.VtoId);
+                                var vtoRock = new VtoModel.Vto_Rocks
+                                {
+                                    CreateTime = now,
+                                    Rock = rock.ForRock,
+                                    Vto = vto,
+
+                                };
+                                s.Save(vtoRock);
+                                f++;
+                            }
+                        }
+                    }
+                    
+                    tx.Commit();
+                    s.Flush();
+
+                    return ""+f;
+                }
+            }
+        }
 	}
 }

@@ -10,6 +10,7 @@ namespace RadialReview.Models.Enums
 		invalid,
 		local_sqlite,
 		local_mysql,
-		production
+		production,
+        local_test_sqlite
 	}
 }

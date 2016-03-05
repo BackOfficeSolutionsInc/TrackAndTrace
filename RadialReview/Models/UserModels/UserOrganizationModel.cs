@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace RadialReview.Models
 {
-	[DebuggerDisplay("{User}")]
+	[DebuggerDisplay("User {User}")]
 	[DataContract]
     public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable/*, IAngularizer<UserOrganizationModel>*/
     {

@@ -185,11 +185,13 @@ function updateTodoDueDate(todo, duedate) {
 	var d = new Date(duedate);
 	var a=d.toISOString().substr(0, 10).split("-");
 	var dispDate = new Date(a[0], a[1] - 1, a[2]);
-	var nowDateStr = new Date().toISOString().substr(0, 10).split("-");
-	var nowDate = new Date(nowDateStr[0], nowDateStr[1] - 1, nowDateStr[2]);
-
+	//var nowDateStr = new Date().toISOString().substr(0, 10).split("-");
+    //var nowDate = new Date(nowDateStr[0], nowDateStr[1] - 1, nowDateStr[2]);
+	var nowDateStr = new Date();
+	var nowDate = new Date(nowDateStr.getYear()+1900, nowDateStr.getMonth(), nowDateStr.getDate());
+		
 	var found = row.find(".due-date");
-	$(found).toggleClass("red", dispDate < nowDate);
+	$(found).toggleClass("red", dispDate.getTime() < nowDate.getTime());
 	found.html(dateFormatter(dispDate));
 	//$("input[data-todo=" + todo + "]").val(dateFormatter(new Date(duedate)));
 	$("input[data-todo=" + todo + "]").val(dateFormatter(dispDate));
@@ -297,14 +299,19 @@ function sortTodoByUser(recurrenceId, todoList) {
 }
 
 function constructTodoRow(todo) {
-	var red = "";
-	if (todo.duedate < Date.now())
+    var red = "";
+    var nowDateStr = new Date();
+    var nowDate = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
+    var duedateStr = todo.duedate.split("T")[0].split("-");
+    var duedate = new Date(duedateStr[0], duedateStr[1] - 1, duedateStr[2]).getTime();
+
+    if (duedate < nowDate)
 		red = "red";
 	var date = new Date(new Date(todo.duedate).toUTCString().substr(0,16));
 	//Accountable user name populated?
 	return '<li class="todo-row dd-item arrowkey"' +
 			'data-createtime="' + todo.createtime + '"' +
-			'data-duedate="' + todo.duedate + '"' +
+			'data-duedate="' + duedate + '"' +
 			'data-checked="' + todo.checked + '" ' +
 			'data-imageurl="' + todo.imageurl + '" ' +
 			'data-name="' + todo.accountableUser + '" ' +

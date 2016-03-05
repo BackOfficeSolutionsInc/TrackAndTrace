@@ -123,7 +123,8 @@ namespace RadialReview.Accessors
 					todo.ForRecurrence = r;
 
 					s.Save(todo);
-
+                    //if (todo.DueDate == todo.DueDate.Date)
+                    //    todo.DueDate = todo.DueDate.Date.AddDays(1).AddMinutes(-todo.Organization.GetTimezoneOffset()).AddMilliseconds(-1);
 					todo.Ordering = -todo.Id;
 					s.Update(todo);
 

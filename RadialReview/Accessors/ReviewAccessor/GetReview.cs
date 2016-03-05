@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using NHibernate.Linq;
+using RadialReview.Models.Permissions;
 
 namespace RadialReview.Accessors {
 	public partial class ReviewAccessor : BaseAccessor {
@@ -39,14 +40,17 @@ namespace RadialReview.Accessors {
 			return reviews;
 		}
 
-		public static List<ReviewModel> GetReviewsForUser(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long forUserId, int page, int pageCount, DateTime dueAfter,bool includeAnswers=true) {
-			perms.ViewUserOrganization(forUserId, true);
+		public static List<ReviewModel> GetReviewsForUser(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long forUserId, int page, int pageCount, DateTime dueAfter,bool includeAnswers=true,bool includeAllUserOrgs=true) {
+            perms.ViewUserOrganization(forUserId, includeAnswers);
 
 			List<ReviewModel> reviews;
 
 			var user = s.Get<UserOrganizationModel>(forUserId);
-
-			var usersIds = user.UserIds;
+            long[] usersIds;
+            if (includeAllUserOrgs)
+                usersIds = user.UserIds;
+            else
+                usersIds = new long[]{ forUserId };
 
 			reviews = s.QueryOver<ReviewModel>().Where(x => /*x.ForUserId == forUserId &&*/ x.DeleteTime == null && x.DueDate > dueAfter)
 								.WhereRestrictionOn(x => x.ForUserId).IsIn(usersIds)
@@ -164,11 +168,11 @@ namespace RadialReview.Accessors {
 
 
 
-		public List<ReviewModel> GetReviewsForUser(UserOrganizationModel caller, long forUserId, int page, int pageCount, DateTime dueAfter) {
+		public List<ReviewModel> GetReviewsForUser(UserOrganizationModel caller, long forUserId, int page, int pageCount, DateTime dueAfter,bool includeAllUserOrgs=true) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetReviewsForUser(s, perms, caller, forUserId, page, pageCount, dueAfter,false);
+                    return GetReviewsForUser(s, perms, caller, forUserId, page, pageCount, dueAfter, false, includeAllUserOrgs);
 				}
 			}
 		}
@@ -190,7 +194,9 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var reviewPopulated = s.Get<ReviewModel>(reviewId);
 
-					PermissionsUtility.Create(s, caller).ViewUserOrganization(reviewPopulated.ForUserId, true).ViewReview(reviewId);
+					PermissionsUtility.Create(s, caller)
+                        .ViewUserOrganization(reviewPopulated.ForUserId, true, PermissionType.ViewReviews)
+                        .ViewReview(reviewId);
 
 					var allAnswers = s.QueryOver<AnswerModel>()
 										.Where(x => x.ForReviewId == reviewId && x.DeleteTime == null)
@@ -222,7 +228,7 @@ namespace RadialReview.Accessors {
 		public List<AnswerModel> GetAnswersForUserReview(UserOrganizationModel caller, long userOrgId, long reviewContainerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ViewUserOrganization(userOrgId, true);
+					PermissionsUtility.Create(s, caller).ViewUserOrganization(userOrgId, true,PermissionType.ViewReviews);
 
 					var answers = s.QueryOver<AnswerModel>()
 										.Where(x => x.AboutUserId == userOrgId && x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null)

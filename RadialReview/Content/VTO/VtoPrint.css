@@ -1,6 +1,6 @@
 ﻿
 .vto-print {
-    height: 15.5in;
+    /*height: 15.5in;*/
     width: 10in;
     margin: 0;
     padding: 0; /* 1in .5in;*/
@@ -14,7 +14,8 @@
 
     .vto-print.vto {
         adjust: none;
-        border:none;
+        border: none;
+        width: 100%;
     }
 
 
@@ -23,6 +24,7 @@
         overflow: hidden;
         padding: 0.5in;
         height: 7in;
+        width: 100%;
     }
 
     .vto-print .top {
@@ -110,11 +112,12 @@
         background-position-x: 0.25in !important;
         background-position-y: 0.18in !important;
     }
-    .vto-print .eos-icon img{
-        width: auto;
-        height: 85%;
-        margin-left: 0.35in;
-    }
+
+        .vto-print .eos-icon img {
+            width: auto;
+            height: 85%;
+            margin-left: 0.35in;
+        }
 
     .vto-print .eos-title {
         height: 100%;
@@ -219,7 +222,7 @@
     .vto-print .column-container .column-data {
         height: 90%;
         height: calc( 100% - .5in - 7px - 2px);
-        padding: 0 6px;    
+        padding: 0 6px;
         margin-right: 1px;
     }
 

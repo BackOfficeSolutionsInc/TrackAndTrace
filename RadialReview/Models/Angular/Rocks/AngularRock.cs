@@ -7,8 +7,9 @@ using RadialReview.Models.Enums;
 namespace RadialReview.Models.Angular.Meeting
 {
 	public class AngularRock : BaseAngular
-	{
-		public AngularRock(){}
+    {
+        public AngularRock() { }
+        public AngularRock(long id):base(id) {}
 
 		public AngularRock(RockModel rock) : base(rock.Id)
 		{

@@ -38,13 +38,15 @@ using RadialReview.Utilities.NHibernate;
 using NHibernate.Envers.Configuration.Fluent;
 using FluentConfiguration = NHibernate.Envers.Configuration.Fluent.FluentConfiguration;
 using RadialReview.Models.Payments;
+using NHibernate.Driver;
+using RadialReview.Utilities.Productivity;
 
 //using Microsoft.VisualStudio.Profiler;
 
 namespace RadialReview.Utilities
 {
     public static class NHSQL
-    {       
+    {
         public static string NHibernateSQL { get; set; }
     }
     public class NHSQLInterceptor : EmptyInterceptor, IInterceptor
@@ -66,40 +68,42 @@ namespace RadialReview.Utilities
         }*/
         private static object lck = new object();
         public static ISession Session { get; set; }
-        
+
         public static ISessionFactory GetDatabaseSessionFactory()
         {
             lock (lck)
             {
                 if (factory == null)
                 {
+
+                    ChromeExtensionComms.SendCommand("dbStart");
                     var config = System.Configuration.ConfigurationManager.AppSettings;
                     var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
-					
+
                     switch (Config.GetEnv())
                     {
                         case Env.local_sqlite:
                             {
-								var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
+                                var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
                                 var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
                                 DbFile = file;
                                 try
                                 {
                                     var c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
-	                                //SetupAudit(c);
+                                    //SetupAudit(c);
                                     factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                                     .Mappings(m =>
                                     {
-										m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-										   .Conventions.Add<StringColumnLengthConvention>();
+                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                           .Conventions.Add<StringColumnLengthConvention>();
                                         m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
-										//m.AutoMappings.Add(CreateAutomappings);
+                                        //m.AutoMappings.Add(CreateAutomappings);
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
                                     })
-								   .ExposeConfiguration(SetupAudit)
-								   .ExposeConfiguration(BuildSchema)
+                                   .ExposeConfiguration(SetupAudit)
+                                   .ExposeConfiguration(BuildSchema)
                                    .BuildSessionFactory();
                                 }
                                 catch (Exception e)
@@ -108,45 +112,118 @@ namespace RadialReview.Utilities
                                 }
                                 break;
                             }
-						case Env.local_mysql:
-							{
-								var c = new Configuration();
-								//c.SetInterceptor(new NHSQLInterceptor());
-								//SetupAudit(c);
-								factory = Fluently.Configure(c).Database(
-											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
-								   .Mappings(m =>
-								   {
-									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-										   .Conventions.Add<StringColumnLengthConvention>();
-									  // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                        case Env.local_mysql:
+                            {
+                                try
+                                {
+                                    var c = new Configuration();
+                                    //c.SetInterceptor(new NHSQLInterceptor());
+                                    //SetupAudit(c);
+                                    factory = Fluently.Configure(c).Database(
+                                                MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
+                                       .Mappings(m =>
+                                       {
+                                           m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                               .Conventions.Add<StringColumnLengthConvention>();
+                                           // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
 
-									   ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
-									   ////m.AutoMappings.Add(CreateAutomappings);
-									   ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-								   })
-								   .ExposeConfiguration(SetupAudit)
-								   .ExposeConfiguration(BuildProductionMySqlSchema)
-								   .BuildSessionFactory();
-								break;
-							}
+                                           ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                           ////m.AutoMappings.Add(CreateAutomappings);
+                                           ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                       })
+                                       .ExposeConfiguration(SetupAudit)
+                                       .ExposeConfiguration(BuildProductionMySqlSchema)
+                                       .BuildSessionFactory();
+                                }
+                                catch (Exception e)
+                                {
+                                    ChromeExtensionComms.SendCommand("dbError",e.Message);
+                                    throw e;
+                                }
+                                break;
+                            }
                         case Env.production:
-							{
-								var c = new Configuration();
-								//SetupAudit(c);
+                            {
+                                var c = new Configuration();
+                                //SetupAudit(c);
                                 factory = Fluently.Configure(c).Database(
-											MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
+                                            MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
                                    .Mappings(m =>
                                    {
-									   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-										   .Conventions.Add<StringColumnLengthConvention>();
+                                       m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                           .Conventions.Add<StringColumnLengthConvention>();
                                        //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                        //m.AutoMappings.Add(CreateAutomappings);
                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
                                    })
-								   .ExposeConfiguration(SetupAudit)
-								   .ExposeConfiguration(BuildProductionMySqlSchema)
+                                   .ExposeConfiguration(SetupAudit)
+                                   .ExposeConfiguration(BuildProductionMySqlSchema)
                                    .BuildSessionFactory();
+                                break;
+                            }
+                        case Env.local_test_sqlite:
+                            {
+                                //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
+                                //var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
+                                //DbFile = file;
+                                //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
+                               // var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
+                               // DbFile = file;
+
+                                string Path = System.Environment.CurrentDirectory;
+                               // string[] appPath = Path.Split(new string[] { "bin" }, StringSplitOptions.None);
+                                AppDomain.CurrentDomain.SetData("DataDirectory", Path);
+                                var connectionString = "Data Source=|DataDirectory|\\_testdb.db";
+                                try
+                                {
+                                    var c = new Configuration();
+                                    c.SetInterceptor(new NHSQLInterceptor());
+                                    //SetupAudit(c);
+                                    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                                    .Mappings(m =>
+                                    {
+                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                           .Conventions.Add<StringColumnLengthConvention>();
+                                        m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite\");
+                                        //m.AutoMappings.Add(CreateAutomappings);
+                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+
+                                    })
+                                   .ExposeConfiguration(SetupAudit)
+                                   .ExposeConfiguration(BuildSchema)
+                                   .BuildSessionFactory();
+                                }
+                                catch (Exception e)
+                                {
+                                    throw e;
+                                }
+                                break;
+//                                try
+//                                {
+//                                    var c = new Configuration();
+//                                    c.SetProperty("connection.release_mode", "on_close")
+//                                    .SetProperty("dialect", typeof(SQLiteDialect).AssemblyQualifiedName)
+//                                    .SetProperty("connection.driver_class", typeof(SQLite20Driver).AssemblyQualifiedName)
+//                                    ;//.SetProperty("connection.connection_string", "data source=:memory:")
+////                                    ;//.SetProperty(Environment.ProxyFactoryFactoryClass, typeof(ProxyFactoryFactory).AssemblyQualifiedName);
+
+//                                    //c.SetInterceptor(new NHSQLInterceptor());
+//                                    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString("Data Source=:memory:;Version=3;New=True;"))
+//                                    .Mappings(m =>
+//                                    {
+//                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+//                                           .Conventions.Add<StringColumnLengthConvention>();
+//                                        m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite");
+//                                        //m.AutoMappings.Add(CreateAutomappings);
+//                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+
+//                                    })
+//                                   .ExposeConfiguration(SetupAudit)
+//                                   .ExposeConfiguration(BuildSchema)
+//                                   .BuildSessionFactory();
+//                                }catch (Exception e){
+//                                    throw e;
+//                                }
                                 break;
                             }
                         /*case "connectionString":
@@ -155,49 +232,59 @@ namespace RadialReview.Utilities
                             }*/
                         default: throw new Exception("No database type");
                     }
+
+                    ChromeExtensionComms.SendCommand("dbComplete");
+                     
                 }
-	           // DataCollection.MarkProfile(1);
+                // DataCollection.MarkProfile(1);
                 return factory;
             }
         }
 
 
-	    public static bool CloseCurrentSession()
-	    {
-			var session = (SessionPerRequest)HttpContext.Current.Items["NHibernateSession"];
-		    if (session != null){
-			    if (session.IsOpen){
-				    session.Close();
-			    }
-
-			    if (session.WasDisposed){
-					session.GetBackingSession().Dispose();
-			    }
-				HttpContext.Current.Items.Remove("NHibernateSession");
-			    return true;
-		    }
-		    return false;
-	    }
-		
-
-
-        public static ISession GetCurrentSession(bool singleSession=true)
+        public static bool CloseCurrentSession()
         {
-	        if (singleSession && !(HttpContext.Current == null || HttpContext.Current.Items == null)){
-		        try{
-			        var session = (SessionPerRequest) HttpContext.Current.Items["NHibernateSession"];
-			        if (session == null){
-				        session = new SessionPerRequest(GetDatabaseSessionFactory().OpenSession()); // Create session, like SessionFactory.createSession()...
-				        HttpContext.Current.Items.Add("NHibernateSession", session);
-			        }
-			        return session;
-		        }
-		        catch (Exception e){
-					//Something went wrong.. revert
-			        var a = "Error";
-		        }
-	        }
-	        return GetDatabaseSessionFactory().OpenSession();
+            var session = (SessionPerRequest)HttpContext.Current.Items["NHibernateSession"];
+            if (session != null)
+            {
+                if (session.IsOpen)
+                {
+                    session.Close();
+                }
+
+                if (session.WasDisposed)
+                {
+                    session.GetBackingSession().Dispose();
+                }
+                HttpContext.Current.Items.Remove("NHibernateSession");
+                return true;
+            }
+            return false;
+        }
+
+
+
+        public static ISession GetCurrentSession(bool singleSession = true)
+        {
+            if (singleSession && !(HttpContext.Current == null || HttpContext.Current.Items == null))
+            {
+                try
+                {
+                    var session = (SessionPerRequest)HttpContext.Current.Items["NHibernateSession"];
+                    if (session == null)
+                    {
+                        session = new SessionPerRequest(GetDatabaseSessionFactory().OpenSession()); // Create session, like SessionFactory.createSession()...
+                        HttpContext.Current.Items.Add("NHibernateSession", session);
+                    }
+                    return session;
+                }
+                catch (Exception e)
+                {
+                    //Something went wrong.. revert
+                    var a = "Error";
+                }
+            }
+            return GetDatabaseSessionFactory().OpenSession();
             /*while(true)
             {
                 lock (lck)
@@ -236,114 +323,114 @@ namespace RadialReview.Utilities
                 new SchemaUpdate(config).Execute(false, true);
             }
 
-			var auditEvents = new AuditEventListener();
-			config.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { auditEvents };
-			config.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { auditEvents };
+            var auditEvents = new AuditEventListener();
+            config.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { auditEvents };
+            config.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { auditEvents };
 
             // this NHibernate tool takes a configuration (with mapping info in)
             // and exports a database schema from it
         }
 
-		
 
-	    private static void SetupAudit(Configuration nhConf)
-	    {
 
-			var enversConf = new FluentConfiguration();
-			nhConf.SetEnversProperty(ConfigurationKey.StoreDataAtDelete, true);
-			nhConf.SetEnversProperty(ConfigurationKey.AuditStrategyValidityStoreRevendTimestamp, true);
+        private static void SetupAudit(Configuration nhConf)
+        {
+
+            var enversConf = new FluentConfiguration();
+            nhConf.SetEnversProperty(ConfigurationKey.StoreDataAtDelete, true);
+            nhConf.SetEnversProperty(ConfigurationKey.AuditStrategyValidityStoreRevendTimestamp, true);
             nhConf.SetEnversProperty(ConfigurationKey.AuditStrategy, typeof(CustomValidityAuditStrategy));
-			
-			
-			enversConf.Audit<VtoModel.VtoItem>().ExcludeRelationData(x => x.Vto);
-			enversConf.Audit<VtoModel.VtoItem_Bool>().ExcludeRelationData(x=>x.Vto);
-			enversConf.Audit<VtoModel.VtoItem_String>().ExcludeRelationData(x => x.Vto);
-			enversConf.Audit<VtoModel.VtoItem_DateTime>().ExcludeRelationData(x => x.Vto);
-			enversConf.Audit<VtoModel.VtoItem_Decimal>().ExcludeRelationData(x => x.Vto);
-			enversConf.Audit<VtoModel>();
-			enversConf.Audit<VtoModel.CoreFocusModel>().ExcludeRelationData(x=>x.Vto);
-			enversConf.Audit<VtoModel.MarketingStrategyModel>().ExcludeRelationData(x => x.Vto);
-			enversConf.Audit<VtoModel.OneYearPlanModel>().ExcludeRelationData(x => x.Vto);
-			enversConf.Audit<VtoModel.QuarterlyRocksModel>().ExcludeRelationData(x => x.Vto);
-			enversConf.Audit<VtoModel.ThreeYearPictureModel>().ExcludeRelationData(x => x.Vto);
 
-			enversConf.Audit<TodoModel>();
-			enversConf.Audit<IssueModel>();
-			enversConf.Audit<ScoreModel>();
-			enversConf.Audit<MeasurableModel>();
-			enversConf.Audit<L10Meeting>();
-			enversConf.Audit<L10Recurrence>();
 
-			enversConf.Audit<ClientReviewModel>();
-			enversConf.Audit<LongModel>();
-			enversConf.Audit<LongTuple>();
-			enversConf.Audit<PaymentModel>();
-			enversConf.Audit<PaymentPlanModel>();
-			enversConf.Audit<InvoiceModel>();
-			enversConf.Audit<InvoiceItemModel>();
-			enversConf.Audit<QuestionCategoryModel>();
-			enversConf.Audit<LocalizedStringModel>();
-			enversConf.Audit<LocalizedStringPairModel>();
-			enversConf.Audit<ImageModel>();
+            enversConf.Audit<VtoModel.VtoItem>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel.VtoItem_Bool>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel.VtoItem_String>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel.VtoItem_DateTime>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel.VtoItem_Decimal>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel>();
+            enversConf.Audit<VtoModel.CoreFocusModel>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel.MarketingStrategyModel>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel.OneYearPlanModel>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel.QuarterlyRocksModel>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel.ThreeYearPictureModel>().ExcludeRelationData(x => x.Vto);
 
-			enversConf.Audit<PeriodModel>();
-			enversConf.Audit<ReviewModel>();
-			enversConf.Audit<ReviewsModel>();
-			enversConf.Audit<RockModel>();
-			enversConf.Audit<RoleModel>();
-		    enversConf.Audit<UserOrganizationModel>()
-			    .ExcludeRelationData(x => x.Groups)
-			    .ExcludeRelationData(x => x.ManagingGroups);
-				//.ExcludeRelationData(x => x.CustomQuestions);
-			enversConf.Audit<PositionDurationModel>();
-			enversConf.Audit<QuestionModel>();
-			enversConf.Audit<TeamDurationModel>();
-			enversConf.Audit<ManagerDuration>();
-			enversConf.Audit<OrganizationTeamModel>();
-			enversConf.Audit<OrganizationPositionModel>();
-			enversConf.Audit<PositionModel>();
+            enversConf.Audit<TodoModel>();
+            enversConf.Audit<IssueModel>();
+            enversConf.Audit<ScoreModel>();
+            enversConf.Audit<MeasurableModel>();
+            enversConf.Audit<L10Meeting>();
+            enversConf.Audit<L10Recurrence>();
 
-			enversConf.Audit<OrganizationModel>();
-			enversConf.Audit<ResponsibilityGroupModel>();
-			enversConf.Audit<ResponsibilityModel>();
-			enversConf.Audit<TempUserModel>();
-			enversConf.Audit<UserLookup>();
-			enversConf.Audit<UserModel>();
-			enversConf.Audit<UserLogin>();
+            enversConf.Audit<ClientReviewModel>();
+            enversConf.Audit<LongModel>();
+            enversConf.Audit<LongTuple>();
+            enversConf.Audit<PaymentModel>();
+            enversConf.Audit<PaymentPlanModel>();
+            enversConf.Audit<InvoiceModel>();
+            enversConf.Audit<InvoiceItemModel>();
+            enversConf.Audit<QuestionCategoryModel>();
+            enversConf.Audit<LocalizedStringModel>();
+            enversConf.Audit<LocalizedStringPairModel>();
+            enversConf.Audit<ImageModel>();
+
+            enversConf.Audit<PeriodModel>();
+            enversConf.Audit<ReviewModel>();
+            enversConf.Audit<ReviewsModel>();
+            enversConf.Audit<RockModel>();
+            enversConf.Audit<RoleModel>();
+            enversConf.Audit<UserOrganizationModel>()
+                .ExcludeRelationData(x => x.Groups)
+                .ExcludeRelationData(x => x.ManagingGroups);
+            //.ExcludeRelationData(x => x.CustomQuestions);
+            enversConf.Audit<PositionDurationModel>();
+            enversConf.Audit<QuestionModel>();
+            enversConf.Audit<TeamDurationModel>();
+            enversConf.Audit<ManagerDuration>();
+            enversConf.Audit<OrganizationTeamModel>();
+            enversConf.Audit<OrganizationPositionModel>();
+            enversConf.Audit<PositionModel>();
+
+            enversConf.Audit<OrganizationModel>();
+            enversConf.Audit<ResponsibilityGroupModel>();
+            enversConf.Audit<ResponsibilityModel>();
+            enversConf.Audit<TempUserModel>();
+            enversConf.Audit<UserLookup>();
+            enversConf.Audit<UserModel>();
+            enversConf.Audit<UserLogin>();
             enversConf.Audit<UserRoleModel>();
             enversConf.Audit<IdentityUserClaim>();
 
-			enversConf.Audit<PaymentSpringsToken>();
-			enversConf.Audit<ScheduledTask>();
+            enversConf.Audit<PaymentSpringsToken>();
+            enversConf.Audit<ScheduledTask>();
 
 
-			enversConf.Audit<Dashboard>();
-			enversConf.Audit<TileModel>();
+            enversConf.Audit<Dashboard>();
+            enversConf.Audit<TileModel>();
 
-			nhConf.IntegrateWithEnvers(enversConf);
-	    }
+            nhConf.IntegrateWithEnvers(enversConf);
+        }
 
 
         private static void BuildProductionMySqlSchema(Configuration config)
         {
-	        var sw = Stopwatch.StartNew();
+            var sw = Stopwatch.StartNew();
             //UPDATE DATABASE:
-	        var updates = new List<string>();
-	        //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(1);
-			var su = new SchemaUpdate(config);
-			//Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(2);
-			su.Execute(updates.Add, true);
-			//Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(3);
+            var updates = new List<string>();
+            //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(1);
+            var su = new SchemaUpdate(config);
+            //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(2);
+            su.Execute(updates.Add, true);
+            //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(3);
 
-	        var end =sw.Elapsed;
-			
-			var auditEvents = new AuditEventListener();
-			config.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { auditEvents };
-			config.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { auditEvents };
+            var end = sw.Elapsed;
+
+            var auditEvents = new AuditEventListener();
+            config.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { auditEvents };
+            config.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { auditEvents };
 
             //KILL/CREATE DATABASE:
             //new SchemaExport(config).Execute(true, true, false);
-			// DELETE THE EXISTING DB ON EACH RUN
+            // DELETE THE EXISTING DB ON EACH RUN
             /*if (!File.Exists(DbFile))
             {
                 new SchemaExport(config).Create(false, true);

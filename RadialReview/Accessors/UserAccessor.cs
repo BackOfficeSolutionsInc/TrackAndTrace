@@ -203,20 +203,20 @@ namespace RadialReview.Accessors
 			return new List<UserOrganizationModel>();
 		}
 
-		public List<UserOrganizationModel> GetManagers(UserOrganizationModel caller, long forUserId)
+		public List<UserOrganizationModel> GetManagers(UserOrganizationModel caller, long forUserId,params PermissionType[] alsoCheck)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetManagers(s.ToQueryProvider(true), perms, caller, forUserId);
+					return GetManagers(s.ToQueryProvider(true), perms, caller, forUserId,alsoCheck);
 				}
 			}
 		}
-		public static List<UserOrganizationModel> GetManagers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forUserId)
+        public static List<UserOrganizationModel> GetManagers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forUserId, params PermissionType[] alsoCheck)
 		{
-			perms.ViewUserOrganization(forUserId, false);
+			perms.ViewUserOrganization(forUserId, false, alsoCheck);
 			var forUser = s.Get<UserOrganizationModel>(forUserId);
 			return forUser.ManagedBy
 							.ToListAlive()
@@ -804,6 +804,115 @@ namespace RadialReview.Accessors
 			}
 		}
 
+        public ResultObject UndeleteUser(UserOrganizationModel caller, long userId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).RemoveUser(userId);
+                    var user = s.Get<UserOrganizationModel>(userId);
+                    if (user.DeleteTime == null)
+                        throw new PermissionsException("Could not undelete");
+
+                    var deleteTime = user.DeleteTime.Value;
+
+                    user.DeleteTime = null;
+
+                    if (user.User != null)
+                    {
+                        var newArray = user.User.UserOrganizationIds.ToList();
+                        //if (newArray.Any(userId))
+                        //    throw new PermissionsException("User does not exist.");
+                        newArray.Add(userId);
+                        user.User.UserOrganizationIds = newArray.ToArray();
+                    }
+
+
+                    var tempUser = user.TempUser;
+                    if (tempUser != null)
+                    {
+                        //s.Delete(tempUser);
+                    }
+
+                    var warnings = new List<String>();
+                    //new management structure
+                    DeepSubordianteAccessor.UndeleteAll(s, user, deleteTime);
+                    //old management structure
+                    var asSubordinate = s.QueryOver<ManagerDuration>().Where(x => x.SubordinateId == userId && x.DeleteTime == deleteTime).List().ToList();
+                    foreach (var sub in asSubordinate)
+                    {
+                        sub.DeletedBy = caller.Id;
+                        sub.DeleteTime = null;
+                        s.Update(sub);
+                        //sub.Subordinate.UpdateCache(s);
+                        if (sub.Manager != null)
+                            sub.Manager.UpdateCache(s);
+                    }
+                    var subordinates = s.QueryOver<ManagerDuration>().Where(x => x.ManagerId == userId && x.DeleteTime == deleteTime).List().ToList();
+                    foreach (var subordinate in subordinates)
+                    {
+                        subordinate.DeletedBy = caller.Id;
+                        subordinate.DeleteTime = null;
+                        s.Update(subordinate);
+                        if (subordinate.Subordinate != null)
+                            subordinate.Subordinate.UpdateCache(s);
+                        //subordinate.Manager.UpdateCache(s);
+
+                        //warnings.Add(user.GetFirstName() + " no longer manages " + subordinate.Subordinate.GetNameAndTitle() + ".");
+                    }
+                    //teams
+                    var teams = s.QueryOver<TeamDurationModel>().Where(x => x.UserId == userId && x.DeleteTime == deleteTime).List().ToList();
+                    foreach (var t in teams)
+                    {
+                        t.DeletedBy = caller.Id;
+                        t.DeleteTime = null;
+                        s.Update(t);
+                        //subordinate.Subordinate.UpdateCache(s);
+                        //subordinate.Manager.UpdateCache(s);
+                    }
+                    //managed teams
+                    var managedTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.ManagedBy == userId).List().ToList();
+                    foreach (var m in managedTeams)
+                    {
+                        if (m.Type != TeamType.Subordinates)
+                        {
+                            m.ManagedBy = caller.Id;
+                            s.Update(m);
+                            warnings.Add("You now manage the team: " + m.GetName() + ".");
+                        }
+                        else
+                        {
+                            //teams
+                            var subordinateTeam = s.QueryOver<TeamDurationModel>().Where(x => x.TeamId == m.Id && x.DeleteTime == deleteTime).List().ToList();
+                            foreach (var t in subordinateTeam)
+                            {
+                                t.DeletedBy = caller.Id;
+                                t.DeleteTime = null;
+                                s.Update(t);
+                            }
+
+                            m.DeleteTime = null;
+                            s.Update(m);
+                        }
+                    }
+                    s.Update(user);
+                    user.UpdateCache(s);
+                    tx.Commit();
+                    s.Flush();
+
+                    if (warnings.Count() == 0)
+                    {
+                        return ResultObject.CreateMessage(StatusType.Success, "Successfully re-added " + user.GetFirstName() + ".");
+                    }
+                    else
+                    {
+                        return ResultObject.CreateMessage(StatusType.Warning, "Successfully re-added " + user.GetFirstName() + ".<br/><b>Warning:</b><br/>" + string.Join("<br/>", warnings));
+                    }
+                }
+            }
+        }
+        
 		public ResultObject RemoveUser(UserOrganizationModel caller, long userId, DateTime now)
 		{
 			using (var s = HibernateSession.GetCurrentSession())

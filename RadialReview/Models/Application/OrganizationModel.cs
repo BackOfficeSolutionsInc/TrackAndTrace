@@ -1,6 +1,7 @@
 ﻿using FluentNHibernate.Conventions.AcceptanceCriteria;
 using FluentNHibernate.Mapping;
 using NHibernate.Mapping;
+using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
@@ -56,6 +57,18 @@ namespace RadialReview.Models
 			public virtual bool EnableReview { get; set; }
 
 			public virtual bool EnableSurvey { get; set; }
+
+            public virtual int GetTimezoneOffset()
+            {
+                var zone = TimeZoneId ?? "Central Standard Time";
+                var ts = TimeZoneInfo.FindSystemTimeZoneById(zone);
+                return (int)ts.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
+            }
+            public virtual YearStart YearStart            {
+                get{
+                   return new YearStart(this);
+                }
+            }
 			public OrganizationSettings()
 			{
 				TimeZoneId = "Central Standard Time";
@@ -138,9 +151,10 @@ namespace RadialReview.Models
 		/// <returns></returns>
 		public virtual int GetTimezoneOffset()
 		{
-			var zone = Settings.TimeZoneId ?? "Central Standard Time";
-			var ts = TimeZoneInfo.FindSystemTimeZoneById(zone);
-			return (int)ts.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
+            return Settings.GetTimezoneOffset();
+            //var zone = Settings.TimeZoneId ?? "Central Standard Time";
+            //var ts = TimeZoneInfo.FindSystemTimeZoneById(zone);
+            //return (int)ts.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
 		}
 
 		public virtual DateTime ConvertFromUTC(DateTime utcTime){

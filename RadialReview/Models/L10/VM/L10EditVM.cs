@@ -24,12 +24,9 @@ namespace RadialReview.Models.L10.VM
 
 		public L10EditVM()
 		{
-			SelectedMembers = new long[0] { };
-			SelectedMeasurables = new long[0] { };
-			SelectedRocks=new long[0]{};
-
-	
-
+            //SelectedMembers = new long[0] { };
+            //SelectedMeasurables = new long[0] { };
+            //SelectedRocks=new long[0]{};
 		}
 
 		public string Return { get; set; }

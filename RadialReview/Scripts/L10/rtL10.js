@@ -57,6 +57,7 @@ $(function () {
 	meetingHub.client.updateRockCompletion = updateRockCompletion;
 	meetingHub.client.updateRockName = updateRockName;
 	meetingHub.client.updateRocks = updateRocks;
+	meetingHub.client.removeRock = removeRock;
 	
 	meetingHub.client.updateTodoMessage = updateTodoMessage;
 	meetingHub.client.updateTodoDetails = updateTodoDetails;

@@ -49,12 +49,15 @@ namespace RadialReview.Models.L10
 		public virtual long DefaultTodoOwner { get; set; }
 
 		public virtual long CreatedById { get; set; }
-		public virtual List<long> _WhoCanEdit { get; set; }
-		public virtual string VideoId { get; set; }
+        public virtual List<long> _WhoCanEdit { get; set; }
+        public virtual string VideoId { get; set; }
+        public virtual long VtoId { get; set; }
 		public virtual string OrderIssueBy { get; set; }
 		public virtual bool EnableTranscription { get; set; }
 
 		public virtual string HeadlinesId { get; set; }
+
+        public virtual bool IsLeadershipTeam { get; set; }
 
 		public L10Recurrence()
 		{
@@ -71,6 +74,7 @@ namespace RadialReview.Models.L10
 			IncludeAggregateTodoCompletion = true;
 			EnableTranscription = false;
             CountDown = false;
+            IsLeadershipTeam = true;
 		}
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>
@@ -86,10 +90,13 @@ namespace RadialReview.Models.L10
                 Map(x => x.DeleteTime);
                 Map(x => x.CountDown);
 
+                Map(x => x.IsLeadershipTeam);
+
+                Map(x => x.VtoId);
+
 				Map(x => x.EnableTranscription);
 
-				Map(x => x.OrderIssueBy);
-
+                Map(x => x.OrderIssueBy);
 				Map(x => x.CreatedById);
 
 				Map(x => x.SegueMinutes);

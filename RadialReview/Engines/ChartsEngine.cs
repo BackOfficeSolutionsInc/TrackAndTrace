@@ -24,6 +24,7 @@ using System.Web;
 using RadialReview.Utilities.DataTypes;
 using System.Security.Cryptography;
 using TimeSpan = System.TimeSpan;
+using RadialReview.Models.Permissions;
 
 namespace RadialReview.Engines
 {
@@ -632,7 +633,7 @@ namespace RadialReview.Engines
 		{
 			
 			if (sensitive){
-				new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, true));
+				new PermissionsAccessor().Permitted(caller, x => x.ManagesUserOrganization(forUserId, true,PermissionType.ViewReviews));
 			}
 			else{
 				using (var s = HibernateSession.GetCurrentSession())
@@ -646,7 +647,7 @@ namespace RadialReview.Engines
 						if (forUserId == caller.Id && ((!review.ClientReview.Visible && !managingOrg) || !review.ClientReview.IncludeScatterChart))
 							throw new PermissionsException();
 						if (forUserId != caller.Id && !managingOrg)
-							p.ManagesUserOrganization(forUserId, false);
+							p.ManagesUserOrganization(forUserId, false,PermissionType.ViewReviews);
 						
 						includePrevious = review.ClientReview.ScatterChart.IncludePrevious;
 						groupBy = review.ClientReview.ScatterChart.Groups;

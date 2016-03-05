@@ -35,6 +35,13 @@ namespace System.Web
 		public static OrganizationModel Organization(this HtmlHelper html){
 			return (OrganizationModel)html.ViewBag.Organization;
 		}
+        public static DateTime ConvertFromUtc(this HtmlHelper html,DateTime time)
+        {
+            var org = (OrganizationModel)html.ViewBag.Organization;
+            if (org!=null)
+                return org.ConvertFromUTC(time);
+            return time;
+        }
 
 		public static string ProductName(this HtmlHelper html){
 			return Config.ProductName(html.Organization());

@@ -186,6 +186,9 @@ ol.sortable li {
 	right: 0px;
 	z-index: -1;
 }*/
+    /*.issue-list .issue-row.undoable *:not(.undo-button){
+        display: none;
+    }*/
 
     .issues-list > .issue-row.selected {
         border: 1px solid #A5ACB8;
@@ -278,7 +281,7 @@ ol.sortable li {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: calc(100% - 138px);
+    width: calc(100% - 166px);
     font-size: 18px;
     min-height: 19px;
 }
@@ -298,6 +301,13 @@ ol.sortable li {
 
 .issues-list .issue-row .btn-group .issuesButton {
     color: gray;
+}
+.issues-list .issue-row .btn-group .vtoButton {
+    color: gray;
+    top: 2px;
+}
+.issues-list .issue-row.undoable {
+    border-color: #CCCCCC !important;
 }
 
 .issues-list .dd-list  .dd-list  .placeholder:before {
@@ -705,3 +715,4 @@ body.dragging, body.dragging * {
     min-width:44px;
     width:44px;
 }
+

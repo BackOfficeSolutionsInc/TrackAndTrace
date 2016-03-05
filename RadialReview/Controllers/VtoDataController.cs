@@ -87,7 +87,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult AddRock(long vto, string connectionId = null)
 		{
-			VtoAccessor.AddRock(GetUser(), vto);
+			VtoAccessor.CreateNewRock(GetUser(), vto);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 

@@ -114,6 +114,13 @@ namespace RadialReview.Controllers
             }
         }
 
+        [Access(AccessLevel.Manager)]
+        public JsonResult Undelete(long id)
+        {
+            var result = _UserAccessor.UndeleteUser(GetUser(), id);
+            return Json(result,JsonRequestBehavior.AllowGet);
+        }
+
 
         [Access(AccessLevel.Manager)]
         public PartialViewResult Remove(long id)
@@ -492,6 +499,15 @@ namespace RadialReview.Controllers
             return Json(ResultObject.Success("Swapped user."));
         }
         #endregion
+
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Reviews(long id)
+        {
+            var userId = id;
+            ViewBag.ForUser = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false,PermissionType.ViewReviews).GetName();
+            var reviews= _ReviewAccessor.GetReviewsForUser(GetUser(), userId, 0, 1000, DateTime.MinValue, false);
+            return View(reviews);
+        }
 
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Details(long id) {

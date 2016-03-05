@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Models.Permissions;
 
 namespace RadialReview.Controllers
 {
@@ -444,7 +445,7 @@ namespace RadialReview.Controllers
 		public ActionResult ClientDetails(long id, bool print = false, bool reviewing = false)
 		{
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
-			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false));
+			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false, PermissionType.ViewReviews));
 			if (managesUser)
 				ViewBag.Reviewing = true;
 			ViewBag.ReviewId = id;
@@ -942,9 +943,9 @@ namespace RadialReview.Controllers
 		{
 			var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.Id);
 			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId).Alive().ToList();
-			var managers = _UserAccessor.GetManagers(GetUser(), review.ForUserId);
+			var managers = _UserAccessor.GetManagers(GetUser(), review.ForUserId, PermissionType.ViewReviews);
 
-			var user = _UserAccessor.GetUserOrganization(GetUser(), review.ForUserId, false, false);
+			var user = _UserAccessor.GetUserOrganization(GetUser(), review.ForUserId, false, false,PermissionType.ViewReviews);
 
 
 			foreach (var c in review.ClientReview.Charts.ToListAlive())
@@ -1004,7 +1005,7 @@ namespace RadialReview.Controllers
 			else
 			{
 				ViewBag.RoleDetails = true;
-				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false));
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false, PermissionType.ViewReviews));
 				var model = GetReviewDetails(review);
 				//model.Supervisors = model.AnswersAbout.Where(x => x.ByUserId == GetUser().Id).ToList();
 				return View(model);

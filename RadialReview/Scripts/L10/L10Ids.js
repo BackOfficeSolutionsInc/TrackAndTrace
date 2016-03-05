@@ -4,11 +4,15 @@ $(function () {
 
     refreshCurrentIssueDetails();
 	fixIssueDetailsBoxSize();
-	$("body").on("click", ".issues-list>.issue-row", function () {
+	$("body").on("click", ".issues-list>.issue-row:not(.undoable)", function () {
 		var issueRow = $(this);//.closest(".issue-row");
 		$(".issue-row.selected").removeClass("selected");
 		$(issueRow).addClass("selected");
-		currentIssuesDetailsId = $(issueRow).data("recurrence_issue");
+		var tempRowId=$(issueRow).data("recurrence_issue");
+		if (tempRowId == currentIssuesDetailsId)
+		    return;
+		currentIssuesDetailsId = tempRowId;
+        
 		var createtime = $(issueRow).data("createtime");
 		var message = $(issueRow).data("message");
 		var details = $(issueRow).data("details");
@@ -58,6 +62,27 @@ $(function () {
 			"</div>");
 
 		fixIssueDetailsBoxSize();
+	});
+
+    
+	$("body").on("click", ".issues-list>.issue-row .vtoButton", function () {
+        
+	    var row = $(this).closest(".issue-row");
+	    var rowId = row.data("recurrence_issue");
+	    $.ajax({
+	        url: "/l10/moveissuetovto/" + rowId,
+	        success: function (data) {
+	            if (showJsonAlert(data)) {
+	                $(".undoable").slideUp('slow', function () {
+	                    $(this).remove();
+	                });
+	                row.addClass("undoable");
+	                row.data("undo-url", "/l10/MoveIssueFromVto/" + data.Object);
+	                row.data("undo-action", "remove");
+	                refreshCurrentIssueDetails();
+	            }
+	        }
+	    });
 	});
 
 	$("body").on("click", ".issueDetails .message-holder .message", function() {
@@ -279,8 +304,9 @@ function constructRow(issue) {
 	if (issue.details)
 		details = issue.details;
 
-	return '<li class="issue-row dd-item arrowkey" data-padid="'+issue.padid+'" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '">\n'
-		+ '	<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>\n'
+	return '<li class="issue-row dd-item arrowkey undoable-stripped" data-padid="' + issue.padid + '" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '">\n'
+        + ' <span class="undo-button">Undo</span>'
+        + '	<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>\n'
 		+ '	<div class="move-icon noselect dd-handle">\n'
 		+ '		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>\n'
 		+ '		<span class="inner icon fontastic-icon-primitive-square"></span>\n'
@@ -288,7 +314,8 @@ function constructRow(issue) {
 		+ '<div class="btn-group pull-right">\n'
 		+ ' <span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + recurrenceId + '" data-recurrence_issue="' + issue.issue + '" data-method="copymodal" style="padding-right: 5px"></span>\n'	
 		+ ' <span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" data-issue="'+issue.issue+'" data-meeting="'+issue.createdDuringMeetingId+'" data-recurrence="'+recurrenceId+'" data-method="CreateTodoFromIssue"></span>\n'
-		+ '</div>\n'
+        + ' <span class="glyphicon glyphicon-vto vtoButton"></span>'
+        + '</div>\n'
 		+ '<div class="number-priority">\n'
 		+	' <span class="number"></span>\n'
         +	' <span class="priority" data-priority="'+issue.priority+'"></span>\n'
@@ -438,7 +465,7 @@ function refreshCurrentIssueDetails() {
 	$(".issue-row[data-recurrence_issue=" + currentIssuesDetailsId + "]").addClass("selected");
 
 
-	$(".issues-list > .issue-row > .number-priority > .number").each(function (i) {
+	$(".issues-list > .issue-row:not(.undoable) > .number-priority > .number").each(function (i) {
 	    $(this).html(i + 1);
 	});
 

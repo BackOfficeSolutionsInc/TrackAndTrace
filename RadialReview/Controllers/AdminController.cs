@@ -31,11 +31,10 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.Query;
 using RadialReview.Models.UserModels;
 using WebGrease.Css.Extensions;
+using RadialReview.Utilities.Productivity;
 
 namespace RadialReview.Controllers
 {
-
-
 
     public partial class AccountController : BaseController
     {
@@ -46,15 +45,18 @@ namespace RadialReview.Controllers
 			return View();
 		}
 
-
-
 		[Access(AccessLevel.Radial)]
 
 		public JsonResult GetRedis()
 		{
 			return Json(Config.Redis("CHANNEL"),JsonRequestBehavior.AllowGet);
 		}
-
+        [Access(AccessLevel.Radial)]
+        public string Chrome(string id)
+        {
+            ChromeExtensionComms.SendCommand(id);
+            return "ok: \"" + id +"\"";
+        }
 
 		[Access(AccessLevel.Radial)]
 	    public ActionResult Version()

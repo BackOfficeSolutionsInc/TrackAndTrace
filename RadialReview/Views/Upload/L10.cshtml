@@ -1,0 +1,38 @@
+﻿@model List<RadialReview.Models.L10.VM.L10VM>
+@{
+    ViewBag.Title = "Upload L10";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Upload Level 10</h2>
+
+<table class="table table-border table-striped table-hover">
+    @foreach (var row in Model)
+    {
+        <tr>
+            <td>@row.Recurrence.Name</td>
+            <td style="width:1px;">
+                <a href="/upload/l10/scorecard?recurrence=@row.Recurrence.Id">Scorecard (@row.Recurrence._DefaultMeasurables.Count)</a>
+            </td>
+            <td style="width:1px;">
+                <a href="/upload/l10/rocks?recurrence=@row.Recurrence.Id">Rocks (@row.Recurrence._DefaultRocks.Count)</a>
+            </td>
+            <td style="width:60px;">
+                <a href="/upload/l10/todos?recurrence=@row.Recurrence.Id">To-dos</a>
+            </td>
+            <td style="width:1px;">
+                <a href="/upload/l10/issues?recurrence=@row.Recurrence.Id">Issues</a>
+            </td>
+        </tr>
+    }
+</table>
+
+<style>
+    a {
+        color: orange;
+    }
+
+    .table-bordered * {
+        border-color: gray !important;
+    }
+</style>

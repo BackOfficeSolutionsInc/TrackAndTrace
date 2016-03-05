@@ -38,7 +38,7 @@
 				<ol class="todo-list sortable init-@(guid)">
 					@foreach (var i in Model.Todos.OrderBy(x => x.Ordering))
 					{
-						var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id } };
+						var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id },{"Organization", ViewBag.Organization} };
 						@Html.Partial("~/Views/L10/partial/TodoRow.cshtml", i, vm)
 					}
 				</ol>

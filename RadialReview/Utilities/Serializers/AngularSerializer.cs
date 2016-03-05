@@ -20,6 +20,10 @@ using RadialReview.Models.Angular.Base;
 
 namespace RadialReview.Utilities.Serializers
 {
+    /**
+     *  add "&transform=true" to url to see untransformed.
+     * 
+     * *///
 	public class AngularSerialization : JsonConverter 
 	{
 		//public JsonConverter Backing { get; set; }

@@ -39,6 +39,22 @@ namespace RadialReview.Utilities.DataTypes
 			Denominator = denominator * weight;
 		}
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Ratio)            {
+                var o = (Ratio)obj;
+                return o.Numerator == Numerator && o.Denominator == Denominator;
+            }
+            return false;
+        }
+
+        public override int GetHashCode(){
+            int hash = 17;
+            hash = hash * 31 + Numerator.GetHashCode();
+            hash = hash * 31 + Denominator.GetHashCode();
+            return hash;
+        }
+
 		public bool IsValid()
 		{
 			return Denominator != 0;

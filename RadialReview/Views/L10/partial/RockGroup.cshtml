@@ -1,39 +1,41 @@
 ﻿@model List<RadialReview.Models.L10.L10Meeting.L10Meeting_Rock>
 
-@foreach (var person in Model.GroupBy(x => x.ForRock.ForUserId)){
-	<div class="component">
-		@Html.Partial("_Picture", person.First().ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
-		<span class="owner">
-			@person.First().ForRock.AccountableUser.GetName()
-		</span>
-		<span data-accountable="@person.First().ForRock.AccountableUser.Id" class="pull-right completion-percentage"><span class="ratio"></span><span class="percentage"></span></span>
-		<div class="table-responsive">
-			<table style="width: 100%">
-				<tr>
-					<th></th>
+@foreach (var person in Model.GroupBy(x => x.ForRock.ForUserId))
+{
+    <div class="component rock-group rock-group-user-id-@person.First().ForRock.AccountableUser.Id">
+        @Html.Partial("_Picture", person.First().ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
+        <span class="owner">
+            @person.First().ForRock.AccountableUser.GetName()
+        </span>
+        <span data-accountable="@person.First().ForRock.AccountableUser.Id" class="pull-right completion-percentage"><span class="ratio"></span><span class="percentage"></span></span>
+        <div class="table-responsive">
+            <table style="width: 100%">
+                <tr>
+                    <th></th>
                     <th style="width: 1px"></th>
                     <th style="width: 46px"></th>
-				</tr>
-				@foreach (var i in person){
-					<tr class="user-id-@i.ForRock.AccountableUser.Id">
-                        <td class="message">@i.ForRock.Rock</td>
+                </tr>
+                @foreach (var i in person)
+                {
+                    <tr data-owner="@i.ForRock.AccountableUser.Id" class="rock-row user-id-@i.ForRock.AccountableUser.Id rock-id-@i.ForRock.Id">
+                        <td class="message multiline" data-rock="@(i.ForRock.Id)">@i.ForRock.Rock</td>
                         <td class="rock-state-holder">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
-						<td class="buttonHolder currentBlue">
-							<span class="icon fontastic-icon-pinboard issuesButton issuesModal"
-							      data-meeting="@person.First().L10Meeting.Id"
-							      data-recurrence="@person.First().ForRecurrence.Id"
-							      data-rock="@(i.ForRock.Id)"
-							      data-method="CreateRockIssue"></span>
-							<span class="glyphicon glyphicon-unchecked todoButton todoModal"
-							      data-meeting="@person.First().L10Meeting.Id"
-							      data-recurrence="@person.First().ForRecurrence.Id"
-							      data-rock="@(i.ForRock.Id)"
-							      data-method="CreateRockTodo">
-							</span>
-						</td>
-					</tr>
-				}
-			</table>
-		</div>
-	</div>
+                        <td class="buttonHolder currentBlue">
+                            <span class="icon fontastic-icon-pinboard issuesButton issuesModal"
+                                  data-meeting="@person.First().L10Meeting.Id"
+                                  data-recurrence="@person.First().ForRecurrence.Id"
+                                  data-rock="@(i.ForRock.Id)"
+                                  data-method="CreateRockIssue"></span>
+                            <span class="glyphicon glyphicon-unchecked todoButton todoModal"
+                                  data-meeting="@person.First().L10Meeting.Id"
+                                  data-recurrence="@person.First().ForRecurrence.Id"
+                                  data-rock="@(i.ForRock.Id)"
+                                  data-method="CreateRockTodo">
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
 }

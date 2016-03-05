@@ -81,6 +81,10 @@
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.2\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="LumenWorks.Framework.IO, Version=3.9.0.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
+      <HintPath>..\packages\LumenWorksCsvReader.3.9\lib\net20\LumenWorks.Framework.IO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Mandrill">
       <HintPath>..\packages\Mandrill.1.0.74\lib\net40\Mandrill.dll</HintPath>
     </Reference>
@@ -356,6 +360,7 @@
     <Compile Include="Accessors\TodoIntegrations\ExternalTodoAccessor.cs" />
     <Compile Include="Accessors\TodoIntegrations\TrelloAccessor.cs" />
     <Compile Include="Accessors\TranscriptAccessor.cs" />
+    <Compile Include="Accessors\UploadAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
     <Compile Include="Accessors\UserTemplateAccessor.cs" />
     <Compile Include="Accessors\VtoAccessor.cs" />
@@ -388,6 +393,7 @@
     <Compile Include="Areas\RouteDebugger\RequestHelper.cs" />
     <Compile Include="Areas\RouteDebugger\RouteDebuggerAreaRegistration.cs" />
     <Compile Include="Areas\RouteDebugger\RouteDebuggerConfig.cs" />
+    <Compile Include="Controllers\ArchiveController.cs" />
     <Compile Include="Controllers\CustomizeController.cs" />
     <Compile Include="Controllers\HealthCheckController.cs" />
     <Compile Include="Controllers\LogController.cs" />
@@ -512,6 +518,7 @@
     <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Application\MailModel.cs" />
     <Compile Include="Models\Application\NameId.cs" />
+    <Compile Include="Models\Application\UploadModel.cs" />
     <Compile Include="Models\Application\YearStart.cs" />
     <Compile Include="Models\Askables\AboutCompanyAskable.cs" />
     <Compile Include="Models\Askables\RockModel.cs" />
@@ -792,14 +799,22 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MandrillStrings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="Models\Enums\AccessLevel.cs" />
     <Compile Include="Utilities\AwsUtil.cs" />
     <Compile Include="Utilities\Cache\Cache.cs" />
     <Compile Include="Utilities\Cache\CacheKeys.cs" />
     <Compile Include="Utilities\DataTypes\DateRange.cs" />
+    <Compile Include="Utilities\DataTypes\DiscreteDistribution.cs" />
+    <Compile Include="Utilities\DataTypes\Histogram.cs" />
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
     <Compile Include="Utilities\Config.cs" />
+    <Compile Include="Utilities\DataTypes\Rect.cs" />
     <Compile Include="Utilities\DbUtil.cs" />
     <Compile Include="Utilities\Encrypt\Crypto.cs" />
     <Compile Include="Utilities\Extensions\AuditExtensions.cs" />
@@ -810,12 +825,14 @@
     <Compile Include="Utilities\Extensions\TimespanExtensions.cs" />
     <Compile Include="Utilities\Extensions\ViewBagExtensions.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
+    <Compile Include="Utilities\DistanceUtility.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PermissionItemHelper.cs" />
+    <Compile Include="Utilities\Productivity\ChromeExtensionComms.cs" />
     <Compile Include="Utilities\RandomUtil.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
@@ -908,6 +925,13 @@
       <DependentUpon>L10ChatLog.css</DependentUpon>
     </Content>
     <Content Include="Content\L10\L10Transcribe.css" />
+    <Content Include="Data\nickname.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Resources\Checked.png" />
     <None Include="Resources\star.png" />
     <None Include="Resources\Unchecked.png" />
@@ -929,6 +953,7 @@
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
     <Content Include="Scripts\speechrecog.js" />
+    <Content Include="Scripts\Upload\UploadScorecard.js" />
     <Content Include="Scripts\video\Obsolete\FileBufferReader.js" />
     <Content Include="Scripts\video\hark.js" />
     <Content Include="Scripts\video\Obsolete\RTCMultiConnection.js" />
@@ -1285,6 +1310,12 @@
     <Content Include="Views\UserTemplate\Edit.cshtml" />
     <Content Include="Views\VTO\partial\editable.cshtml" />
     <Content Include="Views\VTO\partial\pagescripts.cshtml" />
+    <Content Include="Views\Upload\Index.cshtml" />
+    <Content Include="Views\Upload\L10.cshtml" />
+    <Content Include="Views\Upload\UploadScorecard.cshtml" />
+    <Content Include="Views\Upload\SelectScorecard.cshtml" />
+    <Content Include="Views\User\Reviews.cshtml" />
+    <Content Include="Views\Upload\UploadScorecardSelected.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1702,6 +1733,7 @@
     <Content Include="Views\Shared\EditorTemplates\Priority.cshtml" />
     <Content Include="Views\Organization\Stats.cshtml" />
     <Content Include="Views\Manage\Data.cshtml" />
+    <Content Include="Views\Archive\Users.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

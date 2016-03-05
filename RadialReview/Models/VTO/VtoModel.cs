@@ -9,6 +9,7 @@ using NHibernate.Envers.Configuration.Fluent;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using Remotion.Linq.Clauses;
+using RadialReview.Models.Components;
 
 namespace RadialReview.Models.VTO
 {
@@ -311,7 +312,8 @@ namespace RadialReview.Models.VTO
 			public virtual DateTime CreateTime { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual VtoItemType Type { get; set; }
-			public virtual int Ordering { get; set; }
+            public virtual int Ordering { get; set; }
+            public virtual ForModel ForModel { get; set; }
 
 			protected VtoItem()
 			{
@@ -328,8 +330,9 @@ namespace RadialReview.Models.VTO
 					Map(x => x.CopiedFrom);
 					Map(x => x.CreateTime);
 					Map(x => x.DeleteTime);
-					Map(x => x.Type).CustomType<VtoItemType>();
-					Map(x => x.Ordering);
+                    Map(x => x.Type).CustomType<VtoItemType>();
+                    Map(x => x.Ordering);
+                    Component(x => x.ForModel).ColumnPrefix("ForModel_");
 				}
 			}
 		}
@@ -346,7 +349,12 @@ namespace RadialReview.Models.VTO
 			public override string ToString(){
 				return Data??"";
 			}
-		}
+
+            [Obsolete("Use VtoAccessor.Addstring()",false)]
+            public VtoItem_String(){
+            }
+
+        }
 
 		public class VtoItem_Decimal : VtoItem
 		{

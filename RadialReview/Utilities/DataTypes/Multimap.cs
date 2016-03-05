@@ -10,6 +10,19 @@ namespace RadialReview.Utilities.DataTypes
     {
         private Dictionary<K, List<V>> Map { get; set; }
 
+        public Multimap<K, V2> ConvertValue<V2>(Func<V, V2> valueConvert)
+        {
+            return new Multimap<K, V2>() {
+                Map = Map.ToDictionary(x => x.Key, x => x.Value.Select(y => valueConvert(y)).ToList())
+            };
+        }
+        public Multimap<K2, V> ConvertKey<K2>(Func<K, K2> keyConvert)
+        {
+            return new Multimap<K2, V>() {
+                Map = Map.ToDictionary(x => keyConvert(x.Key), x=>x.Value)
+            };
+        }
+
         public Multimap()
         {
             Map = new Dictionary<K, List<V>>();

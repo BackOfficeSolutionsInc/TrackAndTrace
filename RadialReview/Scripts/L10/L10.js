@@ -26,6 +26,7 @@ function initL10() {
 	updateTime();
 	resizing();
 	if (meetingStart && (isLeader || !followLeader)) {
+	    
 		loadPage(window.location.hash.replace("#", ""));
 	}
 
@@ -62,6 +63,7 @@ function initL10() {
 		var title = dat.title || "Add a to-do";
 		showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m);
 	});
+
 
 }
 
@@ -232,6 +234,7 @@ function loadPage(location) {
 }
 
 function loadPageForce(location) {
+    console.log("Loading:" + location);
 	$(".issues-list").sortable("destroy");
 	$(".todo-list").sortable("destroy");
 	$(".issues-list").sortable("refresh");
@@ -300,18 +303,31 @@ function callWhenReady(selector, callback, scope) {
         }, 1);
     }
 }
-
-function replaceMainWindow(html,callback) {
-    var a = $("#hiddenWindow").html(html);
-    $("#main-window").fadeOut(200, function () {
+var curHiddenId = 0;
+function replaceMainWindow(html, callback) {
+    var curId = curHiddenId;
+    curHiddenId += 1;
+    var name ="hiddenLoad"+curId;
+    var b = $("<div/>").attr("id",name).html(html);
+    var a = $("#hiddenWindow").append(b);
+    $("#main-window").finish().fadeOut(200, function () {
         $("#main-window").html("");
-	    $("#main-window").append($(a).children());
+        console.log($(b).children());
+        $("#main-window").append($(b).children());
+        $(b).remove();
 	    //callWhenReady("#main-window", function () {
 	    //   debugger;
-	    $("#main-window").fadeIn(200, callback);
+	    $("#main-window").finish().fadeIn(200, callback);
 	    //});
 	});
+}
 
+function printIframe(id) {
+    var iframe = document.frames ? document.frames[id] : document.getElementById(id);
+    var ifWin = iframe.contentWindow || iframe;
+    iframe.focus();
+    ifWin.printPage();
+    return false;
 }
 
 function fixSidebar() {

@@ -43,7 +43,9 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult BlankEditorRow(bool accountable=false,long? admin=null)
 		{
-			ViewBag.AllMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToSelectList(x=>x.GetNameAndTitle(),x=>x.Id);
+           // ViewBag.AllMembers = _DeepSubordianteAccessor.GetSubordinatesAndSelfModels(GetUser(), GetUser().Id);
+
+			ViewBag.AllMembers = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, false).ToSelectList(x=>x.Name,x=>x.UserId);
 			ViewBag.ShowAccountable = accountable;
 			return PartialView("_MeasurableRow", new MeasurableModel(GetUser().Organization){
 				AdminUserId = admin ?? 0,
@@ -54,7 +56,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Modal(MeasurableController.MeasurableVM model)
 		{
-			var avail = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).Select(x => x.Id).ToList();
+            var avail = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, false).Select(x => x.UserId).ToList();
 
 			if (!avail.Contains(model.UserId))
 				throw new PermissionsException();

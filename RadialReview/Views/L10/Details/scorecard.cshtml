@@ -102,20 +102,21 @@
 
 
 									<td ng-repeat="week in (model.Scorecard|transform:this).Weeks | filter:filters.byRange('ForWeek',model.date.startDate,model.date.endDate@(forceMin))" class="score" ng-class="{current:week.IsCurrentWeek}"  ng-class="{handle: measurable.IsDivider}">
-                                        <div ng-show="measurable.Id<0" class="grid gray {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))}}">{{model.Measured}}</div>
+                                        @*<div ng-show="measurable.Id<0" class="grid gray {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))}}">{{functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)).Measured}}</div>*@
                                         <input data-goal="{{measurable.Target}}"
                                                data-goal-dir="{{measurable.Direction}}"
                                                data-row="{{$parent.$index}}"
                                                data-col="{{$index}}"
                                                type="text"
-                                               ng-hide="measurable.Id<0"
+                                               @*ng-hide="measurable.Id<0"*@
+                                               ng-disabled="measurable.Id<0"
                                                placeholder="N/A"
                                                ng-model-options="{debounce: 75}"
                                                ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)).Measured"
                                                class="grid rt {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))}}"
-                                               data-scoreid="{{Id}}"
+                                               data-scoreid="{{::Id}}"
                                                data-measurable="{{::measurable.Id}}"
-                                               data-week="{{week.ForWeekNumber}}"
+                                               data-week="{{::week.ForWeekNumber}}"
                                                fcsa-number="{{functions.getFcsa(measurable)}}"
                                                ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))"
                                                id="{{functions.scorecardId(model,$parent.$index,$index)}}" />

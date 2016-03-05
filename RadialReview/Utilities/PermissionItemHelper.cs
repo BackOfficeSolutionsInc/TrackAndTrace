@@ -22,6 +22,17 @@ namespace RadialReview.Utilities
 
 
 		
+        public void UnsafeAllow(PermItem.AccessLevel level,PermItem.ResourceType resourceType,long id){
+            string key;
+            switch(level){
+                case PermItem.AccessLevel.View : key = "CanView_"+resourceType+"~"+id;break;
+                case PermItem.AccessLevel.Edit : key = "CanEdit_"+resourceType+"~"+id;break;
+                case PermItem.AccessLevel.Admin : key = "CanAdmin_"+resourceType+"~"+id;break;
+                default: throw new ArgumentOutOfRangeException(""+level.ToString());
+            }
+            new CacheChecker(key, this).Execute(()=>this);
+            //this.cache[key] = new CacheResult() { };
+        }
 		
 		/*protected class PAccess
 		{
@@ -223,5 +234,12 @@ namespace RadialReview.Utilities
 			return o;
 		}*/
 
-	}
+
+        public PermissionsUtility CanUpload()
+        {
+            if (caller == null || caller.DeleteTime != null)
+                throw new PermissionsException("You cannot upload documents");
+            return this;
+        }
+    }
 }

@@ -17,8 +17,10 @@ namespace RadialReview.Models.Askables {
 		public virtual long OrganizationId { get; set; }
 		public virtual long ForUserId { get; set; }
 		public virtual bool CompanyRock { get; set; }
-		public virtual DateTime? DueDate { get; set; }
-		public virtual RockState Completion { get; set; }
+        public virtual DateTime? DueDate { get; set; }
+        public virtual RockState Completion { get; set; }
+        public virtual bool _AddedToVTO { get; set; }
+        public virtual bool _AddedToL10 { get; set; }
 
 		public override QuestionType GetQuestionType(){
 			return QuestionType.Rock;

@@ -437,7 +437,7 @@ namespace RadialReview.Controllers
 		public JsonResult UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null)
 		{
 			var recurrenceId = id;
-			L10Accessor.UpdateTodo(GetUser(), todoId, complete:@checked, connectionId:connectionId);
+			L10Accessor.UpdateTodo(GetUser(), todoId, complete:@checked, connectionId:connectionId,duringMeeting:true);
 			return Json(ResultObject.SilentSuccess(@checked));
 		}
 
@@ -582,5 +582,21 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess(result), JsonRequestBehavior.AllowGet);
 		}
 
+
+
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult MoveIssueToVTO(long id)
+        {
+            var issue_recurrence = id;
+            var vto_issue = L10Accessor.MoveIssueToVto(GetUser(), issue_recurrence);
+            return Json( ResultObject.SilentSuccess(vto_issue.Id), JsonRequestBehavior.AllowGet);
+        }
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> MoveIssueFromVto(long id)
+        {
+            var vtoIssue = id;
+            var recurIssue = await L10Accessor.MoveIssueFromVto(GetUser(), vtoIssue);
+            return Json(ResultObject.SilentSuccess(recurIssue.Id), JsonRequestBehavior.AllowGet);
+        }
 	}
 }

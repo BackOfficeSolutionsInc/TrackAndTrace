@@ -27,12 +27,23 @@ function updateRockCompletion(meetingRockId, state, rockId) {
 }
 
 function updateRockName(rockId, message) {
-	$(".message[rock='" + rockId + "']").html(message);
+	$(".message[data-rock='" + rockId + "']").html(message);
 }
 
 
 function updateRocks(html) {
-	$(".rocks-container").html(html);
-	$(".rock-empty-holder").addClass("hidden");
-	$(".rocks-container").removeClass("hidden");
+    $(".rocks-container").html(html);
+    $(".rock-empty-holder").addClass("hidden");
+    $(".rocks-container").removeClass("hidden");
+}
+
+
+function removeRock(rockId) {
+    var row = $(".rock-row.rock-id-" + rockId);
+    var accountableUser = $(row).data("owner");
+    row.remove();
+    if ($(".rock-row.user-id-" + accountableUser).length == 0) {
+        $(".rock-group.rock-group-user-id-" + accountableUser).remove();
+    }
+
 }

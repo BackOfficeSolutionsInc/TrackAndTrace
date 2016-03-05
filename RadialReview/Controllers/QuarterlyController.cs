@@ -18,7 +18,7 @@ namespace RadialReview.Controllers
         }
 
 		[Access(AccessLevel.UserOrganization)]
-	    public ActionResult Printout(long id,bool issues=true,bool todos=true,bool scorecard=true,bool rocks=true)
+	    public ActionResult Printout(long id,bool issues=true,bool todos=true,bool scorecard=true,bool rocks=true,bool print=false)
 	    {
             var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
             var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout");
@@ -31,7 +31,7 @@ namespace RadialReview.Controllers
 
             var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
 
-            return Pdf(doc,now+"_"+recur.Name+"_QuarterlyPrintout.pdf");
+            return Pdf(doc,now+"_"+recur.Name+"_QuarterlyPrintout.pdf", true);
 	    }
     }
 }

@@ -167,11 +167,16 @@ function showTextAreaModal(title, callback, defaultText) {
 function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
 	$("#modalMessage").html("");
 	$("#modalMessage").addClass("hidden");
+	$("#modal").addClass("loading");
+	$('#modal').modal('show');
+	
 	$.ajax({
 		url: pullUrl,
 		type: "GET",
 		//Couldnt retrieve modal partial view
 		error: function (jqxhr, status, error) {
+		    $('#modal').modal('hide');
+		    $("#modal").removeClass("loading");
 			$("#modalForm").unbind('submit');
 			if (status == "timeout")
 				showAlert("The request has timed out. If the problem persists, please contact us.");
@@ -180,12 +185,15 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
 		},
 		//Retrieved Partial Modal
 		success: function (modal) {
-			if (!modal) {
+		    if (!modal) {
+		        $('#modal').modal('hide');
+		        $("#modal").removeClass("loading");
 				showAlert("Something went wrong. If the problem persists, please contact us.");
 				return;
 			}
 			$('#modalBody').html(modal);
 			$("#modalTitle").html(title);
+		    $("#modal").removeClass("loading");
 			//Reregister submit button
 			$("#modalForm").unbind('submit');
 
@@ -207,6 +215,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
 					}
 				}
 				$("#modal").modal("hide");
+				$("#modal").removeClass("loading");
 				$.ajax({
 					url: pushUrl,
 					type: "POST",
@@ -214,6 +223,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
 					success: function (data, status, jqxhr) {
 						if (!data) {
 							$("#modal").modal("hide");
+					        $("#modal").removeClass("loading");
 							showAlert("Something went wrong. If the problem persists, please contact us.");
 						} else {
 							//StoreJsonAlert(data);
@@ -245,9 +255,11 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
 							showAlert("Something went wrong. If the problem persists, please contact us.");
 						}
 						$("#modal").modal("hide");
+					    $("#modal").removeClass("loading");
 					}
 				});
 			});
+			$("#modal").removeClass("loading");
 			$('#modal').modal('show');
 			var count = 0;
 			setTimeout(function () {
@@ -450,6 +462,7 @@ function profilePicture(url, name, initials) {
 	"</span>" +
 "</span>";
 }
+
 
 
 (function ($) {
@@ -670,3 +683,53 @@ $(function() {
     $('html,body').scrollTop(scrollmem);
   });
 });
+
+
+$(function () {
+    $(document).on("click", ".undoable .undo-button", function () {
+        var undoable = $(this).closest(".undoable");
+        var url = undoable.data("undo-url");
+        var action = undoable.data("undo-action");
+        if (typeof (url) !== "undefined") {
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    if (showJsonAlert(data)) {
+                        if (("" + action).indexOf("unclass")!=-1) {
+                            $(undoable).removeClass("undoable");
+                        }
+                        if (("" + action).indexOf("remove") != -1) {
+                            $(undoable).remove();
+                        }
+                    }
+                }
+            });
+        } else {
+            showAlert("No action for undoable.", "Error!");
+        }
+    });
+});
+
+
+window.addEventListener("submit", function (e) {
+    var form = e.target;
+    if (form.getAttribute("enctype") === "multipart/form-data") {
+        if (form.dataset.ajax) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var xhr = new XMLHttpRequest();
+            xhr.open(form.method, form.action);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    if (form.dataset.ajaxUpdate) {
+                        var updateTarget = document.querySelector(form.dataset.ajaxUpdate);
+                        if (updateTarget) {
+                            updateTarget.innerHTML = xhr.responseText;
+                        }
+                    }
+                }
+            };
+            xhr.send(new FormData(form));
+        }
+    }
+}, true);

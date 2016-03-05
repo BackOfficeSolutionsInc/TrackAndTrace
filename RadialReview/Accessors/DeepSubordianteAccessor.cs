@@ -186,7 +186,7 @@ namespace RadialReview.Accessors
         public static void RemoveAll(ISession s, UserOrganizationModel user, DateTime now)
         {
             var id = user.Id;
-            var all = s.QueryOver<DeepSubordinateModel>().Where(x => x.ManagerId == id || x.SubordinateId == id).List().ToList();
+            var all = s.QueryOver<DeepSubordinateModel>().Where(x => (x.ManagerId == id || x.SubordinateId == id) && x.DeleteTime==null).List().ToList();
 
             foreach (var a in all)
             {
@@ -222,5 +222,17 @@ namespace RadialReview.Accessors
 				}
 			}
 	    }
+
+        public static void UndeleteAll(ISession s, UserOrganizationModel user, DateTime deleteTime)
+        {
+            var id = user.Id;
+            var all = s.QueryOver<DeepSubordinateModel>().Where(x => (x.ManagerId == id || x.SubordinateId == id) && x.DeleteTime == deleteTime).List().ToList();
+
+            foreach (var a in all)
+            {
+                a.DeleteTime = null;
+                s.Update(a);
+            }
+        }
     }
 }

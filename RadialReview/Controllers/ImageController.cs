@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -60,7 +61,7 @@ namespace RadialReview.Controllers
         // GET: /Img/
         [Access(AccessLevel.Any)]
         [OutputCache(Duration = 60 * 60 * 24 * 30, VaryByParam = "id;dim")]
-        public ActionResult Index(string id,string dim=null)
+        public async Task<ActionResult> Index(string id,string dim=null)
         {
             try
             {
@@ -72,7 +73,7 @@ namespace RadialReview.Controllers
                 {
                     imagePath = ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder; //Server.MapPath("~/" + ConstantStrings.ImagePlaceholder);
                 }else if(id=="wait"){
-                    Thread.Sleep(500);
+                    await Task.Delay(500);
                     return File(TrackingGif, "image/gif");
                 }else{
                     var user = GetUserModel();

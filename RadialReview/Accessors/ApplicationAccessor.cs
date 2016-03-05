@@ -11,6 +11,7 @@ using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Productivity;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;

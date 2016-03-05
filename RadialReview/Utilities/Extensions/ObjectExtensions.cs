@@ -14,6 +14,10 @@ namespace RadialReview
 {
     public static class ObjectExtensions
 	{
+        public static decimal TryParseDecimal(this string str,decimal deflt)
+        {
+            return str.TryParseDecimal()??deflt;
+        }
 		public static decimal? TryParseDecimal(this string str)
 		{
 			decimal o;

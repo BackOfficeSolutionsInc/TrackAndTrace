@@ -66,6 +66,22 @@
             display: block;
         }
 
+        .fontastic-icon-checklist:before {
+            font-size: inherit;
+        }
+
+        .vto-frame {
+            width: 100%;
+            height: 640px;
+            height: calc(100vh - 196px);
+            margin-top: 10px;
+            border: none;
+        }
+
+        .nav.nav-pills.tabs-up a span {
+            margin-left: -4px;
+            margin-right: 1px;
+        }
         /*.nav-tabs li a{
             border-radius: 4px;
             border-color: #DDD !important;
@@ -102,6 +118,15 @@
             e.preventDefault();
             $(this).tab('show');
         });
+
+        function printIframe(id)
+        {
+            var iframe = document.frames ? document.frames[id] : document.getElementById(id);
+            var ifWin = iframe.contentWindow || iframe;
+            iframe.focus();
+            ifWin.printPage();
+            return false;
+        }
 
         $(function() {
             $('a[data-toggle="tabajax"]').on('shown.bs.tab', function (e) {
@@ -248,12 +273,13 @@
         <div style="/*height:90px*/"></div>
 
         <ul class="nav nav-pills tabs-up" id="pages" style="clear:both">
-            <li class="active"><a href="#Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
-            <li><a href="#Rocks" data-target="#Rocks" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> @(Html.Organization().Settings.RockName ?? "Rocks")</a></li>
-            <li><a href="#Headlines" data-target="#Headlines" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Headlines </a></li>
-            <li><a href="#Todo" data-target="#Todo" class="media_node span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
-            <li><a href="#Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
-            <li><a href="#Notes" data-target="#Notes" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Notes </a></li>
+            <li class="active"><a href="#Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-window-list"></span> Scorecard </a></li>
+            <li><a href="#Rocks" data-target="#Rocks" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-trophy-1"></span> @(Html.Organization().Settings.RockName ?? "Rocks")</a></li>
+            <li><a href="#Headlines" data-target="#Headlines" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-results-demographics"></span> Headlines </a></li>
+            <li><a href="#Todo" data-target="#Todo" class="media_node span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"><span class="glyphicon glyphicon-check"></span> To-Do List </a></li>
+            <li><a href="#Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-pinboard"></span> Issues List </a></li>
+            <li><a href="#VTO" data-target="#VTO" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="glyphicon glyphicon-vto"></span> V/TO </a></li>
+            <li><a href="#Notes" data-target="#Notes" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"><span class="glyphicon glyphicon-pencil"></span> Notes </a></li>
         </ul>
 
         <div class="tab-content">
@@ -262,9 +288,10 @@
             <div id="Rocks" class="tab-pane"><div ng-if="selectedTab=='#Rocks'">@Html.Partial("~/Views/L10/Details/rocks.cshtml")</div></div>
             <div id="Todo" class="tab-pane"><div ng-if="selectedTab=='#Todo'">@Html.Partial("~/Views/L10/Details/todo.cshtml")</div></div>
             <div id="Issues" class="tab-pane"><div ng-if="(selectedTab=='#Issues')">@Html.Partial("~/Views/L10/Details/issues.cshtml")</div></div>
+            <div id="VTO" class="tab-pane"><div ng-if="(selectedTab=='#VTO')"><div class="pull-right btn btn-sm btn-default" onclick="printIframe('vto-frame')"><span class="glyphicon glyphicon-print"></span> Print</div><iframe id="vto-frame" class="vto-frame" data-src="/vto/edit/@(ViewBag.VtoId)?noheading=true" src="/vto/edit/@(ViewBag.VtoId)?noheading=true"></iframe></div></div>
             <div id="Notes" class="tab-pane"><div ng-if="(selectedTab=='#Notes')">@Html.Partial("~/Views/L10/Details/notes.cshtml")</div></div>
         </div>
         @*<input type="text" ng-model="selectedTab" />
-        <input type="text" ng-model="$$watchersCount" />*@
+            <input type="text" ng-model="$$watchersCount" />*@
     </div>
 </div>

@@ -71,6 +71,40 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to aaron,erin,ronnie,ron
+        ///abbie,abigail
+        ///abby,abigail
+        ///abe,abraham,abram
+        ///abednego,bedney
+        ///abel,ebbie,ab,abe,eb
+        ///abiel,ab
+        ///abigail,nabby,abby,gail
+        ///abijah,ab,bige
+        ///abner,ab
+        ///abraham,ab,abe
+        ///abram,ab
+        ///absalom,app,ab,abbie
+        ///ada,addy
+        ///adaline,delia,lena,dell,addy,ada
+        ///adam,edie,ade
+        ///addy,adele
+        ///adela,della
+        ///adelaide,heidi,adele,dell,addy,della
+        ///adelbert,del,albert,delbert,bert
+        ///adele,dell
+        ///adeline,delia,lena,dell,addy,ada
+        ///adelphia,philly,delphia,adele,dell,addy
+        ///adolphus,dolph,ado,adolph
+        ///adrian,rian
+        ///adrienne,a [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string nickname {
+            get {
+                return ResourceManager.GetString("nickname", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap Star {

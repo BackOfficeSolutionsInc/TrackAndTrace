@@ -101,8 +101,9 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public void EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews,bool updateAllL10s)
+		public List<PermissionsException> EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews,bool updateAllL10s)
 		{
+            var output = new List<PermissionsException>();
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
@@ -145,7 +146,10 @@ namespace RadialReview.Accessors
 						r.OrganizationId = orgId;
 						r.Period = s.Get<PeriodModel>(r.PeriodId);
 						var added = r.Id == 0;
-						s.SaveOrUpdate(r);
+                        if (added)
+                            s.Save(r);
+                        else
+						    s.Merge(r);
 
 						if (updateOutstandingReviews && added)
 						{
@@ -160,10 +164,13 @@ namespace RadialReview.Accessors
                             var r1 = r;
                             foreach (var o in allL10s.Select(x=>x.L10Recurrence))
                             {
-                                L10Accessor.AddRock(s,perm,o.Id,new Controllers.L10Controller.AddRockVm(){
-                                    RecurrenceId=o.Id,
-                                    SelectedRock = r1.Id,
-                                });
+                                if (o.OrganizationId != caller.Organization.Id)
+                                    throw new PermissionsException("Cannot access the Level 10");
+                                perm.UnsafeAllow(PermItem.AccessLevel.View, PermItem.ResourceType.L10Recurrence, o.Id);
+                                perm.UnsafeAllow(PermItem.AccessLevel.Edit, PermItem.ResourceType.L10Recurrence, o.Id);
+                                L10Accessor.AddRock(s, perm, o.Id, r1);
+                                r1._AddedToL10 = false;
+                                r1._AddedToVTO = false;
                             }
                         }
 					}
@@ -171,6 +178,7 @@ namespace RadialReview.Accessors
 
 					tx.Commit();
 					s.Flush();
+                    return output;
 				}
 			}
 		}

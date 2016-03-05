@@ -28,16 +28,19 @@ namespace RadialReview.Models.L10.VM
 		public bool CanEdit { get; set; }
 		public bool CanAdmin { get; set; }
 
+        public long VtoId { get;set;}
+
 		[DataContract]
-		public class WeekVM
-		{
-			[DataMember(Name="StartDate")]
+		public class WeekVM{
+
 			public DateTime DisplayDate { get; set; }
 			[DataMember(Name = "EndDate")]
-			public DateTime DataContract_EndDate { get { return DisplayDate.AddDays(7); } }
+			public DateTime DataContract_EndDate { get { return StartDate.AddDays(7); } }
 			[DataMember(Name = "ForWeek")]
 			public long DataContract_Weeks { get { return TimingUtility.GetWeekSinceEpoch(ForWeek); } }
 
+			[DataMember(Name="StartDate")]
+            public DateTime StartDate { get; set; }
 			public DateTime ForWeek { get; set; }
 			public bool IsCurrentWeek { get; set; }
 			public int NumPeriods { get; set; }
@@ -46,7 +49,8 @@ namespace RadialReview.Models.L10.VM
 			{
 				NumPeriods = 1;
 			}
-		}
+
+        }
 
 		public List<WeekVM> Weeks { get; set; }
 

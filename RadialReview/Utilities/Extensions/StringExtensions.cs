@@ -9,6 +9,30 @@ namespace RadialReview
 {
     public static class StringExtensions
     {
+        public static string IntToStringFast(this int value, char[] baseChars)
+        {
+            // 32 is the worst cast buffer size for base 2 and int.MaxValue
+            int i = 32;
+            char[] buffer = new char[i];
+            int targetBase = baseChars.Length;
+
+            do
+            {
+                buffer[--i] = baseChars[value % targetBase];
+                value = value / targetBase;
+            }
+            while (value > 0);
+
+            char[] result = new char[32 - i];
+            Array.Copy(buffer, i, result, 0, 32 - i);
+
+            return new string(result);
+        }
+
+        public static string ToLetter(this int self){
+            return self.IntToStringFast(new[] { 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z' });
+        }
+
         public static bool EqualsInvariant(this String self, string other)
         {
             if (self == null && other == null)

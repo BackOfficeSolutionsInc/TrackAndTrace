@@ -420,7 +420,11 @@ namespace RadialReview.Controllers
 					var csv = new CsvReader(sr);
 					while (csv.Read()) { }
 
-					var headers = csv.FieldHeaders.ToList();
+                    var headers = csv.FieldHeaders.Select((x, i) =>{
+                        if (String.IsNullOrWhiteSpace(x))
+                            return "(Column " + i.ToLetter() + ")";
+                        return x;
+                    }).ToList();
 
 					var model = new FieldsVM()
 					{

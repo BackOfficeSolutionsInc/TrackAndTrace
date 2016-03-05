@@ -4,8 +4,22 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Upload Organization (.csv)</h2>
+<h2 class="pull-right"><a href="/upload" class="btn btn-default">Back to Upload</a></h2>
+<h2>Upload Users to Organization</h2>
 
+<h3>File Format (.csv):</h3>
+<table class="table table-bordered">
+    <tr>
+        <td>First Name</td>
+        <td>Last Name</td>
+        <td>Email</td>
+        <td>Position</td>
+        <td>Manager First Name</td>
+        <td>Manager Last Name</td>
+    </tr>
+</table>
+
+<div style="height:30px"></div>
 
 <form action="/Organization/Upload" method="post" enctype="multipart/form-data">
 	
@@ -24,3 +38,9 @@
 		</div>
 	</div>
 </form>
+
+<style>
+    .table-bordered *{
+        border-color: gray !important;
+    }
+</style>

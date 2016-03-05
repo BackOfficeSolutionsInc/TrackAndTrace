@@ -200,13 +200,15 @@
 	}
 
 	.vto /*.core-values*/ tr .delete,
-	.vto /*.core-values*/ li .delete {
+	.vto /*.core-values*/ li .delete,
+	.vto /*.core-values*/ tr .ids-button {
 		opacity: 0;
 		cursor: pointer;
 	}
 
 	.vto /*.core-values*/ tr:hover .delete:hover,
-	.vto /*.core-values*/ li:hover .delete:hover {
+	.vto /*.core-values*/ li:hover .delete:hover,
+	.vto /*.core-values*/ tr:hover .ids-button:hover {
 		opacity: .8;
 		cursor: pointer;
 	}
@@ -215,6 +217,9 @@
 	.vto /*.core-values*/ li:hover .delete {
 		opacity: .2;
 	}
+    .vto /*.core-values*/ tr:hover .ids-button {
+		opacity: .75;
+    }
 
 	.vto .core-focus .title .boxed,
 	.vto .core-values .title .boxed,
@@ -273,11 +278,11 @@
 	}
 
 		.vto .ten-year-target textarea {
-			position: absolute;
+			/*position: absolute;
 			top: 5px;
 			bottom: 5px;
 			left: 5px;
-			right: 5px;
+			right: 5px;*/
 			resize: none !important;
 			width: 90%;
 			width: calc(100% - 10px);

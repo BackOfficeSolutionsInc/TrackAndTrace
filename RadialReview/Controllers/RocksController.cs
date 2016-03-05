@@ -117,7 +117,7 @@ namespace RadialReview.Controllers
 			foreach (var r in model.Rocks){
 				r.ForUserId = model.UserId;
 			}
-			_RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks,model.UpdateOutstandingReviews, model.UpdateAllL10s);
+			 _RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks,model.UpdateOutstandingReviews, model.UpdateAllL10s);
 			return Json(ResultObject.Create(model.Rocks.Select(x=>new { Session = x.Period.Name, Rock = x.Rock, Id =x.Id }),status:StatusType.Success));
 		}
 

@@ -192,7 +192,8 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	};
 
 	$scope.functions.subtractDays = function (date, days) {
-		var d = new Date(date);
+	    var d = new Date(date);
+	    d = new Date(moment(d).add(new Date().getTimezoneOffset(), "minutes").valueOf())
 		d.setDate(d.getDate() - days);
 		return d;
 	};

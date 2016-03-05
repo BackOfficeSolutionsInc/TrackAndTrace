@@ -236,8 +236,12 @@ namespace RadialReview.Accessors
                     var added = measurables.Where(x => x.Id == 0).ToList();
 					foreach (var r in measurables)
 					{
-						r.OrganizationId = orgId;
-						s.SaveOrUpdate(r);
+                        r.OrganizationId = orgId;
+                        //var added = r.Id == 0;
+                        if (r.Id==0)
+                            s.Save(r);
+                        else
+                            s.Merge(r);
 					}
 					var now = DateTime.UtcNow;
 
@@ -262,6 +266,11 @@ namespace RadialReview.Accessors
                             var r1 = r;
                             foreach (var o in allL10s.Select(x => x.L10Recurrence))
                             {
+
+                                if (o.OrganizationId != caller.Organization.Id)
+                                    throw new PermissionsException("Cannot access the Level 10");
+                                perm.UnsafeAllow(PermItem.AccessLevel.View, PermItem.ResourceType.L10Recurrence, o.Id);
+                                perm.UnsafeAllow(PermItem.AccessLevel.Edit, PermItem.ResourceType.L10Recurrence, o.Id);
                                 L10Accessor.AddMeasurable(s, perm, o.Id, new Controllers.L10Controller.AddMeasurableVm()
                                 {
                                     RecurrenceId = o.Id,

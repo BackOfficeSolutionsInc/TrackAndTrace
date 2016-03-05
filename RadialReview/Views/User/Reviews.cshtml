@@ -1,0 +1,30 @@
+﻿@model List<RadialReview.Models.ReviewModel>
+
+@{
+    ViewBag.Title = "Reviews - " + ViewBag.ForUser;
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section top{
+	<div class="jumbotron">
+		<h1>Reviews</h1>
+	</div>
+}
+
+<h2>Reviews for @ViewBag.ForUser</h2>
+
+
+<table class="table table-striped">
+    <tr>
+        <th>Review Name</th>
+        <th>Report</th>
+    </tr>
+
+    @foreach (var r in Model)
+    {
+        <tr>
+            <td>@r.Name</td>
+            <td><a href="/Review/Details/@r.Id">Edit</a> | <a href="/Review/ClientDetails/@r.Id?reviewing=true">View</a></td>
+        </tr>
+    }
+</table>

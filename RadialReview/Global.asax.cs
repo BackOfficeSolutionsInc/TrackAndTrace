@@ -16,14 +16,25 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using RadialReview.Utilities.Serializers;
+using RadialReview.Utilities.Productivity;
+using System.Threading.Tasks;
 
 namespace RadialReview
 {
 
     public class MvcApplication : System.Web.HttpApplication
     {
+        // protected async void App
+
+        protected async Task Application_End(){
+            var wasKilled=await ChromeExtensionComms.SendCommandAndWait("appEnd");
+            var inte = 0;
+            inte += 1;
+        }
+
         protected async void Application_Start()
         {
+            ChromeExtensionComms.SendCommand("appStart");
 			//GlobalConfiguration.Configure(WebApiConfig.Register);
             AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
 

@@ -348,7 +348,7 @@
                             </a>
                         </td>
                         <td class="noOverflow" style="max-width: 150px;" title="@p.Email">
-                            <a href="mailto:@p.Email">@p.Email</a>
+                            <a href="~/Manage/UserDetails/@p.Id">@p.Email</a>
                         </td>
                         <td class="NalignCenter noOverflow" style="max-width: 200px;">
                             <a href="@Url.Action("Positions","User",new {id = p.Id})" class="fullWidth">

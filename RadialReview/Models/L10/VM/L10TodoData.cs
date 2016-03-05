@@ -17,7 +17,7 @@ namespace RadialReview.Models.L10.VM
 		public string details { get; set; }
 		public bool @checked { get; set; }
 		public long createtime { get; set; }
-		public long duedate { get; set; }
+		public DateTime duedate { get; set; }
 		public string padId { get; set; }
 		public static TodoData FromTodo(TodoModel todo)
 		{
@@ -32,7 +32,7 @@ namespace RadialReview.Models.L10.VM
 				accountableUserId = todo.AccountableUserId,
 				todo = todo.Id,
 				padId = todo.PadId,
-				duedate = todo.DueDate.ToJavascriptMilliseconds()
+				duedate = todo.DueDate,//.ToJavascriptMilliseconds()
 			};
 		}
 	}

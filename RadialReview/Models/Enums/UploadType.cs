@@ -7,6 +7,11 @@ namespace RadialReview.Models.Enums
 {
     public enum UploadType
     {
-        ProfileImage
+        Upload=0,
+        ProfileImage,
+        Scorecard,
+        Rocks,
+        Issues,
+        Todos,
     }
 }

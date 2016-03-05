@@ -7958,3 +7958,6 @@ select:-webkit-autofill:focus {
 .dashboard .l10-todo-list-container .owner-column {
   display: inherit;
 }
+.dashboard .todo-checkbox-container input {
+  margin-top: 4px !important;
+}

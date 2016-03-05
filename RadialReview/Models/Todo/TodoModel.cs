@@ -22,9 +22,11 @@ namespace RadialReview.Models.Todo
 		public virtual String Message { get; set; }
 		public virtual String Details { get; set; }
 		public virtual long CreatedById { get; set; }
-		public virtual UserOrganizationModel CreatedBy { get; set; }
-		public virtual long? CreatedDuringMeetingId { get; set; }
-		public virtual L10Meeting CreatedDuringMeeting { get; set; }
+        public virtual UserOrganizationModel CreatedBy { get; set; }
+        public virtual long? CreatedDuringMeetingId { get; set; }
+        public virtual long? CompleteDuringMeetingId { get; set; }
+        public virtual L10Meeting CreatedDuringMeeting { get; set; }
+        //public virtual L10Meeting CompleteDuringMeeting { get; set; }
 		public virtual long? ForRecurrenceId { get; set; }
 		public virtual L10Recurrence ForRecurrence { get; set; }
 		public virtual long AccountableUserId { get; set; }
@@ -73,7 +75,10 @@ namespace RadialReview.Models.Todo
 				References(x => x.AccountableUser).Column("AccountableUserId").LazyLoad().ReadOnly();
 
 				Map(x => x.CreatedDuringMeetingId).Column("CreatedDuringMeetingId");
-				References(x => x.CreatedDuringMeeting).Column("CreatedDuringMeetingId").Nullable().LazyLoad().ReadOnly();
+                References(x => x.CreatedDuringMeeting).Column("CreatedDuringMeetingId").Nullable().LazyLoad().ReadOnly();
+
+                Map(x => x.CompleteDuringMeetingId).Column("CompleteDuringMeetingId");
+                //References(x => x.CompleteDuringMeeting).Column("CompleteDuringMeetingId").Nullable().LazyLoad().ReadOnly();
 
 				Map(x => x.ForRecurrenceId).Column("ForRecurrenceId");
 				References(x => x.ForRecurrence).Column("ForRecurrenceId").Nullable().LazyLoad().ReadOnly();

@@ -267,7 +267,27 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public List<UserOrganizationModel> GetOrganizationMembers(UserOrganizationModel caller, long organizationId, bool teams, bool managers)
+        public static List<Tuple<string, string, long>> GetMembers_Tiny(UserOrganizationModel caller, long organizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+                    UserOrganizationModel uo =null;
+                    UserModel u = null;
+                    return s.QueryOver<UserOrganizationModel>(() => uo)
+                        .JoinAlias(x => x.User, () => u)
+                        .Where(x => x.Organization.Id == organizationId && x.DeleteTime == null)
+                        .Select(x => u.FirstName, x => u.LastName, x => x.Id)
+                        .List<object[]>()
+                        .Select(x => Tuple.Create((string)x[0], (string)x[1], (long)x[2]))
+                        .ToList();
+
+                }
+            }
+
+        }
+
+        public List<UserOrganizationModel> GetOrganizationMembers(UserOrganizationModel caller, long organizationId, bool teams, bool managers)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
