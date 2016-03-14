@@ -151,27 +151,25 @@ namespace RadialReview.Controllers
 		}
 		[HttpPost]
 		[Access(AccessLevel.Any)]
-		public ActionResult Create(String name, bool enableL10, bool enableReview)
+		public ActionResult Create(String name, bool enableL10, bool enableReview,string planType = "professional")
 		{
 			Boolean managersCanEdit = false;
 			var user = GetUserModel();
 			//var basicPlan=_PaymentAccessor.BasicPaymentPlan();
-			var localizedName = new LocalizedStringModel() { Standard = name };
-			long newRoleId;
+			UserOrganizationModel uOrg;
 
-			var plan = PaymentOptions.MonthlyPlan(12m, 4m, DateTime.UtcNow.AddMonths(1), 2);
-
+			//var plan = PaymentOptions.MonthlyPlan(12m, 4m, DateTime.UtcNow.AddMonths(1), 2);
+            var paymentPlanType = PaymentAccessor.GetPlanType(planType);
 			var organization = _OrganizationAccessor.CreateOrganization(
 				user,
-				localizedName,
-				managersCanEdit,
-				plan,
+				name,
+                paymentPlanType,
 				DateTime.UtcNow,
-				out newRoleId,
+                out uOrg,
 				enableL10,
 				enableReview
 			);
-			return RedirectToAction("SetRole", "Account", new { id = newRoleId });
+            return RedirectToAction("SetRole", "Account", new { id = uOrg.Id });
 		}
 
 		[HttpGet]

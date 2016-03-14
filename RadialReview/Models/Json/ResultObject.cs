@@ -75,6 +75,9 @@ namespace RadialReview.Models.Json
             }
         }
 
+        public Dictionary<string, string> Data { get; set; }
+        public String Html { get;set;}
+
         public object Object { get; set; }
 		public String Message { get; set; }
 		public String Trace { get; set; }
@@ -103,6 +106,8 @@ namespace RadialReview.Models.Json
 			}
 			set{_Refresh = value;}
 		}
+
+        public string Redirect { get; set; }
 
 		private bool? _Silent { get; set; }
 
@@ -238,10 +243,34 @@ namespace RadialReview.Models.Json
             };
         }
 
+        public static ResultObject CreateHtml(string html, Dictionary<string, string> data=null) {
+            return new ResultObject() {
+                Error = false,
+                Message = "Success",
+                Object = null,
+                Status = StatusType.Success,
+                Html = html,
+                Data=data,
+                Silent=true
+            };
+        }
 
 		public ResultObject ForceSilent(){
 			Silent = true;
 			return this;
 		}
-	}
+
+        public static ResultObject CreateRedirect(string url,String message=null)
+        {
+            return new ResultObject() {
+                Error = false,
+                Message = message,
+                Object = null,
+                Status = StatusType.Success,
+                Silent = (message == null),
+                Redirect = url,
+            };
+        }
+
+    }
 }

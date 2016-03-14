@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using NHibernate;
 using RadialReview;
 using RadialReview.Accessors;
@@ -11,15 +12,13 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Principal;
 using System.Text;
 using System.Web;
 
-namespace TractionTools.Tests.TestUtils
-{
-    public static class TestObjectExtensions
-    {
-        public class Setter<T>
-        {
+namespace TractionTools.Tests.TestUtils {
+    public static class TestObjectExtensions {
+        public class Setter<T> {
 
             private PropertyInfo prop;
             private FieldInfo field;
@@ -50,13 +49,11 @@ namespace TractionTools.Tests.TestUtils
         {
             Setter<T> propInfo = null;
             var type = obj.GetType();
-            do
-            {
+            do {
                 var prop = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (prop != null)
                     propInfo = new Setter<T>(obj, prop);
-                else
-                {
+                else {
                     var field = type.GetField(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                     if (field != null)
                         propInfo = new Setter<T>(obj, field);
@@ -97,8 +94,7 @@ namespace TractionTools.Tests.TestUtils
         //    return compiled;
         //}
     }
-    public class BaseTest
-    {
+    public class BaseTest {
         //[ClassInitialize]
         //public void Startup()
         //{
@@ -113,25 +109,31 @@ namespace TractionTools.Tests.TestUtils
         private static bool ApplicationCreated;
         protected void MockApplication()
         {
-           if (!ApplicationCreated)
+            if (!ApplicationCreated)
                 new ApplicationAccessor().EnsureApplicationExists();
-           ApplicationCreated = true;
+            ApplicationCreated = true;
         }
-        public void MockHttpContext(){
-            HttpContext.Current = new HttpContext(new HttpRequest("", "http://fake.url", ""),new HttpResponse(new StringWriter()));
+        public void MockHttpContext()
+        {
+            HttpContext.Current = new HttpContext(new HttpRequest("", "http://fake.url", ""), new HttpResponse(new StringWriter()));
+
+            var fakeIdentity = new GenericIdentity("TestUser");
+            var principal = new GenericPrincipal(fakeIdentity, null);
+            
+            HttpContext.Current.User = principal;
         }
         public static void Throws<T>(Action func) where T : Exception
         {
             var exceptionThrown = false;
-            try{
+            try {
                 func.Invoke();
-            }catch (T){
+            } catch (T) {
                 exceptionThrown = true;
             }
 
             if (!exceptionThrown)
                 throw new AssertFailedException(String.Format("An exception of type {0} was expected, but not thrown", typeof(T)));
-            
+
         }
 
         public void DbCommit(Action<ISession> sFunc)
@@ -141,16 +143,13 @@ namespace TractionTools.Tests.TestUtils
 
         public void DbExecute(Action<ISession> sFunc, bool commit = false)
         {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     if (s.Connection.ConnectionString != "Data Source=|DataDirectory|\\_testdb.db")
                         throw new Exception("ConnectionString must be 'Data Source=|DataDirectory|\\_testdb.db'");
 
                     sFunc(s);
-                    if (commit)
-                    {
+                    if (commit) {
                         tx.Commit();
                         s.Flush();
                     }
@@ -162,12 +161,11 @@ namespace TractionTools.Tests.TestUtils
 
         public UserOrganizationModel GetAdminUser()
         {
-            if (_AdminUser == null){
-                DbCommit(x =>
-                {
-                    _AdminUser=new UserOrganizationModel(){
-                            IsRadialAdmin = true
-                        };
+            if (_AdminUser == null) {
+                DbCommit(x => {
+                    _AdminUser = new UserOrganizationModel() {
+                        IsRadialAdmin = true
+                    };
                     x.Save(_AdminUser);
                 });
             }
@@ -177,8 +175,7 @@ namespace TractionTools.Tests.TestUtils
 
         public UserOrganizationModel GetCaller()
         {
-            return new UserOrganizationModel()
-            {
+            return new UserOrganizationModel() {
                 IsRadialAdmin = true
             };
         }

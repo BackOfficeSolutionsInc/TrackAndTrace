@@ -314,18 +314,28 @@ namespace RadialReview.Models
 				Map(x => x.SendEmailImmediately);
 				Component(x => x._Settings).ColumnPrefix("Settings_");
 
-				References(x => x.Image).Not.LazyLoad().Cascade.SaveUpdate();
-				References(x => x.Name).Not.LazyLoad().Cascade.SaveUpdate();
-				References(x => x.PaymentPlan).Cascade.SaveUpdate();
+				References(x => x.Image)
+                    .Not.LazyLoad()
+                    .Cascade.SaveUpdate();
+				References(x => x.Name)
+                    .Not.LazyLoad()
+                    .Cascade.SaveUpdate();
+				References(x => x.PaymentPlan)
+                    .LazyLoad()
+                    .Cascade.SaveUpdate();
 
-				HasMany(x => x.Reviews)
+                HasMany(x => x.Reviews)
+                    .LazyLoad()
 					.Cascade.SaveUpdate();
 				HasMany(x => x.Members)
 					.KeyColumn("Organization_Id")
+                    .LazyLoad()
 					.Cascade.SaveUpdate();
-				HasMany(x => x.Payments)
+                HasMany(x => x.Payments)
+                    .LazyLoad()
 					.Cascade.SaveUpdate();
-				HasMany(x => x.Invoices)
+                HasMany(x => x.Invoices)
+                    .LazyLoad()
 					.Cascade.SaveUpdate();
 				/*HasMany(x => x.Industries)
 					.KeyColumn("OrganizationId")

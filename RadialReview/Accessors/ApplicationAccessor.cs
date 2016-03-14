@@ -338,6 +338,11 @@ namespace RadialReview.Accessors
             return foundQ;
         }
 
+        public static QuestionCategoryModel GetRockCategory(ISession s)
+        {
+            return ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+        }
+
         public static QuestionCategoryModel GetApplicationCategory(ISession session, String category)
         {
             var found = ApplicationCategories.FirstOrDefault(x => x.ToLower() == category.ToLower());

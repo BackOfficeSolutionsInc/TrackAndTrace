@@ -267,14 +267,15 @@ namespace RadialReview.Controllers
 
 			if (ModelState.IsValid)
 			{
-				var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+				//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 				//var attendees = allMembers.Where(x => model.Attendees.Contains(x.Id)).ToList();
+                var allMembers = _OrganizationAccessor.GetAllOrganizationMemberIdsAcrossTime(GetUser(), GetUser().Organization.Id);
 
 				var ratingKeys = form.AllKeys.Where(x => x.StartsWith("rating_"));
 				var ratingIds = ratingKeys.Where(x => form[x].TryParseDecimal()!=null).Select(x => long.Parse(x.Replace("rating_", ""))).ToList();
 
 				ratingValues = ratingIds.Select(x => Tuple.Create(x, form["rating_" + x].TryParseDecimal())).ToList();
-				allMembers.Select(x => x.Id).EnsureContainsAll(ratingIds);
+				allMembers./*Select(x => x.Id).*/EnsureContainsAll(ratingIds);
 
 				foreach (var r in ratingValues)
 				{

@@ -45,7 +45,10 @@ namespace RadialReview.Models.Scorecard
 
 		public MeasurableModel()
 		{
-			_Editable = true;
+            _Editable = true;
+            CreateTime = DateTime.UtcNow;
+            NextGeneration = CreateTime - TimeSpan.FromDays(7);
+            DueDate = DayOfWeek.Friday;
 		}
 
 		public MeasurableModel(OrganizationModel forOrganization):this()

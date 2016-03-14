@@ -34,12 +34,12 @@ namespace RadialReview.Models.Angular.Scorecard
 
 		public AngularScorecard()
 		{
-			
+            Id = -1;
 		}
 
-		public List<AngularMeasurable> Measurables { get; set; }
-		public List<AngularScore> Scores { get; set; }
-		public List<AngularWeek> Weeks { get; set; }
+		public IEnumerable<AngularMeasurable> Measurables { get; set; }
+        public IEnumerable<AngularScore> Scores { get; set; }
+        public IEnumerable<AngularWeek> Weeks { get; set; }
 
 		public string DateFormat1 { get; set; }
 		public string DateFormat2 { get; set; }

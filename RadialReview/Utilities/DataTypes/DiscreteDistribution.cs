@@ -7,7 +7,7 @@ namespace RadialReview.Utilities.DataTypes {
     public class DiscreteDistribution<T> {
         private double Low {get;set;}
         private double High {get;set;}
-
+        private bool Coerce { get; set; }
         private Multimap<T,double> Backing { get; set; }
 
         public DiscreteDistribution<U> Convert<U>(Func<T, U> convert)
@@ -17,14 +17,20 @@ namespace RadialReview.Utilities.DataTypes {
             };
         }
 
-        public DiscreteDistribution(double lowScore,double highScore){
+        public DiscreteDistribution(double lowScore,double highScore,bool coerce=false){
             Low = lowScore;
             High = highScore;
+            Coerce = coerce;
             Backing = new Multimap<T, double>();
         }
 
         public void Add(T value,double score){
-            if (score > Math.Max(High,Low) || score<Math.Min(Low,High))
+            var min = Math.Min(Low,High);
+            var max = Math.Max(High,Low);
+            if (Coerce)
+                score = Math.Max(Math.Min(max, score), min);
+
+            if (score > max  || score< min)
                 throw new ArgumentOutOfRangeException("score", "Score is out of range");
             var newScore = (score-Low)/(High-Low);
                         

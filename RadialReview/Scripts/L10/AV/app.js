@@ -93,7 +93,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			$.support.cors = true;
 			$.connection.hub.url = '/signalr/hubs';
 			_setupHubCallbacks(hub);
-			$.connection.hub.start()
+			$.connection.hub.start(Constants.StartHubSettings)
 				.done(function () {
 					console.log('connected to SignalR hub... connection id: ' + _hub.connection.id);
 

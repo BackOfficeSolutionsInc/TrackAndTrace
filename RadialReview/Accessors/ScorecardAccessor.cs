@@ -19,7 +19,6 @@ namespace RadialReview.Accessors
 {
 	public class ScorecardAccessor
 	{
-
 		public static List<ScoreModel> GetScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end, bool loadUsers)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -128,8 +127,6 @@ namespace RadialReview.Accessors
 			}
 		}
 
-
-
 		public static List<MeasurableModel> GetUserMeasurables(ISession s, PermissionsUtility perms, long userId, bool loadUsers,bool ordered,bool includeAdmin)
 		{
 			perms.ViewUserOrganization(userId, false);
@@ -179,8 +176,6 @@ namespace RadialReview.Accessors
 			}
 			return found;
 		}
-
-
 
 		public static List<MeasurableModel> GetUserMeasurables(UserOrganizationModel caller, long userId,bool ordered=false,bool includeAdmin=false)
 		{
@@ -366,7 +361,6 @@ namespace RadialReview.Accessors
 			}
 		}
 
-
 		public static ScoreModel UpdateScoreInMeeting(ISession s, PermissionsUtility perms, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom,string connectionId)
 		{
 			var now = DateTime.UtcNow;
@@ -529,7 +523,6 @@ namespace RadialReview.Accessors
 			}
 		}
 
-
 		public static ScoreModel GetScoreInMeeting(UserOrganizationModel caller, long scoreId, long recurrenceId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -561,8 +554,6 @@ namespace RadialReview.Accessors
 			}
 		}
 
-
-
 		public static MeasurableModel GetMeasurable(UserOrganizationModel caller, long id)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -586,5 +577,33 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+
+        public static void CreateMeasurable(ISession s, PermissionsUtility perm, MeasurableModel measurable,bool checkEditDetails)
+        {
+            //Create new
+            if (measurable == null)
+                throw new PermissionsException("You must include a measurable to create.");
+            if (measurable.OrganizationId == null)
+                throw new PermissionsException("You must include an organization id.");
+            if (checkEditDetails) {
+                perm.EditUserDetails(measurable.AccountableUser.Id);
+            }
+            perm.ViewOrganization(measurable.OrganizationId);
+
+            perm.ViewUserOrganization(measurable.AccountableUserId, false);
+            perm.ViewUserOrganization(measurable.AdminUserId, false);
+
+            measurable.OrganizationId = measurable.OrganizationId;
+
+            measurable.AccountableUser = s.Load<UserOrganizationModel>(measurable.AccountableUserId);
+            measurable.AdminUser = s.Load<UserOrganizationModel>(measurable.AdminUserId);
+
+            s.Save(measurable);
+
+            measurable.AccountableUser.UpdateCache(s);
+            measurable.AdminUser.UpdateCache(s);
+
+        }
+
 	}
 }

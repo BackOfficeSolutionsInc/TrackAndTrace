@@ -65,8 +65,9 @@ namespace RadialReview.Controllers
 			}
 			return View(new PaymentPlan_Monthly()
 			{
-				FirstN_Users_Free = 2,
-				L10PricePerPerson = 12,
+                BaselinePrice = 149,
+				FirstN_Users_Free = 10,
+				L10PricePerPerson = 10,
 				ReviewPricePerPerson = 4,
 				PlanCreated = DateTime.UtcNow,
 				OrgId = id,
@@ -253,6 +254,9 @@ namespace RadialReview.Controllers
 
 					tx.Commit();
 					s.Flush();
+
+                    model._Org = org;
+
 					return View(model);
 				}
 			}

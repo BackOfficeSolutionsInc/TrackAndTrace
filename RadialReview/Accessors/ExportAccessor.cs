@@ -53,24 +53,35 @@ namespace RadialReview.Accessors
 				{
 					var todos = L10Accessor.GetAllTodosForRecurrence(s, PermissionsUtility.Create(s, caller), recurrenceId);
 					var csv = new Csv();
-					foreach (var t in todos){
-						var padDetails =await PadAccessor.GetText(t.PadId);
+                    //foreach (var t in todos) {
+                    //    await 
+                    //}
+                    var tasks = todos.Select(t=>{
+                        return GrabTodo(csv, t);
+                    });
 
-						csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x=>x.GetName()));
-						csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
-						csv.Add("" + t.Id, "Due Date", t.DueDate.ToShortDateString());
-						var time = "";
-						if (t.CompleteTime != null)
-							time = t.CompleteTime.Value.ToShortDateString();
-						csv.Add("" + t.Id, "Completed", time);
-						csv.Add("" + t.Id, "To-Do", "" + t.Message);
-						csv.Add("" + t.Id, "Details", "" + padDetails);
-					}
+                    await Task.WhenAll(tasks);
 
 					return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(false));
 				}
 			}
 		}
+
+        private static async Task GrabTodo(Csv csv, Models.Todo.TodoModel t)
+        {
+
+            var padDetails = await PadAccessor.GetText(t.PadId);
+
+            csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
+            csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
+            csv.Add("" + t.Id, "Due Date", t.DueDate.ToShortDateString());
+            var time = "";
+            if (t.CompleteTime != null)
+                time = t.CompleteTime.Value.ToShortDateString();
+            csv.Add("" + t.Id, "Completed", time);
+            csv.Add("" + t.Id, "To-Do", "" + t.Message);
+            csv.Add("" + t.Id, "Details", "" + padDetails);
+        }
 
 		public static async Task<byte[]> IssuesList(UserOrganizationModel caller, long recurrenceId)
 		{
@@ -94,11 +105,16 @@ namespace RadialReview.Accessors
 					var sb = new StringBuilder();
 
 					sb.Append("Id,Depth,Owner,Created,Closed,Issue,Details").AppendLine();
-					var id = 0;
-					foreach (var i in issues){
-						id++;
-						await RecurseIssue(sb, id, i, 0);
-					}
+					//var id = 0;
+
+                    var tasks = issues.Select((i, id) => {
+                        return RecurseIssue(sb, id, i, 0);
+                    });
+                    //foreach (var i in issues){
+                    //    id++;
+                    //    await ;
+                    //}
+                    await Task.WhenAll(tasks);
 
 					return new System.Text.UTF8Encoding().GetBytes(sb.ToString());
 				}

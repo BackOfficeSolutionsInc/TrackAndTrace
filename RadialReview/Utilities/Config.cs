@@ -206,10 +206,13 @@ namespace RadialReview.Utilities
 			}
 		}
 
-        public static string PaymentSpring_PublicKey()
+        public static string PaymentSpring_PublicKey(bool forceUseTest = false)
         {
-            switch (GetEnv())
-            {
+            if (forceUseTest)
+                return GetAppSetting("PaymentSpring_PublicKey_Test");
+
+            switch (GetEnv()) {
+                case Env.local_test_sqlite: return GetAppSetting("PaymentSpring_PublicKey_Test");
                 case Env.local_mysql: return GetAppSetting("PaymentSpring_PublicKey_Test");
                 case Env.local_sqlite: return GetAppSetting("PaymentSpring_PublicKey_Test");
                 case Env.production: return GetAppSetting("PaymentSpring_PublicKey");
@@ -222,8 +225,8 @@ namespace RadialReview.Utilities
             if (forceUseTest)
                 return GetAppSetting("PaymentSpring_PrivateKey_Test");
 
-            switch (GetEnv())
-            {
+            switch (GetEnv()) {
+                case Env.local_test_sqlite: return GetAppSetting("PaymentSpring_PrivateKey_Test");
                 case Env.local_mysql: return GetAppSetting("PaymentSpring_PrivateKey_Test");
                 case Env.local_sqlite: return GetAppSetting("PaymentSpring_PrivateKey_Test");
                 case Env.production: return GetAppSetting("PaymentSpring_PrivateKey");

@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
-namespace RadialReview.Utilities.Extensions {
+namespace RadialReview {
 	public static class StreamExtension {
 
 		public static string ReadToEnd(this Stream stream) {
@@ -16,6 +18,19 @@ namespace RadialReview.Utilities.Extensions {
 			stream.Position = 0;
 			return stream;
 		}
+
+        public static List<string> ReadLines(this MemoryStream stream)
+        {
+            stream.Position = 0; // Rewind!
+            List<string> rows = new List<string>();
+            using (var reader = new StreamReader(stream)) {
+                string line;
+                while ((line = reader.ReadLine()) != null) {
+                    rows.Add(line);
+                }
+            }
+            return rows;
+        }
 
 	}
 }

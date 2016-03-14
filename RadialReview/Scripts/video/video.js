@@ -6,6 +6,8 @@
         //debugger;
         connection.leave();
         connection.session.oneway = false;
+        //connection.openOrJoin();
+
         connection.openOrJoin();
         jQuery.dequeue($("#main-window"), "fx");
     });

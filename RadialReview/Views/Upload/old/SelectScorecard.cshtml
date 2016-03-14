@@ -1,0 +1,38 @@
+﻿@model RadialReview.Controllers.UploadController.SelectScorecardVM
+@{
+    ViewBag.Title = "Select Fields";
+    var i = 0;
+    var j = 0;
+}
+
+
+<h2>Select Scorecard Fields</h2>
+
+<div style="height:120px; overflow-y:auto">
+    <div class="alert alert-info"><span id="instruction">Please wait...</span><button id="nextButton" disabled onclick="nextStep()" class="btn btn-info pull-right btn-sm" style="margin-top:-5px;">Next</button></div>
+    <div id="errors" class="alert alert-danger"></div>
+</div>
+<br />
+<div id="table" class="table-responsive" >
+    <table class="table table-bordered table-condensed noselect">
+        @foreach (var row in Model.Rows)
+        {
+            <tr>
+                @foreach (var cell in row)
+                {
+                    <td class="tdItem" data-row="@j" data-col="@i">
+                        @cell
+                        @{i += 1;}
+                    </td>
+                }
+                @{ i = 0; j += 1;}
+            </tr>
+        }
+    </table>
+</div>
+
+@Html.HiddenFor(x => x.RecurrenceId)
+@Html.HiddenFor(x => x.Path)
+@Html.HiddenFor(x => x.UseAWS)
+
+<img src="/i/wait" onload="updateTables()">

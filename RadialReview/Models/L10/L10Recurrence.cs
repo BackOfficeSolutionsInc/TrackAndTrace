@@ -70,10 +70,10 @@ namespace RadialReview.Models.L10
 			TodoListMinutes		= 5;
 			IDSMinutes			= 60;
 			ConclusionMinutes	= 5;
-			IncludeIndividualTodos = true;
-			IncludeAggregateTodoCompletion = true;
+			IncludeIndividualTodos = false;
+			IncludeAggregateTodoCompletion = false;
 			EnableTranscription = false;
-            CountDown = false;
+            CountDown = true;
             IsLeadershipTeam = true;
 		}
 

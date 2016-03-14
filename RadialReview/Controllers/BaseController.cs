@@ -49,7 +49,7 @@ namespace RadialReview.Controllers
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #region ViewBag
 
-        protected void SetAlert(string status, AlertType type = AlertType.Info)
+        protected void ShowAlert(string status, AlertType type = AlertType.Info)
         {
             switch (type)
             {

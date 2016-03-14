@@ -22,6 +22,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Utilities.Query;
 using RadialReview.Models.Json;
 using System.Security.Principal;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Accessors
 {
@@ -896,6 +897,24 @@ namespace RadialReview.Accessors
                             s.Update(m);
                         }
                     }
+
+                    var attendees = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+                        .Where(x => x.User.Id == userId && x.DeleteTime == deleteTime)
+                        .List().ToList();
+
+                    foreach (var f in attendees) {
+                        f.DeleteTime = null;
+                        s.Update(f);
+                    }
+                    var meetingAttendees = s.QueryOver<L10Meeting.L10Meeting_Attendee>()
+                    .Where(x => x.User.Id == userId && x.DeleteTime == deleteTime)
+                    .List().ToList();
+
+                    foreach (var f in meetingAttendees) {
+                        f.DeleteTime = null;
+                        s.Update(f);
+                    }
+
                     s.Update(user);
                     user.UpdateCache(s);
                     tx.Commit();
@@ -998,6 +1017,21 @@ namespace RadialReview.Accessors
 							s.Update(m);
 						}
 					}
+
+
+                    var l10Attendee = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.User.Id == userId && x.DeleteTime==null).List().ToList();
+                    foreach (var m in l10Attendee) {
+                        m.DeleteTime = now;
+                        s.Update(m);
+                    }
+
+                    var l10MeetingAttendee = s.QueryOver<L10Meeting.L10Meeting_Attendee>()
+                        .Where(x => x.User.Id == userId && x.DeleteTime == null)
+                        .List().ToList();
+                    foreach (var m in l10MeetingAttendee.OrderByDescending(x=>x.Id).GroupBy(x=>x.Id).Select(x=>x.First())) {
+                        m.DeleteTime = now;
+                        s.Update(m);
+                    }
 					s.Update(user);
 					user.UpdateCache(s);
 					tx.Commit();

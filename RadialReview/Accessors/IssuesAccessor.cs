@@ -61,7 +61,8 @@ namespace RadialReview.Accessors
             if (String.IsNullOrWhiteSpace(issue.PadId))
                 issue.PadId = Guid.NewGuid().ToString();
 
-            await PadAccessor.CreatePad(issue.PadId, issue.Description);
+            if (!string.IsNullOrWhiteSpace(issue.Description))
+                await PadAccessor.CreatePad(issue.PadId, issue.Description);
 
 
             s.Save(issue);

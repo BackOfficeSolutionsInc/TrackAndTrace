@@ -7,7 +7,7 @@ $(function() {
 			debugger;
 			showJsonAlert(data, showSuccess);
 		};
-		$.connection.hub.start().done(function() {
+		$.connection.hub.start(Constants.StartHubSettings).done(function () {
 			console.log("realtime connected");
 		});
 	} catch (e) {

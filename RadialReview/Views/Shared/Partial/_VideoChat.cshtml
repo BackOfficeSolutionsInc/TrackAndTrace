@@ -6,7 +6,7 @@
 		<div class="uncollapser footer-bar-tab noselect "><span class="clicker">Video Conference</span><span class="sendAudio icon fontastic-icon-mic-no"></span><span class="sendVideo icon fontastic-icon-eye-slash-close"></span></div>
 		<div class="video-bar footer-bar-contents">
 			@*<div class="collapser">Hide</div>*@
-			<div class="start-conference start-video btn btn-xs btn-success">Join Conference</div>
+			<div class="start-conference start-video btn btn-xs btn-success " >Join Conference</div>
 			@*<div class="start-conference start-screenshare btn btn-xs btn-default">Share Screen</div>*@
 			<a target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers" class="experimental">This experimental feature is built on WebRTC. It will only work on Chrome, Opera, and Firefox.</a>
 		</div>
@@ -113,6 +113,7 @@
             
 			connection.bandwidth = {
 			    video: 256,    // 256kbps
+                audio: 128,
 			};
 
 			connection.onstream = function(event) {
@@ -188,8 +189,21 @@
 			$(function() {
 				setTimeout(function() {
 					try {
-						connection.session.oneway = true;
-						connection.join();
+						//connection.session.oneway = true;
+					    //connection.join();
+					    connection.join(false, {
+					        localPeerSdpConstraints: {
+					            OfferToReceiveAudio: true,
+					            OfferToReceiveVideo: true
+					        },
+					        remotePeerSdpConstraints: {
+					            OfferToReceiveAudio: true,
+					            OfferToReceiveVideo: true
+					        },
+					        isOneWay: true,
+					        isDataOnly: false
+					    });
+
 					} catch(e) {
 						showAlert("Could not connect to video conferencing server.");
 						console.error(e);

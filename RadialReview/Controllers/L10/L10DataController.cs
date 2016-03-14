@@ -62,6 +62,27 @@ namespace RadialReview.Controllers
 			//public long SelectedAdminMember { get; set; }
 			public List<RockModel> Rocks { get; set; }
 
+            public static AddRockVm CreateRock(long recurrenceId, RockModel model)
+            {
+                if (model == null)
+                    throw new ArgumentNullException("model", "Rock was null");
+
+                if (model.ForUserId<= 0)
+                    throw new ArgumentOutOfRangeException("You must specify an accountable user id");
+                if (model.OrganizationId <= 0)
+                    throw new ArgumentOutOfRangeException("You must specify an organization id");
+                if (recurrenceId <= 0)
+                    throw new ArgumentOutOfRangeException("You must specify a recurrence id");
+                if (String.IsNullOrWhiteSpace(model.Rock))
+                    throw new ArgumentOutOfRangeException("You must specify a title for the rock");
+
+                return new AddRockVm() {
+                    SelectedRock = -3,
+                    Rocks = model.AsList(),
+                    RecurrenceId = recurrenceId,
+                };
+            }
+
 		}
 
 		// GET: L10Data
@@ -116,6 +137,22 @@ namespace RadialReview.Controllers
 			//public long SelectedAdminMember { get; set; }
 			public List<MeasurableModel> Measurables { get; set; }
 
+            public static AddMeasurableVm CreateNewMeasurable(long recurrenceId,MeasurableModel model)
+            {
+                if (model.AdminUserId <= 0)
+                    throw new ArgumentOutOfRangeException("You must specify an admin user id");
+                if (model.AccountableUserId <= 0)
+                    throw new ArgumentOutOfRangeException("You must specify an accountable user id");
+                if (model.OrganizationId <= 0)
+                    throw new ArgumentOutOfRangeException("You must specify an organization id");
+                if (String.IsNullOrWhiteSpace(model.Title))
+                    throw new ArgumentOutOfRangeException("You must specify a title for the measurable");
+                return new AddMeasurableVm() {
+                    SelectedMeasurable = -3,
+                    RecurrenceId = recurrenceId,
+                    Measurables = new List<MeasurableModel>() { model }
+                };
+            }
 	    }
 
 		// GET: L10Data

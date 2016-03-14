@@ -96,7 +96,7 @@ $(function () {
 
 	console.log("StartingHub ");
 
-	$.connection.hub.start().done(initConnection);
+	$.connection.hub.start(Constants.StartHubSettings).done(initConnection);
 
 	$.connection.hub.disconnected(function() {
 		if (!isUnloading) {
@@ -105,7 +105,7 @@ $(function () {
 				showAlert("Connection lost. Reconnecting.");
 				disconnected = true;
 				setTimeout(function() {
-					$.connection.hub.start().done(initConnection);
+				    $.connection.hub.start(Constants.StartHubSettings).done(initConnection);
 				}, 5000); // Restart connection after 5 seconds.
 			}, 1000);
 		}

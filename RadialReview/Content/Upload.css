@@ -1,0 +1,48 @@
+﻿
+.ui-selecting {
+    background: rgba(128, 128, 128, 0.50);
+}
+
+.ui-selected {
+    background: rgba(108, 255, 102, 0.50);
+}
+
+.table-condensed td {
+    padding: 0 !important;
+    border: 1px solid gray !important;
+}
+
+.tdItem {
+    white-space: nowrap;
+    max-width: 80px;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.wasSelected {
+    background: rgba(6, 144, 247, 0.6);
+}
+
+#table {
+    font-size: 8px;
+}
+
+.resultTable td {
+    white-space: nowrap;
+    max-width: 110px;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 0 4px !important;
+    margin: 0;
+    border: 1px solid black !important;
+    font-size: 10px;
+    vertical-align: middle;
+}
+
+.resultTable select {
+    width: 100%;
+}

@@ -33,7 +33,7 @@ namespace RadialReview.Accessors
 	{
 
 
-		public OrganizationModel CreateOrganization(UserModel user, LocalizedStringModel name, Boolean managersCanAddQuestions, PaymentPlanModel paymentPlan, DateTime now, out long newUserId, bool enableL0, bool enableReview)
+		public OrganizationModel CreateOrganization(UserModel user, string name, PaymentPlanType planType, DateTime now, out UserOrganizationModel newUser, bool enableL10, bool enableReview)
 		{
 			UserOrganizationModel userOrgModel;
 			OrganizationModel organization;
@@ -46,14 +46,15 @@ namespace RadialReview.Accessors
 					organization = new OrganizationModel()
 					{
 						CreationTime = now,
-						Name = name,
+						Name = new LocalizedStringModel() { Standard = name },
 						ManagersCanEdit = false,
 					};
-					organization.Settings.EnableL10 = enableL0;
+					organization.Settings.EnableL10 = enableL10;
 					organization.Settings.EnableReview = enableReview;
 					db.Save(organization);
-					PaymentAccessor.CreatePlan(db, organization, paymentPlan);
-					organization.PaymentPlan = paymentPlan;
+                    var paymentPlan = PaymentAccessor.GeneratePlan(planType,now);
+                    PaymentAccessor.AttachPlan(db, organization, paymentPlan);
+                    organization.PaymentPlan = paymentPlan;
 					organization.Organization = organization;
 					db.Update(organization);
 					//db.Organizations.Add(organization);
@@ -78,7 +79,10 @@ namespace RadialReview.Accessors
 
 					user.UserOrganization.Add(userOrgModel);
 					user.UserOrganizationCount += 1;
-					var newArray = user.UserOrganizationIds.ToList();
+
+                    var newArray = new List<long>();
+                    if (user.UserOrganizationIds!=null)
+                        newArray = user.UserOrganizationIds.ToList();
 					newArray.Add(userOrgModel.Id);
 					user.UserOrganizationIds = newArray.ToArray();
 
@@ -168,7 +172,7 @@ namespace RadialReview.Accessors
 						ManagerId = userOrgModel.Id,
 						OrganizationId = organization.Id,
 					});
-					newUserId = userOrgModel.Id;
+					newUser = userOrgModel;
 
 					userOrgModel.UpdateCache(db);
 
@@ -272,16 +276,36 @@ namespace RadialReview.Accessors
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-                    UserOrganizationModel uo =null;
+                    UserOrganizationModel uo = null;
                     UserModel u = null;
+                    TempUserModel t = null;
                     return s.QueryOver<UserOrganizationModel>(() => uo)
-                        .JoinAlias(x => x.User, () => u)
+                        .Left.JoinAlias(x => x.User, () => u)
+                        .Left.JoinAlias(x => x.TempUser, () => t)
                         .Where(x => x.Organization.Id == organizationId && x.DeleteTime == null)
-                        .Select(x => u.FirstName, x => u.LastName, x => x.Id)
+                        .Select(x => u.FirstName, x => u.LastName, x => x.Id,x=> t.FirstName, x=>t.LastName)
                         .List<object[]>()
-                        .Select(x => Tuple.Create((string)x[0], (string)x[1], (long)x[2]))
-                        .ToList();
+                        .Select(x =>{
+                            var fname = (string)x[0];
+                            var lname = (string)x[1];
+                            if (fname==null && lname==null)
+                            {
+                                fname = (string)x[3];
+                                lname=(string)x[4];
+                            }
+                            return Tuple.Create(fname, lname, (long)x[2]);
+                        }).ToList();
 
+                }
+            }
+        }
+
+        public List<long> GetAllOrganizationMemberIdsAcrossTime(UserOrganizationModel caller, long organizationId)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+                    return s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId).Select(x=>x.Id).List<long>().ToList();
                 }
             }
 

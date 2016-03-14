@@ -20,9 +20,6 @@ using System.Web.Mvc;
 
 namespace RadialReview.Controllers
 {
-
-
-
     public class UserController : BaseController
     {
 

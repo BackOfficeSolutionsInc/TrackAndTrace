@@ -6,7 +6,7 @@
 }
 
 
-<h2>Select Scorecard Fields</h2>
+<h2>Select Issues Fields</h2>
 
 <div style="height:120px; overflow-y:auto">
     <div class="alert alert-info"><span id="instruction">Please wait...</span><button id="nextButton" disabled onclick="nextStep()" class="btn btn-info pull-right btn-sm" style="margin-top:-5px;">Next</button></div>
@@ -33,5 +33,6 @@
 
 @Html.HiddenFor(x => x.RecurrenceId)
 @Html.HiddenFor(x => x.Path)
+@Html.HiddenFor(x => x.UseAWS)
 
 <img src="/i/wait" onload="updateTables()">

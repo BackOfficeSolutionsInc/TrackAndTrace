@@ -53,6 +53,9 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 							dst[key] = dst[key].concat(src.AngularList);
 						} else if (src.UpdateMethod == "ReplaceAll") {
 							dst[key] = src.AngularList;
+						}else if (src.UpdateMethod=="AddIfNotExist"){
+						    console.log("unhandled ");
+						    debugger;
 						}
 					} else {
 						if (!angular.isObject(dst[key]))

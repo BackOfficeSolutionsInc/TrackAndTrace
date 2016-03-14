@@ -198,6 +198,9 @@ namespace RadialReview.Controllers
             var allRocks = RockAccessor.GetAllVisibleRocksAtOrganization(GetUser(), GetUser().Organization.Id, true);
             var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
             var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+            model.SelectedRocks = model.SelectedRocks ?? new long[0];
+            model.SelectedMembers = model.SelectedMembers ?? new long[0];
+            model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
 
             if (model.Recurrence.Id != 0)
             {
@@ -219,6 +222,7 @@ namespace RadialReview.Controllers
                     L10Recurrence = model.Recurrence,
                     User = x
                 }).ToList();
+                //model.SelectedMeasurables=model.SelectedMeasurables??new long[0]{};
                 model.Recurrence._DefaultMeasurables = allMeasurables.Where(x => model.SelectedMeasurables.Any(y => x != null && y == x.Id))
                 .Select(x => new L10Recurrence.L10Recurrence_Measurable()
                 {
@@ -226,6 +230,7 @@ namespace RadialReview.Controllers
                     Measurable = x
                 }).ToList();
 
+                //model.SelectedRocks = model.SelectedRocks ?? new long[0] { };
                 model.Recurrence._DefaultRocks = allRocks.Where(x => model.SelectedRocks.Any(y => y == x.Id))
                     .Select(x => new L10Recurrence.L10Recurrence_Rocks()
                     {
@@ -249,9 +254,9 @@ namespace RadialReview.Controllers
             model.PossibleMeasurables = allMeasurables.Where(x => x != null).ToList();
 
 
-            model.SelectedRocks = model.SelectedRocks ?? new long[0];
-            model.SelectedMembers = model.SelectedMembers ?? new long[0];
-            model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
+            //model.SelectedRocks = model.SelectedRocks ?? new long[0];
+            //model.SelectedMembers = model.SelectedMembers ?? new long[0];
+            //model.SelectedMeasurables = model.SelectedMeasurables ?? new long[0];
 
             return View("Edit", model);
         }

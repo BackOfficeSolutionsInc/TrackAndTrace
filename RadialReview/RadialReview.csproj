@@ -398,6 +398,10 @@
     <Compile Include="Controllers\HealthCheckController.cs" />
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\QuarterlyController.cs" />
+    <Compile Include="Controllers\Upload\Upload_RocksController.cs" />
+    <Compile Include="Controllers\Upload\Upload_TodosController.cs" />
+    <Compile Include="Controllers\Upload\Upload_IssuesController.cs" />
+    <Compile Include="Controllers\Upload\Upload_ScorecardController.cs" />
     <Compile Include="Controllers\WebhookController.cs" />
     <Compile Include="Controllers\AccountabilityController.cs" />
     <Compile Include="Controllers\CallbackController.cs" />
@@ -412,10 +416,10 @@
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\IssuesController.cs" />
     <Compile Include="Controllers\JobDescriptionController.cs" />
-    <Compile Include="Controllers\L10Controller.cs" />
-    <Compile Include="Controllers\L10DataController.cs" />
-    <Compile Include="Controllers\L10DetailsController.cs" />
-    <Compile Include="Controllers\L10SubPageController.cs" />
+    <Compile Include="Controllers\L10\L10Controller.cs" />
+    <Compile Include="Controllers\L10\L10DataController.cs" />
+    <Compile Include="Controllers\L10\L10DetailsController.cs" />
+    <Compile Include="Controllers\L10\L10SubPageController.cs" />
     <Compile Include="Controllers\LogStreamController.cs" />
     <Compile Include="Controllers\MeasurableController.cs" />
     <Compile Include="Controllers\MeetingController.cs" />
@@ -471,7 +475,7 @@
     <Compile Include="Controllers\SurveyController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
-    <Compile Include="Controllers\UploadController.cs" />
+    <Compile Include="Controllers\Upload\UploadController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="Engines\BaseEngine.cs" />
@@ -550,6 +554,7 @@
     <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Enums\LessGreater.cs" />
     <Compile Include="Models\Enums\Month.cs" />
+    <Compile Include="Models\Enums\PaymentPlanType.cs" />
     <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
     <Compile Include="Models\Enums\RepeatsType.cs" />
     <Compile Include="Models\Enums\RockState.cs" />
@@ -588,6 +593,7 @@
     <Compile Include="Models\Payments\PaymentOptions.cs" />
     <Compile Include="Models\Payments\PaymentSpringCustomerCard.cs" />
     <Compile Include="Models\Payments\PaymentSpringsCustomer.cs" />
+    <Compile Include="Models\Payments\PaymentTokenVM.cs" />
     <Compile Include="Models\PermissionItem.cs" />
     <Compile Include="Models\Permissions\PermissionDropdownVM.cs" />
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
@@ -826,6 +832,7 @@
     <Compile Include="Utilities\Extensions\ViewBagExtensions.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
+    <Compile Include="Utilities\HtmlUtility.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
@@ -925,6 +932,7 @@
       <DependentUpon>L10ChatLog.css</DependentUpon>
     </Content>
     <Content Include="Content\L10\L10Transcribe.css" />
+    <Content Include="Content\Upload.css" />
     <Content Include="Data\nickname.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -953,10 +961,15 @@
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
     <Content Include="Scripts\speechrecog.js" />
+    <Content Include="Scripts\Upload\UploadRocks.js" />
+    <Content Include="Scripts\Upload\UploadTodos.js" />
+    <Content Include="Scripts\Upload\UploadIssues.js" />
+    <Content Include="Scripts\Upload\UploadSteps.js" />
     <Content Include="Scripts\Upload\UploadScorecard.js" />
     <Content Include="Scripts\video\Obsolete\FileBufferReader.js" />
     <Content Include="Scripts\video\hark.js" />
     <Content Include="Scripts\video\Obsolete\RTCMultiConnection.js" />
+    <Content Include="Scripts\video\Obsolete\serverRTCMultiConnection.js" />
     <Content Include="Scripts\video\Obsolete\socket.io.js" />
     <Content Include="Scripts\video\video.js" />
     <Content Include="SoftwareUpdates\20151216.txt" />
@@ -1312,10 +1325,15 @@
     <Content Include="Views\VTO\partial\pagescripts.cshtml" />
     <Content Include="Views\Upload\Index.cshtml" />
     <Content Include="Views\Upload\L10.cshtml" />
-    <Content Include="Views\Upload\UploadScorecard.cshtml" />
-    <Content Include="Views\Upload\SelectScorecard.cshtml" />
+    <Content Include="Views\Upload\old\UploadScorecard.cshtml" />
+    <Content Include="Views\Upload\old\SelectScorecard.cshtml" />
     <Content Include="Views\User\Reviews.cshtml" />
     <Content Include="Views\Upload\UploadScorecardSelected.cshtml" />
+    <Content Include="Views\Upload\UploadL10.cshtml" />
+    <Content Include="Views\Upload\old\SelectIssues.cshtml" />
+    <Content Include="Views\Upload\UploadIssuesSelected.cshtml" />
+    <Content Include="Views\Upload\UploadTodosSelected.cshtml" />
+    <Content Include="Views\Upload\UploadRocksSelected.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />

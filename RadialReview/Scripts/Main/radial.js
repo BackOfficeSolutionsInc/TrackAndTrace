@@ -534,10 +534,18 @@ var interceptAjax = function (event, request, settings) {
 					StoreJsonAlert(result);
 				}
 				location.reload();
+			} else if (result.Redirect) {
+			    var url = result.Redirect;
+			    if (result.Silent !== undefined && !result.Silent) {
+			        result.Refresh = false;
+			        result.Redirect = false;
+			        StoreJsonAlert(result);
+			    }
+			    window.location.href = url;
 			} else {
-				if (result.Silent !== undefined && !result.Silent) {
-					showJsonAlert(result, true, true);
-				}
+			    if (result.Silent !== undefined && !result.Silent) {
+			        showJsonAlert(result, true, true);
+			    }
 			}
 		} catch (e) {
 			console.log(e);
@@ -733,3 +741,22 @@ window.addEventListener("submit", function (e) {
         }
     }
 }, true);
+
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function () {
+        var context = this, args = arguments;
+        var later = function () {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+};
+
+Constants = {
+    StartHubSettings:{ transport: ['webSockets', 'longPolling'] }
+    };

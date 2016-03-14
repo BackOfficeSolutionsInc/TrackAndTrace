@@ -32,11 +32,14 @@ namespace RadialReview.Models.Askables {
 		public virtual DateTime? CompleteTime { get; set; }
 		public virtual UserOrganizationModel AccountableUser { get; set; }
 
+        public virtual String PadId { get; set; }
+
 		public RockModel()
 		{
 			CreateTime = DateTime.UtcNow;
 			OnlyAsk = AboutType.Self;
 			Completion = RockState.OnTrack;
+            PadId = Guid.NewGuid().ToString();
 		}
 
 		public override string GetQuestion()
@@ -65,8 +68,9 @@ namespace RadialReview.Models.Askables {
 		public class RockModelMap : SubclassMap<RockModel>
 		{
 			public RockModelMap()
-			{
-				Map(x => x.Rock);
+            {
+                Map(x => x.Rock);
+                Map(x => x.PadId);
 				Map(x => x.Completion);
 				Map(x => x.DueDate);
 				Map(x => x.OrganizationId);

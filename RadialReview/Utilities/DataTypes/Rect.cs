@@ -19,7 +19,7 @@ namespace RadialReview.Utilities.DataTypes {
         public int MaxX { get { return rect[2]; } }
         public int MaxY { get { return rect[3]; } }
 
-        public Rect(List<int> rect)
+        public Rect(IEnumerable<int> rect)
         {
             this.rect = rect.ToList();
         }
@@ -32,6 +32,11 @@ namespace RadialReview.Utilities.DataTypes {
             var realMaxy = Math.Max(y1, y2);
 
             rect = new List<int> { realMinx, realMiny, realMaxx, realMaxy };
+        }
+
+        public override string ToString()
+        {
+            return string.Join(",", rect);
         }
 
         public RectType GetRectType()
@@ -108,7 +113,7 @@ namespace RadialReview.Utilities.DataTypes {
             return type;
         }
         
-        public void EnsureSameRange(Rect other)
+        public void EnsureSameRangeAs(Rect other)
         {
             var type =this.GetRectType();
             if (type == other.GetRectType()) {

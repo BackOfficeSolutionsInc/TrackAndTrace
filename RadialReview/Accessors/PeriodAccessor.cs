@@ -127,5 +127,25 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-	}
+
+        public static PeriodModel GetCurrentPeriod(ISession s, PermissionsUtility perms, long organizationdId)
+        {
+            perms.ViewOrganization(organizationdId);
+            var now = DateTime.UtcNow;
+            return s.QueryOver<PeriodModel>()
+                .Where(x=> x.DeleteTime == null && x.StartTime < now && now <= x.EndTime)
+                .List().OrderByDescending(x=>x.StartTime)
+                .FirstOrDefault();
+
+        }
+
+        public static PeriodModel GetCurrentPeriod(UserOrganizationModel caller, long organizationdId)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    return GetCurrentPeriod(s, PermissionsUtility.Create(s, caller), organizationdId);
+                }
+            }
+        }
+    }
 }

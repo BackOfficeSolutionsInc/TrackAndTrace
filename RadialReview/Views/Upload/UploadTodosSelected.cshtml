@@ -1,0 +1,47 @@
+﻿@model RadialReview.Controllers.UploadController.UploadTodosSelectedDataVM
+
+
+@using (Html.BeginForm("SubmitTodos", "upload", FormMethod.Post)) {
+   <input type="hidden" name="Path" value="@Model.Path" />
+
+
+    <div class="clearfix"></div>
+    <div class="table-responsive">
+        <table class="table table-bordered resultTable">
+            <thead>
+                <tr>
+                    <th style="min-width: 120px;">Owner</th>
+                    @if (Model.IncludeUsers) { 
+                        <th style="min-width: 120px;">Best Guess</th>
+                    }
+                    <th style="min-width: 280px;">Todo</th>
+                    <th style="min-width: 380px;">Details</th>
+                    <th style="max-width: 122px">Due Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{var i = 0;}
+                @foreach (var row in Model.Todos) {
+                    
+                    var users = !Model.IncludeUsers?Model.AllUsers.Select((x,ii)=>{
+                        x.Selected = (ii == 0);
+                        return x;
+                    }).OrderBy(x=>x.Text).ToList():Model.UserLookup[Model.Users[i]].GetProbabilities().OrderByDescending(x => x.Value).Select(x => x.Key).ToSelectList(x => x.Item1 + " " + x.Item2, x => x.Item3);
+                    var todo = Model.Todos[i];
+                    var details = Model.DetailsStrings[i];
+                    var due = Model.DueDates[i];
+                    <tr>
+                        @if (Model.IncludeUsers) { 
+                            <td style="font-style:italic">@Model.Users[i]</td>
+                        }
+                        <td>@Html.DropDownList("m_user_" + i, users)</td>
+                        <td>@Html.TextBox("m_todo_" + i, todo, new { style="width:100%;"})</td>
+                        <td>@Html.TextBox("m_details_" + i, details, new { style = "width:100%;" })</td>
+                        <td><input name="m_due_@i" type="date" value ="@due.ToString("yyyy-MM-dd")"/></td>
+                    </tr>
+                        i++;
+                }
+            </tbody>
+        </table>
+    </div>
+}

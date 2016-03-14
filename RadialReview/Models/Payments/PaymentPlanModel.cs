@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Tasks;
 using System;
 
@@ -13,6 +14,7 @@ namespace RadialReview.Models
 		public virtual DateTime FreeUntil { get; set; }
 		public virtual ScheduledTask Task { get; set; }
 		public virtual ScheduledTask _CurrentTask { get; set; }
+        public virtual PaymentPlanType PlanType { get; set; }
 
         public virtual TimeSpan SchedulerPeriod()        {
             return TimeSpan.MaxValue;
@@ -32,8 +34,13 @@ namespace RadialReview.Models
                 Map(x => x.PlanCreated);
                 Map(x => x.FreeUntil);
                 References(x => x.Task).Not.Nullable().Not.LazyLoad();
-
+                Map(x => x.PlanType).CustomType<PaymentPlanType>();
             }
+        }
+
+        public virtual string TaskName()
+        {
+            return "PAYMENT_PLAN";
         }
     }
 
@@ -42,6 +49,8 @@ namespace RadialReview.Models
         public virtual decimal L10PricePerPerson { get; set; }
         public virtual decimal ReviewPricePerPerson { get; set; }
         public virtual int FirstN_Users_Free { get; set; }
+
+        public virtual decimal BaselinePrice { get; set; }
 
         public virtual long OrgId { get; set; }
 
@@ -63,10 +72,17 @@ namespace RadialReview.Models
                 Map(x => x.ReviewPricePerPerson);
 				Map(x => x.FirstN_Users_Free);
 				Map(x => x.OrgId).Column("OrganizationId");
-				Map(x => x.ReviewFreeUntil);
-				Map(x => x.L10FreeUntil);
+                Map(x => x.ReviewFreeUntil);
+                Map(x => x.L10FreeUntil);
+                Map(x => x.BaselinePrice);
             }
         }
+
+        public override string TaskName()
+        {
+            return ScheduledTask.MonthlyPaymentPlan;
+        }
+        
     }
 
    

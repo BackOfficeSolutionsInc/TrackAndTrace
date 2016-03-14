@@ -1,70 +1,92 @@
 ﻿@model RadialReview.Controllers.UploadController.UploadScorecardSelectedDataVM
 
 
-<div class="row">
-    <div class="col-md-3">
-        <h3>Users</h3>
-        <ol>
-            @foreach (var r in Model.Users) {
-                Tuple<string,string,long> res = Tuple.Create("","",-1L);
-                Model.UserLookup[r].TryResolveOne(ref res);
-                <li> @r => @res.Item1 @res.Item2 @res.Item3 </li>
-            }
-        </ol>
-    </div>
-    <div class="col-md-3">
-        <h3>Measurables</h3>
-        <ol>
-            @foreach (var r in Model.Measurables)
-            {
-                <li>@r</li>
-            }
-        </ol>
-    </div>
-    <div class="col-md-3">
-        <h3>Goal</h3>
-        <ol>
-            @foreach (var r in Model.Goals)
-            {
-                <li>@r</li>
-            }
-        </ol>
-    </div>
-    <div class="col-md-3">
-        <h3>Weeks</h3>
-        <ol>
-            @foreach (var r in Model.Dates)
-            {
-                <li>@r</li>
-            }
-        </ol>
-    </div>
-</div>
+@*<div class="row">
+        <div class="col-md-3">
+            <h3>Users</h3>
+            <ol>
+                @foreach (var r in Model.Users) {
+                    Tuple<string, string, long> res = Tuple.Create("", "", -1L);
+                    Model.UserLookup[r].TryResolveOne(ref res);
+                    <li> @r => @res.Item1 @res.Item2 @res.Item3 </li>
+                }
+            </ol>
+        </div>
+        <div class="col-md-3">
+            <h3>Measurables</h3>
+            <ol>
+                @foreach (var r in Model.Measurables) {
+                    <li>@r</li>
+                }
+            </ol>
+        </div>
+        <div class="col-md-3">
+            <h3>Goal</h3>
+            <ol>
+                @foreach (var r in Model.Goals) {
+                    <li>@r</li>
+                }
+            </ol>
+        </div>
+        <div class="col-md-3">
+            <h3>Weeks</h3>
+            <ol>
+                @foreach (var r in Model.Dates) {
+                    <li>@r</li>
+                }
+            </ol>
+        </div>
+    </div>*@
+@using (Html.BeginForm("SubmitScorecard", "upload", FormMethod.Post)) {
+    @*@Html.AntiForgeryToken();
+    <button class="btn btn-success" type="submit">Submit</button>*@
+    @*<input type="hidden" name="RecurrenceId" value="@Model.RecurrenceId" />*@
+    @*<input type="hidden" name="UseAWS" value="@Model.UseAWS.ToString()" />*@
+    <input type="hidden" name="Path" value="@Model.Path" />
+    <input type="hidden" name="ScoreRange" value="@Model.ScoreRange" />
+    <input type="hidden" name="DateRange" value="@Model.DateRange" />
+    <input type="hidden" name="MeasurableRectType" value="@Model.MeasurableRectType" />
 
-<div class="clearfix"></div>
-<table class="table table-bordered">
-    <tr>
-        <td>Owner</td>
-        <td>Measurable</td>
-        <td>Goal</td>
-        @foreach (var d in Model.Dates) {
-            <td>@d.ToShortDateString()</td>
-        }
 
-    </tr>
-    @{var i = 0;}
-    @foreach (var row in Model.Scores) {
-        var user = Model.UserLookup[Model.Users[i]].ResolveOne();
-        var measurable = Model.Measurables[i];
-        var goal = Model.Goals[i];
-        <tr>
-            <td>@user.Item1 @user.Item2  (@user.Item3)</td>
-            <td>@measurable</td>
-            <td>@goal</td>
-            @foreach(var c in row){
-                <td>@c</td>   
-            }
-        </tr>
-        i++;
-    }
-</table>
+    <div class="clearfix"></div>
+    <div class="table-responsive">
+        <table class="table table-bordered resultTable">
+            <thead>
+                <tr>
+                    <th style="min-width: 120px;">Owner</th>
+                    <th style="min-width: 120px;">Best Guess</th>
+                    <th style="min-width: 180px;">Measurable</th>
+                    <th>Goal</th>
+                    <th>Direction</th>
+                    @foreach (var d in Model.Dates) {
+                        <th>@d.ToShortDateString()</th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+                @{var i = 0;}
+                @foreach (var row in Model.Scores) {
+                    var users = Model.UserLookup[Model.Users[i]].GetProbabilities().OrderByDescending(x => x.Value).Select(x => x.Key).ToSelectList(x => x.Item1 + " " + x.Item2, x => x.Item3);
+                    if (!users.Any()) {
+                        users = Model.AllUsers.OrderBy(c=>c.Text).ToList();
+                    }
+                   
+                    var measurable = Model.Measurables[i];
+                    var goal = Model.Goals[i];
+                    <tr>
+                        <td style="font-style:italic">@Model.Users[i]</td>
+                        <td>@Html.DropDownList("m_user_" + i, users)</td>
+                        <td>@Html.TextBox("m_measurable_" + i, measurable, new { style="width:100%;"})</td>
+                        <td>@Html.TextBox("m_goal_" + i, goal, new { type = "numeric", step = "any" })</td>
+                        <td>@Html.EnumDropDownList("m_goaldir_" + i, RadialReview.Models.Enums.LessGreater.GreaterThan)</td>
+                        @foreach (var c in row) {
+                            <td>@c</td>
+                        }
+                    </tr>
+                        i++;
+                }
+            </tbody>
+        </table>
+    </div>
+}
