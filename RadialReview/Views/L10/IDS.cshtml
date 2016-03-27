@@ -7,11 +7,11 @@
 }
 
 
-<div class="meeting-page ids">
-	<div class="row">
-		<div class="col-md-8">
-			<hgroup class="page-header  listing fixed-pos">
-				<div class="pull-right">
+<div class="meeting-page ids prioritization-@Model.Recurrence.Prioritization">
+    <div class="row">
+        <div class="col-md-8">
+            <hgroup class="page-header  listing fixed-pos">
+                <div class="pull-right">
                     <div class="btn-group">
                         <a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                             <span class="icon fontastic-icon-star-3"></span> <span class="mode-button">Mode </span>
@@ -23,58 +23,59 @@
                             <li><a class="clickable " onclick="changeMode('Prioritize (4 Columns)')"><span class="icon fontastic-icon-thumbnails"></span> Prioritize (4 Columns)</a></li>
                         </ul>
                     </div>
-					<div class="btn-group">
-						<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-							<span class="icon fontastic-icon-sort-alpha-two"></span> <span class="sort-button">Sort</span>
-						</a> 
-						<ul class="dropdown-menu pull-right" role="menu">
+                    <div class="btn-group">
+                        <a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <span class="icon fontastic-icon-sort-alpha-two"></span> <span class="sort-button">Sort</span>
+                        </a>
+                        <ul class="dropdown-menu pull-right" role="menu">
                             @*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-priority','Auto-Priority',-1)"> By Priority (Auto)</a></li>*@
-                            <li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-priority','Priority',-1)"> By Priority</a></li>
-							@*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-message','Issue')"> By Issue</a></li>*@
-							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-owner','Owner')"> By Owner</a></li>
-							@*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-duedate','Due Date',-1)"> By Due Date</a></li>*@
-							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',1)"> By Date Created (Asc)</a></li>
-							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',-1)"> By Date Created (Desc)</a></li>
+                            <li><a class="clickable show-priority" onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-priority','Priority',-1)"> By Priority</a></li>
+                            <li><a class="clickable show-rank " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-rank','Rank')"> By Rank</a></li>
+                            @*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-message','Issue')"> By Issue</a></li>*@
+                            <li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-owner','Owner')"> By Owner</a></li>
+                            @*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-duedate','Due Date',-1)"> By Due Date</a></li>*@
+                            <li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',1)"> By Date Created (Asc)</a></li>
+                            <li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',-1)"> By Date Created (Desc)</a></li>
 
-						</ul>
-					</div>
-					@*<div class="btn-group ">
-						<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
-						<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
-					</div>*@
-					@Html.Partial("partial/ButtonBar", Model)
-				</div>
-				<h2>IDS <small>Identify. Discuss. Solve.</small></h2>
-			</hgroup>
-			@*<div class="dd">
-					<ol class="ids-list dd-list">
-						@foreach (var i in Model.Issues.OrderBy(x => x._Order))
-						{
-							@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)
-						}
-					</ol>
-				</div>*@
-			<div class="issues-container">
-				<ol class="issues-list sortable init-@(guid)">
-					@foreach (var i in Model.Issues.OrderBy(x => x.Ordering).ThenByDescending(x=>x.CreateTime))
-					{@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)}
-			</ol>
-		</div>
+                        </ul>
+                    </div>
+                    @*<div class="btn-group ">
+                            <div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
+                            <div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
+                        </div>*@
+                    @Html.Partial("partial/ButtonBar", Model)
+                </div>
+                <h2>IDS <small>Identify. Discuss. Solve.</small></h2>
+            </hgroup>
+            @*<div class="dd">
+                    <ol class="ids-list dd-list">
+                        @foreach (var i in Model.Issues.OrderBy(x => x._Order))
+                        {
+                            @Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)
+                        }
+                    </ol>
+                </div>*@
+            <div class="issues-container prioritization-@Model.Recurrence.Prioritization">
+                <ol class="issues-list sortable init-@(guid)">
+                    @foreach (var i in Model.Issues.OrderBy(x => x.Ordering).ThenByDescending(x => x.CreateTime)) {@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)}
+                </ol>
+            </div>
 
-	</div>
-	<div class="col-md-4">
-		<div style="">
-			<div class="fixed-pos">
-				<div class="hidden-lg hidden-md" style="height: 25px;"></div>
-				<hgroup class="page-header details">
-					<h4>Details</h4>
-				</hgroup>
-				<div class="component issueDetails" id="issueDetails"></div>
-			</div>
-		</div>
-	</div>
+        </div>
+        <div class="col-md-4">
+            <div style="">
+                <div class="fixed-pos">
+                    <div class="hidden-lg hidden-md" style="height: 25px;"></div>
+                    <hgroup class="page-header details">
+                        <h4>Details</h4>
+                    </hgroup>
+                    <div class="component issueDetails" id="issueDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
+
 <script>
 	@*$('.dd').nestable({
 		maxDepth :2000,

@@ -139,11 +139,11 @@ namespace RadialReview.Controllers
 
             public static AddMeasurableVm CreateNewMeasurable(long recurrenceId,MeasurableModel model)
             {
-                if (model.AdminUserId <= 0)
+                if (model.AdminUserId <= 0)// && (model.AdminUser==null || model.AdminUser.Id<=0))
                     throw new ArgumentOutOfRangeException("You must specify an admin user id");
-                if (model.AccountableUserId <= 0)
+                if (model.AccountableUserId <= 0 )//&& (model.AccountableUser == null || model.AccountableUser.Id <= 0))
                     throw new ArgumentOutOfRangeException("You must specify an accountable user id");
-                if (model.OrganizationId <= 0)
+                if (model.OrganizationId <= 0)// && (model.Organization == null || model.Organization.Id <= 0))
                     throw new ArgumentOutOfRangeException("You must specify an organization id");
                 if (String.IsNullOrWhiteSpace(model.Title))
                     throw new ArgumentOutOfRangeException("You must specify a title for the measurable");
@@ -288,8 +288,8 @@ namespace RadialReview.Controllers
 			using (var zip = new ZipFile())
 			{
 				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id));
-				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), await ExportAccessor.TodoList(GetUser(), id));
-				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), await ExportAccessor.IssuesList(GetUser(), id));
+				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), await ExportAccessor.TodoList(GetUser(), id,false));
+				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), await ExportAccessor.IssuesList(GetUser(), id,false));
 				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));
 
@@ -409,10 +409,10 @@ namespace RadialReview.Controllers
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult UpdateIssue(long id, DateTime? time=null, string message = null, string details = null, long? owner = null,int? priority=null)
+        public JsonResult UpdateIssue(long id, DateTime? time = null, string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null)
 		{
             time = time ?? DateTime.UtcNow;
-			L10Accessor.UpdateIssue(GetUser(), id,time.Value, message, details,owner:owner,priority: priority);
+			L10Accessor.UpdateIssue(GetUser(), id,time.Value, message, details,owner:owner,priority: priority,rank:rank);
 			return Json(ResultObject.SilentSuccess());
 		}
 

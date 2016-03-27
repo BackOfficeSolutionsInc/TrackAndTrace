@@ -22,13 +22,14 @@ namespace TractionTools.Tests.Accessors
     public class RockAccessorTests : BaseTest
     {
         [TestMethod]
-        public void EditRocks()
+        public async Task EditRocks()
         {
             OrganizationModel org = null;
             UserOrganizationModel employee = null;
             UserOrganizationModel manager = null;
             L10Recurrence recur = null;
             PeriodModel period = null;
+            var testId = Guid.NewGuid();
 
             DbCommit(s=>{
                     org = new OrganizationModel() { };
@@ -51,7 +52,7 @@ namespace TractionTools.Tests.Accessors
                 });
             MockApplication();
             MockHttpContext();
-            new UserAccessor().AddManager(GetAdminUser(), employee.Id, manager.Id, new DateTime(2016, 1, 1));
+            new UserAccessor().AddManager(await GetAdminUser(testId), employee.Id, manager.Id, new DateTime(2016, 1, 1));
 
             var accessor = new RockAccessor();
             var controller = new RocksController();

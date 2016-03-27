@@ -9,8 +9,8 @@ namespace RadialReview.Models.Angular.Base
 	public enum AngularListType
 	{
 		ReplaceAll,
-		Add,
-        AddIfNotExist
+        Add,
+        ReplaceIfNewer,
 	}
 
 	public class AngularList

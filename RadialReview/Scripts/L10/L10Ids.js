@@ -242,7 +242,17 @@ function sortIssueBy(recurrenceId, issueList,sortBy,title,mult) {
             if ($(a).data("priority") === $(b).data("priority"))
                 return mult * $(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
             return mult * ($(a).data("priority")-$(b).data("priority"));
-        } else {
+        } else if (sortBy == "data-rank") {
+            var aa = +$(a).attr(sortBy);
+            var bb = +$(b).attr(sortBy);
+            if (aa == 0)
+                aa = Number.MAX_VALUE;
+            if (bb == 0)
+                bb = Number.MAX_VALUE;
+            if (aa === bb)
+                return mult * $(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
+            return mult * (aa-bb); 
+        }else {
             if ($(a).attr(sortBy) === $(b).attr(sortBy))
                 return mult * $(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
             return mult * $(a).attr(sortBy).localeCompare($(b).attr(sortBy));
@@ -317,8 +327,9 @@ function constructRow(issue) {
         + ' <span class="glyphicon glyphicon-vto vtoButton"></span>'
         + '</div>\n'
 		+ '<div class="number-priority">\n'
-		+	' <span class="number"></span>\n'
-        +	' <span class="priority" data-priority="'+issue.priority+'"></span>\n'
+		+ ' <span class="number"></span>\n'
+        + ' <span class="priority" data-priority="' + issue.priority + '"></span>\n'
+        + ' <span class="rank123" data-rank="'+issue.rank+'">'+issue.rank+'</span>\n'
 		+ '</div>\n'
 		+ '<span class="profile-image">\n'
 		+ '		<span class="profile-picture">\n' 
@@ -383,7 +394,6 @@ function getIssueOrder() {
     for (var i = 0; i < items.length; i++) {
         output.push(_getIssueOrder(items[i]));
     }
-    debugger;
     return output;
 }
 
@@ -541,13 +551,49 @@ function updateIssueOwner(id, userId, name, image) {
 }
 
 function updateIssuePriority(id, priority) {
-	var dom = $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .priority").data("priority", priority);
+    var dom = $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .priority").data("priority", priority);
     var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
     $(row).data("priority", priority);
-	refreshPriority(dom);
+    refreshPriority(dom);
+}
+
+function refreshRanks(){
+    var ranks = $(".rank123").filter(function () { return $(this).data("rank") > 0 }).sort(function (a, b) { return $(a).data("rank") - $(b).data("rank"); });
+    var diff = 0;
+    var last = 0;
+    for (var i = 0; i < ranks.length; i++) {
+        var r = ranks[i];
+        var cur = $(r).data("rank");
+        if (cur!=last+1)
+        {
+            $(r).data("rank", last + 1);
+            $(r).html(last + 1)
+            cur = last + 1;
+            var row = $(r).closest(".issue-row");
+            row.data("rank", cur);
+        }
+        last = cur;
+    }
+    currentRank = last + 1;
+}
+
+function updateIssueRank(id, rank,skipRefresh) {
+    var dom = $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .rank123");
+    dom.data("rank", rank);
+    dom.attr("data-rank", rank);
+    dom.html(rank);
+    var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
+    $(row).data("rank", rank);
+
+    refreshRanks();
 }
 
 $("body").on("contextmenu", ".issue-row .priority", function (e) {
+    e.preventDefault();
+    return false;
+});
+
+$("body").on("contextmenu", ".issue-row .rank123", function (e) {
     e.preventDefault();
     return false;
 });
@@ -560,7 +606,7 @@ $("body").on("contextmenu", ".issue-row .priority", function (e) {
 */
 $(function () {
 
-    var timer = {};
+    var priorityTimer = {};
     $("body").on("mousedown", ".issue-row .priority", function (e) {
         var p = +$(this).data("priority");
 	    console.log("current priority:" + p);
@@ -581,11 +627,11 @@ $(function () {
         //refreshPriority(this);
 
         ////DEBOUNCE
-        if (timer[id]) {
-            clearTimeout(timer[id]);
+        if (priorityTimer[id]) {
+            clearTimeout(priorityTimer[id]);
         }
         var that = this;
-        timer[id] = setTimeout(function () {
+        priorityTimer[id] = setTimeout(function () {
             var pp = +$(that).data("priority");
             var d = { priority: pp, time: new Date().getTime() };
             $.ajax({
@@ -598,6 +644,64 @@ $(function () {
             });
         }, 500);
        
+        e.preventDefault();
+        return false;
+    });
+    var rankTimer = {};
+    var currentRank = 1;
+
+
+
+    $("body").on("mousedown", ".issue-row .rank123", function (e) {
+        var p = +$(this).data("rank");
+        console.log("current rank:" + p);
+
+        currentRank = 1;
+        $(".rank123").each(function () {
+            currentRank = Math.max(currentRank, $(this).data("rank"));
+        });
+
+        if (e.button == 0 || e.button==2) {
+            if (p == 0) {
+                p = currentRank;
+                currentRank += 1;
+            } else {
+                p = 0;
+                //refreshRanks();
+            }        
+        } else {
+            return false;
+        }
+        // $(this).data("priority", p);
+        console.log("new rank:" + p);
+        var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
+
+        //updateIssuePriority(id, p);
+        //refreshCurrentIssueDetails();
+        //refreshPriority(this);
+
+        updateIssueRank(id, p);
+        refreshRanks();
+
+        ////DEBOUNCE
+        if (rankTimer[id]) {
+            clearTimeout(rankTimer[id]);
+        }
+        var that = this;
+        rankTimer[id] = setTimeout(function () {
+            var pp = +$(that).data("rank");
+            var d = { rank: pp, time: new Date().getTime() };
+            $.ajax({
+                url: "/L10/UpdateIssue/" + id,
+                data: d,
+                method: "POST",
+                success: function (d) {
+                    showJsonAlert(d);
+                }
+            });
+            refreshRanks();
+        }, 200);
+
         e.preventDefault();
         return false;
     });

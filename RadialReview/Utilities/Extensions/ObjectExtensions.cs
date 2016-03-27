@@ -14,17 +14,37 @@ namespace RadialReview
 {
     public static class ObjectExtensions
 	{
+
+        public static DateTime? TryParseDateTime(this string str)
+        {
+            DateTime o;
+            if (DateTime.TryParse(str, out o))
+                return o;
+            return null;
+        }
+        public static DateTime TryParseDateTime(this string str,DateTime deflt)
+        {
+            return TryParseDateTime(str) ?? deflt;
+        }
+
         public static decimal TryParseDecimal(this string str,decimal deflt)
         {
             return str.TryParseDecimal()??deflt;
         }
-		public static decimal? TryParseDecimal(this string str)
-		{
-			decimal o;
-			if (decimal.TryParse(str, out o))
-				return o;
-			return null;
-		}
+        public static decimal? TryParseDecimal(this string str)
+        {
+            decimal o;
+            if (decimal.TryParse(str, out o))
+                return o;
+            return null;
+        }
+        public static decimal? TryParseDecimal(this string str,NumberStyles styles,IFormatProvider provider)
+        {
+            decimal o;
+            if (decimal.TryParse(str, styles, provider, out o))
+                return o;
+            return null;
+        }
 
 		public static long? TryParseLong(this string str)
 		{

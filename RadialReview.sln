@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E05E5D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TractionTools.Tests", "TractionTools.Tests\TractionTools.Tests.csproj", "{7ADBCF98-CE48-448D-B0B2-80AC072EAE29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TractionTools.UITests", "TractionTools.UITests\TractionTools.UITests.csproj", "{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,6 +193,24 @@ Global
 		{7ADBCF98-CE48-448D-B0B2-80AC072EAE29}.UPDATE DATABSE|Mixed Platforms.Build.0 = Release|Any CPU
 		{7ADBCF98-CE48-448D-B0B2-80AC072EAE29}.UPDATE DATABSE|x64.ActiveCfg = Release|Any CPU
 		{7ADBCF98-CE48-448D-B0B2-80AC072EAE29}.UPDATE DATABSE|x86.ActiveCfg = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Release|x64.ActiveCfg = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.Release|x86.ActiveCfg = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.UPDATE DATABSE|Any CPU.ActiveCfg = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.UPDATE DATABSE|Any CPU.Build.0 = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.UPDATE DATABSE|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.UPDATE DATABSE|Mixed Platforms.Build.0 = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.UPDATE DATABSE|x64.ActiveCfg = Release|Any CPU
+		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.UPDATE DATABSE|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

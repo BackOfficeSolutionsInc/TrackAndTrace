@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using System.Collections.Generic;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Scorecard;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Accessors
 {
@@ -17,12 +18,14 @@ namespace TractionTools.Tests.Accessors
     public class ScorecardAccessorTests : BaseTest
     {
         [TestMethod]
-        public void EditMeasurables()
+        public async Task EditMeasurables()
         {
             OrganizationModel org = null;
             UserOrganizationModel employee = null;
             UserOrganizationModel manager = null;
             L10Recurrence recur = null;
+
+            var testId = Guid.NewGuid();
             
             DbCommit(s =>
             {
@@ -38,7 +41,7 @@ namespace TractionTools.Tests.Accessors
             });
             MockApplication();
             MockHttpContext();
-            new UserAccessor().AddManager(GetAdminUser(), employee.Id, manager.Id, new DateTime(2016, 1, 1));
+            new UserAccessor().AddManager(await GetAdminUser(testId), employee.Id, manager.Id, new DateTime(2016, 1, 1));
 
             var accessor = new ScorecardAccessor();
             var controller = new MeasurableController();

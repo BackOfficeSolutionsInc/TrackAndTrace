@@ -1,7 +1,11 @@
-﻿using RadialReview.Hubs;
+﻿using NHibernate;
+using RadialReview.Hubs;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Angular.Scorecard;
+using RadialReview.Models.Application;
+using RadialReview.Models.L10;
 using RadialReview.Models.Scorecard;
+using RadialReview.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +13,10 @@ using System.Web;
 
 namespace RadialReview.Utilities.RealTime {
     public partial class RealTimeUtility {
-        protected class RTRecurrenceUpdater {
+        public class RTRecurrenceUpdater {
 
             protected List<long> _recurrenceIds = new List<long>();
+            protected Dictionary<long, L10Meeting> _recurrenceId_meeting = new Dictionary<long, L10Meeting>();
             protected RealTimeUtility rt;
             public RTRecurrenceUpdater(IEnumerable<long> recurrences, RealTimeUtility rt)
             {
@@ -19,16 +24,34 @@ namespace RadialReview.Utilities.RealTime {
                 this.rt = rt;
             }
 
-            protected void UpdateAll(IAngularItem item)
+            protected void UpdateAll(Func<long, IAngularItem> itemGenerater)
             {
                 foreach (var r in _recurrenceIds) {
                     var updater = rt.GetUpdater<MeetingHub>(MeetingHub.GenerateMeetingGroupId(r));
-                    updater.Add(item);
+                    updater.Add(itemGenerater(r));
                 }
-
             }
 
-            public RTRecurrenceUpdater UpdateScorecard(List<ScoreModel> scores, AngularListType type)
+            public RTRecurrenceUpdater AddLowLevelAction(Action<dynamic> action)
+            {
+                rt.AddAction(() => {
+                    foreach (var r in _recurrenceIds) {
+                        var g = rt.GetGroup<MeetingHub>(MeetingHub.GenerateMeetingGroupId(r));
+                        action(g);
+                    }
+                });
+                return this;
+            }
+
+            public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer)
+            {
+                rt.AddAction(() => {
+                    UpdateAll(rid => new AngularMeasurable(measurable));
+                });
+                return UpdateScorecard(scores.Where(x => x.Measurable.Id == measurable.Id), type);
+            }
+
+            public RTRecurrenceUpdater UpdateScorecard(IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer)
             {
                 rt.AddAction(() => {
                     //UpdateAngular stuff
@@ -44,12 +67,12 @@ namespace RadialReview.Utilities.RealTime {
                         scorecard.Scores = AngularList.Create<AngularScore>(type, scoresList);
                     }
                     scorecard.Measurables = AngularList.Create(type, measurablesList);
-                    UpdateAll(scorecard);
-
+                    UpdateAll(rid => scorecard);
                 });
                 return this;
-
             }
         }
+
+       
     }
 }

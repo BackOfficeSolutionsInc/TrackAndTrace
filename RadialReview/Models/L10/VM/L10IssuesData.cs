@@ -21,6 +21,7 @@ namespace RadialReview.Models.L10.VM
 		public String padid { get; set; }
         public long? createdDuringMeetingId { get; set; }
         public int priority { get; set; }
+        public int rank { get; set; }
 
 		public static IssuesData FromIssueRecurrence(IssueModel.IssueModel_Recurrence recur)
 		{
@@ -35,7 +36,8 @@ namespace RadialReview.Models.L10.VM
 				padid = recur.Issue.PadId,
 				owner = recur.Owner.NotNull(x => x.GetName()),
 				imageUrl	= recur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._64))??"/i/placeholder",
-				createdDuringMeetingId = recur.Issue.CreatedDuringMeetingId
+				createdDuringMeetingId = recur.Issue.CreatedDuringMeetingId,
+                rank = recur.Rank
 			};
 			if (recur.Owner!=null){
 				issue.accountable = recur.Owner.Id;

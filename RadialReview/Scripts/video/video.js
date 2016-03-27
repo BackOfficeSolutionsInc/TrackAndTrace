@@ -2,13 +2,20 @@
 
     $('body').on("click", '.videoconference-container .start-video', function (e) {
         this.disabled = true;
-        $(this).addClass("hidden");
         //debugger;
         connection.leave();
         connection.session.oneway = false;
-        //connection.openOrJoin();
-
+        //connection.session.audio = true;
+        //connection.session.video = true;
+        //connection.session.broadcast = true;
         connection.openOrJoin();
+
+        //connection.unhold("both");
+        //connection.addStream({
+        //    audio: true,
+        //    video: true
+        //});
+        //connection.redial();
         jQuery.dequeue($("#main-window"), "fx");
     });
 
@@ -32,6 +39,7 @@
     });
     $('body').on('click', '.videoconference-container .start-video:not(.disabled)', function () {
         $(".start-video").addClass("disabled");
+        $(".start-video").html("Starting...");
         //TODO Start video
     });
     /*$('body').on('click', '.uncollapser .clicker', function () {

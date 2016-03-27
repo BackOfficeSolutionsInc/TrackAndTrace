@@ -26,6 +26,10 @@ using RadialReview.Models.L10;
 using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
 using RadialReview.Exceptions;
+using Novacode;
+using System.Globalization;
+using System.Threading;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Accessors
 {
@@ -729,11 +733,12 @@ namespace RadialReview.Accessors
             items.Add(str);
             var angularItems = AngularList.Create(AngularListType.ReplaceAll, AngularVtoString.Create(items));
 
+            if (updateFunc != null) {
+                if (skipUpdate)
+                    UpdateVTO(s, vtoId, x => x.update(updateFunc(vto, angularItems)));
 
-            if (skipUpdate)
-                UpdateVTO(s, vtoId, x => x.update(updateFunc(vto, angularItems)));
-
-            UpdateVTO(s, vtoId, x => x.update(new AngularUpdate() { updateFunc(vto, angularItems) }));
+                UpdateVTO(s, vtoId, x => x.update(new AngularUpdate() { updateFunc(vto, angularItems) }));
+            }
             return str;
         }
 
@@ -791,7 +796,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
+        
         public static void AddRock(ISession s, PermissionsUtility perms, long vtoId, RockModel rock, DateTime? nowTime = null)
         {
             if (rock._AddedToVTO)
@@ -865,29 +870,362 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    var now = DateTime.UtcNow;
-                    var vto = s.Get<VtoModel>(vtoId);
-                    var organizationId = vto.Organization.Id;
-                    var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
-                    var rock = new RockModel()
-                    {
-                        CreateTime = now,
-                        OrganizationId = organizationId,
-                        CompanyRock = false,
-                        Category = category,
-                        //Period = s.Load<PeriodModel>(vto.PeriodId),
-                        PeriodId = vto.PeriodId,
-                        OnlyAsk = AboutType.Self,
-                        ForUserId = caller.Id,
-                        AccountableUser = caller,
-                        Rock = message,
-                    };
-                    AddRock(s, perms, vtoId, rock, now);
-
+                    CreateNewRock(s, perms, vtoId,caller.Id, message);
                     tx.Commit();
                     s.Flush();
                 }
             }
+        }
+
+        public static void CreateNewRock(ISession s,PermissionsUtility perms, long vtoId,long owner, string message = null)
+        {
+            var now = DateTime.UtcNow;
+            var vto = s.Get<VtoModel>(vtoId);
+            var organizationId = vto.Organization.Id;
+            perms.ViewUserOrganization(owner, false);
+
+            var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+            var rock = new RockModel() {
+                CreateTime = now,
+                OrganizationId = organizationId,
+                CompanyRock = false,
+                Category = category,
+                //Period = s.Load<PeriodModel>(vto.PeriodId),
+                PeriodId = vto.PeriodId,
+                OnlyAsk = AboutType.Self,
+                ForUserId = owner,
+                AccountableUser = s.Load<UserOrganizationModel>(owner),
+                Rock = message,
+            };
+            AddRock(s, perms, vtoId, rock, now);
+
+        }
+
+        private static string ParseVtoHeader(Novacode.Cell cell,string searchFor)
+        {
+            searchFor = searchFor.ToLower();
+            var found = cell.Paragraphs.Where(x => x.StyleName != "ListParagraph").Where(x => x.Text.ToLower().Contains(searchFor)).FirstOrDefault().NotNull(x => x.Text);
+            if (found != null) {
+                var sp = found.Split(':');
+                if (sp.Length > 1)
+                    found = string.Join(":",sp.Skip(1));
+                else
+                    found = sp[0].SubstringAfter(searchFor);
+            }
+            return found;
+        }
+
+        public static VtoModel UploadVtoForRecurrence(UserOrganizationModel caller,DocX doc, long recurrenceId) {
+
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller).AdminL10Recurrence(recurrenceId);
+                    var recur = s.Get<L10Recurrence>(recurrenceId);
+                    var vtoId = recur.VtoId;
+                    if (vtoId <= 0)
+                        throw new PermissionsException("V/TO does not exist.");
+                    perms.EditVTO(vtoId);
+                    var vto = s.Get<VtoModel>(vtoId);
+                    if (vto == null)
+                        throw new PermissionsException("V/TO does not exist.");
+
+                    //var organizationId = vto.Organization.Id;
+                    //var existing = OrganizationAccessor.GetCompanyValues(s.ToQueryProvider(true), perms, organizationId, null);
+                    //existing.Add(new CompanyValueModel() { OrganizationId = organizationId });
+                    //OrganizationAccessor.EditCompanyValues(s, perms, organizationId, existing);
+
+                    #region Page 1
+                    if (doc.Tables.Count < 2)
+                        throw new FormatException("Could not find the V/TO.");
+
+                    var page1 = doc.Tables[0];
+
+                    var corevaluesTitle = "CORE VALUES";
+                    var threeYearTitle = "3-YEAR PICTURE™";
+                    var coreFocusTitle = "CORE FOCUS™";
+                    var tenYearTargetTitle = "10-YEAR TARGET™";
+                    var marketingStrategyTitle = "MARKETING STRATEGY";
+                    var rocksTitle = "ROCKS";
+                    var issuesTitle = "ISSUES LIST";
+                    var oneYearTitle = "1-YEAR PLAN";
+
+                    if (page1.Rows.Count != 5)
+                        throw new FormatException("Could not find Vision Page.");
+
+                    var corevaluesRow = page1.Rows[0];
+                    var threeYearPictureDetailsRow = page1.Rows[1];
+                    var coreFocusRow = page1.Rows[2];
+                    var tenYearRow = page1.Rows[3];
+                    var marketingStrategyRow = page1.Rows[4];
+
+                    //Core values
+                    if (corevaluesRow.Cells.Count != 3 || corevaluesRow.Cells[0].FillColor.Name != "bfbfbf")
+                        throw new FormatException("Could not find Core Values.");
+                    if (corevaluesRow.Cells[0].Paragraphs.Count == 1 && !string.IsNullOrWhiteSpace(corevaluesRow.Cells[0].Paragraphs[0].Text))
+                        corevaluesTitle = corevaluesRow.Cells[0].Paragraphs[0].Text;
+                    var corevaluesCell = corevaluesRow.Cells[1];
+                    if (corevaluesCell.Lists.Count != 1 || !corevaluesCell.Lists[0].Items.Any())
+                        throw new FormatException("Could not find Core Values list.");
+                    var corevaluesList = corevaluesCell.Lists[0].Items.Select(x => x.Text).ToList();
+
+                    //3 year picture
+                    if (corevaluesRow.Cells.Count != 3 || corevaluesRow.Cells[2].FillColor.Name != "bfbfbf" || coreFocusRow.Cells.Count != 3)
+                        throw new FormatException("Could not find Three Year Picture.");
+                    if (corevaluesRow.Cells[2].Paragraphs.Count == 1 && !string.IsNullOrWhiteSpace(corevaluesRow.Cells[2].Paragraphs[0].Text))
+                        threeYearTitle = corevaluesRow.Cells[2].Paragraphs[0].Text;
+                    if (threeYearPictureDetailsRow.Cells.Count != 3)
+                        throw new FormatException("Could not find Three Year Picture details.");
+                    var threeYearCell = threeYearPictureDetailsRow.Cells[2];
+
+                    if (threeYearCell.Lists.Count!=1)
+                        throw new FormatException("Could not find Three Year Picture (What does it look like).");
+                    var threeYearLooksList = threeYearCell.Lists[0].Items.Select(x => x.Text.Trim());
+
+                    //var threeYearTop = threeYearCell.Paragraphs.Where(x => x.StyleName != "ListParagraph").ToList();
+                    
+                    //3 year picture - Headings
+                    var threeYearFuture = ParseVtoHeader(threeYearCell, "Future Date");
+                    var threeYearRevenue = ParseVtoHeader(threeYearCell, "Revenue");
+                    var threeYearProfit = ParseVtoHeader(threeYearCell, "Profit");
+                    var threeYearMeasurables = ParseVtoHeader(threeYearCell, "Measurables");
+
+                    //Core Focus
+                    if (coreFocusRow.Cells.Count != 3 || coreFocusRow.Cells[0].FillColor.Name != "bfbfbf")
+                        throw new FormatException("Could not find Core Focus.");
+                    if (coreFocusRow.Cells[0].Paragraphs.Count == 1 && !string.IsNullOrWhiteSpace(coreFocusRow.Cells[0].Paragraphs[0].Text))
+                        coreFocusTitle = coreFocusRow.Cells[0].Paragraphs[0].Text;
+                    var coreFocusCell = coreFocusRow.Cells[1];
+
+                    var nicheParagraphTuple= coreFocusCell.Paragraphs.Select((x, i) => Tuple.Create(i, x)).Where(x => x.Item2.Text.ToLower().Contains("niche")).FirstOrDefault();
+                    string purpose = "<could not parse>";
+                    string niche = "<could not parse>";
+                    string purposeTitle = "Purpose/Cause/Passion";
+                    
+                    if (nicheParagraphTuple == null && coreFocusCell.Paragraphs.Count==2 && coreFocusCell.Paragraphs[0].MagicText.Count>0) {
+                        purposeTitle = coreFocusCell.Paragraphs[0].MagicText[0].text;
+                        purpose = string.Join("",coreFocusCell.Paragraphs[0].MagicText.Skip(1).Select(x=>x.text)).TrimStart(':').Trim();
+                        niche = string.Join("", coreFocusCell.Paragraphs[1].MagicText.Skip(1).Select(x => x.text)).TrimStart(':').Trim();
+                    } else {
+                        var purposeParagraphs = coreFocusCell.Paragraphs.Where((x, i) => i < nicheParagraphTuple.Item1).SelectMany(x=>x.MagicText).ToList();
+                        var nicheParagraphs = coreFocusCell.Paragraphs.Where((x, i) => i >= nicheParagraphTuple.Item1).SelectMany(x => x.MagicText).ToList();
+
+                        purpose = string.Join("", purposeParagraphs.Skip(1).Select(x => x.text)).TrimStart(':').Trim();
+                        niche = string.Join("", nicheParagraphs.Skip(1).Select(x => x.text)).TrimStart(':').Trim();
+
+                        if (purposeParagraphs.Count>0)
+                            purposeTitle = purposeParagraphs[0].text;
+                    }
+
+
+                    //10 year target
+                    if (tenYearRow.Cells.Count != 3 || tenYearRow.Cells[0].FillColor.Name != "bfbfbf")
+                        throw new FormatException("Could not find Ten Year Target.");
+                    if (tenYearRow.Cells[0].Paragraphs.Count == 1 && !string.IsNullOrWhiteSpace(tenYearRow.Cells[0].Paragraphs[0].Text))
+                        tenYearTargetTitle = tenYearRow.Cells[0].Paragraphs[0].Text;
+                    var tenYearCell = tenYearRow.Cells[1];
+
+
+                    //Marketing Strategy
+                    if (marketingStrategyRow.Cells.Count != 3 || marketingStrategyRow.Cells[0].FillColor.Name != "bfbfbf")
+                        throw new FormatException("Could not find Marketing Strategy.");
+                    if ((marketingStrategyRow.Cells[0].Paragraphs.Count == 1 || marketingStrategyRow.Cells[0].Paragraphs.Count == 2) && !string.IsNullOrWhiteSpace(string.Join(" ", marketingStrategyRow.Cells[0].Paragraphs.Select(x => x.Text))))
+                        marketingStrategyTitle = string.Join(" ", marketingStrategyRow.Cells[0].Paragraphs.Select(x => x.Text));
+                    var marketingStrategyCell = marketingStrategyRow.Cells[1];
+
+
+                    var targetTuple = Tuple.Create("target",marketingStrategyCell.Paragraphs.Select((x, i) => Tuple.Create(i, x)).Where(x => x.Item2.Text.ToLower().Contains("target market") || x.Item2.Text.Contains("The List")).FirstOrDefault());
+                    var uniquesTuple = Tuple.Create("uniques", marketingStrategyCell.Paragraphs.Select((x, i) => Tuple.Create(i, x)).Where(x => x.Item2.Text.ToLower().Contains("uniques")).FirstOrDefault());
+                    var provenTuple = Tuple.Create("proven", marketingStrategyCell.Paragraphs.Select((x, i) => Tuple.Create(i, x)).Where(x => x.Item2.Text.ToLower().Contains("proven")).FirstOrDefault());
+                    var guaranteeTuple = Tuple.Create("guarantee", marketingStrategyCell.Paragraphs.Select((x, i) => Tuple.Create(i, x)).Where(x => x.Item2.Text.ToLower().Contains("guarantee")).FirstOrDefault());
+
+                    // <name, <location, paragraph>>
+                    var marketStratList =new List<Tuple<string,Tuple<int,Paragraph>>>() { targetTuple, uniquesTuple, provenTuple, guaranteeTuple };
+
+                    var ordering = marketStratList.OrderBy(x => x.Item2.Item1).ToList().Where(x=>x.Item2.Item2!=null).ToList();
+
+                    var marketingDict = new DefaultDictionary<string, string>(x=>"<could not parse>");
+
+                    if (ordering.Any()) {
+                        for (var i = 0; i < ordering.Count; i++) {
+                            var start = ordering[i].Item2.Item1;
+                            var end = 0;
+                            if (i != ordering.Count - 1)
+                                end = ordering[i + 1].Item2.Item1;
+                            else
+                                end = marketingStrategyCell.Paragraphs.Count;
+                            //Grab this section's paragraphs
+                            //merge the magic text together, skip the first one (usually the title)
+                            var sectionTitle = ordering[i].Item1;
+                            marketingDict[sectionTitle] = string.Join("", marketingStrategyCell.Paragraphs.Where((x, j) => start <= j && j < end).SelectMany(x => x.MagicText).Skip(1).Select(x => x.text));
+                        }
+                    }
+                    var uniques = new List<string>();
+                    if (marketingStrategyCell.Lists.Count==1)
+                        uniques = marketingStrategyCell.Lists[0].Items.Select(x => x.Text).ToList();
+                    else if (marketingStrategyCell.Lists.Count>1){
+                        var uniquesHeadingLoc = marketingStrategyCell.Xml.Value.IndexOf(uniquesTuple.Item2.Item2.Xml.Value);
+                        uniques = marketingStrategyCell.Lists.FirstOrDefault(x => marketingStrategyCell.Xml.Value.IndexOf(x.Xml.Value) > uniquesHeadingLoc).NotNull(y=>y.Items.Select(x => x.Text).ToList()) ?? uniques;
+                    }
+                                       
+
+
+                    #endregion
+                    #region Page 2
+
+                    var page2 = doc.Tables[1];
+
+                    if (page2.Rows.Count != 2)
+                        throw new FormatException("Could not find Traction Page.");
+
+                    var headingsRow = page2.Rows[0];
+                    var tractionRow = page2.Rows[1];
+
+                    if (headingsRow.Cells.Count != 3 || headingsRow.Cells.Any(x => x.FillColor.Name != "bfbfbf"))
+                        throw new FormatException("Could not find Traction Page headings.");
+                    if (tractionRow.Cells.Count != 3)
+                        throw new FormatException("Could not find Traction Page data.");
+
+                    if (headingsRow.Cells[0].Paragraphs.Count == 1 && !string.IsNullOrWhiteSpace(headingsRow.Cells[0].Paragraphs[0].Text))
+                        oneYearTitle = headingsRow.Cells[0].Paragraphs[0].Text;
+                    if (headingsRow.Cells[1].Paragraphs.Count == 1 && !string.IsNullOrWhiteSpace( headingsRow.Cells[1].Paragraphs[0].Text))
+                        rocksTitle = headingsRow.Cells[1].Paragraphs[0].Text;
+                    if (headingsRow.Cells[2].Paragraphs.Count == 1 && !string.IsNullOrWhiteSpace(headingsRow.Cells[2].Paragraphs[0].Text))
+                        issuesTitle = headingsRow.Cells[2].Paragraphs[0].Text;
+
+                    //One Year Plan
+                    var oneYearPlanCell = tractionRow.Cells[0];
+                    if (oneYearPlanCell.Tables.Count != 1 || oneYearPlanCell.Tables[0].ColumnCount > 2)
+                        throw new FormatException("Could not find One Year Plan goals.");
+                    var oneYearPlanGoals = oneYearPlanCell.Tables[0].Rows.Select(x => string.Join("\n",x.Cells.Last().Paragraphs.Select(y=>y.Text))).ToList();
+
+                    //One year target - Headings
+                    var oneYearFuture = ParseVtoHeader(oneYearPlanCell, "Future Date");
+                    var oneYearRevenue = ParseVtoHeader(oneYearPlanCell, "Revenue");
+                    var oneYearProfit = ParseVtoHeader(oneYearPlanCell, "Profit");
+                    var oneYearMeasurables = ParseVtoHeader(oneYearPlanCell, "Measurables");
+
+                    //Rocks
+                    var rocksCell = tractionRow.Cells[1];
+                    if (rocksCell.Tables.Count != 1 || rocksCell.Tables[0].ColumnCount > 3)
+                        throw new FormatException("Could not find Rocks list.");
+                    var rocksList = rocksCell.Tables[0].Rows;
+
+                    //One year target - Headings
+                    var rocksFuture = ParseVtoHeader(rocksCell, "Future Date");
+                    var rocksRevenue = ParseVtoHeader(rocksCell, "Revenue");
+                    var rocksProfit = ParseVtoHeader(rocksCell, "Profit");
+                    var rocksMeasurables = ParseVtoHeader(rocksCell, "Measurables");
+
+                    //Issues List
+                    var issuesCell = tractionRow.Cells[2];
+                    if (issuesCell.Tables.Count != 1 || issuesCell.Tables[0].ColumnCount > 2)
+                        throw new FormatException("Could not find Issues List.");
+                    var issuesList = issuesCell.Tables[0].Rows.Select(x => string.Join("\n",x.Cells.Last().Paragraphs.Select(y=>y.Text)));
+
+                    #endregion
+
+                    #region Update VTO
+                    //Headings
+                    vto.CoreValueTitle = corevaluesTitle;
+                    vto.CoreFocus.CoreFocusTitle = coreFocusTitle;
+                    vto.TenYearTargetTitle = tenYearTargetTitle;
+                    vto.MarketingStrategy.MarketingStrategyTitle = marketingStrategyTitle;
+                    vto.ThreeYearPicture.ThreeYearPictureTitle = threeYearTitle;
+
+                    vto.OneYearPlan.OneYearPlanTitle = oneYearTitle;
+                    vto.QuarterlyRocks.RocksTitle = rocksTitle;
+                    vto.IssuesListTitle = issuesTitle;
+
+
+                    //Core Values
+                    var organizationId = vto.Organization.Id;
+                    var existing = OrganizationAccessor.GetCompanyValues(s.ToQueryProvider(true), perms, organizationId, null);
+                    foreach (var cv in corevaluesList) {
+                        existing.Add(new CompanyValueModel() { OrganizationId = organizationId, CompanyValue=cv });
+                    }
+                    OrganizationAccessor.EditCompanyValues(s, perms, organizationId, existing);
+
+                    var currencyStyle = NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowParentheses | NumberStyles.AllowThousands | NumberStyles.AllowTrailingWhite | NumberStyles.Currency;
+                    var currentCulture =Thread.CurrentThread.CurrentCulture;
+                    //Three Year Picture
+                    vto.ThreeYearPicture.FutureDate  = threeYearFuture.TryParseDateTime();
+                    vto.ThreeYearPicture.Revenue     = threeYearRevenue.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.ThreeYearPicture.Profit      = threeYearProfit.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.ThreeYearPicture.Measurables = threeYearMeasurables;
+
+                    foreach (var t in threeYearLooksList) {
+                        VtoAccessor.AddString(s, perms, vtoId, VtoItemType.List_LookLike, null, skipUpdate: true, value:t);
+                    }
+
+                    //Core Focus 
+                    vto.CoreFocus.Niche = niche;
+                    vto.CoreFocus.Purpose = purpose;
+                    vto.CoreFocus.PurposeTitle = purposeTitle;
+
+
+                    //Ten Year Target
+                    vto.TenYearTarget = string.Join("\n", tenYearCell.Paragraphs.Select(x => x.Text));
+
+                    //Marketing Strategy 
+
+                    vto.MarketingStrategy.TargetMarket = marketingDict["target"];
+                    vto.MarketingStrategy.ProvenProcess = marketingDict["proven"];
+                    vto.MarketingStrategy.Guarantee = marketingDict["guarantee"];
+                    
+                    foreach (var t in uniques) {
+                        VtoAccessor.AddString(s, perms, vtoId, VtoItemType.List_Uniques, null, skipUpdate: true, value:t);
+                    }
+
+                    //One Year Plan
+                    vto.OneYearPlan.FutureDate  = oneYearFuture.TryParseDateTime();
+                    vto.OneYearPlan.Revenue     = oneYearRevenue.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.OneYearPlan.Profit      = oneYearProfit.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.OneYearPlan.Measurables = oneYearMeasurables;
+
+                    foreach (var t in oneYearPlanGoals) {                        
+                        VtoAccessor.AddString(s, perms, vtoId, VtoItemType.List_YearGoals, null, skipUpdate: true, value: t);
+                    }
+
+                    //Rocks
+                    vto.QuarterlyRocks.FutureDate   = rocksFuture.TryParseDateTime();
+                    vto.QuarterlyRocks.Revenue      = rocksRevenue.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.QuarterlyRocks.Profit       = rocksProfit.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.QuarterlyRocks.Measurables  = rocksMeasurables;
+
+                    var allUsers = OrganizationAccessor.GetMembers_Tiny(s,perms,vto.Organization.Id);
+                    Dictionary<string,DiscreteDistribution<Tuple<string,string,long>>> rockUserLookup = null;
+                    if (rocksList.Any() && (rocksList[0].ColumnCount==3||rocksList[0].ColumnCount==2)){
+                        var rockUsers = rocksList.Select(x=>string.Join("\n",x.Cells.Last().Paragraphs.Select(y=>y.Text)));
+                        rockUserLookup=DistanceUtility.TryMatch(rockUsers,allUsers);                        
+                    }
+                   
+
+                    foreach (var r in rocksList) {
+                        var owner = caller.Id;
+                        if (r.ColumnCount==2 || r.ColumnCount==3){
+                            var ownerTup = Tuple.Create("","",owner);
+                            rockUserLookup[string.Join("\n",r.Cells.Last().Paragraphs.Select(y=>y.Text))].TryResolveOne(ref ownerTup);
+                        }
+                           
+                        var message = r.Cells.Reverse<Cell>().Skip(1).FirstOrDefault().NotNull(x=>string.Join("\n",x.Paragraphs.Select(y=>y.Text)));
+                        CreateNewRock(s, perms, vtoId, owner, message);
+                        
+                    }
+
+                    //Issues
+                    foreach (var i in issuesList) {
+                        VtoAccessor.AddString(s, perms, vtoId, VtoItemType.List_Issues, null, skipUpdate: true, value: i);
+                    }
+                    #endregion
+
+                    tx.Commit();
+                    s.Flush();
+
+                    return vto;
+                }
+            }
+
+         
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'signalR', 'meetingDataUrlBase', 'meetingId',"meetingCallback","$compile","$sce",
-function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetingCallback,$compile,$sce) {
+﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'radial', 'meetingDataUrlBase', 'meetingId',"meetingCallback","$compile","$sce",
+function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId,meetingCallback,$compile,$sce) {
 	 $scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
 	if (meetingId == null)
 		throw Error("MeetingId was empty");
@@ -11,7 +11,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 			if (proxy) {
 				proxy.invoke("join", $scope.meetingId, connection.id).done(function () {
 					console.log("rejoin");
-					$(".rt").prop("disabled", false);
+					//$(".rt").prop("disabled", false);
 					if (callback) {
 						callback();
 					}
@@ -27,84 +27,9 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 		}
 	}
 
-	function removeDeleted(model) {
-		for (var key in model) {
-			if (model[key] == "`delete`")
-				model[key] = null;
-			if (typeof (model[key]) == 'object')
-				removeDeleted(model[key]);
-		}
-	}
-
-	function baseExtend(dst, objs, deep) {
-		var h = dst.$$hashKey;
-
-		for (var i = 0, ii = objs.length; i < ii; ++i) {
-			var obj = objs[i];
-			if (!angular.isObject(obj) && !angular.isFunction(obj)) continue;
-			var keys = Object.keys(obj);
-			for (var j = 0, jj = keys.length; j < jj; j++) {
-				var key = keys[j];
-				var src = obj[key];
-				if (deep && angular.isObject(src)) {
-					if (src.AngularList) {
-						//Special AngularList Object
-						if (src.UpdateMethod == "Add") {
-							dst[key] = dst[key].concat(src.AngularList);
-						} else if (src.UpdateMethod == "ReplaceAll") {
-							dst[key] = src.AngularList;
-						}else if (src.UpdateMethod=="AddIfNotExist"){
-						    console.log("unhandled ");
-						    debugger;
-						}
-					} else {
-						if (!angular.isObject(dst[key]))
-							dst[key] = angular.isArray(src) ? [] : {};
-
-						if (angular.isArray(dst[key])) {
-							dst[key] = dst[key].concat(src);
-						} else {
-							if (dst[key].Key == src.Key)
-								baseExtend(dst[key], [src], true);
-							else
-								dst[key] = src;
-						}
-					}
-				} else {
-					dst[key] = src;
-				}
-			}
-		}
-		if (h) {
-			dst.$$hashKey = h;
-		} else {
-			delete dst.$$hashKey;
-		}
-		return dst;
-	}
-
-	function convertDates(obj) {
-		var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
-		//var dateRegex2 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
-		var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
-		for (var key in obj) {
-			var value = obj[key];
-			var type = typeof (value);
-			if (obj[key]==null) {
-				//Do nothing
-			}else if (type == 'string' && dateRegex1.test(value)) {
-				obj[key] = new Date(parseInt(value.substr(6)));
-			} else if (type == 'string' && dateRegex2.test(value)) {
-				obj[key] = new Date(obj[key]);
-			} else if (obj[key].getDate!==undefined) {
-				obj[key] =new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
-			} else if (type == 'object') {
-				convertDates(value);
-			}
-		}
-	};
-
 	function updateScorecard(data) {
+	    console.log("updateScorecard");
+	    $scope.ScoreLookup = $scope.ScoreLookup || {};
 		var lu = data.Lookup;
 		if (lu != null) {
 			for (var key in lu) {
@@ -119,29 +44,33 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 		}
 	};
 
-	function update(data, status) {
+	//function update(data, status) {
 
-		console.log("update:");
-		console.log(data);
-		//angular.merge($scope.model, data);
-		baseExtend($scope.model, [data], true);
+	//	console.log("update:");
+	//	console.log(data);
+	//	//angular.merge($scope.model, data);
+	//	baseExtend($scope.model, [data], true);
 
-		updateScorecard(data);
+	//	updateScorecard(data);
 
-		convertDates($scope.model);
-		removeDeleted($scope.model);
-	}
+	//	convertDates($scope.model);
+	//	removeDeleted($scope.model);
+	//}
 
-	var meetingHub = signalR('meetingHub', function (connection, proxy) {
-		console.log('trying to connect to service');
-		$scope.connectionId = connection.id;
-		rejoin(connection, proxy, function () {
-			console.log("Logged in: " + connection.id);
-		});
-	});
+	//var meetingHub = signalR('meetingHub', function (connection, proxy) {
+	//	console.log('trying to connect to service');
+	//	$scope.connectionId = connection.id;
+	//	rejoin(connection, proxy, function () {
+	//		console.log("Logged in: " + connection.id);
+	//	});
+	//});
 
-	meetingHub.on('update', update);
+	//meetingHub.on('update', update);
 
+	var r = radial($scope, 'meetingHub', rejoin);
+
+	r.updater.postExtend = updateScorecard;
+	//r.rejoin = rejoin;
 	
 	$scope.functions = {};
 	$scope.filters = {};
@@ -150,29 +79,29 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 	        reload = true;
 	    }
 	    if (reload) {
-	        console.log("reloading...");
-	        $http({ method: 'get', url: meetingDataUrlBase + $scope.meetingId })
-            .success(function (data, status) {
-                convertDates(data);
-                $scope.model = data;
-                /*var sevenMin = moment().subtract('days',7).toDate();
-                var sevenMax = moment().add('days',9).toDate();
-    
-                debugger;
-                if (!$scope.model)
-                    $scope.model = {};
-                $scope.model.date = { startDate: sevenMin, endDate: sevenMax };
-                */
 
+	        if (!window.tzoffset)
+	        {
+	            var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
+	            window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
+                             (jul.getTime() % 24 * 60 * 60 * 1000)
+                             ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
+	        }
+
+
+	        console.log("reloading...");
+	        $http({ method: 'get', url: meetingDataUrlBase + $scope.meetingId + "?_clientTimestamp="+((+new Date())+(window.tzoffset*60*1000))})
+            .success(function (data, status) {
+               // r.updater.clearAndApply(data, status);
+                r.updater.convertDates(data);
+                $scope.model = data;
+                
                 if (meetingCallback) {
                     setTimeout(function () {
                         meetingCallback();
                     }, 1);
                 }
-
-                //update(data, status);
             }).error(function (data, status) {
-                //$scope.model = {};
                 console.log("Error");
                 console.error(data);
             });
@@ -200,9 +129,9 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 		d.setDate(d.getDate() - days);
 		return d;
 	};
-	$scope.functions.scorecardId = function (s, row, column) {
+	$scope.functions.scorecardId = function (s, measurableId, weekId) {
 		if (!s)
-			return "sc_" + row + "_" + column;
+		    return "sc_" + measurableId + "_" + weekId;
 		return "sc_" + s.Id;
 	};
 	$scope.functions.scorecardColor = function (s) {
@@ -236,8 +165,6 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 
 	$scope.ScoreIdLookup =null;
 
-	//debugger;
-	//for(var i =0;i<scope.model.)
 
 	$scope.functions.getFcsa = function(measurable) {
 		if (measurable.Modifiers == "Dollar") {
@@ -278,37 +205,12 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 				}
 			}
 		}
-
-		//for (var s in scores) {
-		//		var score = $scope.model.Lookup[scores[s].Key];
-		//		if (!(week in $scope.ScoreLookup))
-		//			$scope.ScoreLookup[week] = {};
-		//		$scope.ScoreLookup[week][measurableId] = score;
-		//	}
-		//}
 		
 		if (week in $scope.ScoreLookup && measurableId in $scope.ScoreLookup[week]) {
 			var lu = $scope.model.Lookup[$scope.ScoreLookup[week][measurableId]];
 			if (lu != null)
 				return lu;
 		}
-			
-
-		//console.log("miss ls " + week + " " + measurableId);
-
-		//var lu = $scope.functions.lookupScoreFull(week, measurableId);
-		//if (lu != null)
-		//	return $scope.model.Lookup[$scope.ScoreLookup[week][measurableId]];d
-		//for (var s in scores) {
-		//	var score = $scope.model.Lookup[scores[s].Key];
-		//	if (score.ForWeek == week && score.Measurable.Id == measurableId) {
-		//		if (!(week in $scope.ScoreLookup))
-		//			$scope.ScoreLookup[week] = {};
-		//		$scope.ScoreLookup[week][measurableId] = score;
-
-		//		return score;
-		//	}
-		//}
 
 		var wKey = week;
 		if (!(wKey in $scope.proxyLookup))
@@ -317,7 +219,6 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 			$scope.proxyLookup[wKey][measurableId] = { Id: -1, Type: "AngularScore", Measurable: { Id: measurableId }, ForWeek: week, Measured: null };
 
 		return $scope.proxyLookup[wKey][measurableId];
-		//return  { Id: -1, Type: "AngularScore", Measurable: { Id: measurableId }, ForWeek: week, Measured: null };
 	};
 
 	$scope.functions.updateComplete = function (self) {
@@ -334,9 +235,7 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 
 	//var sevenMin = moment().subtract('days', 6).toDate();
 	//var sevenMax = moment().add('days', 2).toDate();
-
-	
-	
+    	
 	$scope.now = moment();
 
 	$scope.rockstates = [{ name: 'Off Track', value: 'AtRisk' }, { name: 'On Track', value: 'OnTrack' }, { name: 'Complete', value: 'Complete' }];
@@ -384,14 +283,8 @@ function ($scope, $http, $timeout, signalR, meetingDataUrlBase, meetingId,meetin
 		});
 	};
 
-	$scope.functions.showModal = function (title, pull, push, callback, validation, onSuccess) {
-		showModal(title, pull, push, callback, validation, onSuccess);
-	};
-	//$scope.$watch('date', function (newDate) {
-	//	console.log('New date set: ', newDate);
-	//}, false);
-
-	//$scope.$watch('Complete', function (newDate) {
-	//	console.log('Complete: ', newDate);
-	//}, false);
+	//$scope.functions.showModal = function (title, pull, push, callback, validation, onSuccess) {
+	//	showModal(title, pull, push, callback, validation, onSuccess);
+	//};
+	
 }]);

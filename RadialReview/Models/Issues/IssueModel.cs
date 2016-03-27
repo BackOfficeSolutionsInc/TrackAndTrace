@@ -109,6 +109,8 @@ namespace RadialReview.Models.Issues
 			public virtual IssueModel_Recurrence ParentRecurrenceIssue { get; set; }
 			public virtual long? Ordering { get; set; }
 
+            public virtual int Rank { get; set; }
+
 			public IssueModel_Recurrence()
 			{
 				CreateTime = DateTime.UtcNow;
@@ -124,8 +126,9 @@ namespace RadialReview.Models.Issues
                     Map(x => x.DeleteTime);
                     Map(x => x.LastUpdate_Priority);
 					Map(x => x.CloseTime);
-					Map(x => x.Priority);
-					Map(x => x.Ordering);
+                    Map(x => x.Priority);
+                    Map(x => x.Ordering);
+                    Map(x => x.Rank);
 					References(x => x.CreatedBy).Column("CreatedById");
 					References(x => x.CopiedFrom).Column("CopiedFromId").Nullable();
 					References(x => x.Owner).Column("OwnerId").Nullable();
@@ -138,6 +141,7 @@ namespace RadialReview.Models.Issues
 				}
 			}
 
-		}
+
+        }
 	}
 }

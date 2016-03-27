@@ -49,7 +49,7 @@
 			}
 		};
 
-		return {
+		var o= {
 			proxy: proxy,
 			connection: connection,
 			disconnected:disconnected,
@@ -75,6 +75,8 @@
 				});
 			}
 		};
+        
+		return o;
 	};
 	return signalRFactory;
 }]);

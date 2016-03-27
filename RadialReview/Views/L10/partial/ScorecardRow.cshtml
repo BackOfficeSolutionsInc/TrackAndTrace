@@ -86,8 +86,9 @@
                                data-scoreid="@(found.NotNull(x => x.Id))"
                                data-measurable="@Model.MeetingMeasurable.Measurable.Id"
                                data-week="@(r.ForWeek.ToJavascriptMilliseconds())"
-                               id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />
-                    </form>
+                               @*id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />*@
+                               id="sc_@(found != null ? "" + found.Id : Model.MeetingMeasurable.Measurable.Id + "_" + r.ForWeek.ToJavascriptMilliseconds())" />
+                      </form> 
 				</td>
 				if (r.IsCurrentWeek){
 					<td class="buttonHolder">

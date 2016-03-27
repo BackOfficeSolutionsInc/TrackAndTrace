@@ -194,7 +194,7 @@ function updateServerScore(self) {
     var val = getScoreTransform(self);//$(self).attr("data-value");//.val();
     var dom = $(self).attr("id");
     var oldVal = $(self).attr("data-oldval");
-    //debugger;
+    debugger;
     $.ajax({
         url: "/l10/UpdateScore/" + MeetingId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val + "&dom=" + dom + "&connection=" + $.connection.hub.id,
         success: function (data) {

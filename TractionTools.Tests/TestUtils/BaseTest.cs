@@ -3,7 +3,12 @@ using Moq;
 using NHibernate;
 using RadialReview;
 using RadialReview.Accessors;
+using RadialReview.Controllers;
 using RadialReview.Models;
+using RadialReview.Models.Askables;
+using RadialReview.Models.Enums;
+using RadialReview.Models.UserModels;
+using RadialReview.NHibernate;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Productivity;
 using System;
@@ -14,7 +19,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Principal;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
+using System.Web.SessionState;
 
 namespace TractionTools.Tests.TestUtils {
     public static class TestObjectExtensions {
@@ -66,45 +75,160 @@ namespace TractionTools.Tests.TestUtils {
         }
         public static void SetValue<T, TRef>(this T obj, string field, TRef value)
         {
-            //string p;
-            //if (field.Body is UnaryExpression)
-            //{
-            //    p = ((UnaryExpression)field.Body).Operand.ToString();
-            //    p = p.Substring(p.IndexOf(".") + 1);
-            //}
-            //if (field.Body is MemberExpression)
-            //{
-            //    //p = ((MemberExpression)selector.Body).Member.Name.ToString();
-            //    p = ((MemberExpression)field.Body).ToString();
-            //    p = p.Substring(p.IndexOf(".") + 1);
-            //}
             var setter = GetSetter(obj, field);
-            //var prop = .GetProperties(field, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             setter.Set(value);
         }
-        //public static Func<T, R> SetFieldAccessor<T, R>(string fieldName)
-        //{
-        //    ParameterExpression param = Expression.Parameter(typeof(T), "arg");
-
-        //    MemberExpression member = Expression.Field(param, fieldName);
-
-        //    LambdaExpression lambda = Expression.Lambda(typeof(Func<T, R>), member, param);
-
-        //    Func<T, R> compiled = (Func<T, R>)lambda.Compile();
-        //    return compiled;
-        //}
+       
     }
     public class BaseTest {
-        //[ClassInitialize]
-        //public void Startup()
-        //{
-        //    ChromeExtensionComms.SendCommand("testStart");
-        //}
-        //[ClassCleanup]
-        //public void Teardown()
-        //{
-        //    ChromeExtensionComms.SendCommand("testEnd");
-        //}
+      
+        private static Dictionary<Guid,UserOrganizationModel> AdminUsers = new Dictionary<Guid,UserOrganizationModel>();
+        private static Dictionary<Guid, OrganizationModel> AdminOrganizations = new Dictionary<Guid, OrganizationModel>();
+
+        //protected static string AdminEmail = "admin" + Guid.NewGuid().ToString().Replace("-", "").ToLower() + "@admin.com";
+        //protected static string AdminPassword = Guid.NewGuid().ToString().Replace("-", "").ToLower();
+        protected NHibernateUserManager UserManager = new NHibernateUserManager(new NHibernateUserStore());
+        protected async Task<UserOrganizationModel> GetAdminUser(Guid id)
+        {
+            
+            if (AdminUsers.ContainsKey(id)) {
+                return AdminUsers[id];
+            }
+            var username = "admin" + id.ToString().Replace("-", "").ToLower() + "@admin.com";
+            var password = id.ToString().Replace("-", "").ToLower();
+            MockHttpContext();
+            var user = new UserModel() { UserName = username, FirstName = "Admin_FN", LastName = "Admin_LN" };
+            var resultx = await UserManager.CreateAsync(user,password );
+            bool genAdmin = false;
+            DbCommit(s => {
+                AdminOrganizations[id] = new OrganizationModel() {
+                    Name = new LocalizedStringModel("AdminOrg"),                   
+                };
+
+                AdminOrganizations[id].Settings.EnableL10 = true;
+                AdminOrganizations[id].Settings.EnableReview = true;
+                s.Save(AdminOrganizations[id]);
+
+                AdminUsers[id] = new UserOrganizationModel() {
+                    IsRadialAdmin = true,
+                    User = user,
+                    Organization = AdminOrganizations[id],
+                    Cache = new UserLookup()
+                };
+                s.Save(AdminUsers[id]);
+                AdminUsers[id].UpdateCache(s);
+                user.UserOrganizationIds = AdminUsers[id].Id.AsList().ToArray();
+                user.UserOrganizationCount = 1;
+                user.CurrentRole = AdminUsers[id].Id;
+
+                s.Save(new OrganizationTeamModel() { Name = "OrgTeam", Organization = AdminOrganizations[id], Type = TeamType.AllMembers });
+                s.Save(new OrganizationTeamModel() { Name = "ManagerTeam", Organization = AdminOrganizations[id], Type = TeamType.Managers });
+
+                user.IsRadialAdmin = true;
+                s.Update(user);
+
+                //Add an admin user to the database
+                var admins = s.QueryOver<UserModel>().Where(x => x.UserName == "admin@admin.com").List().ToList();
+                genAdmin = !admins.Any();
+
+                
+
+            });
+
+            if (!AdminUsers.Any()) {
+
+                DbCommit(s => {
+                    //s.Save(AdminOrganizations[id]);
+
+                    s.Save(new OrganizationTeamModel() { Name = "OrgTeam", Organization = AdminOrganizations[id], Type = TeamType.AllMembers });
+                    s.Save(new OrganizationTeamModel() { Name = "ManagerTeam", Organization = AdminOrganizations[id], Type = TeamType.Managers });
+
+                });
+            }
+
+
+            await CreateGeneralAdmin();
+            #region Create Admin in DB
+            //if (genAdmin) {
+            //    var um = new UserModel() { UserName = "admin@admin.com", FirstName = "admin", LastName = "account" };
+            //    var resulty = await UserManager.CreateAsync(um, "admin");
+            //    DbCommit(s => {
+            //        var org = new OrganizationModel() {
+            //            Name = new LocalizedStringModel("Admin Account"),
+            //        };
+            //        s.Save(org);
+            //        var uo = new UserOrganizationModel() {
+            //            IsRadialAdmin = true,
+            //            User = um,
+            //            Organization = org,
+            //            Cache = new UserLookup()
+            //        };
+            //        org.Settings.EnableL10 = true;
+            //        org.Settings.EnableReview = true;
+
+            //        s.Save(uo);
+            //        uo.UpdateCache(s);
+            //        um.UserOrganizationIds = uo.Id.AsList().ToArray();
+            //        um.UserOrganizationCount = 1;
+            //        um.CurrentRole = uo.Id;
+            //        um.IsRadialAdmin = true;
+            //        s.Update(um);
+            //    });
+            //}
+            #endregion
+
+            return AdminUsers[id];
+        }
+
+        private async Task CreateGeneralAdmin()
+        {
+            bool genAdmin=false;
+            DbExecute(s => {
+
+                var admins = s.QueryOver<UserModel>().Where(x => x.UserName == "admin@gmail.com").List().ToList();
+                genAdmin = !admins.Any();
+            });
+            if (genAdmin) {
+                var UserManager = new NHibernateUserManager(new NHibernateUserStore());
+                var user = new UserModel() { UserName = "admin@gmail.com", FirstName = "Admin_FN", LastName = "Admin_LN" };
+                var resultx = await UserManager.CreateAsync(user, "adminpass");
+                DbCommit(s => {
+                    var org = new OrganizationModel() {
+                        Name = new LocalizedStringModel("AdminOrg"),
+                    };
+
+                    org.Settings.EnableL10 = true;
+                    org.Settings.EnableReview = true;
+                    s.Save(org);
+                    org.Organization = org;
+                    s.Update(org);
+                    var u = new UserOrganizationModel() {
+                        IsRadialAdmin = true,
+                        User = user,
+                        Organization = org,
+                        Cache = new UserLookup()
+                    };
+                    s.Save(u);
+                    u.UpdateCache(s);
+                    user.UserOrganizationIds = u.Id.AsList().ToArray();
+                    user.UserOrganizationCount = 1;
+                    user.CurrentRole = u.Id;
+
+                    s.Save(new OrganizationTeamModel() { Name = "OrgTeam", Organization = org, Type = TeamType.AllMembers });
+                    s.Save(new OrganizationTeamModel() { Name = "ManagerTeam", Organization = org, Type = TeamType.Managers });
+
+                    user.IsRadialAdmin = true;
+                    s.Update(user);                    
+                });
+            }
+        }
+
+        protected string GetBaseUrl(string after = null)
+        {
+            after = (after ?? "").TrimStart('/');
+
+            return "https://localhost:44300/" + after;
+        }
 
         private static bool ApplicationCreated;
         protected void MockApplication()
@@ -113,14 +237,26 @@ namespace TractionTools.Tests.TestUtils {
                 new ApplicationAccessor().EnsureApplicationExists();
             ApplicationCreated = true;
         }
+
         public void MockHttpContext()
         {
-            HttpContext.Current = new HttpContext(new HttpRequest("", "http://fake.url", ""), new HttpResponse(new StringWriter()));
+            if (HttpContext.Current == null) {
+                HttpContext.Current = new HttpContext(new HttpRequest("", "http://fake.url", ""), new HttpResponse(new StringWriter()));
 
-            var fakeIdentity = new GenericIdentity("TestUser");
-            var principal = new GenericPrincipal(fakeIdentity, null);
-            
-            HttpContext.Current.User = principal;
+                var fakeIdentity = new GenericIdentity("TestUser");
+                var principal = new GenericPrincipal(fakeIdentity, null);
+
+                HttpContext.Current.User = principal;
+                var browser = new HttpBrowserCapabilities() {
+                    Capabilities = new Dictionary<string, string>{
+                    {"majorversion", "8"},
+                    {"browser", "IE"},
+                    {"isMobileDevice","false"}
+                }
+                };
+                HttpContext.Current.Request.Browser = browser;
+            }
+
         }
         public static void Throws<T>(Action func) where T : Exception
         {
@@ -136,12 +272,18 @@ namespace TractionTools.Tests.TestUtils {
 
         }
 
-        public void DbCommit(Action<ISession> sFunc)
-        {
-            DbExecute(sFunc, true);
+        public static void DbCommit(Action<ISession> sFunc){
+            BaseTest.DbExecute(sFunc, true);
         }
+        //protected void DbCommit(Action<ISession> sFunc)
+        //{
+        //    BaseTest.DbExecute(sFunc, true);
+        //}
+        //protected void DbExecute(Action<ISession> sFunc, bool commit = false){
+        //    BaseTest.DbExecute(sFunc, commit);
+        //}
 
-        public void DbExecute(Action<ISession> sFunc, bool commit = false)
+        public static void DbExecute(Action<ISession> sFunc, bool commit = false)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -156,21 +298,6 @@ namespace TractionTools.Tests.TestUtils {
                 }
 
             }
-        }
-        private static UserOrganizationModel _AdminUser = null;
-
-        public UserOrganizationModel GetAdminUser()
-        {
-            if (_AdminUser == null) {
-                DbCommit(x => {
-                    _AdminUser = new UserOrganizationModel() {
-                        IsRadialAdmin = true
-                    };
-                    x.Save(_AdminUser);
-                });
-            }
-
-            return _AdminUser;
         }
 
         public UserOrganizationModel GetCaller()

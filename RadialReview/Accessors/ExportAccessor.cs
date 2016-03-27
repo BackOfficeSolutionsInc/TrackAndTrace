@@ -45,7 +45,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static async Task<byte[]> TodoList(UserOrganizationModel caller, long recurrenceId)
+		public static async Task<byte[]> TodoList(UserOrganizationModel caller, long recurrenceId,bool includeDetails)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -57,7 +57,7 @@ namespace RadialReview.Accessors
                     //    await 
                     //}
                     var tasks = todos.Select(t=>{
-                        return GrabTodo(csv, t);
+                        return GrabTodo(csv, t, includeDetails);
                     });
 
                     await Task.WhenAll(tasks);
@@ -67,10 +67,8 @@ namespace RadialReview.Accessors
 			}
 		}
 
-        private static async Task GrabTodo(Csv csv, Models.Todo.TodoModel t)
+        private static async Task GrabTodo(Csv csv, Models.Todo.TodoModel t,bool includeDetails)
         {
-
-            var padDetails = await PadAccessor.GetText(t.PadId);
 
             csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
             csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
@@ -80,10 +78,14 @@ namespace RadialReview.Accessors
                 time = t.CompleteTime.Value.ToShortDateString();
             csv.Add("" + t.Id, "Completed", time);
             csv.Add("" + t.Id, "To-Do", "" + t.Message);
-            csv.Add("" + t.Id, "Details", "" + padDetails);
+
+            if (includeDetails) {
+                var padDetails = await PadAccessor.GetText(t.PadId);
+                csv.Add("" + t.Id, "Details", "" + padDetails);
+            }
         }
 
-		public static async Task<byte[]> IssuesList(UserOrganizationModel caller, long recurrenceId)
+		public static async Task<byte[]> IssuesList(UserOrganizationModel caller, long recurrenceId,bool includeDetails)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -104,11 +106,15 @@ namespace RadialReview.Accessors
 					//}
 					var sb = new StringBuilder();
 
-					sb.Append("Id,Depth,Owner,Created,Closed,Issue,Details").AppendLine();
+                    sb.Append("Id,Depth,Owner,Created,Closed,Issue");
+                    if (includeDetails){
+                        sb.Append(",Details");
+                    } 
+                    sb.AppendLine();
 					//var id = 0;
 
                     var tasks = issues.Select((i, id) => {
-                        return RecurseIssue(sb, id, i, 0);
+                        return RecurseIssue(sb, id, i, 0, includeDetails);
                     });
                     //foreach (var i in issues){
                     //    id++;
@@ -200,7 +206,7 @@ namespace RadialReview.Accessors
 			
 		}
 
-		public static async Task RecurseIssue(StringBuilder sb,int index,IssueModel.IssueModel_Recurrence parent, int depth)
+        public static async Task RecurseIssue(StringBuilder sb, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails)
 		{
 			var time = "";
 			if (parent.CloseTime != null)
@@ -214,14 +220,14 @@ namespace RadialReview.Accessors
 				sb.Append(",");*/
 			sb.Append(Csv.CsvQuote(parent.Issue.Message)).Append(",");
 
-
-			var padDetails = await PadAccessor.GetText(parent.Issue.PadId);
-			//var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
-
-			sb.Append(Csv.CsvQuote(padDetails));
+            if (includeDetails) {
+                var padDetails = await PadAccessor.GetText(parent.Issue.PadId);
+                //var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
+                sb.Append(Csv.CsvQuote(padDetails));
+            }
 			sb.AppendLine();
 			foreach(var child in parent._ChildIssues)
-				await RecurseIssue(sb, index, child,depth+1);
+                await RecurseIssue(sb, index, child, depth + 1, includeDetails);
 		}
 	
 		

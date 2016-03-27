@@ -14,6 +14,7 @@ using RadialReview.Models.L10;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Synchronize;
+using RadialReview.Utilities.RealTime;
 
 namespace RadialReview.Accessors
 {
@@ -222,64 +223,62 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					if (measurables.Any(x => x.AccountableUserId != userId))
-						throw new PermissionsException("Measurable UserId does not match UserId");
+                    using (var rt = RealTimeUtility.Create()) {
+                        if (measurables.Any(x => x.AccountableUserId != userId))
+                            throw new PermissionsException("Measurable UserId does not match UserId");
 
-					var perm = PermissionsUtility.Create(s, caller).EditQuestionForUser(userId);
-					var user = s.Get<UserOrganizationModel>(userId);
-					var orgId = user.Organization.Id;
-                    var added = measurables.Where(x => x.Id == 0).ToList();
-					foreach (var r in measurables)
-					{
-                        r.OrganizationId = orgId;
-                        //var added = r.Id == 0;
-                        if (r.Id==0)
-                            s.Save(r);
-                        else
-                            s.Merge(r);
-					}
-					var now = DateTime.UtcNow;
+                        var perm = PermissionsUtility.Create(s, caller).EditQuestionForUser(userId);
+                        var user = s.Get<UserOrganizationModel>(userId);
+                        var orgId = user.Organization.Id;
+                        var added = measurables.Where(x => x.Id == 0).ToList();
+                        foreach (var r in measurables) {
+                            r.OrganizationId = orgId;
+                            //var added = r.Id == 0;
+                            if (r.Id == 0)
+                                s.Save(r);
+                            else
+                                s.Merge(r);
+                        }
+                        var now = DateTime.UtcNow;
 
-					var toDelete = measurables.Where(x => x.DeleteTime != null).Select(x=>x.Id).ToList();
-					if (toDelete.Any()){
-						var recurMeasurables=s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
-							.Where(x => x.DeleteTime == null)
-							.WhereRestrictionOn(x => x.Measurable.Id).IsIn(toDelete)
-							.List();
-						foreach (var m in recurMeasurables){
-							m.DeleteTime = now;
-							s.Update(m);
-						}
-					}
-
-                    if (updateAllL10s)
-                    {
-                        var allL10s = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.User.Id == userId).List().Where(x => x.L10Recurrence.DeleteTime == null).ToList();
-
-                        foreach (var r in added)
-                        {
-                            var r1 = r;
-                            foreach (var o in allL10s.Select(x => x.L10Recurrence))
-                            {
-
-                                if (o.OrganizationId != caller.Organization.Id)
-                                    throw new PermissionsException("Cannot access the Level 10");
-                                perm.UnsafeAllow(PermItem.AccessLevel.View, PermItem.ResourceType.L10Recurrence, o.Id);
-                                perm.UnsafeAllow(PermItem.AccessLevel.Edit, PermItem.ResourceType.L10Recurrence, o.Id);
-                                L10Accessor.AddMeasurable(s, perm, o.Id, new Controllers.L10Controller.AddMeasurableVm()
-                                {
-                                    RecurrenceId = o.Id,
-                                    SelectedMeasurable = r1.Id,
-                                });
+                        var toDelete = measurables.Where(x => x.DeleteTime != null).Select(x => x.Id).ToList();
+                        if (toDelete.Any()) {
+                            var recurMeasurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+                                .Where(x => x.DeleteTime == null)
+                                .WhereRestrictionOn(x => x.Measurable.Id).IsIn(toDelete)
+                                .List();
+                            foreach (var m in recurMeasurables) {
+                                m.DeleteTime = now;
+                                s.Update(m);
                             }
                         }
+
+                        if (updateAllL10s) {
+                            var allL10s = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.User.Id == userId).List().Where(x => x.L10Recurrence.DeleteTime == null).ToList();
+
+                            foreach (var r in added) {
+                                var r1 = r;
+                                foreach (var o in allL10s.Select(x => x.L10Recurrence)) {
+
+                                    if (o.OrganizationId != caller.Organization.Id)
+                                        throw new PermissionsException("Cannot access the Level 10");
+                                    perm.UnsafeAllow(PermItem.AccessLevel.View, PermItem.ResourceType.L10Recurrence, o.Id);
+                                    perm.UnsafeAllow(PermItem.AccessLevel.Edit, PermItem.ResourceType.L10Recurrence, o.Id);
+                                    L10Accessor.AddMeasurable(s, perm, rt, o.Id, new Controllers.L10Controller.AddMeasurableVm() {
+                                        RecurrenceId = o.Id,
+                                        SelectedMeasurable = r1.Id,
+                                    });
+                                }
+                            }
+                        }
+
+                        s.SaveOrUpdate(user);
+                        user.UpdateCache(s);
+
+                        tx.Commit();
+                        s.Flush();
+
                     }
-
-					s.SaveOrUpdate(user);
-					user.UpdateCache(s);
-
-					tx.Commit();
-					s.Flush();
 				}
 			}
 		}

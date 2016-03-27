@@ -58,6 +58,10 @@
     <Reference Include="CsvHelper">
       <HintPath>..\packages\CsvHelper.2.8.2\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
+    <Reference Include="DocX, Version=1.0.0.19, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocX.1.0.0.19\lib\net40\DocX.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -841,6 +845,9 @@
     <Compile Include="Utilities\PermissionItemHelper.cs" />
     <Compile Include="Utilities\Productivity\ChromeExtensionComms.cs" />
     <Compile Include="Utilities\RandomUtil.cs" />
+    <Compile Include="Utilities\RealTime\RealTimeUtility.cs" />
+    <Compile Include="Utilities\RealTime\RecurrenceUpdater.cs" />
+    <Compile Include="Utilities\ReflectionUtility.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
@@ -949,6 +956,8 @@
     <Content Include="Scripts\Angular\Helpers\Directives\PriorityTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\RightClick.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\TableSort.js" />
+    <Content Include="Scripts\Angular\Helpers\radialModule.js" />
+    <Content Include="Scripts\Angular\Helpers\updater.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
@@ -1334,6 +1343,7 @@
     <Content Include="Views\Upload\UploadIssuesSelected.cshtml" />
     <Content Include="Views\Upload\UploadTodosSelected.cshtml" />
     <Content Include="Views\Upload\UploadRocksSelected.cshtml" />
+    <Content Include="Views\Upload\UploadVTO.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />

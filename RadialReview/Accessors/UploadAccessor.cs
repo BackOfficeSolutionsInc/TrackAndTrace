@@ -64,27 +64,40 @@ namespace RadialReview.Accessors {
                     s.Flush();
                 }
             }
+            
+            //using (var mscopy2 = new MemoryStream()) {
+                using (var mscopy = new MemoryStream()) {
+                    using (var ms = new MemoryStream()) {
+                        stream.Seek(0, SeekOrigin.Begin);
+                        await stream.CopyToAsync(ms);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        await stream.CopyToAsync(mscopy);
+                        mscopy.Seek(0, SeekOrigin.Begin);
+                        //await stream.CopyToAsync(mscopy2);
+                        //mscopy2.Seek(0, SeekOrigin.Begin);
 
-            using (var ms = new MemoryStream()) {
-                stream.Seek(0, SeekOrigin.Begin);
-                await stream.CopyToAsync(ms);
-                ms.Seek(0, SeekOrigin.Begin);
+                        var path = upload.GetPath(false);
 
-                var path = upload.GetPath(false);
+                        var fileTransferUtilityRequest = new TransferUtilityUploadRequest {
+                            BucketName = "Radial",
+                            InputStream = ms,
+                            StorageClass = S3StorageClass.ReducedRedundancy,
+                            Key = path,
+                            ContentType = contentType,
+                            CannedACL = S3CannedACL.PublicRead,
+                        };
+                        fileTransferUtilityRequest.Headers.CacheControl = "public, max-age=604800";
 
-                var fileTransferUtilityRequest = new TransferUtilityUploadRequest {
-                    BucketName = "Radial",
-                    InputStream = ms,
-                    StorageClass = S3StorageClass.ReducedRedundancy,
-                    Key = path,
-                    ContentType = contentType,
-                    CannedACL = S3CannedACL.PublicRead,
-                };
-                fileTransferUtilityRequest.Headers.CacheControl = "public, max-age=604800";
-
-                var fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.USEast1));
-                fileTransferUtility.Upload(fileTransferUtilityRequest);
-            }
+                        var fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.USEast1));
+                        await fileTransferUtility.UploadAsync(fileTransferUtilityRequest);
+                        //ms.Seek(0, SeekOrigin.Begin);
+                        upload._Data = mscopy.ReadBytes();
+                        mscopy.Seek(0, SeekOrigin.Begin);
+                        //upload._Stream = mscopy2;
+                        //upload._Stream.Seek(0, SeekOrigin.Begin);
+                    }
+                }
+           // }
             return upload;
         }
 
@@ -130,7 +143,7 @@ namespace RadialReview.Accessors {
         {
             ms.Seek(0, SeekOrigin.Begin);
             var text = ms.ReadToEnd();
-            ui.Lines = text.Split(new[] { "\r\n", "\n" },StringSplitOptions.None).ToList();
+            ui.Lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
             ui.Csv = CsvUtility.Load(text.ToStream());
 
             var dist = new DiscreteDistribution<FileType>(0, 2, true);

@@ -5,13 +5,13 @@ using System.Web;
 
 namespace RadialReview.Models.Enums
 {
-    public enum UploadType
-    {
-        Upload=0,
+    public enum UploadType {
+        Upload = 0,
         ProfileImage,
         Scorecard,
         Rocks,
         Issues,
         Todos,
+        VTO,
     }
 }

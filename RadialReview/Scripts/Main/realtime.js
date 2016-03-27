@@ -1,18 +1,18 @@
 ﻿var statusTimeout;
 $(function() {
-	try {
-		var messageHub = $.connection.messageHub;
+	//try {
+	//	var messageHub = $.connection.messageHub;
 
-		messageHub.client.showAlert = function(data, showSuccess) {
-			debugger;
-			showJsonAlert(data, showSuccess);
-		};
-		$.connection.hub.start(Constants.StartHubSettings).done(function () {
-			console.log("realtime connected");
-		});
-	} catch (e) {
-		console.error(e);
-	}
+	//	messageHub.client.showAlert = function(data, showSuccess) {
+	//		debugger;
+	//		showJsonAlert(data, showSuccess);
+	//	};
+	//	$.connection.hub.start(Constants.StartHubSettings).done(function () {
+	//		console.log("realtime connected");
+	//	});
+	//} catch (e) {
+	//	console.error(e);
+	//}
 });
 /*
 messageHub.client.unhide = function (selector) {

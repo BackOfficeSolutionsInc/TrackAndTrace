@@ -16,14 +16,31 @@ namespace RadialReview.Utilities.RealTime {
 
         protected List<Action> _actions = new List<Action>();
         protected bool Executed = false;
+        protected bool SkipExecution = false;
         private RealTimeUtility(){}
 
-        public RealTimeUtility Create(){
-            return new RealTimeUtility();
+        private RealTimeUtility(bool shouldExecute)
+        {
+            // TODO: Complete member initialization
+            SkipExecution = !shouldExecute;
+        }
+
+        public static RealTimeUtility Create(bool shouldExecute=true){
+            return new RealTimeUtility(shouldExecute);
+        }
+
+        public void DoNotExecute()
+        {
+            if (Executed)
+                throw new PermissionsException("Already executed.");
+            SkipExecution = true;
         }
 
         public bool Execute()
         {
+            if (SkipExecution)
+                return false;
+
             if (Executed)
                 throw new PermissionsException("Cannot execute again.");
             Executed = true;
@@ -40,16 +57,17 @@ namespace RadialReview.Utilities.RealTime {
             if (_updaters.ContainsKey(name))
                 return _updaters[name];
 
-            var hub = GlobalHost.ConnectionManager.GetHubContext<HUB>();
-            var group = hub.Clients.Group(name);
-            _groups[name]=group;
+            GetGroup<HUB>(name);
             var updater = new AngularUpdate();
             _updaters[name] = updater;
             return updater;
 
         }
+        public RTRecurrenceUpdater UpdateRecurrences(IEnumerable<long> recurrences){
+            return UpdateRecurrences(recurrences.ToArray());
+        }
 
-        public RTRecurrenceUpdater UpdateRecurrences(params IEnumerable<long> recurrences){
+        public RTRecurrenceUpdater UpdateRecurrences(params long[] recurrences){
             return new RTRecurrenceUpdater(recurrences, this);
         }
 
@@ -57,7 +75,16 @@ namespace RadialReview.Utilities.RealTime {
         {
             _actions.Add(a);
         }
-      
+
+        protected dynamic GetGroup<HUB>(string name) where HUB : IHub
+        {
+            if (_groups.ContainsKey(name))
+                return _groups[name];
+            var hub = GlobalHost.ConnectionManager.GetHubContext<HUB>();
+            var group = hub.Clients.Group(name);
+            _groups[name] = group;
+            return group;
+        }
 
         public void Dispose()
         {

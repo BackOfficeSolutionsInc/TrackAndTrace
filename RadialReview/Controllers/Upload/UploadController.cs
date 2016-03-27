@@ -19,6 +19,7 @@ using System.Globalization;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models;
 using RadialReview.Models.Scorecard;
+using Novacode;
 
 namespace RadialReview.Controllers {
     public partial class UploadController : BaseController {
@@ -76,8 +77,8 @@ namespace RadialReview.Controllers {
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Recurrence(recurrence));
             ViewBag.RecurrenceId = recurrence;
             var title = id.ToTitleCase();
-            ViewBag.Title = "Upload "+title;
-            ViewBag.UploadScript = "Upload"+title+".js";
+            ViewBag.Title = "Upload " + title;
+            ViewBag.UploadScript = "Upload" + title + ".js";
 
             return View("UploadL10");
         }
@@ -105,6 +106,42 @@ namespace RadialReview.Controllers {
                 return Json(ResultObject.CreateError("An error has occurred. " + e.Message));
             }
         }
+
+        [Access(AccessLevel.UserOrganization)]
+        [HttpGet]
+        public ActionResult UploadVTO(long recurrenceId)
+        {
+            ViewBag.RecurrenceId = recurrenceId;
+            return View();
+        }
+
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<ActionResult> UploadVTO(long recurrenceId, HttpPostedFileBase file)
+        {
+            using (var ms = new MemoryStream()) {
+                await file.InputStream.CopyToAsync(ms);
+                file.InputStream.Seek(0, SeekOrigin.Begin);
+                _PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrenceId));
+                var upload = await UploadAccessor.UploadFile(GetUser(), UploadType.VTO, file, ForModel.Create<L10Recurrence>(recurrenceId));
+                var doc = DocX.Load(ms);
+                var sections = doc.GetSections();
+
+
+                var vto = VtoAccessor.UploadVtoForRecurrence(GetUser(), doc, recurrenceId);
+
+
+                var a = 0;
+               
+
+                return RedirectToAction("Edit","VTO",new{id=vto.Id});
+            }
+
+
+
+
+        }
+
 
         #region Comments
         //[Access(AccessLevel.UserOrganization)]
@@ -306,6 +343,6 @@ namespace RadialReview.Controllers {
         //    return RedirectToAction("Index", "Upload");
         //}
         #endregion
-        
+
     }
 }

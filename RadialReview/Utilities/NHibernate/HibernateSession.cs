@@ -168,12 +168,16 @@ namespace RadialReview.Utilities
                                 //DbFile = file;
                                 //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
                                // var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
-                               // DbFile = file;
 
-                                string Path = System.Environment.CurrentDirectory;
+
+                                string Path = "C:\\UITests";//Config.GetAppSetting("DBPATH");//System.Environment.CurrentDirectory;
+                                if (!Directory.Exists(Path))
+                                    Directory.CreateDirectory(Path);
+                                DbFile = Path+"\\_testdb.db";
                                // string[] appPath = Path.Split(new string[] { "bin" }, StringSplitOptions.None);
                                 AppDomain.CurrentDomain.SetData("DataDirectory", Path);
                                 var connectionString = "Data Source=|DataDirectory|\\_testdb.db";
+                                //var connectionString = "Data Source =" + Path;
                                 try
                                 {
                                     var c = new Configuration();
@@ -184,7 +188,7 @@ namespace RadialReview.Utilities
                                     {
                                         m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                            .Conventions.Add<StringColumnLengthConvention>();
-                                        m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite\");
+                                       // m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite\");
                                         //m.AutoMappings.Add(CreateAutomappings);
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
@@ -314,13 +318,13 @@ namespace RadialReview.Utilities
         private static void BuildSchema(Configuration config)
         {
             // delete the existing db on each run
-            if (!File.Exists(DbFile))
-            {
-                new SchemaExport(config).Create(false, true);
-            }
-            else
-            {
-                new SchemaUpdate(config).Execute(false, true);
+            if (Config.ShouldUpdateDB()) {
+                if (!File.Exists(DbFile)) {
+                    new SchemaExport(config).Create(false, true);
+                } else {
+                    new SchemaUpdate(config).Execute(false, true);
+                }
+                Config.DbUpdateSuccessful();
             }
 
             var auditEvents = new AuditEventListener();
@@ -417,9 +421,12 @@ namespace RadialReview.Utilities
             //UPDATE DATABASE:
             var updates = new List<string>();
             //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(1);
-            var su = new SchemaUpdate(config);
-            //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(2);
-            su.Execute(updates.Add, true);
+
+            if (Config.ShouldUpdateDB()) {
+                var su = new SchemaUpdate(config);
+                su.Execute(updates.Add, true);
+                Config.DbUpdateSuccessful();
+            }
             //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(3);
 
             var end = sw.Elapsed;

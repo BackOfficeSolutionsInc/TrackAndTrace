@@ -19,6 +19,7 @@ using System.Globalization;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models;
 using RadialReview.Models.Scorecard;
+using RadialReview.Utilities.RealTime;
 
 namespace RadialReview.Controllers {
     public partial class UploadController : BaseController {
@@ -119,54 +120,56 @@ namespace RadialReview.Controllers {
             var measurableLookup = new Dictionary<int, MeasurableModel>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var org = s.Get<L10Recurrence>(recurrence).Organization;
-                    var perms = PermissionsUtility.Create(s, caller).ViewOrganization(org.Id);
-                    foreach (var m in measurables) {
-                        var ident = m.Key;
-                        var owner = users[ident];
-                        var goal = goals[ident];
-                        var goaldir = goalDirs[ident];
-                        var measurable = new MeasurableModel() {
-                            Title = m.Value,
-                            OrganizationId = org.Id,
-                            Goal = goal,
-                            GoalDirection = goaldir,
-                            AccountableUserId = owner,
-                            AdminUserId = owner,
-                            CreateTime = now
-                        };
+                    using (var rt = RealTimeUtility.Create(false)) {
+                        var org = s.Get<L10Recurrence>(recurrence).Organization;
+                        var perms = PermissionsUtility.Create(s, caller).ViewOrganization(org.Id);
+                        foreach (var m in measurables) {
+                            var ident = m.Key;
+                            var owner = users[ident];
+                            var goal = goals[ident];
+                            var goaldir = goalDirs[ident];
+                            var measurable = new MeasurableModel() {
+                                Title = m.Value,
+                                OrganizationId = org.Id,
+                                Goal = goal,
+                                GoalDirection = goaldir,
+                                AccountableUserId = owner,
+                                AdminUserId = owner,
+                                CreateTime = now
+                            };
 
-                        L10Accessor.AddMeasurable(s, perms, recurrence, L10Controller.AddMeasurableVm.CreateNewMeasurable(recurrence, measurable), skipRealTime: true);
-                        measurableLookup[ident] = measurable;
-                        var scoreRow = measurableRectType == "Row"
-                            ? new Rect(scoreRect.MinX, scoreRect.MinY + ident, scoreRect.MaxX, scoreRect.MinY + ident)
-                            : new Rect(scoreRect.MinX + ident, scoreRect.MinY, scoreRect.MinX + ident, scoreRect.MaxY);
+                            L10Accessor.AddMeasurable(s, perms,rt, recurrence, L10Controller.AddMeasurableVm.CreateNewMeasurable(recurrence, measurable), skipRealTime: true);
+                            measurableLookup[ident] = measurable;
+                            var scoreRow = measurableRectType == "Row"
+                                ? new Rect(scoreRect.MinX, scoreRect.MinY + ident, scoreRect.MaxX, scoreRect.MinY + ident)
+                                : new Rect(scoreRect.MinX + ident, scoreRect.MinY, scoreRect.MinX + ident, scoreRect.MaxY);
 
-                        var scoresFound = scoreRow.GetArray1D(csvData, x => x.TryParseDecimal());
+                            var scoresFound = scoreRow.GetArray1D(csvData, x => x.TryParseDecimal());
 
-                        for (var i = 0; i < dates.Count; i++) {
-                            var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday));
-                            var score = scoresFound[i];
-                            L10Accessor._UpdateScore(s, perms, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
+                            for (var i = 0; i < dates.Count; i++) {
+                                var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday));
+                                var score = scoresFound[i];
+                                L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
+                            }
+
+
+
                         }
+                        var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+                            .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
+                            .Select(x => x.User.Id)
+                            .List<long>().ToList();
 
-
-
+                        foreach (var u in users.Where(x => !existing.Any(y => y == x.Value)).Select(x => x.Value).Distinct()) {
+                            s.Save(new L10Recurrence.L10Recurrence_Attendee() {
+                                User = s.Load<UserOrganizationModel>(u),
+                                L10Recurrence = s.Load<L10Recurrence>(recurrence),
+                                CreateTime = now,
+                            });
+                        }
+                        tx.Commit();
+                        s.Flush();
                     }
-                    var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
-                        .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
-                        .Select(x => x.User.Id)
-                        .List<long>().ToList();
-
-                    foreach (var u in users.Where(x => !existing.Any(y => y == x.Value)).Select(x => x.Value).Distinct()) {
-                        s.Save(new L10Recurrence.L10Recurrence_Attendee() {
-                            User = s.Load<UserOrganizationModel>(u),
-                            L10Recurrence = s.Load<L10Recurrence>(recurrence),
-                            CreateTime = now,
-                        });
-                    }
-                    tx.Commit();
-                    s.Flush();
                 }
             }
 

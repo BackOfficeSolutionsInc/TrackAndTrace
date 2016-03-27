@@ -1,4 +1,8 @@
-﻿
+﻿<div class="btn-group pull-right" style="padding: 5px 0px;">
+    <div class="btn btn-default btn-xs rockModal" data-recurrence="{{::meetingId}}"><span class="icon fontastic-icon-science-laboratory"></span> Add Rock</div>
+</div>
+
+
 <div class="scorecard meeting-page" style="clear: both;">
     <div class="row">
         <div class="col-md-12" click-anywhere-but-here="model.Selected = -1">
@@ -14,3 +18,11 @@
         </div>
     </div>
 </div>
+@using (Html.BeginScripts()) {
+    <script>
+        $("body").on("click", ".rockModal", function () {
+            var m = $(this).data("recurrence");
+            showModal('Add Rock', '/L10/AddRock/' + m, '/L10/AddRock/');
+        });
+    </script>
+}

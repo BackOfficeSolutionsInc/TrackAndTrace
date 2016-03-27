@@ -6,8 +6,29 @@ using System.Web;
 
 namespace RadialReview.Utilities
 {
-	public class FileUtilities
+	public static class FileUtilities
 	{
+        public static bool IsFileLocked(this FileInfo file)
+        {
+            FileStream stream = null;
+
+            try {
+                stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+            } catch (IOException) {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            } finally {
+                if (stream != null)
+                    stream.Close();
+            }
+
+            //file is not locked
+            return false;
+        }
+
 		public static string[] WriteSafeReadAllLines(String path)
 		{
 			using (var csv = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))

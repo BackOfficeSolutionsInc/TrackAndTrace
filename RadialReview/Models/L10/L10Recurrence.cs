@@ -10,6 +10,14 @@ using RadialReview.Models.Scorecard;
 
 namespace RadialReview.Models.L10
 {
+    public enum PrioritizationType {
+        Invalid=0,
+        [Display(Name="By Priority")]
+        Priority,
+        [Display(Name="By Rank (1,2,3)")]
+        Rank,
+    }
+
 	public class L10Recurrence : ILongIdentifiable,IDeletable
 	{
 		public virtual long Id { get; set; }
@@ -59,6 +67,8 @@ namespace RadialReview.Models.L10
 
         public virtual bool IsLeadershipTeam { get; set; }
 
+        public virtual PrioritizationType Prioritization { get; set; }
+
 		public L10Recurrence()
 		{
 			VideoId = Guid.NewGuid().ToString();
@@ -75,6 +85,8 @@ namespace RadialReview.Models.L10
 			EnableTranscription = false;
             CountDown = true;
             IsLeadershipTeam = true;
+            Prioritization = PrioritizationType.Rank;
+
 		}
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence>
@@ -110,6 +122,8 @@ namespace RadialReview.Models.L10
 				Map(x => x.DefaultTodoOwner);
 				Map(x => x.IncludeIndividualTodos);
 				Map(x => x.IncludeAggregateTodoCompletion);
+
+                Map(x => x.Prioritization).CustomType<PrioritizationType>();
 
 				Map(x => x.OrganizationId).Column("OrganizationId");
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();

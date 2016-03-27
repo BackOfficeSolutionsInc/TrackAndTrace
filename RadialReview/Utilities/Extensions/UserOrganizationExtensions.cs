@@ -173,7 +173,7 @@ namespace RadialReview
 		{
 			var hash = 0;
 			var str = user.GetName();
-			if (str.Length != 0)
+			if (str!=null && str.Length != 0)
 			{
 				foreach (var chr in str)
 				{
@@ -188,7 +188,7 @@ namespace RadialReview
 		{
 			var hash = 0;
 			var str = user.Name();
-			if (str.Length != 0)
+			if (str!=null && str.Length != 0)
 			{
 				foreach (var chr in str)
 				{

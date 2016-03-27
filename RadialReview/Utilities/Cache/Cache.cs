@@ -143,7 +143,7 @@ namespace RadialReview
 			var found = ((CacheItem)Context.Items[key]);
 			if (found == null)
 				found = ((CacheItem)Context.Cache[key]);
-			if (found == null)
+			if (found == null && Context.Session !=null)
 				found = ((CacheItem)Context.Session[key]);
 
 			if (found != null && (found.Expires == null || found.Expires >= DateTime.UtcNow))

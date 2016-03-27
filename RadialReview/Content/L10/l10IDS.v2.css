@@ -68,6 +68,8 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    
+    cursor:copy;
 }
 
 .ids .priority .hoverable {
@@ -716,3 +718,51 @@ body.dragging, body.dragging * {
     width:44px;
 }
 
+
+.issues-container .rank123[data-rank='0']{    
+    background-color: #B9B9B9;
+}
+
+.issues-container .rank123{    
+    display: none;
+    width: 23px;
+    float: left;
+    height: 14px;
+    top: 2px;
+    position: relative;
+    left: -16px;
+    text-align: center;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 11px;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin: 0px 4px;
+    padding-top:2px;
+    cursor:copy;
+}
+
+.issues-container.prioritization-Rank .number-priority .rank123  {
+    display:inline-block;
+}
+
+.issues-container.prioritization-Rank .number-priority .priority{
+    display:none;
+}
+
+.ids .show-priority,
+.ids .show-rank {
+    display:none;
+}
+
+.ids.prioritization-Priority .show-priority {
+    display:block;
+}
+.ids.prioritization-Rank .show-rank {
+    display:block;
+}

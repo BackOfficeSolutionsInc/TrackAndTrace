@@ -12,6 +12,7 @@ using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities.DataTypes;
 using System.Globalization;
+using System.Threading;
 
 namespace RadialReview.Utilities
 {
@@ -145,6 +146,13 @@ namespace RadialReview.Utilities
             if (includeNextWeek)
                 arg = arg.AddDays(7);
 
+            var offsetObj = Thread.GetData(Thread.GetNamedDataSlot("timeOffset"));
+            var diff = timezoneOffset;
+            if (offsetObj != null) {
+                diff = (int)Math.Round((double)offsetObj);
+            }
+
+
             e = Math2.Max(arg, e);
             //if (StartDate >= EndDate)
             //	throw new PermissionsException("Date ordering incorrect");
@@ -157,11 +165,11 @@ namespace RadialReview.Utilities
                 if (meetingStart.NotNull(x => s1 <= x.Value && x.Value < next))
                     currWeek = true;
                 //var j = s.AddDays(-7);
-                var displayDate = s.AddDays(-7).AddDays(6).StartOfWeek(weekStart);
+                var displayDate = s.AddDays(-7).AddDays(6).StartOfWeek(weekStart).AddMinutes(-diff);
                 weeks.Add(new L10MeetingVM.WeekVM()
                 {
                     DisplayDate = displayDate,
-                    StartDate = displayDate.AddMinutes(-timezoneOffset),
+                    StartDate = displayDate.AddMinutes(-diff),
                     ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
                     IsCurrentWeek = currWeek,
                 });

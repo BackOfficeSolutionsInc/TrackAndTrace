@@ -121,6 +121,11 @@ namespace RadialReview.Controllers
             if (user != null && Request != null)
             {
 				user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
+                if (user._ClientTimestamp!=null)
+                {
+                    var diff = (DateTime.UtcNow - user._ClientTimestamp.Value.ToDateTime()).TotalMinutes;
+                    Thread.SetData(Thread.GetNamedDataSlot("timeOffset"), diff);
+                }
 			}
 			return user;
 		}
@@ -602,6 +607,9 @@ namespace RadialReview.Controllers
 							var hints = true;
 							try{
 								oneUser = GetUser(s);
+                                if (oneUser == null)
+                                    throw new NoUserOrganizationException();
+
 								var lu = s.Get<UserLookup>(oneUser.Cache.Id);
 								if (!GetUserModel(s).IsRadialAdmin){
 									lu.LastLogin = DateTime.UtcNow;

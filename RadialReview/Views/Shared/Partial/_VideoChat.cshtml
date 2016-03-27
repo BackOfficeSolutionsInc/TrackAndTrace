@@ -1,216 +1,247 @@
-﻿@if (ViewBag.VideoChatRoom is long)
-{
-	<div class="videoconference-container footer-bar-container" data-height="128px">
-		<div class="video-overlay hidden1"><video src='' autoplay=""></video></div>
+﻿@if (ViewBag.VideoChatRoom is long) {
+    <div class="videoconference-container footer-bar-container" data-height="128px">
+        <div class="video-overlay hidden1"><video src='' autoplay=""></video></div>
 
-		<div class="uncollapser footer-bar-tab noselect "><span class="clicker">Video Conference</span><span class="sendAudio icon fontastic-icon-mic-no"></span><span class="sendVideo icon fontastic-icon-eye-slash-close"></span></div>
-		<div class="video-bar footer-bar-contents">
-			@*<div class="collapser">Hide</div>*@
-			<div class="start-conference start-video btn btn-xs btn-success " >Join Conference</div>
-			@*<div class="start-conference start-screenshare btn btn-xs btn-default">Share Screen</div>*@
-			<a target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers" class="experimental">This experimental feature is built on WebRTC. It will only work on Chrome, Opera, and Firefox.</a>
-		</div>
-	</div>
-	using (Html.BeginStyles())
-	{
-		<style>
-			.volume {
-				width: 20px;
-				height: 30px;
-				float: right;
-			}
+        <div class="uncollapser footer-bar-tab noselect "><span class="clicker">Video Conference</span><span class="sendAudio icon fontastic-icon-mic-no"></span><span class="sendVideo icon fontastic-icon-eye-slash-close"></span></div>
+        <div class="video-bar footer-bar-contents">
+            @*<div class="collapser">Hide</div>*@
+            <div class="start-conference start-video btn btn-xs btn-success ">Join Conference</div>
+            @*<div class="start-conference start-screenshare btn btn-xs btn-default">Share Screen</div>*@
+            <a target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers" class="experimental">This experimental feature is built on WebRTC. It will only work on Chrome, Opera, and Firefox.</a>
+        </div>
+    </div>
+    using (Html.BeginStyles()) {
+        <style>
+            .volume {
+                width: 20px;
+                height: 30px;
+                float: right;
+            }
 
-			.volume-bar {
-				width: 10px;
-				height: 5px;
-				background-color: rgba(255, 0, 0, 0.2);
-				display: inline-block;
-				float: right;
-			}
-		</style>
-	}
-	using (Html.BeginScripts())
-	{
-		<script>
-			var VideoChatRoomId = @((long)ViewBag.VideoChatRoom);
-			var ICE_SERVERS = null;
+            .volume-bar {
+                width: 10px;
+                height: 5px;
+                background-color: rgba(255, 0, 0, 0.2);
+                display: inline-block;
+                float: right;
+            }
+        </style>
+    }
+    using (Html.BeginScripts()) {
+        <script>
+            var VideoChatRoomId = @((long)ViewBag.VideoChatRoom);
+            var ICE_SERVERS = null;
 
-			$.ajax({
-				url: "/WebRtc/getIceServers?room=" + VideoChatRoomId,
-				success: function(data) {
-					ICE_SERVERS = data;
-				},
-				error:function(data) {
-					ICE_SERVERS = [{ url: 'stun:74.125.142.127:19302' }];
-				}
-			});
+            $.ajax({
+                url: "/WebRtc/getIceServers?room=" + VideoChatRoomId,
+                success: function(data) {
+                    ICE_SERVERS = data;
+                },
+                error:function(data) {
+                    ICE_SERVERS = [{ url: 'stun:74.125.142.127:19302' }];
+                }
+            });
 
-		</script>
+        </script>
 
-		<script src="~/Scripts/L10/AV/adapter.js"></script>
-		<script src="~/Scripts/L10/AV/connectionManager.js"></script>
-		<script src="~/Scripts/L10/AV/app.js"></script>
-	}
+        <script src="~/Scripts/L10/AV/adapter.js"></script>
+        <script src="~/Scripts/L10/AV/connectionManager.js"></script>
+        <script src="~/Scripts/L10/AV/app.js"></script>
+    }
 }
 
-@if (ViewBag.VideoChatRoom is RadialReview.Models.VideoConference.VideoConferenceVM)
-{
-	var MM = (RadialReview.Models.VideoConference.VideoConferenceVM)ViewBag.VideoChatRoom;
-	<div class="videoconference-container footer-bar-container" data-height="128px" style="bottom:-128px;">
-		<div class="video-overlay hidden1"><video src='' autoplay=""></video></div>
+@if (ViewBag.VideoChatRoom is RadialReview.Models.VideoConference.VideoConferenceVM) {
+    var MM = (RadialReview.Models.VideoConference.VideoConferenceVM)ViewBag.VideoChatRoom;
+    <div class="videoconference-container footer-bar-container" data-height="128px" style="bottom:-128px;">
+        <div class="video-overlay hidden1"><video src='' autoplay=""></video></div>
 
-		<div class="uncollapser footer-bar-tab noselect"><span class="clicker">Video Conference</span><span class="sendAudio icon fontastic-icon-mic-no"></span><span class="sendVideo icon fontastic-icon-eye-slash-close"></span><span class="icon fontastic-icon-share" onclick="showTextAreaModal('Share this link with attendees',noop,'@(Html.GetBaseUrl("/Video/Join/"+MM.RoomId))')"></span></div>
-		<div class="video-bar footer-bar-contents">
-			@*<div class="collapser">Hide</div>*@
-			<div class="start-conference start-video btn btn-xs btn-success">Join Conference</div>
-			@*<div class="start-conference start-screenshare btn btn-xs btn-default">Share Screen</div>*@
-			<a target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers" class="experimental">This experimental feature is built on WebRTC. It will only work on Chrome, Opera, and Firefox.</a>
-		</div>
-	</div>
-	using (Html.BeginStyles())
-	{
-		<style>
-			.volume {
-				width: 20px;
-				height: 30px;
-				float: right;
-			}
+        <div class="uncollapser footer-bar-tab noselect"><span class="clicker">Video Conference</span><span class="sendAudio icon fontastic-icon-mic-no"></span><span class="sendVideo icon fontastic-icon-eye-slash-close"></span><span class="icon fontastic-icon-share" onclick="showTextAreaModal('Share this link with attendees',noop,'@(Html.GetBaseUrl("/Video/Join/"+MM.RoomId))')"></span></div>
+        <div class="video-bar footer-bar-contents">
+            @*<div class="collapser">Hide</div>*@
+            <div class="start-conference start-video btn btn-xs btn-success">Join Conference</div>
+            @*<div class="start-conference start-screenshare btn btn-xs btn-default">Share Screen</div>*@
+            <a target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers" class="experimental">This experimental feature is built on WebRTC. It will only work on Chrome, Opera, and Firefox.</a>
+        </div>
+    </div>
+    using (Html.BeginStyles()) {
+        <style>
+            .volume {
+                width: 20px;
+                height: 30px;
+                float: right;
+            }
 
-			.volume-bar {
-				width: 10px;
-				height: 5px;
-				background-color: rgba(255, 0, 0, 0.2);
-				display: inline-block;
-				float: right;
-			}
-		</style>
-	}
+            .volume-bar {
+                width: 10px;
+                height: 5px;
+                background-color: rgba(255, 0, 0, 0.2);
+                display: inline-block;
+                float: right;
+            }
+
+            .videoconference-container.disabled .collapser {
+                background-color: #EEEEEE;
+                color: #CCCCCC;
+                border: 1px solid #CCCCCC;
+                /* background-color: white; */
+                cursor: no-drop;
+            }
+        </style>
+    }
 
 
-	using (Html.BeginScripts())
-	{
+    using (Html.BeginScripts()) {
 
-		<script src="@Html.VideoConferenceUrl("/RTCMultiConnection.js")"></script>
-		<script src="@Html.VideoConferenceUrl("/dev/FileBufferReader.js")"></script>
-		<script src="@Html.VideoConferenceUrl("/socket.io/socket.io.js")"></script>
-		<script src="/Scripts/video/hark.js"></script>
+        <script src="@Html.VideoConferenceUrl("/RTCMultiConnection.js")"></script>
+        <script src="@Html.VideoConferenceUrl("/dev/FileBufferReader.js")"></script>
+        <script src="@Html.VideoConferenceUrl("/socket.io/socket.io.js")"></script>
+        <script src="/Scripts/video/hark.js"></script>
         <script src="~/Scripts/video/video.js"></script>
-    	@*@Scripts.Render("~/bundles/Video")*@
+        @*@Scripts.Render("~/bundles/Video")*@
 
-		<script>
+        <script>
             function noop() {
                 return "";
             }
-			var chatContainer = document.querySelector('.chat-output');
+            var chatContainer = document.querySelector('.chat-output');
 
-			var connection = new RTCMultiConnection("@MM.RoomId");
-			connection.socketURL = "@Html.VideoConferenceUrl():443";
-			connection.enableFileSharing = true; // by default, it is "false".
+            var connection = new RTCMultiConnection("@MM.RoomId");
 
-			connection.extra = {name: "@ViewBag.UsersName"};
-			connection.session = {audio: true, video: true, data: true};
-			connection.sdpConstraints.mandatory = {OfferToReceiveAudio: true,OfferToReceiveVideo: true};
-            
-			connection.bandwidth = {
-			    video: 256,    // 256kbps
+            //var browser = (connection.DetectRTC.browser.name||"").toLowerCase();
+
+            //if(!(browser=="chrome" || browser=="firefox")) {
+            //    //cant use browser
+            //    $(".videoconference-container").addClass("disabled");
+            //    console.log("browser not compatible with video");
+            //}
+
+            connection.socketURL = "@Html.VideoConferenceUrl():443";
+            connection.enableFileSharing = true; // by default, it is "false".
+
+            connection.extra = {name: "@ViewBag.UsersName"};
+            connection.session = {
+                audio: true, video: true, data: true};
+            connection.sdpConstraints.mandatory = {
+                OfferToReceiveAudio: true,OfferToReceiveVideo: true
+            };
+
+            connection.bandwidth = {
+                video: 256,    // 256kbps
                 audio: 128,
-			};
+            };
 
-			connection.onstream = function(event) {
-				event.mediaElement.controls = false;
-				var streamId = event.streamid;
-				var name = "";
-				if (event.extra && event.extra.name){
-					name = event.extra.name;
-				}
-				var container = $("<div class='video-container streamid_" + streamId + "'>"+/*"<video src='' height='116px' autoplay/>"+*/"<div class='video-name'>" + name + "</div><div class='volume'></div><div class='no-mic-icon icon fontastic-icon-mic-no'></div></div>");
-				$(".video-bar").append(container);
+            connection.onstream = function(event) {
+                console.log("adding stream!");
+                console.log(event.mediaElement);
+                event.mediaElement.controls = false;
+                var streamId = event.streamid;
+                var name = "";
+                if (event.extra && event.extra.name){
+                    name = event.extra.name;
+                }
+                var container = $("<div class='video-container streamid_" + streamId + "'>"+/*"<video src='' height='116px' autoplay/>"+*/"<div class='video-name'>" + name + "</div><div class='volume'></div><div class='no-mic-icon icon fontastic-icon-mic-no'></div></div>");
+                $(".video-bar").append(container);
 
-				var otherVideo = $(".video-container.streamid_" + streamId + " video")[0];
-				$(event.mediaElement).css({"height":"116px","max-width":"154px;"});
-				if (event.type == "local") {
-					container.prepend(event.mediaElement);
-					container.addClass("mine");
-					container.find(".video-name").html("You");
-					$(".videoconference-container .sendVideo").removeClass("fontastic-icon-eye-slash-close");
-					$(".videoconference-container .sendAudio").removeClass("fontastic-icon-mic-no");
-					$(".videoconference-container .sendVideo").addClass("fontastic-icon-eye-2");
-					$(".videoconference-container .sendAudio").addClass("fontastic-icon-mic");
-				}else{
-					container.append(event.mediaElement);
-				}
-			};
+                var otherVideo = $(".video-container.streamid_" + streamId + " video")[0];
+                $(event.mediaElement).css({"height":"116px","max-width":"154px;"});
+                if (event.type == "local") {
+                    container.prepend(event.mediaElement);
+                    container.addClass("mine");
+                    container.find(".video-name").html("You");
+                    $(".videoconference-container .sendVideo").removeClass("fontastic-icon-eye-slash-close");
+                    $(".videoconference-container .sendAudio").removeClass("fontastic-icon-mic-no");
+                    $(".videoconference-container .sendVideo").addClass("fontastic-icon-eye-2");
+                    $(".videoconference-container .sendAudio").addClass("fontastic-icon-mic");
+                    $(".start-video").addClass("hidden");
+                }else{
+                    container.append(event.mediaElement);
+                }
+            };
 
-			connection.onstreamended = function(event) {
-				var streamId = event.streamid;
-				$(".streamid_" + streamId).remove();
-			};
-			connection.onspeaking = function(e) {
-				$(e.mediaElement).parent(".video-container").addClass("speaking");
-				connection.send({
-					speaking: true,
-					streamid: e.streamid
-				});
-			};
-			connection.onsilence = function(e) {
-				$(e.mediaElement).parent(".video-container").removeClass("speaking");
-				connection.send({
-					silent: true,
-					streamid: e.streamid
-				});
-			};
-			function appendDIV(event) {
-				var div = document.createElement('div');
-				div.innerHTML = event.data || event;
-				chatContainer.insertBefore(div, chatContainer.firstChild);
-				div.tabIndex = 0; div.focus();
-				document.getElementById('input-text-chat').focus();
-			}
+            connection.onstreamended = function(event) {
+                var streamId = event.streamid;
+                $(".streamid_" + streamId).remove();
+            };
+            connection.onspeaking = function(e) {
+                $(e.mediaElement).parent(".video-container").addClass("speaking");
+                connection.send({
+                    speaking: true,
+                    streamid: e.streamid
+                });
+            };
+            connection.onsilence = function(e) {
+                $(e.mediaElement).parent(".video-container").removeClass("speaking");
+                connection.send({
+                    silent: true,
+                    streamid: e.streamid
+                });
+            };
+            function appendDIV(event) {
+                var div = document.createElement('div');
+                div.innerHTML = event.data || event;
+                chatContainer.insertBefore(div, chatContainer.firstChild);
+                div.tabIndex = 0; div.focus();
+                document.getElementById('input-text-chat').focus();
+            }
 
-			connection.onmessage = function(event) {
-				if(event.data.speaking || event.data.silent) {
-					//var streamObject = connection.streams[event.data.streamid];
-					if(event.data.speaking)
-						$(".video-container.streamid_"+event.data.streamid).addClass("speaking");
-					else
-						$(".video-container.streamid_"+event.data.streamid).removeClass("speaking");
-				}else{
-					appendDIV(event);
-				}
+            connection.onmessage = function(event) {
+                if(event.data.speaking || event.data.silent) {
+                    //var streamObject = connection.streams[event.data.streamid];
+                    if(event.data.speaking)
+                        $(".video-container.streamid_"+event.data.streamid).addClass("speaking");
+                    else
+                        $(".video-container.streamid_"+event.data.streamid).removeClass("speaking");
+                }else{
+                    appendDIV(event);
+                }
 
-			};
-			connection.filesContainer = $('.file-container');
+            };
+            connection.filesContainer = $('.file-container');
 
-			connection.onopen = function() {
-				//$('.share-file').disabled = false;
-				//$('.input-text-chat').disabled = false;
-			};
+            connection.onopen = function() {
+                //$('.share-file').disabled = false;
+                //$('.input-text-chat').disabled = false;
+            };
 
-			$(function() {
-				setTimeout(function() {
-					try {
-						//connection.session.oneway = true;
-					    //connection.join();
-					    connection.join(false, {
-					        localPeerSdpConstraints: {
-					            OfferToReceiveAudio: true,
-					            OfferToReceiveVideo: true
-					        },
-					        remotePeerSdpConstraints: {
-					            OfferToReceiveAudio: true,
-					            OfferToReceiveVideo: true
-					        },
-					        isOneWay: true,
-					        isDataOnly: false
-					    });
+            $(function() {
+                setTimeout(function() {
+                    try {
+                        connection.session.oneway = true;
+                       // connection.join();
+                        connection.join(false, {
+                            localPeerSdpConstraints: {
+                                OfferToReceiveAudio: true,
+                                OfferToReceiveVideo: true
+                            },
+                            remotePeerSdpConstraints: {
+                                OfferToReceiveAudio: true,
+                                OfferToReceiveVideo: true
+                            },
+                            isOneWay: true,
+                            isDataOnly: false
+                        });
+                       // connection.session.oneway = true;
+                        //connection.session.audio=false;
+                        //connection.session.video=false;
+                        //connection.session.data=true;
+                        //connection.sdpConstraints.mandatory = {
+                        //    OfferToReceiveAudio: true,
+                        //    OfferToReceiveVideo: true
+                        //};
+                        //connection.sdpConstraints = {
+                        //    OfferToReceiveAudio: false,
+                        //    OfferToReceiveVideo: false
+                        //};
+                        //connection.openOrJoin();
 
-					} catch(e) {
-						showAlert("Could not connect to video conferencing server.");
-						console.error(e);
-					}
-				},100);
-			});
+                    } catch(e) {
+                        showAlert("Could not connect to video conferencing server.");
+                        console.error(e);
+                    }
+                },100);
+            });
 
-		</script>
-	}
+
+        </script>
+    }
 }

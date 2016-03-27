@@ -3,6 +3,7 @@ using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -20,6 +21,9 @@ namespace RadialReview.Models.Application
         public virtual Guid Identifier { get; set; }
         public virtual string MimeType { get; set; }
         public virtual ForModel ForModel { get; set; }
+        public virtual byte[] _Data { get; set; }
+        //public virtual Stream _Stream { get; set; }
+
         public UploadModel()
         {
             CreateTime = DateTime.UtcNow;
@@ -51,5 +55,6 @@ namespace RadialReview.Models.Application
                 Component(x => x.ForModel).ColumnPrefix("ForModel_");
             }
         }
+
     }
 }

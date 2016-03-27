@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewBag.Title = "Upload V/TO";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Select a V/TO to Upload</h2>
+
+
+<form action="/Upload/UploadVTO" method="post" enctype="multipart/form-data">
+
+    <div class="row">
+        <div class="col-md-3">
+            <label for="file">Filename:</label>
+        </div>
+        <div class="col-md-9">
+            <input type="file" name="File" id="file" />
+        </div>
+    </div>
+    <br />
+    <input type="hidden" name="RecurrenceId" value="@ViewBag.RecurrenceId" />
+    <div class="row">
+        <div class="col-md-3">
+            <input class="btn btn-primary" type="submit" />
+        </div>
+    </div>
+</form>

@@ -69,6 +69,7 @@ $(function () {
 	meetingHub.client.updateIssueDetails  = updateIssueDetails;
 	meetingHub.client.updateIssueOwner    = updateIssueOwner;
 	meetingHub.client.updateIssuePriority = updateIssuePriority;
+	meetingHub.client.updateIssueRank     = updateIssueRank;
 	meetingHub.client.setIssueOrder       = setIssueOrder;
 
 	meetingHub.client.createNote = createNote;

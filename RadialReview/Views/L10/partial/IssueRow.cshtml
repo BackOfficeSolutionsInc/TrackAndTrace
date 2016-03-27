@@ -11,6 +11,7 @@
     data-owner="@Model.Owner.NotNull(x=>x.GetName())"
     data-accountable="@Model.Owner.NotNull(x => x.Id)"
     data-priority="@Model.Priority"
+    data-rank="@Model.Rank"
     data-padid="@Model.Issue.PadId">
     <span class="undo-button">Undo</span>
     <input data-recurrence_issue="@Model.Id" class="issue-checkbox" type="checkbox" @(Model.CloseTime == null ? "" : "checked") />
@@ -34,14 +35,14 @@
     <div class="number-priority">
         <span class="number"></span>
         <span class="priority" data-priority="@Model.Priority"></span>
+        <span class="rank123 badge" data-rank="@Model.Rank">@Model.Rank</span>
     </div>
     <span class="profile-image">@Html.Partial("_ProfilePicture", Model.Owner)</span>
     <div class="message" data-recurrence_issue="@Model.Id">@Model.Issue.Message</div>
     <div class="issue-details-container"><div class="issue-details" data-recurrence_issue="@Model.Id">@Model.Issue.Description</div></div>
     <ol class="dd-list">
-        @foreach (var i in Model._ChildIssues.OrderBy(x => x.Ordering))
-        {
+        @foreach (var i in Model._ChildIssues.OrderBy(x => x.Ordering)) {
             @Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)
         }
-</ol>
+    </ol>
 </li>

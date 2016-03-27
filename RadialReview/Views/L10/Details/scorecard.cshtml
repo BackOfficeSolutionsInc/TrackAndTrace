@@ -109,7 +109,8 @@
                                                data-col="{{$index}}"
                                                type="text"
                                                @*ng-hide="measurable.Id<0"*@
-                                               ng-disabled="measurable.Id<0"
+                                               ng-class="{'disabled':measurable.Id<0}"
+                                               ng-disabled="measurable.Disabled"
                                                placeholder="N/A"
                                                ng-model-options="{debounce: 75}"
                                                ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)).Measured"
