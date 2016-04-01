@@ -50,6 +50,7 @@ using System.Web.WebPages.Html;
 using RadialReview.Models.VTO;
 using RadialReview.Models.Angular.VTO;
 using RadialReview.Utilities.RealTime;
+using RadialReview.Models.Periods;
 
 namespace RadialReview.Accessors {
     public class L10Accessor : BaseAccessor {
@@ -2064,7 +2065,7 @@ namespace RadialReview.Accessors {
             }
         }*/
 
-        public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime updateTime, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null,int? rank=null)
+        public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime updateTime, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -2077,7 +2078,7 @@ namespace RadialReview.Accessors {
                     var recurrenceId = issue.Recurrence.Id;
                     if (recurrenceId == 0)
                         throw new PermissionsException("Meeting does not exist.");
-                    var perms=PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
+                    var perms = PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
 
                     var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
                     var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), connectionId);
@@ -2116,30 +2117,30 @@ namespace RadialReview.Accessors {
                         issue.LastUpdate_Priority = updateTime;
                         var old = issue.Rank;
                         issue.Rank = rank.Value;
-                        group.updateIssueRank(issueRecurrenceId, issue.Rank);
+                        group.updateIssueRank(issueRecurrenceId, issue.Rank, true);
                         updatesText.Add("Rank from " + old + " to " + issue.Rank);
                         s.Update(issue);
-                        if (rank.Value == 0) {
-                            var current = _GetCurrentL10Meeting(s,perms,recurrenceId,true,false,false);
-                            var q = s.QueryOver<IssueModel.IssueModel_Recurrence>();
-                            if (current == null)
-                                q = q.Where(x => x.CloseTime == null);
-                            else
-                                q = q.Where(x => x.CloseTime == null || x.CloseTime > current.StartTime);
+                        //if (rank.Value == 0) {
+                        //    var current = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false);
+                        //    var q = s.QueryOver<IssueModel.IssueModel_Recurrence>();
+                        //    if (current == null)
+                        //        q = q.Where(x => x.CloseTime == null);
+                        //    else
+                        //        q = q.Where(x => x.CloseTime == null || x.CloseTime > current.StartTime);
 
-                            var ranks =  q.Where(x => x.Rank != 0).List().OrderBy(x=>x.Rank).ToList();
-                            var last = 0;
+                        //    var ranks = q.Where(x => x.Rank != 0).List().OrderBy(x => x.Rank).ToList();
+                        //    var last = 0;
 
-                            foreach (var r in ranks) {
-                                var cur = r.Rank;
-                                if (cur!=last+1){
-                                    r.Rank = last + 1;
-                                    cur = last + 1;
-                                    s.Update(r);
-                                }
-                                last = cur;
-                            }
-                        }
+                        //    foreach (var r in ranks) {
+                        //        var cur = r.Rank;
+                        //        if (cur != last + 1) {
+                        //            r.Rank = last + 1;
+                        //            cur = last + 1;
+                        //            s.Update(r);
+                        //        }
+                        //        last = cur;
+                        //    }
+                        //}
                     }
                     var now = DateTime.UtcNow;
                     if (complete != null) {
@@ -3460,6 +3461,46 @@ namespace RadialReview.Accessors {
                     tx.Commit();
                     s.Flush();
                     return issueRecur;
+                }
+            }
+        }
+
+        public static List<RockModel> GetAllMyL10Rocks(UserOrganizationModel caller, long userId, long? periodId = null)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perm = PermissionsUtility.Create(s, caller);
+
+                    perm.ViewUserOrganization(userId, true, PermissionType.EditEmployeeDetails);
+
+                    var rockList = new List<RockModel>();
+                    if (periodId != null) {
+                        try {
+                            var period = s.Get<PeriodModel>(periodId);
+                            //PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime);
+                            if (period != null && period.OrganizationId > 0) {
+                                perm.ViewOrganization(period.OrganizationId);
+
+                                //var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id).Select(x => new AngularRock(x));
+                                rockList.AddRange(RockAccessor.GetAllRocks(s, perm, userId)
+                                   .Where(x => periodId == x.PeriodId));
+                            }
+                        } catch (Exception e) {
+
+                        }
+
+                    }
+
+
+                    RockModel rock = null;
+                    rockList.AddRange(s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+                        .JoinAlias(x => x.ForRock, () => rock)
+                        .Where(x => rock.AccountableUser.Id == userId && x.DeleteTime == null && rock.DeleteTime == null)
+                        .Select(x => x.ForRock).List<RockModel>()
+                        .Distinct(x => x.Id).ToList());
+
+                    return rockList.Distinct(x => x.Id).ToList();
+
                 }
             }
         }

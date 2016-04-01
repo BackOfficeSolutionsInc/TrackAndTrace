@@ -8,12 +8,12 @@
         padding-top: 26px;
         background-color: #F7F7F7;
         box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
-	    z-index: 1;
+        z-index: 1;
     }
-	
-	.ids .notesButton {
-		 z-index: 11;
-	}
+
+.ids .notesButton {
+    z-index: 11;
+}
 
 
 .ids .number-priority {
@@ -23,15 +23,16 @@
     display: inline-block;
 }
 
-.ids .issueDetails .number-priority{
-    display:none;
+.ids .issueDetails .number-priority {
+    display: none;
 }
 
 .ids .issues-container.column .number-priority {
     float: left;
 }
+
 .ids .issues-container .issue-row .issue-row .number-priority {
-    display:none;
+    display: none;
 }
 
 .ids .number {
@@ -61,63 +62,77 @@
     font-size: 16px;
     color: #666;
     float: left;
-    cursor:pointer; 
+    cursor: pointer;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    
-    cursor:copy;
+    cursor: copy;
 }
 
-.ids .priority .hoverable {
-	opacity: .5;
-}
-.ids .priority:hover .hoverable {
-	opacity: 1;
-	font-weight: bold;
+    .ids .priority .hoverable {
+        opacity: .5;
+    }
+
+    .ids .priority:hover .hoverable {
+        opacity: 1;
+        font-weight: bold;
+    }
+
+.ids .issues-list li {
+    line-height: 14px;
 }
 
-.ids .issues-list li{
-	line-height: 14px;
-}
-
-.ids .issues-list > .issue-row.prioritize{
+.ids.prioritization-Priority .issues-list > .issue-row.prioritize,
+.ids.prioritization-Invalid .issues-list > .issue-row.prioritize {
     background-color: rgb(247, 239, 213);
     border-color: rgb(207, 200, 156);
 }
-.ids .issues-list > .issue-row.prioritize.selected{
-    background-color:rgb(249, 235, 190);
+
+    .ids.prioritization-Priority .issues-list > .issue-row.prioritize.selected,
+    .ids.prioritization-Invalid .issues-list > .issue-row.prioritize.selected {
+        background-color: rgb(249, 235, 190);
+    }
+
+    .ids.prioritization-Priority .issues-list > .issue-row.prioritize > .move-icon,
+    .ids.prioritization-Invalid .issues-list > .issue-row.prioritize > .move-icon {
+        color: rgb(168, 157, 92) !important;
+    }
+
+    .ids.prioritization-Priority .issues-list > .issue-row.prioritize.selected > .message,
+    .ids.prioritization-Priority .issues-list > .prioritize.selected > .move-icon,
+    .ids.prioritization-Priority .issues-list > .prioritize.selected > .number-priority > .number,
+    .ids.prioritization-Invalid .issues-list > .issue-row.prioritize.selected > .message,
+    .ids.prioritization-Invalid .issues-list > .prioritize.selected > .move-icon,
+    .ids.prioritization-Invalid .issues-list > .prioritize.selected > .number-priority > .number, {
+        color: rgb(137, 112, 0) !important;
+    }
+
+.ids.prioritization-Priority .priority .icon,
+.ids.prioritization-Invalid .priority .icon {
+    font-size: 11px;
+    line-height: 10px;
+    color: rgb(205, 140, 0);
 }
 
-.ids .issues-list > .issue-row.prioritize > .move-icon{
-    color: rgb(168, 157, 92) !important;
-}
-
-.ids .issues-list > .issue-row.prioritize.selected > .message,
-.ids .issues-list > .prioritize.selected > .move-icon,
-.ids .issues-list > .prioritize.selected > .number-priority > .number{
-    color: rgb(137, 112, 0) !important;
-}
-
-.ids .priority .icon {
-    font-size:11px;
-    line-height:10px;    
-    color:rgb(205, 140, 0);
-}
-
-.ids .priority.none .icon {
-    color:gray;
+.ids.prioritization-Priority .priority.none .icon,
+.ids.prioritization-Invalid .priority.none .icon {
+    color: gray;
 }
 
 .ids .priority.single-3 .icon {
-    font-size:10px;
+    font-size: 10px;
 }
 
 
-.ids .priority {  
+.ids .issue-row[data-checked="True"],
+.ids .issue-row[data-checked="true"] {
+    display: none;
+}
+
+.ids .priority {
     font-size: 9px;
 }
 
@@ -213,13 +228,13 @@ ol.sortable li {
 }
 
 .issues-list > .issue-row > .issue-checkbox {
-    /*display: inline-block;
-	position: relative;
-	left: -24px;*/
     display: inline-block;
     position: relative;
-    left: -24px;
+    left: -26px;
     top: -6px;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
 }
 
 
@@ -279,7 +294,7 @@ ol.sortable li {
     display: inline-block;
     position: relative;
     top: -3px;
-    left: -16px;
+    left: -11px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -304,20 +319,22 @@ ol.sortable li {
 .issues-list .issue-row .btn-group .issuesButton {
     color: gray;
 }
+
 .issues-list .issue-row .btn-group .vtoButton {
     color: gray;
     top: 2px;
 }
+
 .issues-list .issue-row.undoable {
     border-color: #CCCCCC !important;
 }
 
-.issues-list .dd-list  .dd-list  .placeholder:before {
-	content: "↳";
-	margin-left:-18px;
-	margin-top:-18px;
-	color: #B3B3B3;
-    font-size: 18px; 
+.issues-list .dd-list .dd-list .placeholder:before {
+    content: "↳";
+    margin-left: -18px;
+    margin-top: -18px;
+    color: #B3B3B3;
+    font-size: 18px;
 }
 
 .issues-list .placeholder {
@@ -329,7 +346,7 @@ ol.sortable li {
 
 .issues-list .dd-list .dragged {
     margin-left: 7px !important;
-    margin-top:  -5px !important;
+    margin-top: -5px !important;
 }
 
 .issues-list > .placeholder {
@@ -413,6 +430,7 @@ body.dragging, body.dragging * {
 .issueDetails .move-icon {
     display: none;
 }
+
 .issueDetails .issue-row .btn-group {
     display: none;
 }
@@ -533,7 +551,7 @@ body.dragging, body.dragging * {
 
 .issueDetails > .dd-list {
     max-height: 400px;
-	max-height: 35vh;
+    max-height: 35vh;
     padding-bottom: 20px;
     margin-bottom: 20px;
     overflow-y: auto;
@@ -584,7 +602,7 @@ body.dragging, body.dragging * {
     border: 1px solid #DDD;
     padding: 1px;
     background-color: #FFF;
-	line-height: 21px;
+    line-height: 21px;
 }
 
 .ids .picture {
@@ -615,7 +633,7 @@ body.dragging, body.dragging * {
 
 .ids .issueDetails textarea {
     /*max-height: 600px;*/
-	min-height: 60px;
+    min-height: 60px;
     white-space: pre-line;
 }
 
@@ -667,68 +685,121 @@ body.dragging, body.dragging * {
 }
 
 .single-1 {
-	  margin-left: 2px;
+    margin-left: 2px;
 }
 
 .columns.triple .message {
-  font-size: 12px;
-  word-wrap: normal;
-  white-space: pre-line;
-  height: 34px;
-  line-height: 11px;
-  top: 1px;
-  overflow-wrap: inherit;
-  display: -webkit-inline-box;
-  /* overflow: hidden; */
-  text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+    font-size: 12px;
+    word-wrap: normal;
+    white-space: pre-line;
+    height: 34px;
+    line-height: 11px;
+    top: 1px;
+    overflow-wrap: inherit;
+    display: -webkit-inline-box;
+    /* overflow: hidden; */
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
 }
 
 .columns.triple .issues-list > .issue-row.selected > .message {
-  top: 1px;
+    top: 1px;
 }
 
 .columns.quadruple .message {
-  font-size: 12px;
-  word-wrap: normal;
-  white-space: pre-line;
-  height: 34px;
-  line-height: 11px;
-  top: 1px;
-  overflow-wrap: inherit;
-  display: -webkit-inline-box;
-  /* overflow: hidden; */
-  text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+    font-size: 12px;
+    word-wrap: normal;
+    white-space: pre-line;
+    height: 34px;
+    line-height: 11px;
+    top: 1px;
+    overflow-wrap: inherit;
+    display: -webkit-inline-box;
+    /* overflow: hidden; */
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
 }
 
 .columns.quadruple .issues-list > .issue-row.selected > .message {
-  top: 1px;
+    top: 1px;
 }
 
 .ids .columns.quadruple .number-priority,
 .ids .columns.triple .number-priority {
-	top: -2px;
+    top: -2px;
 }
 
-.priority-column{
-    min-width:44px;
-    width:44px;
+.priority-column {
+    min-width: 64px;
+    width: 64px;
 }
 
+.complete-column {
+    min-width: 84px;
+    width: 84px;
+}
 
-.issues-container .rank123[data-rank='0']{    
+.issues-container .rank123 {
+    
+    background-color: #cfcfcf;
+}
+
+.issues-container .rank123[data-rank='0']{
     background-color: #B9B9B9;
 }
 
-.issues-container .rank123{    
+    .issues-container .rank123[data-rank='1']:after {
+        background-image: url('../img/123.png');
+        content: "";
+        position: absolute;
+        height: 38px;
+        background-size: 58px;
+        background-repeat: no-repeat;
+        z-index: 1000000000;
+        /* background-color: green; */
+        width: 12px;
+        left: -11px;
+        top: -20px;
+    }
+
+    .issues-container .rank123[data-rank='2']:after {
+        background-image: url('../img/123.png');
+        content: "";
+        position: absolute;
+        height: 38px;
+        background-size: 58px;
+        background-repeat: no-repeat;
+        z-index: 1000000000;
+        /* background-color: green; */
+        width: 23px;
+        left: -17px;
+        top: -18px;
+        background-position-x: -13px;
+    }
+
+    .issues-container .rank123[data-rank='3']:after {
+        background-image: url('../img/123.png');
+        content: "";
+        position: absolute;
+        height: 38px;
+        width: 26px;
+        background-size: 58px;
+        background-repeat: no-repeat;
+        z-index: 1000000000;
+        /* background-color: green; */
+        left: -17px;
+        top: -21px;
+        background-position-x: -39px;
+    }
+
+.issues-container .rank123 {
     display: none;
     width: 23px;
     float: left;
     height: 14px;
-    top: 2px;
+    top: 0px;
     position: relative;
     left: -16px;
     text-align: center;
@@ -743,26 +814,46 @@ body.dragging, body.dragging * {
     -ms-user-select: none;
     user-select: none;
     margin: 0px 4px;
-    padding-top:2px;
-    cursor:copy;
+    cursor: copy;
+    padding-top: 2px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
-.issues-container.prioritization-Rank .number-priority .rank123  {
-    display:inline-block;
+
+.ids.rank-full .issues-container .rank123[data-rank='0']{
+    cursor:not-allowed;
 }
 
-.issues-container.prioritization-Rank .number-priority .priority{
-    display:none;
+.issues-container.prioritization-Rank .number-priority .rank123 {
+    display: inline-block;
+}
+
+.issues-container.prioritization-Rank .number-priority .priority {
+    display: none;
 }
 
 .ids .show-priority,
 .ids .show-rank {
-    display:none;
+    display: none;
 }
 
-.ids.prioritization-Priority .show-priority {
-    display:block;
+.ids.prioritization-Priority .show-priority,
+.ids.prioritization-Invalid .show-priority {
+    display: block;
 }
+
 .ids.prioritization-Rank .show-rank {
-    display:block;
+    display: block;
+}
+
+.ids .issue-row .move-icon .outer:before {
+    display: none;
+}
+
+.ids .issue-row .move-icon .outer:after {
+    width: 2px;
+    background-color: red;
+    height: 14px;
+    content: "";
 }

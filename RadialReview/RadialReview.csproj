@@ -909,6 +909,7 @@
     <Compile Include="Models\Audit\LogModel.cs" />
     <Content Include="Areas\RouteDebugger\Content\rdstyle.css" />
     <Content Include="Areas\RouteDebugger\Scripts\detect.js" />
+    <Content Include="Content\Angular\tablesort.css" />
     <Content Include="Content\bootstrap-duallistbox.css" />
     <Content Include="Content\creditcard_icon\amex.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -930,6 +931,7 @@
     </Content>
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
+    <Content Include="Content\img\123.png" />
     <Content Include="Content\img\ajax-loader-ob.gif" />
     <Content Include="Content\img\ajax-loader-orange.gif" />
     <Content Include="Content\L10\L10ChatLog.css">
@@ -970,6 +972,7 @@
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
     <Content Include="Scripts\speechrecog.js" />
+    <Content Include="Scripts\undo.js" />
     <Content Include="Scripts\Upload\UploadRocks.js" />
     <Content Include="Scripts\Upload\UploadTodos.js" />
     <Content Include="Scripts\Upload\UploadIssues.js" />

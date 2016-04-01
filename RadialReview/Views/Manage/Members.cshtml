@@ -22,6 +22,7 @@
 
 	var invalidCount = Model.Users.Count(x => x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail"));
 	var resendCount = Model.Users.Count(x => !x.Verified && !(x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail")));
+	var unsentCount = Model.Users.Count(x => !x.EmailSent);
 }
 
 @section top{
@@ -44,7 +45,12 @@
 
 @if (invalidCount>0)
 {
-	@Html.AlertBoxDismissable(@"Invitations could not be delivered to "+invalidCount+" user".Pluralize(invalidCount)+". Email addresses were incorrect. Click <span class='strokeOrange invalidEmail glyphicon glyphicon-envelope'></span> to try another address.", "alert-danger", "Warning:")
+	@Html.AlertBoxDismissable(@"Invitations could not be delivered to "+invalidCount+" user".Pluralize(invalidCount)+". Email addresses were incorrect. Click <span class='nohover strokeOrange invalidEmail glyphicon glyphicon-envelope'></span> to try another address.", "alert-danger", "Warning:")
+} else if (unsentCount > 0) {
+    @Html.AlertBoxDismissable(@"Invitations not sent to " + unsentCount + " user".Pluralize(unsentCount) + ". Click <span class='btn btn-xs btn-default nohover' style='position: relative;top: -1px;'>Send Invites</span> or <span class='nohover glyphicon glyphicon-envelope glyphicon-exclamation-sign1 red strokeRed unsentEmail clickable icon'></span> to issue invitations.", "alert-warning", "Warning:")
+} else {  
+    @Html.AlertBoxDismissable(@"Add users to "+RadialReview.Properties.ProductStrings.ProductName+", click the <span class='btn btn-xs btn-default nohover' style='position: relative;top: -1px;'>Add</span> button.", "alert-info", "Info:")
+
 }
 
 @*@if (resendCount > 0)
@@ -55,6 +61,11 @@
 @using (Html.BeginStyles())
 {
     <style>
+        .alert .btn:hover{    
+            background-color: white;
+            border-color: #CCCCCC;
+        }
+
         tr.managing {
         }
 

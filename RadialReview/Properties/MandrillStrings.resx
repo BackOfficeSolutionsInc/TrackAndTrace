@@ -118,12 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="FromAddress" xml:space="preserve">
-    <value>support@radialreview.com</value>
+    <value>support@mail.traction.tools</value>
   </data>
   <data name="FromName" xml:space="preserve">
-    <value>Radial Review</value>
+    <value>Traction® Tools</value>
   </data>
   <data name="SupportEmail" xml:space="preserve">
-    <value>support@radialreview.com</value>
+    <value>support@mail.traction.tools</value>
   </data>
 </root>

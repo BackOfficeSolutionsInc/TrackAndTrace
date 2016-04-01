@@ -165,13 +165,43 @@ namespace TractionTools.Tests.Utilities {
         [TestMethod]
         public void FirstInitialLastInitial()
         {
-            var namesIn = new[] { "C. D.", "J. B.", "W. D.", "A. W.", "G. O.", "D. J.", "J J", "B C", "S. J." };
+            var namesIn = new[] { "C. D.", "J. B.", "W. D.", "A. W.", "G. O.", "D. J.", "J J", "B C", "S. J.", "CD", "JB", "WD", "AW", "GO", "DJ", "JJ", "BC", "SJ" };
 
             //try out histogram first pass
             AssertHistogram(NameFormat.FILI, namesIn);
 
             //All together
             var match = DistanceUtility.TryMatch(namesIn, Available);
+            Assert.AreEqual(18, match.Keys.Count);
+
+            AssertDistribution(match["J. B."], 100L);
+            AssertDistribution(match["W. D."], 102L);
+            AssertDistribution(match["A. W."], 103L);
+            AssertDistribution(match["G. O."], 106L);
+            AssertDistribution(match["D. J."], 113L);
+            AssertDistribution(match["J J"], 109L);
+            AssertDistribution(match["B C"], 104L);
+            AssertDistribution(match["S. J."], 107L);
+            AssertDistribution(match["C. D."], 101L, 2);
+
+            AssertDistribution(match["JB"], 100L);
+            AssertDistribution(match["WD"], 102L);
+            AssertDistribution(match["AW"], 103L);
+            AssertDistribution(match["GO"], 106L);
+            AssertDistribution(match["DJ"], 113L);
+            AssertDistribution(match["JJ"], 109L);
+            AssertDistribution(match["BC"], 104L);
+            AssertDistribution(match["SJ"], 107L);
+            AssertDistribution(match["CD"], 101L, 2);
+
+
+            namesIn = new[] { "C. D.", "J. B.", "W. D.", "A. W.", "G. O.", "D. J.", "J J", "B C", "S. J."};
+
+            //try out histogram first pass
+            AssertHistogram(NameFormat.FILI, namesIn);
+
+            //All together
+            match = DistanceUtility.TryMatch(namesIn, Available);
             Assert.AreEqual(9, match.Keys.Count);
 
             AssertDistribution(match["J. B."], 100L);
@@ -183,6 +213,26 @@ namespace TractionTools.Tests.Utilities {
             AssertDistribution(match["B C"], 104L);
             AssertDistribution(match["S. J."], 107L);
             AssertDistribution(match["C. D."], 101L, 2);
+
+
+            namesIn = new[] {"CD", "JB", "WD", "AW", "GO", "DJ", "JJ", "BC", "SJ" };
+
+            //try out histogram first pass
+            AssertHistogram(NameFormat.FILI, namesIn);
+
+            //All together
+            match = DistanceUtility.TryMatch(namesIn, Available);
+            Assert.AreEqual(9, match.Keys.Count);
+
+            AssertDistribution(match["JB"], 100L);
+            AssertDistribution(match["WD"], 102L);
+            AssertDistribution(match["AW"], 103L);
+            AssertDistribution(match["GO"], 106L);
+            AssertDistribution(match["DJ"], 113L);
+            AssertDistribution(match["JJ"], 109L);
+            AssertDistribution(match["BC"], 104L);
+            AssertDistribution(match["SJ"], 107L);
+            AssertDistribution(match["CD"], 101L, 2);
         }
 
         [TestMethod]

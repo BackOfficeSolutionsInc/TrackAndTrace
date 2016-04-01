@@ -82,18 +82,18 @@ namespace RadialReview.Accessors
 		#endregion
 		#region AsyncMailer
 
-		private static MailMessage CreateMessage(EmailModel email)
-		{
-			MailMessage message = new MailMessage()
-			{
-				Subject = email.Subject,
-				Body = email.Body,
-				IsBodyHtml = true,
-				From = new MailAddress(ConstantStrings.SmtpFromAddress),
-			};
-			message.To.Add(email.ToAddress);
-			return message;
-		}
+        //private static MailMessage CreateMessage(EmailModel email)
+        //{
+        //    MailMessage message = new MailMessage()
+        //    {
+        //        Subject = email.Subject,
+        //        Body = email.Body,
+        //        IsBodyHtml = true,
+        //        From = new MailAddress(ConstantStrings.SmtpFromAddress),
+        //    };
+        //    message.To.Add(email.ToAddress);
+        //    return message;
+        //}
 
 		private static Pool<SmtpClient> SmtpPool = new Pool<SmtpClient>(30, TimeSpan.FromMinutes(2), () => new SmtpClient
 		{

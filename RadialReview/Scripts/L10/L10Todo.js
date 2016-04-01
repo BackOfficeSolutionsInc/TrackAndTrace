@@ -1,7 +1,10 @@
 ﻿var currentTodoDetailsId;
 
 $(function () {
-	$("body").on("click", ".todo-list>.todo-row", function () {
+    $("body").on("click", ".todo-list>.todo-row", function (evt) {
+        if ($(evt.target).hasClass("todo-checkbox"))
+            return;
+
 		var todoRow = $(this);
 		$(".todo-row.selected").removeClass("selected");
 		$(todoRow).addClass("selected");

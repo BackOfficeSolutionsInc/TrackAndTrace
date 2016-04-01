@@ -34,22 +34,21 @@
 				</div>
 				<h2>To-do List <small></small></h2>
 			</hgroup>
-			<div class="todo-container ">
-				<ol class="todo-list sortable init-@(guid)">
-					@foreach (var i in Model.Todos.OrderBy(x => x.Ordering))
-					{
-						var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id },{"Organization", ViewBag.Organization} };
-						@Html.Partial("~/Views/L10/partial/TodoRow.cshtml", i, vm)
-					}
-				</ol>
-			</div>
+            <div class="todo-container " style="margin-bottom:128px;">
+                <ol class="todo-list sortable init-@(guid)">
+                    @foreach (var i in Model.Todos.OrderBy(x => x.Ordering)) {
+                        var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id }, { "Organization", ViewBag.Organization } };
+                        @Html.Partial("~/Views/L10/partial/TodoRow.cshtml", i, vm)
+                    }
+                </ol>
+            </div>
 		</div>
 		<div class="col-md-4">
 			<div class="hidden-lg hidden-md" style="height: 25px;"></div>
 			<div style="">
 				<div class="fixed-pos">
 					<hgroup class="page-header details">
-						<h4>Details</h4>
+						<h4>Notes</h4>
 					</hgroup>
 					<div class="component todoDetails" id="todoDetails"></div>
 				</div>

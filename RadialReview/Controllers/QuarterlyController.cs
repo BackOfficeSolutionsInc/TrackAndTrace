@@ -27,7 +27,7 @@ namespace RadialReview.Controllers
             if(scorecard) PdfAccessor.AddScorecard(doc, recur);
             if(rocks)     PdfAccessor.AddRocks(GetUser(), doc, recur);
             if(todos)     PdfAccessor.AddTodos(GetUser(), doc, recur);
-            if(issues)    PdfAccessor.AddIssues(GetUser(), doc, recur);
+            if(issues)    PdfAccessor.AddIssues(GetUser(), doc, recur, todos);
 
             var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
 

@@ -30,7 +30,7 @@
 				<h2>Scorecard<small></small></h2>
 			</hgroup>
 				<div class="empty-holder scorecard-empty-holder @(Model.Meeting._MeetingMeasurables.Any() ? "hidden" : "")"></div>
-			<div class="component zoomable">
+			<div class="component zoomable" style="margin-bottom:128px;">
 				<div class="clearfix"></div>
 
 				<div style="position: relative;" class="scorecard-holder @(Model.Meeting._MeetingMeasurables.Any()?"":" hidden")">
@@ -85,7 +85,7 @@
 								</tr>
 								<tr>
 									<th>&nbsp;</th>
-									<th style="min-width: 18px;">&nbsp;</th>
+									<th style1="min-width: 18px;"></th>
 									<th class="heading who alignRight">Owner@*Accountable*@</th>
                                     @if (Model.ShowAdmin) { 
 									<th class="heading who alignLeft "><span class="newLine gray">@*/Admin*@</span></th>
@@ -199,6 +199,9 @@
 	</div>
 </div>
 <style>
+    td > div.number {
+        display:none;
+    }
 	.ui-resizable-e {
 		width: 4px;
 		right: 0;

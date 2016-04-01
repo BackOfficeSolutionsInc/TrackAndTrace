@@ -166,6 +166,11 @@ namespace RadialReview.Utilities {
             var possible_id_score = new List<Tuple<long, int, string, string>>();
             switch (format) {
                 case NameFormat.FILI: {
+                    if (string.IsNullOrWhiteSpace(name2) && name1.Length==2) {
+                        name2 = ""+name1[1];//preserve this order
+                        name1 = ""+name1[0];
+                    }
+
                         foreach (var a in available_first_last_id) {
                             var best = int.MaxValue;
                             foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
@@ -366,141 +371,149 @@ namespace RadialReview.Utilities {
         {
             name = name.ToLower();
             available_first_last_id = available_first_last_id.Select(x => Tuple.Create(x.Item1.ToLower(), x.Item2.ToLower(), x.Item3)).ToList();
-            var names = name.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            var namesz = name.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (names.Count() == 0) {
+            if (namesz.Count() == 0) {
                 return;
             }
 
-            if (names.Count() == 1) {
-                var n = names[0].ToLower();
-                foreach (var a in available_first_last_id) {
-                    //Try first name
-                    var added = false;
-                    var best = int.MaxValue;
-                    foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
-                        var fnScore = DamerauLevenshteinDistance(n, nickname, thresh);
+            var nameList = new List<string[]>(){namesz};
 
-                        if (fnScore <= thresh)
-                            best = Math.Min(best, fnScore);
-
-                        //if (fnScore <= thresh && !added) {
-                        //    formats.Add();
-                        //    added = true;
-                        //}
-                        //if (fnScore == 0) {
-                        //    formats.Add(NameFormat.FN);
-                        //    break;
-                        //}
-                    }
-                    if (best != int.MaxValue)
-                        formats.Add(NameFormat.FN, best);
-                    var lnScore = DamerauLevenshteinDistance(n, a.Item2.ToLower(), thresh);
-                    if (lnScore <= thresh)
-                        formats.Add(NameFormat.LN, lnScore);
-                    //if (lnScore <= thresh) {
-                    //    formats.Add(NameFormat.LN);
-                    //}
-                    //if (lnScore == 0)
-                    //    formats.Add(NameFormat.LN);
-                }
-
+            if (namesz.Count() == 1 && namesz[0].Length == 2) {
+                nameList.Add(new string[] { ("" + namesz[0][0]), "" + namesz[0][1] });
             }
+            foreach (var narray in nameList) {
+                var names = narray.Select(x=>x).ToArray();
+                if (names.Count() == 1) {
+                    var n = names[0].ToLower();
+                    foreach (var a in available_first_last_id) {
+                        //Try first name
+                        var added = false;
+                        var best = int.MaxValue;
+                        foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                            var fnScore = DamerauLevenshteinDistance(n, nickname, thresh);
 
-            if (names.Count() >= 2) {
-                names = new[] { names[0], names[names.Length - 1] };
-                var fn = names[0].ToLower();
-                var ln = names[1].ToLower();
-                foreach (var a in available_first_last_id) {
-                    //Try first name
-                    if (names[0].TrimEnd('.').Length == 1 && names[1].TrimEnd('.').Length == 1) { // J. S.
-                        //FILI
-                        if ((a.Item1.Length > 0 && a.Item1[0] == names[0][0]) && (a.Item2.Length > 0 && a.Item2[0] == names[1][0])) {
-                            //formats.Add(NameFormat.FILI);
-                            //formats.Add(NameFormat.FILI);
-                            formats.Add(NameFormat.FILI, 0);
-                        }
-                        if ((a.Item1.Length > 0 && a.Item1[0] == names[1][0]) && (a.Item2.Length > 0 && a.Item2[0] == names[0][0])) {
-                            //formats.Add(NameFormat.LIFI);
-                            //formats.Add(NameFormat.LIFI);
-                            formats.Add(NameFormat.LIFI, 0);
-                        }
-                    } else if (names[0].TrimEnd('.').Length == 1 && names[1].TrimEnd('.').Length > 1) {// J. Smith
+                            if (fnScore <= thresh)
+                                best = Math.Min(best, fnScore);
 
-                        if (a.Item1.Length > 0 && names[0][0] == a.Item1[0]) {
-                            var lnThresh = DamerauLevenshteinDistance(ln, a.Item2.ToLower(), thresh);
-                            if (lnThresh <= thresh)
-                                formats.Add(NameFormat.FILN, lnThresh);
-                            //if (lnThresh <= thresh) {
-                            //    formats.Add(NameFormat.FILN);
-                            //    if (lnThresh == 0)
-                            //        formats.Add(NameFormat.FILN);
+                            //if (fnScore <= thresh && !added) {
+                            //    formats.Add();
+                            //    added = true;
+                            //}
+                            //if (fnScore == 0) {
+                            //    formats.Add(NameFormat.FN);
+                            //    break;
                             //}
                         }
-                    } else if (names[0].TrimEnd('.').Length > 1 && names[1].TrimEnd('.').Length == 1) {// John S.
-                        if (a.Item2.Length > 0 && names[1][0] == a.Item2[0]) {
-                            bool added = false;
+                        if (best != int.MaxValue)
+                            formats.Add(NameFormat.FN, best);
+                        var lnScore = DamerauLevenshteinDistance(n, a.Item2.ToLower(), thresh);
+                        if (lnScore <= thresh)
+                            formats.Add(NameFormat.LN, lnScore);
+                        //if (lnScore <= thresh) {
+                        //    formats.Add(NameFormat.LN);
+                        //}
+                        //if (lnScore == 0)
+                        //    formats.Add(NameFormat.LN);
+                    }
+
+                }
+
+                if (names.Count() >= 2) {
+                    names = new[] { names[0], names[names.Length - 1] };
+                    var fn = names[0].ToLower();
+                    var ln = names[1].ToLower();
+                    foreach (var a in available_first_last_id) {
+                        //Try first name
+                        if (names[0].TrimEnd('.').Length == 1 && names[1].TrimEnd('.').Length == 1) { // J. S.
+                            //FILI
+                            if ((a.Item1.Length > 0 && a.Item1[0] == names[0][0]) && (a.Item2.Length > 0 && a.Item2[0] == names[1][0])) {
+                                //formats.Add(NameFormat.FILI);
+                                //formats.Add(NameFormat.FILI);
+                                formats.Add(NameFormat.FILI, 0);
+                            }
+                            if ((a.Item1.Length > 0 && a.Item1[0] == names[1][0]) && (a.Item2.Length > 0 && a.Item2[0] == names[0][0])) {
+                                //formats.Add(NameFormat.LIFI);
+                                //formats.Add(NameFormat.LIFI);
+                                formats.Add(NameFormat.LIFI, 0);
+                            }
+                        } else if (names[0].TrimEnd('.').Length == 1 && names[1].TrimEnd('.').Length > 1) {// J. Smith
+
+                            if (a.Item1.Length > 0 && names[0][0] == a.Item1[0]) {
+                                var lnThresh = DamerauLevenshteinDistance(ln, a.Item2.ToLower(), thresh);
+                                if (lnThresh <= thresh)
+                                    formats.Add(NameFormat.FILN, lnThresh);
+                                //if (lnThresh <= thresh) {
+                                //    formats.Add(NameFormat.FILN);
+                                //    if (lnThresh == 0)
+                                //        formats.Add(NameFormat.FILN);
+                                //}
+                            }
+                        } else if (names[0].TrimEnd('.').Length > 1 && names[1].TrimEnd('.').Length == 1) {// John S.
+                            if (a.Item2.Length > 0 && names[1][0] == a.Item2[0]) {
+                                bool added = false;
+                                var best = int.MaxValue;
+                                foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                                    var fnThresh = DamerauLevenshteinDistance(names[0], nickname.ToLower(), thresh);
+                                    if (fnThresh <= thresh)
+                                        best = Math.Min(best, fnThresh);
+                                    //if (fnThresh <= thresh && added == false) {
+                                    //    formats.Add(NameFormat.FNLI);
+                                    //    added = true;
+                                    //}
+                                    //if (fnThresh == 0) {
+                                    //    formats.Add(NameFormat.FNLI);
+                                    //    break;
+                                    //}
+                                }
+                                if (best != int.MaxValue)
+                                    formats.Add(NameFormat.FNLI, best);
+
+                            }
+                        } else if (names[0].TrimEnd('.').Length > 1 && names[1].TrimEnd('.').Length > 1) {
+                            // John Smith
+                            var added = false;
                             var best = int.MaxValue;
                             foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
-                                var fnThresh = DamerauLevenshteinDistance(names[0], nickname.ToLower(), thresh);
-                                if (fnThresh <= thresh)
-                                    best = Math.Min(best, fnThresh);
-                                //if (fnThresh <= thresh && added == false) {
-                                //    formats.Add(NameFormat.FNLI);
+                                var fnScore = DamerauLevenshteinDistance(fn, nickname.ToLower(), thresh);
+                                var lnScore = DamerauLevenshteinDistance(ln, a.Item2.ToLower(), thresh);
+                                if ((int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0) <= thresh)
+                                    best = Math.Min(best, (int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0));
+                                //if (fnThresh <= thresh && lnThresh <= thresh && !added) {
+                                //    formats.Add(NameFormat.FNLN);
                                 //    added = true;
                                 //}
-                                //if (fnThresh == 0) {
-                                //    formats.Add(NameFormat.FNLI);
+                                //if (fnThresh == 0 && lnThresh == 0) {
+                                //    formats.Add(NameFormat.FNLN);
                                 //    break;
                                 //}
                             }
                             if (best != int.MaxValue)
-                                formats.Add(NameFormat.FNLI, best);
+                                formats.Add(NameFormat.FNLN, best);
 
-                        }
-                    } else if (names[0].TrimEnd('.').Length > 1 && names[1].TrimEnd('.').Length > 1) {
-                        // John Smith
-                        var added = false;
-                        var best = int.MaxValue;
-                        foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
-                            var fnScore = DamerauLevenshteinDistance(fn, nickname.ToLower(), thresh);
-                            var lnScore = DamerauLevenshteinDistance(ln, a.Item2.ToLower(), thresh);
-                            if ((int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0) <= thresh)
-                                best = Math.Min(best, (int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0));
-                            //if (fnThresh <= thresh && lnThresh <= thresh && !added) {
-                            //    formats.Add(NameFormat.FNLN);
-                            //    added = true;
-                            //}
-                            //if (fnThresh == 0 && lnThresh == 0) {
-                            //    formats.Add(NameFormat.FNLN);
-                            //    break;
-                            //}
-                        }
-                        if (best != int.MaxValue)
-                            formats.Add(NameFormat.FNLN, best);
+                            // Smith John
+                            added = false;
+                            best = int.MaxValue;
+                            foreach (var nickname in GetNicknames(a.Item2, ref nicknameCache)) {
+                                var fnScore = DamerauLevenshteinDistance(fn, nickname.ToLower(), thresh);
+                                var lnScore = DamerauLevenshteinDistance(ln, a.Item1.ToLower(), thresh);
 
-                        // Smith John
-                        added = false;
-                        best = int.MaxValue;
-                        foreach (var nickname in GetNicknames(a.Item2, ref nicknameCache)) {
-                            var fnScore = DamerauLevenshteinDistance(fn, nickname.ToLower(), thresh);
-                            var lnScore = DamerauLevenshteinDistance(ln, a.Item1.ToLower(), thresh);
-
-                            if ((int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0) <= thresh)
-                                best = Math.Min(best, (int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0));
-                            //if (fnThresh <= thresh && lnThresh <= thresh && !added) {
-                            //    formats.Add(NameFormat.LNFN);
-                            //    added = true;
-                            //}
-                            //if (fnThresh == 0 && lnThresh == 0) {
-                            //    formats.Add(NameFormat.LNFN);
-                            //    break;
-                            //}
+                                if ((int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0) <= thresh)
+                                    best = Math.Min(best, (int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0));
+                                //if (fnThresh <= thresh && lnThresh <= thresh && !added) {
+                                //    formats.Add(NameFormat.LNFN);
+                                //    added = true;
+                                //}
+                                //if (fnThresh == 0 && lnThresh == 0) {
+                                //    formats.Add(NameFormat.LNFN);
+                                //    break;
+                                //}
+                            }
+                            if (best != int.MaxValue)
+                                formats.Add(NameFormat.LNFN, best);
+                        } else {
+                            throw new ArgumentOutOfRangeException("Unhandled Case");
                         }
-                        if (best != int.MaxValue)
-                            formats.Add(NameFormat.LNFN, best);
-                    } else {
-                        throw new ArgumentOutOfRangeException("Unhandled Case");
                     }
                 }
             }

@@ -43,7 +43,9 @@ namespace RadialReview.Controllers
 	    [Access(AccessLevel.UserOrganization)]
 	    public JsonResult DetailsData(long id)
 	    {
-		    return Json(L10Accessor.GetAngularRecurrence(GetUser(), id), JsonRequestBehavior.AllowGet);
+            var model=L10Accessor.GetAngularRecurrence(GetUser(), id);
+            model.Name=null;
+		    return Json(model, JsonRequestBehavior.AllowGet);
 	    }
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]

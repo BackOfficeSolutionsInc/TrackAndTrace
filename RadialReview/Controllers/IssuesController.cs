@@ -129,6 +129,12 @@ namespace RadialReview.Controllers
 					name = x.GetName()
 				}).ToList();
 
+            
+            var prior = recur.Prioritization;
+            var showPriority = false;
+            if (prior == Models.L10.PrioritizationType.Invalid || prior == Models.L10.PrioritizationType.Priority)
+                showPriority = true;
+
 
 			var model = new IssueVM(){
 				Message = issue,
@@ -139,6 +145,7 @@ namespace RadialReview.Controllers
 				OwnerId = GetUser().Id,
 				ForModelId = modelId,
 				ForModelType = modelType,
+                ShowPriority = showPriority
 		    };
 			return PartialView("CreateIssueModal", model);
 	    }
@@ -209,7 +216,7 @@ namespace RadialReview.Controllers
 				ForModel = model.ForModelType??"IssueModel",
 				ForModelId = model.ForModelId??-1,
 				Organization = GetUser().Organization,
-                _Priority = model.Priority
+                _Priority = model.Priority,
 				
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());

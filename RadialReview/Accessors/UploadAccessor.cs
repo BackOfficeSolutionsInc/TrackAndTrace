@@ -113,8 +113,8 @@ namespace RadialReview.Accessors {
 
                     if (file.ContentType.NotNull(x => x.ToLower().Contains("csv")))
                         o.FileType.Add(FileType.CSV, 2);
-                    if (file.ContentType.NotNull(x => x.ToLower().Contains("text")))
-                        o.FileType.Add(FileType.Lines, 2);
+                    //if (file.ContentType.NotNull(x => x.ToLower().Contains("text")))
+                    //    o.FileType.Add(FileType.Lines, 2);
 
                     var useAws = true;
                     string path = null;

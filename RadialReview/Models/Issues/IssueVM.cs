@@ -36,5 +36,7 @@ namespace RadialReview.Models.Issues
 			public string name { get; set; }
 			public string imageUrl { get; set; }
 		}
-	}
+
+        public bool ShowPriority { get; set; }
+    }
 }

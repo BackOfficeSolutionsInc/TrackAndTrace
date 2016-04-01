@@ -200,7 +200,7 @@
     @if (!(ViewBag.NoTitleBar ?? false))
     {
         <div id="footer">
-            <p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName</p>
+            <p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName &amp; EOS</p>
             @{ Html.RenderPartial("Partial/Footer"); }
         </div>
     }

@@ -86,6 +86,7 @@
         $(".back-button").hide();
         $(".print-vto-button").hide();
         var page = "main";
+        var vtoLastScroll=0;
         $(".vto-button").click(function(){
             if (typeof($(".vto-frame").attr("src"))==="undefined"){
                 $(".vto-frame").attr("src",$(".vto-frame").attr("data-src"));
@@ -95,6 +96,8 @@
             $(".back-button").show();
             $(".print-vto-button").show();
             page="vto";
+            vtoLastScroll = $(".slider-container").scrollTop();
+            $(".slider-container").scrollTop(0);
         });
 
         $(".back-button").click(function(){
@@ -103,6 +106,8 @@
             $(".print-vto-button").hide();
             $(".slider-container").css("overflow-y","inherit");
             page="main";
+            
+            vtoLastScroll = $(".slider-container").scrollTop(vtoLastScroll)
         });
 
         $(document).bind("keyup keydown", function(e){
@@ -221,37 +226,38 @@
                             }
                             <li class="page-item page-conclusion">	<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>
                         </ol>
+
+                        @if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
+                            <br />
+                            <div class="alignCenter">
+                                <div style="color: #bbb;">Follow meeting leader:</div>
+                                <input id="Follow"
+                                       type="checkbox"
+                                       checked
+                                       class="switch switch-large fullWidth hide"
+                                       style="min-width: 138px;"
+                                       data-on-color="default"
+                                       data-off-color="info"
+                                       data-on-text="Locked"
+                                       data-off-text="Unlocked"
+                                       data-size="small"
+                                       data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
+
+                            </div>
+                            <br />
+                        }
                     </div>
-                    <div class="component">
-                        <div class="title">Additional Pages</div>
-                        <ol>
+                    <div class="component additional-pages">
+                        @*<b class="title">Additional Pages</b>*@
+                        <div>
                             @if (Model.VtoId != 0) {
-                            <li><div class="vto-button clickable" data-location="Scorecard" href="#vto">V/TO</div></li>
+                            <div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="Scorecard" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
                             }
-                        </ol>
+                        </div>
                         @*<div class="alignCenter">
                                 <a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
                             </div>*@
-                        @if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId)
-                        {
-                        <br />
-                        <div class="alignCenter">
-                            <div style="color: #bbb;">Follow meeting leader:</div>
-                            <input id="Follow"
-                                   type="checkbox"
-                                   checked
-                                   class="switch switch-large fullWidth hide"
-                                   style="min-width: 138px;"
-                                   data-on-color="default"
-                                   data-off-color="info"
-                                   data-on-text="Locked"
-                                   data-off-text="Unlocked"
-                                   data-size="small"
-                                   data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
-
-                        </div>
-                        <br />
-                        }
+                        
                     </div>
 
 

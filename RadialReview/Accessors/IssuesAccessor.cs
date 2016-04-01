@@ -82,10 +82,20 @@ namespace RadialReview.Accessors
             };
             s.Save(recur);
             o.IssueRecurrenceModel = recur;
-            if (r.OrderIssueBy == "data-priority")
-            {
+            if (r.OrderIssueBy == "data-priority") {
                 var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
                     .Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Priority > issue._Priority && x.ParentRecurrenceIssue == null)
+                    .Select(x => x.Ordering).List<long?>().Where(x => x != null).ToList();
+                var max = -1L;
+                if (order.Any())
+                    max = order.Max() ?? -1;
+                max += 1;
+                recur.Ordering = max;
+                s.Update(recur);
+            }
+            if (r.OrderIssueBy == "data-rank") {
+                var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                    .Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Rank > issue._Rank && x.ParentRecurrenceIssue == null)
                     .Select(x => x.Ordering).List<long?>().Where(x => x != null).ToList();
                 var max = -1L;
                 if (order.Any())

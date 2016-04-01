@@ -33,7 +33,7 @@ namespace RadialReview.Models
         {
 			Id(x => x.Id);
 			Map(x => x.ToAddress);
-			Map(x => x.MandrillId);
+			Map(x => x.MandrillId).Index("EmailModel_MandrillId");
 			Map(x => x.EmailType);
 			Map(x => x.Bcc);
             Map(x => x.Body).Length(3000).Not.Nullable();
@@ -63,7 +63,7 @@ namespace RadialReview.Models
 		{
 			Id(x => x.Id);
 
-			Map(x => x.MandrillId);
+			Map(x => x.MandrillId);//.Index("EmailmandrillId;
 			Map(x => x.EventType).CustomType<WebHookEventType>();
 			Map(x => x.TimeStamp);
 			

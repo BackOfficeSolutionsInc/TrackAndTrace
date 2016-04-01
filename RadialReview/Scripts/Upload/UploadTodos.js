@@ -6,7 +6,7 @@ var uploader = UploadSteps({
     confirmSelectionUrl: "/Upload/SubmitTodos",
     afterUpload: function (d) {
         uploader.addSelectionStep("Select todos (Do not select header)", validateTodo);
-
+        debugger;
         if (d.Data.FileType == "CSV") {
             uploader.addSelectionStep("Select due date (Do not select header)", validateDate, true);
             uploader.addSelectionStep("Select owners (Do not select header)", validateUsers, true);

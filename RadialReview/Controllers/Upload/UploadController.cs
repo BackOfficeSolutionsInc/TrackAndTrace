@@ -94,7 +94,8 @@ namespace RadialReview.Controllers {
                 var upload = await UploadAccessor.UploadAndParse(GetUser(), type, file, ForModel.Create<L10Recurrence>(recurrenceId));
                 if (csv && upload.GetLikelyFileType() != FileType.CSV)
                     throw new FileNotFoundException("File must be a csv.");
-                var table = HtmlUtility.Table(upload.Csv, new TableOptions<string>() {
+                var linedat = upload.GetLikelyFileType() == FileType.CSV ? upload.Csv : upload.Lines.Select(x => x.AsList()).ToList();
+                var table = HtmlUtility.Table(linedat, new TableOptions<string>() {
                     CellClass = (x => "tdItem"),
                     TableClass = "table table-bordered table-condensed noselect",
                     Responsive = true

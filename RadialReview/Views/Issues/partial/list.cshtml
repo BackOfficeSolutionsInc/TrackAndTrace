@@ -15,13 +15,13 @@
             0" click-anywhere-but-here="model.Selected = -1">
             <thead>
                 <tr>
-                    <th class="checkbox-column"></th>
-                    <th class="priority-column" ts-criteria="Priority" ts-default="descending">Priority</th>
-                    <th class="owner-column"></th>
-                    <th class="issue-column" style="padding-left: 4px;">Issue</th>
+                    <th class="checkbox-column" ts-criteria="Complete">&nbsp;</th>
+                    <th class="priority-column" ts-criteria="Priority">Priority</th>
+                    <th class="owner-column" ts-criteria="Owner.Name">&nbsp;</th>
+                    <th class="issue-column" ts-criteria="Name" style="padding-left: 4px;" ts-default="ascending">Issue</th>
                     @*<th></th>
                     <th></th>*@
-                    <th class="complete-column">Completed</th>
+                    <th class="complete-column" ts-criteria="CompleteTime">Completed</th>
                 </tr>
             </thead>
             <tbody>

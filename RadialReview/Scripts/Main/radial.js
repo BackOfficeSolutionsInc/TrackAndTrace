@@ -720,6 +720,9 @@ $(function () {
                         if (("" + action).indexOf("remove") != -1) {
                             $(undoable).remove();
                         }
+                        if (("" + action).indexOf("unhide") != -1) {
+                            $(undoable).show();
+                        }
                     }
                 }
             });

@@ -51,7 +51,9 @@ namespace RadialReview.Controllers {
             var dates1 = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
 
 
-            var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
+            var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
+            var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
+           // var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
             var userLookups = DistanceUtility.TryMatch(userStrings, allUsers);
 
             Rect scoreRect = null;

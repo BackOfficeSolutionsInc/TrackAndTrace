@@ -141,13 +141,13 @@
                             <div class="well smallBreak2" style="margin:30px">
                                 <div class="">
                                     <dl>
-                                        <dt>Rank 1-2-3 </dt>
-                                        <dd>Users select the first, second, and third most important issue to discuss. Once these three are discussed, select another three to prioritize.</dd>
-                                        <i>This is the preferred method.</i>
+                                        <dt>Rank 1, 2, & 3 </dt>
+                                        <dd>Select the 1<sup>st</sup>, 2<sup>nd</sup>, and 3<sup>rd</sup> most important issue to discuss. After discussing, select another three to prioritize.</dd>
+                                        <small><i>*This is the preferred method.</i></small>
                                     </dl>
                                     <dl>
-                                        <dt>Priority </dt>
-                                        <dd>Users are able to vote on which issue to talk about. The issue with the most votes has the highest priority.</dd>
+                                        <dt>Priority</dt>
+                                        <dd>Vote on which issue to talk about. Issue with the most votes has the highest priority.</dd>
                                     </dl>
                                 </div>
 
@@ -223,13 +223,13 @@
                     <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
 
                         <div class="row">
-                            <div class="col-sm-4">
+                            <div class="col-sm-6">
                                 <div class="form-group">
-                                    <label class="col-sm-3 control-label">Transcribe Meeting :</label>
-                                    <div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.EnableTranscription, new { @class = "editable", style = "margin-top: 11px;" }) <span class="gray">(Chrome Only!)</span></div>
+                                    <label class="col-sm-6 control-label">Transcribe Meeting :</label>
+                                    <div class="col-sm-6">@Html.CheckBoxFor(x => x.Recurrence.EnableTranscription, new { @class = "editable", style = "margin-top: 11px;" }) <span class="gray">(Chrome Only!)</span></div>
                                 </div>
                             </div>
-                            <div class="col-sm-8">
+                            <div class="col-sm-6">
                                 <div class="panel">
                                     <div class="panel-body">
                                         Use a microphone to transcribe the meeting into an archive. This is a beta feature.

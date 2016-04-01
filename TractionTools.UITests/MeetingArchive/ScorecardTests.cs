@@ -86,6 +86,7 @@ namespace TractionTools.UITests.Selenium {
             });
 
             TestView(auc, "/L10/meeting/" + recur.Id, d => {
+                d.WaitForAlert();
                 //Start the meeting
                 d.FindElement(By.Id("form0"),10).Submit();
                 //Click Scorecard

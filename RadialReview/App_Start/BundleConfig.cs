@@ -30,7 +30,8 @@ namespace RadialReview
 				"~/Scripts/Angular/helpers.js", 
 			};
 			var angularHelpers_Styles = new[]{
-				"~/Content/components/daterangepicker-bs3.css"
+				"~/Content/components/daterangepicker-bs3.css",
+                "~/Content/Angular/tablesort.css"
 			};
 
 
@@ -146,6 +147,7 @@ namespace RadialReview
 					"~/Scripts/jquery/jquery.ui.sortable.js",
 					"~/Scripts/L10/charts/sparklines.min.js",
 					"~/Scripts/home/resizeable-tables.js",
+                    "~/Scripts/undo.js",
 					"~/Scripts/L10/L10.js",
 					"~/Scripts/L10/L10Ids.js",
 					"~/Scripts/L10/L10Todo.js",
@@ -155,8 +157,8 @@ namespace RadialReview
 					"~/Scripts/L10/L10Notes.js",
 					"~/Scripts/L10/sortable.js",
 					"~/Scripts/speechrecog.js",
-					"~/Scripts/L10/L10Transcribe.js",
-					"~/Scripts/L10/L10ChatLog.js",
+                    "~/Scripts/L10/L10Transcribe.js",
+                    "~/Scripts/L10/L10ChatLog.js",
 					"~/Scripts/L10/rtL10.js"//Ensure last
 				));
 

@@ -958,20 +958,25 @@ tr.danger .strikable {
     text-align: center;
 }
 
-.unsentEmail:hover {
+.unsentEmail:not(.nohover):hover {
     color: #FFBF4B;
     background-color: #c69232;
 }
 
-.resendEmail:hover {
+.resendEmail:not(.nohover):hover {
     color: #79a9cf;
     background-color: #49789f;
 }
 
-.invalidEmail:hover {
+.invalidEmail:not(.nohover):hover {
     color: #CC8384;
     background-color: #b06869;
 }
+
+.nohover{
+    cursor:default;
+}
+
 /*
 .team {
     background-color: rgba(235, 235, 235, 0.42);

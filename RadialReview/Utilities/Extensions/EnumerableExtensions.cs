@@ -34,6 +34,13 @@ namespace RadialReview
 
     public static class EnumerableExtensions
     {
+
+        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> items,int maxItems)
+        {
+            return items.Select((item, inx) => new { item, inx })
+                        .GroupBy(x => x.inx / maxItems)
+                        .Select(g => g.Select(x => x.item));
+        }
 		public static double? Median<TColl, TValue>(this IEnumerable<TColl> source,Func<TColl, TValue> selector){
 			return source.Select(selector).Median();
 		}

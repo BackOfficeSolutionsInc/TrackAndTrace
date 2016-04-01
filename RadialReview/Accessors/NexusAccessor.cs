@@ -18,13 +18,11 @@ using RadialReview.Models.Application;
 using System.Threading.Tasks;
 using RadialReview.Models.Json;
 
-namespace RadialReview.Accessors
-{
-    public class NexusAccessor : BaseAccessor
-    {
+namespace RadialReview.Accessors {
+    public class NexusAccessor : BaseAccessor {
         //public static UrlAccessor _UrlAccessor = new UrlAccessor();
 
-        public TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName,out UserOrganizationModel createdUser, bool isClient,string organizationName)
+        public TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, out UserOrganizationModel createdUser, bool isClient, string organizationName)
         {
             if (!Emailer.IsValid(email))
                 throw new RedirectException(ExceptionStrings.InvalidEmail);
@@ -34,23 +32,21 @@ namespace RadialReview.Accessors
 
             TempUserModel tempUser;
             var now = DateTime.UtcNow;
-            using (var db = HibernateSession.GetCurrentSession())
-            {
+            using (var db = HibernateSession.GetCurrentSession()) {
                 long newUserId = 0;
-                using (var tx = db.BeginTransaction())
-                {
+                using (var tx = db.BeginTransaction()) {
 
                     var newUser = new UserOrganizationModel();
                     createdUser = newUser;
-	                if (managerId == -4){
-		                //No manager
+                    if (managerId == -4) {
+                        //No manager
 
-	                }else if (managerId == -3){
-						//Manager at organization
+                    } else if (managerId == -3) {
+                        //Manager at organization
                         if (!caller.ManagingOrganization)
                             throw new PermissionsException();
                         newUser.ManagingOrganization = true;
-                    }else{
+                    } else {
                         var manager = db.Get<UserOrganizationModel>(managerId);
                         //Manager and Caller are in the same organization
                         if (manager.Organization.Id != caller.Organization.Id)
@@ -62,52 +58,50 @@ namespace RadialReview.Accessors
                         if (!(caller.ManagerAtOrganization || caller.ManagingOrganization) || !(manager.ManagerAtOrganization || manager.ManagingOrganization))
                             throw new PermissionsException();
 
-					}
-					newUser.ClientOrganizationName = organizationName;
-					newUser.IsClient = isClient;
+                    }
+                    newUser.ClientOrganizationName = organizationName;
+                    newUser.IsClient = isClient;
                     newUser.ManagerAtOrganization = isManager;
                     newUser.Organization = caller.Organization;
                     newUser.EmailAtOrganization = email;
-                    tempUser = new TempUserModel()
-                    {
+                    tempUser = new TempUserModel() {
                         FirstName = firstName,
                         LastName = lastName,
                         Email = email,
                         Guid = nexusId.ToString(),
                         LastSent = null,
                         OrganizationId = caller.Organization.Id,
-						LastSentByUserId = caller.Id,
-						EmailStatus = null
+                        LastSentByUserId = caller.Id,
+                        EmailStatus = null
                     };
                     newUser.TempUser = tempUser;
-					
-					var position = orgPositionId!= -2?db.Get<OrganizationPositionModel>(orgPositionId):null;
 
-					if (position!=null && position.Organization.Id != newUser.Organization.Id)
+                    var position = orgPositionId != -2 ? db.Get<OrganizationPositionModel>(orgPositionId) : null;
+
+                    if (position != null && position.Organization.Id != newUser.Organization.Id)
                         throw new PermissionsException();
 
                     db.Save(newUser);
-	                newUser.TempUser.UserOrganizationId = newUser.Id;
+                    newUser.TempUser.UserOrganizationId = newUser.Id;
 
-	                if (position != null){
-		                var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id){
-			                Start = now,
-		                };
+                    if (position != null) {
+                        var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id) {
+                            Start = now,
+                        };
 
 
                         var template = UserTemplateAccessor._GetAttachedUserTemplateUnsafe(db, position.Id, AttachType.Position);
                         if (template != null)
                             UserTemplateAccessor._AddUserToTemplateUnsafe(db, template.Organization, template.Id, newUser.Id, false);
 
-		                newUser.Positions.Add(positionDuration);
-	                }
+                        newUser.Positions.Add(positionDuration);
+                    }
 
-	                if (managerId > 0)
-                    {
-                        var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id){
-							Start = now,
-							Manager = db.Load<UserOrganizationModel>(managerId),
-							Subordinate = db.Load<UserOrganizationModel>(newUser.Id),
+                    if (managerId > 0) {
+                        var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id) {
+                            Start = now,
+                            Manager = db.Load<UserOrganizationModel>(managerId),
+                            Subordinate = db.Load<UserOrganizationModel>(newUser.Id),
                         };
                         var manager = db.Get<UserOrganizationModel>(managerId);
                         //db.Save(new DeepSubordinateModel() { CreateTime = now, Links = 1, ManagerId = newUserId, SubordinateId = newUserId });
@@ -117,29 +111,26 @@ namespace RadialReview.Accessors
 
                     db.Update(newUser);
 
-                    if (isManager)
-                    {
+                    if (isManager) {
                         var subordinateTeam = OrganizationTeamModel.SubordinateTeam(caller, newUser);
                         db.Save(subordinateTeam);
                     }
 
                     newUserId = newUser.Id;
-					newUser.UpdateCache(db);
+                    newUser.UpdateCache(db);
                     tx.Commit();
                 }
 
-                using (var tx = db.BeginTransaction())
-                {
+                using (var tx = db.BeginTransaction()) {
                     //Attach 
                     caller = db.Get<UserOrganizationModel>(caller.Id);
-                    var nexus = new NexusModel(nexusId)
-                    {
+                    var nexus = new NexusModel(nexusId) {
                         ActionCode = NexusActions.JoinOrganizationUnderManager,
                         ByUserId = caller.Id,
                         ForUserId = newUserId,
                     };
 
-                    nexus.SetArgs(new string[] { "" + caller.Organization.Id, email, "" + newUserId, firstName, lastName,""+isClient });
+                    nexus.SetArgs(new string[] { "" + caller.Organization.Id, email, "" + newUserId, firstName, lastName, "" + isClient });
                     id = nexus.Id;
                     db.SaveOrUpdate(nexus);
                     //var newUser=db.Get<UserOrganizationModel>(newUserId);
@@ -153,40 +144,36 @@ namespace RadialReview.Accessors
             return tempUser;
         }
 
-        public async Task<Tuple<string,UserOrganizationModel>> JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, bool isClient,bool sendEmail,string organizationName)
+        public async Task<Tuple<string, UserOrganizationModel>> JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, bool isClient, bool sendEmail, string organizationName)
         {
             //var sendEmail = caller.Organization.SendEmailImmediately;
 
             UserOrganizationModel createdUser;
 
-            var tempUser = CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName,out createdUser, isClient, organizationName);
-            if (sendEmail)
-            {
-                var mail=CreateJoinEmailToGuid(caller, tempUser);
+            var tempUser = CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName, out createdUser, isClient, organizationName);
+            if (sendEmail) {
+                var mail = CreateJoinEmailToGuid(caller, tempUser);
                 await Emailer.SendEmail(mail);
             }
-            return Tuple.Create(tempUser.Guid,createdUser);
+            return Tuple.Create(tempUser.Guid, createdUser);
         }
 
         public async Task<EmailResult> ResendAllEmails(UserOrganizationModel caller, long organizationId)
         {
-            var unsentEmails=new List<Mail>();
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+            var unsentEmails = new List<Mail>();
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
 
-                    var toSend = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.TempUser != null && x.DeleteTime==null && x.User==null).Fetch(x=>x.TempUser).Eager.List().ToList();
-                    foreach (var user in toSend)
-                    {
-                       unsentEmails.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser));
-					   user.UpdateCache(s);
-					}
+                    var toSend = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.TempUser != null && x.DeleteTime == null && x.User == null).Fetch(x => x.TempUser).Eager.List().ToList();
+                    foreach (var user in toSend) {
+                        unsentEmails.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser));
+                        user.UpdateCache(s);
+                    }
                     tx.Commit();
                     s.Flush();
-                
-                } 
+
+                }
             }
             return await Emailer.SendEmails(unsentEmails);
         }
@@ -194,48 +181,47 @@ namespace RadialReview.Accessors
         public async Task<EmailResult> SendAllJoinEmails(UserOrganizationModel caller, long organizationId)
         {
             var unsent = new List<Mail>();
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, organizationId);
 
                     var toSend = s.QueryOver<TempUserModel>().Where(x => x.OrganizationId == organizationId && x.LastSent == null).List().ToList();
-                    
-                 
-	                var toUpdate = s.QueryOver<UserOrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(toSend.Select(x => x.UserOrganizationId).ToArray()).List().ToList();
-	                foreach (var user in toUpdate){
-		                if (user.DeleteTime != null)
-			                toSend.RemoveAll(x => x.UserOrganizationId == user.Id);
 
-	                }
 
-					foreach (var tempUser in toSend){
-						var found = toUpdate.FirstOrDefault(x => x.Id == tempUser.UserOrganizationId);
-						if (found == null || found.DeleteTime!=null)
-							continue;
-						unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
-					}
-					var output = ((await Emailer.SendEmails(unsent)));
-					foreach (var user in toUpdate){
-						user.UpdateCache(s);
-					}
-	                return output;
+                    var toUpdate = s.QueryOver<UserOrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(toSend.Select(x => x.UserOrganizationId).ToArray()).List().ToList();
+                    foreach (var user in toUpdate) {
+                        if (user.DeleteTime != null)
+                            toSend.RemoveAll(x => x.UserOrganizationId == user.Id);
+
+                    }
+
+                    foreach (var tempUser in toSend) {
+                        var found = toUpdate.FirstOrDefault(x => x.Id == tempUser.UserOrganizationId);
+                        if (found == null || found.DeleteTime != null)
+                            continue;
+                        unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
+                    }
+
+                    foreach (var user in toUpdate) {
+                        user.UpdateCache(s);
+                    }
+                    tx.Commit();
+                    s.Flush();
                 }
             }
+            var output = ((await Emailer.SendEmails(unsent)));
+            return output;
         }
-        
+
         public Mail CreateJoinEmailToGuid(UserOrganizationModel caller, TempUserModel tempUser)
         {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     var result = CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
 
-	                var user = s.Get<UserOrganizationModel>(tempUser.UserOrganizationId);
-					if (user!=null)
-						user.UpdateCache(s);
+                    var user = s.Get<UserOrganizationModel>(tempUser.UserOrganizationId);
+                    if (user != null)
+                        user.UpdateCache(s);
 
                     tx.Commit();
                     s.Flush();
@@ -243,7 +229,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-		[Obsolete("Update userOrganization cache",false)]
+        [Obsolete("Update userOrganization cache", false)]
         public static Mail CreateJoinEmailToGuid(DataInteraction s, UserOrganizationModel caller, TempUserModel tempUser)
         {
             var emailAddress = tempUser.Email;
@@ -254,17 +240,17 @@ namespace RadialReview.Accessors
             tempUser = s.Get<TempUserModel>(tempUser.Id);
             tempUser.LastSent = DateTime.UtcNow;
             s.SaveOrUpdate(tempUser);
-			
+
             //Send Email
             //[OrganizationName,LinkUrl,LinkDisplay,ProductName]            
             var url = "Account/Register?returnUrl=%2FOrganization%2FJoin%2F" + id;
-			url = Config.BaseUrl(caller.Organization) + url;
+            url = Config.BaseUrl(caller.Organization) + url;
             //var body = String.Format(;
             //subject = ;
-			var productName = Config.ProductName(caller.Organization);
-			return Mail.To(EmailTypes.JoinOrganization, emailAddress)
-				.Subject(EmailStrings.JoinOrganizationUnderManager_Subject, firstName, caller.Organization.Name.Translate(), productName)
-				.Body(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, productName, id.ToUpper());
+            var productName = Config.ProductName(caller.Organization);
+            return Mail.To(EmailTypes.JoinOrganization, emailAddress)
+                .Subject(EmailStrings.JoinOrganizationUnderManager_Subject, firstName, caller.Organization.Name.Translate(), productName)
+                .Body(EmailStrings.JoinOrganizationUnderManager_Body, firstName, caller.Organization.Name.Translate(), url, url, productName, id.ToUpper());
 
 
 
@@ -275,10 +261,8 @@ namespace RadialReview.Accessors
 
         public void Execute(NexusModel nexus)
         {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     nexus = s.Get<NexusModel>(nexus.Id);
 
                     //db.Nexuses.Attach(nexus);
@@ -292,10 +276,8 @@ namespace RadialReview.Accessors
 
         public NexusModel Put(NexusModel model)
         {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     model = Put(s.ToUpdateProvider(), model);
                     tx.Commit();
                     s.Flush();
@@ -313,17 +295,15 @@ namespace RadialReview.Accessors
 
         public NexusModel Get(String id)
         {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     /*var found = db.Nexuses.Find(id);
                     if (found == null)
                         throw new PermissionsException();
                     return found;*/
                     var found = s.Get<NexusModel>(id);
-					if (found == null)
-						throw new PermissionsException("The request was not found.");
+                    if (found == null)
+                        throw new PermissionsException("The request was not found.");
                     if (found.DeleteTime != null && DateTime.UtcNow > found.DeleteTime)
                         throw new PermissionsException("The request has expired.");
                     return found;

@@ -294,7 +294,7 @@ namespace RadialReview.Controllers
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));
 
 				foreach (var note in await ExportAccessor.Notes(GetUser(), id))
-					zip.AddEntry(String.Format("{2}", time, recur.Name, note.Item1), note.Item2);
+                    zip.AddEntry(String.Format("{2}", time, recur.Name, note.Item1.Replace("/", "_")), note.Item2);
 
 				zip.Save(memoryStream);
 				memoryStream.Seek(0, SeekOrigin.Begin);
@@ -396,25 +396,50 @@ namespace RadialReview.Controllers
 			L10Accessor.UpdateIssues(GetUser(), recurrenceId, model);
 			return Json(ResultObject.SilentSuccess());
 		}
-		
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
+
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
         public JsonResult UpdateIssueCompletion(long id, long issueId, bool @checked, DateTime? time = null, string connectionId = null)
         {
             time = time ?? DateTime.UtcNow;
-			var recurrenceId = id;
+            var recurrenceId = id;
             L10Accessor.UpdateIssue(GetUser(), issueId, time.Value, complete: @checked, connectionId: connectionId);
-			return Json(ResultObject.SilentSuccess(@checked));
-		}
+            return Json(ResultObject.SilentSuccess(@checked));
+        }
+        [Access(AccessLevel.UserOrganization)]
+        [HttpGet]
+        public JsonResult UpdateIssueCompleted(long id, bool @checked, string connectionId = null)
+        {
+            var time = DateTime.UtcNow;
+            var recurrenceId = id;
+            L10Accessor.UpdateIssue(GetUser(), id, time, complete: @checked, connectionId: connectionId);
+            return Json(ResultObject.SilentSuccess(@checked),JsonRequestBehavior.AllowGet);
+        }
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
+
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
         public JsonResult UpdateIssue(long id, DateTime? time = null, string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null)
-		{
+        {
             time = time ?? DateTime.UtcNow;
-			L10Accessor.UpdateIssue(GetUser(), id,time.Value, message, details,owner:owner,priority: priority,rank:rank);
-			return Json(ResultObject.SilentSuccess());
-		}
+            L10Accessor.UpdateIssue(GetUser(), id, time.Value, message, details, owner: owner, priority: priority, rank: rank);
+            return Json(ResultObject.SilentSuccess());
+        }
+        public class IssueRankVM {
+            public long id { get; set; }
+            public int rank { get; set; }
+            public DateTime time { get; set; } 
+        }
+
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public JsonResult UpdateIssuesRank(List<IssueRankVM> arr)
+        {
+            foreach (var m in arr) {
+                L10Accessor.UpdateIssue(GetUser(), m.id, DateTime.UtcNow, rank: m.rank);
+            }
+            return Json(ResultObject.SilentSuccess());
+        }
 
 		#endregion
 

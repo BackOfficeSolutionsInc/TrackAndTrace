@@ -71,9 +71,11 @@ namespace RadialReview.Controllers
                         .Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
 						.Body(EmailStrings.PasswordReset_Body, user.Name(), Config.BaseUrl(null) + "n/" + token, Config.BaseUrl(null) + "n/" + token, Config.ProductName(null))
                     );
+                TempData["InfoAlert"]=("Please check your inbox, an email has been sent with further instructions.");
 
+            } else {
+                TempData["Message"] = ("An error has occurred. Please check that you have the correct email address and try again. Contact us if the problem persists.");
             }
-            TempData["InfoAlert"]=("Please check your inbox, an email has been sent with further instructions.");
             return RedirectToAction("Index", "Home");
         }
 

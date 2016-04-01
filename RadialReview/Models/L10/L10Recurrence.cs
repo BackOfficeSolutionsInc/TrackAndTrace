@@ -14,7 +14,7 @@ namespace RadialReview.Models.L10
         Invalid=0,
         [Display(Name="By Priority")]
         Priority,
-        [Display(Name="By Rank (1,2,3)")]
+        [Display(Name = "By Rank (1, 2 & 3)")]
         Rank,
     }
 

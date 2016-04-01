@@ -22,7 +22,7 @@
 
 .todo-list > .todo-row {
 	border: 1px solid #ddd;
-	padding: 0 5px;
+	padding: 0 5px 0 0;
 	margin: 2px;
 	border: 1px solid #CCC;
 	background: #EEE;
@@ -50,10 +50,18 @@
 	display: none;
 }
 .todo-list > .todo-row > .todo-checkbox {
-	display: inline-block;
+	/*display: inline-block;
 	position: relative;
 	left: -24px;
-	top: -5px;
+	top: -5px;*/
+    
+    display: inline-block;
+    position: relative;
+    left: -21px;
+    top: -6px;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
 }
 
 
@@ -95,17 +103,19 @@
 
 
 .todo-list .message {
-	display: inline-block;
-	position: relative;
-	top: -2px;
-	left: -16px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	width: 70%;
-	width: calc(100% - 155px);
-	font-size: 18px;
-	min-height: 19px;
+    display: inline-block;
+    position: relative;
+    top: -2px;
+    left: -16px;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 70%;
+    width: calc(100% - 77px);
+    font-size: 18px;
+    min-height: 19px;
 }
 
 .todo-list > .todo-row > .message {
@@ -272,7 +282,7 @@ body.dragging, body.dragging * {
 .todoDetails h4 {
 	margin-top: 0px;
 	margin-bottom: 10px;
-	min-height: 48px;
+	min-height: 30px;
 }
 
 .todoDetails:empty { 
@@ -395,4 +405,11 @@ body.dragging, body.dragging * {
 .todo .fixed-pos {  
 	position: relative;
 	width: 100%;
+}
+
+.todo-list .outer:before {
+    display:none;
+}
+.todo-list .due-date{
+    display:none;
 }

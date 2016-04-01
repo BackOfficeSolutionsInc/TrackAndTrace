@@ -21,7 +21,7 @@
 					callback(connection, proxy);
 				}
 			})
-			.fail(function () { alert("Connection failed"); });
+			.fail(function () { /*alert("Connection failed");*/ });
 		window.angularSharedSignalR.proxies[hubName] = proxy;
 		return window.angularSharedSignalR.proxies[hubName];
 	}

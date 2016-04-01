@@ -18,6 +18,8 @@ namespace RadialReview.Models.Angular.Meeting
 	{
 		public AngularRecurrence(L10Recurrence recurrence) : this(recurrence.Id){
 			Name = recurrence.Name;
+            Prioritization = recurrence.Prioritization!=PrioritizationType.Invalid?recurrence.Prioritization:PrioritizationType.Priority;
+
 		}
 
 		public AngularRecurrence(long id):base(id){
@@ -32,8 +34,8 @@ namespace RadialReview.Models.Angular.Meeting
 		public IEnumerable<AngularTodo> Todos { get; set; }
 		public IEnumerable<AngularIssue> Issues { get; set; } 
 		public AngularDateRange date { get; set; }
-
 		public string HeadlinesUrl { get; set; }
+        public PrioritizationType Prioritization { get; set; }
 	}
 
 

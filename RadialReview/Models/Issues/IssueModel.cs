@@ -30,7 +30,8 @@ namespace RadialReview.Models.Issues
 		public virtual String ForModel { get; set; }
 		public virtual long ForModelId { get; set; }
 		public virtual long OrganizationId { get; set; }
-		public virtual OrganizationModel Organization { get; set; }
+        public virtual OrganizationModel Organization { get; set; }
+        public virtual int _Rank { get; set; }
 
 		//public virtual long _RecurrenceIssueId { get; set; }
 		public virtual async Task<string> GetTodoMessage()
@@ -143,5 +144,6 @@ namespace RadialReview.Models.Issues
 
 
         }
-	}
+
+    }
 }

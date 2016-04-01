@@ -3022,14 +3022,14 @@ select[multiple].input-lg {
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
-.btn:hover,
-.btn:focus,
-.btn.focus {
+.btn:not(.nohover):hover,
+.btn:not(.nohover):focus,
+.btn:not(.nohover).focus {
   color: #333333;
   text-decoration: none;
 }
-.btn:active,
-.btn.active {
+.btn:not(.nohover):active,
+.btn:not(.nohover).active {
   outline: 0;
   background-image: none;
   -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
@@ -3894,13 +3894,13 @@ fieldset[disabled] .btn-link {
   box-shadow: none;
 }
 .btn-link,
-.btn-link:hover,
-.btn-link:focus,
-.btn-link:active {
+.btn-link:not(.nohover):hover,
+.btn-link:not(.nohover):focus,
+.btn-link:not(.nohover):active {
   border-color: transparent;
 }
-.btn-link:hover,
-.btn-link:focus {
+.btn-link:not(.nohover):hover,
+.btn-link:not(.nohover):focus {
   color: #151312;
   text-decoration: underline;
   background-color: transparent;
@@ -7264,7 +7264,7 @@ tr.grayRow {
 .clickable {
   /*color: @traction-orange;*/
 }
-.clickable:hover {
+.clickable:not(.nohover):hover {
   color: #cf5e0f;
 }
 .table-hover-underline a {

@@ -14,6 +14,7 @@ namespace RadialReview.Content
     {
 		public class MandrillWebHookBindingModel
 		{
+            [AllowHtml]
 			public string mandrill_events { get; set; }
 		}
 

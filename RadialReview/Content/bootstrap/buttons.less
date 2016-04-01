@@ -29,15 +29,15 @@
 		}
 	}
 
-	&:hover,
-	&:focus,
-	&.focus {
+	&:not(.nohover):hover,
+	&:not(.nohover):focus,
+	&:not(.nohover).focus {
 		color: @btn-default-color;
 		text-decoration: none;
 	}
 
-	&:active,
-	&.active {
+	&:not(.nohover):active,
+	&:not(.nohover).active {
 		outline: 0;
 		background-image: none;
 		.box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
@@ -134,14 +134,14 @@
 	}
 
 	&,
-	&:hover,
-	&:focus,
-	&:active {
+	&:not(.nohover):hover,
+	&:not(.nohover):focus,
+	&:not(.nohover):active {
 		border-color: transparent;
 	}
 
-	&:hover,
-	&:focus {
+	&:not(.nohover):hover,
+	&:not(.nohover):focus {
 		color: @link-hover-color;
 		text-decoration: @link-hover-decoration;
 		background-color: transparent;

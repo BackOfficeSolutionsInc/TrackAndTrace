@@ -97,11 +97,16 @@ namespace RadialReview.Accessors
         private static Color TableGray = new Color(100, 100, 100, 100);
         private static Color TableBlack = new Color(0, 0, 0);
 
-        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait)
+        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait,bool addSection=true)
         {
+            Section section;
 
-            var section = document.AddSection();
-            section.PageSetup.Orientation = orientation;
+            if (addSection||document.LastSection==null) {
+                section = document.AddSection();
+                section.PageSetup.Orientation = orientation;
+            } else {
+                section = document.LastSection;
+            }
 
             var paragraph = new Paragraph();
             paragraph.AddTab();
@@ -153,7 +158,7 @@ namespace RadialReview.Accessors
             table.RightPadding = 0;
 
             //Number
-            var column = table.AddColumn(Unit.FromInch(0.2));
+            var column = table.AddColumn(Unit.FromInch(/*0.2*/0));
             column.Format.Alignment = ParagraphAlignment.Center;
 
             //Due
@@ -161,7 +166,7 @@ namespace RadialReview.Accessors
             column.Format.Alignment = ParagraphAlignment.Center;
 
             //Who
-            column = table.AddColumn(Unit.FromInch(1));
+            column = table.AddColumn(Unit.FromInch(1+0.2));
             column.Format.Alignment = ParagraphAlignment.Center;
 
 
@@ -200,7 +205,7 @@ namespace RadialReview.Accessors
                 row.HeightRule = RowHeightRule.AtLeast;
                 row.VerticalAlignment = VerticalAlignment.Center;
                 row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
-                row.Cells[0].AddParagraph("" + mn + ".");
+                //row.Cells[0].AddParagraph("" + mn + ".");
                 row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToShortDateString()) ?? "Not-set");
                 row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
                 row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
@@ -210,13 +215,13 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static void AddIssues(UserOrganizationModel caller, Document doc, AngularRecurrence recur)
+        public static void AddIssues(UserOrganizationModel caller, Document doc, AngularRecurrence recur,bool mergeWithTodos)
         {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
 
-            var section = AddTitledPage(doc, "Issues List");
+            var section = AddTitledPage(doc, "Issues List", addSection:!mergeWithTodos);
 
             var table = section.AddTable();
             table.Style = "Table";
@@ -225,11 +230,15 @@ namespace RadialReview.Accessors
             table.RightPadding = 0;
 
             //Number
-            var column = table.AddColumn(Unit.FromInch(0.2));
+            var column = table.AddColumn(Unit.FromInch(/*0.2*/0));
             column.Format.Alignment = ParagraphAlignment.Center;
 
             //Priority
-            column = table.AddColumn(Unit.FromInch(0.7));
+            var size = Unit.FromInch(0.0);
+            var isPriority = recur.Prioritization==PrioritizationType.Priority;
+            if (isPriority)
+                size = Unit.FromInch(0.7);
+            column = table.AddColumn(size);
             column.Format.Alignment = ParagraphAlignment.Center;
 
             //Who
@@ -238,7 +247,7 @@ namespace RadialReview.Accessors
 
 
             //Issue
-            column = table.AddColumn(Unit.FromInch(4.85 + .75));
+            column = table.AddColumn(Unit.FromInch(4.85 + .75 + (isPriority?0:.7)+0.2));
             column.Format.Alignment = ParagraphAlignment.Left;
 
             var row = table.AddRow();
@@ -248,7 +257,7 @@ namespace RadialReview.Accessors
             row.Shading.Color = TableGray;
             row.Height = Unit.FromInch(0.25);
 
-            row.Cells[1].AddParagraph("Priority");
+            row.Cells[1].AddParagraph(isPriority?"Priority":"");
             row.Cells[1].VerticalAlignment = VerticalAlignment.Bottom;
 
             row.Cells[2].AddParagraph("Owner");
@@ -271,20 +280,19 @@ namespace RadialReview.Accessors
                 row.HeightRule = RowHeightRule.AtLeast;
                 row.VerticalAlignment = VerticalAlignment.Center;
                 row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
-                row.Cells[0].AddParagraph("" + mn + ".");
+                //row.Cells[0].AddParagraph("" + mn + ".");
 
                 var p = "";
-                if (m.Priority >= 1 && m.Priority <= 3)
-                {
-                    for (var i = 0; i < m.Priority; i++)
-                        p += "*";//"★";
+                if (isPriority) {
+                    if (m.Priority >= 1 && m.Priority <= 3) {
+                        for (var i = 0; i < m.Priority; i++)
+                            p += "*";//"★";
+                    } else if (m.Priority > 3) {
+                        p = "* x" + m.Priority;
+                    }
+                    //row.Cells[1].Format.Font.Name = "Arial";
+                    row.Cells[1].AddParagraph(p);
                 }
-                else if (m.Priority > 3)
-                {
-                    p = "* x" + m.Priority;
-                }
-                //row.Cells[1].Format.Font.Name = "Arial";
-                row.Cells[1].AddParagraph(p);
 
                 //if (m.Priority >= 1)
                 //{
@@ -327,13 +335,13 @@ namespace RadialReview.Accessors
 
                 mult = 1.0;
                 //Number
-                column = table.AddColumn(Unit.FromInch(0.2 * mult));
+                column = table.AddColumn(Unit.FromInch(/*0.2*/0 * mult));
                 column.Format.Alignment = ParagraphAlignment.Center;
                 //Due
                 column = table.AddColumn(Unit.FromInch(0.7 * mult));
                 column.Format.Alignment = ParagraphAlignment.Center;
                 //Who
-                column = table.AddColumn(Unit.FromInch(1 * mult));
+                column = table.AddColumn(Unit.FromInch(1+.2 * mult));
                 column.Format.Alignment = ParagraphAlignment.Center;
                 //Completion
                 column = table.AddColumn(Unit.FromInch(0.75 * mult));
@@ -375,7 +383,7 @@ namespace RadialReview.Accessors
                     row.HeightRule = RowHeightRule.AtLeast;
                     row.VerticalAlignment = VerticalAlignment.Center;
                     row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
-                    row.Cells[0].AddParagraph("" + mn + ".");
+                    //row.Cells[0].AddParagraph("" + mn + ".");
                     row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToShortDateString()) ?? "Not-set");
                     row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
                     row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
@@ -399,13 +407,13 @@ namespace RadialReview.Accessors
 
             mult = 10.0 / 7.5;
             //Number
-            column = table.AddColumn(Unit.FromInch(0.2 * mult));
+            column = table.AddColumn(Unit.FromInch(/*0.2*/ 0 * mult));
             column.Format.Alignment = ParagraphAlignment.Center;
             //Due
             column = table.AddColumn(Unit.FromInch(0.7 * mult));
             column.Format.Alignment = ParagraphAlignment.Center;
             //Who
-            column = table.AddColumn(Unit.FromInch(1 * mult));
+            column = table.AddColumn(Unit.FromInch(1+0.2 * mult));
             column.Format.Alignment = ParagraphAlignment.Center;
             //Completion
             column = table.AddColumn(Unit.FromInch(0.75 * mult));
@@ -447,7 +455,7 @@ namespace RadialReview.Accessors
                 row.HeightRule = RowHeightRule.AtLeast;
                 row.VerticalAlignment = VerticalAlignment.Center;
                 row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
-                row.Cells[0].AddParagraph("" + mn + ".");
+                //row.Cells[0].AddParagraph("" + mn + ".");
                 row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToShortDateString()) ?? "Not-set");
                 row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
                 row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
@@ -491,7 +499,7 @@ namespace RadialReview.Accessors
 
 
             //Number
-            var column = table.AddColumn(Unit.FromInch(0.25));
+            var column = table.AddColumn(Unit.FromInch(0/*0.25*/));
             column.Format.Alignment = ParagraphAlignment.Center;
 
             //Who
@@ -500,7 +508,7 @@ namespace RadialReview.Accessors
             column.Format.Alignment = ParagraphAlignment.Center;
 
             //Measurable
-            column = table.AddColumn(Unit.FromInch(2.0));
+            column = table.AddColumn(Unit.FromInch(2.0+.25));
             column.Format.Alignment = ParagraphAlignment.Center;
 
             //Goal
@@ -562,8 +570,8 @@ namespace RadialReview.Accessors
                 row.HeightRule = RowHeightRule.AtLeast;
                 row.VerticalAlignment = VerticalAlignment.Center;
                 row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
-                row.Cells[0].AddParagraph("" + mn + ".");
-                row.Cells[0].Format.Alignment = ParagraphAlignment.Right;
+                //row.Cells[0].AddParagraph("" + mn + ".");
+                //row.Cells[0].Format.Alignment = ParagraphAlignment.Right;
                 row.Cells[1].AddParagraph(m.Owner.Name);
                 row.Cells[2].AddParagraph(m.Name);
                 row.Cells[2].Format.Alignment = ParagraphAlignment.Left;
