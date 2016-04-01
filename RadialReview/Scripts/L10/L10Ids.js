@@ -362,6 +362,10 @@ function sortIssueBy(recurrenceId, issueList, sortBy, title, mult) {
 function updateIssueCompletion(issueId, complete) {
     var selector = ".issue-checkbox[data-recurrence_issue='" + issueId + "']";
     $(selector).prop("checked", complete);
+    $(selector).parents(".issue-row").attr("data-checked", complete);
+    $(selector).parents(".issue-row").data("checked", complete);
+    
+    refreshCurrentIssueDetails();
 }
 
 function deserializeIssues(selector, issueList) {

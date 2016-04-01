@@ -1039,5 +1039,29 @@ namespace RadialReview.Controllers {
             }
         }
 
+        [Access(AccessLevel.Radial)]
+        public string M4_01_2016()
+        {
+
+            var f = 0;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    //Fix TempUser userIds
+
+                    var recur = s.QueryOver<L10Recurrence>().List().ToList();
+
+                    foreach (var r in recur) {
+                        r.ShowHeadlinesBox = true;// = Guid.NewGuid().ToString();
+                        s.Update(r);
+                        f++;
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+
+                    return "" + f;
+                }
+            }
+        }
     }
 }

@@ -120,6 +120,23 @@
                                       new { @class = "Xselect2  duel-list form-control rocks editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typeing one of your " + Html.Organization().Settings.RockName + "..." })
                         </div>
                     </div>
+                </div><div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingHeadlines">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseHeadlines" aria-expanded="false" aria-controls="collapseHeadlines">
+                                People Headlines
+                            </a>
+                            <div class="list-count pull-right"></div>
+                        </h4>
+                    </div>
+                    <div id="collapseHeadlines" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingHeadlines">
+                        <div class="panel-body ids">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Show notes box:</label>
+                                <div class="col-sm-4">@Html.CheckBoxFor(x => x.Recurrence.ShowHeadlinesBox, new { @class = "checkbox", style = "margin-top:3px;" }) </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-heading" role="tab" id="headingIDS">

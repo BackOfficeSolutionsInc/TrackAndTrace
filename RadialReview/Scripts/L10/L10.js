@@ -267,22 +267,22 @@ function loadPageForce(location) {
 }
 
 function resizing() {
-    var clock = $(".current-time");
+    var clock = $(".elapsed-time");
     var maxSec = 221;
     var maxResize = 192;
-    if (lessThan10) {
-        maxSec = 166;
-        maxResize = 0;
-    }
+    //if (lessThan10) {
+    //    maxSec = 166;
+    //    maxResize = 0;
+    //}
     if (clock.width() < maxSec) {
-        $(".current-time .second").css("display", "none");
+        $(".elapsed-time .second").css("display", "none");
     } else {
-        $(".current-time .second").css("display", "inherit");
+        $(".elapsed-time .second").css("display", "inherit");
     }
     if (clock.width() < maxResize) {
-        $(".current-time .big").css({ "font-size": "40px", "line-height": "85px" });
+        $(".elapsed-time").css({ "font-size": "40px", "line-height": "60px" });
     } else {
-        $(".current-time .big").css({ "font-size": "60px", "line-height": "" });
+        $(".elapsed-time").css({ "font-size": "60px", "line-height": "" });
     }
 }
 

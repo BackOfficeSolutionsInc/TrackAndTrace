@@ -46,10 +46,10 @@
 	font-size: 70%;
 }
 .scorecard-table .measurable.heading{
-    padding-left:40px;
+    padding-left:10px;
 }
 .scorecard-table .measurable {
-	text-align: right !important;
+	/*text-align: right !important;*/
 	font-weight: bold;
 	padding-left: 10px;
 	padding-right: 10px;
@@ -62,7 +62,7 @@
 }
 
 .scorecard-table .target {
-	text-align: left;
+	text-align: right;
 	padding-left: 5px;
 	padding-right: 10px;
 }

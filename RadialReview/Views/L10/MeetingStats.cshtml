@@ -24,12 +24,12 @@
 <div class="component meeting-stats">
 	<div class="row">
 
-		<div class="col-md-6">
+		<div class="col-md-12">
 			<div class="row">
 				<div class="col-xs-6 smallPad smallBreak2">
 					<div class="stats">
 						<h1 id="reviewsCompleted" class="scramble resize1" data-range="99" style="">@Model.IssuesSolved</h1>
-						<h6>Issues Completed</h6>
+						<h6>Issues Solved</h6>
 					</div>
 				</div>
 				<div class="col-xs-6 smallPad smallBreak2">
@@ -40,7 +40,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-md-6">
+		<div class="col-md-12">
 			<div class="row">
 				<div class="col-xs-6 smallPad smallBreak2">
 					<div class="stats">
@@ -62,7 +62,7 @@
 			</div>
 		</div>
 	</div>
-	@if (Model.TodosCreated.Any(x => x.CompleteTime == null))
+	@*@if (Model.TodosCreated.Any(x => x.CompleteTime == null))
 	{
 		<h3 style="font-size: 20px; color: #444;">Newly Added New To-Dos</h3>
 		<div class="todo-container ">
@@ -76,7 +76,7 @@
 				}
 			</ol>
 		</div>
-	}
+	}*@
 </div>
 
 @*<div class="component meeting-stats">

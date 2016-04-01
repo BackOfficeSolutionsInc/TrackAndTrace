@@ -71,13 +71,22 @@ body {
 }
 
     .current-time .big {
-        font-size: 60px;
+        font-size: 21px;
     }
 
     .current-time .second {
-        font-size: 22px;
+        font-size: 16px;
         width: 10px;
         position: relative;
+    }
+
+.elapsed-time {
+    font-size: 60px;
+}
+
+    .elapsed-time .gray {
+        font-size: 25px;
+        margin: -7px;
     }
 
 .component .gray {
@@ -244,10 +253,10 @@ h3 {
     white-space: nowrap;
 }
 
-.issuesButton:hover,
-.vtoButton:hover{
-    opacity:1;
-}
+    .issuesButton:hover,
+    .vtoButton:hover {
+        opacity: 1;
+    }
 
 .fontastic-icon-pinboard.issuesButton:before {
     top: 4px !important;
@@ -483,21 +492,22 @@ profile-image {
                 height: 100%;
                 border: none;
             }
-            
-        .slider-container .back-button{
-            position: fixed;
-            top: 35px;
-            left: 1px;
-            width:57px;
-        }
-        .slider-container .print-vto-button{
-            position: fixed;
-            top: 58px;
-            left: 1px;
-            width:57px;
-        }
 
-iframe{
+    .slider-container .back-button {
+        position: fixed;
+        top: 35px;
+        left: 1px;
+        width: 57px;
+    }
+
+    .slider-container .print-vto-button {
+        position: fixed;
+        top: 58px;
+        left: 1px;
+        width: 57px;
+    }
+
+iframe {
     background: url('/Content/select2-spinner.gif');
     background-repeat: no-repeat;
     background-position-x: 50%;
@@ -509,3 +519,23 @@ iframe{
     position:fixed;
     bottom:0;
 }*/
+
+
+.stats {
+    color: #1F98C7;
+    text-align: center;
+    font-family: 'Lato',sans-serif;
+    border: 1px solid #E4E4E4;
+    border-top: 2px solid #E4E4E4;
+    /* border: 1px; */
+    margin-bottom: 50px;
+    background-color: #F8F8F8;
+    height: 160px;
+    /* margin: 40px 120px; */
+    width: 70%;
+    height: 160px;
+    margin: 30px auto;
+    text-align: center;
+    min-width: 300px;
+    /* vertical-align: middle; */
+}

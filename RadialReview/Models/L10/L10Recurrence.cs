@@ -63,7 +63,8 @@ namespace RadialReview.Models.L10
 		public virtual string OrderIssueBy { get; set; }
 		public virtual bool EnableTranscription { get; set; }
 
-		public virtual string HeadlinesId { get; set; }
+        public virtual string HeadlinesId { get; set; }
+        public virtual bool ShowHeadlinesBox { get; set; }
 
         public virtual bool IsLeadershipTeam { get; set; }
 
@@ -86,6 +87,7 @@ namespace RadialReview.Models.L10
             CountDown = true;
             IsLeadershipTeam = true;
             Prioritization = PrioritizationType.Rank;
+            ShowHeadlinesBox=false;
 
 		}
 
@@ -94,8 +96,9 @@ namespace RadialReview.Models.L10
 			public L10RecurrenceMap()
 			{
 				Id(x => x.Id);
-				Map(x => x.Name).Length(10000);
-				Map(x => x.VideoId);
+                Map(x => x.Name).Length(10000);
+                Map(x => x.VideoId);
+                Map(x => x.ShowHeadlinesBox);
 				Map(x => x.HeadlinesId);
 				Map(x => x.CreateTime);
                 Map(x => x.MeetingInProgress);
@@ -264,5 +267,7 @@ namespace RadialReview.Models.L10
 		}
 
 
-	}
+
+        
+    }
 }

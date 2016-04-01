@@ -18,7 +18,12 @@
 		<span class="inner icon fontastic-icon-primitive-square"></span>
 	</div>
 	<div class="btn-group pull-right">
-		<span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="@Model.Id" data-recurrence="@Model.ForRecurrenceId" data-meeting="@ViewData["MeetingId"]"></span>
+        <span class="icon fontastic-icon-pinboard issuesModal issuesButton"
+              data-method="issuefromtodo"
+              data-todo="@Model.Id"
+              data-recurrence="@Model.ForRecurrenceId"
+              data-meeting="@ViewData["MeetingId"]"
+              title="Create a Context-Aware Issue™"></span>
 	</div>
 	<span class="profile-image">@Html.Partial("_ProfilePicture", Model.AccountableUser)</span>
 	@*<div class="btn-group pull-right">

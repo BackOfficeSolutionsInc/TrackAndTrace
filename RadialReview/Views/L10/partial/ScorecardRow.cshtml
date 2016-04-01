@@ -92,23 +92,25 @@
 				</td>
 				if (r.IsCurrentWeek){
 					<td class="buttonHolder">
-						<span class="icon fontastic-icon-pinboard issuesButton issuesModal"
-						      data-meeting="@Model.MeetingId"
-						      data-recurrence="@Model.RecurrenceId"
-						      data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-						      data-score="@(found.NotNull(x => x.Id))"
-						      data-userid="@(Model.MeetingMeasurable.Measurable.AccountableUserId)"
-							@*data-message="@found.IssueMessage().EscapeHtml()"
+                        <span class="icon fontastic-icon-pinboard issuesButton issuesModal"
+                              data-meeting="@Model.MeetingId"
+                              data-recurrence="@Model.RecurrenceId"
+                              data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+                              data-score="@(found.NotNull(x => x.Id))"
+                              data-userid="@(Model.MeetingMeasurable.Measurable.AccountableUserId)"
+                              title="Create a Context-Aware Issue™"
+                              @*data-message="@found.IssueMessage().EscapeHtml()"
 							data-details="@found.IssueDetails().EscapeHtml()"*@>
-						</span>
-						<span class="glyphicon glyphicon-unchecked todoButton todoModal"
-						      data-method="CreateScorecardTodo"
-						      data-meeting="@Model.MeetingId"
-						      data-recurrence="@Model.RecurrenceId"
-						      data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-						      data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
-						      data-score="@(found.NotNull(x => x.Id))">
-						</span>
+                        </span>
+                        <span class="glyphicon glyphicon-unchecked todoButton todoModal"
+                              data-method="CreateScorecardTodo"
+                              data-meeting="@Model.MeetingId"
+                              data-recurrence="@Model.RecurrenceId"
+                              data-measurable="@Model.MeetingMeasurable.Measurable.Id"
+                              data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
+                              title="Create a Context-Aware To-Do™"
+                              data-score="@(found.NotNull(x => x.Id))">
+                        </span>
 					</td>
 				}
 				col += 1;

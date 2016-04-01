@@ -987,6 +987,7 @@
     <Content Include="SoftwareUpdates\20151216.txt" />
     <Content Include="SoftwareUpdates\20160125.txt" />
     <Content Include="SoftwareUpdates\20151229.txt" />
+    <Content Include="SoftwareUpdates\20160401.txt" />
     <Content Include="SoftwareUpdates\20160201.txt" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
     <Content Include="Content\Bootstrap-tabs.css" />

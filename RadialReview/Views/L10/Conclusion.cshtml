@@ -16,13 +16,7 @@
             </hgroup>
           
 
-            <div class="centered" style="width: 67%; max-width: 650px; margin-bottom: 47px; margin-top: -22px; ">
-                <div class="component cascading-messages">
-                    <h3 style="font-size: 20px; color: #444;">Cascading Messages</h3>
-                    <h4 class="cascading-messages-container" style="padding-bottom:15px;">Who do we need to tell about the decisions we've made?</h4>
-                </div>
-            </div>
-
+          
             @if (ViewBag.TodosCreated is List<TodoModel>  )
             {
                 <div class="centered" style="width: 75%; max-width: 700px; margin-bottom: 47px; margin-top: -22px; ">
@@ -38,6 +32,13 @@
                 </div>
             }
             
+            <div class="centered" style="width: 87%; max-width: 800px; margin-bottom: 47px; margin-top: -22px; ">
+                <div class="component cascading-messages">
+                    <h3 style="font-size: 20px; color: #444;">Cascading Messages</h3>
+                    <h4 class="cascading-messages-container" style="padding-bottom:15px;">Who do we need to tell about the decisions we've made?</h4>
+                </div>
+            </div>
+
             <div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;">
                 <div class="component">
                     <div class="meeting-manager">
@@ -47,6 +48,7 @@
                             UpdateTargetId = "main-window",
                             LoadingElementDuration = 1000,
                             InsertionMode = InsertionMode.Replace,
+                            OnSuccess="ConclusionSuccess"
                         })) {
                             @Html.ValidationSummaryMin()
                             @Html.SecuredHiddenFor(x => x.Recurrence.Id)
@@ -88,6 +90,9 @@
 <script>
     function gotoIndex(data) {
         window.location.href = "/L10/MeetingStats/";
+    }
+    function ConclusionSuccess() {
+        startTime = undefined;
     }
 </script>
 

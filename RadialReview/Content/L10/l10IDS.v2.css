@@ -70,6 +70,7 @@
     -ms-user-select: none;
     user-select: none;
     cursor: copy;
+    top: -8px;
 }
 
     .ids .priority .hoverable {
@@ -181,7 +182,7 @@ ol.sortable li {
 	padding: 4px;
 	margin: 6px;*/
     border: 1px solid #DDD;
-    padding: 0 5px;
+    padding: 0 5px 0 0;
     margin: 2px;
     border: 1px solid #CCC;
     background: #EEE;
@@ -230,7 +231,7 @@ ol.sortable li {
 .issues-list > .issue-row > .issue-checkbox {
     display: inline-block;
     position: relative;
-    left: -26px;
+    left: -21px;
     top: -6px;
     cursor: pointer;
     width: 15px;
@@ -760,8 +761,8 @@ body.dragging, body.dragging * {
         z-index: 1000000000;
         /* background-color: green; */
         width: 12px;
-        left: -11px;
-        top: -20px;
+        left: -7px;
+        top: -6px;
     }
 
     .issues-container .rank123[data-rank='2']:after {
@@ -774,8 +775,8 @@ body.dragging, body.dragging * {
         z-index: 1000000000;
         /* background-color: green; */
         width: 23px;
-        left: -17px;
-        top: -18px;
+        left: -13px;
+        top: -4px;
         background-position-x: -13px;
     }
 
@@ -789,17 +790,17 @@ body.dragging, body.dragging * {
         background-repeat: no-repeat;
         z-index: 1000000000;
         /* background-color: green; */
-        left: -17px;
-        top: -21px;
+        left: -13px;
+        top: -7px;
         background-position-x: -39px;
     }
 
 .issues-container .rank123 {
     display: none;
-    width: 23px;
+    width: 24px;
     float: left;
     height: 14px;
-    top: 0px;
+    top: -1px;
     position: relative;
     left: -16px;
     text-align: center;
@@ -815,9 +816,10 @@ body.dragging, body.dragging * {
     user-select: none;
     margin: 0px 4px;
     cursor: copy;
-    padding-top: 2px;
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-top: 7px;
+    padding-left: 1px;
+    padding-right: 2px;
+    height:24px;
 }
 
 
@@ -856,4 +858,8 @@ body.dragging, body.dragging * {
     background-color: red;
     height: 14px;
     content: "";
+}
+
+.ids .number-priority .number{
+    display:none;
 }

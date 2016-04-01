@@ -156,7 +156,7 @@ namespace RadialReview.Controllers
 		#region Segue
 		private PartialViewResult Segue(L10MeetingVM model)
 		{
-			ViewBag.Segue_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.Segue_Subheading,"Share your best professional and best personal news.");
+			ViewBag.Segue_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.Segue_Subheading,"Share good news from the last 7 days. One personal and one professional.");
 			
 			return PartialView("Segue", model);
 		}
