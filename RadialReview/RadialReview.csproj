@@ -848,6 +848,7 @@
     <Compile Include="Utilities\RealTime\RealTimeUtility.cs" />
     <Compile Include="Utilities\RealTime\RecurrenceUpdater.cs" />
     <Compile Include="Utilities\ReflectionUtility.cs" />
+    <Compile Include="Utilities\ResourceUtility.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
@@ -934,6 +935,9 @@
     <Content Include="Content\img\123.png" />
     <Content Include="Content\img\ajax-loader-ob.gif" />
     <Content Include="Content\img\ajax-loader-orange.gif" />
+    <EmbeddedResource Include="Content\embedded\EOS_Model.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Content\L10\L10ChatLog.css">
       <DependentUpon>L10ChatLog.less</DependentUpon>
     </Content>
@@ -952,6 +956,7 @@
     <None Include="Resources\Checked.png" />
     <None Include="Resources\star.png" />
     <None Include="Resources\Unchecked.png" />
+    <None Include="Resources\EOS_Model.png" />
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\ElemReady.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\fcsaNumber.js" />

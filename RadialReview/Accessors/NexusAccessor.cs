@@ -304,8 +304,13 @@ namespace RadialReview.Accessors {
                     var found = s.Get<NexusModel>(id);
                     if (found == null)
                         throw new PermissionsException("The request was not found.");
-                    if (found.DeleteTime != null && DateTime.UtcNow > found.DeleteTime)
-                        throw new PermissionsException("The request has expired.");
+                    if (found.DeleteTime != null && DateTime.UtcNow > found.DeleteTime) {
+                        var message = "The request has expired.";
+                        if (found.ActionCode == NexusActions.ResetPassword) {
+                            message += " You can only use this password reset code once.";
+                        }
+                        throw new PermissionsException(message);
+                    }
                     return found;
                 }
             }

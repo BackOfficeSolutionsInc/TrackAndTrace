@@ -85,7 +85,11 @@ namespace RadialReview.Controllers
         {
             SignOut();
             //Call this to force check permissions 
-            var nexus = _NexusAccessor.Get(id);
+            try {
+                var nexus = _NexusAccessor.Get(id);
+            } catch (Exception e) {
+
+            }
 
             return View(new ResetPasswordWithTokenViewModel() { Token = id });
         }

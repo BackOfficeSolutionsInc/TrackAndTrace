@@ -11,6 +11,13 @@ using RadialReview.Models.VTO;
 
 namespace RadialReview.Models.Angular.VTO
 {
+    public interface IVtoSectionHeader {
+        DateTime? FutureDate { get; set; }
+        Decimal? Revenue { get; set; }
+        Decimal? Profit { get; set; }
+        String Measurables { get; set; }
+    }
+
 	public class AngularVTO : Base.BaseAngular
 	{
 		[Obsolete("User Static constructor", false)]
@@ -184,7 +191,7 @@ namespace RadialReview.Models.Angular.VTO
 			};
 		}
 	}
-	public class AngularThreeYearPicture : Base.BaseAngular
+	public class AngularThreeYearPicture : Base.BaseAngular, IVtoSectionHeader
 	{
 		[Obsolete("User Static constructor", false)]
 		public AngularThreeYearPicture(long id)
@@ -215,7 +222,7 @@ namespace RadialReview.Models.Angular.VTO
 		}
 	}
 
-	public class AngularOneYearPlan : Base.BaseAngular
+    public class AngularOneYearPlan : Base.BaseAngular, IVtoSectionHeader
 	{
 		[Obsolete("User Static constructor", false)]
 		public AngularOneYearPlan(long id): base(id){
@@ -243,7 +250,7 @@ namespace RadialReview.Models.Angular.VTO
 		}
 	}
 
-	public class AngularQuarterlyRocks : Base.BaseAngular
+    public class AngularQuarterlyRocks : Base.BaseAngular, IVtoSectionHeader
 	{
 		[Obsolete("User Static constructor", false)]
 		public AngularQuarterlyRocks(long id) : base(id){
