@@ -13,27 +13,27 @@
   /*border-width:1px;
   font-weight:bold;*/
 
-  &:focus,
-  &.focus {
+  &:not(.nohover):focus,
+  &:not(.nohover).focus {
     color: @color;
     background-color: darken(@background, 10%);
         border-color: darken(@border, 25%);
   }
-  &:hover {
+  &:not(.nohover):hover {
     color: @color;
     background-color: darken(@background, 10%);
         border-color: darken(@border, 12%);
   }
-  &:active,
-  &.active,
+  &:not(.nohover):active,
+  &:not(.nohover).active,
   .open > .dropdown-toggle& {
     color: @color;
     background-color: darken(@background, 10%);
         border-color: darken(@border, 12%);
 
-    &:hover,
-    &:focus,
-    &.focus {
+    &:not(.nohover):hover,
+    &:not(.nohover):focus,
+    &:not(.nohover).focus {
       color: @color;
       background-color: darken(@background, 17%);
           border-color: darken(@border, 25%);
@@ -81,13 +81,13 @@
   /*border-width:1px;*/
   font-weight:bold;
 
-  &:focus,
-  &.focus {
+  &:not(.nohover):focus,
+  &:not(.nohover).focus {
     color: white;
     background-color: @background;
         border-color: white;
   }
-  &:hover {
+  &:not(.nohover):hover {
     color: white;
     background-color: @background;
         border-color: white;
@@ -99,9 +99,9 @@
     background-color: @background;
         border-color: white;
 
-    &:hover,
-    &:focus,
-    &.focus {
+    &:not(.nohover):hover,
+    &:not(.nohover):focus,
+    &:not(.nohover).focus {
 		color: white;
 		background-color: @background;
 			border-color: white;

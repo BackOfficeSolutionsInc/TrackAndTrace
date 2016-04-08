@@ -19,6 +19,7 @@ using RestSharp.Validation;
 using MathNet.Numerics.Distributions;
 using RadialReview.Utilities;
 using WebGrease.Css.Extensions;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Controllers
 {
@@ -36,12 +37,13 @@ namespace RadialReview.Controllers
 			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
 			var model = new L10MeetingVM(){
 				Recurrence = recurrence,
-				EnableTranscript = recurrence.EnableTranscription
+				EnableTranscript = recurrence.EnableTranscription,
 			};
             if (model != null && model.Recurrence != null)
 			{
 				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
+                model.MemberPictures = model.Recurrence._DefaultAttendees.Select(x => new ProfilePictureVM {Initials = x.User.GetInitials(),Name = x.User.GetName(),UserId=x.User.Id,Url=x.User.ImageUrl(true,ImageSize._32) }).ToList();
 
 			}
 			//Dont need the meeting 
@@ -219,7 +221,7 @@ namespace RadialReview.Controllers
 		#region Headlines
 		private PartialViewResult Headlines(L10MeetingVM model)
 		{
-			ViewBag.CEH_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share all news about the people in your business. Good news is good. Add bad news to the Issues List.");
+            ViewBag.CEH_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share headlines about customers/clients and people in the company. Good and bad. Drop down (to the issues list) anything that needs discussion.");
 			model.HeadlinesId=model.Recurrence.HeadlinesId;
 			return PartialView("Headlines", model);
 		}

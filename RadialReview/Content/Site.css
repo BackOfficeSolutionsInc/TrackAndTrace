@@ -1881,3 +1881,11 @@ textarea {
 .multiline{
     white-space:pre;
 }
+
+.select2-selection .img-flag{
+    display:none;
+}
+
+#modalMessage{
+        margin-top: -9px;
+}

@@ -270,6 +270,10 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId,meeting
 			if (d instanceof Date) d = d.getTime();
 			if (minValue instanceof Date) minValue = minValue.getTime();
 			if (maxValue instanceof Date) maxValue = maxValue.getTime();
+
+			if (fieldName == "ForWeek")
+			    d -= 7*24*60*60*1000;
+
 			return minValue <= d && d <= maxValue || moment(d).format("MMDDYYYY")==moment(maxValue).format("MMDDYYYY");
 		};
 	};

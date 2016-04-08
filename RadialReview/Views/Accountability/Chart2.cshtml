@@ -1,0 +1,222 @@
+﻿@model RadialReview.Controllers.AccountabilityController.AccountabilityChartVM
+@{
+	ViewBag.Title = "Accountability Chart";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Accountability Chart</h2>
+
+<ul id="Selectors" class="noBullet "></ul>
+<div class="row">
+	<div class="col-md-9">
+		<div id="Chart"></div>
+	</div>
+	<div class="col-md-3 noselect">
+	</div>
+</div>
+
+@using (Html.BeginStyles()) {
+	<style>
+		.node circle {
+			fill: #fff;
+			stroke: steelblue;
+			stroke-width: 1.5px;
+		}
+
+		.node {
+			font: 10px sans-serif;
+		}
+
+			.node.organizations circle {
+				stroke: black;
+				fill: #E4E4E4;
+			}
+
+			.node.admin circle {
+				stroke: #ff7878;
+				fill: #ffbcbc;
+			}
+
+		.link {
+			fill: none;
+			stroke: #ccc;
+			stroke-width: 1.5px;
+		}
+
+		.highlighted text, .highlighted {
+			fill: red !important;
+			color: red !important;
+		}
+
+		.selector {
+			text-transform: capitalize;
+			cursor: pointer;
+		}
+
+		.acc {
+			fill: #FFF;
+			stroke: #000;
+		}
+
+		.accTitle {
+			text-anchor: middle;
+			font-size: 12px;
+			font-weight: bold;
+		}
+
+		.accSubtitle {
+			text-anchor: middle;
+			font-size: 12px;
+		}
+
+		.accBar {
+			fill: #bfbfbf;
+			stroke: #000;
+		}
+	</style>
+}
+
+
+@using (Html.BeginScripts()) {
+	<script src="~/Scripts/d3/d3.min.js"></script>
+	<script>
+		allClasses = [];
+
+		var width = 3000,
+            height = 10000;
+
+		var boxWidth = 142;
+		var boxHeight = 32;
+		var titleFontSize = 16;
+
+		var tree = d3.layout.tree()
+            .size([height, width - 250]);
+
+		var diagonal = d3.svg.diagonal()
+            .projection(function (d) { return [d.x, d.y]; });
+
+		var svg = d3.select("#Chart").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+          .append("g")
+            .attr("transform", "translate(0,25)");
+
+		d3.json("/Data/OrganizationAccountability/@Model.OrganizationId", function (error, json) {
+			var nodes = tree.nodes(json),
+                links = tree.links(nodes);
+
+			var link = svg.selectAll("path.link")
+                .data(links)
+              .enter().append("path")
+                .attr("class", "link")
+                .attr("d", diagonal);
+
+			var node = svg.selectAll("g.node")
+		        .data(nodes)
+		        .enter().append("g")
+		        .attr("class", function (d) { return "node " + d.class; })
+		        .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+			var accountabilities = node.append("a")
+				.attr("xlink:href", function (d) {
+					if (d.id != "-1") {
+						return "/User/Details/" + d.id;
+					}
+				});
+			accountabilities.append("rect")
+				.attr("width", boxWidth)
+				.attr("height", function (d) {
+					if (d.data && d.data.Roles) {
+						return Math.max(boxHeight, d.data.Roles.length * 15 + titleFontSize * 3);
+					}
+					return boxHeight;
+				})
+				.attr("transform", function (d) { return "translate(" + -(boxWidth / 2) + "," + -(boxHeight / 2) + ")"; })
+					.attr("class", "acc");
+
+			accountabilities.append("rect")
+				.attr("width", boxWidth)
+				.attr("height", function (d) {
+					if (d.id!=-1)
+						return titleFontSize * 2.5;
+					return titleFontSize * 3.5;
+				})
+		        .attr("transform", function (d) { return "translate(" + -(boxWidth / 2) + "," + (-(boxHeight / 2)) + ")"; })
+				.attr("class", "accBar")
+				.style(function (d) {
+					if (d.data.color)
+						return "fill:" + d.data.color;
+					return "";
+				});
+
+			accountabilities.append("text")
+		        .attr("transform", function (d) { return "translate(" + 0 + "," + (-(boxHeight / 2) + titleFontSize) + ")"; })
+				.attr("class", "accTitle")
+                .text(function (d) {
+                	return d.subtext;
+                });
+			accountabilities.append("text")
+				.attr("transform", function (d) { return "translate(" + 0 + "," + (-(boxHeight / 2) + titleFontSize * 2) + ")"; })
+				.attr("class", "accSubtitle")
+                .text(function (d) {
+                	return d.name;
+                });
+
+			accountabilities.append("text")
+				.attr("transform", function (d) {
+					return "translate(" + -(boxWidth / 2 - 6) + "," + (-(boxHeight / 2) + titleFontSize * 2 + 12) + ")";
+				})
+				.attr("class", "accRoles")
+				.each(function (d) {
+					if (d.data && d.data.Roles) {
+						for (var i = 0; i < d.data.Roles.length; i++) {
+							d3.select(this).append("tspan").attr("dy", "1.2em").attr("x", "0").text(function (d) {
+								return (i+1)+". "+d.data.Roles[i].Role;
+							});
+						}
+					}
+				});
+
+
+
+			for (var i = 0; i < allClasses.length; i++) {
+				/*$("#Selectors").append("<li data-highlight='" + allClasses[i] + "' class='selector " + allClasses[i] + " noSelect'>" + allClasses[i].replace(/_/g, ' ') + "</li>");*/
+				var c = allClasses[i];
+
+
+				$("." + c).hover(
+                    function () {
+                    	var clss = $(this).data("highlight");
+                    	$("." + clss).attr("class", function (i, classNames) { return classNames + " highlighted"; });
+                    },
+                    function () {
+                    	var clss = $(this).data("highlight");
+                    	$("." + clss).attr("class", function (i, classNames) { return classNames.replace("highlighted", ""); });
+                    });
+			}
+
+			var box = node.append("a")
+                .attr("xlink:href", function (d) { return "/User/Details/" + d.id; })
+                .append("g")
+                .attr("transform", function (d) { return "translate(0,-4)"; });
+
+			/*box.append("text")
+		        .attr("dx", function (d) { return d.children ? -7 : 7; })
+		        .attr("dy", 3)
+		        .attr("text-anchor", function (d) { return d.children ? "end" : "start"; })
+		        .text(function (d) { return d.name; })
+		        .style("font-size", "10px");*/
+
+			/*box.append("text")
+		        .attr("dx", function (d) { return d.children ? -7 : 7; })
+		        .attr("dy", 10)
+		        .attr("text-anchor", function (d) { return d.children ? "end" : "start"; })
+		        .text(function (d) { return d.subtext; })
+		        .style("font-size", "8px")
+		        .style("fill", "gray");*/
+		});
+
+		d3.select(self.frameElement).style("height", height + "px");
+
+	</script>
+}

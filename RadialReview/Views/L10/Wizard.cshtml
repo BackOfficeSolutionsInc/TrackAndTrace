@@ -1,0 +1,93 @@
+﻿@model long
+@{
+    ViewBag.Title = "L10 Wizard";
+    ViewBag.FullWidth = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginStyles()) {
+    <link href="~/Content/L10/L10Wizard.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>
+
+}
+
+@using (Html.BeginScripts()) {
+    <script src="~/Scripts/Wizard/wizard.js"></script>
+    <script src="~/Scripts/L10/L10Wizard.js"></script>
+    @Scripts.Render("~/bundles/meeting")
+
+    <script src="~/Scripts/L10/L10.js"></script>
+
+    <script>
+        initWizard("firstPage");
+        setCompletion(10);
+        angular.module('L10App')
+			.value('meetingId', @Model)
+			.value('date-range',"today")
+			.value('meetingDataUrlBase', '/L10/DetailsData/')
+			.value("meetingCallback",false);
+
+    </script>
+}
+<div class="ng-cloak2" ng-app="L10App">
+    <div ng-controller="L10Controller">
+        <div class="wizard hidden">
+            <div class="row">
+                <div class="col-sm-3 wizard-menu">
+                    <div class="component">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                                <span class="sr-only">60% Complete</span>
+                            </div>
+                        </div>
+                        <ol>
+                            <li><a href="#Basics">Basics</a></li>
+                            <li><a href="#Rocks">Rocks</a></li>
+                            <li><a href="#Scorecard">Scorecard</a></li>
+                            <li><a href="#Issues">Issues</a></li>
+                            <li><a href="#Todos">To-dos</a></li>
+                            <li><a href="#Attendees">Attendees</a></li>
+                            <li><a href="#VTO">V/TO</a></li>
+                        </ol>
+
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    <div class="component wizard-page" data-page="Basics">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">Meeting Name:</label>
+                                <div class="col-xs-8">
+                                    <input type="text" ng-model="model.Name" ng-change="functions.sendUpdate(issue)" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">Is this the leadership team:</label>
+                                <div class="col-xs-8">
+                                    <input type="text" ng-model="model.Name" ng-change="functions.sendUpdate(issue)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="component wizard-page" data-page="Rocks">
+                        @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml",new ViewDataDictionary{{"AddHeaders",false},{"AddDatePicker",false}});}
+                    </div>
+                    <div class="component wizard-page" data-page="Scorecard">
+                        secondPage!!
+                    </div>
+                    <div class="component wizard-page" data-page="Issues">
+                        issues!!
+                    </div>
+                    <div class="component wizard-page" data-page="Todos">
+                        todos!!
+                    </div>
+                    <div class="component wizard-page" data-page="Attendees">
+                        Attendees!!
+                    </div>
+                    <div class="component wizard-page" data-page="VTO">
+                        VTO!!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -70,7 +70,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://review.radialreview.com/.
+        ///   Looks up a localized string similar to https://traction.tools/.
         /// </summary>
         public static string BaseUrl2 {
             get {
@@ -160,7 +160,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to support@radialreview.com.
+        ///   Looks up a localized string similar to support@mail.traction.tools.
         /// </summary>
         public static string SupportEmail {
             get {

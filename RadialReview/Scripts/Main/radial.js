@@ -202,7 +202,12 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
                 var serialized = $("#modalForm").serialize();
 
                 if (validation) {
-                    var message = eval(validation + '()');
+                    var message = undefined;
+                    if (typeof (validation) === "string") {
+                        message = eval(validation + '()');
+                    }else if (typeof (validation) === "function") {
+                        message = validation();
+                    }
                     if (message !== undefined && message != true) {
                         if (message == false) {
                             $("#modalMessage").html("Error");
@@ -272,6 +277,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
         }
     });
 }
+
 
 function UnstoreJsonAlert() {
     var data = localStorage.getItem("Alert");

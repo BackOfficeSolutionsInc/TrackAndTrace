@@ -68,6 +68,29 @@ namespace RadialReview.Accessors {
 
 
     public class PdfAccessor {
+
+        
+        //public void AddFont(Uri baseUri, string familyName)
+        //{
+        //    if (String.IsNullOrEmpty(familyName))
+        //        throw new ArgumentNullException("familyName");
+        //    if (familyName.Contains(","))
+        //        throw new NotImplementedException("Only one family name is supported.");
+        //    // family name starts right of '#'
+        //    int idxHash = familyName.IndexOf('#');
+        //    if (idxHash < 0)
+        //        throw new ArgumentException("Family name must contain a '#'. Example './#MyFontFamilyName'", "familyName");
+        //    string key = familyName.Substring(idxHash + 1);
+        //    if (String.IsNullOrEmpty(key))
+        //        throw new ArgumentException("familyName has invalid format.");
+        //    if (this.fontFamilies.ContainsKey(key))
+        //        throw new ArgumentException("An entry with the specified family name already exists.");
+        //    System.Windows.Media.FontFamily fontFamily = new System.Windows.Media.FontFamily(baseUri, familyName);
+        //    &nbsp;
+        //    this.fontFamilies.Add(key, fontFamily);
+        //}
+
+
         public static Document CreateDoc(UserOrganizationModel caller, string docTitle)
         {
             var document = new Document();
@@ -90,13 +113,17 @@ namespace RadialReview.Accessors {
             document.DefaultPageSetup.PageHeight = Unit.FromInch(11);
 
 
+          
+
+
             return document;
         }
 
         private static Color TableGray = new Color(100, 100, 100, 100);
+        private static Color TableDark = new Color(50, 50, 50);
         private static Color TableBlack = new Color(0, 0, 0);
 
-        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true)
+        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true,bool addPageNumber=true)
         {
             Section section;
 
@@ -106,27 +133,33 @@ namespace RadialReview.Accessors {
             } else {
                 section = document.LastSection;
             }
+            if (addPageNumber) {
+                var paragraph = new Paragraph();
+                paragraph.AddTab();
 
-            var paragraph = new Paragraph();
-            paragraph.AddTab();
-            paragraph.AddPageField();
-            // Add paragraph to footer for odd pages.
-            section.Footers.Primary.Add(paragraph);
-            section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(0.25);
+                paragraph.AddPageField();
+                // Add paragraph to footer for odd pages.
+                section.Footers.Primary.Add(paragraph);
+                section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(0.25);
+            }
 
 
             var frame = section.AddTextFrame();
             frame.Height = Unit.FromInch(.75);
-            frame.Width = Unit.FromInch(10);
+            frame.Width = Unit.FromInch(7.5);
+            if (orientation == Orientation.Landscape)
+                frame.Width = Unit.FromInch(10);
+           // frame.LineFormat.Color = TableGray;
             //frame.Left = ShapePosition.Center;
 
             frame.MarginRight = Unit.FromInch(1);
             frame.MarginLeft = Unit.FromInch(1);
+            
 
             var title = frame.AddTable();
             title.Borders.Color = TableBlack;
 
-            var size = Unit.FromInch(5);
+            var size = Unit.FromInch(5.5);
             if (orientation == Orientation.Landscape)
                 size = Unit.FromInch(8);
             var c = title.AddColumn(size);
@@ -134,6 +167,8 @@ namespace RadialReview.Accessors {
             var rr = title.AddRow();
             rr.Cells[0].AddParagraph(pageTitle);
             rr.Format.Font.Bold = true;
+            //rr.Format.Font.Size = .4;
+            rr.Format.Font.Name = "Arial Narrow";
             rr.Shading.Color = TableGray;
             rr.HeightRule = RowHeightRule.AtLeast;
             rr.VerticalAlignment = VerticalAlignment.Center;
@@ -142,6 +177,150 @@ namespace RadialReview.Accessors {
 
             return section;
         }
+
+        public static Document AddL10(Document doc,  AngularRecurrence recur,DateTime? lastMeeting)
+        { 
+            //CreateDoc(caller,"THE LEVEL 10 MEETING");
+            var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™",addPageNumber:false);
+            var p=section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.Year + " EOS. All Rights Reserved.");
+            p.Format.Font.Size = 8;
+            p.Format.Font.Color = TableGray;
+
+            //p =section.AddParagraph();
+            //var f = p.AddFormattedText("The Weekly Agenda",TextFormat.Bold);
+            //f.Font.Name = "Arial Narrow";
+            //f.Font.Size = 16;
+            //p.Format.LeftIndent = Unit.FromInch(.5);
+            //p.Format.SpaceAfter =Unit.FromInch(.25);
+            //var p = section.AddParagraph();
+            //var t = section.AddTable();
+            //t.AddColumn(Unit.FromInch(3.75));
+            //t.AddColumn(Unit.FromInch(3.75));
+
+            //var r = t.AddRow();
+            //p = r.Cells[0].AddParagraph("Day: _____________________________ ");
+            //p.Format.Alignment = ParagraphAlignment.Right;
+            //p = r.Cells[1].AddParagraph(" Time: ________________");
+            //p.Format.Alignment = ParagraphAlignment.Left;
+
+            p = section.AddParagraph();
+            p.Format.SpaceAfter = Unit.FromInch(.25/2);
+            p.Format.SpaceBefore = Unit.FromInch(0);
+            p.Format.Alignment = ParagraphAlignment.Center;
+            p.Format.Font.Size = 14;
+            p.AddFormattedText("Agenda:", TextFormat.Bold | TextFormat.Underline);
+
+            var t = section.AddTable();
+            t.Format.SpaceBefore = Unit.FromInch(.05);
+            t.Format.LeftIndent = Unit.FromInch(1);
+            t.AddColumn(Unit.FromInch(3.75));
+            t.AddColumn(Unit.FromInch(2.25));
+
+            var r = t.AddRow();
+            r.Cells[0].AddParagraph("Segue");
+            r.Cells[1].AddParagraph("5 Minutes");
+            r = t.AddRow();
+            r.Cells[0].AddParagraph("Scorecard");
+            r.Cells[1].AddParagraph("5 Minutes");
+            r = t.AddRow();
+            r.Cells[0].AddParagraph("Rock Review");
+            r.Cells[1].AddParagraph("5 Minutes");
+            r = t.AddRow();
+            r.Cells[0].AddParagraph("Customer/Employee Headlines");
+            r.Cells[1].AddParagraph("5 Minutes");
+            r = t.AddRow();
+            r.Cells[0].AddParagraph("To-Do List");
+            r.Cells[1].AddParagraph("5 Minutes");
+
+            var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime>lastMeeting).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate).ToList();
+            var issues = recur.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
+
+
+            var fs = ResizeToFit(new Section(),Unit.FromInch(4.5),Unit.FromInch(5.25),(Cell,ffss)=>{
+                var o = new List<Paragraph>();
+                for (var i = 0; i < todos.Count;i++ ){
+                    var pp = new Paragraph();
+                    pp.Format.LeftIndent = Unit.FromInch(1.25);
+                    pp.AddText(todos[i].Name ?? "");
+                    pp.Format.TabStops.ClearAll();
+                    pp.Format.TabStops.AddTabStop(Unit.FromInch(6),TabAlignment.Right);
+                    pp.AddTab();
+                    pp.AddText(todos[i].Owner.NotNull(x => x.Initials) ?? "");
+                    o.Add(pp);
+                }
+
+                for (var i = 0; i < issues.Count; i++) {
+                    var pp = new Paragraph();
+                    pp.AddText(issues[i].Name??"");
+                    pp.Format.TabStops.ClearAll();
+                    pp.Format.TabStops.AddTabStop(Unit.FromInch(6), TabAlignment.Right);
+                    pp.AddTab();
+                    pp.AddText(issues[i].Owner.NotNull(x => x.Initials) ?? "");
+                    o.Add(pp);
+                }
+                return o;
+            },maxFontSize:10);
+
+            for (var i = 0; i < todos.Count; i++) {
+                var pp = new Table();
+                pp.Format.SpaceAfter = 0;
+                pp.AddColumn(Unit.FromInch(1.25));
+                pp.AddColumn(Unit.FromInch(4));
+                pp.AddColumn(Unit.FromInch(.5));
+                pp.Format.Font.Color = TableDark;
+                var rr = pp.AddRow();
+                pp.Format.Font.Size = fs;
+                p=rr.Cells[1].AddParagraph(todos[i].Name ?? "");
+                p.Format.FirstLineIndent = Unit.FromInch(-.1);
+                p.Format.LeftIndent = Unit.FromInch(.1);
+                rr.Cells[2].AddParagraph(todos[i].Owner.NotNull(x => x.Initials) ?? "");
+                section.Add(pp);          
+            }
+        
+            t = section.AddTable();
+            t.Format.LeftIndent = Unit.FromInch(1);
+            t.AddColumn(Unit.FromInch(3.75));
+            t.AddColumn(Unit.FromInch(2.25));
+            t.Format.SpaceBefore = Unit.FromInch(.05);
+            r = t.AddRow();
+            r.Cells[0].AddParagraph("IDS");
+            r.Cells[1].AddParagraph("60 Minutes");
+
+            for (var i = 0; i < issues.Count; i++) {
+                var pp = new Table();
+
+                pp.Format.SpaceAfter = 0;
+                pp.AddColumn(Unit.FromInch(1.25));
+                pp.AddColumn(Unit.FromInch(4));
+                pp.AddColumn(Unit.FromInch(0.5));
+                var rr = pp.AddRow();
+                //pp.Format.LeftIndent = Unit.FromInch(1.25);
+                pp.Format.Font.Size = fs;
+                pp.Format.Font.Color = TableDark;
+                p= rr.Cells[1].AddParagraph(issues[i].Name ?? "");
+                p.Format.FirstLineIndent = Unit.FromInch(-.1);
+                p.Format.LeftIndent = Unit.FromInch(.1);
+                rr.Cells[2].AddParagraph(issues[i].Owner.NotNull(x => x.Initials) ?? "");
+                section.Add(pp);
+            }
+            t = section.AddTable();
+            t.TopPadding = Unit.FromInch(.05);
+            t.Format.LeftIndent = Unit.FromInch(1);
+            t.AddColumn(Unit.FromInch(3.75));
+            t.AddColumn(Unit.FromInch(2.25));
+            r = t.AddRow();
+            r.Cells[0].AddParagraph("Conclude");
+            r.Cells[1].AddParagraph("5 Minutes");
+            p = r.Cells[0].AddParagraph("Recap To-Do List");
+            p.Format.LeftIndent = Unit.FromInch(1+3/8.0);
+            p = r.Cells[0].AddParagraph("Cascading messages");
+            p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
+            p = r.Cells[0].AddParagraph("Rating 1-10");
+            p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
+
+            return doc;
+        }
+
         public static void AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur)
         {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
@@ -182,13 +361,13 @@ namespace RadialReview.Accessors {
             row.Height = Unit.FromInch(0.25);
 
             row.Cells[1].AddParagraph("Due");
-            row.Cells[1].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[1].VerticalAlignment = VerticalAlignment.Center;
 
             row.Cells[2].AddParagraph("Owner");
-            row.Cells[2].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[2].VerticalAlignment = VerticalAlignment.Center;
 
             row.Cells[3].AddParagraph("To-dos");
-            row.Cells[3].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
             row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
 
             var mn = 1;
@@ -258,13 +437,13 @@ namespace RadialReview.Accessors {
             row.Height = Unit.FromInch(0.25);
 
             row.Cells[1].AddParagraph(isPriority ? "Priority" : "");
-            row.Cells[1].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[1].VerticalAlignment = VerticalAlignment.Center;
 
             row.Cells[2].AddParagraph("Owner");
-            row.Cells[2].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[2].VerticalAlignment = VerticalAlignment.Center;
 
             row.Cells[3].AddParagraph("Issue");
-            row.Cells[3].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 
             var mn = 1;
             foreach (var m in recur.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name)) {
@@ -358,16 +537,16 @@ namespace RadialReview.Accessors {
                 row.Height = Unit.FromInch(0.25);
 
                 row.Cells[1].AddParagraph("Due");
-                row.Cells[1].VerticalAlignment = VerticalAlignment.Bottom;
+                row.Cells[1].VerticalAlignment = VerticalAlignment.Center;
 
                 row.Cells[2].AddParagraph("Owner");
-                row.Cells[2].VerticalAlignment = VerticalAlignment.Bottom;
+                row.Cells[2].VerticalAlignment = VerticalAlignment.Center;
 
                 row.Cells[3].AddParagraph("Status");
-                row.Cells[3].VerticalAlignment = VerticalAlignment.Bottom;
+                row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 
                 row.Cells[4].AddParagraph("Company Rock");
-                row.Cells[4].VerticalAlignment = VerticalAlignment.Bottom;
+                row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
 
                 mn = 1;
                 foreach (var m in recur.Rocks.Where(x => x.CompanyRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
@@ -433,17 +612,17 @@ namespace RadialReview.Accessors {
             row.Height = Unit.FromInch(0.25);
 
             row.Cells[1].AddParagraph("Due");
-            row.Cells[1].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[1].VerticalAlignment = VerticalAlignment.Center;
 
             row.Cells[2].AddParagraph("Owner");
-            row.Cells[2].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[2].VerticalAlignment = VerticalAlignment.Center;
 
             row.Cells[3].AddParagraph("Status");
-            row.Cells[3].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 
             row.Cells[4].AddParagraph("Rock");
             row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
-            row.Cells[4].VerticalAlignment = VerticalAlignment.Bottom;
+            row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
             //table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
             mn = 1;
             foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
@@ -699,18 +878,24 @@ namespace RadialReview.Accessors {
                 }
                 s.Width += w;
                 s.Height += h;
+            } else if (o is Character) {
+
             } else {
-                throw new Exception("donno this type");
+                throw new Exception("donno this type:" + o.NotNull(x => x.GetType()));
             }
             return s;
         }
 
-        public static void ResizeToFit(Cell cell, Unit width, Unit height, Func<Cell, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null)
+        public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null)
         {
             var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, height.Inch), XGraphicsUnit.Inch, XPageDirection.Downwards);
             var fontSize = maxFontSize ?? Unit.FromPoint(12);
             var minSize = minFontSize ?? Unit.FromPoint(5);
             List<DocumentObject> paragraphsToAdd;
+
+            if (!(cell is Cell || cell is Paragraph || cell is Section))
+                throw new Exception("cant handle:" + cell.NotNull(x=>x.GetType()));
+
             while (true) {
                 var curHeight = 0.0;
                 var curWidth = 0.0;
@@ -726,8 +911,12 @@ namespace RadialReview.Accessors {
                         table.Format.Font.Size = fontSize;
                         family = table.Format.Font.Name;
                     }
-                    if (string.IsNullOrWhiteSpace(family))
-                        family = cell.Format.Font.Name;
+                    if (string.IsNullOrWhiteSpace(family)) {
+                        if (cell is Paragraph)
+                            family = ((Paragraph)cell).Format.Font.Name;
+                        if (cell is Cell)
+                            family = ((Cell)cell).Format.Font.Name;
+                    }
                     if (string.IsNullOrWhiteSpace(family))
                         family = "Arial Narrow";
 
@@ -742,8 +931,15 @@ namespace RadialReview.Accessors {
                 fontSize -= Unit.FromPoint(1);
             }
             foreach (var p in paragraphsToAdd) {
-                cell.Elements.Add(p);
+
+                if (cell is Paragraph)
+                    ((Paragraph)cell).Elements.Add(p);
+                if (cell is Cell)
+                    ((Cell)cell).Elements.Add(p);
+                if (cell is Section)
+                    ((Section)cell).Elements.Add(p);
             }
+            return fontSize;
         }
 
         private static List<Paragraph> OrderedList(IEnumerable<string> items, ListType type, Unit? leftIndent = null)
@@ -804,7 +1000,7 @@ namespace RadialReview.Accessors {
             title.AddColumn(Unit.FromInch(10.07 - 2.22));
             // title.Borders.Color = TableBlack;
             var titleRow = title.AddRow();
-            var imageFilename = HttpContext.Current.Server.MapPath("~/Content/embedded/EOS_Model.png");
+            var imageFilename = HttpContext.Current.Server.MapPath("~/Content/img/EOS_Model.png");
 
             var img = titleRow.Cells[1].AddImage(imageFilename);
             //img.Height = Unit.FromInch(2.13);
@@ -885,7 +1081,7 @@ namespace RadialReview.Accessors {
             var TableBlack = new Color(0, 0, 0);
             /////////////////////////////
 
-            var section = AddVtoPage(doc, vto.Name, "VISION");
+            var section = AddVtoPage(doc, vto.Name??"", "VISION");
 
             /////////////////////////////
             
@@ -920,7 +1116,7 @@ namespace RadialReview.Accessors {
             cvTitle.Format.Font.Bold = true;
             cvTitle.Format.Font.Size = 14;
             cvTitle.Format.Font.Name = "Arial Narrow";
-            cvTitle.AddParagraph(vto.CoreValueTitle);
+            cvTitle.AddParagraph(vto.CoreValueTitle??"CORE VALUES");
             cvTitle.Format.Alignment = ParagraphAlignment.Center;
             row.VerticalAlignment = VerticalAlignment.Center;
             var coreValue = row.Cells[1];//.AddParagraph("CV-asdf");
@@ -959,7 +1155,7 @@ namespace RadialReview.Accessors {
             row.Height = Unit.FromInch(1.2);
             var cfTitle = row.Cells[0];
             cfTitle.Shading.Color = TableGray;
-            cfTitle.AddParagraph(vto.CoreFocus.CoreFocusTitle);
+            cfTitle.AddParagraph(vto.CoreFocus.CoreFocusTitle ?? "CORE FOCUS™");
             cfTitle.Format.Font.Name = "Arial Narrow";
             cfTitle.Format.Font.Bold = true;
             cfTitle.Format.Font.Size = 14;
@@ -970,14 +1166,14 @@ namespace RadialReview.Accessors {
             ResizeToFit(coreFocus, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
                 var o = new List<Paragraph>();
                 var p1 = new Paragraph();
-                var txt = p1.AddFormattedText(vto.CoreFocus.PurposeTitle.Trim().TrimEnd(':') + ": ", TextFormat.Bold);
+                var txt = p1.AddFormattedText((vto.CoreFocus.PurposeTitle??"Purpose/Cause/Passion").Trim().TrimEnd(':') + ": ", TextFormat.Bold);
                 p1.Format.Font.Name = "Arial Narrow";
-                p1.AddText(vto.CoreFocus.Purpose);
+                p1.AddText(vto.CoreFocus.Purpose??"");
                 o.Add(p1);
                 p1.Format.SpaceAfter = fs * 1.5;
                 var p2 = new Paragraph();
                 p2.AddFormattedText("Our Niche: ", TextFormat.Bold);
-                p2.AddText(vto.CoreFocus.Niche);
+                p2.AddText(vto.CoreFocus.Niche??"");
                 p2.Format.Font.Name = "Arial Narrow";
                 o.Add(p2);
                 return o;
@@ -991,10 +1187,10 @@ namespace RadialReview.Accessors {
             var tyTitle = row.Cells[0];
             row.Height = Unit.FromInch(0.6);
             tyTitle.Shading.Color = TableGray;
-            tyTitle.AddParagraph(vto.TenYearTargetTitle);
+            tyTitle.AddParagraph(vto.TenYearTargetTitle??"10-YEAR TARGET™");
             tyTitle.Format.Font.Name = "Arial Narrow";
             tyTitle.Format.Font.Bold = true;
-            tyTitle.Format.Font.Size = 14;
+            tyTitle.Format.Font.Size = 13.5;
             var tenYear = row.Cells[1];
             tyTitle.Format.Alignment = ParagraphAlignment.Center;
             row.VerticalAlignment = VerticalAlignment.Center;
@@ -1003,7 +1199,7 @@ namespace RadialReview.Accessors {
                 var o = new List<Paragraph>();
                 var p1 = new Paragraph();
                 p1.Format.Font.Name = "Arial Narrow";
-                p1.AddText(vto.TenYearTarget);
+                p1.AddText(vto.TenYearTarget??"");
                 o.Add(p1);
                 return o;
             }, maxFontSize: 10);
@@ -1012,7 +1208,7 @@ namespace RadialReview.Accessors {
             row = vtoLeft.AddRow();
             var msTitle = row.Cells[0];
             msTitle.Shading.Color = TableGray;
-            msTitle.AddParagraph(vto.Strategy.MarketingStrategyTitle);
+            msTitle.AddParagraph(vto.Strategy.MarketingStrategyTitle??"MARKETING STRATEGY");
             msTitle.Format.Font.Name = "Arial Narrow";
             var marketingStrategy = row.Cells[1];
             msTitle.Format.Font.Bold = true;
@@ -1029,7 +1225,7 @@ namespace RadialReview.Accessors {
                 var p1 = new Paragraph();
                 var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
                 p1.Format.Font.Name = "Arial Narrow";
-                p1.AddText(vto.Strategy.TargetMarket);
+                p1.AddText(vto.Strategy.TargetMarket??"");
                 o.Add(p1);
 
                 var p2 = new Paragraph();
@@ -1047,14 +1243,14 @@ namespace RadialReview.Accessors {
                 p3.Format.SpaceBefore = fs * 1.5;
                 p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
                 p3.Format.Font.Name = "Arial Narrow";
-                p3.AddText(vto.Strategy.ProvenProcess);
+                p3.AddText(vto.Strategy.ProvenProcess??"");
                 o.Add(p3);
 
                 var p4 = new Paragraph();
                 p4.Format.SpaceBefore = fs * 1.5;
                 p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
                 p4.Format.Font.Name = "Arial Narrow";
-                p4.AddText(vto.Strategy.Guarantee);
+                p4.AddText(vto.Strategy.Guarantee??"");
                 o.Add(p4);
 
                 return o;
@@ -1071,7 +1267,7 @@ namespace RadialReview.Accessors {
             row.Height = Unit.FromInch(.55);
             var typTitle = row.Cells[0];
             typTitle.Shading.Color = TableGray;
-            typTitle.AddParagraph(vto.ThreeYearPicture.ThreeYearPictureTitle);
+            typTitle.AddParagraph(vto.ThreeYearPicture.ThreeYearPictureTitle??"3-YEAR-PICTURE™");
             typTitle.Format.Font.Name = "Arial Narrow";
             typTitle.Format.Font.Bold = true;
             typTitle.Format.Font.Size = 14;
@@ -1081,7 +1277,7 @@ namespace RadialReview.Accessors {
 
             row = vtoRight.AddRow();
             var threeYear = row.Cells[0];
-            var looksList = vto.ThreeYearPicture.LooksLike.Select(x => x.Data).ToList();
+            var looksList = vto.ThreeYearPicture.LooksLike.Where(x=>!string.IsNullOrWhiteSpace(x.Data)).Select(x => x.Data).ToList();
 
             ResizeToFit(threeYear, Unit.FromInch(3.4), Unit.FromInch(5.15), (cell, fs) => {
                 var o = new List<Paragraph>();
@@ -1108,7 +1304,7 @@ namespace RadialReview.Accessors {
             var tractionHeader = table.AddRow();
             tractionHeader.Shading.Color = TableGray;
             tractionHeader.Height = Unit.FromInch(0.55);
-            var paragraph = tractionHeader.Cells[0].AddParagraph(vto.OneYearPlan.OneYearPlanTitle);
+            var paragraph = tractionHeader.Cells[0].AddParagraph(vto.OneYearPlan.OneYearPlanTitle??"1-YEAR PLAN");
             paragraph.Format.Font.Name = "Arial Narrow";
             paragraph.Format.Font.Size = 14;
             paragraph.Format.Font.Bold = true;
@@ -1117,7 +1313,7 @@ namespace RadialReview.Accessors {
             //tractionHeader.Cells[0].Format.Shading.Color = TableGray;
 
 
-            paragraph = tractionHeader.Cells[1].AddParagraph(vto.QuarterlyRocks.RocksTitle);
+            paragraph = tractionHeader.Cells[1].AddParagraph(vto.QuarterlyRocks.RocksTitle??"ROCKS");
             paragraph.Format.Font.Name = "Arial Narrow";
             paragraph.Format.Font.Size = 14;
             paragraph.Format.Font.Bold = true;
@@ -1125,7 +1321,7 @@ namespace RadialReview.Accessors {
             tractionHeader.Cells[1].VerticalAlignment = VerticalAlignment.Center;
             //tractionHeader.Cells[1].Format.Shading.Color = TableGray;
 
-            paragraph = tractionHeader.Cells[2].AddParagraph(vto.IssuesListTitle);
+            paragraph = tractionHeader.Cells[2].AddParagraph(vto.IssuesListTitle??"ISSUES LIST");
             paragraph.Format.Font.Name = "Arial Narrow";
             paragraph.Format.Font.Size = 14;
             paragraph.Format.Font.Bold = true;
@@ -1167,7 +1363,7 @@ namespace RadialReview.Accessors {
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
                     p.Format.Alignment = ParagraphAlignment.Right;
-                    p = r.Cells[1].AddParagraph(goals[i]);
+                    p = r.Cells[1].AddParagraph(goals[i]??"");
                     p.Format.SpaceBefore = Unit.FromPoint(2);
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
@@ -1208,11 +1404,11 @@ namespace RadialReview.Accessors {
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
                     p.Format.Alignment = ParagraphAlignment.Right;
-                    p = r.Cells[1].AddParagraph(rocks[i].Rock.Name);
+                    p = r.Cells[1].AddParagraph(rocks[i].Rock.Name??"");
                     p.Format.SpaceBefore = Unit.FromPoint(2);
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
-                    p = r.Cells[2].AddParagraph(rocks[i].Rock.Owner.Initials);
+                    p = r.Cells[2].AddParagraph(rocks[i].Rock.Owner.NotNull(X=>X.Initials)??"");
                     p.Format.SpaceBefore = Unit.FromPoint(2);
                     p.Format.Alignment = ParagraphAlignment.Center;
                     p.Format.Font.Size = fs;
@@ -1256,7 +1452,7 @@ namespace RadialReview.Accessors {
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
                     p.Format.Alignment = ParagraphAlignment.Right;
-                    p = r.Cells[1].AddParagraph(issues[i]);
+                    p = r.Cells[1].AddParagraph(issues[i]??"");
                     p.Format.SpaceBefore = Unit.FromPoint(2);
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";

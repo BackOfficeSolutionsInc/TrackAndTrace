@@ -235,6 +235,8 @@ function makeXEditable_Scorecard(selector) {
                 return 'This field is required';
             }
         },
+        onblur:'submit',
+        showbuttons:false,
         placement: placement,
         display: function (value, sourceData) {
             if ($(this).hasClass("unit")) {
@@ -265,8 +267,24 @@ function makeXEditable_Scorecard(selector) {
             if ($(this).hasClass("target-value")) {
                 $(this).text(transformNumber(value, ""));
             }
-            if ($(this).hasClass("who") && $(this).hasClass("accountable"))
-                $(this).text(getInitials($(this).text()));
+            if ($(this).hasClass("who") && $(this).hasClass("accountable")) {
+                var aid = value || $(this).data("accountable");
+                //var url = $(this).data("accountable-url");
+                //var initials = $(this).data("accountable-initials");
+                //var name = $(this).data("accountable-name");
+                var name = "";
+                var initials = "n/a";
+                var url = null;
+                if (aid in picturesLookup) {
+                    url = picturesLookup[aid].url;
+                    name = picturesLookup[aid].name;
+                    initials = picturesLookup[aid].initials;
+                }
+                debugger;
+                var mid = $(this).closest("tr").data("measurable");
+
+                $("tr[data-measurable='" + mid + "'] .who.accountable").html(profilePicture(url, name, initials));
+            }
             if ($(this).hasClass("adminSelection"))
                 $(this).text("/" + getInitials($(this).text()));
             return null;

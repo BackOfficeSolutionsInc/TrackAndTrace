@@ -39,6 +39,8 @@ using MigraDoc.DocumentObjectModel;
 using System.IO.Compression;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities.Productivity;
+using PdfSharp.Drawing;
+using System.Drawing.Text;
 
 
 namespace RadialReview.Controllers
@@ -346,11 +348,69 @@ namespace RadialReview.Controllers
             //}
 			return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
 		}
+        private static string MappedAppPath()
+        {
+            string APP_PATH = System.Web.HttpContext.Current.Request.ApplicationPath.ToLower();
+            if (APP_PATH == "/") //a site 
+                APP_PATH = "/";
+            else if (!APP_PATH.EndsWith(@"/")) //a virtual 
+                APP_PATH += @"/";
 
+            string it = System.Web.HttpContext.Current.Server.MapPath(APP_PATH);
+            if (!it.EndsWith(@"\"))
+                it += @"\";
+            return it;
+        }
 		protected FileResult Pdf(Document document, string name = null, bool inline = true)
 		{
+         
+          XPrivateFontCollection privateFontCollection = new XPrivateFontCollection();
+
+          //  Uri fontUri = new Uri(MappedAppPath() + "Content\\ttf\\");
+          //  //Uri fontUri = new Uri(Config.BaseUrl(caller.Organization) + "//");
+          //  privateFontCollection.AddFont("./#Arial");
+
+
+          //  // Render the document
+          //  DocumentRenderer documentRenderer = new DocumentRenderer(document);
+          //  documentRenderer.PrivateFonts = privateFontCollection;
+          //  documentRenderer.PrepareDocument();
+
+            //PrivateFontCollection pfc = new PrivateFontCollection();
+
+            //pfc.AddFontFile(Server.MapPath(@"~\Content\ttf\arial.ttf"));
+            //pfc.AddFontFile(Server.MapPath(@"~\Content\ttf\ARIALN.TTF"));
+            //pfc.AddFontFile(Server.MapPath(@"~\Content\ttf\ARIALNB.TTF"));
+
+            //XPrivateFontCollection globalFontCollection = XPrivateFontCollection.Global;
+            //new System.Windows.Application();
+
+            //// Add the 3 type faces of 'FrutigerLight' from the resources
+            //Uri uri = new Uri("pack://application:,,,/");
+            ////const string name = "./FrutigerFonts/#FrutigerLight";
+            ////const string name = "./Fonts/#Early Tickertape";
+            //const string n = "./#Arial Narrow";
+            //globalFontCollection.AddFont(uri, n);
+
+
+            //XPdfFontOptions opt = new XPdfFontOptions(PdfFontEmbedding.Default);
+            var assembly = Assembly.GetExecutingAssembly();
+
+            foreach (var resourceName in assembly.GetManifestResourceNames()) {
+                try {
+                    if (resourceName.ToLower().EndsWith(".ttf")) {
+                        using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) {
+                            XPrivateFontCollection.Global.AddFont(resourceStream.ReadBytes(),resourceName.Substring(0,resourceName.Length-4).Split('.').Last());
+                        }
+                    }
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+
 			var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.Always);
 			pdfRenderer.Document = document;
+           // pdfRenderer.DocumentRenderer = new DocumentRenderer(document) { PrivateFonts = pfc };
 			pdfRenderer.RenderDocument();
 			
 			var stream = new MemoryStream();
@@ -624,8 +684,8 @@ namespace RadialReview.Controllers
 							filterContext.Controller.ViewBag.UserName = MessageStrings.User;
 							filterContext.Controller.ViewBag.UserImage = "/img/placeholder";
 							filterContext.Controller.ViewBag.UserInitials = "";
-							filterContext.Controller.ViewBag.UserColor = 0;
-							filterContext.Controller.ViewBag.IsManager = false;
+                            filterContext.Controller.ViewBag.UserColor = 0;
+                            filterContext.Controller.ViewBag.IsManager = false;
 							filterContext.Controller.ViewBag.ShowL10 = false;
 							filterContext.Controller.ViewBag.ShowReview = false;
 							filterContext.Controller.ViewBag.ShowSurvey = false;

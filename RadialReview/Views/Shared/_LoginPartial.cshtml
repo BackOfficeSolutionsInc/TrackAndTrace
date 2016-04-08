@@ -2,61 +2,72 @@
 
 @using Microsoft.AspNet.Identity
 @using RadialReview.Properties
-@if (Request.IsAuthenticated)
-{
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
-    {
+@if (Request.IsAuthenticated) {
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" })) {
         @Html.AntiForgeryToken()
 
-		@Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
-			{ "ImageTitle", ((string)ViewBag.UsersName) }, 
-			{ "Initials", ViewBag.UserInitials }, 
+        @Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
+			{ "ImageTitle", ((string)ViewBag.UsersName) },
+			{ "Initials", ViewBag.UserInitials },
 			{ "Color", ViewBag.UserColor }
 		})
         <ul class="nav navbar-nav navbar-right1">
-            
+
             <li>
-	            <div class="btn-group heading" style="padding:8px;">
-		            <a href="@Url.Action("Details", "User", new { id = ViewBag.UserId })"
-		               style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap;max-width: 246px;"
-		               class="btn btn-default heading ">
-			            @(ViewBag.UserName ?? "Manage")
-		            </a>
-		            <button type="button" class="btn btn-default heading dropdown-toggle" data-toggle="dropdown">
-			            <span class="caret"></span>
-			            <span class="sr-only">Toggle Dropdown</span>
-		            </button>
-		            <ul class="dropdown-menu" role="menu">
-                        @if (ViewBag.IsManager ?? false)
-                        {
+                <div class="btn-group heading" style="padding:8px;">
+                    <div href="@Url.Action("Details", "User", new { id = ViewBag.UserId })"
+                         style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap;max-width: 246px;"
+                         class="btn btn-default heading ">
+                        @(ViewBag.UserName ?? "Manage")
+                    </div>
+                    <button type="button" class="btn btn-default heading dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                        @*<span class="sr-only">Toggle Dropdown</span>*@
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        @{var doDivider = false;}
+                        @if (ViewBag.IsManager ?? false) {
                             <li>
-                                <a href="@Url.Action("Index", "Manage")">
-                                    Manage @(Html.Organization().NotNull(x=>x.GetName())??"Organization")
+                                <a href="@Url.Action("Index", "Manage")" title1="Add members, edit teams, rocks, roles and measurables">
+                                    Manage @(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")
                                     <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
                                 </a>
                             </li>
-			                <li class="divider"></li>
+                            doDivider = true;
                         }
-			            <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")">
-				            @if (((int?)ViewBag.Organizations ?? 0) > 1)
-				            {
-					            @Html.ActionLink("Change Roles", "Role", "Account", new { ReturnUrl = Request.Url.AbsolutePath }, null)
-				            }
-				            else
-				            {
-					            <a href="#">Change Roles</a>
-				            }
-			            </li>
-			            <li>@Html.ActionLink("Settings", "Manage", "Account")</li>
-			            @*<li>
-				            <a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
-					            Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
-				            </a>
-			            </li>*@
-			            <li class="divider"></li>
-			            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-		            </ul>
-	            </div>
+                        @*<li>
+                                <a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
+                                    Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
+                                </a>
+                            </li>*@
+
+                        @if (doDivider == true) {
+
+                            <li class="divider"></li>
+                        }
+
+                        @if (((int?)ViewBag.Organizations ?? 0) > 1) {
+                            <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")">
+                                @if (((int?)ViewBag.Organizations ?? 0) > 1) {
+                                    @Html.ActionLink("Change Roles", "Role", "Account", new { ReturnUrl = Request.Url.AbsolutePath }, null)
+                                } else {
+                                    <a href="#">Change Roles</a>
+                                }
+                            </li>
+                        }
+                        <li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
+                        <li class="divider"></li>
+                        @if (ViewBag.ManagingOrganization ?? false) {
+                            <li>
+                                <a href="@Url.Action("Advanced", "Manage")" title1="Add credit card information, edit advanced settings">
+                                    @(Html.Organization().NotNull(x => x.GetName()) ?? "Organization") Settings
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+                        }
+                        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                    </ul>
+                </div>
 
 
             </li>
@@ -64,8 +75,7 @@
         </ul>
     }
 
-    using (var s = Html.BeginScripts())
-    {
+    using (var s = Html.BeginScripts()) {
         <script>
             function setHints(b) {
                 //TODO hit hints url
@@ -79,9 +89,7 @@
             }
         </script>
     }
-}
-else
-{
+} else {
     <ul class="nav navbar-nav navbar-right">
         <li>@Html.ActionLink(DisplayNameStrings.register, "Register", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
         <li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "loginLink", })</li>

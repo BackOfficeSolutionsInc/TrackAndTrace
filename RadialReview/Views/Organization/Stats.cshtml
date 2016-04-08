@@ -1,6 +1,16 @@
 ﻿@model List<RadialReview.Controllers.OrganizationController.OrgStats>
+@using RadialReview.Models.Enums
 @{
     ViewBag.FullWidth = true;
+
+    var scoreOrder = new Dictionary<AccountType, int>() {
+        {AccountType.Demo, 1},
+        {AccountType.Implementer, 2},
+        {AccountType.Dormant, 3},
+        {AccountType.Cancelled, 4},
+        {AccountType.Other, 5},
+        {AccountType.Paying, 6},
+    };
 }
 
 <div class="clearfix"></div>
@@ -12,15 +22,15 @@
 
 <table class="table table-condensed table-striped">
     <thead>
-        <tr><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>LastLogin</th><th>CreateTime</th></tr>
+        <tr><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>Status</th><th>LastLogin</th><th>CreateTime</th><th>TrialEnd</th></tr>
     </thead>
-    @foreach (var i in Model)
-    {
+    @foreach (var i in Model) {
         <tr>
             <td>@i.OrgId</td>
             <td class="alignRight"><a href="/Organization/Which/@i.OrgId">@i.OrgName</a></td>
             <td>@i.Username  </td>
             <td>@i.Position</td>
+            <td class="account-@i.Status select" data-sort="@(scoreOrder[i.Status])"><span class="hidden">@(scoreOrder[i.Status])</span><span class="" data-sort="@(scoreOrder[i.Status])">@i.Status</span></td>
             <td class="alignRight" style="color:@(i.LastLogin.NotNull(x =>{
 						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
 						                         {
@@ -38,16 +48,23 @@
                 @i.LastLogin.NotNull(x => x.ToString())
             </td>
             <td>@i.OrgCreateTime</td>
+            <td style="color:@(i.TrialEnd.NotNull(x => (x > DateTime.UtcNow) ? "green" : "red"))">
+                @if (i.TrialEnd != DateTime.MinValue) {
+                    @i.TrialEnd
+                }
+            </td>
         </tr>
     }
 </table>
 
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
     <script>
         $("table").tablesorter({
             // sortForce: [[0, 1]],
             sortStable: true,
+            headers: {
+                4: { sorter: 'attr' },
+            }
         });
     </script>
 }
@@ -60,4 +77,41 @@
     table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr :not(.tablesorter-headerUnSorted) .tablesorter-header-inner {
         color: black;
     }
+
+    .select{
+        vertical-align:middle;
+        text-align:center;
+        border-bottom:1px solid white;
+    }
+    .account-Paying  {
+			background-color: #1b6b74;
+			color: white;
+			font-weight: bold;
+		}
+		
+		.account-Dormant {
+			color: gray;
+		}
+		.account-Other  {
+			background-color: gray;
+			color: white;
+			font-weight: bold;
+		}
+		
+		.account-Cancelled {
+			color: lightgray;
+			font-style: italic;
+		}
+
+		.account-Demo  {
+			background-color: #d9534f;
+			color: white;
+			font-weight: bold;
+		}
+
+		.account-Implementer  {
+			background-color: #ff7d00;
+			color: white;
+			font-weight: bold;
+		}
 </style>

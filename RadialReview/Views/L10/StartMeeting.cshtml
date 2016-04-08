@@ -1,63 +1,126 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingVM
 
 @{
-	ViewBag.Title = "Start Meeting";
-	Layout = "~/Views/L10/BasePage.cshtml";
+    ViewBag.Title = "Start Meeting";
+    Layout = "~/Views/L10/BasePage.cshtml";
 
 }
 
 <div class="centered start-meeting" style="width:50%;">
-	<div class="component">
-		<div class="meeting-manager">
-			<div class="title">Who's attending this meeting?</div>
-			@using (Ajax.BeginForm("StartMeeting", new AjaxOptions()
-			{
-				HttpMethod = "POST",
-				InsertionMode = InsertionMode.Replace,
-				UpdateTargetId = "main-window",
-				LoadingElementDuration = 1000,
-			}))
-			{
-				@*if (ViewBag.Message!=null){
-					 <div class="alert alert-danger" role="alert">
-						 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-						 <span class="sr-only">Error:</span>
-						 @ViewBag.Message
-					 </div>
-				 }*@
+    <div class="component">
+        <div class="meeting-manager">
+            <div class="title">Who's attending this meeting?</div>
+            @using (Ajax.BeginForm("StartMeeting", new AjaxOptions() {
+                HttpMethod = "POST",
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "main-window",
+                LoadingElementDuration = 1000,
+            })) {
+                @*if (ViewBag.Message!=null){
+                        <div class="alert alert-danger" role="alert">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            <span class="sr-only">Error:</span>
+                            @ViewBag.Message
+                        </div>
+                    }*@
 
-				@Html.ValidationSummary()
-				@Html.SecuredHiddenFor(x => x.Recurrence.Id)
-				<table style="width:100%">
-					@foreach (var a in Model.Recurrence._DefaultAttendees)
-					{
-						<tr>
-							<td style="width: 50%;" ><span class="user-status-container user-status-container-@a.User.Id"></span></td>
-							<td style="width: 1px;" class="check"><input type="checkbox" checked name="Attendees" value="@a.User.Id" /></td>
-							<td style="width: 1px;" class="pix">@Html.Partial("_ProfilePicture", a.User)</td>
-							<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;" class="name">@a.User.GetName()</td>
-							<td style="width: 50%;"></td>
-						</tr>
-					}
-				</table>
-				<div class="alignCenter">
-					<input type="submit" class="btn btn-primary center" value="Start Meeting as Leader" />
-				</div>
-			}
-			<hr />
-			<span style="display: block;margin-top: -31px;margin-left: auto;margin-right: auto;text-align: center;  padding-bottom: 7px;">
-				<span style="width: 33px;background-color: #FFF;color: #DDD;display: inline-block;"> or </span> 
-			</span>
-			
-			<div class="alignCenter smallBreak2">
-				<a class="btn btn-default " href="/L10/Details/@Model.Recurrence.Id"><span class="icon fontastic-icon-archive-1"></span> Go to archive</a>
-			</div>
-			<div class="alignCenter smallBreak2">
-				<a class="btn btn-default " href="/L10/ExportAll/@Model.Recurrence.Id"><span class="icon fontastic-icon-file-zip"></span> Export All</a>
-			</div>
-			<div class="alignCenter">
-				<a class="btn btn-default " href="/L10/Edit/@Model.Recurrence.Id"><span class="glyphicon glyphicon-cog"></span> Settings</a>
-			</div>
-		</div>
-	</div>
+                @Html.ValidationSummary()
+                @Html.SecuredHiddenFor(x => x.Recurrence.Id)
+                <table style="width:100%">
+                    @foreach (var a in Model.Recurrence._DefaultAttendees) {
+                        <tr>
+                            <td style="width: 50%;"><span class="user-status-container user-status-container-@a.User.Id"></span></td>
+                            <td style="width: 1px;" class="check"><input type="checkbox" checked name="Attendees" value="@a.User.Id" /></td>
+                            <td style="width: 1px;" class="pix">@Html.Partial("_ProfilePicture", a.User)</td>
+                            <td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;" class="name">@a.User.GetName()</td>
+                            <td style="width: 50%;"></td>
+                        </tr>
+                    }
+                </table>
+                <div class="alignCenter">
+                    <input type="submit" class="btn btn-primary center" value="Start Meeting as Leader" />
+                </div>
+            }
+            <hr />
+            <span style="display: block;margin-top: -31px;margin-left: auto;margin-right: auto;text-align: center;  padding-bottom: 7px;">
+                <span style="width: 33px;background-color: #FFF;color: #DDD;display: inline-block;"> or </span>
+            </span>
+            <div class="alignCenter">
+                <div class="row">
+                    <div class="col-md-6 alignRight-md smallBreak2">
+                        <div class="btn btn-default video-modal" onclick="showVideo(this)" data-video-url="https://www.youtube.com/embed/u5lUYseptlc">
+                            <span class="glyphicon glyphicon-film"></span> Level 10 Tutorial
+                        </div>
+                    </div>
+                    <div class="col-md-6 alignLeft-md smallBreak2">
+                        <div class="btn btn-default" href="/quarterlyprintout" onclick="showPrint()">
+                            <span class="glyphicon glyphicon-book"></span> Quarterly Printout
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 alignRight-md smallBreak2">
+                        <div class="">
+                            <a class="btn btn-default " href="/L10/printout/@Model.Recurrence.Id"><span class="glyphicon glyphicon-file"></span> L10 Printout</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6 alignLeft-md smallBreak2">
+                        <div class="">
+                            <a class="btn btn-default " href="/L10/Edit/@Model.Recurrence.Id">
+                                <span class="glyphicon glyphicon-cog"></span> Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            @*<div class="alignCenter smallBreak2">
+                    <a class="btn btn-default " href="/L10/Details/@Model.Recurrence.Id"><span class="icon fontastic-icon-archive-1"></span> Go to archive</a>
+                </div>
+                <div class="alignCenter smallBreak2">
+                    <a class="btn btn-default " href="/L10/ExportAll/@Model.Recurrence.Id"><span class="icon fontastic-icon-file-zip"></span> Export All</a>
+                </div>*@
+
+        </div>
+    </div>
 </div>
+<script>
+    function showVideo(self) {
+        debugger;
+        var overlay = $("<div class='video-overlay'></div>");
+        $("body").append(overlay);
+        videoSRC = $(self).attr("data-video-url");
+        videoSRCauto = videoSRC + "?autoplay=1";
+
+        var w = $("body").width();
+        var h = $("body").height();
+
+        if (w > h) {
+            h = w * 320 / 640;
+        } else {
+            w = h * 640 / 320;
+        }
+
+        $(overlay).append("<iframe src='" + videoSRCauto + "' width='" + w + "' height='" + h + "'></iframe>");
+        $(overlay).click(function () {
+            $(overlay).remove();
+        });
+    }
+
+    function showPrint() {
+        //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
+        showModal("Generate Quarterly Printout", "/Quarterly/Modal", "/Quarterly/Printout/@Model.Recurrence.Id","callbackPrint");
+    }
+    function callbackPrint() {
+
+        $("#modalForm").unbind("submit");
+        $("#modalForm").attr("target", "_blank");
+        $("#modalForm").attr("method", "post");
+        $("#modalForm").attr("action", "/Quarterly/Printout/@Model.Recurrence.Id");
+        $("#modalForm").bind("submit", function () {
+            $("#modal").modal('hide');
+        });
+
+       // $("#modalForm").bind("submit");
+    }
+</script>  

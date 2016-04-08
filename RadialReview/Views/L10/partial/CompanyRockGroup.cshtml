@@ -5,7 +5,7 @@
 		<span class="pull-left company-rocks-heading">Company Rocks</span>
 		<span class="completion-percentage alignCenter"><span class="ratio"></span><span class="percentage"></span></span>
 	</div>
-	<div class="table-responsive ">
+	<div class="table-responsive " style="overflow-y:hidden;">
 		<table style="width: 100%">
 			@*<tr>
 					<th style="width: 46px"></th>
@@ -13,6 +13,7 @@
 					<th>Company Rocks</th>
 					<th>Who</th>
 				</tr>*@
+            <tr></tr>
 			@foreach (var i in Model)
 			{
 				<tr class="user-id-@i.ForRock.AccountableUser.Id">
@@ -33,12 +34,12 @@
                               title="Create a Context-Aware To-Do™">
                         </span>
 					</td>
-					<td style="white-space: nowrap;vertical-align:top;">
+					@*<td style="white-space: nowrap;vertical-align:top;">
 						@Html.Partial("_Picture", i.ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
 						<span class="owner">
 							@i.ForRock.AccountableUser.GetName()
 						</span>
-					</td>
+					</td>*@
 				</tr>
 			}
 		</table>

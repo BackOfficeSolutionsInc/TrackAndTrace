@@ -105,7 +105,10 @@ namespace RadialReview
         }
         public static bool ToBooleanJS(this String s)
         {
-            return s.ToLower().Contains("true");
+            if (s == null)
+                return false;
+            var l = s.ToLower();
+            return l.Contains("true") || l=="on";
         }
 
         public static DateTime ToDateTime(this String s,String format,double offset=0.0)

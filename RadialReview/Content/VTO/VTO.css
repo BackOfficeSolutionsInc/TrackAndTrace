@@ -1,371 +1,401 @@
 ﻿.vto {
-	border: 1px solid gray;
-	padding: 20px;
-	background-color: white;
-	margin-bottom: 10px;
+    border: 1px solid gray;
+    padding: 20px;
+    background-color: white;
+    margin-bottom: 10px;
 }
 
-    .vto .delete{
-        vertical-align:top;
+    .vto .delete {
+        vertical-align: top;
     }
 
-	.vto .add-row {
-		color: transparent;
-		pointer-events: none;
-		list-style-type: none;
-	}
-
-	.vto ol,.vto .table-list{
-		padding-top: 20px;
-        width:100%;
-	}
-
-    .vto .table-list tr td{
-        vertical-align:top;
-    }
-    .vto .table-list .row-number{
-        width:40px;
-        text-align:right;
-        padding-right: 0.5em;
-    }
-    
-	.vto .table-list textarea{
-        width:100%;
-        margin-bottom: -2px;
-        padding: 0px;
-        margin-top: -1px;
-	}
-
-    .vto .table-list .delete-column{
-        width:16px;
-        padding-left:2px;
+    .vto .add-row {
+        color: transparent;
+        pointer-events: none;
+        list-style-type: none;
     }
 
-	.vto .content:hover .add-row,
-	.vto .content:hover .add-row:after {
-		color: lightgray;
-		pointer-events: all;
-	}
+    .vto ol, .vto .table-list {
+        padding-top: 20px;
+        width: 100%;
+    }
 
-	.vto .add-row:after {
-		content: "Add row";
-		color: transparent;
-	}
+        .vto .table-list tr td {
+            vertical-align: top;
+        }
 
-	.vto .add-row:hover,
-	.vto .add-row:hover:after {
-		color: gray;
-		cursor: pointer;
-	}
+        .vto .table-list .row-number {
+            width: 40px;
+            text-align: right;
+            padding-right: 0.5em;
+        }
 
-	.vto textarea {
-		width: 90%;
-		border: 1px solid transparent;
-		resize: none;
-	}
+        .vto .table-list textarea {
+            width: 100%;
+            margin-bottom: -2px;
+            padding: 0px;
+            margin-top: -1px;
+        }
+
+        .vto .table-list .delete-column {
+            width: 16px;
+            padding-left: 2px;
+        }
+
+    .vto .content:hover .add-row,
+    .vto .content:hover .add-row:after {
+        color: lightgray;
+        pointer-events: all;
+    }
+
+    .vto .add-row:after {
+        content: "Add row";
+        color: transparent;
+    }
+
+    .vto .add-row:hover,
+    .vto .add-row:hover:after {
+        color: gray;
+        cursor: pointer;
+    }
+
+    .vto textarea {
+        width: 90%;
+        border: 1px solid transparent;
+        resize: none;
+    }
 
 
-		.vto textarea:hover {
-			border: 0px;
-			border: 1px dotted #ef7622;
-		}
+        .vto textarea:hover {
+            border: 0px;
+            border: 1px dotted #ef7622;
+        }
 
-		.vto textarea:focus, .vto .boxed.content:hover textarea:focus {
-			border: 0px;
-			border: 1px dotted #ef7622;
-			outline: none;
-		}
+        .vto textarea:focus, .vto .boxed.content:hover textarea:focus {
+            border: 0px;
+            border: 1px dotted #ef7622;
+            outline: none;
+        }
 
-	.vto .boxed.content:hover textarea {
-		border: 0px;
-		border: 1px dotted #dadada;
-		resize: vertical;
-	}
+    .vto .boxed.content:hover textarea {
+        border: 0px;
+        border: 1px dotted #dadada;
+        resize: vertical;
+    }
 
-	.vto input {
-		border: none;
-		border-bottom: 1px solid transparent;
-		width: 90%;
-	}
+    .vto input {
+        border: none;
+        border-bottom: 1px solid transparent;
+        width: 90%;
+    }
 
-		.vto input:focus, .vto .boxed.content:hover input:focus {
-			border: 0px;
-			border-bottom: 1px dotted #ef7622;
-			outline: none;
-		}
+        .vto input:focus, .vto .boxed.content:hover input:focus {
+            border: 0px;
+            border-bottom: 1px dotted #ef7622;
+            outline: none;
+        }
 
-		.vto input:hover {
-			border: 0px;
-			border-bottom: 1px dotted #ef7622;
-		}
+        .vto input:hover {
+            border: 0px;
+            border-bottom: 1px dotted #ef7622;
+        }
 
-	.vto .boxed.content:hover input {
-		border-bottom: 1px dotted #dadada;
-	}
+    .vto .boxed.content:hover input {
+        border-bottom: 1px dotted #dadada;
+    }
 
-	.vto .goals {
-		font-weight: bold;
-	}
+    .vto .goals {
+        font-weight: bold;
+    }
 
-	.vto .border-table .number {
-		width: 40px;
-		text-align: right;
-		padding: 0 6px;
-        vertical-align:top;
+    .vto .border-table .number {
+        width: 40px;
+        text-align: right;
+        padding: 0 6px;
+        vertical-align: top;
         padding-top: 5px;
-	}
+    }
 
-	.vto .border-table table {
-		width: 100%;
-	}
+    .vto .border-table table {
+        width: 100%;
+    }
 
-	.vto .border-table td {
-		border: 1px solid black;
-		padding: 2px 4px;
-	}
+    .vto .border-table td {
+        border: 1px solid black;
+        padding: 2px 4px;
+    }
 
-	.vto .border-table .add-row-tr td {
-		border: 1px solid transparent;
-	}
+    .vto .border-table .add-row-tr td {
+        border: 1px solid transparent;
+    }
 
-	.vto .title {
-		font-weight: bold;    
+    .vto .title {
+        font-weight: bold;
         white-space: nowrap;
         background-color: transparent;
-	}
-
-	.vto .details {
-	}
-
-	.vto .boxed {
-		border: 1px solid black;
-		margin: 1px;
-		height: 100%;
-		overflow: auto;
-		-moz-box-sizing: border-box;
-	}
-
-	.vto .heading .organzation-name {
-		border: 1px solid black;
-		padding: 6px 12px;
-		position: relative;
-		width: 100%;
-		display: table;
-	}
-
-
-	.vto .heading .title {
-		padding: 4px;
-		display: table-cell;
-		width: 1px;
-		padding-right: 12px;
-	}
-
-	.vto .heading .organzation-name input {
-		width: calc(100% - 55px);
-		display: table-cell;
-		width: 100%;
-	}
-
-
-	.vto .heading .icon {
-		height: 64px;
-		width: 64px;
-		display: inline-block;
-		float: left;
-	}
-
-	.vto .heading .page-title {
-		text-decoration: underline;
-		text-align: center;
-		font-size: 20px;
-		padding: 10px;
-		font-weight: bold;
-	}
-
-	.vto [class*="col-"] {
-		padding-left: 0px;
-		padding-right: 0px;
-	}
-
-	.vto .row {
-		margin-left: 0px;
-		margin-right: 0px;
-	}
-
-	.vto .heading .vto-title {
-		font-size: 32px;
-		text-align: center;
-		font-weight: bold;
-	}
-
-	.vto /*.core-values*/ tr .delete,
-	.vto /*.core-values*/ li .delete,
-	.vto /*.core-values*/ tr .ids-button {
-		opacity: 0;
-		cursor: pointer;
-	}
-
-	.vto /*.core-values*/ tr:hover .delete:hover,
-	.vto /*.core-values*/ li:hover .delete:hover,
-	.vto /*.core-values*/ tr:hover .ids-button:hover {
-		opacity: .8;
-		cursor: pointer;
-	}
-
-	.vto /*.core-values*/ tr:hover .delete,
-	.vto /*.core-values*/ li:hover .delete {
-		opacity: .2;
-	}
-    .vto /*.core-values*/ tr:hover .ids-button {
-		opacity: .75;
     }
 
-	.vto .core-focus .title .boxed,
-	.vto .core-values .title .boxed,
-	.vto .ten-year-target .title .boxed,
-	.vto .marketing-strategy .title .boxed,
-	.vto .three-year-picture .title.boxed {
+    .vto .details {
+    }
+
+    .vto .boxed {
+        border: 1px solid black;
+        margin: 1px;
+        height: 100%;
+        overflow: auto;
+        -moz-box-sizing: border-box;
+    }
+
+    .vto .heading .organzation-name {
+        border: 1px solid black;
+        padding: 6px 12px;
+        position: relative;
+        width: 100%;
+        display: table;
+    }
+
+
+    .vto .heading .title {
+        padding: 4px;
+        display: table-cell;
+        width: 1px;
+        padding-right: 12px;
+    }
+
+    .vto .heading .organzation-name input {
+        width: 100%;
+        width: calc(100% - 55px);
+        display: table-cell;
+    }
+
+
+    .vto .heading .icon {
+        height: 64px;
+        width: 64px;
+        display: inline-block;
+        float: left;
+    }
+
+    .vto .heading .page-title {
+        text-decoration: underline;
+        text-align: center;
+        padding: 10px;
+        font-weight: bold;
+        font-size: 25px;
+        font-family: 'Arial Narrow','Lato',sans-serif;
+
+    }
+
+    .vto [class*="col-"] {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .vto .row {
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    .vto .heading .vto-title {
+        /*font-size: 32px;
 		text-align: center;
-		padding: 5px;
-		background-color: #cac8c8;
-	}
+		font-weight: bold;*/
+        font-size: 42px;
+        text-align: center;
+        font-weight: bold;
+        font-family: 'Arial Narrow','Lato',sans-serif;
+        margin-top: -20px;
+    }
 
-	.vto .boxed.content {
-		padding: 5px;
-	}
+    .vto /*.core-values*/ tr .delete,
+    .vto /*.core-values*/ li .delete,
+    .vto /*.core-values*/ tr .ids-button {
+        opacity: 0;
+        cursor: pointer;
+    }
 
-	.vto .core-focus .boxed.content div {
-		display: flex;
-		-webkit-box-orient: vertical;
-		-moz-box-orient: vertical;
-		-webkit-flex-direction: column;
-		-ms-flex-direction: column;
-		flex-direction: column;
-	}
+    .vto /*.core-values*/ tr:hover .delete:hover,
+    .vto /*.core-values*/ li:hover .delete:hover,
+    .vto /*.core-values*/ tr:hover .ids-button:hover {
+        opacity: .8;
+        cursor: pointer;
+    }
+
+    .vto /*.core-values*/ tr:hover .delete,
+    .vto /*.core-values*/ li:hover .delete {
+        opacity: .2;
+    }
+
+    .vto /*.core-values*/ tr:hover .ids-button {
+        opacity: .75;
+    }
+
+    .vto .core-focus .title .boxed,
+    .vto .core-values .title .boxed,
+    .vto .ten-year-target .title .boxed,
+    .vto .marketing-strategy .title .boxed,
+    .vto .three-year-picture .title.boxed {
+        text-align: center;
+        padding: 5px;
+        background-color: #cac8c8;
+        font-family: 'Arial Narrow','Lato',sans-serif;
+        font-size: 18px;
+    }
+
+    .vto .boxed.content {
+        padding: 5px;
+    }
+
+    .vto .core-focus .boxed.content div {
+        display: flex;
+        -webkit-box-orient: vertical;
+        -moz-box-orient: vertical;
+        -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+        flex-direction: column;
+    }
 
 
-	.vto .core-focus .purpose,
-	.vto .core-focus .niche {
-		padding: 10px 0px;
-	}
+    .vto .core-focus .purpose,
+    .vto .core-focus .niche {
+        padding: 10px 0px;
+    }
 
-	.vto .core-focus td {
-		vertical-align: top;
-		padding: 0px;
+    .vto .core-focus td {
+        vertical-align: top;
+        padding: 0px;
         text-align: right;
-	}
+    }
 
-	.vto .core-focus .content .title {
-		padding: 3px;
-		display: inline-block;
+    .vto .core-focus .content .title {
+        padding: 3px;
+        display: inline-block;
         text-align: right;
-	}
+    }
 
-	.vto .marketing-strategy .target-market,
-	.vto .marketing-strategy .three-uniques,
-	.vto .marketing-strategy .proven-process,
-	.vto .marketing-strategy .guarantee {
-		padding: 10px 0px;
-	}
+    .vto .marketing-strategy .target-market,
+    .vto .marketing-strategy .three-uniques,
+    .vto .marketing-strategy .proven-process,
+    .vto .marketing-strategy .guarantee {
+        padding: 10px 0px;
+    }
 
-	.vto .marketing-strategy .boxed.content {
-		padding: 5px;
-	}
+    .vto .marketing-strategy .boxed.content {
+        padding: 5px;
+    }
 
-	.vto .ten-year-target {
-		position: relative;
-	}
+    .vto .ten-year-target {
+        position: relative;
+    }
 
-		.vto .ten-year-target textarea {
-			/*position: absolute;
+        .vto .ten-year-target textarea {
+            /*position: absolute;
 			top: 5px;
 			bottom: 5px;
 			left: 5px;
 			right: 5px;*/
-			resize: none !important;
-			width: 90%;
-			width: calc(100% - 10px);
-			vertical-align: middle;
-			display: inline-block;
-		}
+            resize: none !important;
+            width: 90%;
+            width: calc(100% - 10px);
+            vertical-align: middle;
+            display: inline-block;
+        }
 
-	.vto ol {
-		margin-bottom: 0px;
-	}
+    .vto ol {
+        margin-bottom: 0px;
+    }
 
-	.vto .boxed {
-		min-height: 40px;
-	}
+    .vto .boxed {
+        min-height: 40px;
+    }
 
 .tm:after {
-	content: "™";
-	position: relative;
-	top: -1px;
-	left: -2px;
+    content: "™";
+    position: relative;
+    top: -1px;
+    left: -2px;
 }
 
 @media (min-width: 1200px) {
-	.vto .core-focus .boxed,
-	.vto .core-values .boxed {
-		min-height: 100px;
-		height: calc(21vh - 47px);
-		/* VH% x (topOffset+bottomOffset)  */
-		/*190+33*/
-		padding: 5px;
-	}
+    .vto .core-focus .boxed,
+    .vto .core-values .boxed {
+        min-height: 100px;
+        height: calc(21vh - 47px);
+        /* VH% x (topOffset+bottomOffset)  */
+        /*190+33*/
+        padding: 5px;
+    }
 
-	.vto .ten-year-target .boxed {
-		min-height: 50px;
-		height: calc(10vh - 22px);
-	}
+    .vto .ten-year-target .boxed {
+        min-height: 50px;
+        height: calc(10vh - 22px);
+    }
 
-	.vto .marketing-strategy .boxed {
-		min-height: 200px;
-		height: calc(47vh - 105px);
-	}
+    .vto .marketing-strategy .boxed {
+        min-height: 200px;
+        height: calc(47vh - 105px);
+    }
 
-	.vto .three-year-picture .boxed.content {
-		min-height: 405px;
-		height: calc(100vh - 276px);
-	}
+    .vto .three-year-picture .boxed.content {
+        min-height: 405px;
+        height: calc(100vh - 284px);
+    }
 }
 
 #main {
-	padding-bottom: 0px !important;
+    padding-bottom: 0px !important;
 }
 
 profile-image .picture-container {
-	width: 32px;
-	height: 32px;
-	border: 1px solid #DDD;
-	padding: 1px;
-	background-color: #FFF;
-	line-height: 29px;
-	text-align: center;
-	font-weight: bold;
-	color: #444;
-	/* font-size: 14px; */
-	/* white-space: nowrap; */
-	overflow: hidden;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #DDD;
+    padding: 1px;
+    background-color: #FFF;
+    line-height: 29px;
+    text-align: center;
+    font-weight: bold;
+    color: #444;
+    /* font-size: 14px; */
+    /* white-space: nowrap; */
+    overflow: hidden;
 }
 
 
 .rock-accountable {
-	text-decoration: none;
-	border-bottom: none !important;
-	top: -8px;
-	position: relative;
-	white-space: nowrap;
+    text-decoration: none;
+    border-bottom: none !important;
+    top: -8px;
+    position: relative;
+    white-space: nowrap;
 }
 
-	.rock-accountable profile-image {
-		position: relative;
-		top: 11px;
-	}
+    .rock-accountable profile-image {
+        position: relative;
+        top: 11px;
+    }
 
 
 .looks-like {
-	text-decoration: underline;
-	font-weight: bold;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.eos-model {
+    margin-top: -20px;
+    margin-left: 15px;
+    max-height: 165px;
+    width: auto;
+    max-width: 100%;
+    max-width: calc(100% - 15px);
+}
+
+.traction .eos-model{    
+    max-height: 135px;
+}
+
+
+.vto .copywrite {
+    color: #CAC8C8;
+    font-size: 12px;
 }

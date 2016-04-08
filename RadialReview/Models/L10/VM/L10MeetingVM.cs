@@ -8,6 +8,7 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
 using System.Runtime.Serialization;
 using RadialReview.Utilities;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Models.L10.VM
 {
@@ -17,8 +18,9 @@ namespace RadialReview.Models.L10.VM
 		public L10Meeting Meeting { get; set; }
 		public List<ScoreModel> Scores { get; set; }
 		public List<IssueModel.IssueModel_Recurrence> Issues { get; set; }
-		public List<TodoModel> Todos { get; set; }
-		public List<L10Meeting.L10Meeting_Rock> Rocks { get; set; }
+        public List<TodoModel> Todos { get; set; }
+        public List<L10Meeting.L10Meeting_Rock> Rocks { get; set; }
+        public List<ProfilePictureVM> MemberPictures { get; set; }
 
 		public ScorecardPeriod ScorecardType { get; set; }
 

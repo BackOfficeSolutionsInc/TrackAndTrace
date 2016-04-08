@@ -18,6 +18,7 @@ using RadialReview.Models.Timeline;
 using RadialReview.Models.VideoConference;
 using RadialReview.Utilities;
 using RadialReview.Exceptions;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Controllers
 {
@@ -56,11 +57,15 @@ namespace RadialReview.Controllers
             {
                 Recurrence = recurrence,
                 Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, true, loadLogs: true),
-                EnableTranscript = recurrence.EnableTranscription
+                EnableTranscript = recurrence.EnableTranscription,
             };
+            
 
             if (model.Meeting != null)
             {
+
+                model.MemberPictures = recurrence._DefaultAttendees.Select(x => new ProfilePictureVM { UserId = x.User.Id, Url = x.User.ImageUrl(true, ImageSize._32), Name = x.User.GetName(), Initials = x.User.GetInitials() }).ToList();
+
                 var transcript = TranscriptAccessor.GetMeetingTranscript(GetUser(), model.Meeting.Id);
                 model.CurrentTranscript = transcript.Select(x => new MeetingTranscriptVM()
                 {
@@ -167,6 +172,24 @@ namespace RadialReview.Controllers
             var model=AddExtras(recurrenceId, new L10EditVM(){Return = @return});
             return View("Edit", model);
         }
+
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Wizard(long? id = null, string @return = null)
+        {
+            if (id == null) {
+                //var m = new L10Recurrence();
+                //var model = new L10EditVM();
+                //AddExtras(0, model);
+                //ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
+                return View("Wizard", 0L);
+            } else {
+                //var recurrenceId = id.Value;
+                //_PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
+                //var model = AddExtras(recurrenceId, new L10EditVM() { Return = @return });
+                return View("Wizard", id.Value);
+            }
+        }
+
 
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
@@ -301,6 +324,20 @@ namespace RadialReview.Controllers
             return View(list);
         }
 
+
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Printout(long id)
+        {
+            var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
+            var d = L10Accessor.GetLastMeetingEndTime(GetUser(), id);
+
+            var doc = PdfAccessor.CreateDoc(GetUser(), "THE LEVEL 10 MEETING");
+
+            PdfAccessor.AddL10(doc, recur, d);
+
+            var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
+            return Pdf(doc, now + "_" + recur.Name + "_L10Meeting.pdf", true);
+        }
 
         #region Error
         [Access(AccessLevel.Any)]

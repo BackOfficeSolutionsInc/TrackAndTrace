@@ -20,6 +20,7 @@ namespace RadialReview.Models.Angular.Meeting
 			Name = recurrence.Name;
             Prioritization = recurrence.Prioritization!=PrioritizationType.Invalid?recurrence.Prioritization:PrioritizationType.Priority;
             VtoId = recurrence.VtoId;
+
 		}
 
 		public AngularRecurrence(long id):base(id){

@@ -52,6 +52,9 @@ namespace RadialReview.Controllers
             public DateTime? LastLogin {get;set;}
             public string Position { get; set; }
             public DateTime? OrgCreateTime { get; set; }
+            public DateTime? TrialEnd { get; set; }
+
+            public AccountType Status { get; set; }
         }
 		[Access(AccessLevel.Radial)]
         public ActionResult Stats()
@@ -63,6 +66,9 @@ namespace RadialReview.Controllers
 
                     var orgs = s.QueryOver<OrganizationModel>().Where(x => x.DeleteTime == null).List().ToList();
                     var list = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && !x.IsRadialAdmin && x.Name!="Clay Upton" && x.Name!="Kathy Mayfield").List().ToList();
+
+                    var tokens = s.QueryOver<PaymentSpringsToken>().Where(x => x.Active == true && x.DeleteTime == null).List().ToDictionary(x => x.OrganizationId, x => x);
+
                     var stats=    orgs.Select(x=>{
                             var user = list.Where(y=>y.OrganizationId==x.Id).OrderByDescending(y=>y.LastLogin).FirstOrDefault();
                             return new OrgStats()
@@ -71,7 +77,9 @@ namespace RadialReview.Controllers
                                 Username = user.NotNull(y=>y.Name),
                                 Position = user.NotNull(y=>y.Positions),
                                 LastLogin = user.NotNull(y => y.LastLogin),
-                                OrgCreateTime = x.NotNull(u=>u.CreationTime)
+                                OrgCreateTime = x.NotNull(u => u.CreationTime),
+                                Status = x.NotNull(y=>y.AccountType),
+                                TrialEnd  = tokens.ContainsKey(x.Id)?(DateTime?)null:x.NotNull(u => u.PaymentPlan.FreeUntil)
                             };
                         }).ToList();
                     return View(stats);

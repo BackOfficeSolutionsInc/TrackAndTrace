@@ -838,7 +838,17 @@ $(function () {
         if (e.button == 0 || e.button == 2) {
             if (p == 0) {
                 p = currentRank;
+                //if (currentRank == 3) {
+                //    $("[data-rank='0'] .rank123").tooltip({ title: "Solve the top three issues first." });
+                //}
+
                 if (currentRank >= 4) {
+                    //$(e.target).tooltip({ title: "Solve the top three issues first." });
+                    //$(e.target).tooltip('show');
+                    //setTimer(function () {
+                    //    $(e.target).tooltip('hide');
+                    //    $(e.target).tooltip('destroy');
+                    //}, 1500);
                     clearAlerts();
                     showAlert("Solve the top three issues first.", "alert-info rank-solve-message", "Info:");
                     return;

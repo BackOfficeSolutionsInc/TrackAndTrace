@@ -44,6 +44,10 @@
     width: 100%;
 }
 
+.dashboard .todo-list-container .due-date.red{
+    font-weight:normal;
+}
+
 .dashboard .todo-list-container .name {
     display: none;
 }
@@ -117,6 +121,17 @@
     margin: 0px;
 }
 
+.dashboard .scorecard .measurable-column {
+    padding-left: 4px;
+}
+.dashboard .scorecard .goal-column {
+    padding-left: 3px;
+}
+
+.dashboard .scorecard-table .target.direction{
+    padding-left: 5px;
+}
+
 .dashboard .scorecard input {
     font-size: 12px !important;
 }
@@ -137,6 +152,10 @@
     overflow-x: hidden;
 }
 
+.dashboard .todo-pane .todo-text{
+    color:#5D5D5D
+}
+
 @media (max-width: 992px) {
     .todo-pane {
         max-height: 100% !important;
@@ -155,6 +174,11 @@
 
 .dashboard .rock-list-container {
     text-align: left;
+}
+
+.dashboard .rock-list-container .name{
+    color: #5D5D5D;
+    font-weight: normal;
 }
 
 .dashboard .todo-checkbox-container {
@@ -372,17 +396,34 @@
 
 .dashboard .rock-list-container .rock-completion-container {
     padding: 2px;
+    max-width: 100px !important;
+}
+.dashboard .rock-list-container .rock-completion-container:after{
+    top: 7px;
 }
 
+
 .dashboard .rock-list-container .rock-completion {
-    position: relative;
-    /* padding: 0 0 0 30px; */
+    /*position: relative;
+    /* padding: 0 0 0 30px; *
     border-radius: 2px;
-    /* height: 29px; */
-    /* top: -2px; */
+    /* height: 29px; *
+    /* top: -2px; *
     margin: 0px;
     cursor: pointer;
+    transition: background .2s;*/
+    position: relative;
+    padding: 0 0 0 11px;
+    border-radius: 2px;
+    height: 25px;
+    top: -1px;
+    margin: 0px;
+    cursor: pointer;
+    -moz-transition: background .2s;
+    -o-transition: background .2s;
+    -webkit-transition: background .2s;
     transition: background .2s;
+    width: 100px;
 }
 
 .dashboard .rock-list-container .picture-column {

@@ -32,17 +32,18 @@
                 </div>
             }
             
-            <div class="centered" style="width: 87%; max-width: 800px; margin-bottom: 47px; margin-top: -22px; ">
+            <div class="centered" style="width: 87%; max-width: 760px; margin-bottom: 47px; margin-top: -22px; ">
                 <div class="component cascading-messages">
                     <h3 style="font-size: 20px; color: #444;">Cascading Messages</h3>
-                    <h4 class="cascading-messages-container" style="padding-bottom:15px;">Who do we need to tell about the decisions we've made?</h4>
+                    <h4 class="cascading-messages-container" style="padding-bottom:15px;">Do we need to tell anyone about any of the decisions we made?</h4>
                 </div>
             </div>
 
             <div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;">
                 <div class="component">
                     <div class="meeting-manager">
-                        <div class="title">Ratings (1 to 10)</div>
+                        <div class="title" style="font-size: 20px;color: #444;">Ratings (1 to 10)<div style="font-size: 12px;font-weight: lighter;"><small>Ratings less than an 8? Drop it down.</small></div></div>
+                        
                         @using (Ajax.BeginForm("Conclusion", new AjaxOptions() {
                             HttpMethod = "POST",
                             UpdateTargetId = "main-window",
@@ -63,7 +64,7 @@
                                             @Model.Meeting._MeetingAttendees[i].User.GetName()
                                         </td>
                                         <td style="width: 1px;">
-                                            @Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "any", type = "number", style = "width:60px", @class = "rt" })
+                                            @Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.5",novalidate="novalidate", type = "number", style = "width:60px", @class = "rt" })
                                         </td>
                                         <td style="width:50%;"></td>
                                     </tr>

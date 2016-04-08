@@ -1,131 +1,179 @@
 ﻿
 .rocks-container {
-  /* We first create a flex layout context */
-  /*display: flex;*/
-  
-  /* Then we define the flow direction and if we allow the items to wrap 
+    /* We first create a flex layout context */
+    /*display: flex;*/
+    /* Then we define the flow direction and if we allow the items to wrap 
    * Remember this is the same as:
    * flex-direction: row;
    * flex-wrap: wrap;
    */
-  /*flex-flow: row wrap;
+    /*flex-flow: row wrap;
   */
-  /* Then we define how is distributed the remaining space */
-  /*justify-content: space-around;*/
+    /* Then we define how is distributed the remaining space */
+    /*justify-content: space-around;*/
+        margin-bottom: 24px;
 }
 
-.rocks-container .rocks-item {
-	padding: 5px;
-	width: 400px;
-	height: 220px;
-	margin-top: 10px;
-	text-align: center;
-	position: relative;
-}
+    .rocks-container .rocks-item {
+        padding: 5px;
+        width: 400px;
+        height: 220px;
+        margin-top: 10px;
+        text-align: center;
+        position: relative;
+    }
 
-.rocks-container .message {
-	font-weight: bold;
-	font-size: 17px;
-	padding-left: 14px;
-    padding-bottom: 6px;
-	/*height: 90px;*/
-	/*overflow: hidden;
+    .rocks-container .message {
+        font-weight: bold;
+        font-size: 17px;
+        padding-left: 42px;
+        padding-bottom: 6px;
+        /*height: 90px;*/
+        /*overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;*/
+    }
+
+    .rocks-container .rocks-item .owner {
+        text-align: right;
+        color: #B2B2B2;
+        /* width: 100%; */
+        position: absolute;
+        left: 0;
+        right: 10px;
+        bottom: 5px;
+        font-size: 12px;
+    }
+
+        .rocks-container .rocks-item .owner .lbl {
+            color: lightgray;
+        }
+
+    .rocks-container .owner {
+        font-size: 14px;
+        position: relative;
+        top: -7px;
+        text-transform: uppercase;
+        /* margin-top: 2px; */
+        left: -4px;
+    }
+
+.company-rock-container .owner {
+    font-size: 17px;
 }
-.rocks-container .rocks-item .owner {
-	text-align: right;
-	color: #B2B2B2;
-	/* width: 100%; */
-	position: absolute;
-	left: 0;
-	right: 10px;
-	bottom: 5px;
-	font-size: 12px;
-}
-.rocks-container .rocks-item .owner .lbl {
-	color: lightgray;
-}
-.rocks-container .owner {
-	font-size: 19px;
-	position: relative;
-	top: -6px;
-	font-weight: bold;
-	text-transform: uppercase;
-}
-.company-rock-container .owner{
-	font-size: 17px;
-}
+
 .rocks-container .picture-container {
-	width: 30px;
-	height: 30px;
-	border: 1px solid #DDD;
-	padding: 1px;
-	margin: 0px 6px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #DDD;
+    padding: 1px;
+    margin: 0px 6px;
 }
 
 .rocks-container tr:first-child {
-	border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.rocks-container tr td {
-	border-bottom: 1px solid #f0f0f0;
+.rocks-container tr:not(:last-child) td {
+    border-bottom: 1px solid #f0f0f0;
 }
+
+    .rocks-container tr:not(:last-child) td:last-child {
+        border-bottom: 1px solid #2C77BA;
+    }
+
+.rocks-container tr:nth-child(2) td.currentBlue {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-top: none;
+}
+
+.rocks-container tr:last-child td.currentBlue {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom: none;
+}
+
 .rocks-container td.currentBlue {
-	background-color: #2C77BA;
-	border-bottom: 1px solid #2C77BA;
-	text-align: center;
-	width: 46px;
+    background-color: #2C77BA;
+    border-bottom: 1px solid #2C77BA;
+    text-align: center;
+    width: 46px;
     min-width: 46px;
-	/*display: block;*/
-	padding: 6px;
+    /*display: block;*/
+    padding: 6px;
     vertical-align: top;
-    padding-top: 4px;
+    padding-top: 3px;
 }
 
-.rocks-container .rock-state-holder{
-    vertical-align:top;
-    line-height:1;
+.rocks-container .rock-state-holder {
+    vertical-align: top;
+    line-height: 0.5;
 }
 
 .rocks-container .component {
-	margin: 5px;
+    margin-bottom: 12px;
+    padding: 4px 1px 6px 1px;
+    box-shadow: 0px 3px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
 .rock-empty-holder:after {
     content: "Click 'Add Rock' to create a rock";
 }
 
-.completion-percentage .ratio,
-.completion-percentage .percentage {
-	width: 40px;
-    font-size: 16px;
-    display: inline-block;
-	font-weight: bold;
-	color: #444;
+.completion-percentage {
+    padding-right: 1px;
+    padding-top: 4px;
 }
+
+    .completion-percentage .ratio,
+    .completion-percentage .percentage {
+        /* width: 48px; */
+        font-size: 16px;
+        display: inline-block;
+        font-weight: bold;
+        color: #444;
+        text-align: right;
+        padding-right: 11px;
+    }
+
 .company-rocks-heading {
-    font-weight: bold;
+    /*font-weight: bold;*/
     text-transform: uppercase;
-	font-size: 20px;
-	height: 22px;
-	position: relative;
-	top: -6px;
+    font-size: 20px;
+    height: 22px;
+    position: relative;
+    top: -4px;
+    left: 4px;
+    color: rgba(137, 112, 0, 0.9);
+}
+
+.company-rock-container .completion-percentage .ratio,
+.company-rock-container .completion-percentage .percentage {
+    color: rgba(137, 112, 0, 0.9);
 }
 
 .company-rocks-heading-container {
-	height: 28px;
+    height: 28px;
 }
-.completion-percentage .percentage{
-	text-align: right;
+
+.completion-percentage .percentage {
+    text-align: right;
 }
 
 .company-rock-container .component {
     background-color: #F7EFD5;
-    border-color: #CFC89C;
+    /* border-color: #69A779; */
     color: #897000;
-    border: 1px solid;
-    border-radius: 2px;
+    border: 1px solid #8A7104;
+    border-top-color: #B3A77F;
+    border-left-color: #A29051;
+    border-style: solid;
+    border-right-color: #A29051;
+    border-radius: 3px;
+    padding: 3px;
+    padding-bottom: 6px;
+    box-shadow: 0px 9px 22px -8px rgba(0, 0, 0, 0.42);
 }
 
 /*.company-rock-container {

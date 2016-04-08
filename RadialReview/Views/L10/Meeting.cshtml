@@ -28,7 +28,7 @@
         var MeetingId = @Model.Recurrence.Id;
         @if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-                                                        																				}
+                                                                																				}
 
 
     </script>
@@ -44,98 +44,112 @@
     @Scripts.Render("~/bundles/L10")
     @Html.Partial("_SetupScript", Model)
     <script>
-        function afterLoad() {
-            console.log("called afterLoad");
-            userId = @(ViewBag.UserId);
-            @if (Model.Meeting != null){
+
+    var picturesLookup={};
+
+    function addToPictureLookup(id,url,name,initials){
+        picturesLookup[id]= {url:url,name:name,initials:initials};
+    }
+
+    function afterLoad() {
+        console.log("called afterLoad");
+        userId = @(ViewBag.UserId);
+
+
+
+
+        @if (Model.Meeting != null){
+        foreach (var m in Model.MemberPictures.ToList()) {
+            @:addToPictureLookup(@m.UserId,"@m.Url","@m.Name","@m.Initials");
+                }
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-                                                                                                    	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
+                                                                                                                                                        	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
 
 				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
 					@:setPageTime("@i.Item1",@i.Item2);
-                                                                                                    	}
+                                                                                                                                                        	}
 			}
 			else{
 				@:isLeader =false;
-                                                                                                    }
-            initL10();
-            try {
-                resetClickables();
-            } catch (e) {
+                                                                                                                                                        }
+        initL10();
+        try {
+            resetClickables();
+        } catch (e) {
 
-            }
         }
+    }
 
-        $(".switch").addClass("hide");
+    $(".switch").addClass("hide");
 
-        $(function() {
-            $('.switch').bootstrapSwitch();
+    $(function() {
+        $('.switch').bootstrapSwitch();
 
-            $(".switch").removeClass("hide");
-            $('#Follow').on('switchChange', function(e, data) {
-                setFollowLeader(data.value);
-            });
+        $(".switch").removeClass("hide");
+        $('#Follow').on('switchChange', function(e, data) {
+            setFollowLeader(data.value);
+        });
 
-            // $(".slider-container").css({position:"relative",left:"0px",top:"0px",width:"100%",height:"100%"});
-            // $(".left-panel").css({position:"absolute",left:"0px",top:"0px",width:"100%",overflowX:"hidden"});
-            // $(".right-panel").css({position:"absolute",left:"100%",top:"0px",width:"100%",overflowX:"hidden","background-color":"red"});
+        // $(".slider-container").css({position:"relative",left:"0px",top:"0px",width:"100%",height:"100%"});
+        // $(".left-panel").css({position:"absolute",left:"0px",top:"0px",width:"100%",overflowX:"hidden"});
+        // $(".right-panel").css({position:"absolute",left:"100%",top:"0px",width:"100%",overflowX:"hidden","background-color":"red"});
 
+        $(".back-button").hide();
+        $(".print-vto-button").hide();
+        var page = "main";
+        var vtoLastScroll=0;
+        $(".vto-button").click(function(){
+            if (typeof($(".vto-frame").attr("src"))==="undefined"){
+                $(".vto-frame").attr("src",$(".vto-frame").attr("data-src"));
+            }
+            $(".slider").css({marginLeft:"-100%"});
+            $(".slider-container").css("overflow-y","hidden");
+            $(".back-button").show();
+            $(".print-vto-button").show();
+            page="vto";
+            vtoLastScroll = $(".slider-container").scrollTop();
+            $(".slider-container").scrollTop(0);
+        });
+
+        $(".back-button").click(function(){
+            $(".slider").css({marginLeft:"0%"});
             $(".back-button").hide();
             $(".print-vto-button").hide();
-            var page = "main";
-            var vtoLastScroll=0;
-            $(".vto-button").click(function(){
-                if (typeof($(".vto-frame").attr("src"))==="undefined"){
-                    $(".vto-frame").attr("src",$(".vto-frame").attr("data-src"));
-                }
-                $(".slider").css({marginLeft:"-100%"});
-                $(".slider-container").css("overflow-y","hidden");
-                $(".back-button").show();
-                $(".print-vto-button").show();
-                page="vto";
-                vtoLastScroll = $(".slider-container").scrollTop();
-                $(".slider-container").scrollTop(0);
-            });
+            $(".slider-container").css("overflow-y","inherit");
+            page="main";
 
-            $(".back-button").click(function(){
-                $(".slider").css({marginLeft:"0%"});
-                $(".back-button").hide();
-                $(".print-vto-button").hide();
-                $(".slider-container").css("overflow-y","inherit");
-                page="main";
-
-                vtoLastScroll = $(".slider-container").scrollTop(vtoLastScroll)
-            });
-
-            $(document).bind("keyup keydown", function(e){
-                if(e.ctrlKey && e.keyCode == 80){
-                    if (page=="vto"){
-                        printIframe("vto-frame");
-                        e.preventDefault();
-                    }else if (page=="main"){
-                        $("#hidden12335325").remove();
-                        var embed = $("<div id='hidden12335325' style='display:none'></div>");
-                        embed.append($('<iframe  type="application/pdf" src="/quarterly/printout/@(Model.Recurrence.Id)" id="pdf-frame" width="100%" height="100%"></embeded>'));
-
-                        $("body").append(embed);
-                        //var documentId = "pdfDocument";
-                        //var doc = document.getElementById(documentId);
-
-                        ////Wait until PDF is ready to print
-                        //if (typeof doc.print === 'undefined') {
-                        //    setTimeout(function(){printDocument(documentId);}, 1000);
-                        //} else {
-                        //    doc.print();
-                        //}
-                        var PDF = document.getElementById("pdf-frame");
-                        PDF.focus();
-                        PDF.contentWindow.print();
-                        // printIframe("pdf-frame");
-                        e.preventDefault();
-                    }
-                }
-            });
+            vtoLastScroll = $(".slider-container").scrollTop(vtoLastScroll)
         });
+
+        $(document).bind("keyup keydown", function(e){
+            if(e.ctrlKey && e.keyCode == 80){
+                if (page=="vto"){
+                    printIframe("vto-frame");
+                    e.preventDefault();
+                }else if (page=="main"){
+                    $("#hidden12335325").remove();
+                    var embed = $("<div id='hidden12335325' style='display:none'></div>");
+                    embed.append($('<iframe  type="application/pdf" src="/quarterly/printout/@(Model.Recurrence.Id)" id="pdf-frame" width="100%" height="100%"></embeded>'));
+
+                    $("body").append(embed);
+                    //var documentId = "pdfDocument";
+                    //var doc = document.getElementById(documentId);
+
+                    ////Wait until PDF is ready to print
+                    //if (typeof doc.print === 'undefined') {
+                    //    setTimeout(function(){printDocument(documentId);}, 1000);
+                    //} else {
+                    //    doc.print();
+                    //}
+                    var PDF = document.getElementById("pdf-frame");
+                    PDF.focus();
+                    PDF.contentWindow.print();
+                    // printIframe("pdf-frame");
+                    e.preventDefault();
+                }
+            }
+        });
+    });
 
 
     </script>
@@ -311,7 +325,7 @@
         @if (Model.EnableTranscript)
 		{
 		@:shouldStartTranscribe = true;
-                                                                        }
+                                                                                }
 
 
 

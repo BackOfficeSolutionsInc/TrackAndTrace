@@ -121,7 +121,7 @@
     <value>1201 Infinity Ct, Lincoln, NE 68512</value>
   </data>
   <data name="BaseUrl2" xml:space="preserve">
-    <value>https://review.radialreview.com/</value>
+    <value>https://traction.tools/</value>
     <comment>http://localhost:2200/</comment>
   </data>
   <data name="Company" xml:space="preserve">
@@ -152,7 +152,7 @@
     <value>1-402-437-0099</value>
   </data>
   <data name="SupportEmail" xml:space="preserve">
-    <value>support@radialreview.com</value>
+    <value>support@mail.traction.tools</value>
   </data>
   <data name="TestEmail" xml:space="preserve">
     <value>clay.upton+test@radialreview.com</value>

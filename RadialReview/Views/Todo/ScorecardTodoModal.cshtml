@@ -18,10 +18,10 @@
 	<div class="col-sm-7">
 		<div class="form-group">
 			@Html.LabelFor(x => x.AccountabilityId)
-			<select name="@Html.NameFor(x => x.AccountabilityId)" class="select-user form-control" style="width: 100%;height:64px;">
+			<select name="@Html.NameFor(x => x.AccountabilityId)" class="select-user form-control" style="width: 100%;height:64px;" multiple="multiple">
 				@foreach (var u in Model.PossibleUsers)
 				{
-					<option data-img="@u.imageUrl" value="@u.id" @(u.id==Model.AccountabilityId?"selected":"")>@u.name</option>
+					<option data-img="@u.imageUrl" value="@u.id" @(Model.AccountabilityId.Any(x => x == u.id) ? "selected" : "")>@u.name</option>
 				}
 			</select>
 		</div>
@@ -56,6 +56,7 @@
 		templateResult: imageListFormat,
 		templateSelection: imageListFormat,
 	});
+
 
 	var now = new Date();
 	now = Date.UTC(now.getYear() + 1900, now.getMonth(), now.getDate(), 0, 0, 0);

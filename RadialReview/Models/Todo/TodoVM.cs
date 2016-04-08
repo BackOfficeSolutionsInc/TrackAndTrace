@@ -30,7 +30,7 @@ namespace RadialReview.Models.Todo
 		[Required]
 
 		[Display(Name = "Who's Accountable")]
-		public long AccountabilityId { get; set; }
+		public long[] AccountabilityId { get; set; }
 
 		public List<AccountableUserVM> PossibleUsers { get; set; }
 
@@ -47,7 +47,7 @@ namespace RadialReview.Models.Todo
 
 		public TodoVM(long accountableUserId) : this()
 		{
-			AccountabilityId = accountableUserId;
+			AccountabilityId = new []{accountableUserId};
 
 		}
 	}

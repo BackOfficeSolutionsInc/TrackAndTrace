@@ -430,6 +430,19 @@ namespace RadialReview.Accessors {
             return previousMeeting;
         }
 
+        public static DateTime GetLastMeetingEndTime(UserOrganizationModel caller, long recurrenceId)
+        {  
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var last = GetPreviousMeeting(s, perms, recurrenceId);
+                    if (last == null || !last.CompleteTime.HasValue)
+                        return DateTime.MinValue;
+                    return last.CompleteTime.Value;
+                }
+            }
+        }
+
         public static L10Recurrence GetL10Recurrence(UserOrganizationModel caller, long recurrenceId, bool load)
         {
             using (var s = HibernateSession.GetCurrentSession()) {

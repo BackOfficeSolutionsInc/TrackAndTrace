@@ -37,7 +37,7 @@ namespace RadialReview.Controllers
             var tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
             
 			var start = TimingUtility.PeriodsAgo(DateTime.UtcNow,13, GetUser().Organization.Settings.ScorecardPeriod);
-			var end = DateTime.UtcNow.AddDays(14);
+			var end = DateTime.UtcNow;//.AddDays(14);
 			if (completed){
 				start = DateTime.UtcNow.AddDays(-1);
 				end = DateTime.UtcNow.AddDays(2);

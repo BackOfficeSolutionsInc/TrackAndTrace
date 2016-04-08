@@ -47,7 +47,7 @@
 									<div class="label label-success hoverable" style = "height:16px; width: 80px;display: inline-block">in-progress</div>
 								}
 								else{
-									<div class="label label-default hoverable" style = "width: 80px;display: inline-block">click to begin</div>
+									<div class="label label-primary hoverable" style = "width: 80px;display: inline-block">Go!</div>
 								}
 							</td>
 							<td class="table-hover-underline" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>

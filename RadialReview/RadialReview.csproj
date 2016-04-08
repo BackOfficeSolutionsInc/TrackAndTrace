@@ -654,6 +654,7 @@
     <Compile Include="Models\Todo\TodoVM.cs" />
     <Compile Include="Models\UserModels\ManagerDuration.cs" />
     <Compile Include="Models\Askables\RoleModel.cs" />
+    <Compile Include="Models\UserModels\ProfilePictureVM.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
     <Compile Include="Models\UserModels\UserLookup.cs" />
     <Compile Include="Models\UserTemplate\IUserTemplateItem.cs" />
@@ -910,6 +911,13 @@
     <Compile Include="Models\Audit\LogModel.cs" />
     <Content Include="Areas\RouteDebugger\Content\rdstyle.css" />
     <Content Include="Areas\RouteDebugger\Scripts\detect.js" />
+    <None Include="Content\AccountabilityChart\AccountabilityChart.less" />
+    <Content Include="Content\AccountabilityChart\AccountabilityChart.css">
+      <DependentUpon>AccountabilityChart.less</DependentUpon>
+    </Content>
+    <Content Include="Content\AccountabilityChart\AccountabilityChart.min.css">
+      <DependentUpon>AccountabilityChart.css</DependentUpon>
+    </Content>
     <Content Include="Content\Angular\tablesort.css" />
     <Content Include="Content\bootstrap-duallistbox.css" />
     <Content Include="Content\creditcard_icon\amex.png">
@@ -938,6 +946,9 @@
     <EmbeddedResource Include="Content\embedded\EOS_Model.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Content Include="Content\img\EOS_Model.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\L10\L10ChatLog.css">
       <DependentUpon>L10ChatLog.less</DependentUpon>
     </Content>
@@ -945,10 +956,29 @@
       <DependentUpon>L10ChatLog.css</DependentUpon>
     </Content>
     <Content Include="Content\L10\L10Transcribe.css" />
+    <Content Include="Content\L10\L10Wizard.css">
+      <DependentUpon>L10Wizard.less</DependentUpon>
+    </Content>
+    <Content Include="Content\L10\L10Wizard.min.css">
+      <DependentUpon>L10Wizard.css</DependentUpon>
+    </Content>
     <Content Include="Content\Upload.css" />
     <Content Include="Data\nickname.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Content\ttf\Arial.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Content\ttf\Arial Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Content\ttf\Arial Narrow Bold.TTF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Content\ttf\Arial Narrow.TTF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Content Include="Content\L10\L10Wizard.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -967,6 +997,7 @@
     <Content Include="Scripts\Angular\Helpers\updater.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
+    <Content Include="Scripts\d3\accountabilityChart.js" />
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
     <Content Include="Scripts\jquery\jquery.autoNumeric.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.js" />
@@ -975,6 +1006,7 @@
     <Content Include="Scripts\L10\L10ChatLog.js" />
     <Content Include="Scripts\L10\L10Headlines.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
+    <Content Include="Scripts\L10\L10Wizard.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
     <Content Include="Scripts\speechrecog.js" />
     <Content Include="Scripts\undo.js" />
@@ -989,6 +1021,7 @@
     <Content Include="Scripts\video\Obsolete\serverRTCMultiConnection.js" />
     <Content Include="Scripts\video\Obsolete\socket.io.js" />
     <Content Include="Scripts\video\video.js" />
+    <Content Include="Scripts\Wizard\wizard.js" />
     <Content Include="SoftwareUpdates\20151216.txt" />
     <Content Include="SoftwareUpdates\20160125.txt" />
     <Content Include="SoftwareUpdates\20151229.txt" />
@@ -1573,7 +1606,7 @@
     <Content Include="Views\Review\Details\AggregateAnswers.cshtml" />
     <Content Include="Views\JobDescription\Edit.cshtml" />
     <Content Include="Views\JobDescription\Modal.cshtml" />
-    <Content Include="Views\Accountability\Chart.cshtml" />
+    <Content Include="Views\Accountability\Chart2.cshtml" />
     <Content Include="Views\Charts\Line.cshtml" />
     <Content Include="Views\Reviews\EditDueDateModal.cshtml" />
     <Content Include="Views\Organization\Upload.cshtml" />
@@ -1771,6 +1804,9 @@
     <Content Include="Views\Organization\Stats.cshtml" />
     <Content Include="Views\Manage\Data.cshtml" />
     <Content Include="Views\Archive\Users.cshtml" />
+    <Content Include="Views\Accountability\Chart.cshtml" />
+    <Content Include="Views\Quarterly\Modal.cshtml" />
+    <Content Include="Views\L10\Wizard.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -2080,7 +2116,6 @@
     <Folder Include="Views\MeetingData\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
-    <Folder Include="Views\Quarterly\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
     <Folder Include="Views\Transcript\" />
@@ -2088,6 +2123,7 @@
     <Folder Include="Views\VtoData\" />
     <Folder Include="Views\Webhook\" />
     <Folder Include="Views\WebRtc\" />
+    <Folder Include="Views\Wizard\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -53,7 +53,7 @@ namespace RadialReview.Controllers
 	    {
 			var model = new TodoVM(GetUser().Id){
 				ByUserId = GetUser().Id,
-				AccountabilityId = GetUser().Id,
+				AccountabilityId = new []{GetUser().Id},
 				MeetingId = -1
 			};
 			ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false)
@@ -70,19 +70,20 @@ namespace RadialReview.Controllers
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 
-			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
-			{
-				CreatedById = GetUser().Id,
-				ForRecurrenceId = model.RecurrenceId,
-				CreatedDuringMeetingId = model.MeetingId,
-				Message = model.Message ?? "",
-				Details = model.Details ?? "",
-				ForModel = "TodoModel",
-				ForModelId = -1,
-				Organization = GetUser().Organization,
-				AccountableUserId = model.AccountabilityId,
-				DueDate = model.DueDate
-			});
+            foreach (var m in model.AccountabilityId) {
+                await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel() {
+                    CreatedById = GetUser().Id,
+                    ForRecurrenceId = model.RecurrenceId,
+                    CreatedDuringMeetingId = model.MeetingId,
+                    Message = model.Message ?? "",
+                    Details = model.Details ?? "",
+                    ForModel = "TodoModel",
+                    ForModelId = -1,
+                    Organization = GetUser().Organization,
+                    AccountableUserId = m,
+                    DueDate = model.DueDate
+                });
+            }
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
 
@@ -119,21 +120,21 @@ namespace RadialReview.Controllers
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId);
 			if (model.MeetingId!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
-		
 
-			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
-			{
-				CreatedById = GetUser().Id,
-				ForRecurrenceId = model.RecurrenceId,
-				CreatedDuringMeetingId = model.MeetingId,
-				Message = model.Message ?? "",
-				Details = model.Details ?? "",
-				ForModel = model.ForModelType??"TodoModel",
-				ForModelId = model.ForModelId??-1,
-				Organization = GetUser().Organization,
-				AccountableUserId = model.AccountabilityId,
-				DueDate = model.DueDate
-			});
+            foreach (var a in model.AccountabilityId) {
+                await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel() {
+                    CreatedById = GetUser().Id,
+                    ForRecurrenceId = model.RecurrenceId,
+                    CreatedDuringMeetingId = model.MeetingId,
+                    Message = model.Message ?? "",
+                    Details = model.Details ?? "",
+                    ForModel = model.ForModelType ?? "TodoModel",
+                    ForModelId = model.ForModelId ?? -1,
+                    Organization = GetUser().Organization,
+                    AccountableUserId = a,
+                    DueDate = model.DueDate
+                });
+            }
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
 
@@ -191,7 +192,7 @@ namespace RadialReview.Controllers
 				MeasurableId = measurable,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
-				AccountabilityId = accountable ?? recur.DefaultTodoOwner,
+				AccountabilityId = new []{accountable ?? recur.DefaultTodoOwner},
 				PossibleUsers = recur._DefaultAttendees
 					.Select(x => x.User)
 					.Select(x => new AccountableUserVM()
@@ -211,19 +212,20 @@ namespace RadialReview.Controllers
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
-			{
-				CreatedById = GetUser().Id,
-				ForRecurrenceId = model.RecurrenceId,
-				CreatedDuringMeetingId = model.MeetingId,
-				Message = model.Message ?? "",
-				Details = model.Details ?? "",
-				ForModel = "MeasurableModel",
-				ForModelId = model.MeasurableId,
-				Organization = GetUser().Organization,
-				AccountableUserId = model.AccountabilityId,
-				DueDate = model.DueDate
-			});
+            foreach (var m in model.AccountabilityId) {
+                await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel() {
+                    CreatedById = GetUser().Id,
+                    ForRecurrenceId = model.RecurrenceId,
+                    CreatedDuringMeetingId = model.MeetingId,
+                    Message = model.Message ?? "",
+                    Details = model.Details ?? "",
+                    ForModel = "MeasurableModel",
+                    ForModelId = model.MeasurableId,
+                    Organization = GetUser().Organization,
+                    AccountableUserId = m,
+                    DueDate = model.DueDate
+                });
+            }
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);
 		}
@@ -243,7 +245,7 @@ namespace RadialReview.Controllers
 				RockId = rock,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
-				AccountabilityId = accountable ?? recur.DefaultTodoOwner,
+				AccountabilityId = new []{accountable ?? recur.DefaultTodoOwner},
 				PossibleUsers = recur._DefaultAttendees
 					.Select(x => x.User)
 					.Select(x => new AccountableUserVM()
@@ -262,20 +264,22 @@ namespace RadialReview.Controllers
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RockId,x=>x.RecurrenceId);
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
-			
-			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
-			{
-				CreatedById = GetUser().Id,
-				ForRecurrenceId = model.RecurrenceId,
-				CreatedDuringMeetingId = model.MeetingId,
-				Message = model.Message ?? "",
-				Details = model.Details ?? "",
-				ForModel = "RockModel",
-				ForModelId = model.RockId,
-				Organization = GetUser().Organization,
-				AccountableUserId = model.AccountabilityId,
-				DueDate = model.DueDate
-			});
+
+
+            foreach (var m in model.AccountabilityId) {
+                await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel() {
+                    CreatedById = GetUser().Id,
+                    ForRecurrenceId = model.RecurrenceId,
+                    CreatedDuringMeetingId = model.MeetingId,
+                    Message = model.Message ?? "",
+                    Details = model.Details ?? "",
+                    ForModel = "RockModel",
+                    ForModelId = model.RockId,
+                    Organization = GetUser().Organization,
+                    AccountableUserId = m,
+                    DueDate = model.DueDate
+                });
+            }
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);
 		}
@@ -290,7 +294,6 @@ namespace RadialReview.Controllers
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence,true);
 
 
-
 			var model = new TodoFromIssueVM(recur.DefaultTodoOwner)
 			{
 				Message = await i.NotNull(async x=>await x.GetTodoMessage()),
@@ -299,7 +302,7 @@ namespace RadialReview.Controllers
 				MeetingId = meeting??-1,
 				IssueId = issue,
 				RecurrenceId = recurrence,
-				AccountabilityId = L10Accessor.GuessUserId(i, recur.DefaultTodoOwner),
+				AccountabilityId = new []{L10Accessor.GuessUserId(i, recur.DefaultTodoOwner)},
 				PossibleUsers = recur._DefaultAttendees
 					.Select(x => x.User)
 					.Select(x => new AccountableUserVM()
@@ -320,19 +323,20 @@ namespace RadialReview.Controllers
 			if (model.MeetingId!=-1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-			await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel()
-			{
-				CreatedById = GetUser().Id,
-				ForRecurrenceId = model.RecurrenceId,
-				CreatedDuringMeetingId = model.MeetingId,
-				Message = model.Message ?? "",
-				Details = model.Details ?? "",
-				ForModel = "IssueModel",
-				ForModelId = model.IssueId,
-				Organization = GetUser().Organization,
-				AccountableUserId = model.AccountabilityId,
-				DueDate = model.DueDate
-			});
+            foreach (var m in model.AccountabilityId) {
+                await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel() {
+                    CreatedById = GetUser().Id,
+                    ForRecurrenceId = model.RecurrenceId,
+                    CreatedDuringMeetingId = model.MeetingId,
+                    Message = model.Message ?? "",
+                    Details = model.Details ?? "",
+                    ForModel = "IssueModel",
+                    ForModelId = model.IssueId,
+                    Organization = GetUser().Organization,
+                    AccountableUserId = m,
+                    DueDate = model.DueDate
+                });
+            }
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
 

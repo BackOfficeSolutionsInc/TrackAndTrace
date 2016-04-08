@@ -430,7 +430,7 @@ profile-image {
 }
 
 .start-meeting .btn-default {
-    width: 140px;
+    width: 170px;
 }
 
 .btn.settings-button {
@@ -538,4 +538,38 @@ iframe {
     text-align: center;
     min-width: 300px;
     /* vertical-align: middle; */
+}
+
+
+.video-overlay{
+    background-color: rgba(0,0,0,.25);
+    position:fixed;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;   
+    z-index:10000000000000000;
+}
+
+.video-overlay:after{
+    content: "x";
+    float: right;
+    color: #7B7B7B;
+    position: absolute;
+    top: 4px;
+    right: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.video-overlay:after:hover{
+    color: #bababa;
+}
+
+.video-overlay iframe{
+    border:none;
+    width:100%;
+    background:none;
+    margin-top: 20px;
 }

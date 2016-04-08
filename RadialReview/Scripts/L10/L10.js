@@ -64,7 +64,12 @@ function initL10() {
         if (!m)
             m = "Modal";
         var title = dat.title || "Add a to-do";
-        showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m);
+        showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m, null, function () {
+            debugger;
+            if ($('#modalBody').find(".select-user").val()== null)
+                return "You must select at least one to-do owner.";
+            return true;
+        });
     });
 
 
