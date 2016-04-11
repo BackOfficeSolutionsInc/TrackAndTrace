@@ -573,3 +573,22 @@ iframe {
     background:none;
     margin-top: 20px;
 }
+
+profile-image.desaturate {
+    filter: gray;
+    filter: grayscale(0.7);
+    -webkit-filter: grayscale(0.7);
+    opacity: 0.7;
+    -moz-transition: all ease .2s;
+    -o-transition: all ease .2s;
+    -webkit-transition: all ease .2s;
+    transition: all ease .2s;
+}
+
+
+profile-image.desaturate:hover{
+    filter: none;
+    filter: grayscale(.3);
+    -webkit-filter: grayscale(.3);
+    opacity: .9;
+}

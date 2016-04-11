@@ -139,7 +139,7 @@
 </head>
 <body>
 	<div ng-controller="L10Controller" ng-model="model">
-		<div ng-repeat="agendaItem in AgendaItems | transform:this">
+		<div ng-repeat="agendaItem in AgendaItems">
 			<div ng-controller="RocksListController">
 				<div class="rocks meeting-page">
 					<div class="row">
@@ -188,7 +188,7 @@
 			<hr />
 		</div>
 		
-		<div ng-repeat="attendee in Attendees  | transform:this">
+		<div ng-repeat="attendee in Attendees ">
 			{{attendee.Name}}
 		</div>
 	</div>

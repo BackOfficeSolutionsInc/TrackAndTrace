@@ -8,7 +8,7 @@
 	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
 		<div id="Members" class="tab-pane members-pane scrollbox">
 			<div></div>
-			<table width="100%" class="component" ng-hide="(model.Members | transform:this).length==0">
+			<table width="100%" class="component" ng-hide="(model.Members).length==0">
 				<tr ng-show="$first">
 					<td></td>
 					<td class="picture-column"></td>
@@ -16,7 +16,7 @@
 					<th></th>
 					<th></th>
 				</tr>
-				<tr id="member_{{member.Id}}" ng-repeat="member in model.Members | transform:this | orderBy: 'Name'" class="">
+				<tr id="member_{{member.Id}}" ng-repeat="member in model.Members | orderBy: 'Name'" class="">
 					<td style="min-width: 5px;"></td>
 					<td class="picture-column"><profile-image user="member"></profile-image></td>
 					<td style="width:100%"><a href="/User/Details/{{member.Id}}">{{member.Name}}</a></td>
@@ -26,7 +26,7 @@
 					<td ng-show="member.Managing" style="min-width: 15px;"></td>
 				</tr>
 			</table>
-			<div class="gray" style="padding: 30px 15px;" ng-show="(model.Members | transform:this).length==0">
+			<div class="gray" style="padding: 30px 15px;" ng-show="(model.Members).length==0">
 				No members fit criteria.
 			</div>
 		</div>

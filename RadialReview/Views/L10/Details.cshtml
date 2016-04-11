@@ -42,7 +42,6 @@
 }
 @using (Html.BeginStyles())
 {
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
     @Styles.Render("~/styles/L10")
@@ -93,6 +92,7 @@
             border-right-width: 2px;
         }*/
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>
 
 }
 @using (Html.BeginScripts())
@@ -193,6 +193,32 @@
                 showModal('Add Measurable', '/L10/AddMeasurable/' + m, '/L10/AddMeasurable/');
             });
 
+            $(document).bind("keyup keydown", function(e){
+                if((e.ctrlKey || e.metaKey) && e.keyCode == 80){
+                    //refreshDocHeight();
+                    //window.print();
+                    var scope = angular.element($('[ng-controller="L10Controller"]')).scope();
+                    var w;
+                    var page="";
+                    if (scope.selectedTab=="#VTO"){
+                        page = "vto=true";
+                    }else if (scope.selectedTab=="#Scorecard"){
+                        page = "scorecard=true";
+                    }else if (scope.selectedTab=="#Todo"){
+                        page = "todos=true";
+                    }else if (scope.selectedTab=="#Rocks"){
+                        page = "rocks=true";
+                    }else if (scope.selectedTab=="#Issues"){
+                        page = "issues=true";
+                    }else{
+                        return;
+                    }
+                    w = window.open("/Quarterly/PrintPages/"+scope.model.Id+"?"+page);
+                    w.print();
+                    e.preventDefault();
+                }
+            });
+
             /*$(document).on('focus', "input.due-date", function () {
 				if (!$(this).attr("init")) {
 					var now = new Date();
@@ -221,45 +247,45 @@
 				}
 			});*/
         });
-        $.fn.editable.defaults.mode = 'popup';
+        //$.fn.editable.defaults.mode = 'inline';
 
-        $("body").on('click', ".inlineEdit", function () {
-            debugger;
-            if (!$(this).attr("editable")) {
-                var placement = $(this).attr("data-placement")||"left";
-                $(this).editable({
-                    savenochange: true,
-                    validate: function(value) {
-                        if ($(this).hasClass("numeric")){
-                            var regex = /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/;
-                            if(! regex.test(value)) {
-                                return 'This field must be a number';
-                            }
-                        }
-                        if ($.trim(value) == '') {
-                            return 'This field is required';
-                        }
-                    },
-                    placement: placement,
-                    success: function (data) {
+        //$("body").on('click', ".inlineEdit", function () {
+        //    debugger;
+        //    if (!$(this).attr("editable")) {
+        //        var placement = $(this).attr("data-placement")||"left";
+        //        $(this).editable({
+        //            savenochange: true,
+        //            validate: function(value) {
+        //                if ($(this).hasClass("numeric")){
+        //                    var regex = /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/;
+        //                    if(! regex.test(value)) {
+        //                        return 'This field must be a number';
+        //                    }
+        //                }
+        //                if ($.trim(value) == '') {
+        //                    return 'This field is required';
+        //                }
+        //            },
+        //            placement: placement,
+        //            success: function (data) {
 
-                        /*var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
+        //                /*var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
 
-						if ($(this).data("name") == "direction") {
-							$(items).attr("data-goal-dir", $(this).attr("data-value"));
-						} else if ($(this).data("name") == "target") {
-							$(items).attr("data-goal", $(this).attr("data-value"));
-						}
-						$(items).each(function (d) {
-							updateScore(this);
-						});
-						debugger;*/
-                    }
-                });
-                $(this).attr("editable", "1");
-                $(this).click();
-            }
-        });
+		//				if ($(this).data("name") == "direction") {
+		//					$(items).attr("data-goal-dir", $(this).attr("data-value"));
+		//				} else if ($(this).data("name") == "target") {
+		//					$(items).attr("data-goal", $(this).attr("data-value"));
+		//				}
+		//				$(items).each(function (d) {
+		//					updateScore(this);
+		//				});
+		//				debugger;*/
+        //            }
+        //        });
+        //        $(this).attr("editable", "1");
+        //        $(this).click();
+        //    }
+        //});
     </script>
 }
 <div ng-app="L10App" class="meeting-review ng-cloak meeting-archive">
@@ -275,7 +301,9 @@
         <ul class="nav nav-pills tabs-up" id="pages" style="clear:both">
             <li class="active"><a href="#Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-window-list"></span> Scorecard </a></li>
             <li><a href="#Rocks" data-target="#Rocks" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-trophy-1"></span> @(Html.Organization().Settings.RockName ?? "Rocks")</a></li>
-            <li><a href="#Headlines" data-target="#Headlines" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-results-demographics"></span> Headlines </a></li>
+            @if (ViewBag.IncludeHeadlines??true) { 
+                <li><a href="#Headlines" data-target="#Headlines" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-results-demographics"></span> Headlines </a></li>
+            }
             <li><a href="#Todo" data-target="#Todo" class="media_node span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"><span class="glyphicon glyphicon-check"></span> To-Do List </a></li>
             <li><a href="#Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-pinboard"></span> Issues List </a></li>
             <li><a href="#VTO" data-target="#VTO" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="glyphicon glyphicon-vto"></span> V/TO </a></li>

@@ -1,0 +1,4 @@
+﻿.issues-list-container .priority-2 .priority-column,
+.issues-list-container .priority-Rank .priority-column {
+  display: none;
+}

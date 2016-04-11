@@ -15,15 +15,15 @@
 
             <li>
                 <div class="btn-group heading" style="padding:8px;">
-                    <div href="@Url.Action("Details", "User", new { id = ViewBag.UserId })"
-                         style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap;max-width: 246px;"
-                         class="btn btn-default heading ">
+                    <button type="button" href="@Url.Action("Details", "User", new { id = ViewBag.UserId })"
+                            style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap; max-width:256px;padding-right:11px;"
+                            class="btn btn-default heading  dropdown-toggle" data-toggle="dropdown">
                         @(ViewBag.UserName ?? "Manage")
-                    </div>
-                    <button type="button" class="btn btn-default heading dropdown-toggle" data-toggle="dropdown">
                         <span class="caret"></span>
-                        @*<span class="sr-only">Toggle Dropdown</span>*@
                     </button>
+                    @*< class="btn btn-default heading>
+                        @*<span class="sr-only">Toggle Dropdown</span>*
+                    </button>*@
                     <ul class="dropdown-menu" role="menu">
                         @{var doDivider = false;}
                         @if (ViewBag.IsManager ?? false) {
@@ -40,12 +40,28 @@
                                     Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
                                 </a>
                             </li>*@
+                        @if (ViewBag.ManagingOrganization ?? false) {
+                            <li>
+                                <a href="@Url.Action("Advanced", "Manage")" title1="Add credit card information, edit advanced settings">
+                                    @(Html.Organization().NotNull(x => x.GetName()) ?? "Organization") Settings
+                                </a>
+                            </li>
+                            doDivider = true;
+                        }
 
                         @if (doDivider == true) {
 
                             <li class="divider"></li>
                         }
 
+                    
+                        <li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
+                        @if (((int?)ViewBag.Organizations ?? 0) > 0) {
+
+                            <li>@Html.ActionLink("My Accountabilities", "Details", "User", new { id = ViewBag.UserId },null)</li>
+                        }    
+                       
+                        <li class="divider"></li>
                         @if (((int?)ViewBag.Organizations ?? 0) > 1) {
                             <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")">
                                 @if (((int?)ViewBag.Organizations ?? 0) > 1) {
@@ -54,16 +70,6 @@
                                     <a href="#">Change Roles</a>
                                 }
                             </li>
-                        }
-                        <li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
-                        <li class="divider"></li>
-                        @if (ViewBag.ManagingOrganization ?? false) {
-                            <li>
-                                <a href="@Url.Action("Advanced", "Manage")" title1="Add credit card information, edit advanced settings">
-                                    @(Html.Organization().NotNull(x => x.GetName()) ?? "Organization") Settings
-                                </a>
-                            </li>
-                            <li class="divider"></li>
                         }
                         <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
                     </ul>

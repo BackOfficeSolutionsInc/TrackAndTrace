@@ -18,13 +18,13 @@ namespace RadialReview.Models.Angular.Meeting
 	{
 		public AngularRecurrence(L10Recurrence recurrence) : this(recurrence.Id){
 			Name = recurrence.Name;
-            Prioritization = recurrence.Prioritization!=PrioritizationType.Invalid?recurrence.Prioritization:PrioritizationType.Priority;
+            IssuesList.Prioritization = recurrence.Prioritization!=PrioritizationType.Invalid?recurrence.Prioritization:PrioritizationType.Priority;
             VtoId = recurrence.VtoId;
 
 		}
 
 		public AngularRecurrence(long id):base(id){
-			
+            IssuesList = new AngularIssuesList();
 		}
 
 		public string Name { get; set; }
@@ -33,13 +33,17 @@ namespace RadialReview.Models.Angular.Meeting
 		public IEnumerable<AngularMeetingNotes> Notes { get; set; }
 		public IEnumerable<AngularRock> Rocks { get; set; }
 		public IEnumerable<AngularTodo> Todos { get; set; }
-		public IEnumerable<AngularIssue> Issues { get; set; } 
+        public AngularIssuesList IssuesList { get; set; }
 		public AngularDateRange date { get; set; }
         public string HeadlinesUrl { get; set; }
-        public PrioritizationType Prioritization { get; set; }
+        //public PrioritizationType Prioritization { get; set; }
         public long? VtoId { get; set; }
 	}
+    public class AngularIssuesList {
 
+        public IEnumerable<AngularIssue> Issues { get; set; }
+        public PrioritizationType? Prioritization { get; set; }
+    }
 
 	public class AngularDateRange
 	{

@@ -9,6 +9,10 @@
             showModal(title, pull, push, callback, validation, onSuccess);
         };
 
+        //$scope.functions.xEditable = function () {
+        //    var type, name, pk, url, mode
+        //}
+
         var o = {};
 
         var hub = signalR(hubName, function (connection, proxy) {

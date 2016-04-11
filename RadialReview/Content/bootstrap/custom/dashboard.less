@@ -1,6 +1,6 @@
-﻿
+﻿@import "../variables";
 .tiny {
-    /* color: red !important; */
+    /* color: red !important; */ 
     padding: 0px;
 }
 
@@ -439,74 +439,6 @@
 .alert {
     margin-top: 3px;
     margin-bottom: 7px;
-}
-
-.rock-completion {
-    font-weight: bold;
-    color: white;
-    border: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.15);
-    outline: none;
-}
-
-.rock-completion:active {
-    border-top: 1px solid rgba(0, 0, 0, 0.15);
-    border-bottom: none;
-}
-
-.rock-completion:focus {
-    border-bottom: 2px solid rgba(0, 0, 0, 0.15);
-    outline-color: transparent;
-    outline-style: none;
-    box-shadow: none;
-}
-
-.rock-completion-container {
-    position: relative;
-}
-
-.rock-completion-container:after {
-    font-family: 'Glyphicons Halflings';
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    content: "\e114";
-    color: #FFF;
-    position: absolute;
-    right: 6.5px;
-    top: 10.5px;
-    z-index: 27;
-    pointer-events: none;
-}
-
-.rock-completion.AtRisk
-/*.rock-completion [label='At Risk']*/ {
-    background-color: #d8524f;
-    font-weight: bold;
-    color: white;
-}
-
-.rock-completion.OnTrack
-/*.rock-completion [label='On Track']*/ {
-    background-color: #1F68EC;
-    font-weight: bold;
-    color: white;
-}
-
-.rock-completion.Complete
-/*.rock-completion [label='Complete']*/ {
-    background-color: #449D44;
-    font-weight: bold;
-    color: white;
-}
-
-.rock-completion option {
-    color: black;
-    background-color: white;
 }
 
 .todo-heading .clickable:hover .glyphicon-unchecked:before {

@@ -13,9 +13,9 @@ namespace RadialReview.Models.L10
     public enum PrioritizationType {
         Invalid=0,
         [Display(Name="By Votes")]
-        Priority,
+        Priority=1,
         [Display(Name = "By Priority (1, 2 & 3)")]
-        Rank,
+        Rank=2,
     }
 
 	public class L10Recurrence : ILongIdentifiable,IDeletable

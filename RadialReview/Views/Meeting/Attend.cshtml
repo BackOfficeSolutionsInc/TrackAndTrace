@@ -56,7 +56,7 @@
 					<div class="component">
 						<div class="title">Agenda</div>
 						<ol>
-							<li ng-repeat="agendaItem in model.AgendaItems | transform:this" @*class="page-item page-{{agendaItem.Id}}"*@>
+							<li ng-repeat="agendaItem in model.AgendaItems " @*class="page-item page-{{agendaItem.Id}}"*@>
 								<a ng-click="functions.setPage(agendaItem.Key)" data-location="{{agendaItem.BackendName}}" href="#">{{agendaItem.Name}}</a><span title="Spend {{agendaItem.Duration}} minutes on your {{agendaItem.Name}}" data-over="{{agendaItem.Duration}}" class="page-time"></span>
 							</li>
 						</ol>
@@ -70,7 +70,7 @@
 			<div class="col-sm-9 col-md-10  full">
 
 				<div class="main-window-container">
-					<div ng-repeat="agendaItem in model.AgendaItems | transform:this">
+					<div ng-repeat="agendaItem in model.AgendaItems">
 						<div ng-if="agendaItem.Key == model.CurrentPage">
 							<div id="main-window" ng-include="'./../Template/'+agendaItem.BackendName"></div>
 						</div>
@@ -92,7 +92,7 @@
 				<div class="col-xs-3 noPadRight">
 					<div class="side tabs">
 						<div class="tab add"><span class="pull-right glyphicon glyphicon-plus-sign"></span> Add Page</div>
-						<div ng-repeat="note in model.Notes  | transform:this" data-id="{{note.Id}}" class="tab">{{note.Title}}</div>
+						<div ng-repeat="note in model.Notes" data-id="{{note.Id}}" class="tab">{{note.Title}}</div>
 					</div>
 				</div>
 			</div>

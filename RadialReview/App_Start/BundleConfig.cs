@@ -27,11 +27,13 @@ namespace RadialReview
 				"~/Scripts/Angular/Helpers/Directives/PriorityTemplates.js",
 				"~/Scripts/Angular/Helpers/Directives/fcsaNumber.js",
 				"~/Scripts/Angular/Helpers/angular-timer.min.js",
+				"~/Scripts/Angular/Helpers/angular-elastic-input.js",
 				"~/Scripts/Angular/helpers.js", 
 			};
 			var angularHelpers_Styles = new[]{
 				"~/Content/components/daterangepicker-bs3.css",
-                "~/Content/Angular/tablesort.css"
+                "~/Content/Angular/tablesort.css",
+                "~/Content/Angular/xeditable.min.css"
 			};
 
 
@@ -86,6 +88,7 @@ namespace RadialReview
 					"~/Content/bootstrap.vertical-tabs.css",
 					"~/Content/slider.css",
 					"~/Content/site.css",
+                    "~/Content/bootstrap/custom/Site.css",
 					"~/Content/Fonts.css",
 					"~/Content/jquery.qtip.css"));
 
@@ -171,6 +174,7 @@ namespace RadialReview
 				.Include(
 					"~/Scripts/Angular/Meetings/RockState.js",
 					"~/Scripts/Angular/Meetings/ButtonBar.js",
+                    "~/Scripts/Angular/Helpers/Libraries/angular-xeditable.js",
 					"~/Scripts/Angular/Meetings/L10App.js",
 					"~/Scripts/Angular/Meetings/L10Controller.js"
 				));
@@ -194,6 +198,11 @@ namespace RadialReview
 					  "~/Scripts/L10/jquery-ui.color.js"/*,
 					  "~/Scripts/Main/realtime.js"*/
 			));
+            
+			bundles.Add(new StyleBundle("~/styles/Dashboard").Include(
+                "~/Content/bootstrap/custom/dashboard.css",
+                "~/Scripts/Grid/style.css"
+            ));
 
 			bundles.Add(new ScriptBundle("~/bundles/DashboardGrid").Include(
 				"~/Scripts/Grid/fixtures.js",

@@ -26,6 +26,8 @@ namespace RadialReview.Controllers
             var recur = L10Accessor.GetL10Recurrence(GetUser(),id,false);
 
             ViewBag.VtoId = recur.VtoId;
+            ViewBag.IncludeHeadlines = recur.ShowHeadlinesBox;
+            ViewBag.ShowPriority = (recur.Prioritization == Models.L10.PrioritizationType.Invalid||recur.Prioritization == Models.L10.PrioritizationType.Priority);
 
             
             return View(id);
@@ -68,6 +70,13 @@ namespace RadialReview.Controllers
 			L10Accessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null)
+        {
+            L10Accessor.Update(GetUser(), model, connectionId);
+            return Json(ResultObject.SilentSuccess());
+        }
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult UpdateAngularScore(AngularScore model, string connectionId = null)

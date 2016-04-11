@@ -1,17 +1,18 @@
 ﻿@{
     var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
     var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+
     //var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
     //var includeOwner = (ViewBag.IncludeOwner == null || ((bool)ViewBag.IncludeOwner) == true);
     //var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
     //var includeTitle = (ViewBag.IncludeTitle == null || ((bool)ViewBag.IncludeTitle) == true);
-    var selector = ViewBag.Selector as string ?? "model.Issues | transform:this";
+    var selector = ViewBag.Selector as string ?? "model.IssuesList";
 }
 
-<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak issues-list-container app">
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak issues-list-container app ">
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
 
-        <table ts-wrapper width="100%" class="component" ng-show="(@(selector) | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length >
+        <table ts-wrapper width="100%" class="component priority-{{(@selector).Prioritization}}" ng-show="((@(selector)).Issues| filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length >
             0" click-anywhere-but-here="model.Selected = -1">
             <thead>
                 <tr>
@@ -25,7 +26,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="issue in (@(selector) | transform:this)  | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)"
+                <tr ng-repeat="issue in ((@(selector)).Issues)  | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)"
                     ng-class="{grayRow: issue.Complete}"
                     @*ng-if="model.Selected!=issue.Key"*@
                     class="clickable"
@@ -100,7 +101,7 @@
                 </tr>*@
             </tbody>
         </table>
-        <div class="component gray" style="padding: 30px 15px;clear: both;" ng-show="(@(selector) | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length==0">
+        <div class="component gray" style="padding: 30px 15px;clear: both;" ng-show="((@(selector)).Issues | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length==0">
             No issues fit your search criteria.
         </div>
     </div>

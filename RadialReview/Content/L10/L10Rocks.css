@@ -180,3 +180,17 @@
 	padding-left: 35px;
 	padding-right:35px;
 }*/
+
+
+/*.rock-list-container .rock-name{
+    width:100%;
+    border:0;
+    cursor:pointer;
+
+}
+
+
+.rock-list-container .rock-name:focus{
+    border-bottom: 1px dotted 	#EF7622;
+    outline:none;
+}*/

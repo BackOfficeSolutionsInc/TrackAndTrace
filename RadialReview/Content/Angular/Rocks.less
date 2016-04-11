@@ -1,0 +1,68 @@
+﻿
+
+.rock-completion {
+    font-weight: bold;
+    color: white;
+    border: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+    outline: none;
+
+    &:active {
+        border-top: 1px solid rgba(0, 0, 0, 0.15);
+        border-bottom: none;
+    }
+
+    &:focus {
+        border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+        outline-color: transparent;
+        outline-style: none;
+        box-shadow: none;
+    }
+
+    &.AtRisk {
+        background-color: #d8524f;
+        font-weight: bold;
+        color: white;
+    }
+
+    &.OnTrack {
+        background-color: #1F68EC;
+        font-weight: bold;
+        color: white;
+    }
+
+    &.Complete {
+        background-color: #449D44;
+        font-weight: bold;
+        color: white;
+    }
+
+    & option {
+        color: black;
+        background-color: white;
+    }
+}
+
+
+
+.rock-completion-container {
+    position: relative;
+
+    &:after {
+        font-family: 'Glyphicons Halflings';
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        content: "\e114";
+        color: #FFF;
+        position: absolute;
+        right: 6.5px;
+        top: 10.5px;
+        z-index: 27;
+        pointer-events: none;
+    }
+}

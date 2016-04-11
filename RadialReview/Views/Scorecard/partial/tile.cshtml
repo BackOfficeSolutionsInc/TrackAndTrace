@@ -1,7 +1,7 @@
 ﻿@{
 	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
 	var controller = (ViewBag.AddController == null || ((bool)ViewBag.AddController) == true);
-    var selector = ViewBag.Selector as string ?? "model.Scorecard | transform:this";
+    var selector = ViewBag.Selector as string ?? "model.Scorecard";
     // var scorecardKey = ViewBag.ScorecardKey as string ?? "model.Scorecard.Key";
     var scorecardKey = "(" + selector + ").Key";
 }

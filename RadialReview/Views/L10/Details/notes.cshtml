@@ -8,7 +8,7 @@
 	<div class="row">
 		<div class="col-md-12" click-anywhere-but-here="model.Selected = -1">
             <div class="component">
-                <div class="" ng-repeat="note in model.Notes | transform:this" style="padding:5px 10px;">
+                <div class="" ng-repeat="note in model.Notes" style="padding:5px 10px;">
                     <div ng-hide="model.Selected==note.Key">
                         <div ng-click="note.DetailsUrl_Src=note.DetailsUrl;model.Selected = note.Key" class="clickable" style="padding: 5px 0 ;"><span class="glyphicon glyphicon-chevron-right  gray"></span> <b>{{note.Title}}</b></div>
                     </div>
@@ -22,7 +22,7 @@
                     </div>
 
                 </div>
-                <div class="gray no-todos" style="padding: 30px 15px;" ng-show="(model.Notes | transform:this).length==0">
+                <div class="gray no-todos" style="padding: 30px 15px;" ng-show="(model.Notes).length==0">
                     No notes exist.
                 </div>
             </div>

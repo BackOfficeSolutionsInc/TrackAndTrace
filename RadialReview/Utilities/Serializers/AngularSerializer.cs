@@ -174,8 +174,8 @@ namespace RadialReview.Utilities.Serializers
 					return Merge(parent[name] as IDictionary, keyList);
 				else
 					throw new Exception("Property already exists and is not a dictionary: " + name);
-			}else if (value is Enum){
-				return value.ToString();
+            } else if (value is Enum || (value !=null && Nullable.GetUnderlyingType(value.GetType()) != null && Nullable.GetUnderlyingType(value.GetType()).IsEnum)) {
+				return value.ToString(); 
 			}
 
 			//Well nothing to convert

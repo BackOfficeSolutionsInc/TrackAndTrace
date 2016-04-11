@@ -889,6 +889,12 @@ namespace RadialReview.Utilities {
                     return this;
 
                 var m = session.Get<MeasurableModel>(measurableId);
+
+                if (m.AccountableUserId == caller.Id)
+                    return this;
+                if (m.AdminUserId == caller.Id)
+                    return this;
+
                 if (IsManagingOrganization(m.OrganizationId))
                     return this;
 

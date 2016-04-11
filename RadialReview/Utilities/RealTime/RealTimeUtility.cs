@@ -17,16 +17,26 @@ namespace RadialReview.Utilities.RealTime {
         protected List<Action> _actions = new List<Action>();
         protected bool Executed = false;
         protected bool SkipExecution = false;
+        protected string SkipUser = null;
         private RealTimeUtility(){}
 
-        private RealTimeUtility(bool shouldExecute)
+        private RealTimeUtility(string skipUser,bool shouldExecute)
         {
             // TODO: Complete member initialization
             SkipExecution = !shouldExecute;
+            SkipUser = skipUser;
         }
 
-        public static RealTimeUtility Create(bool shouldExecute=true){
-            return new RealTimeUtility(shouldExecute);
+        public static RealTimeUtility Create()
+        {
+            return new RealTimeUtility(null, true);
+        }
+        public static RealTimeUtility Create(bool shouldExecute = true)
+        {
+            return new RealTimeUtility(null, shouldExecute);
+        }
+        public static RealTimeUtility Create(string skipUser=null,bool shouldExecute=true){
+            return new RealTimeUtility(skipUser,shouldExecute);
         }
 
         public void DoNotExecute()
@@ -81,7 +91,7 @@ namespace RadialReview.Utilities.RealTime {
             if (_groups.ContainsKey(name))
                 return _groups[name];
             var hub = GlobalHost.ConnectionManager.GetHubContext<HUB>();
-            var group = hub.Clients.Group(name);
+            var group = hub.Clients.Group(name,SkipUser);
             _groups[name] = group;
             return group;
         }

@@ -46,21 +46,42 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpGet]
+        public ActionResult PrintVTO(long id)
+        {
+            var vto = VtoAccessor.GetAngularVTO(GetUser(), id);
+            var doc = PdfAccessor.CreateDoc(GetUser(), vto.Name+" Vision/Traction Organizer");
+            PdfAccessor.AddVTO(doc, vto);
+            var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
+            return Pdf(doc, now + "_" + vto.Name + "_VTO.pdf", true);
+        }
+        [Access(AccessLevel.UserOrganization)]
+        [HttpGet]
+        public ActionResult PrintPages(long id, bool issues = false, bool todos = false, bool scorecard = false, bool rocks = false, bool vto = false, bool l10 = false, bool print = false)
+        {
+            return Printout(id, issues, todos, scorecard, rocks, vto, l10, print);
+        }
+
+        [Access(AccessLevel.UserOrganization)]
+        [HttpGet]
         public ActionResult Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool print = false)
         {
             var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
             var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout");
-
+            var anyPages = false;
             if (vto && recur.VtoId.HasValue && recur.VtoId > 0) {
                 var vtoModel = VtoAccessor.GetAngularVTO(GetUser(), recur.VtoId.Value);
                 PdfAccessor.AddVTO(doc, vtoModel);
+                anyPages = true;
             }
-            if (l10) PdfAccessor.AddL10(doc, recur,L10Accessor.GetLastMeetingEndTime(GetUser(),id));
-            if (todos) PdfAccessor.AddTodos(GetUser(), doc, recur);
-            if (issues) PdfAccessor.AddIssues(GetUser(), doc, recur, todos);
-            if (scorecard) PdfAccessor.AddScorecard(doc, recur);
-            if (rocks) PdfAccessor.AddRocks(GetUser(), doc, recur);
+            if (l10) { PdfAccessor.AddL10(doc, recur, L10Accessor.GetLastMeetingEndTime(GetUser(), id)); anyPages = true;}
+                
+            if (todos){ PdfAccessor.AddTodos(GetUser(), doc, recur); anyPages = true;}
+            if (issues){ PdfAccessor.AddIssues(GetUser(), doc, recur, todos); anyPages = true;}
+            if (scorecard){ PdfAccessor.AddScorecard(doc, recur); anyPages = true;}
+            if (rocks){ PdfAccessor.AddRocks(GetUser(), doc, recur); anyPages = true;}
             var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
+            if (!anyPages)
+                return Content("No pages to print.");
 
             return Pdf(doc, now + "_" + recur.Name + "_QuarterlyPrintout.pdf", true);
         }

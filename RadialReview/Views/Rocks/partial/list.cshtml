@@ -3,7 +3,7 @@
 	var controller = (ViewBag.AddController!= null && ((bool)ViewBag.AddController) == true);
 	var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
     var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
-    var selector = ViewBag.Selector as string ?? "(model.Rocks | transform:this)";
+    var selector = ViewBag.Selector as string ?? "(model.Rocks)";
     var filter = ViewBag.Filter as string ?? " | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)";
 
 }
@@ -20,32 +20,44 @@
 		}
 		<div id="Rocks" class="tab-pane rock-pane scrollbox">
 			<div></div>
-			<div ng-repeat="(key,value) in @(selector) | groupBy: 'Owner.Name'">
-				<table width="100%" class="component" ng-show="(value @(filter)).length">
-					<tr class="table-header" ng-show="$first">
-						<td class="hidden-width-1"></td>
-						<td class="picture-column"></td>
-						<th>Rock</th>
-						@*<th class="alignCenter">Due Date</th>*@
-						<th></th>
+			@*<div ng-repeat="(key,value) in @(selector) | groupBy: 'Owner.Name'">*@
+            <table ts-wrapper width="100%" class="component" ng-show="(@(selector) @(filter)).length">
+                <thead>
+                    <tr class="table-header">
+                        <th class="hidden-width-1" ts-criteria="Completion">Status</th>
+                        <th style="width: 32px; display: table-cell;" class="picture-column" ts-criteria="Owner.Name" ts-default="ascending">&nbsp;</th>
+                        <th ts-criteria="Name">Rock</th>
+                        @*<th class="alignCenter">Due Date</th>*@
+                        <th></th>
 
-					</tr>
-					@*| orderBy: ['Complete','-CompleteTime','Name']*@
-					<tr class="{{rock.Completion}}" id="rock_{{rock.Id}}" ng-repeat="rock in value | orderBy: ['Complete','-CompleteTime','DueDate'] @(filter)"
-						@*ng-class="{grayRow: rock.Complete}"*@
-						class="">
-						<td class=" rock-completion-container hidden-width-1" style="min-width: 120px;text-align: center;vertical-align: top;">
-							<select ng-class="rock.Completion" class="form-control rock-completion" ng-class="forRock_{{rock.Id}}" ng-model="rock.Completion" ng-options="item.value as item.name for item in rockstates" ng-change="functions.sendUpdate(rock)"></select>
-							@*<rockstate rock="rock" ng-model="rock" ></rockstate>*@
-							@*<input type="checkbox" ng-model="rock.Complete" />*@
-						</td>
-						<td class="picture-column"><profile-image user="rock.Owner"></profile-image></td>
-						<td class="name " style="width:100%">{{rock.Name}}</td>
-						@*<td class="alignCenter" style="min-width: 80px;"><input ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" class="due-date" data-rock="{{rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" /></td>*@
-						<td style="min-width: 15px;"></td>
-					</tr>
-				</table>
-			</div>
+                    </tr>
+                </thead>
+                <tbody>
+                    @*| orderBy: ['Complete','-CompleteTime','Name']*@
+                    <tr ts-repeat class="{{rock.Completion}}" id="rock_{{rock.Id}}" ng-repeat="rock in @(selector) | orderBy: ['Complete','-CompleteTime','DueDate'] @(filter)"
+                        @*ng-class="{grayRow: rock.Complete}"*@
+                        class="">
+                        <td class=" rock-completion-container hidden-width-1" style="min-width: 120px;text-align: center;vertical-align: top;">
+                            <select class="form-control rock-completion {{rock.Completion}}" ng-class="forRock_{{rock.Id}}" ng-model="rock.Completion" ng-options="item.value as item.name for item in rockstates" ng-change="functions.sendUpdate(rock)"></select>
+                            @*<rockstate rock="rock" ng-model="rock" ></rockstate>*@
+                            @*<input type="checkbox" ng-model="rock.Complete" />*@
+                        </td>
+                        <td class="picture-column">
+                            <span class="item-wrapper place-right">
+                                <span class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners">
+                                    <profile-image class="" user="rock.Owner"></profile-image>
+                                </span>
+                            </span>
+                        </td>
+                        <td class="name message-column" style="width:100%">
+                            <input ng-model="rock.Name" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)">
+                        </td>
+                        @*<td class="alignCenter" style="min-width: 80px;"><input ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" class="due-date" data-rock="{{rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" /></td>*@
+                        <td style="min-width: 15px;"></td>
+                    </tr>
+                </tbody>
+            </table>
+			@*</div>*@
 			<div class="gray" style="padding: 15px 15px;" ng-show="(@(selector) @(filter)).length==0">
 				No @rockName fit your search criteria.
 			</div>

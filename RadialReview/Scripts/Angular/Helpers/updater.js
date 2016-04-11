@@ -14,15 +14,15 @@
         var h = dst.$$hashKey;
 
         //Check if the lookup has the base object
-        if (typeof(after)==="undefined") {
+        if (typeof (after) === "undefined") {
             if ("Key" in dst) {
                 //throw "Do not box update with AngularUpdate, instead pass the updated object in directly.";
-                var lookthrough= objs;
-                if (!angular.isArray(objs)){
-                    lookthrough= [objs];
+                var lookthrough = objs;
+                if (!angular.isArray(objs)) {
+                    lookthrough = [objs];
                 }
-                for(var k in objs){
-                    var o= objs[k];
+                for (var k in objs) {
+                    var o = objs[k];
                     if ("Lookup" in o) {
                         if (dst["Key"] in o["Lookup"]) {
                             var baseObj = o["Lookup"][dst["Key"]];
@@ -50,9 +50,6 @@
                         } else if (src.UpdateMethod == "ReplaceAll") {
                             dst[key] = src.AngularList;
                         } else if (src.UpdateMethod == "ReplaceIfNewer") {
-                            debugger;
-
-
                             var keysList = [];
                             for (var e in dst[key]) {
                                 keysList.push(dst[key][e]["Key"]);
@@ -69,7 +66,7 @@
 
 
                         } else {
-                            console.error("UpdateMethod unknown:"+src.UpdateMethod);
+                            console.error("UpdateMethod unknown:" + src.UpdateMethod);
                         }
                     } else {
                         if (!angular.isObject(dst[key]))
@@ -78,24 +75,24 @@
                         if (angular.isArray(dst[key])) {
                             if (src.length > 0 && "Key" in src[0]) {
                                 var keysList = [];
-                                for(var e in dst[key]){
+                                for (var e in dst[key]) {
                                     keysList.push(dst[key][e]["Key"]);
                                 }
                                 for (var e in src) { //Foreach element in src
                                     var loc = keysList.indexOf(src[e]["Key"]);
-                                    if (loc!=-1) {
+                                    if (loc != -1) {
                                         dst[key][loc] = src[e];
                                     } else {
                                         dst[key].push(src[e]);
                                         keysList.push(src[e]["Key"]);
                                     }
                                 }
-                            }else{
+                            } else {
                                 dst[key] = dst[key].concat(src);
                             }
                         } else {
-                            if (dst[key].Key == src.Key)
-                                baseExtend(dst[key], [src], true,true);
+                            if ((typeof (src.Key) !== "undefined" || key == "Lookup") && dst[key].Key == src.Key)
+                                baseExtend(dst[key], [src], true, true);
                             else
                                 dst[key] = src;
                         }
@@ -135,36 +132,121 @@
     }
 
     function clearAndApply(data, status) {
+        // this.scope._model = {};
         this.scope.model = {};
         this.applyUpdate(data, status);
     }
 
+    function resolveRef(model, update) {
+        function populate(m, u, topLevel) {
+            if (typeof (topLevel) === "undefined")
+                topLevel = true;
+
+            if (Array.isArray(u) || (u && u.AngularList)) {
+                var out = [];
+                var keysList = [];
+                for (var e in m) {
+                    keysList.push(m[e]["Key"]);
+                }
+
+                if (u.AngularList && (u.AngularList.length == 0 || u.AngularList[0].Key) && (m.length == 0 || m[0].Key)) {
+                   
+                    for (var k in u.AngularList) { //Foreach element in src
+                        var loc = keysList.indexOf(u.AngularList[k]["Key"]);
+                        if (loc != -1) {
+                            m[loc] = populate(m[loc], u.AngularList[k], false);
+                        } else {
+                            m.push(populate(null, u.AngularList[k], false));
+                            keysList.push(u.AngularList[k]["Key"]);
+                        }
+                    }
+                } else if ((u.length == 0 || u[0].Key) && (m.length == 0 || m[0].Key)) {
+                    for (var k in u) { //Foreach element in src
+                        var loc = keysList.indexOf(u[k]["Key"]);
+                        if (loc != -1) {
+                            try {
+                                m[loc] = populate(m[loc], u[k], false);
+                            } catch (e) {
+                                debugger;
+                            }
+                        } else {
+                            m.push(populate(null, u[k], false));
+                            keysList.push(u[k]["Key"]);
+                        }
+                    }
+                } else {
+                    for (var k in u) {
+                        populate(m[k], u[k], false);
+                    }
+                    console.warn("List items should have keys.");
+                }
+
+                return m;
+            }
+            else if (u && u._Pointer) {
+                return model.Lookup[m.Key];
+                ////var o = {};
+                //for (var k in out) {
+                //    out[k] = populate(out[k], u[k], false);
+                //}
+                //return out;
+            } else if (angular.isObject(u) /*&& topLevel*/) {
+                //var o = {};
+                for (var k in u) {
+                    //if (k == "AngularList")
+                    //    m = populate(m, u[k], false);
+                    //else
+                    m[k] = populate(m[k], u[k], false);
+                }
+                return m;
+            } else {
+                return u;
+            }
+        }
+        //if (typeof (backingModel) === "undefined")
+        //    backingModel = {}
+
+
+
+        return populate(model, update);
+    }
+
     function applyUpdate(data, status) {
+        convertDates(data);
         this._preExtend(data, status);
         baseExtend(this.scope.model, [data], true);
         this._postExtend(data, status);
-        convertDates(this.scope.model);
         this._preDelete(data, status);
         removeDeleted(this.scope.model);
         this._postDelete(data, status);
+        this._preResolve(data, status);
+        resolveRef(this.scope.model, data);
+        this._postResolve(this.scope.model, data, status);
+
     }
 
-    function updaterFactory($scope,hub) {
+    function updaterFactory($scope, hub) {
         var o = {
-            scope:$scope,
-            preExtend: function (data, status) {console.log("preExtend update:", data);},
-            postExtend:function (data, status) {console.log("postExtend update");},
+            // _model:{},
+            scope: $scope,
+            preExtend: function (data, status) { console.log("preExtend update:", data); },
+            postExtend: function (data, status) { console.log("postExtend update"); },
             preDelete: function (data, status) { },
             postDelete: function (data, status) { },
+            preResolve: function (data, status) { },
+            postResolve: function (data, status) { },
             convertDates: convertDates,
+            //transform:transform,
         };
 
-        o.applyUpdate   = function (d, s) { applyUpdate.call(o, d, s); };
+        o.applyUpdate = function (d, s) { applyUpdate.call(o, d, s); };
         o.clearAndApply = function (d, s) { clearAndApply.call(o, d, s); };
-        o._preExtend    = function (d, s) { o.preExtend && o.preExtend.call(o, d, s); };
-        o._postExtend   = function (d, s) { o.postExtend && o.postExtend.call(o, d, s); };
-        o._preDelete    = function (d, s) { o.preDelete && o.preDelete.call(o, d, s); };
-        o._postDelete   = function (d, s) { o.postDelete && o.postDelete.call(o, d, s); };
+        o._preExtend = function (d, s) { o.preExtend && o.preExtend.call(o, d, s); };
+        o._postExtend = function (d, s) { o.postExtend && o.postExtend.call(o, d, s); };
+        o._preDelete = function (d, s) { o.preDelete && o.preDelete.call(o, d, s); };
+        o._postDelete = function (d, s) { o.postDelete && o.postDelete.call(o, d, s); };
+        o._preResolve = function (d, s) { o.preResolve && o.preResolve.call(o, d, s); };
+        o._postResolve = function (m, d, s) { o.postResolve && o.postResolve.call(o, m, d, s); };
 
         hub.on('update', o.applyUpdate);
         return o;

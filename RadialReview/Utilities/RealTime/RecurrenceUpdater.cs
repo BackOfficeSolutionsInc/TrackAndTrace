@@ -43,6 +43,13 @@ namespace RadialReview.Utilities.RealTime {
                 return this;
             }
 
+            public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, AngularListType type = AngularListType.ReplaceIfNewer)
+            {
+                rt.AddAction(() => {
+                    UpdateAll(rid => new AngularMeasurable(measurable));
+                });
+                return this;
+            }
             public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer)
             {
                 rt.AddAction(() => {
@@ -62,7 +69,8 @@ namespace RadialReview.Utilities.RealTime {
                         measurablesList.Add(new AngularMeasurable(measurable));
                         var scoresList = new List<AngularScore>();
                         foreach (var ss in scores.Where(x => x.Measurable.Id == measurable.Id)) {
-                            scoresList.Add(new AngularScore(ss));
+
+                            scoresList.Add(new AngularScore(ss,false));
                         }
                         scorecard.Scores = AngularList.Create<AngularScore>(type, scoresList);
                     }

@@ -110,7 +110,7 @@ namespace RadialReview.Accessors
             meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur), r.OrderIssueBy);
 
             var updates = new AngularRecurrence(recurrenceId);
-            updates.Issues = new List<AngularIssue>() { new AngularIssue(recur) };
+            updates.IssuesList.Issues = new List<AngularIssue>() { new AngularIssue(recur) };
             meetingHub.update(updates);
             Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateIssue", ForModel.Create(issue), issue.NotNull(x => x.Message));
             return o;

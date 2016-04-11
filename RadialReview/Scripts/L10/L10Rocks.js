@@ -27,8 +27,9 @@ function updateRockCompletion(meetingRockId, state, rockId) {
 }
 
 function updateRockName(rockId, message) {
-	$(".message[data-rock='" + rockId + "']").html(message);
+    $(".message[data-rock='" + rockId + "']").html(message);
 }
+
 
 
 function updateRocks(html) {

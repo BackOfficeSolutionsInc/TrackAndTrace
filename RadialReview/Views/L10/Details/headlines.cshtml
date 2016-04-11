@@ -8,7 +8,7 @@
 <div class="scorecard meeting-page" style="clear: both;">
 	<div class="row">
 		<div class="col-md-12" click-anywhere-but-here="model.Selected = -1">
-            <div class="component" ng-repeat1="note in model.HeadlinesUrl | transform:this" style="padding:5px 10px;height:500px;">
+            <div class="component" ng-repeat1="note in model.HeadlinesUrl" style="padding:5px 10px;height:500px;">
                 <iframe style="background-color: white" width="100%" height="100%" ng-src="{{trustAsResourceUrl(model.HeadlinesUrl)}}" ng-data-src="{{model.HeadlinesUrl}}"></iframe>
             </div>
 		</div>

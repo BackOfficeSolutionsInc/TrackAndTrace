@@ -233,7 +233,7 @@ namespace RadialReview.Accessors {
             r.Cells[1].AddParagraph("5 Minutes");
 
             var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime>lastMeeting).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate).ToList();
-            var issues = recur.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
+            var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
 
 
             var fs = ResizeToFit(new Section(),Unit.FromInch(4.5),Unit.FromInch(5.25),(Cell,ffss)=>{
@@ -414,7 +414,7 @@ namespace RadialReview.Accessors {
 
             //Priority
             var size = Unit.FromInch(0.0);
-            var isPriority = recur.Prioritization == PrioritizationType.Priority;
+            var isPriority = recur.IssuesList.Prioritization == PrioritizationType.Priority;
             if (isPriority)
                 size = Unit.FromInch(0.7);
             column = table.AddColumn(size);
@@ -446,7 +446,7 @@ namespace RadialReview.Accessors {
             row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 
             var mn = 1;
-            foreach (var m in recur.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name)) {
+            foreach (var m in recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name)) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;

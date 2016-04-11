@@ -506,6 +506,7 @@
     <Compile Include="Models\Angular\Base\IAngularize.cs" />
     <Compile Include="Models\Angular\CompanyValue\AngularCompanyValue.cs" />
     <Compile Include="Models\Angular\Issues\AngularIssue.cs" />
+    <Compile Include="Models\Angular\Issues\AngularIssuesList.cs" />
     <Compile Include="Models\Angular\Meeting\AngularAgendaItems.cs" />
     <Compile Include="Models\Angular\Base\AngularUpdate.cs" />
     <Compile Include="Models\Angular\Meeting\AngularMeetingMeasurable.cs" />
@@ -918,7 +919,20 @@
     <Content Include="Content\AccountabilityChart\AccountabilityChart.min.css">
       <DependentUpon>AccountabilityChart.css</DependentUpon>
     </Content>
+    <Content Include="Content\Angular\Issues.css">
+      <DependentUpon>Issues.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Angular\Issues.min.css">
+      <DependentUpon>Issues.css</DependentUpon>
+    </Content>
+    <Content Include="Content\Angular\Rocks.css">
+      <DependentUpon>Rocks.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Angular\Rocks.min.css">
+      <DependentUpon>Rocks.css</DependentUpon>
+    </Content>
     <Content Include="Content\Angular\tablesort.css" />
+    <Content Include="Content\Angular\xeditable.min.css" />
     <Content Include="Content\bootstrap-duallistbox.css" />
     <Content Include="Content\creditcard_icon\amex.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -979,6 +993,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <Content Include="Content\L10\L10Wizard.less" />
+    <Content Include="Content\Angular\Rocks.less" />
+    <Content Include="Content\Angular\Issues.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -987,12 +1003,14 @@
     <None Include="Resources\star.png" />
     <None Include="Resources\Unchecked.png" />
     <None Include="Resources\EOS_Model.png" />
+    <Content Include="Scripts\Angular\Helpers\angular-elastic-input.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\ElemReady.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\fcsaNumber.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\PriorityTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\RightClick.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\TableSort.js" />
+    <Content Include="Scripts\Angular\Helpers\Libraries\angular-xeditable.js" />
     <Content Include="Scripts\Angular\Helpers\radialModule.js" />
     <Content Include="Scripts\Angular\Helpers\updater.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />

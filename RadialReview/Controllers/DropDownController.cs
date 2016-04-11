@@ -59,12 +59,31 @@ namespace RadialReview.Controllers
 			var recurrenceId = id;
 			var attendees = L10Accessor.GetL10Recurrence(GetUser(), id, true)._DefaultAttendees;
 
-			var result =attendees.Select(x=>new DropDownItem(){
+			var result =attendees.Select(x=>new {
 				text = x.User.GetName(),
-				value = userId?""+x.User.Id:""+x.Id
+				value = userId?""+x.User.Id:""+x.Id,
+                url = x.User.ImageUrl(true,ImageSize._32),
+                profilePicture=true
 			}).OrderBy(x=>x.text);
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
+
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult AngularMeetingMembers(long id, bool userId = false)
+        {
+            var recurrenceId = id;
+            var attendees = L10Accessor.GetAngularRecurrence(GetUser(), id).Attendees;
+
+            return Json(attendees, JsonRequestBehavior.AllowGet);
+
+            //var result = attendees.Select(x => new {
+            //    text = x.User.GetName(),
+            //    value = userId ? "" + x.User.Id : "" + x.Id,
+            //    url = x.User.ImageUrl(true, ImageSize._32),
+            //    profilePicture = true
+            //}).OrderBy(x => x.text);
+            //return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
 	    [Access(AccessLevel.UserOrganization)]
 	    public JsonResult OrganizationRGM(string q)

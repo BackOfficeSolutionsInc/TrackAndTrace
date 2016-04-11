@@ -231,7 +231,7 @@ namespace RadialReview.Controllers
 				default: throw new ArgumentOutOfRangeException("name");
 			}
 
-			L10Accessor.UpdateArchiveMeasurable(GetUser(), measurableId, recurrenceId, title, direction, target, accountableId, adminId);
+            L10Accessor.UpdateArchiveMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId);
 			return Json(ResultObject.SilentSuccess());
 	    }
 

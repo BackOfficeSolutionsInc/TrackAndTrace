@@ -1,19 +1,19 @@
 ﻿@model long
 <div class="review smallBreak2 loading tiny" style2="min-height:30px;">
     <div class="scorecard-heading heading" style="@(ViewBag.HeadingStyle)">
-        {{(model.L10Scorecards | transform:this | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Scorecard" class=""> (View all)</a>
+        {{(model.L10Scorecards | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Scorecard" class=""> (View all)</a>
 
     </div><div class="specialDiv tile hidden-width-1">@{ 
         Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary(){
             {"AddHeaders", false},
             {"AddController", false},
             {"DisableName", true},
-            {"Selector", "((model.L10Scorecards | transform:this)| filter:{KeyId:"+Model+"})[0].Contents "},
+            {"Selector", "((model.L10Scorecards)| filter:{KeyId:"+Model+"})[0].Contents "},
         }); }</div><div class="tile visible-width-1">@{
         Html.RenderPartial("~/Views/Scorecard/Partial/tile.cshtml", new ViewDataDictionary(){
             {"AddHeaders",false},
             {"AddController",false},
             {"DisableName",true},
-            {"Selector", "((model.L10Scorecards | transform:this)| filter:{KeyId:"+Model+"})[0].Contents "},
-        });}</div><div ng-show="(model.L10Scorecards | transform:this | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Scorecards | transform:this | filter:{KeyId:@(Model)}).length==0)">Please wait</div></div>
+            {"Selector", "((model.L10Scorecards)| filter:{KeyId:"+Model+"})[0].Contents "},
+        });}</div><div ng-show="(model.L10Scorecards | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Scorecards | filter:{KeyId:@(Model)}).length==0)">Please wait</div></div>
 

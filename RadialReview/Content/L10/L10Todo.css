@@ -410,7 +410,7 @@ body.dragging, body.dragging * {
 .todo .due-date.red, .todo-pane .due-date.red {
     color: #E23737;
     text-decoration: none;
-    font-weight: bold;
+    /*font-weight: bold;*/
 }
 
 .todo .due-date.green, .todo-pane .due-date.green {

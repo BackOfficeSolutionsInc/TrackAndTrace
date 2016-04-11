@@ -47,7 +47,8 @@ namespace RadialReview.Models.Angular.Users
 				Name ="n/a",
 				ImageUrl = null,
 				Initials = "n/a",
-				Managing = null
+				Managing = null,
+                
 			};
 		}
 		

@@ -62,7 +62,7 @@
                         </div>
                         <div class="col-sm-8">
                             <div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
-                            <div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model| transform:this))" ng-model="(model| transform:this).Name " type="text" ng-model-options="{ debounce: 250 }"> </div>
+                            <div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name " type="text" ng-model-options="{ debounce: 250 }"> </div>
                             <div class="page-title">VISION</div>
                         </div>
                         <div class="col-sm-1"></div>
@@ -82,8 +82,8 @@
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
                                                                ng-model-options="{ debounce: 250 }"
-                                                               ng-change="functions.sendUpdate((model| transform:this))"
-                                                               ng-model="(model| transform:this).CoreValueTitle" />
+                                                               ng-change="functions.sendUpdate((model))"
+                                                               ng-model="(model).CoreValueTitle" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -94,7 +94,7 @@
                                             <div style="display:table; width: 100%;height: 100%;">
                                                 <div style="display:table-cell;vertical-align:middle;">
                                                     <table class="add-row-container table-list">
-                                                        <tr class="add-row-row" ng-repeat="value in (model| transform:this).Values | filter:{Deleted:false}">
+                                                        <tr class="add-row-row" ng-repeat="value in (model).Values | filter:{Deleted:false}">
                                                             <td class="row-number">{{$index+1}}.</td>
                                                             <td>
                                                                 <textarea ng-model-options="{ debounce: 250 }"
@@ -128,8 +128,8 @@
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
                                                                ng-model-options="{ debounce: 250 }"
-                                                               ng-change="functions.sendUpdate((model| transform:this).CoreFocus)"
-                                                               ng-model="(model| transform:this).CoreFocus.CoreFocusTitle" />
+                                                               ng-change="functions.sendUpdate((model).CoreFocus)"
+                                                               ng-model="(model).CoreFocus.CoreFocusTitle" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -143,11 +143,11 @@
                                                         <table class="table" style="margin-bottom:0px;">
                                                             <tr class="purpose">
                                                                 <td>
-                                                                    <div class="title" style="color:transparent;height:0px;">{{(model| transform:this).CoreFocus.PurposeTitle}}:</div>
-                                                                    <input style="width:100%;" class="title" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model| transform:this).CoreFocus)" ng-model="(model| transform:this).CoreFocus.PurposeTitle" />
+                                                                    <div class="title" style="color:transparent;height:0px;">{{(model).CoreFocus.PurposeTitle}}:</div>
+                                                                    <input style="width:100%;" class="title" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" />
                                                                 </td>
                                                                 <td>
-                                                                    <textarea textarea-resize ng-model="(model| transform:this).CoreFocus.Purpose" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model| transform:this).CoreFocus)"></textarea>
+                                                                    <textarea textarea-resize ng-model="(model).CoreFocus.Purpose" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
                                                                 </td>
                                                             </tr>
                                                             <tr class="niche">
@@ -155,7 +155,7 @@
                                                                     <span class="title">Our Niche:</span>
                                                                 </td>
                                                                 <td>
-                                                                    <textarea textarea-resize ng-model="(model| transform:this).CoreFocus.Niche" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model| transform:this).CoreFocus)"></textarea>
+                                                                    <textarea textarea-resize ng-model="(model).CoreFocus.Niche" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -177,8 +177,8 @@
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
                                                                ng-model-options="{ debounce: 250 }"
-                                                               ng-change="functions.sendUpdate((model| transform:this))"
-                                                               ng-model="(model| transform:this).TenYearTargetTitle" />
+                                                               ng-change="functions.sendUpdate((model))"
+                                                               ng-model="(model).TenYearTargetTitle" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -187,7 +187,7 @@
                                     <div class="col-lg-9">
                                         <div class="boxed content">
                                             <div class="target">
-                                                <textarea textarea-resize ng-model="(model| transform:this).TenYearTarget" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model| transform:this))"></textarea>
+                                                <textarea textarea-resize ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model))"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -203,8 +203,8 @@
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
                                                                ng-model-options="{ debounce: 250 }"
-                                                               ng-change="functions.sendUpdate((model| transform:this).Strategy)"
-                                                               ng-model="(model.Strategy| transform:this).MarketingStrategyTitle" />
+                                                               ng-change="functions.sendUpdate((model).Strategy)"
+                                                               ng-model="(model.Strategy).MarketingStrategyTitle" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -217,13 +217,13 @@
                                                     <div class="target-market">
                                                         <span class="title">Target Market/"The List":</span>
                                                         <div>
-                                                            <textarea textarea-resize ng-model="(model.Strategy| transform:this).TargetMarket" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model| transform:this).Strategy)"></textarea>
+                                                            <textarea textarea-resize ng-model="(model.Strategy).TargetMarket" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
                                                         </div>
                                                     </div>
                                                     <div class="three-uniques">
                                                         <div class="title">Three Uniques:</div>
                                                         <table class="add-row-container table-list">
-                                                            <tr class="add-row-row" ng-repeat="uniques in (model.Strategy.Uniques| transform:this) | filter:{Deleted:false}">
+                                                            <tr class="add-row-row" ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
                                                                 <td class="row-number">{{$index+1}}.</td>
                                                                 <td>
                                                                     <textarea textarea-resize ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data"></textarea>
@@ -241,13 +241,13 @@
                                                     <div class="proven-process">
                                                         <span class="title">Proven Process:</span>
                                                         <div>
-                                                            <textarea textarea-resize ng-model="(model.Strategy| transform:this).ProvenProcess" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model| transform:this).Strategy)"></textarea>
+                                                            <textarea textarea-resize ng-model="(model.Strategy).ProvenProcess" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
                                                         </div>
                                                     </div>
                                                     <div class="guarantee">
                                                         <span class="title">Guarantee:</span>
                                                         <div>
-                                                            <textarea textarea-resize ng-model="(model.Strategy| transform:this).Guarantee" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model| transform:this).Strategy)"></textarea>
+                                                            <textarea textarea-resize ng-model="(model.Strategy).Guarantee" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -268,8 +268,8 @@
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
                                                                ng-model-options="{ debounce: 250 }"
-                                                               ng-change="functions.sendUpdate((model.ThreeYearPicture| transform:this))"
-                                                               ng-model="(model.ThreeYearPicture| transform:this).ThreeYearPictureTitle" />
+                                                               ng-change="functions.sendUpdate((model.ThreeYearPicture))"
+                                                               ng-model="(model.ThreeYearPicture).ThreeYearPictureTitle" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -277,28 +277,28 @@
                                         <div class="boxed content">
                                             <div>
                                                 <span class="bold lbl">Future Date:</span> <span class="future-date input">
-                                                    <input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture | transform:this).FutureDate' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture | transform:this))" />
+                                                    <input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture).FutureDate' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
                                                 </span>
                                             </div>
                                             <div>
                                                 <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                    <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.ThreeYearPicture | transform:this).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture | transform:this))" />
+                                                    <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.ThreeYearPicture).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
                                                 </span>
                                             </div>
                                             <div>
                                                 <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                    <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.ThreeYearPicture | transform:this).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture | transform:this))" />
+                                                    <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.ThreeYearPicture).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
                                                 </span>
                                             </div>
                                             <div>
                                                 <span class="bold lbl">Measurables:</span><span class="measurables input">
-                                                    <textarea textarea-resize type="text" ng-model='(model.ThreeYearPicture | transform:this).Measurables' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture | transform:this))"></textarea>
+                                                    <textarea textarea-resize type="text" ng-model='(model.ThreeYearPicture).Measurables' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))"></textarea>
                                                 </span>
                                             </div>
                                             <div class="looks-like">What does it look like?</div>
                                             <div class="listing">
                                                 <table class="add-row-container table-list">
-                                                    <tr class="add-row-row" ng-repeat="item in (model.ThreeYearPicture| transform:this).LooksLike | filter:{Deleted:false}">
+                                                    <tr class="add-row-row" ng-repeat="item in (model.ThreeYearPicture).LooksLike | filter:{Deleted:false}">
                                                         <td class="row-number">{{$index+1}}.</td>
                                                         <td>
                                                             <textarea textarea-resize ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
@@ -335,7 +335,7 @@
                         </div>
                         <div class="col-sm-8">
                             <div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
-                            @*<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model| transform:this))" ng-model="(model| transform:this).Name " type="text" ng-model-options="{ debounce: 250 }"> </div>*@
+                            @*<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name " type="text" ng-model-options="{ debounce: 250 }"> </div>*@
                             <div class="page-title">@ViewBag.TractionPageTitle</div>
                         </div>
                         <div class="col-sm-1"></div>
@@ -354,8 +354,8 @@
                                                     <input style="width:100%;"
                                                            class="title alignCenter"
                                                            ng-model-options="{ debounce: 250 }"
-                                                           ng-change="functions.sendUpdate((model.OneYearPlan | transform:this))"
-                                                           ng-model="(model.OneYearPlan| transform:this).OneYearPlanTitle" />
+                                                           ng-change="functions.sendUpdate((model.OneYearPlan))"
+                                                           ng-model="(model.OneYearPlan).OneYearPlanTitle" />
                                                 </div>
                                             </div>
                                         </div>
@@ -363,29 +363,29 @@
                                     <div class="boxed content">
                                         <div>
                                             <span class="bold lbl">Future Date:</span> <span class="future-date input">
-                                                <input type="date" class="datepicker2" ng-model='(model.OneYearPlan | transform:this).FutureDate' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan | transform:this))" />
+                                                <input type="date" class="datepicker2" ng-model='(model.OneYearPlan).FutureDate' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.OneYearPlan | transform:this).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan | transform:this))" />
+                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.OneYearPlan).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.OneYearPlan | transform:this).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan | transform:this))" />
+                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.OneYearPlan).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Measurables:</span><span class="measurables input">
-                                                <textarea textarea-resize type="text" ng-model='(model.OneYearPlan | transform:this).Measurables' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan | transform:this))"></textarea>
+                                                <textarea textarea-resize type="text" ng-model='(model.OneYearPlan).Measurables' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))"></textarea>
                                             </span>
                                         </div>
                                         <div class="smallBreak2">&nbsp;</div>
                                         <div class="goals-table border-table">
                                             <table class="add-row-container">
                                                 <tr><th colspan="2">Goals for the year:</th></tr>
-                                                <tr class="add-row-row" ng-repeat="item in (model.OneYearPlan | transform:this).GoalsForYear | filter:{Deleted:false}">
+                                                <tr class="add-row-row" ng-repeat="item in (model.OneYearPlan).GoalsForYear | filter:{Deleted:false}">
                                                     <td class="number">{{$index+1}}.</td>
                                                     <td>
                                                         <textarea textarea-resize ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
@@ -413,8 +413,8 @@
                                                     <input style="width:100%;"
                                                            class="title alignCenter"
                                                            ng-model-options="{ debounce: 250 }"
-                                                           ng-change="functions.sendUpdate((model.QuarterlyRocks | transform:this))"
-                                                           ng-model="(model.QuarterlyRocks| transform:this).RocksTitle" />
+                                                           ng-change="functions.sendUpdate((model.QuarterlyRocks))"
+                                                           ng-model="(model.QuarterlyRocks).RocksTitle" />
                                                 </div>
                                             </div>
                                         </div>
@@ -422,29 +422,29 @@
                                     <div class="boxed content">
                                         <div>
                                             <span class="bold lbl">Future Date:</span><span class="future-date input">
-                                                <input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks | transform:this).FutureDate' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks | transform:this))" />
+                                                <input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks).FutureDate' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.QuarterlyRocks | transform:this).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks | transform:this))" />
+                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.QuarterlyRocks).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.QuarterlyRocks | transform:this).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks | transform:this))" />
+                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.QuarterlyRocks).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Measurables:</span><span class="measurables input">
-                                                <textarea textarea-resize type="text" ng-model='(model.QuarterlyRocks | transform:this).Measurables' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks | transform:this))"></textarea>
+                                                <textarea textarea-resize type="text" ng-model='(model.QuarterlyRocks).Measurables' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))"></textarea>
                                             </span>
                                         </div>
                                         <div class="smallBreak2">&nbsp;</div>
                                         <div class="rocks-table border-table">
                                             <table class="add-row-container">
                                                 <tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight">Who</th></tr>
-                                                <tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks | transform:this).Rocks | filter:{Deleted:false}">
+                                                <tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false}">
                                                     <td class="number">{{$index+1}}.</td>
                                                     <td>
                                                         <textarea textarea-resize style="width: 80%;" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(item)" ng-model="item.Rock.Name"></textarea>
@@ -453,8 +453,8 @@
 
                                                     <td>
                                                         <a href="#rock" data-value="{{item.Rock.Owner.Id}}" data-display="false" class="inlineEdit rock-accountable" data-type="select" data-pk="{{item.Id}}" data-url="/Vto/XUpdateRock" data-name="accountable" data-source="/Dropdown/OrganizationMembers/@(Html.Organization().Id)?userId=true">
-                                                            <profile-image user="(item.Rock.Owner | transform:this)"></profile-image>
-                                                            {{(item.Rock.Owner | transform:this).Name}}
+                                                            <profile-image user="(item.Rock.Owner)"></profile-image>
+                                                            {{(item.Rock.Owner).Name}}
                                                         </a>
 
                                                     </td>
@@ -480,8 +480,8 @@
                                                     <input style="width:100%;"
                                                            class="title alignCenter"
                                                            ng-model-options="{ debounce: 250 }"
-                                                           ng-change="functions.sendUpdate((model | transform:this))"
-                                                           ng-model="(model| transform:this).IssuesListTitle" />
+                                                           ng-change="functions.sendUpdate((model))"
+                                                           ng-model="(model).IssuesListTitle" />
                                                 </div>
                                             </div>
                                         </div>
@@ -489,7 +489,7 @@
                                     <div class="boxed content">
                                         <div class="rocks-table border-table">
                                             <table class="add-row-container">
-                                                <tr class="add-row-row" ng-repeat="item in (model | transform:this).Issues | filter:{Deleted:false}">
+                                                <tr class="add-row-row" ng-repeat="item in (model).Issues | filter:{Deleted:false}">
                                                     <td class="number">{{$index+1}}.</td>
                                                     <td>
                                                         <textarea textarea-resize ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
@@ -527,7 +527,7 @@
                     <div class="eos-icon"><div class="eos-model">The EOS Model™</div><img src="https://s3.amazonaws.com/Radial/base/Vto/EOS_Wheel.png"></div>
                     <div class="eos-title">
                         <div>THE VISION/TRACTION ORGANIZER™</div>
-                        <div class="page-title">Organization Name:<span class="page-title-text">{{(model| transform:this).Name}}</span></div>
+                        <div class="page-title">Organization Name:<span class="page-title-text">{{(model).Name}}</span></div>
                         <div class="page-name">VISION</div>
                     </div>
                 </div>
@@ -535,58 +535,58 @@
                     <div class="column-1 resize-group">
                         <table>
                             <tr>
-                                <td class="cell-title cell-border">{{(model| transform:this).CoreValueTitle}}</td>
+                                <td class="cell-title cell-border">{{(model).CoreValueTitle}}</td>
                                 <td class="cell-contents resize-item cell-border">
                                     <ol>
-                                        <li ng-repeat="value in (model| transform:this).Values | filter:{Deleted:false}">
+                                        <li ng-repeat="value in (model).Values | filter:{Deleted:false}">
                                             <div>{{value.CompanyValue}}</div>
                                         </li>
                                     </ol>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="cell-title cell-border">{{(model| transform:this).CoreFocus.CoreFocusTitle}}</td>
+                                <td class="cell-title cell-border">{{(model).CoreFocus.CoreFocusTitle}}</td>
                                 <td class="cell-contents resize-item cell-border">
                                     <div class="purpose">
-                                        <div class="title">{{(model| transform:this).CoreFocus.PurposeTitle}}</div>
-                                        <div class="data">{{(model| transform:this).CoreFocus.Purpose}}</div>
+                                        <div class="title">{{(model).CoreFocus.PurposeTitle}}</div>
+                                        <div class="data">{{(model).CoreFocus.Purpose}}</div>
                                         <br />
                                     </div>
                                     <div class="niche">
                                         <div class="title">Our Niche:</div>
-                                        <div class="data">{{(model| transform:this).CoreFocus.Niche}}</div>
+                                        <div class="data">{{(model).CoreFocus.Niche}}</div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="cell-title cell-border">{{(model| transform:this).TenYearTargetTitle}}</td>
+                                <td class="cell-title cell-border">{{(model).TenYearTargetTitle}}</td>
                                 <td class="cell-contents resize-item cell-border">
-                                    <div class="data" style="padding-top: 10px;">{{(model| transform:this).TenYearTarget}}</div>
+                                    <div class="data" style="padding-top: 10px;">{{(model).TenYearTarget}}</div>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="cell-title cell-border">{{(model| transform:this).Strategy.MarketingStrategyTitle}}</td>
+                                <td class="cell-title cell-border">{{(model).Strategy.MarketingStrategyTitle}}</td>
                                 <td class="cell-contents resize-item cell-border">
 
                                     <div class="target-market">
                                         <span class="title">Target Market/"The List":</span>
-                                        <div class="data">{{(model.Strategy| transform:this).TargetMarket}}</div>
+                                        <div class="data">{{(model.Strategy).TargetMarket}}</div>
                                     </div>
                                     <div class="three-uniques">
                                         <div class="title">Three Uniques:</div>
                                         <ol>
-                                            <li ng-repeat="uniques in (model.Strategy.Uniques| transform:this) | filter:{Deleted:false}">
+                                            <li ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
                                                 <div>{{uniques.Data}}</div>
                                             </li>
                                         </ol>
                                     </div>
                                     <div class="proven-process">
                                         <span class="title">Proven Process:</span>
-                                        <div class="data">{{(model.Strategy| transform:this).ProvenProcess}}</div>
+                                        <div class="data">{{(model.Strategy).ProvenProcess}}</div>
                                     </div>
                                     <div class="guarantee">
                                         <span class="title">Guarantee:</span>
-                                        <div class="data">{{(model.Strategy| transform:this).Guarantee}}</div>
+                                        <div class="data">{{(model.Strategy).Guarantee}}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -595,18 +595,18 @@
                     </div>
                     <div class="column-2 column-container">
                         <div class="cell-title-container">
-                            <div class="cell-title cell-border">{{(model| transform:this).ThreeYearPicture.ThreeYearPictureTitle}}</div>
+                            <div class="cell-title cell-border">{{(model).ThreeYearPicture.ThreeYearPictureTitle}}</div>
                         </div>
                         <div class="column-data cell-border">
-                            <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.ThreeYearPicture | transform:this).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
-                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.ThreeYearPicture | transform:this).Revenue| currency:"$":0}}</span></div>
-                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.ThreeYearPicture | transform:this).Profit | currency:"$":0}}</span></div>
-                            <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.ThreeYearPicture | transform:this).Measurables}}</span></div>
+                            <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.ThreeYearPicture).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
+                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.ThreeYearPicture).Revenue| currency:"$":0}}</span></div>
+                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.ThreeYearPicture).Profit | currency:"$":0}}</span></div>
+                            <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.ThreeYearPicture).Measurables}}</span></div>
                             <br />
                             <div class="looks-like">What does that look like?</div>
                             <div class="resize-group">
                                 <ul class="resize-item">
-                                    <li ng-repeat="item in (model.ThreeYearPicture| transform:this).LooksLike | filter:{Deleted:false}"><div class="">{{item.Data}}</div></li>
+                                    <li ng-repeat="item in (model.ThreeYearPicture).LooksLike | filter:{Deleted:false}"><div class="">{{item.Data}}</div></li>
                                 </ul>
                             </div>
                         </div>
@@ -621,7 +621,7 @@
                     <div class="eos-icon"><div class="eos-model">The EOS Model™</div><img src="https://s3.amazonaws.com/Radial/base/Vto/EOS_Wheel.png"></div>
                     <div class="eos-title">
                         <div>THE VISION/TRACTION ORGANIZER™</div>
-                        <div class="page-title">Organization Name:<span class="page-title-text">{{(model| transform:this).Name}}</span></div>
+                        <div class="page-title">Organization Name:<span class="page-title-text">{{(model).Name}}</span></div>
                         <div class="page-name">@ViewBag.TractionPageTitle</div>
                     </div>
                 </div>
@@ -629,19 +629,19 @@
 
                     <div class="column-3 column-container">
                         <div class="cell-title-container">
-                            <div class="cell-title cell-border">{{(model| transform:this).OneYearPlan.OneYearPlanTitle}}</div>
+                            <div class="cell-title cell-border">{{(model).OneYearPlan.OneYearPlanTitle}}</div>
                         </div>
                         <div class="column-data cell-border">
-                            <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.OneYearPlan | transform:this).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
-                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.OneYearPlan | transform:this).Revenue| currency:"$":0}}</span></div>
-                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.OneYearPlan | transform:this).Profit | currency:"$":0}}</span></div>
-                            <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.OneYearPlan | transform:this).Measurables}}</span></div>
+                            <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.OneYearPlan).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
+                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.OneYearPlan).Revenue| currency:"$":0}}</span></div>
+                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.OneYearPlan).Profit | currency:"$":0}}</span></div>
+                            <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.OneYearPlan).Measurables}}</span></div>
                             <br />
                             <div class="resize-group">
                                 <table class="table-bordered resize-item ">
                                     <tbody class="">
                                         <tr><th colspan=2>Goals for the year:</th></tr>
-                                        <tr ng-repeat="item in (model.OneYearPlan | transform:this).GoalsForYear | filter:{Deleted:false}">
+                                        <tr ng-repeat="item in (model.OneYearPlan).GoalsForYear | filter:{Deleted:false}">
                                             <td class="number">{{$index+1}}.</td>
                                             <td>{{item.Data}}</td>
                                         </tr>
@@ -653,22 +653,22 @@
 
                     <div class="column-4 column-container">
                         <div class="cell-title-container">
-                            <div class="cell-title cell-border">{{(model| transform:this).QuarterlyRocks.RocksTitle}}</div>
+                            <div class="cell-title cell-border">{{(model).QuarterlyRocks.RocksTitle}}</div>
                         </div>
                         <div class="resize-group column-data cell-border">
-                            <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.QuarterlyRocks | transform:this).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
-                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.QuarterlyRocks | transform:this).Revenue| currency:"$":0}}</span></div>
-                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.QuarterlyRocks | transform:this).Profit| currency:"$":0}}</span></div>
-                            <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.QuarterlyRocks | transform:this).Measurables}}</span></div>
+                            <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.QuarterlyRocks).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
+                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.QuarterlyRocks).Revenue| currency:"$":0}}</span></div>
+                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.QuarterlyRocks).Profit| currency:"$":0}}</span></div>
+                            <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.QuarterlyRocks).Measurables}}</span></div>
                             <br />
                             <div class="resize-group">
                                 <table class="table-bordered resize-item ">
                                     <tr><th colspan=2>Goals for the year:</th><th>Who:</th></tr>
-                                    <tr ng-repeat="item in (model.QuarterlyRocks | transform:this).Rocks | filter:{Deleted:false}">
+                                    <tr ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false}">
                                         <td class="number">{{$index+1}}.</td>
                                         <td style="width: 80%;">{{item.Rock.Name}}</td>
                                         <td style="white-space: nowrap;padding: 0 10px;">
-                                            {{(item.Rock.Owner | transform:this).Name}}
+                                            {{(item.Rock.Owner).Name}}
                                         </td>
                                     </tr>
                                 </table>
@@ -678,13 +678,13 @@
 
                     <div class="column-5 column-container">
                         <div class="cell-title-container">
-                            <div class="cell-title cell-border">{{(model| transform:this).IssuesListTitle}}</div>
+                            <div class="cell-title cell-border">{{(model).IssuesListTitle}}</div>
                         </div>
                         <div class="resize-group column-data cell-border">
                             <br />
                             <div class="resize-group">
                                 <table class="table-bordered resize-item ">
-                                    <tr ng-repeat="item in (model | transform:this).Issues | filter:{Deleted:false}">
+                                    <tr ng-repeat="item in (model).Issues | filter:{Deleted:false}">
                                         <td class="number">{{$index+1}}.</td>
                                         <td>{{item.Data}}</td>
                                     </tr>
@@ -859,9 +859,13 @@
         setTimeout(refreshDocHeight, 1);
 
         $(document).bind("keyup keydown", function(e){
-            if(e.ctrlKey && e.keyCode == 80){
-                refreshDocHeight();
-                window.print();
+            if((e.ctrlKey || e.metaKey) && e.keyCode == 80){
+                //refreshDocHeight();
+                //window.print();
+                
+                var w = window.open("/Quarterly/PrintVTO/@Model.Id");
+                w.print();
+
                 e.preventDefault();
             }
         });

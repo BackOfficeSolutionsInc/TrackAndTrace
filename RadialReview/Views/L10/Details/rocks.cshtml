@@ -1,12 +1,12 @@
 ﻿<div class="btn-group pull-right" style="padding: 5px 0px;">
-    <div class="btn btn-default btn-xs rockModal" data-recurrence="{{::meetingId}}"><span class="icon fontastic-icon-science-laboratory"></span> Add Rock</div>
+    <div class="btn btn-default btn-xs rockModal" data-recurrence="{{::meetingId}}"><span class="icon fontastic-icon-trophy-1"></span> Add Rock</div>
 </div>
 
 
 <div class="scorecard meeting-page" style="clear: both;">
     <div class="row">
         <div class="col-md-12" click-anywhere-but-here="model.Selected = -1">
-            <div class="component" ng-repeat1="note in model.HeadlinesUrl | transform:this" style="padding:5px 10px;">
+            <div class="component" ng-repeat1="note in model.HeadlinesUrl" style="padding:5px 10px;">
                 @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml", new ViewDataDictionary(){
 		                           {"AddHeaders", false},
                 {"AddController", false},

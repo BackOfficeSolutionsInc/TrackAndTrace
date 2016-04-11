@@ -70,7 +70,7 @@ namespace RadialReview.Controllers
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
 
-            foreach (var m in model.AccountabilityId) {
+           // foreach (var m in model.AccountabilityId) {
                 await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel() {
                     CreatedById = GetUser().Id,
                     ForRecurrenceId = model.RecurrenceId,
@@ -80,10 +80,10 @@ namespace RadialReview.Controllers
                     ForModel = "TodoModel",
                     ForModelId = -1,
                     Organization = GetUser().Organization,
-                    AccountableUserId = m,
+                    AccountableUserId = GetUser().Id,
                     DueDate = model.DueDate
                 });
-            }
+           // }
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
 

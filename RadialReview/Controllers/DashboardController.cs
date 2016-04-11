@@ -37,7 +37,7 @@ namespace RadialReview.Controllers
             var tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
             
 			var start = TimingUtility.PeriodsAgo(DateTime.UtcNow,13, GetUser().Organization.Settings.ScorecardPeriod);
-			var end = DateTime.UtcNow;//.AddDays(14);
+			var end = DateTime.UtcNow.AddDays(14);
 			if (completed){
 				start = DateTime.UtcNow.AddDays(-1);
 				end = DateTime.UtcNow.AddDays(2);
@@ -118,7 +118,7 @@ namespace RadialReview.Controllers
                         if (long.TryParse(todo.KeyId, out l10Id))
                         {
                             var tile = new DashboardController.AngularTileId<List<AngularTodo>>(todo.Id,l10Id, l10Lookup[l10Id].Name + " to-dos");
-                            tile.Contents = L10Accessor.GetAllTodosForRecurrence(s, perms, l10Id).Select(x => new AngularTodo(x)).ToList();
+                            tile.Contents = L10Accessor.GetAllTodosForRecurrence(s, perms, l10Id,false).Select(x => new AngularTodo(x)).ToList();
                             output.L10Todos.Add(tile);
                         }
                     }
@@ -128,8 +128,11 @@ namespace RadialReview.Controllers
                         long l10Id = 0;
                         if (long.TryParse(issue.KeyId, out l10Id))
                         {
-                            var tile = new DashboardController.AngularTileId<List<AngularIssue>>(issue.Id,l10Id, l10Lookup[l10Id].Name + " issues");
-                            tile.Contents = L10Accessor.GetIssuesForRecurrence(s, perms, l10Id).Select(x => new AngularIssue(x)).ToList();
+                            var tile = new DashboardController.AngularTileId<AngularIssuesList>(issue.Id,l10Id, l10Lookup[l10Id].Name + " issues");
+                            tile.Contents = new AngularIssuesList() {
+                                Issues = L10Accessor.GetIssuesForRecurrence(s, perms, l10Id).Select(x => new AngularIssue(x)).ToList(),
+                                Prioritization = l10Lookup[l10Id].Prioritization,
+                            };
                             output.L10Issues.Add(tile);
                         }
                     }
@@ -209,7 +212,7 @@ namespace RadialReview.Controllers
 
             public List<AngularTileId<AngularScorecard>> L10Scorecards { get; set; }
             public List<AngularTileId<List<AngularRock>>> L10Rocks { get; set; }
-            public List<AngularTileId<List<AngularIssue>>> L10Issues { get; set; }
+            public List<AngularTileId<AngularIssuesList>> L10Issues { get; set; }
             public List<AngularTileId<List<AngularTodo>>> L10Todos { get; set; }
 
 
@@ -217,7 +220,7 @@ namespace RadialReview.Controllers
             {
                 L10Scorecards = new List<AngularTileId<AngularScorecard>>();
                 L10Rocks = new List<AngularTileId<List<AngularRock>>>();
-                L10Issues = new List<AngularTileId<List<AngularIssue>>>();
+                L10Issues = new List<AngularTileId<AngularIssuesList>>();
                 L10Todos = new List<AngularTileId<List<AngularTodo>>>();
             }
         }

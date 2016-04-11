@@ -30,31 +30,33 @@
 
 .scorecard-table .heading.who {
     text-align: left;
-    min-width: 45px;
+    min-width: 25px;
     /*float:left;*/
     width: 1px;
     font-size: 14px;
 }
 
     .scorecard-table .heading.who.alignRight {
-        padding-left: 10px;
+        padding-left: 5px;
     }
 
 .scorecard-table .who .newLine {
     /*position: relative;
 		top: 20px;
-		font-size: 16px;*/
-    font-size: 70%;
+		font-size: 16px;*/   
+     font-size: 58%;
 }
 
 .scorecard-table .measurable.heading {
-    padding-left: 2px;
+    padding-left: 5px;
+    min-width: 100px !important;
+   /*width: 165px;*/
 }
 
 .scorecard-table .measurable {
     /*text-align: right !important;*/
     /*font-weight: bold;*/
-    padding-left: 2px;
+    padding-left: 5px;
     padding-right: 2px;
     max-width: 240px;
     -ms-text-overflow: ellipsis;
@@ -115,7 +117,7 @@
 .scorecard-table .score.current input {
     /*float: left;*/
     /*width: 100px;*/
-    font-weight: bold;
+    /*font-weight: bold;*/
 }
 
 .scorecard-table .score.current {
@@ -174,7 +176,7 @@
 
 .scorecard-table .score {
     text-align: center;
-    color: #EFEFEF;
+    color: #333;
     padding: 0px;
 }
 
@@ -218,8 +220,19 @@
     }
 
         .scorecard-table .score input:focus, .scorecard-table .score input:active {
-            outline: #CCC auto 1px;
-            /*border: 1px solid #DDD;*/
+            outline: #2c77ba auto 2px; /* rgb(33,115,70) auto 2px;*/
+            outline-offset: -1px;
+            outline-style: solid;
+            /* border: 1px solid #DDD; */
+            background-color: #EFEFEF;
+            background-color: white;
+            z-index: 100000000;
+            width: 71px;
+            /* left: 0px; */
+            margin-right: -1px;
+            margin-top: 0px;
+            /* height: 25px; */
+            /* margin-bottom: 0px; */
         }
 
 
@@ -452,14 +465,20 @@
     }
 
 
-.scorecard-table .profile-picture,
-.scorecard-table .picture-container {
-    width: 21px;
-    height: 21px;
+/*.scorecard:not(.meeting-page)*/ .scorecard-table .profile-picture,
+/*.scorecard:not(.meeting-page)*/ .scorecard-table .picture-container {
+    width: 25px;
+    height: 25px;
     /* margin-top: -2px; */
     /* margin-bottom: -2px; */
+    line-height: 22px;
     position: relative;
     top: 0px;
+    float: left;
+    font-size: 9px;
+}
+
+.scorecard profile-image {
     float: left;
 }
 
@@ -486,5 +505,25 @@
 }
 
 #ScorecardTable_Over {
-    box-shadow:11px 0px 19px -11px rgba(0, 0, 0, 0.36)
+    box-shadow: 11px 0px 19px -11px rgba(0, 0, 0, 0.36);
+}
+
+
+.accountable-column profile-image{
+    float:right;
+}
+
+.scorecard .item-wrapper.place-right form{
+    top:-16px;
+}
+
+.scorecard .goal-column .blend{
+    min-width:50px !important;
+    font-size:14px;
+}
+
+.scorecard .measurable-column,
+.scorecard .measurable-column input{
+    min-width:100px;
+    max-width:200px;
 }
