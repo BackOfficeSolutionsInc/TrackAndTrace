@@ -14,6 +14,7 @@ using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RadialReview.Utilities;
+using RadialReview.Models.Angular.Base;
 
 namespace RadialReview.Accessors
 {
@@ -37,17 +38,20 @@ namespace RadialReview.Accessors
 
             if (issue.CreatedDuringMeetingId == -1)
                 issue.CreatedDuringMeetingId = null;
-
             perms.ConfirmAndFix(issue,
                 x => x.CreatedDuringMeetingId,
                 x => x.CreatedDuringMeeting,
                 x => x.ViewL10Meeting);
-
+            
+            if (issue.OrganizationId == 0 && issue.Organization == null)
+                issue.OrganizationId = perms.GetCaller().Organization.Id;
             perms.ConfirmAndFix(issue,
                 x => x.OrganizationId,
                 x => x.Organization,
                 x => x.ViewOrganization);
 
+            if (issue.CreatedById == 0 && issue.CreatedBy == null)
+                issue.CreatedById = perms.GetCaller().Id;
             perms.ConfirmAndFix(issue,
                 x => x.CreatedById,
                 x => x.CreatedBy,
@@ -110,7 +114,7 @@ namespace RadialReview.Accessors
             meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur), r.OrderIssueBy);
 
             var updates = new AngularRecurrence(recurrenceId);
-            updates.IssuesList.Issues = new List<AngularIssue>() { new AngularIssue(recur) };
+            updates.IssuesList.Issues = AngularList.Create<AngularIssue>(AngularListType.Add, new []{ new AngularIssue(recur) });
             meetingHub.update(updates);
             Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateIssue", ForModel.Create(issue), issue.NotNull(x => x.Message));
             return o;

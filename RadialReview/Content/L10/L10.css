@@ -21,6 +21,10 @@ body {
     margin-bottom: 5px;
 }
 
+    .level-10 .component{
+        box-shadow: 0px 6px 5px -2px rgba(0,0,0,0.1);
+    }
+
     .component.flash {
         -webkit-animation: flash .5s ease 0 infinite alternate; /* Chrome, Safari, Opera */
         -moz-animation: flash .5s ease 0 infinite alternate;
@@ -433,11 +437,13 @@ profile-image {
     width: 170px;
 }
 
+.btn.print-button,
 .btn.settings-button {
     color: #CAC4BE;
     border-color: transparent;
 }
 
+    .btn.print-button:hover,
     .btn.settings-button:hover {
         border-color: #CAC4BE;
         /*color: #F7F7F7;*/
@@ -541,38 +547,38 @@ iframe {
 }
 
 
-.video-overlay{
+.video-overlay {
     background-color: rgba(0,0,0,.25);
-    position:fixed;
-    left:0;
-    right:0;
-    top:0;
-    bottom:0;   
-    z-index:10000000000000000;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10000000000000000;
 }
 
-.video-overlay:after{
-    content: "x";
-    float: right;
-    color: #7B7B7B;
-    position: absolute;
-    top: 4px;
-    right: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    font-family: monospace;
-}
+    .video-overlay:after {
+        content: "x";
+        float: right;
+        color: #7B7B7B;
+        position: absolute;
+        top: 4px;
+        right: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: monospace;
+    }
 
-.video-overlay:after:hover{
-    color: #bababa;
-}
+        .video-overlay:after:hover {
+            color: #bababa;
+        }
 
-.video-overlay iframe{
-    border:none;
-    width:100%;
-    background:none;
-    margin-top: 20px;
-}
+    .video-overlay iframe {
+        border: none;
+        width: 100%;
+        background: none;
+        margin-top: 20px;
+    }
 
 profile-image.desaturate {
     filter: gray;
@@ -586,9 +592,13 @@ profile-image.desaturate {
 }
 
 
-profile-image.desaturate:hover{
-    filter: none;
-    filter: grayscale(.3);
-    -webkit-filter: grayscale(.3);
-    opacity: .9;
-}
+    profile-image.desaturate:hover {
+        filter: none;
+        filter: grayscale(.3);
+        -webkit-filter: grayscale(.3);
+        opacity: .9;
+    }
+
+    .editable-click, a.editable-click, a.editable-click:hover{
+        border-bottom:none !important;
+    }

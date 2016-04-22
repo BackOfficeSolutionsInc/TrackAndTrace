@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using FluentNHibernate.Mapping;
 using RadialReview.Accessors;
 using RadialReview.Models.VTO;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Controllers
 {
@@ -22,6 +23,8 @@ namespace RadialReview.Controllers
             public long Id { get; set; }
 
             public bool IsPartial { get; set; }
+
+            public bool OnlyCompanyWideRocks { get; set; }
         }
 
 
@@ -51,10 +54,13 @@ namespace RadialReview.Controllers
 
             var defaultVision = false;
             var defaultTraction = true;
+            //var onlyCompanyWideRocks = false;
 
             if (model.L10Recurrence != null)
             {
-                defaultVision = L10Accessor.GetL10Recurrence(GetUser(), model.L10Recurrence.Value, false).IsLeadershipTeam;
+                var isLeadership =  L10Accessor.GetL10Recurrence(GetUser(), model.L10Recurrence.Value, false).TeamType == L10TeamType.LeadershipTeam;
+                defaultVision = isLeadership;
+                //onlyCompanyWideRocks = onlyCompanyWideRocks || isLeadership;
             }else{
                 defaultVision = true;
             }

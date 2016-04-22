@@ -2,10 +2,16 @@
 @import "../mixins/utils";
 @import "../../Angular/Rocks";
 @import "../../Angular/Issues";
+@import "modal";
 
 tr.grayRow {
     background-image: url("/Content/img/graystripe.png");
     //background-color: lighten(@traction-orange,40%);
+}
+
+.btn.heading:focus,
+.btn.heading:active {
+    outline: none;
 }
 
 
@@ -151,30 +157,6 @@ select:-webkit-autofill:focus {
     border-top: 1px solid #444;
 }
 
-input.blend {
-    width: 100%;
-    border: none;
-    cursor: pointer;
-    border-bottom: 1px solid transparent;
-    overflow: hidden;
-    -ms-text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
-
-    &:not(:disabled):hover {
-        border-bottom: 1px dotted rgba(0,0,0,0.18);
-    }
-
-    &:not(:disabled):focus {
-        outline: none;
-        border-bottom: 1px dotted @traction-orange;
-    }
-
-    &:disabled {
-        cursor: default;
-        background-color: inherit;
-    }
-}
 
 .noheight {
     height: 0px;

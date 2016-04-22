@@ -181,7 +181,9 @@ namespace RadialReview.Controllers
                 //var model = new L10EditVM();
                 //AddExtras(0, model);
                 //ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
-                return View("Wizard", 0L);
+
+                var l10 = L10Accessor.CreateBlankRecurrence(GetUser(),GetUser().Organization.Id);
+                return RedirectToAction("Wizard", new { id = l10.Id });
             } else {
                 //var recurrenceId = id.Value;
                 //_PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
@@ -336,7 +338,7 @@ namespace RadialReview.Controllers
             PdfAccessor.AddL10(doc, recur, d);
 
             var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
-            return Pdf(doc, now + "_" + recur.Name + "_L10Meeting.pdf", true);
+            return Pdf(doc, now + "_" + recur.Basics.Name + "_L10Meeting.pdf", true);
         }
 
         #region Error

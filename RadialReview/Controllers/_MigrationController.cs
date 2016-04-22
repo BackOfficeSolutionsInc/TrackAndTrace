@@ -1063,5 +1063,60 @@ namespace RadialReview.Controllers {
                 }
             }
         }
+
+
+        [Access(AccessLevel.Radial)]
+        public string M4_15_2016()
+        {
+
+            var f = 0;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    //Fix TempUser userIds
+
+                    var recur = s.QueryOver<L10Recurrence>().Where(x=>x.TeamType==L10TeamType.Invalid || x.TeamType==null).List().ToList();
+
+                    foreach (var r in recur) {
+                        r.TeamType = r.IsLeadershipTeam?L10TeamType.LeadershipTeam:L10TeamType.Other;
+                        s.Update(r);
+                        f++;
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+
+                    return "" + f;
+                }
+            }
+        }
+
+        [Access(AccessLevel.Radial)]
+        public string M4_17_2016()
+        {
+             var f = 0;
+             using (var s = HibernateSession.GetCurrentSession()) {
+                 using (var tx = s.BeginTransaction()) {
+                     //Fix TempUser userIds
+
+                     var eosWW = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id==1795).List().ToList();
+
+                     foreach (var e in eosWW) {
+                         if (e.User.SendTodoTime != -1) {
+
+                             e.User.SendTodoTime = -1;
+                             s.Update(e.User);
+                             f += 1;
+                         }
+                     }
+                     
+                    tx.Commit();
+                    s.Flush();
+
+                    return "EOSWW SetTime:" + f;
+                }
+             }
+
+        }
+
     }
 }

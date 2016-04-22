@@ -863,5 +863,26 @@ namespace RadialReview.Accessors {
                 }
             }
         }
+
+        public void EnsureAllAtOrganization(UserOrganizationModel caller, long organizationId, List<long> userIds,bool includedDeleted=false)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+                    var q= s.QueryOver<UserOrganizationModel>().Where(x =>x.Organization.Id == organizationId);
+                    if(!includedDeleted){
+                        q = q.Where(x=>x.DeleteTime==null);
+                    }
+
+                    var foundIds = q.WhereRestrictionOn(x=>x.Id).IsIn(userIds).Select(x=>x.Id).List<long>().ToList();
+
+                    foreach(var id in userIds){
+                        if (!foundIds.Any(x=>x==id))
+                            throw new PermissionsException("User not part of organization");
+                    }
+
+                }
+            }
+        }
     }
 }

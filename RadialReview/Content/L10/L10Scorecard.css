@@ -254,7 +254,7 @@
     top: 0px;
     left: 0px;
     background-color: #FFF;
-    border-right: 1px solid #E8E8E8;
+    /*border-right: 1px solid #E8E8E8;*/
     display: block;
     max-width: 80%;
 }
@@ -362,7 +362,27 @@
 /*.scorecard-table .divider,*/
 .scorecard-table .divider td {
     height: 4px;
-    background-color: #BDBDBD; /*#E8E8E8;*/
+    background-color: #2C77BA; /*#E8E8E8;*/
+    border-top: 1px solid #24629A;
+    /*-moz-transition: height ease-in-out .15s;
+    -o-transition: height ease-in-out .15s;
+    -webkit-transition: height ease-in-out .15s;
+    transition: height ease-in-out .15s;*/
+}
+
+.scorecard-table .divider td.current-divider-right.handle{
+    border-top:none;
+}
+#ScorecardTable_Over.scorecard-table .divider td {
+    background-color: #E8E8E8; /*#E8E8E8;*/
+    border-top: 1px solid silver;
+}
+
+
+.scorecard-table .divider:hover td {    
+    /*height: 6px;
+    position: relative;
+    top: -1px!important;*/
 }
 
 #ScorecardTable_Over.scorecard-table .divider {
@@ -387,8 +407,8 @@
 	opacity: 0;
 	z-index: 10000;*/
     font-size: 10px;
-    top: -1px;
-    left: 25px;
+    top: -1px;    
+    left: 5px;
     margin: -3px;
 }
 
@@ -516,6 +536,9 @@
 .scorecard .item-wrapper.place-right form{
     top:-16px;
 }
+/*.scorecard .item-wrapper.place-bottom form{
+    top:-16px;
+}*/
 
 .scorecard .goal-column .blend{
     min-width:50px !important;

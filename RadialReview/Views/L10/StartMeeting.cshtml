@@ -15,6 +15,7 @@
                 InsertionMode = InsertionMode.Replace,
                 UpdateTargetId = "main-window",
                 LoadingElementDuration = 1000,
+                OnBegin = "$('.startButton').attr('disabled',true).css('cursor','progress');showLoader();"
             })) {
                 @*if (ViewBag.Message!=null){
                         <div class="alert alert-danger" role="alert">
@@ -38,7 +39,7 @@
                     }
                 </table>
                 <div class="alignCenter">
-                    <input type="submit" class="btn btn-primary center" value="Start Meeting as Leader" />
+                    <input type="submit" class="btn btn-primary center startButton" value="Start Meeting as Leader"  />
                 </div>
             }
             <hr />
@@ -61,7 +62,7 @@
                 <div class="row">
                     <div class="col-md-6 alignRight-md smallBreak2">
                         <div class="">
-                            <a class="btn btn-default " href="/L10/printout/@Model.Recurrence.Id"><span class="glyphicon glyphicon-file"></span> L10 Printout</a>
+                            <a class="btn btn-default " target="_blank" href="/L10/printout/@Model.Recurrence.Id"><span class="glyphicon glyphicon-file"></span> L10 Printout</a>
                         </div>
                     </div>
                     <div class="col-md-6 alignLeft-md smallBreak2">

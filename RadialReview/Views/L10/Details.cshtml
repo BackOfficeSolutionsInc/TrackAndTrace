@@ -290,7 +290,7 @@
 }
 <div ng-app="L10App" class="meeting-review ng-cloak meeting-archive">
     <div ng-controller="L10Controller">
-        <div class="pull-left"><h3 id="meeting-name" style="margin-top: 5px;">{{::model.Name}}</h3></div>
+        <div class="pull-left"><h3 id="meeting-name" style="margin-top: 5px;">{{::model.Basics.Name}}</h3></div>
         <div class="calendar-container pull-right" style="width:240px;">
             <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
             <input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="model.date" options="opts" required placeholder="Select a date range..." />

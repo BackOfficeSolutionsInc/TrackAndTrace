@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Web.Script.Serialization;
 
 namespace RadialReview.Models.Angular.Base
@@ -13,6 +14,7 @@ namespace RadialReview.Models.Angular.Base
 		public bool _Pointer {get { return true; }}
 
 		[ScriptIgnore]
+        [JsonIgnore]
 		public IAngularItem Reference { get; set; }
 
 		public AngularPointer(IAngularItem reference,DateTime time,bool delete)

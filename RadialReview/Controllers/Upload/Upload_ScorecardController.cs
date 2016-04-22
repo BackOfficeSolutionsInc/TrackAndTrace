@@ -84,7 +84,7 @@ namespace RadialReview.Controllers {
             return PartialView("UploadScorecardSelected",m);
 
         }
-
+        
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
@@ -177,7 +177,7 @@ namespace RadialReview.Controllers {
 
             //ShowAlert("Uploaded Scorecard", AlertType.Success);
 
-            return Json(ResultObject.CreateRedirect("/upload/l10/","Uploaded Scorecard"));
+            return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Scorecard", "Uploaded Scorecard"));
         }
 
         public class UploadScorecardSelectedDataVM {

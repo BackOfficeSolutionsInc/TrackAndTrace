@@ -17,17 +17,24 @@ namespace RadialReview.Models.Angular.Meeting
 	public class AngularRecurrence : BaseAngular
 	{
 		public AngularRecurrence(L10Recurrence recurrence) : this(recurrence.Id){
-			Name = recurrence.Name;
+            Basics = new AngularBasics(recurrence.Id) {
+			    Name = recurrence.Name,
+                TeamType = recurrence.TeamType,                
+            };
             IssuesList.Prioritization = recurrence.Prioritization!=PrioritizationType.Invalid?recurrence.Prioritization:PrioritizationType.Priority;
             VtoId = recurrence.VtoId;
-
 		}
 
 		public AngularRecurrence(long id):base(id){
-            IssuesList = new AngularIssuesList();
+            IssuesList = new AngularIssuesList(id);
 		}
+        //[Obsolete("Do not use.",false)]
+        public AngularRecurrence(){
+        }
 
-		public string Name { get; set; }
+        public AngularBasics Basics { get; set; }
+
+		//public string Name { get; set; }
 		public IEnumerable<AngularUser> Attendees { get; set; }
 		public AngularScorecard Scorecard { get; set; }
 		public IEnumerable<AngularMeetingNotes> Notes { get; set; }
@@ -39,8 +46,26 @@ namespace RadialReview.Models.Angular.Meeting
         //public PrioritizationType Prioritization { get; set; }
         public long? VtoId { get; set; }
 	}
-    public class AngularIssuesList {
 
+    public class AngularBasics : BaseAngular {
+        public AngularBasics(long recurrenceId): base(recurrenceId){
+		}
+
+        //[Obsolete("Do not use")]
+        public AngularBasics(){
+        }
+
+        public string Name { get; set; }
+        public L10TeamType? TeamType { get; set; }
+    }
+    public class AngularIssuesList : BaseAngular {
+
+        public AngularIssuesList(long recurrenceId): base(recurrenceId){
+		}
+
+        //[Obsolete("Do not use")]
+        public AngularIssuesList(){
+        }
         public IEnumerable<AngularIssue> Issues { get; set; }
         public PrioritizationType? Prioritization { get; set; }
     }
@@ -49,6 +74,11 @@ namespace RadialReview.Models.Angular.Meeting
 	{
 		public DateTime startDate { get; set; }
 		public DateTime endDate { get; set; }
+
+        public AngularDateRange()
+        {
+
+        }
 	}
 
 	//	public class AngularScorecardRow : BaseAngular

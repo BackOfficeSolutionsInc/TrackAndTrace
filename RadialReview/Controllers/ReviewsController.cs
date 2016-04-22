@@ -94,7 +94,7 @@ namespace RadialReview.Controllers
         public ActionResult Edit(long id)
         {
             var user = GetUser().Hydrate().ManagingUsers(true).Execute();
-            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, true,false);
+            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false,false,populateReview:true);
 			if (reviewContainer.DeleteTime!=null)
 				throw new PermissionsException("This review has been deleted.");
 
@@ -126,6 +126,7 @@ namespace RadialReview.Controllers
 	    public class DueDateVM
 	    {
 			public long RReviewId { get; set; }
+            public long[] reviews { get; set; }
 			public DateTime DueDate { get; set; }
 	    }
 
@@ -144,9 +145,20 @@ namespace RadialReview.Controllers
 	    [HttpPost]
 	    [Access(AccessLevel.Manager)]
 		public JsonResult EditDueDateModal(DueDateVM model)
-	    {
-			_ReviewAccessor.UpdateDueDate(GetUser(), model.RReviewId, model.DueDate);
-		    return Json(ResultObject.Success("Updated due date."));
+        {
+            var ids = new List<long>();
+            var adjDate = GetUser().Organization.ConvertToUTC(model.DueDate);
+            if (model.RReviewId != 0) {
+                ids.Add(model.RReviewId);
+                _ReviewAccessor.UpdateDueDate(GetUser(), model.RReviewId, adjDate);
+            }
+            if (model.reviews != null) {
+                foreach (var m in model.reviews) {
+                    _ReviewAccessor.UpdateDueDate(GetUser(), m, adjDate);
+                    ids.Add(m);
+                }
+            }
+            return Json(ResultObject.Create(new { due = model.DueDate.ToString("MM-dd-yyyy"), ids = ids }, "Updated Due Date"));
 	    }
 
 		[Access(AccessLevel.Manager)]

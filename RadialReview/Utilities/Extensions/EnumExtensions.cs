@@ -2,6 +2,7 @@
 using RadialReview.Utilities.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Resources;
@@ -36,12 +37,23 @@ namespace RadialReview
             var fieldInfo = value.GetType().GetField(value.ToString());
             var descriptionAttributes = fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false) as DisplayAttribute[];
             if (descriptionAttributes == null) return string.Empty;
-            if (descriptionAttributes.Length > 0){
-	            if (descriptionAttributes[0].ResourceType == null)
-		            return descriptionAttributes[0].Name;
+            if (descriptionAttributes.Length > 0) {
+                if (descriptionAttributes[0].ResourceType == null)
+                    return descriptionAttributes[0].Name;
                 return new ResourceManager(descriptionAttributes[0].ResourceType).GetString(descriptionAttributes[0].Name);
             }
             return value.ToString();
+        }
+        public static String GetDescription<T>(this T value) where T : struct, IConvertible
+        {
+            var fieldInfo = value.GetType().GetField(value.ToString());
+            var descriptionAttributes = fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[];
+            if (descriptionAttributes == null) return string.Empty;
+            if (descriptionAttributes.Length > 0) {
+                if (descriptionAttributes[0].Description != null)
+                    return descriptionAttributes[0].Description;
+            }
+            return GetDisplayName(value);
         }
 
         public static IEnumerable<Enum> GetFlags(this Enum input)

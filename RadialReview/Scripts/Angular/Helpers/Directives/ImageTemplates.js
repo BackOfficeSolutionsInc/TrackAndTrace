@@ -20,8 +20,8 @@
             }
         },
         template: "<span class='picture-container' title='{{user.Name}}'>" +
-			"<span ng-if='user.ImageUrl!=\"/i/userplaceholder\" && user.ImageUrl!=null && user.ImageUrl!=\"\"' class='picture' style='background: url({{user.ImageUrl}}) no-repeat center center;'></span>" +
-			"<span ng-if='user.ImageUrl==\"/i/userplaceholder\"' class='picture' style='background-color:hsla({{colorCode}}, 36%, 49%, 1);color:hsla({{colorCode}}, 36%, 72%, 1)'>{{user.Initials}}</span>" +
+			"<span ng-if='user.ImageUrl!=\"/i/userplaceholder\" && user.ImageUrl!=null && user.ImageUrl!=\"\"' class='picture' style='background: url({{user.ImageUrl}}) no-repeat center center; background-color:hsla({{::colorCode}}, 36%, 49%, 1);color:hsla({{::colorCode}}, 36%, 72%, 1)'></span>" +
+			"<span ng-if='user.ImageUrl==\"/i/userplaceholder\"' class='picture' style='background-color:hsla({{::colorCode}}, 36%, 49%, 1);color:hsla({{::colorCode}}, 36%, 72%, 1)'>{{user.Initials}}</span>" +
 			"<span ng-if='user.ImageUrl==null || user.ImageUrl==\"\"' class='picture' style='color:#ccc'>n/a</span>" +
 			"</span>"
     };

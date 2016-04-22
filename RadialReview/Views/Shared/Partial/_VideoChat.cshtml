@@ -130,6 +130,8 @@
                 audio: 128,
             };
 
+            var localConnected=false;
+
             connection.onstream = function(event) {
                 console.log("adding stream!");
                 console.log(event.mediaElement);
@@ -153,6 +155,7 @@
                     $(".videoconference-container .sendVideo").addClass("fontastic-icon-eye-2");
                     $(".videoconference-container .sendAudio").addClass("fontastic-icon-mic");
                     $(".start-video").addClass("hidden");
+                    localConnected=true;
                 }else{
                     container.append(event.mediaElement);
                 }
@@ -161,6 +164,9 @@
             connection.onstreamended = function(event) {
                 var streamId = event.streamid;
                 $(".streamid_" + streamId).remove();
+                if (event.type=="local"){
+                    localConnected=false;
+                }
             };
             connection.onspeaking = function(e) {
                 $(e.mediaElement).parent(".video-container").addClass("speaking");

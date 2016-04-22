@@ -36,9 +36,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label alignLeft">Is Leadership Team:</label>
+                <label class="col-sm-2 control-label alignLeft">Team Type:</label>
                 <div class="col-sm-10">
-                    @Html.CheckBoxFor(x => x.Recurrence.IsLeadershipTeam, new { @class = "checkbox editable", style = "" })
+                    @Html.EnumDropDownListFor(x => x.Recurrence.TeamType, new { @class = "form-control  editable", style = "" })
                 </div>
             </div>
             <hr />

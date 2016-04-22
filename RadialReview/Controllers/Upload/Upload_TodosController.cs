@@ -160,7 +160,7 @@ namespace RadialReview.Controllers {
 
             //ShowAlert("Uploaded Scorecard", AlertType.Success);
 
-            return Json(ResultObject.CreateRedirect("/upload/l10/", "Uploaded To-dos"));
+            return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Todos", "Uploaded To-dos"));
         }
         public class UploadTodosSelectedDataVM {
             public List<string> Todos { get; set; }

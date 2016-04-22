@@ -18,6 +18,17 @@ namespace RadialReview.Models.L10
         Rank=2,
     }
 
+    public enum L10TeamType {
+        Invalid =0,
+
+        [Display(Name = "Leadership Team")]
+        LeadershipTeam = 1,
+        [Display(Name = "Departmental Team")]
+        DepartmentalTeam = 2,
+        [Display(Name = "Other")]
+        Other=100
+    }
+
 	public class L10Recurrence : ILongIdentifiable,IDeletable
 	{
 		public virtual long Id { get; set; }
@@ -65,7 +76,7 @@ namespace RadialReview.Models.L10
 
         public virtual string HeadlinesId { get; set; }
         public virtual bool ShowHeadlinesBox { get; set; }
-
+        public virtual L10TeamType TeamType { get; set; }
         public virtual bool IsLeadershipTeam { get; set; }
 
         public virtual PrioritizationType Prioritization { get; set; }
@@ -88,6 +99,7 @@ namespace RadialReview.Models.L10
             IsLeadershipTeam = true;
             Prioritization = PrioritizationType.Rank;
             ShowHeadlinesBox=false;
+            TeamType = L10TeamType.LeadershipTeam;
 
 		}
 
@@ -126,6 +138,7 @@ namespace RadialReview.Models.L10
 				Map(x => x.IncludeIndividualTodos);
 				Map(x => x.IncludeAggregateTodoCompletion);
 
+                Map(x => x.TeamType).CustomType<L10TeamType>();
                 Map(x => x.Prioritization).CustomType<PrioritizationType>();
 
 				Map(x => x.OrganizationId).Column("OrganizationId");

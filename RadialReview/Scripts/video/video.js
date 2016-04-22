@@ -9,7 +9,11 @@
         //connection.session.video = true;
         //connection.session.broadcast = true;
         connection.openOrJoin();
-
+        setTimeout(function () {
+            if (!localConnected) {
+                connection.open();
+            }
+        },6000);
         //connection.unhold("both");
         //connection.addStream({
         //    audio: true,

@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="SHORTCUT ICON" href="/content/favicon.ico?v=3" />
     <link href='https://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
+
     <title>@ViewBag.Title - @Html.ProductName()</title>
     @*<link href="" rel="stylesheet" />*@
     @Styles.Render("~/Content/css")
@@ -167,7 +168,7 @@
                 @RenderBody()
                 <div class="footer-bar">@{ Html.RenderPartial("Partial/_VideoChat"); }</div>
             </div>
-            <div id="spinnerContainer"></div>
+            <div id="animationContainer"></div>
         </div>
         @{Html.RenderPartial("Partial/_Modal");}
         @using (var s = Html.BeginScripts())
@@ -175,7 +176,8 @@
 				<!--script src="~/Scripts/Main/radial.js"></script-->
             <script>
                 $(function () {
-                    qtip();
+                    //qtip();
+                    $('[data-toggle="tooltip"]').tooltip();
                     ForceUnhide();
                     @if (ViewBag.Alert!=null){
 							@:showAlert("@ViewBag.Alert");

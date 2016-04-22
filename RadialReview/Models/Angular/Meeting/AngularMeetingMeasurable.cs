@@ -14,9 +14,11 @@ namespace RadialReview.Models.Angular.Scorecard
 		public AngularMeetingMeasurable(L10Meeting.L10Meeting_Measurable measurable): base(measurable.Id)
 		{
 			Measurable = new AngularMeasurable(measurable.Measurable);
+            Measurable.RecurrenceMeasurableId = measurable.Id;
 
 		}
 		public AngularMeasurable Measurable { get; set; }
+
 
 	}
 }

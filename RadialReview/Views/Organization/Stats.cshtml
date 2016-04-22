@@ -20,17 +20,27 @@
 <h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
 
 
-<table class="table table-condensed table-striped">
-    <thead>
+<table class="table table-condensed table-striped table-hover">
+    <thead class="table-header">
         <tr><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>Status</th><th>LastLogin</th><th>CreateTime</th><th>TrialEnd</th></tr>
     </thead>
     @foreach (var i in Model) {
         <tr>
             <td>@i.OrgId</td>
             <td class="alignRight"><a href="/Organization/Which/@i.OrgId">@i.OrgName</a></td>
-            <td>@i.Username  </td>
+            <td style="width:120px;">@i.Username  </td>
             <td>@i.Position</td>
-            <td class="account-@i.Status select" data-sort="@(scoreOrder[i.Status])"><span class="hidden">@(scoreOrder[i.Status])</span><span class="" data-sort="@(scoreOrder[i.Status])">@i.Status</span></td>
+            <td class="account-@i.Status {sorter: 'digit'} account">
+                <span style="display: none">@(scoreOrder[i.Status])</span>
+                @if (i.Status == AccountType.Cancelled) {
+                    @:Cancelled
+                } else {
+                    @Html.EnumDropDownList("at-" + i.OrgId, i.Status, new { onchange = "changeAccountType(this," + i.OrgId + ")" })
+                }
+
+            </td>
+
+            @*<td class="account-@i.Status select" data-sort="@(scoreOrder[i.Status])"><span class="hidden">@(scoreOrder[i.Status])</span><span class="" data-sort="@(scoreOrder[i.Status])">@i.Status</span></td>*@
             <td class="alignRight" style="color:@(i.LastLogin.NotNull(x =>{
 						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
 						                         {
@@ -45,12 +55,12 @@
 						                         }
 						                         return "red";
 					                         })??"darkred")">
-                @i.LastLogin.NotNull(x => x.ToString())
+                @i.LastLogin.NotNull(x => x.Value.ToShortDateString())
             </td>
-            <td>@i.OrgCreateTime</td>
+            <td class="alignCenter">@i.OrgCreateTime.NotNull(x => x.Value.ToShortDateString())</td>
             <td style="color:@(i.TrialEnd.NotNull(x => (x > DateTime.UtcNow) ? "green" : "red"))">
                 @if (i.TrialEnd != DateTime.MinValue) {
-                    @i.TrialEnd
+                    @i.TrialEnd.NotNull(x => x.Value.ToShortDateString())
                 }
             </td>
         </tr>
@@ -66,10 +76,95 @@
                 4: { sorter: 'attr' },
             }
         });
+
+        var acType = {
+            @foreach (var kv in scoreOrder) {
+                @:@(kv.Key):@(kv.Value),
+                                                }
+        };
+
+        $("select").on('focus', function () {
+            // Store the current value on focus and on change
+            $(this).data("previous",this.value);
+        })
+
+        function changeAccountType(self, id) {
+            function updateAccountType(){
+                $.ajax("/organization/setaccounttype/" + id + "?type=" + $(self).val());
+                $(self).closest("td").removeClass(function (index, css) {
+                    return (css.match(/\baccount-\S+/g) || []).join(' ');
+                }).addClass("account-" + $(self).val());
+                $(self).find("span").html(acType[$(self).val()]);
+            }
+
+
+            if ("Cancelled"==$(self).val()){
+                showModal({
+                    title:"Are you sure you want to delete this organization?",
+                    icon:"warning",
+                    //fields:{type:"header",value:"This action will affect the organizations members"},
+                    success:function(){
+                        updateAccountType(); $(self).parent("td").html("Cancelled")
+                    },
+                    cancel:function(){
+                        $(self).val($(self).data("previous"));
+                        changeAccountType(self, id)
+                    }
+                });
+            }else{
+                updateAccountType();
+            }
+        }
     </script>
 }
 
 <style>
+    .account {
+        padding: 0 !important;
+        vertical-align: middle !important;
+    }
+
+        .account select {
+            width: 100%;
+        }
+
+    tr.delete td {
+        text-decoration: line-through;
+    }
+
+    .account-Paying select {
+        background-color: #1b6b74;
+        color: white;
+        font-weight: bold;
+    }
+
+    .account-Dormant {
+        color: gray;
+    }
+
+    .account-Other select {
+        background-color: gray;
+        color: white;
+        font-weight: bold;
+    }
+
+    .account-Cancelled {
+        color: lightgray;
+        font-style: italic;
+    }
+
+    .account-Demo select {
+        background-color: #d9534f;
+        color: white;
+        font-weight: bold;
+    }
+
+    .account-Implementer select {
+        background-color: #ff7d00;
+        color: white;
+        font-weight: bold;
+    }
+
     td {
         padding: 0 5px;
     }
@@ -78,40 +173,42 @@
         color: black;
     }
 
-    .select{
-        vertical-align:middle;
-        text-align:center;
-        border-bottom:1px solid white;
+    .select {
+        vertical-align: middle;
+        text-align: center;
+        border-bottom: 1px solid white;
     }
-    .account-Paying  {
-			background-color: #1b6b74;
-			color: white;
-			font-weight: bold;
-		}
-		
-		.account-Dormant {
-			color: gray;
-		}
-		.account-Other  {
-			background-color: gray;
-			color: white;
-			font-weight: bold;
-		}
-		
-		.account-Cancelled {
-			color: lightgray;
-			font-style: italic;
-		}
 
-		.account-Demo  {
-			background-color: #d9534f;
-			color: white;
-			font-weight: bold;
-		}
+    /*.account-Paying {
+        background-color: #1b6b74;
+        color: white;
+        font-weight: bold;
+    }
 
-		.account-Implementer  {
-			background-color: #ff7d00;
-			color: white;
-			font-weight: bold;
-		}
+    .account-Dormant {
+        color: gray;
+    }
+
+    .account-Other {
+        background-color: gray;
+        color: white;
+        font-weight: bold;
+    }
+
+    .account-Cancelled {
+        color: lightgray;
+        font-style: italic;
+    }
+
+    .account-Demo {
+        background-color: #d9534f;
+        color: white;
+        font-weight: bold;
+    }
+
+    .account-Implementer {
+        background-color: #ff7d00;
+        color: white;
+        font-weight: bold;
+    }*/
 </style>

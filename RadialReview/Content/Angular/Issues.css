@@ -1,4 +1,21 @@
-﻿.issues-list-container .priority-2 .priority-column,
+﻿.issues-list-container {
+  /*    border: none;
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+        color: #5d5d5d;
+        background: none;
+        cursor: pointer;
+    }
+
+    input:focus {
+        outline: none;
+    }*/
+}
+.issues-list-container .priority-2 .priority-column,
 .issues-list-container .priority-Rank .priority-column {
   display: none;
+}
+.issues-list-container input.blend {
+  max-width: 100%;
 }

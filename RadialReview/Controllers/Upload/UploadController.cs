@@ -66,6 +66,7 @@ namespace RadialReview.Controllers {
         #endregion
 
         private static Dictionary<string, string> Backup = new Dictionary<string, string>();
+
         [Access(AccessLevel.UserOrganization)]
         public ActionResult L10(string id = null, long recurrence = 0)
         {
@@ -137,12 +138,31 @@ namespace RadialReview.Controllers {
 
                 return RedirectToAction("Edit","VTO",new{id=vto.Id});
             }
-
-
-
-
+        }
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult UploadUsers(long? recurrenceId = null)
+        {
+            ViewBag.RecurrenceId = recurrenceId;
+            return View();
         }
 
+
+        //[Access(AccessLevel.UserOrganization)]
+        //[HttpPost]
+        //public async Task<JsonResult> UploadUsers(HttpPostedFileBase file,long? recurrenceId=null)
+        //{
+
+        //    var upload = await UploadAccessor.UploadAndParse(GetUser(), type, file, ForModel.Create<L10Recurrence>(recurrenceId));
+        //    if (file != null && file.ContentLength > 0) {
+        //        var guid = Guid.NewGuid();
+        //        CSVs[guid] = file.InputStream.ReadToEnd();
+        //        return RedirectToAction("Fields", new { id = guid.ToString() });
+        //    }
+        //    ViewBag.Message = "An error has occurred.";
+        //    return RedirectToAction("Upload");
+
+        //    return Json(ResultObject.SilentSuccess());
+        //}
 
         #region Comments
         //[Access(AccessLevel.UserOrganization)]

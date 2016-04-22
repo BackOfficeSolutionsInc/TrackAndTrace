@@ -260,6 +260,8 @@ namespace RadialReview.Accessors
 		public List<long> AllowedPhoneNumbers = new List<long>(){
 			6467599497, 6467599498, 6467599499,
 			6467603167, 6467603168, 6467603169,
+            441234480162 ,441234480352
+
 		};
 		public void ConstructPhoneNumbers(ISession s)
 		{

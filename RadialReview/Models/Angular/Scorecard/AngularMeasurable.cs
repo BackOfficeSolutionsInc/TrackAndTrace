@@ -7,6 +7,7 @@ using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Scorecard;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Models.Angular.Scorecard
 {
@@ -15,6 +16,11 @@ namespace RadialReview.Models.Angular.Scorecard
 	
 	public class AngularMeasurable : BaseAngular
 	{
+        //public AngularMeasurable(L10Recurrence.L10Recurrence_Measurable measurable, bool skipUser = false) : this(measurable.Measurable,skipUser)
+        //{
+        //    RecurrenceMeasurableId = measurable.Id;
+        //}
+
 		public AngularMeasurable(MeasurableModel measurable,bool skipUser=false):base(measurable.Id)
 		{
 
@@ -55,7 +61,9 @@ namespace RadialReview.Models.Angular.Scorecard
 		public UnitType? Modifiers { get; set; }
 
 		public int? Ordering { get; set; }
-		public bool? Disabled { get; set; }
-		public long RecurrenceId { get; set; }
+        public bool? Disabled { get; set; }
+        public long? RecurrenceId { get; set; }
+        public long? RecurrenceMeasurableId { get; set; }
+
 	}
 }

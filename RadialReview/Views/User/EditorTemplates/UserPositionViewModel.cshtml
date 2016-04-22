@@ -9,7 +9,7 @@
         <label>Position:</label>
     </div>
     <div class="col-xs-9">
-        @Html.DropDownListFor(x => x.PositionId, Model.OrgPositions, new { id = "positionSelector", @class = "form-control" })
+        @Html.DropDownListFor(x => x.PositionId, Model.OrgPositions, new { id = "positionSelector", @class = "form-control  blend" })
     </div>
 </div>
 <div class="hidden newPosition">
@@ -19,7 +19,7 @@
 			<label>New position:</label>
 		</div>
 		<div class="col-xs-9">
-			@Html.DropDownListFor(x => x.CustomPositionId, Model.Positions, new { id = "newPositionSelector", @class = "form-control" })
+			@Html.DropDownListFor(x => x.CustomPositionId, Model.Positions, new { id = "newPositionSelector", @class = "form-control blend" })
 		</div>
 	</div>
 	<div class="smallBreak"></div>
@@ -28,7 +28,7 @@
 			<label>Custom name:</label>
 		</div>
 		<div class="col-xs-9">
-			@Html.TextBoxFor(x => x.CustomPosition, new { id = "newPositionInput", @class = "form-control", placeholder = "New position name" })
+			@Html.TextBoxFor(x => x.CustomPosition, new { id = "newPositionInput", @class = "form-control blend", placeholder = "New position name" })
 		</div>
 	</div>
 	<hr/>

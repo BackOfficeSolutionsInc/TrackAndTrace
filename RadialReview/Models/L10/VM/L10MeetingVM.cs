@@ -29,7 +29,6 @@ namespace RadialReview.Models.L10.VM
 
 		public bool CanEdit { get; set; }
 		public bool CanAdmin { get; set; }
-
         public long VtoId { get;set;}
 
 		[DataContract]
@@ -89,7 +88,9 @@ namespace RadialReview.Models.L10.VM
 		}
 
 		//public bool AutoPrioritize { get; set; }
-	}
+
+        public bool SeenTodoFireworks { get; set; }
+    }
 
 	public class MeetingTranscriptVM
 	{

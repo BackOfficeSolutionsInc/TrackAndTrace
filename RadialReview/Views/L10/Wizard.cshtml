@@ -18,12 +18,12 @@
     <script src="~/Scripts/L10/L10.js"></script>
 
     <script>
-        initWizard("firstPage");
-        setCompletion(10);
+        initWizard("Basics");
+        //setCompletion(10);
         angular.module('L10App')
 			.value('meetingId', @Model)
 			.value('date-range',"today")
-			.value('meetingDataUrlBase', '/L10/DetailsData/')
+			.value('meetingDataUrlBase', '/L10/DetailsData/{0}?scores=false&historical=false')
 			.value("meetingCallback",false);
 
     </script>
@@ -41,12 +41,12 @@
                         </div>
                         <ol>
                             <li><a href="#Basics">Basics</a></li>
-                            <li><a href="#Rocks">Rocks</a></li>
-                            <li><a href="#Scorecard">Scorecard</a></li>
-                            <li><a href="#Issues">Issues</a></li>
-                            <li><a href="#Todos">To-dos</a></li>
                             <li><a href="#Attendees">Attendees</a></li>
-                            <li><a href="#VTO">V/TO</a></li>
+                            <li><a href="#Scorecard">Scorecard</a></li>
+                            <li><a href="#Rocks">Rocks</a></li>
+                            <li><a href="#Todos">To-dos</a></li>
+                            <li><a href="#Issues">Issues</a></li>
+                            @*<li><a href="#VTO">V/TO</a></li>*@
                         </ol>
 
                     </div>
@@ -55,37 +55,78 @@
                     <div class="component wizard-page" data-page="Basics">
                         <div class="form-horizontal">
                             <div class="form-group">
-                                <label class="col-xs-4 control-label">Meeting Name:</label>
-                                <div class="col-xs-8">
-                                    <input type="text" ng-model="model.Name" ng-change="functions.sendUpdate(issue)" />
+                                <label class="col-md-3 control-label">Meeting Name:</label>
+                                <div class="col-md-9">
+                                    <input class="blend" type="text" ng-model-options="{ debounce: 300 }" ng-model="model.Basics.Name" ng-change="functions.sendUpdate(model.Basics)" />
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-xs-4 control-label">Is this the leadership team:</label>
-                                <div class="col-xs-8">
-                                    <input type="text" ng-model="model.Name" ng-change="functions.sendUpdate(issue)" />
+                                <label class="col-md-3 control-label">Type of team:</label>
+                                <div class="col-md-9">
+                                    <select class="blend" ng-model="model.Basics.TeamType" ng-change="functions.sendUpdate(model.Basics)" ng-options=" s.value as s.text for s in options.l10teamtypes" ></select>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="component wizard-page" data-page="Rocks">
-                        @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml",new ViewDataDictionary{{"AddHeaders",false},{"AddDatePicker",false}});}
+                    <div class="component wizard-page" data-page="Attendees">
+                        <div class="title-bar">Attendees List</div>
+                        @{Html.RenderPartial("~/Views/User/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"SortBy","createtime-column"}
+                          });
+                        }
                     </div>
                     <div class="component wizard-page" data-page="Scorecard">
-                        secondPage!!
+                        <div class="upload upload-scorecard" ng-click="functions.goto('/upload/l10/scorecard?recurrence='+meetingId)"></div>
+                        <div class="title-bar">Scorecard Measurables</div>
+                        @{Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"AddDatePicker",false},
+                              {"EditOwner",true},
+                              {"ElasticInput",false},
+                              {"Order","| orderBy: ['Owner.Name','DateCreated','Id']"}
+                          });
+                        }
                     </div>
-                    <div class="component wizard-page" data-page="Issues">
-                        issues!!
+                    <div class="component wizard-page" data-page="Rocks">
+                        <div class="upload upload-rocks" ng-click="functions.goto('/upload/l10/rocks?recurrence='+meetingId)"></div>
+                        <div class="title-bar">Quarterly Rocks</div>
+                        @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml",new ViewDataDictionary{
+                              {"SortBy","createtime-column"},
+                              {"AddHeaders",false},
+                              {"AddDatePicker",false},
+                              {"Filter",""},
+                              {"Order","| orderBy: ['Owner.Name','DateCreated','Id']"}
+                          });
+                        }
                     </div>
                     <div class="component wizard-page" data-page="Todos">
-                        todos!!
+                        <div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+meetingId)"></div>
+                        <div class="title-bar">To-do List</div>
+                        @{Html.RenderPartial("~/Views/Todo/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"ShowDetails",false},
+                              {"SortBy","createtime-column"},
+                              {"AddDatePicker",false},
+                              {"Order","| orderBy: ['DateCreated','Id']"}
+                          });
+                        }
                     </div>
-                    <div class="component wizard-page" data-page="Attendees">
-                        Attendees!!
+                    <div class="component wizard-page" data-page="Issues">
+                        <div class="upload upload-issues" ng-click="functions.goto('/upload/l10/issues?recurrence='+meetingId)"></div>
+                        <div class="title-bar">Issues List</div>
+                        @{Html.RenderPartial("~/Views/Issues/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"ShowDetails",false},
+                              {"SortBy","createtime-column"},
+                              {"SortByDirection","ascending"},
+                              {"Order","| orderBy: ['DateCreated','Id']"}
+                          });
+                        }
                     </div>
-                    <div class="component wizard-page" data-page="VTO">
+                    @*<div class="component wizard-page" data-page="VTO">
                         VTO!!
-                    </div>
+                    </div>*@
                 </div>
             </div>
         </div>

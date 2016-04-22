@@ -29,8 +29,9 @@ namespace RadialReview.Models.Angular.Base
 		public string Key { get { return this.GetKey(); } }
 
 		public bool CreateOnly { get; set; }
-
-	}
+        
+        public bool Hide {get;set;}
+    }
 
 	public class Removed
 	{
@@ -93,6 +94,9 @@ namespace RadialReview.Models.Angular.Base
 		public long Id{get { return 0; }}
 
 		public string Type{get { return "Removed"; }}
-		
-	}
+
+
+
+        public bool Hide { get; set; }
+    }
 }

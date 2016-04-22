@@ -134,7 +134,7 @@ namespace RadialReview.Utilities.Serializers
 				var resolved = (IAngularItem) value;
 				_Serialize(value, sub, lookup, now);
 				Merge(lookup, resolved, sub); //lookup[resolved.GetKey()] = sub;
-				var output = new AngularPointer(resolved, now, false);
+                var output = new AngularPointer(resolved, now, false);
 				if (value is Removed){
 					output = null;
 				}
@@ -149,7 +149,7 @@ namespace RadialReview.Utilities.Serializers
 					var vResolved = (IAngularItem) v;
 					_Serialize(v, sub, lookup, now);
 					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
-					keyList.Add(new AngularPointer(vResolved, now, false));
+                    keyList.Add(new AngularPointer(vResolved, now, false));
 				}
 
 				if (value is IAngularList){
@@ -166,7 +166,7 @@ namespace RadialReview.Utilities.Serializers
 					var vResolved = (IAngularItem) v;
 					_Serialize(v, sub, lookup, now);
 					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
-					keyList.Add(vResolved.GetKey(), new AngularPointer(vResolved, now, false));
+                    keyList.Add(vResolved.GetKey(), new AngularPointer(vResolved, now, false));
 				}
 				if (!parent.ContainsKey(name))
 					parent[name] = keyList;

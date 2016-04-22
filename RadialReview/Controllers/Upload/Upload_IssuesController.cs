@@ -141,7 +141,7 @@ namespace RadialReview.Controllers {
 
             //ShowAlert("Uploaded Scorecard", AlertType.Success);
 
-            return Json(ResultObject.CreateRedirect("/upload/l10/", "Uploaded Issues"));
+            return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Issues", "Uploaded Issues"));
         }
         public class UploadIssuesSelectedDataVM {
             public List<string> Issues { get; set; }

@@ -14,19 +14,23 @@
                 <div class="pull-right">
                     <div class="btn-group">
                         <a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                            <span class="icon fontastic-icon-star-3"></span> <span class="mode-button">Mode </span>
+                            <span class="icon fontastic-icon-thumbnails fontastic-ic1on-star-3"></span> <span class="mode-button">Columns </span>
                         </a>
                         <ul class="dropdown-menu pull-right" role="menu">
-                            <li><a class="clickable " onclick="changeMode('Reorder')"><span class="icon fontastic-icon-align-right"></span> Reorder/Group</a></li>
-                            <li><a class="clickable " onclick="changeMode('Prioritize (2 Columns)')"><span class="icon fontastic-icon-thumbnails"></span> Prioritize (2 Columns)</a></li>
-                            <li><a class="clickable " onclick="changeMode('Prioritize (3 Columns)')"><span class="icon fontastic-icon-thumbnails"></span> Prioritize (3 Columns)</a></li>
-                            <li><a class="clickable " onclick="changeMode('Prioritize (4 Columns)')"><span class="icon fontastic-icon-thumbnails"></span> Prioritize (4 Columns)</a></li>
+                            <li><a class="clickable " onclick="changeMode('Reorder')"><span class="icon fontastic-icon-thumbnail1s fontastic-icon-align-righ1t"></span> 1 Column</a></li>
+                            <li><a class="clickable " onclick="changeMode('Prioritize (2 Columns)')"><span class="icon fontastic-icon-thumbnail1s"></span> 2 Columns</a></li>
+                            <li><a class="clickable " onclick="changeMode('Prioritize (3 Columns)')"><span class="icon fontastic-icon-thumbnail1s"></span> 3 Columns</a></li>
+                            <li><a class="clickable " onclick="changeMode('Prioritize (4 Columns)')"><span class="icon fontastic-icon-thumbnail1s"></span> 4 Columns</a></li>
                         </ul>
                     </div>
                     <div class="btn-group">
-                        <a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <a class="btn btn-default btn-xs" onclick="sortIssueByCurrent(recurrenceId,$('.issues-list'))">
                             <span class="icon fontastic-icon-sort-alpha-two"></span> <span class="sort-button">Sort</span>
                         </a>
+                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" style="padding:1px 3px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
                         <ul class="dropdown-menu pull-right" role="menu">
                             @*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-priority','Auto-Priority',-1)"> By Priority (Auto)</a></li>*@
                             <li><a class="clickable show-priority" onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-priority','Votes',-1)"> By Votes</a></li>

@@ -83,7 +83,7 @@ namespace RadialReview.Controllers {
             if (!anyPages)
                 return Content("No pages to print.");
 
-            return Pdf(doc, now + "_" + recur.Name + "_QuarterlyPrintout.pdf", true);
+            return Pdf(doc, now + "_" + recur.Basics.Name + "_QuarterlyPrintout.pdf", true);
         }
     }
 }

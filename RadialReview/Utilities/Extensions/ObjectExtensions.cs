@@ -34,6 +34,7 @@ namespace RadialReview
         public static decimal? TryParseDecimal(this string str)
         {
             decimal o;
+            str = str.NotNull(x => x.TrimEnd('%','$'));
             if (decimal.TryParse(str, out o))
                 return o;
             return null;
@@ -78,7 +79,9 @@ namespace RadialReview
 		    var phone = "";
 			if (input.Length==11)
 				phone = input.Substring(0, 1) + "-" + input.Substring(1, 3) + "-" + input.Substring(4, 3) + "-" + input.Substring(7, 4);
-			else
+            else if (input.Length == 12) {
+                phone = "+"+input.Substring(0, 2) + " " + input.Substring(2, 4) + " " + input.Substring(6, 6)+" (UK only)";
+            }else
 				phone = "(" + input.Substring(0, 3) + ") " + input.Substring(3, 3) + "-" + input.Substring(6, 4);
 		    return phone;
 	    }

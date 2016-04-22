@@ -26,6 +26,7 @@ namespace RadialReview.Models.Angular.Issues
 			if (recurrenceIssue.Owner!=null)
 				Owner = AngularUser.CreateUser(recurrenceIssue.Owner);
             Priority = recurrenceIssue.Priority;
+            //Delete = recurrenceIssue.DeleteTime != null;
 		}
 		public AngularIssue()
 		{

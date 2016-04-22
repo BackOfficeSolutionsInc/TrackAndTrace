@@ -23,6 +23,8 @@ using RadialReview.Utilities.Query;
 using RadialReview.Models.Json;
 using System.Security.Principal;
 using RadialReview.Models.L10;
+using RadialReview.Models.Angular.Users;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Accessors
 {
@@ -1110,5 +1112,62 @@ namespace RadialReview.Accessors
 			//	return Json(ResultObject.Create(null/*createdUser.GetTree(createdUser.Id.AsList())*/, message, StatusType.Warning));
 			//}
 		}
-	}
-}
+
+        public static List<Tuple<string,string,long>> Search(UserOrganizationModel caller, long orgId, string search,int take=int.MaxValue,long[] exclude=null)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms=PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
+
+                    var users = OrganizationAccessor.GetMembers_Tiny(s, perms, orgId);
+
+                    exclude = exclude??new long[0];
+
+                    users = users.Where(x => !exclude.Any(y => y == x.Item3)).ToList();
+
+                    var splits = search.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    var dist = new DiscreteDistribution<Tuple<string,string,long>>(0,7,true);
+
+                    foreach (var u in users) {
+                        var fname = false;
+                        var lname = false;
+                        var ordered = false;
+                        var fnameStart = false;
+                        var lnameStart = false;
+                        var wasFirst = false;
+                        var exactFirst = false;
+                        var exactLast = false;
+
+                        var f = u.Item1.ToLower();
+                        var l = u.Item2.ToLower();
+                        foreach (var t in splits) {
+                            if (f.Contains(t))
+                                fname = true;
+                            if (f == t)
+                                exactFirst = true;
+                            if (f.StartsWith(t))
+                                fnameStart = true;
+                            if (l.Contains(t))
+                                lname = true;
+                            if (l.StartsWith(t))
+                                lnameStart = true;
+                            if (fname && !wasFirst && lname)
+                                ordered = true;
+                            if (l == t)
+                                exactLast = true;
+                            wasFirst = true;
+                        }
+
+                        var score = fname.ToInt() + lname.ToInt() + ordered.ToInt() + fnameStart.ToInt() + lnameStart.ToInt() + exactFirst.ToInt() + exactLast.ToInt();
+                        if (score>0)
+                            dist.Add(u, score);
+                    }
+
+                    return dist.GetProbabilities().OrderByDescending(x => x.Value).Select(x=>x.Key).Take(take).ToList();
+                }                      
+            }                         
+        }                             
+    }                                 
+}                                     
+                                       

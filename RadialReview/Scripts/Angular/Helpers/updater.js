@@ -10,7 +10,7 @@
         }
     }
 
-    function baseExtend(dst, objs, deep, after) {
+    function baseExtend(dst, objs, deep, after,lookupFix) {
         var h = dst.$$hashKey;
 
         //Check if the lookup has the base object
@@ -26,7 +26,7 @@
                     if ("Lookup" in o) {
                         if (dst["Key"] in o["Lookup"]) {
                             var baseObj = o["Lookup"][dst["Key"]];
-                            baseExtend(objs[k], [baseObj], deep, true);
+                            baseExtend(objs[k], [baseObj], deep, true,true);
                             o["Lookup"][dst["Key"]] = null;
                         }
                     }
@@ -45,28 +45,51 @@
                 if (deep && angular.isObject(src)) {
                     if (src.AngularList) {
                         //Special AngularList Object
-                        if (src.UpdateMethod == "Add") {
-                            dst[key] = dst[key].concat(src.AngularList);
-                        } else if (src.UpdateMethod == "ReplaceAll") {
-                            dst[key] = src.AngularList;
-                        } else if (src.UpdateMethod == "ReplaceIfNewer") {
-                            var keysList = [];
-                            for (var e in dst[key]) {
-                                keysList.push(dst[key][e]["Key"]);
-                            }
-                            for (var e in src.AngularList) { //Foreach element in src
-                                var loc = keysList.indexOf(src.AngularList[e]["Key"]);
-                                if (loc != -1) {
-                                    dst[key][loc] = src.AngularList[e];
-                                } else {
-                                    dst[key].push(src.AngularList[e]);
-                                    keysList.push(src.AngularList[e]["Key"]);
-                                }
-                            }
-
-
+                        if (typeof (lookupFix) !== "undefined" && lookupFix ==true) {
+                            //skip this step if we're fixing the lookup
+                            dst[key] = src;
                         } else {
-                            console.error("UpdateMethod unknown:" + src.UpdateMethod);
+                            if (src.UpdateMethod == "Add") {
+                                if (typeof (dst[key]) === "undefined") {
+                                    dst[key] = [];
+                                }
+                                dst[key] = dst[key].concat(src.AngularList);
+                            } else if (src.UpdateMethod == "ReplaceAll") {
+                                dst[key] = src.AngularList;
+                            } else if (src.UpdateMethod == "ReplaceIfNewer") {
+                                var keysList = [];
+                                for (var entry in dst[key]) {
+                                    keysList.push(dst[key][entry]["Key"]);
+                                }
+                                for (var entry in src.AngularList) { //Foreach element in src
+                                    var loc = keysList.indexOf(src.AngularList[entry]["Key"]);
+                                    if (loc != -1) {
+                                        dst[key][loc] = src.AngularList[entry];
+                                    } else {
+                                        if (typeof (dst[key]) === "undefined") {
+                                            dst[key] = [];
+                                        }
+                                        dst[key].push(src.AngularList[entry]);
+                                        keysList.push(src.AngularList[entry]["Key"]);
+                                    }
+                                }
+                            } else if (src.UpdateMethod == "Remove") {
+                                var keysList = [];
+                                for (var entry in dst[key]) {
+                                    keysList.push(dst[key][entry]["Key"]);
+                                }
+
+                                for (var entry in src.AngularList) {
+                                    var entryKey = src.AngularList[entry]["Key"];
+                                    var index = keysList.indexOf(entryKey);
+                                    if (index != -1) {
+                                        dst[key].splice(index, 1);
+                                        keysList.splice(index, 1);
+                                    }
+                                }
+                            } else {
+                                console.error("UpdateMethod unknown:" + src.UpdateMethod);
+                            }
                         }
                     } else {
                         if (!angular.isObject(dst[key]))
@@ -120,7 +143,8 @@
             if (obj[key] == null) {
                 //Do nothing
             } else if (type == 'string' && dateRegex1.test(value)) {
-                obj[key] = new Date(parseInt(value.substr(6)));
+                //obj[key] = new Date(parseInt(value.substr(6)));
+                obj[key] = new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
             } else if (type == 'string' && dateRegex2.test(value)) {
                 obj[key] = new Date(obj[key]);
             } else if (obj[key].getDate !== undefined) {
@@ -139,6 +163,9 @@
 
     function resolveRef(model, update) {
         function populate(m, u, topLevel) {
+            if (m == null)
+                return u;
+
             if (typeof (topLevel) === "undefined")
                 topLevel = true;
 
@@ -149,15 +176,27 @@
                     keysList.push(m[e]["Key"]);
                 }
 
-                if (u.AngularList && (u.AngularList.length == 0 || u.AngularList[0].Key) && (m.length == 0 || m[0].Key)) {
+                if (u.AngularList && (u.AngularList.length == 0 || u.AngularList[0].Key) && (/*(m.AngularList && (m.AngularList.length==0 || m.AngularList[0].Key))||*/(m.length == 0   || m[0].Key))) {
                    
+                    //if (m.AngularList) {
+                    //    //means that the item was not found in list... cant update a list that doesnt exist.
+                    //    if (m.UpdateMethod == "Remove") {
+                    //        //skip
+                    //    }else if (m.UpdateMethod == "ReplaceIfNewer")                        {
+
+                    //    }
+
+                    //}
+
                     for (var k in u.AngularList) { //Foreach element in src
                         var loc = keysList.indexOf(u.AngularList[k]["Key"]);
                         if (loc != -1) {
                             m[loc] = populate(m[loc], u.AngularList[k], false);
                         } else {
-                            m.push(populate(null, u.AngularList[k], false));
-                            keysList.push(u.AngularList[k]["Key"]);
+                            if (u.UpdateMethod != "Remove") {
+                                m.push(populate(null, u.AngularList[k], false));
+                                keysList.push(u.AngularList[k]["Key"]);
+                            }
                         }
                     }
                 } else if ((u.length == 0 || u[0].Key) && (m.length == 0 || m[0].Key)) {
@@ -170,6 +209,7 @@
                                 debugger;
                             }
                         } else {
+                            
                             m.push(populate(null, u[k], false));
                             keysList.push(u[k]["Key"]);
                         }
@@ -196,7 +236,18 @@
                     //if (k == "AngularList")
                     //    m = populate(m, u[k], false);
                     //else
-                    m[k] = populate(m[k], u[k], false);
+                    if (m[k]!==null && m[k].AngularList) {
+                        //model had an angular list (probably from Lookup merge with Main container)
+                        //Fix m[k]
+                        if (m[k].UpdateMethod=="Remove"){
+                            m[k] = [];
+                        } else if ( m[k].UpdateMethod == "Replace"|| m[k].UpdateMethod == "ReplaceIfNewer" || m[k].UpdateMethod == "Add") {
+                            m[k] = m[k].AngularList;
+                        } else {
+                            console.error("Unknown update type:" + m[k].UpdateMethod);
+                        }
+                    }
+                    m[k] = populate(m[k], u[k], false);                    
                 }
                 return m;
             } else {

@@ -18,6 +18,7 @@ using System.Web.Routing;
 using RadialReview.Utilities.Serializers;
 using RadialReview.Utilities.Productivity;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace RadialReview
 {
@@ -30,6 +31,25 @@ namespace RadialReview
             var wasKilled=await ChromeExtensionComms.SendCommandAndWait("appEnd");
             var inte = 0;
             inte += 1;
+        }
+        [DllImport("gdi32.dll", EntryPoint="AddFontResourceW", SetLastError=true)]
+        public static extern int AddFontResource([In][MarshalAs(UnmanagedType.LPWStr)]string lpFileName);
+        protected int InstallFonts()
+        {
+            if (!Config.IsLocal()) {
+                var fonts = new[] { "Arial Narrow Bold.TTF", "Arial Narrow.TTF", "arial.ttf" };
+                var installed = 0;
+                foreach (var f in fonts) {
+                    try {
+                        var result = AddFontResource(@"c:\\Windows\\Fonts\\" + f);
+                        var error = Marshal.GetLastWin32Error();
+                        installed = installed + (error == 0 ? 1 : 0);
+                    } catch (Exception e) {
+                    }
+                }
+                return installed;
+            }
+            return 0;
         }
 
         protected async void Application_Start()
@@ -62,8 +82,13 @@ namespace RadialReview
 			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new [] { "cshtml" } };
 			ViewEngines.Engines.Add(razorEngine);
 
+
+            //install fonts
+            InstallFonts();
             
         }
+
+
 
 		void Application_EndRequest(Object Sender, EventArgs e)
 		{

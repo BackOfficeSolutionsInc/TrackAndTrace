@@ -49,6 +49,7 @@ namespace RadialReview.Models.Angular.VTO
 		{
 			return new AngularVTO(){
 				Id = vto.Id,
+                L10Recurrence = vto.L10Recurrence,
 				CreateTime = vto.CreateTime,
 				CopiedFrom = vto.CopiedFrom,
 				TenYearTarget = vto.TenYearTarget,
@@ -65,7 +66,9 @@ namespace RadialReview.Models.Angular.VTO
                 IssuesListTitle = vto.IssuesListTitle ?? "ISSUES LIST"
 			};
 		}
-	}
+
+        public long? L10Recurrence { get; set; }
+    }
 	#region DataTypes
 	public class AngularVtoString : Base.BaseAngular
 	{

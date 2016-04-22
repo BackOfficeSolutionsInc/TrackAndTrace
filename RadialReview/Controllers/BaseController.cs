@@ -408,7 +408,7 @@ namespace RadialReview.Controllers
                 }
             }
 
-			var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.Always);
+			var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
 			pdfRenderer.Document = document;
            // pdfRenderer.DocumentRenderer = new DocumentRenderer(document) { PrivateFonts = pfc };
 			pdfRenderer.RenderDocument();

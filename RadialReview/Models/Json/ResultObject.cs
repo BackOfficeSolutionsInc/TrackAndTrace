@@ -87,9 +87,7 @@ namespace RadialReview.Models.Json
 		public bool Refresh {
 			get
 			{
-				if (_Refresh != null)
-					return _Refresh.Value;
-				try{
+                try{
                     if (System.Web.HttpContext.Current != null)
                     {
                         var requestRefresh = System.Web.HttpContext.Current.Request.Params["refresh"];
@@ -102,6 +100,9 @@ namespace RadialReview.Models.Json
 				catch (Exception e){
 					var ops = true;
 				}
+				if (_Refresh != null)
+					return _Refresh.Value;
+				
 				return false;
 			}
 			set{_Refresh = value;}

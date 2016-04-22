@@ -1,46 +1,50 @@
 ﻿@{
-	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
-	var controller = (ViewBag.AddController!= null && ((bool)ViewBag.AddController) == true);
-	var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
+    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+    var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
     var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
     var selector = ViewBag.Selector as string ?? "(model.Rocks)";
-    var filter = ViewBag.Filter as string ?? " | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)";
+    var filter = ViewBag.Filter as string ?? "";// | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)";
+    //var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
+
+    var attrLookup = new Dictionary<string, string>(){
+        {"status-column",""},
+        {"picture-column",""},
+        {"message-column",""},
+        {"due-column",""},
+        {"createtime-column",""},
+        {"delete-column",""}
+    };
+    attrLookup[ViewBag.SortBy ?? "picture-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
 
 }
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak rock-list-container app">
-	<div @(headers||controller ? "ng-controller=L10Controller" : "")>
-		@if (datepicker)
-		{
-			<div class="calendar-container pull-right" style="width: 240px;">
-				<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-				<input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="date" options="opts" required placeholder="Select a date range..." />
-				<b class="caret"></b>
-			</div>
-			<div class="height-placeholder" style="height:40px"></div>
-		}
-		<div id="Rocks" class="tab-pane rock-pane scrollbox">
-			<div></div>
-			@*<div ng-repeat="(key,value) in @(selector) | groupBy: 'Owner.Name'">*@
-            <table ts-wrapper width="100%" class="component" ng-show="(@(selector) @(filter)).length">
+    <div @(headers || controller ? "ng-controller=L10Controller" : "")>
+        @if (datepicker) {
+            <div class="calendar-container pull-right" style="width: 240px;">
+                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                <input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="date" options="opts" required placeholder="Select a date range..." />
+                <b class="caret"></b>
+            </div>
+            <div class="height-placeholder" style="height:40px"></div>
+        }
+        <div id="Rocks" class="tab-pane rock-pane scrollbox">
+            <div></div>
+            <table ts-wrapper width="100%" class="component" ng-show="(@(selector)  @(filter)).length">
                 <thead>
                     <tr class="table-header">
-                        <th class="hidden-width-1" ts-criteria="Completion">Status</th>
-                        <th style="width: 32px; display: table-cell;" class="picture-column" ts-criteria="Owner.Name" ts-default="ascending">&nbsp;</th>
-                        <th ts-criteria="Name">Rock</th>
-                        @*<th class="alignCenter">Due Date</th>*@
-                        <th></th>
-
+                        <th @(attrLookup["status-column"]) class="status-column hidden-width-1" ts-criteria="Completion">Status</th>
+                        <th @(attrLookup["picture-column"]) class="picture-column" style="width: 32px; display: table-cell;" ts-criteria="Owner.Name" title="Accountable">Acc</th>
+                        <th @(attrLookup["message-column"]) class="message-column" ts-criteria="Name">Rock</th>
+                        <th @(attrLookup["createtime-column"]) class="createtime-column alignCenter" ts-criteria="CreateTime">Create Time</th>
+                        <th @(attrLookup["due-column"]) class="due-column alignCenter" ts-criteria="DueDate">Due Date</th>
+                        <th @(attrLookup["delete-column"]) class="delete-column"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @*| orderBy: ['Complete','-CompleteTime','Name']*@
-                    <tr ts-repeat class="{{rock.Completion}}" id="rock_{{rock.Id}}" ng-repeat="rock in @(selector) | orderBy: ['Complete','-CompleteTime','DueDate'] @(filter)"
-                        @*ng-class="{grayRow: rock.Complete}"*@
-                        class="">
-                        <td class=" rock-completion-container hidden-width-1" style="min-width: 120px;text-align: center;vertical-align: top;">
+                    <tr ng-hide="rock.Hide" ts-repeat class="{{rock.Completion}}" id="rock_{{rock.Id}}" ng-repeat="rock in @(selector) @(filter)">
+                        <td class="rock-completion-container hidden-width-1 status-column" style="min-width: 120px;text-align: center;vertical-align: top;">
                             <select class="form-control rock-completion {{rock.Completion}}" ng-class="forRock_{{rock.Id}}" ng-model="rock.Completion" ng-options="item.value as item.name for item in rockstates" ng-change="functions.sendUpdate(rock)"></select>
-                            @*<rockstate rock="rock" ng-model="rock" ></rockstate>*@
-                            @*<input type="checkbox" ng-model="rock.Complete" />*@
                         </td>
                         <td class="picture-column">
                             <span class="item-wrapper place-right">
@@ -49,18 +53,26 @@
                                 </span>
                             </span>
                         </td>
-                        <td class="name message-column" style="width:100%">
-                            <input ng-model="rock.Name" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)">
+                        <td class="message-column name" style="width:100%">
+                            <input ng-model-options="{debounce: 400}" ng-model="rock.Name" placeholder="Enter rock here" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)">
                         </td>
-                        @*<td class="alignCenter" style="min-width: 80px;"><input ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" class="due-date" data-rock="{{rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" /></td>*@
-                        <td style="min-width: 15px;"></td>
+                        <td class="createtime-column">
+                            {{rock.CreateTime | date:'MM/dd/yy'}}
+                        </td>
+                        <td class="due-column alignCenter due-date" style="min-width: 80px;">
+                            <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" ng-model-options="{debounce: 400}" />
+                        </td>
+                        <td class="delete-column" style="min-width: 15px;"><span class="delete-row" ng-click="functions.removeRow($event,rock)"></span></td>
                     </tr>
+                    
                 </tbody>
             </table>
-			@*</div>*@
-			<div class="gray" style="padding: 15px 15px;" ng-show="(@(selector) @(filter)).length==0">
-				No @rockName fit your search criteria.
-			</div>
-		</div>
-	</div>
+            <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+            @*</div>*@
+            <div class="create-row" ng-click="functions.addRow($event,'AngularRock')" data-toggle="tooltip" data-placement="left" title="New Rock"></div>
+            <div class="gray empty-search" style="padding: 15px 15px;" ng-show="(@(selector)  @(filter)).length==0">
+                No @rockName fit your search criteria.
+            </div>
+        </div>
+    </div>
 </div>

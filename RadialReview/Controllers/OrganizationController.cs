@@ -121,12 +121,18 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Radial)]
 		public JsonResult SetAccountType(long id,AccountType type)
 		{
-			using (var s = HibernateSession.GetCurrentSession())
+            using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
 					var org = s.Get<OrganizationModel>(id);
-					org.AccountType = type;
 
+                    if (org.AccountType == AccountType.Cancelled && type != AccountType.Cancelled) {
+                        org.DeleteTime = null;
+                    }
+                    if (type == AccountType.Cancelled && org.AccountType != AccountType.Cancelled) {
+					    org.DeleteTime = DateTime.UtcNow;
+                    }
+					org.AccountType = type;
 					s.Update(org);
 
 					tx.Commit();

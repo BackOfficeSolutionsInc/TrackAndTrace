@@ -95,7 +95,7 @@ namespace RadialReview.Accessors
 					s.Flush();
 
 					if (String.IsNullOrEmpty(body)){
-						var whatResp = new List<string>(){"What was that?", "I didn't get that.", "Huh?", "Could you repeat that?","I'm not sure what you mean.","Hum..."};
+                        var whatResp = new List<string>() { "What was that?", "I didn't get that.", "Huh? I didn't get that.", "Could you repeat that?", "I'm not sure what you mean.", "Hum...Could you repeat that?" };
 						var r = rnd.Next(whatResp.Count);
 						return whatResp[r];
 					}
@@ -216,7 +216,7 @@ namespace RadialReview.Accessors
 						SystemNumber = found.Number,
 						CreateTime = DateTime.UtcNow,
 						ForId = recurrenceId,
-						DeleteTime =  DateTime.UtcNow.AddMinutes(5)
+						DeleteTime =  DateTime.UtcNow.AddMinutes(15)
 					};
 
 					s.Save(a);

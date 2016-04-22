@@ -232,8 +232,14 @@ namespace RadialReview.Controllers
 		    try{
 			    if (score == 0 && userid.HasValue){
 				    var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.StartOfWeek(DayOfWeek.Sunday);
-				    var scores = L10Accessor.GetScoresForRecurrence(GetUser(),recurrence).Where(x=>x.Id==score && x.AccountableUserId==userid.Value && x.ForWeek == week);
-				    s = scores.FirstOrDefault();
+                    if (measurable > 0) {
+                        var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.MeasurableId == measurable && x.AccountableUserId == userid.Value && x.ForWeek == week);
+                        s = scores.FirstOrDefault();
+                        //TODO actually just create the score
+                    } else {
+                        var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.Id == score && x.AccountableUserId == userid.Value && x.ForWeek == week);
+                        s = scores.FirstOrDefault();
+                    }
 			    }else{
 				    s = ScorecardAccessor.GetScoreInMeeting(GetUser(), score, recurrence);
 			    }

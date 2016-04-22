@@ -58,6 +58,18 @@ namespace RadialReview.Utilities.RealTime {
                 return UpdateScorecard(scores.Where(x => x.Measurable.Id == measurable.Id), type);
             }
 
+            public RTRecurrenceUpdater Update(IAngularItem item)
+            {
+                return Update(rid => item);
+            }
+            public RTRecurrenceUpdater Update(Func<long,IAngularItem> item)
+            {
+                rt.AddAction(() => {
+                    UpdateAll(item);
+                });
+                return this;
+            }
+
             public RTRecurrenceUpdater UpdateScorecard(IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer)
             {
                 rt.AddAction(() => {
@@ -70,17 +82,19 @@ namespace RadialReview.Utilities.RealTime {
                         var scoresList = new List<AngularScore>();
                         foreach (var ss in scores.Where(x => x.Measurable.Id == measurable.Id)) {
 
-                            scoresList.Add(new AngularScore(ss,false));
+                            scoresList.Add(new AngularScore(ss, false));
                         }
                         scorecard.Scores = AngularList.Create<AngularScore>(type, scoresList);
                     }
                     scorecard.Measurables = AngularList.Create(type, measurablesList);
-                    UpdateAll(rid => scorecard);
+                    UpdateAll(rid =>{
+                        scorecard.Id = rid;
+                        return scorecard;
+                    });
                 });
                 return this;
             }
-        }
 
-       
+        }
     }
 }

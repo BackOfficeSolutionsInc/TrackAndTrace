@@ -155,16 +155,16 @@
     </script>
 
 }
-<div class="slider-container">
+<div class="slider-container level-10">
     <div class="slider">
         <div class="row full left-panel">
             <div class="col-sm-3 col-md-2 full fixed-pos" style="padding-bottom: 10px;">
                 <div class="">
-                    <div class="component">
+                    <div class="component clocks hidden">
                         <div class="elapsed-time centered">
                             <span class="">
-                                <span class="hour "></span>
-                                <span class="gray ">h</span>
+                                <span class="hour hour-item"></span>
+                                <span class="gray hour-item">h</span>
                                 <span class="minute "></span>
                                 <span class="gray ">m</span>
                                 <span class="second1"></span>
@@ -184,96 +184,107 @@
                 </div>
                 <div class="agenda">
                     <div class="component">
-                        <div class="pull-left" style="width: 24px; height: 22px;"></div>
-                        <div class="btn-group pull-right">
-                            <span class="btn btn-default btn-xs dropdown-toggle settings-button" data-toggle="dropdown" aria-expanded="false">
-                                <span class="glyphicon glyphicon-cog" style="top:2px;"></span>
+                        @*<div class="pull-left" style="width: 24px; height: 22px;"></div>*@
+                        
+                        <div class="btn-group pull-left">
+                            <span class="btn btn-default btn-xs dropdown-toggle print-button" data-toggle="dropdown" aria-expanded="false">
+                                <span class="icon fontastic-icon-print" style="top:2px;"></span>
                             </span>
-                            <ul class="dropdown-menu pull-right" role="menu">
-                                @if (ViewBag.Links != null) {
-                                    foreach (var link in ViewBag.Links) {
-                                        <li><a href="@(link["href"])" target="_blank"><span class="@(link["class"])"></span> @(link["text"])</a></li>
-                                    }
-                                    <li class="divider"></li>
-                                }
-                                @if (Model.CanAdmin) {
-                                    <li><a href="/L10/Edit/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-                                    <li class="divider"></li>
-                                }
-                                <li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})" target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
-
-
-                                <li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
-
+                            <ul class="dropdown-menu" role="menu">
+                                <li ><a onclick="showPrint()"><span class="glyphicon glyphicon-book"></span> Quarterly Printout</a>
+                                </li>
+                                <li><a class="" target="_blank" href="/L10/printout/@Model.Recurrence.Id"><span class="glyphicon glyphicon-file"></span> L10 Printout</a></li>
                             </ul>
                         </div>
-                        <div class="title">Agenda</div>
-                        <ol class="agenda-items">
-                            @if (Model.Recurrence.SegueMinutes > 0) {
-                                <li class="page-item page-segue">		<a data-location="Segue" href="#Segue">Segue</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.SegueMinutes) minutes on your Segue" data-over="@Model.Recurrence.SegueMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.SegueMinutes))m</span></span></li>
-                            }
-                            @if (Model.Recurrence.ScorecardMinutes > 0) {
-                                <li class="page-item page-scorecard">	<a data-location="Scorecard" href="#Scorecard">Scorecard</a><span data-over="@Model.Recurrence.ScorecardMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes) minutes on your Scorecard" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes))m</span></span></li>
-                            }
-                            @if (Model.Recurrence.RockReviewMinutes > 0) {
-                                <li class="page-item page-rocks">		<a data-location="Rocks" href="#Rocks">@Html.Organization().Settings.RockName Review</a><span data-over="@Model.Recurrence.RockReviewMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes) minutes on your @Html.Organization().Settings.RockName Review" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes))m</span></span></li>
-                            }
-                            @if (Model.Recurrence.HeadlinesMinutes > 0) {
-                                <li class="page-item page-headlines">	<a data-location="Headlines" href="#Headlines">People Headlines</a><span data-over="@Model.Recurrence.HeadlinesMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes) minutes on Headlines" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes))m</span></span></li>
-                            }
-                            @if (Model.Recurrence.TodoListMinutes > 0) {
-                                <li class="page-item page-todo">		<a data-location="Todo" href="#Todo">To-do List</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes) minutes on your Todo List" data-over="@Model.Recurrence.TodoListMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes))m</span></span></li>
-                            }
-                            @if (Model.Recurrence.IDSMinutes > 0) {
-                                <li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.IDSMinutes))m</span></span></li>
-                            }
-                            <li class="page-item page-conclusion">	<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>
-                        </ol>
+                                <div class="btn-group pull-right">
+                                    <span class="btn btn-default btn-xs dropdown-toggle settings-button" data-toggle="dropdown" aria-expanded="false">
+                                        <span class="glyphicon glyphicon-cog" style="top:2px;"></span>
+                                    </span>
+                                    <ul class="dropdown-menu pull-right" role="menu">
+                                        @if (ViewBag.Links != null) {
+                                            foreach (var link in ViewBag.Links) {
+                                                <li><a href="@(link["href"])" target="_blank"><span class="@(link["class"])"></span> @(link["text"])</a></li>
+                                            }
+                                            <li class="divider"></li>
+                                        }
+                                        @if (Model.CanAdmin) {
+                                            <li><a href="/L10/Edit/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                                            <li class="divider"></li>
+                                        }
+                                        <li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})" target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
 
-                        @if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
-                            <br />
-                            <div class="alignCenter">
-                                <div style="color: #bbb;">Follow meeting leader:</div>
-                                <input id="Follow"
-                                       type="checkbox"
-                                       checked
-                                       class="switch switch-large fullWidth hide"
-                                       style="min-width: 138px;"
-                                       data-on-color="default"
-                                       data-off-color="info"
-                                       data-on-text="Locked"
-                                       data-off-text="Unlocked"
-                                       data-size="small"
-                                       data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
 
+                                        <li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+
+                                    </ul>
+                                </div>
+                                <div class="title">Agenda</div>
+                                <ol class="agenda-items">
+                                    @if (Model.Recurrence.SegueMinutes > 0) {
+                                        <li class="page-item page-segue">		<a data-location="Segue" href="#Segue">Segue</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.SegueMinutes) minutes on your Segue" data-over="@Model.Recurrence.SegueMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.SegueMinutes))m</span></span></li>
+                                    }
+                                    @if (Model.Recurrence.ScorecardMinutes > 0) {
+                                        <li class="page-item page-scorecard">	<a data-location="Scorecard" href="#Scorecard">Scorecard</a><span data-over="@Model.Recurrence.ScorecardMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes) minutes on your Scorecard" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes))m</span></span></li>
+                                    }
+                                    @if (Model.Recurrence.RockReviewMinutes > 0) {
+                                        <li class="page-item page-rocks">		<a data-location="Rocks" href="#Rocks">@Html.Organization().Settings.RockName Review</a><span data-over="@Model.Recurrence.RockReviewMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes) minutes on your @Html.Organization().Settings.RockName Review" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes))m</span></span></li>
+                                    }
+                                    @if (Model.Recurrence.HeadlinesMinutes > 0) {
+                                        <li class="page-item page-headlines">	<a data-location="Headlines" href="#Headlines">People Headlines</a><span data-over="@Model.Recurrence.HeadlinesMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes) minutes on Headlines" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes))m</span></span></li>
+                                    }
+                                    @if (Model.Recurrence.TodoListMinutes > 0) {
+                                        <li class="page-item page-todo">		<a data-location="Todo" href="#Todo">To-do List</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes) minutes on your Todo List" data-over="@Model.Recurrence.TodoListMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes))m</span></span></li>
+                                    }
+                                    @if (Model.Recurrence.IDSMinutes > 0) {
+                                        <li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.IDSMinutes))m</span></span></li>
+                                    }
+                                    <li class="page-item page-conclusion">	<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>
+                                </ol>
+
+                                @if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
+                                    <br />
+                                    <div class="alignCenter">
+                                        <div style="color: #bbb;">Follow meeting leader:</div>
+                                        <input id="Follow"
+                                               type="checkbox"
+                                               checked
+                                               class="switch switch-large fullWidth hide"
+                                               style="min-width: 138px;"
+                                               data-on-color="default"
+                                               data-off-color="info"
+                                               data-on-text="Locked"
+                                               data-off-text="Unlocked"
+                                               data-size="small"
+                                               data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
+
+                                    </div>
+                                    <br />
+                                }
+                        </div>
+                        <div class="component additional-pages">
+                            @*<b class="title">Additional Pages</b>*@
+                            <div>
+                                @if (Model.VtoId != 0) {
+                                    <div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="Scorecard" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
+                                }
                             </div>
-                            <br />
-                        }
-                    </div>
-                    <div class="component additional-pages">
-                        @*<b class="title">Additional Pages</b>*@
-                        <div>
-                            @if (Model.VtoId != 0) {
-                                <div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="Scorecard" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
-                            }
+                            @*<div class="alignCenter">
+                    <a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
+                </div>*@
+
                         </div>
-                        @*<div class="alignCenter">
-                                <a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
-                            </div>*@
-
-                    </div>
 
 
-                    @*Chat*@
-                    <div class="chat-container">
-                        <div class="component">
-                            <ul class="log"></ul>
-                            @*<div class="text typing">typing...</div>
-                                <div class="text log">log</div>*@
+                        @*Chat*@
+                        <div class="chat-container">
+                            <div class="component">
+                                <ul class="log"></ul>
+                                @*<div class="text typing">typing...</div>
+                    <div class="text log">log</div>*@
+                            </div>
                         </div>
-                    </div>
 
-                </div>
+                    </div>
             </div>
             <div class="col-sm-9 col-md-10  full">
 

@@ -253,14 +253,16 @@ namespace RadialReview.Models.L10
 			public virtual L10Meeting L10Meeting { get; set; }
 			public virtual decimal? Rating { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
+            public virtual bool SeenTodoFireworks { get; set; }
 
 			public class L10MeetingAttendeeMap : ClassMap<L10Meeting_Attendee>
 			{
 				public L10MeetingAttendeeMap()
 				{
 					Id(x => x.Id);
-					Map(x => x.Rating);
-					Map(x => x.DeleteTime);
+                    Map(x => x.Rating);
+                    Map(x => x.DeleteTime);
+                    Map(x => x.SeenTodoFireworks);
 					References(x => x.User).Column("UserId");//.Not.LazyLoad().ReadOnly();
 					References(x => x.L10Meeting).Column("L10MeetingId");//.LazyLoad().ReadOnly();
 					//Map(x => x.UserId).Column("UserId");

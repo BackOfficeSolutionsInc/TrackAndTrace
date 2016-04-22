@@ -19,6 +19,7 @@ namespace RadialReview
 				"~/Scripts/Angular/Helpers/signalR.js",
 				"~/Scripts/Angular/Helpers/radialModule.js",
 				"~/Scripts/Angular/Helpers/Directives/AnywhereButHere.js", 
+				"~/Scripts/Angular/Helpers/Directives/LiveSearch.js", 
 				"~/Scripts/Angular/Helpers/Directives/TableSort.js", 
 				"~/Scripts/Angular/Helpers/Directives/RightClick.js", 
 				"~/Scripts/Angular/Helpers/Directives/ElemReady.js", 
@@ -132,8 +133,9 @@ namespace RadialReview
 					"~/Scripts/d3/Scatter.v2.js",
 					"~/Scripts/review/translateSlider.js"
 				));
-			
-			bundles.Add(new StyleBundle("~/styles/L10").Include(
+
+            bundles.Add(new StyleBundle("~/styles/L10").Include(
+                    "~/Content/L10/fireworks.css",
 					"~/Content/L10/L10.css",
 					"~/Content/L10/L10Todo.css",
 					"~/Content/L10/L10Stats.css",
@@ -149,8 +151,9 @@ namespace RadialReview
 					"~/Scripts/L10/resize-columns.js",
 					"~/Scripts/jquery/jquery.ui.sortable.js",
 					"~/Scripts/L10/charts/sparklines.min.js",
-					"~/Scripts/home/resizeable-tables.js",
+                    "~/Scripts/home/resizeable-tables.js",
                     "~/Scripts/undo.js",
+                    "~/Scripts/L10/fireworks.js",
 					"~/Scripts/L10/L10.js",
 					"~/Scripts/L10/L10Ids.js",
 					"~/Scripts/L10/L10Todo.js",
@@ -182,8 +185,9 @@ namespace RadialReview
 				.Include(angularHelpers_Scripts)
                 .Include(
                     "~/Scripts/jquery/jquery.autoresize.js",
-					"~/Scripts/Angular/VTO/VtoApp.js",
-					"~/Scripts/Angular/VTO/VtoController.js"
+                    "~/Scripts/Angular/VTO/VtoApp.js",
+                    "~/Scripts/Angular/VTO/VtoController.js",
+                    "~/Scripts/VTO/vto.js"
 				));
 			bundles.Add(new StyleBundle("~/styles/meeting")
 				.Include(angularHelpers_Styles));

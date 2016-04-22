@@ -443,3 +443,56 @@ function updateTodoAccountableUser(id, userId, name, image) {
 	$(row).data("accountable", userId);
 	$(row).data("imageurl", image);
 }
+
+
+function checkFireworks() {
+    debugger;
+    if (typeof (seenFireworks) !== "undefined" && !window.fireworksRan && !seenFireworks) {
+        var found = $(".todo-row[data-createdBefore='True']");
+        var total =found.length;
+        if (total>0)
+        {
+            var complete = found.find(".todo-checkbox:checked").length;
+            if (complete / total >= .9) {
+                runFireworks();
+            }
+        }
+
+    }
+}
+
+function runFireworks() {
+    window.fireworksRan = true;
+    fc.init();
+
+    $.ajax("/L10/ranfireworks/" + recurrenceId);
+    
+    var shootFirework = function(){
+
+        if (shootFirework) {
+            ////http://www.schillmania.com/projects/fireworks/
+            //for (var i = 0; i < Math.random() * 2; i++) {
+            if (document.hasFocus()) {
+                var mult = 1;
+                if (Math.random() > .5)
+                    mult = -1;
+                createFirework(19, 81, 4, 5, 55 + Math.random() * 10*mult, 100, 55 + Math.random() * 22*mult, 55 + Math.random() * 22, true, false, "modal");
+            }
+            //}
+            if (Math.random() > .2) {
+                setTimeout(shootFirework, Math.random() * 1000 + 2000);
+            } else {
+                setTimeout(shootFirework, Math.random() * 500 + 200);
+            }
+        }
+    };
+    shootFirework();
+
+    showModal({
+        icon: { icon: "icon fontastic-icon-trophy-1", title: "Congratulations!", color: "#FFA500" },
+        title: "90% To-do completion!",
+        close:function(){
+            shootFirework=false;
+        }
+    });
+}

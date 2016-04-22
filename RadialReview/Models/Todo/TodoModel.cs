@@ -40,12 +40,14 @@ namespace RadialReview.Models.Todo
 
 		public virtual String PadId { get; set; }
 
+        public virtual long? ClearedInMeeting { get; set; }
+
 		public TodoModel()
 		{
 			CreateTime = DateTime.UtcNow;
 			DueDate = CreateTime.AddDays(7);
-			Ordering = -CreateTime.Ticks;
-			PadId = Guid.NewGuid().ToString();
+            Ordering = -CreateTime.Ticks;
+            PadId = Guid.NewGuid().ToString();
 		}
 
 		public class IssueMap : ClassMap<TodoModel>
@@ -54,11 +56,12 @@ namespace RadialReview.Models.Todo
 			{
 				Id(x => x.Id);
 				Map(x => x.Ordering);
-				
-				Map(x => x.CreateTime);
+
+                Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.CompleteTime);
 				Map(x => x.DueDate);
+                Map(x => x.ClearedInMeeting);
 
 				Map(x => x.ForModel);
 				Map(x => x.ForModelId);

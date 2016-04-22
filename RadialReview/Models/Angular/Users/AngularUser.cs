@@ -23,7 +23,8 @@ namespace RadialReview.Models.Angular.Users
 				Name = user.GetName(),
 				ImageUrl = user.ImageUrl(true, imageSize),
 				Initials = user.GetInitials(),
-				Managing = managing
+				Managing = managing,
+                CreateTime = user.CreateTime,
 			};
 		}
 		public static AngularUser CreateUser(UserModels.UserLookup user,ImageSize imageSize = ImageSize._64,bool managing = false)
@@ -58,6 +59,7 @@ namespace RadialReview.Models.Angular.Users
 		public string ImageUrl { get; set; }
 		public string Initials { get; set; }
 		public bool? Managing { get; set; }
+        public DateTime? CreateTime { get;set;}
 	
 	}
 }

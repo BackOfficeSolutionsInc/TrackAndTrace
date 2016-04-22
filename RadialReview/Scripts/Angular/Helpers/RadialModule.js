@@ -1,13 +1,35 @@
-﻿angular.module('radialModule', ["updaterModule"]).factory('radial', ['signalR','updater', function (signalR,updater) {
+﻿angular.module('radialModule', ["updaterModule"]).factory('radial', ['signalR','updater','$http', function (signalR,updater,$http) {
 
    
 
-    function radialFactory($scope,hubName,rejoin) {
+    function radialFactory($scope, hubName, rejoin) {
+    
+
         $scope.functions = $scope.functions || {};
 
         $scope.functions.showModal = function (title, pull, push, callback, validation, onSuccess) {
             showModal(title, pull, push, callback, validation, onSuccess);
         };
+
+
+
+        //$scope.loadPossibleDirections = function () {        };
+
+
+        $scope.loadedOptions = {};
+        $scope.loadSelectOptions = function (url, forceReload) {
+            var rtn = [];
+            if (url in $scope.loadedOptions && !forceReload) {
+                return $scope.loadedOptions[url];
+            }
+            $http.get(url).success(function (data) {
+                $scope.loadedOptions[url] = data;
+                for (var i in data) {
+                    rtn.push(data[i]);
+                }
+            });
+            return rtn;
+        }
 
         //$scope.functions.xEditable = function () {
         //    var type, name, pk, url, mode

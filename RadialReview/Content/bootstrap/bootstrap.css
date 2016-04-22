@@ -3033,8 +3033,8 @@ select[multiple].input-lg {
   color: #333333;
   text-decoration: none;
 }
-.btn:not(.nohover):active,
-.btn:not(.nohover).active {
+.btn:not(.nohover):not(.btn-link):active,
+.btn.active:not(.nohover):not(.btn-link) {
   outline: 0;
   background-image: none;
   -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);

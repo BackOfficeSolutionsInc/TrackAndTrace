@@ -175,7 +175,7 @@ namespace RadialReview.Controllers {
 
             //ShowAlert("Uploaded Scorecard", AlertType.Success);
 
-            return Json(ResultObject.CreateRedirect("/upload/l10/", "Uploaded Rocks"));
+            return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Rocks", "Uploaded Rocks"));
         }
         public class UploadRocksSelectedDataVM {
             public List<string> Rocks { get; set; }

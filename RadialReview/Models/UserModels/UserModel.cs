@@ -70,7 +70,7 @@ namespace RadialReview.Models
         {
             UserOrganization = new List<UserOrganizationModel>();
             Hints = true;
-	        SendTodoTime = 10;
+            SendTodoTime = -1;
 			Roles = new List<UserRoleModel>();
             ConsoleLog = false;
         }

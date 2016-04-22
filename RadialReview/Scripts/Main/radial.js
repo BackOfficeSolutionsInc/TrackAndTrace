@@ -26,6 +26,8 @@ function UrlEncodingFix(str) {
 }
 
 function escapeString(str) {
+    if (typeof (str) !== "string")
+        return str;
     str = str.replace(/"/g, "&quot;");
     str = str.replace(/'/g, "&#39;");
     return str;
@@ -51,6 +53,22 @@ function escapeString(str) {
         return this;
     };
 
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
 })(jQuery);
 
 /*(function () {
@@ -74,22 +92,6 @@ function qtip() {
             target: 'mouse'
         }
     });
-
-    /*$('td').hover(function() {
-        var index = $(this).index();
-        var f = $(this).closest('table');
-        if (f) {
-            var found = f.find("th:nth-child(" + (index) + ")");
-            if (found) {
-
-                found.qtip('show');
-                found.data('visible', true);
-            }
-        }
-    }, function () {
-
-    });*/
-
 }
 
 function save(key, value) {
@@ -117,24 +119,12 @@ function ForceUnhide() {
                 $(e2).addClass("unhide");
             }, speed * i);
         });
-    });
-    /*$(".startHidden").each(function (i, e) {
-        setTimeout(function () {
-            $(e).addClass("unhide");
-        }, speed * i);
-    });*/
+    });    
 }
 
-function ForceHide() {
-    $(".startHidden")
-        .removeClass("startHidden")
-        .removeClass("unhide")
-        .addClass("startHidden");
-}
+function ForceHide() {$(".startHidden").removeClass("startHidden").removeClass("unhide").addClass("startHidden");}
 
-function refresh() {
-    location.reload();
-}
+function refresh() {location.reload();}
 
 /*
 if callback returns text or bool, there is an error
@@ -164,7 +154,15 @@ function showTextAreaModal(title, callback, defaultText) {
     });
 }
 
-function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
+
+function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess,onCancel) {
+    if (typeof (title) === "object") {
+        var obj = title;
+        var push = pullUrl;
+        var cback = pushUrl;
+        return showModalObject(obj, push, cback);
+    }
+    
     $("#modalMessage").html("");
     $("#modalMessage").addClass("hidden");
     $("#modal").addClass("loading");
@@ -191,94 +189,313 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess) {
                 showAlert("Something went wrong. If the problem persists, please contact us.");
                 return;
             }
-            $('#modalBody').html(modal);
-            $("#modalTitle").html(title);
-            $("#modal").removeClass("loading");
-            //Reregister submit button
-            $("#modalForm").unbind('submit');
-
-            $("#modalForm").submit(function (e) {
-                e.preventDefault();
-                var serialized = $("#modalForm").serialize();
-
-                if (validation) {
-                    var message = undefined;
-                    if (typeof (validation) === "string") {
-                        message = eval(validation + '()');
-                    }else if (typeof (validation) === "function") {
-                        message = validation();
-                    }
-                    if (message !== undefined && message != true) {
-                        if (message == false) {
-                            $("#modalMessage").html("Error");
-                        }
-                        else {
-                            $("#modalMessage").html(message);
-                        }
-                        $("#modalMessage").removeClass("hidden");
-                        return;
-                    }
-                }
-                $("#modal").modal("hide");
-                $("#modal").removeClass("loading");
-                $.ajax({
-                    url: pushUrl,
-                    type: "POST",
-                    data: serialized,
-                    success: function (data, status, jqxhr) {
-                        if (!data) {
-                            $("#modal").modal("hide");
-                            $("#modal").removeClass("loading");
-                            showAlert("Something went wrong. If the problem persists, please contact us.");
-                        } else {
-                            //StoreJsonAlert(data);
-                            if (onSuccess) {
-                                if (typeof onSuccess === "string") {
-                                    eval(onSuccess + "(data)");
-                                } else if (typeof onSuccess === "function") {
-                                    onSuccess(data);
-                                }
-                                //$("#modal").modal("hide");
-                            } else {
-                                /*if (data.Error) {
-									//console.log(data.Trace);
-									//console.log(data.Message);
-									//if (!data.ForceNoShow)
-									showJsonAlert(data);
-								} else {
-									//$("#modal").modal("hide");
-									if (data.Refresh)
-										location.reload();
-								}*/
-                            }
-                        }
-                    },
-                    error: function (jqxhr, status, error) {
-                        if (error == "timeout") {
-                            showAlert("The request has timed out. If the problem persists, please contact us.");
-                        } else {
-                            showAlert("Something went wrong. If the problem persists, please contact us.");
-                        }
-                        $("#modal").modal("hide");
-                        $("#modal").removeClass("loading");
-                    }
-                });
+            _bindModal(modal, title, callback, validation, function (formData) {
+                _submitModal(formData, pushUrl, onSuccess, false);
             });
-            $("#modal").removeClass("loading");
-            $('#modal').modal('show');
-            var count = 0;
-            setTimeout(function () {
-                if (callback) {
-                    eval(callback + '()');
-                } else {
-                    $('#modal input:not([type=hidden]):not(.disable):first').focus();
-                }
-            }, 50);
         }
     });
 }
+/*
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///  obj ={                                                                                                                     ///
+///      title:,                                                                                                                ///
+///      icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}   ///
+///      fields: [{                                                                                                             ///
+///          name:(optional)                                                                                                    ///
+///          text:(optional)                                                                                                    ///
+///          type: <text,textarea,checkbox,radio,span,header,h1,h2,h3,h4,h5,h6,number,date,time,file>(optional)                 ///
+///          value: (optional)                                                                                                  ///
+///          placeholder: (optional)                                                                                            ///
+///      },...],                                                                                                                ///
+///      pushUrl:"",                                                                                                            ///
+///      success:function,                                                                                                      ///
+///      cancel:function,                                                                                                       ///
+///  }                                                                                                                          ///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+*/
+function showModalObject(obj,pushUrl,onSuccess,onCancel) {
+    if (typeof (pushUrl) === "undefined")
+        pushUrl = obj["push"] || obj["pushUrl"];
+    if (typeof (onSuccess) === "undefined")
+        onSuccess = obj["success"];  
+    if (typeof (onSuccess) !== "undefined" && typeof (pushUrl) !== "undefined") {
+        var oldSuccess = onSuccess;
+        onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, oldSuccess, true, contentType); };
+    }
+    if (typeof (onSuccess) === "undefined" && typeof (pushUrl) !== "undefined")
+        onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, null, true, contentType); };
 
+    var onClose = obj.close;
 
+    if (typeof (onCancel) === "undefined")
+        onCancel = obj["cancel"];
+
+    if (!obj.fields && obj.pullUrl && obj.title && pushUrl)
+        return showModal(obj.title, obj.pullUrl, pushUrl, onSuccess, obj.validation, obj.success);
+
+    if (typeof (obj.title) === "undefined") {
+        obj.title = "";
+        console.warn("No title supplied");
+    }
+
+    obj.modalClass = obj.modalClass || "";
+
+    var reformat = obj.reformat;
+
+    var iconType = typeof (obj.icon);
+    if (iconType !== "undefined") {
+        obj.modalClass += " modal-icon";
+        $("#modal-icon").attr("class", "modal-icon");            
+        if (iconType==="string")
+            obj.modalClass += " modal-icon-" + obj.icon;
+        else if (iconType === "object") {
+            var time = +new Date();
+            var custom = "modal-icon-custom" + time;
+            obj.modalClass += " " + custom;
+            if (!obj.icon.icon)
+                obj.modalClass += " modal-icon-info";
+            var icon = (obj.icon.icon || "").replace(".", "");
+            var title = escapeString(obj.icon.title || "Hey!");
+            var color = escapeString(obj.icon.color || "#5bc0de");
+            $("#modal-icon").addClass(icon);
+            icon=icon.replace(" ",".")
+            document.styleSheets[0].addRule("." + custom + " ." + icon + ":after", 'content: "' + title + '";');
+            document.styleSheets[0].addRule("." + custom + " ." + icon + ":before", 'background-color: ' + color + ';');
+            document.styleSheets[0].addRule("." + custom + " #modalOk", 'background-color: ' + color + ';');
+        }
+
+    }
+
+    $("#modal #class-container").attr("class",obj.modalClass);
+
+    $("#modalMessage").html("");
+    $("#modalMessage").addClass("hidden");
+    $("#modal").addClass("loading");
+    $('#modal').modal('show');
+
+    var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span", "h1", "h2", "h3", "h4", "h5", "h6", "file"];
+    var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time","file"];
+    var tags = ["span","h1", "h2", "h3", "h4", "h5", "h6"];
+    var anyFields = ""
+    if (typeof (obj.field) !== "undefined") {
+        if (typeof (obj.fields) !== "undefined") {
+            throw "A 'field' and a 'fields' property exists";
+        } else {
+            obj.fields = obj.field;
+        }
+    }
+
+    if (typeof (obj.fields) === "object"){
+        var allDeep =true;
+        for(var f in obj.fields){
+            if (typeof (obj.fields[f]) !== "object"){
+                allDeep=false;
+                break;
+            }
+        }
+        if (!allDeep){
+            obj.fields = [obj.fields];
+        }
+    }
+    
+    var fieldsTypeIsArray = Array.isArray(obj.fields);//typeof (obj.fields);
+    
+    var contentType = null;
+
+    var builder = '<div class="form-horizontal modal-builder">';
+    for (var f in obj.fields) {
+        try{
+            var field = obj.fields[f];
+            var name = field.name||f;
+            var label = typeof (field.text) !== "undefined" || !fieldsTypeIsArray;
+            var text = field.text || name;
+            var value = field.value||"";
+            var placeholder = field.placeholder;
+            var type = (field.type || "text").toLowerCase();
+
+            if (type == "header")
+                type = "h4";
+
+            if (typeof (placeholder) !== "undefined")
+                placeholder = "placeholder='" + placeholder + "'";
+            else placeholder = "";
+            var input = "";
+            var inputIndex = allowed.indexOf(type);
+            if (inputIndex == -1){
+                console.warn("Input type not allowed:" + type);
+                continue;
+            }
+            if (Object.prototype.toString.call(value) === '[object Date]' && type=="date") {
+                value = value.toISOString().substring(0, 10);
+            }
+
+            if (type == "file")
+                contentType = 'enctype="multipart/form-data"';
+
+            if (tags.indexOf(type)!=-1) {
+                input = "<" + type + " name=" + escapeString(name) + '" id="' + escapeString(name) + '">' + value + '</' + type + '>';
+            }else if (type == "textarea") {
+                input = '<textarea class="form-control blend verticalOnly" rows=5 name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
+            } else {
+                input = '<input type="' + escapeString(type) + '" class="form-control blend" name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + ' value="' + escapeString(value) + '"/>';
+            }
+
+            if (addLabel.indexOf(type) != -1 && label) {
+                builder += '<div class="form-group"><label for="' + name + '" class="col-sm-2 control-label">' + text + '</label><div class="col-sm-10">' + input + '</div></div>';
+            } else {
+                builder += input;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    builder += "</div>";
+    _bindModal(builder, obj.title, undefined, undefined, onSuccess, onCancel, reformat, onClose, contentType);
+
+}
+
+function _bindModal(html, title, callback, validation, onSuccess, onCancel, reformat, onClose, contentType) {
+    $('#modalBody').html(html);
+    $("#modalTitle").html(title);
+    $("#modal").removeClass("loading");
+    //Reregister submit button
+    $("#modalForm").unbind('submit');
+
+    $("#modalForm").submit(function (ev) {
+        ev.preventDefault();
+
+        var formData = $("#modalForm").serializeObject();
+
+        if (typeof (reformat) === "function") {
+            var o =reformat(formData);
+            if (typeof (o) !== "undefined" && o!=null)
+                formData = o;
+        }
+
+        if (validation) {
+            var message = undefined;
+            if (typeof (validation) === "string") {
+                message = eval(validation + '()');
+            } else if (typeof (validation) === "function") {
+                message = validation();
+            }
+            if (message !== undefined && message != true) {
+                if (message == false) {
+                    $("#modalMessage").html("Error");
+                }
+                else {
+                    $("#modalMessage").html(message);
+                }
+                $("#modalMessage").removeClass("hidden");
+                return;
+            }
+        }
+        $("#modal").modal("hide");
+        $("#modal").removeClass("loading");
+        //onSuccess(formData);
+
+        if (onSuccess) {
+            if (typeof onSuccess === "string") {
+                eval(onSuccess + "(formData,"+contentType+")");
+            } else if (typeof onSuccess === "function") {
+                onSuccess(formData, contentType);
+            }
+        }
+        if (onClose) {
+            if (typeof onClose === "string") {
+                eval(onClose + "()");
+            } else if (typeof onClose === "function") {
+                onClose();
+            }
+        }
+    });
+
+    $("#modal button[data-dismiss='modal']").unbind('click.radialModal');
+
+   
+    $("#modal button[data-dismiss='modal']").on("click.radialModal", function () {
+        if (typeof onCancel === "string") {
+            eval(onCancel + "()");
+        } else if (typeof onCancel === "function") {
+            onCancel();
+        }
+        if (typeof onClose === "string") {
+            eval(onClose + "()");
+        } else if (typeof onClose === "function") {
+            onClose();
+        }
+    });
+
+    $("#modal").removeClass("loading");
+    $('#modal').modal('show');
+    var count = 0;
+    setTimeout(function () {
+        if (callback) {
+            if (typeof (callback) === "string")
+                eval(callback + '()');
+            else if (typeof (callback) === "function")
+                callback();
+        } else {
+            $('#modal input:not([type=hidden]):not(.disable):first').focus();
+        }
+    }, 50);
+}
+
+function _submitModal(formData, pushUrl, onSuccess,useJson, contentType) {
+    ///FORM DATA IS NOT USED
+    ///TODO use form data;
+    var serialized
+    //var serialized = $.param(formData);
+    //var contentType = null;
+
+    if (typeof (contentType) === "undefined")
+        contentType = null;
+    var processData = null;
+    if (useJson && contentType==null) {
+        serialized = JSON.stringify(formData);
+        contentType = "application/json; charset=utf-8";
+    } else if (contentType == 'enctype="multipart/form-data"') {
+        serialized = new FormData($('#modalForm')[0]);
+        processData = false;
+        contentType = false;
+    }else{
+        serialized = $("#modalForm").serialize();
+        contentType = contentType || "application/x-www-form-urlencoded";
+    }
+
+    $.ajax({
+        url: pushUrl,
+        type: "POST",
+        contentType: contentType,
+        data: serialized,// JSON.stringify(formData),
+        processData:processData,
+        success: function (data, status, jqxhr) {
+            if (!data) {
+                $("#modal").modal("hide");
+                $("#modal").removeClass("loading");
+                showAlert("Something went wrong. If the problem persists, please contact us.");
+            } else {
+                if (onSuccess) {
+                    if (typeof onSuccess === "string") {
+                        eval(onSuccess + "(data)");
+                    } else if (typeof onSuccess === "function") {
+                        onSuccess(data);
+                    }
+                } else {
+                }
+            }
+        },
+        error: function (jqxhr, status, error) {
+            if (error == "timeout") {
+                showAlert("The request has timed out. If the problem persists, please contact us.");
+            } else {
+                showAlert("Something went wrong. If the problem persists, please contact us.");
+            }
+            $("#modal").modal("hide");
+            $("#modal").removeClass("loading");
+        }
+    });
+}
 function UnstoreJsonAlert() {
     var data = localStorage.getItem("Alert");
     localStorage.setItem("Alert", null);
@@ -354,7 +571,10 @@ function showJsonAlert(data, showSuccess, clearOthers) {
             var message = data.Message;
             if (message === undefined)
                 message = "";
-            console.log(data.Trace);
+            if (data.Trace) {
+                console.error(data.TraceMessage);
+                console.error(data.Trace);
+            }
             console.log(data.Message);
             if (!data.Silent && (data.MessageType !== undefined && data.MessageType != "Success" || showSuccess)) {
                 var mType = data.MessageType || "danger";

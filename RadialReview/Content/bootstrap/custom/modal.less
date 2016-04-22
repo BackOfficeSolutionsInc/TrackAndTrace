@@ -1,0 +1,265 @@
+﻿@import "../variables";
+
+#modal {
+
+    .modal-icon {
+        @media (min-width: 768px) {
+            .modal-dialog {
+                max-width: 500px;
+            }
+        }
+
+        .modal-dialog {
+            margin: 45px auto;
+        }
+
+        .modal-content {
+            border-radius: 0;
+        }
+
+        .modal-header {
+            position: relative;
+            border-bottom: none;
+            height: 174px;
+
+            h4 {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+
+        .modal-body {
+            position: relative;
+            border-bottom: 1px solid #e5e5e5;
+            box-shadow: 0px 7px 15px -1px rgba(0, 0, 0, 0.55);
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .modal-body:after {
+            display: block;
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-top: 9px solid #FFF;
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            margin-left: auto;
+            margin-right: auto;
+            bottom: -9px;
+        }
+
+        .modal-body:before {
+            display: block;
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 11px solid transparent;
+            border-right: 11px solid transparent;
+            border-top: 11px solid #e5e5e5;
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            margin-left: auto;
+            margin-right: auto;
+            bottom: -11px;
+        }
+
+        .modal-footer {
+            background-color: @traction-black;
+            border-top: none;
+            height: 105px;
+        }
+
+        #modalTitle {
+            position: absolute;
+            bottom: 0px;
+            text-align: center;
+            left: 0px;
+            right: 0px;
+            padding-bottom: 8px;
+            font-size: 14px;
+            color: @traction-black;
+        }
+
+        .modal-icon:before {
+            position: absolute;
+            display: inline-block;
+            font-family: 'Glyphicons Halflings';
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            border-radius: 75px;
+            width: 75px;
+            height: 75px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            top: 27px;
+            font-size: 27px;
+            padding-top: 20px;
+            color: white;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+            /* border-bottom: 1px rgba(0,0,0,0.5) inset; */
+            border-style: double;
+            border-width: 4px;
+        }
+
+        .modal-icon:after {
+            display: block;
+            font-size: 26px;
+            font-family: Arial;
+            font-weight: bold;
+            position: absolute;
+            color: @traction-black;
+            bottom: 28px;
+            left: 0px;
+            right: 0px;
+            text-align: center;
+            letter-spacing: -1px;
+            -moz-transform: scaleY(0.95);
+            -ms-transform: scaleY(0.95);
+            -o-transform: scaleY(0.95);
+            -webkit-transform: scaleY(0.95);
+            transform: scaleY(0.95);
+        }
+
+        #modalCancel {
+            display: none;
+        }
+
+        #modalOk {
+            width: 23% !important;
+            border-radius: 0;
+            display: block;
+            color: white;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 22px;
+            height: 28px;
+            padding: 0px;
+            font-weight: bold;
+            font-family: sans-serif;
+            box-shadow: -1px -1px 0px 1px rgba(0, 0, 0, 0.25) inset;
+            border: none;
+        }
+
+        &.modal-icon-primary {
+            .modal-icon:before {
+                content: "\e122";
+                background-color: @traction-orange;
+            }
+
+            .modal-icon:after {
+                content: "Hey!";
+            }
+
+            #modalOk {
+                background-color: @traction-orange;
+            }
+        }
+
+        &.modal-icon-warning {
+            .modal-icon:before {
+                content: "\e123";
+                background-color: @brand-warning;
+                padding-top: 22px;
+                padding-left: 2px;
+            }
+
+            .modal-icon:after {
+                content: "Warning!";
+            }
+
+            #modalOk {
+                background-color: @brand-warning;
+            }
+        }
+
+
+        &.modal-icon-success {
+            .modal-icon:before {
+                content: "\e013";
+                background-color: @brand-success;
+            }
+
+            .modal-icon:after {
+                content: "Success!";
+            }
+
+            #modalOk {
+                background-color: @brand-success;
+            }
+        }
+
+        &.modal-icon-danger {
+            .modal-icon:before {
+                content: "\e209";
+                background-color: @brand-danger;
+            }
+
+            .modal-icon:after {
+                content: "Danger!";
+            }
+
+            #modalOk {
+                background-color: @brand-danger;
+            }
+        }
+
+        &.modal-icon-info {
+            .modal-icon:before {
+                content: "\e086";
+                background-color: @brand-info;
+                padding-top: 21px;
+            }
+
+            .modal-icon:after {
+                content: "Info!";
+            }
+
+            #modalOk {
+                background-color: @brand-info;
+            }
+        }
+
+        &.modal-icon-default {
+            .modal-icon:before {
+                content: "\e162";
+                background-color: @traction-orange;
+                padding-top: 23px;
+                padding-left: 3px;
+                border-style: solid;
+            }
+
+            .modal-icon:after {
+                content: "Hey!";
+            }
+
+            #modalOk {
+                background-color: @traction-orange;
+            }
+        }
+
+          &.modal-icon-custom {
+            .modal-icon:before {
+            }
+
+            .modal-icon:after {
+            }
+
+            #modalOk {
+            }
+        }
+
+    }
+}

@@ -1,6 +1,5 @@
-﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'radial', 'meetingDataUrlBase', 'meetingId', "meetingCallback", "$compile", "$sce",
-function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetingCallback, $compile, $sce) {
-
+﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'radial', 'meetingDataUrlBase', 'meetingId', "meetingCallback", "$compile", "$sce", "$q","$window",
+function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetingCallback, $compile, $sce, $q,$window) {
 
     $scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
     if (meetingId == null)
@@ -44,50 +43,16 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
                 }
             }
         }
-        //if (lu != null) {
-        //	for (var key in lu) {
-        //		var value = lu[key];
-        //		if (value != null && value.Type == "AngularScore") {
-        //			if (!(value.ForWeek in $scope.ScoreLookup))
-        //				$scope.ScoreLookup[value.ForWeek] = {};
-
-        //		    //$scope.ScoreLookup[value.ForWeek][value.Measurable.Reference.Id] = value.Key;
-        //			$scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = value.Key;
-        //		}
-        //	}
-        //}
     };
 
-    //function update(data, status) {
 
-    //	console.log("update:");
-    //	console.log(data);
-    //	//angular.merge($scope.model, data);
-    //	baseExtend($scope.model, [data], true);
-
-    //	updateScorecard(data);
-
-    //	convertDates($scope.model);
-    //	removeDeleted($scope.model);
-    //}
-
-    //var meetingHub = signalR('meetingHub', function (connection, proxy) {
-    //	console.log('trying to connect to service');
-    //	$scope.connectionId = connection.id;
-    //	rejoin(connection, proxy, function () {
-    //		console.log("Logged in: " + connection.id);
-    //	});
-    //});
-
-    //meetingHub.on('update', update);
 
     var r = radial($scope, 'meetingHub', rejoin);
 
     r.updater.postResolve = updateScorecard;
-    //r.rejoin = rejoin;
 
-    $scope.functions = $scope.functions||{};
-    $scope.filters = $scope.filters||{};
+    $scope.functions = $scope.functions || {};
+    $scope.filters = $scope.filters || {};
     $scope.functions.reload = function (reload) {
         if (typeof (reload) == "undefined") {
             reload = true;
@@ -103,7 +68,21 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
 
 
             console.log("reloading...");
-            $http({ method: 'get', url: meetingDataUrlBase + $scope.meetingId + "?_clientTimestamp=" + ((+new Date()) + (window.tzoffset * 60 * 1000)) })
+            var url = meetingDataUrlBase;
+            if (meetingDataUrlBase.indexOf("{0}") != -1) {
+                url = url.replace("{0}", $scope.meetingId);
+            } else {
+                url = url + $scope.meetingId;
+            }
+
+            var date = ((+new Date()) + (window.tzoffset * 60 * 1000));
+            if (meetingDataUrlBase.indexOf("?") != -1) {
+                url += "&_clientTimestamp=" + date;
+            } else {
+                url += "?_clientTimestamp=" + date;
+            }
+
+            $http({ method: 'get', url: url })
             .success(function (data, status) {
                 // r.updater.clearAndApply(data, status);
                 r.updater.convertDates(data);
@@ -176,7 +155,6 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
     };
 
     $scope.proxyLookup = {};
-
     $scope.ScoreIdLookup = null;
 
 
@@ -250,9 +228,14 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
 
     $scope.possibleOwners = [];
     $scope.loadPossibleOwners = function () {
-        return $scope.possibleOwners.length ? null : $http.get('/Dropdown/AngularMeetingMembers/' + $scope.model.Id + '?userId=true').success(function (data) {
-            $scope.possibleOwners = data;
-        });
+        if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.Attendees) !== "undefined") {
+            $scope.possibleOwners = $scope.model.Attendees;
+            $scope.possibleOwners;
+        } else {
+            return $scope.possibleOwners.length ? null : $http.get('/Dropdown/AngularMeetingMembers/' + $scope.model.Id + '?userId=true').success(function (data) {
+                $scope.possibleOwners = data;
+            });
+        }
     };
     $scope.possibleDirections = [];
     $scope.loadPossibleDirections = function () {
@@ -306,6 +289,9 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
         };
     };
 
+    $scope.options = {};
+    $scope.options.l10teamtypes = $scope.loadSelectOptions('/dropdown/type/l10teamtype');
+
     $scope.functions.sendUpdate = function (self) {
         var dat = angular.copy(self);
         var _clientTimestamp = new Date().getTime();
@@ -315,57 +301,99 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
         });
     };
 
-    //$scope.functions.showModal = function (title, pull, push, callback, validation, onSuccess) {
-    //	showModal(title, pull, push, callback, validation, onSuccess);
-    //};
+
+    $scope.functions.removeRow = function (event, self) {
+        var dat = angular.copy(self);
+        var _clientTimestamp = new Date().getTime();
+        //var row = $(event.target).closest("tr");
+        //row.hide();
+        //var row =angular.element($(event.target).closest("tr"));
+        //row.hide();
+        self.Hide = true;
+
+        $http.post("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.meetingId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
+            showJsonAlert(data, false, true);
+            self.Hide = false;
+        }).finally(function () {
+            // row.show()
+        });
+    };
+
+    $scope.functions.addRow = function (event, type, args) {
+        if (!$(event.target).hasClass("disabled")) {
+            var _clientTimestamp = new Date().getTime();
+            var controller = angular.element($("[ng-controller]"));
+            controller.addClass("loading");
+            $(event.target).addClass("disabled");
+
+            $http.get("/L10/Add" + type + "/" + $scope.meetingId + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp + args).error(function (data) {
+                showJsonAlert(data, true, true);
+            }).finally(function () {
+                controller.removeClass("loading");
+                $(event.target).removeClass("disabled");
+            });
+        }
+    };
+    $scope.ShowSearch = false;
+    $scope.functions.showUserSearch = function (event) {
+        $scope.ShowSearch = true;
+        setTimeout(function(){
+            $(".user-list-container .livesearch-container input").focus();
+        },1);
+    };
+
+    $scope.functions.addAttendee = function (selected) {
+        var event = { target: $(".user-list-container") };
+        $scope.functions.addRow(event, "AngularUser", "&userid=" + selected.item.id);
+    }
+
+    $scope.functions.createUser = function () {
+        $scope.functions.showModal('Add managed user', '/User/AddModal', '/nexus/AddManagedUserToOrganization?meeting=' + $scope.meetingId+"&refresh=false");
+    }
+
+    $scope.functions.goto = function (url) {
+        $window.location.href = url;
+    }
+
+    $scope.functions.blurSearch = function (self) {
+        $timeout(function () {
+            $scope.model.Search = '';
+            self.visible = false;
+            $scope.ShowSearch = false;
+        },1);
+    }
+
+    $scope.userSearchCallback = function (params) {
+        var defer = $q.defer();
+
+        var ids = $.map($scope.model.Attendees, function (item) {
+            return item.Id;
+        })
+        $http.get("/User/Search?q=" + params + "&exclude=" + ids)
+        .then(function (response) {
+            if (!response.data || !response.data.Object) {
+                defer.resolve([]);
+            }
+            defer.resolve(response.data.Object);
+        })
+        .catch(function (e) {
+            defer.reject(e);
+        });
+
+        return defer.promise;
+    };
+
+    $scope.functions.uploadUsers = function () {
+
+        $window.location.href = "/upload/l10/Users?recurrence=" + $scope.meetingId;
+
+        //showModal({
+        //    title: "Upload users (.csv)",
+        //    fields: [{ name:"file",type: "file" }],
+        //}, "/Upload/UploadRecurrenceFile?recurrenceId=" + $scope.meetingId+"&type=users&csv=true",
+        //function () {
+
+        //});
+    };
 
 }]);
-
-//$(function () {
-//    $.fn.editable.defaults.mode = 'inline';
-
-//    $("body").on('click', ".inlineEdit", function () {
-//        if (!$(this).attr("editable")) {
-//            var placement = $(this).attr("data-placement") || "left";
-//            var mode = $(this).attr("data-mode") || $.fn.editable.defaults.mode || "inline";
-//            var pk = $(this).attr("data-pk");
-//            var url = $(this).attr("data-url");
-//            var that = this;;
-//            debugger;
-//            $(this).editable({
-//                //pk: pk,
-//                //url:url,
-//                mode: mode,
-//                savenochange: true,
-//                validate: function (value) {
-//                    if ($(this).hasClass("numeric")) {
-//                        var regex = /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/;
-//                        if (!regex.test(value)) {
-//                            return 'This field must be a number';
-//                        }
-//                    }
-//                    if ($.trim(value) == '') {
-//                        return 'This field is required';
-//                    }
-//                },
-//                placement: placement,
-//                success: function (data) {
-//                    debugger;
-//                    $(that).attr("editable", null);
-//                    $(that).editable('destroy');
-//                },
-//                display: function (value, sourceData) {
-//                    for (var k in sourceData) {
-//                        var v = sourceData[k].value;
-//                        if (v == value && v.profileImage && profilePicture) {
-//                            return "?";//profilePicture(v.url, v.name, v.initials);
-//                        }
-//                    }
-//                    return null;
-//                }
-//            });
-//            $(this).attr("editable", "1");
-//            $(this).click();
-//        }
-//    });
-//});

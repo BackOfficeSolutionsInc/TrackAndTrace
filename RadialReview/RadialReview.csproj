@@ -400,9 +400,11 @@
     <Compile Include="Controllers\ArchiveController.cs" />
     <Compile Include="Controllers\CustomizeController.cs" />
     <Compile Include="Controllers\HealthCheckController.cs" />
+    <Compile Include="Controllers\L10\L10AngularController.cs" />
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\QuarterlyController.cs" />
     <Compile Include="Controllers\Upload\Upload_RocksController.cs" />
+    <Compile Include="Controllers\Upload\Upload_UsersController.cs" />
     <Compile Include="Controllers\Upload\Upload_TodosController.cs" />
     <Compile Include="Controllers\Upload\Upload_IssuesController.cs" />
     <Compile Include="Controllers\Upload\Upload_ScorecardController.cs" />
@@ -925,6 +927,13 @@
     <Content Include="Content\Angular\Issues.min.css">
       <DependentUpon>Issues.css</DependentUpon>
     </Content>
+    <Content Include="Content\Angular\livesearch.css" />
+    <Content Include="Content\Angular\ProfilePicture.css">
+      <DependentUpon>ProfilePicture.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Angular\ProfilePicture.min.css">
+      <DependentUpon>ProfilePicture.css</DependentUpon>
+    </Content>
     <Content Include="Content\Angular\Rocks.css">
       <DependentUpon>Rocks.less</DependentUpon>
     </Content>
@@ -934,6 +943,18 @@
     <Content Include="Content\Angular\tablesort.css" />
     <Content Include="Content\Angular\xeditable.min.css" />
     <Content Include="Content\bootstrap-duallistbox.css" />
+    <Content Include="Content\bootstrap\custom\mixins.css">
+      <DependentUpon>mixins.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\custom\mixins.min.css">
+      <DependentUpon>mixins.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\custom\modal.css">
+      <DependentUpon>modal.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\custom\modal.min.css">
+      <DependentUpon>modal.css</DependentUpon>
+    </Content>
     <Content Include="Content\creditcard_icon\amex.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -963,6 +984,11 @@
     <Content Include="Content\img\EOS_Model.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\img\material-indefinite-spinner.svg">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\img\particles.gif" />
+    <Content Include="Content\L10\fireworks.css" />
     <Content Include="Content\L10\L10ChatLog.css">
       <DependentUpon>L10ChatLog.less</DependentUpon>
     </Content>
@@ -995,6 +1021,10 @@
     <Content Include="Content\L10\L10Wizard.less" />
     <Content Include="Content\Angular\Rocks.less" />
     <Content Include="Content\Angular\Issues.less" />
+    <Content Include="IIS\install.zip" />
+    <Content Include="Content\bootstrap\custom\modal.less" />
+    <Content Include="Content\bootstrap\custom\mixins.less" />
+    <Content Include="Content\Angular\ProfilePicture.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1007,6 +1037,7 @@
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\ElemReady.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\fcsaNumber.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\LiveSearch.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\PriorityTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\RightClick.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\TableSort.js" />
@@ -1021,6 +1052,7 @@
     <Content Include="Scripts\jquery\jquery.autoresize.js" />
     <Content Include="Scripts\knockout-2.2.1.debug.js" />
     <Content Include="Scripts\knockout-2.2.1.js" />
+    <Content Include="Scripts\L10\fireworks.js" />
     <Content Include="Scripts\L10\L10ChatLog.js" />
     <Content Include="Scripts\L10\L10Headlines.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
@@ -1029,6 +1061,7 @@
     <Content Include="Scripts\speechrecog.js" />
     <Content Include="Scripts\undo.js" />
     <Content Include="Scripts\Upload\UploadRocks.js" />
+    <Content Include="Scripts\Upload\UploadUsers.js" />
     <Content Include="Scripts\Upload\UploadTodos.js" />
     <Content Include="Scripts\Upload\UploadIssues.js" />
     <Content Include="Scripts\Upload\UploadSteps.js" />
@@ -1332,7 +1365,7 @@
     <Content Include="Scripts\Angular\Helpers\Directives\ModalTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\angular-daterangepicker.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\angular-filter.min.js" />
-    <Content Include="Scripts\Angular\Helpers\transform.js" />
+    <Content Include="Scripts\Angular\Helpers\_oldtransform.js" />
     <Content Include="Scripts\Angular\helpers.js" />
     <Content Include="Scripts\Angular\Meetings\ButtonBar.js" />
     <Content Include="Scripts\Angular\Meetings\L10App.js" />
@@ -1404,6 +1437,10 @@
     <Content Include="Views\Upload\UploadTodosSelected.cshtml" />
     <Content Include="Views\Upload\UploadRocksSelected.cshtml" />
     <Content Include="Views\Upload\UploadVTO.cshtml" />
+    <Content Include="Views\Shared\Partial\MaterialIndefiniteLoader.cshtml" />
+    <Content Include="Views\User\partial\list.cshtml" />
+    <Content Include="Views\Upload\UploadUsers.cshtml" />
+    <Content Include="Views\Upload\UploadUsersSelected.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1814,7 +1851,9 @@
     <Content Include="Views\Log\Index.cshtml" />
     <Content Include="Views\Account\FixEmail.cshtml" />
     <Content Include="Views\Account\Headers.cshtml" />
-    <Content Include=".ebextensions\SetupIIS.config" />
+    <Content Include=".ebextensions\SetupIIS.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\L10\Details\headlines.cshtml" />
     <Content Include="Views\Issues\partial\list.cshtml" />
     <Content Include="Views\L10\Details\rocks.cshtml" />
@@ -1825,6 +1864,7 @@
     <Content Include="Views\Accountability\Chart.cshtml" />
     <Content Include="Views\Quarterly\Modal.cshtml" />
     <Content Include="Views\L10\Wizard.cshtml" />
+    <Content Include="Views\L10\Details\_oldScorecard.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

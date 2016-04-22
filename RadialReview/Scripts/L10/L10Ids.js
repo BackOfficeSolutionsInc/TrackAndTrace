@@ -181,7 +181,7 @@ $(function () {
     $("body").on("click", ".issueDetails .message", function () { $(this).siblings(".issue-details-container").slideToggle(400); });
     $("body").on("click", ".issueDetails .expandButton", function () { $(".issueDetails .issue-details-container").slideDown(400); });
     $("body").on("click", ".issueDetails .contractButton", function () { $(".issueDetails .issue-details-container").slideUp(400); });
-    $("body").on("click", ".issueDetails .doneButton input", function () { e.preventDefault(); });
+    $("body").on("click", ".issueDetails .doneButton input", function () { /*e.preventDefault();*/ });
     $("body").on("click", ".issueDetails .doneButton", function () { $(this).find(">input").trigger("click"); });
 
 
@@ -326,6 +326,12 @@ function changeMode(type) {
 
     }
     refreshCurrentIssueDetails();
+}
+function sortIssueByCurrent(recurrenceId, issueList) {
+    if ($(".meeting-page").hasClass("prioritization-Rank"))
+        return sortIssueBy(recurrenceId, issueList, "data-rank", "Priority");
+    else
+        return sortIssueBy(recurrenceId, issueList, "data-priority", "Votes", -1);
 }
 
 function sortIssueBy(recurrenceId, issueList, sortBy, title, mult) {
@@ -776,7 +782,7 @@ $(function () {
         console.log("current priority:" + p);
         if (e.button == 0) {
             p += 1;
-        } else if (e.button == 2) {
+        } else if (e.button == 2 || e.which==3) {
             p -= 1;
             p = Math.max(0, p);
         } else {
@@ -849,8 +855,12 @@ $(function () {
                     //    $(e.target).tooltip('hide');
                     //    $(e.target).tooltip('destroy');
                     //}, 1500);
-                    clearAlerts();
-                    showAlert("Solve the top three issues first.", "alert-info rank-solve-message", "Info:");
+                    //clearAlerts();
+                    //showAlert("Solve the top three issues first.", "alert-info rank-solve-message", "Info:");
+                    showModal({
+                        icon: "primary",
+                        title: "Solve the top three issues first."
+                    });
                     return;
                 }
                 //currentRank += 1;

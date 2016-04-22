@@ -123,6 +123,21 @@
 		    meetingHub.server.join(MeetingId, $.connection.hub.id);*/
 	    });
 
+	    function deleteUser(id) {
+
+	        showModal({
+	            title: "Are you sure?",
+	            icon: "danger",
+	            push: "/User/Remove",
+                fields:{name:"UserId",value:id,type:"hidden"},
+	            success: function () {
+	                $('.row_'+id).remove();
+	                UnstoreJsonAlert();
+	            },
+
+	        });
+	    }
+
         function SendEmails() {
             $("#send").prop("disabled", true);
             $.ajax({
@@ -394,12 +409,13 @@
                         @if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization || p.ForceCanDelete)
 						{
                             <td>
-                                @if (p.Managing || Model.ManagingOrganization || p.ForceCanDelete)
-								{
-                                    <span data-sort="1" onclick="@(Html.ShowModal("Remove " + p.Name + " from the organization?", "/User/Remove/" + p.Id, "/User/Remove", onCompleteFunction: "function(){$('.row_" + p.Id + "').remove();UnstoreJsonAlert();}"))"
+                                @if (p.Managing || Model.ManagingOrganization || p.ForceCanDelete) {
+                                    <span data-sort="1"
+                                          onclick="deleteUser(@p.Id)"
+                                          @*onclick="@(Html.ShowModal("Remove " + p.Name + " from the organization?", "/User/Remove/" + p.Id, "/User/Remove", onCompleteFunction: "function(){$('.row_" + p.Id + "').remove();UnstoreJsonAlert();}"))"*@
                                           class="glyphicon glyphicon-trash clickable">
                                     </span>
-								}
+                                }
                             </td>
 						}
                     </tr>

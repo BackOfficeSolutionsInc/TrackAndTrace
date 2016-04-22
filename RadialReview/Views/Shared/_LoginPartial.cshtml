@@ -17,19 +17,19 @@
                 <div class="btn-group heading" style="padding:8px;">
                     <button type="button" href="@Url.Action("Details", "User", new { id = ViewBag.UserId })"
                             style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap; max-width:256px;padding-right:11px;"
-                            class="btn btn-default heading  dropdown-toggle" data-toggle="dropdown">
+                            class="btn btn-default heading " data-toggle="dropdown">
                         @(ViewBag.UserName ?? "Manage")
+                    </button>
+                    <button class="btn btn-default heading dropdown-toggle" data-toggle="dropdown">
+                        <span class="sr-only">Toggle Dropdown</span>
                         <span class="caret"></span>
                     </button>
-                    @*< class="btn btn-default heading>
-                        @*<span class="sr-only">Toggle Dropdown</span>*
-                    </button>*@
                     <ul class="dropdown-menu" role="menu">
                         @{var doDivider = false;}
                         @if (ViewBag.IsManager ?? false) {
                             <li>
                                 <a href="@Url.Action("Index", "Manage")" title1="Add members, edit teams, rocks, roles and measurables">
-                                    Manage @(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")
+                                    Manage Organization@*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@
                                     <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
                                 </a>
                             </li>
@@ -43,7 +43,7 @@
                         @if (ViewBag.ManagingOrganization ?? false) {
                             <li>
                                 <a href="@Url.Action("Advanced", "Manage")" title1="Add credit card information, edit advanced settings">
-                                    @(Html.Organization().NotNull(x => x.GetName()) ?? "Organization") Settings
+                                    @*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@Organization Settings
                                 </a>
                             </li>
                             doDivider = true;

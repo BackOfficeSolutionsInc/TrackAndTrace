@@ -219,18 +219,23 @@ namespace RadialReview.Accessors {
             var r = t.AddRow();
             r.Cells[0].AddParagraph("Segue");
             r.Cells[1].AddParagraph("5 Minutes");
+            r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
             r = t.AddRow();
             r.Cells[0].AddParagraph("Scorecard");
             r.Cells[1].AddParagraph("5 Minutes");
+            r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
             r = t.AddRow();
             r.Cells[0].AddParagraph("Rock Review");
             r.Cells[1].AddParagraph("5 Minutes");
+            r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
             r = t.AddRow();
             r.Cells[0].AddParagraph("Customer/Employee Headlines");
             r.Cells[1].AddParagraph("5 Minutes");
+            r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
             r = t.AddRow();
             r.Cells[0].AddParagraph("To-Do List");
             r.Cells[1].AddParagraph("5 Minutes");
+            r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
 
             var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime>lastMeeting).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate).ToList();
             var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
@@ -259,21 +264,22 @@ namespace RadialReview.Accessors {
                     o.Add(pp);
                 }
                 return o;
-            },maxFontSize:10);
+            },maxFontSize:9);
 
             for (var i = 0; i < todos.Count; i++) {
                 var pp = new Table();
                 pp.Format.SpaceAfter = 0;
                 pp.AddColumn(Unit.FromInch(1.25));
-                pp.AddColumn(Unit.FromInch(4));
-                pp.AddColumn(Unit.FromInch(.5));
+                pp.AddColumn(Unit.FromInch(4.75-.35));
+                pp.AddColumn(Unit.FromInch(0.35));
                 pp.Format.Font.Color = TableDark;
                 var rr = pp.AddRow();
                 pp.Format.Font.Size = fs;
                 p=rr.Cells[1].AddParagraph(todos[i].Name ?? "");
                 p.Format.FirstLineIndent = Unit.FromInch(-.1);
                 p.Format.LeftIndent = Unit.FromInch(.1);
-                rr.Cells[2].AddParagraph(todos[i].Owner.NotNull(x => x.Initials) ?? "");
+                rr.Cells[2].AddParagraph(todos[i].Owner.NotNull(x => x.Initials) ?? ""); 
+                rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
                 section.Add(pp);          
             }
         
@@ -285,14 +291,15 @@ namespace RadialReview.Accessors {
             r = t.AddRow();
             r.Cells[0].AddParagraph("IDS");
             r.Cells[1].AddParagraph("60 Minutes");
+            r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
 
             for (var i = 0; i < issues.Count; i++) {
                 var pp = new Table();
 
                 pp.Format.SpaceAfter = 0;
                 pp.AddColumn(Unit.FromInch(1.25));
-                pp.AddColumn(Unit.FromInch(4));
-                pp.AddColumn(Unit.FromInch(0.5));
+                pp.AddColumn(Unit.FromInch(4.75 - .35));
+                pp.AddColumn(Unit.FromInch(0.35));
                 var rr = pp.AddRow();
                 //pp.Format.LeftIndent = Unit.FromInch(1.25);
                 pp.Format.Font.Size = fs;
@@ -301,6 +308,7 @@ namespace RadialReview.Accessors {
                 p.Format.FirstLineIndent = Unit.FromInch(-.1);
                 p.Format.LeftIndent = Unit.FromInch(.1);
                 rr.Cells[2].AddParagraph(issues[i].Owner.NotNull(x => x.Initials) ?? "");
+                rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
                 section.Add(pp);
             }
             t = section.AddTable();
@@ -311,6 +319,7 @@ namespace RadialReview.Accessors {
             r = t.AddRow();
             r.Cells[0].AddParagraph("Conclude");
             r.Cells[1].AddParagraph("5 Minutes");
+            r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
             p = r.Cells[0].AddParagraph("Recap To-Do List");
             p.Format.LeftIndent = Unit.FromInch(1+3/8.0);
             p = r.Cells[0].AddParagraph("Cascading messages");

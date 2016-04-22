@@ -1,6 +1,7 @@
 ﻿
 var myPage = "";
 var followLeader = true;
+var meetingStart = false;
 //var isLeader = false;
 //var meetingStart = false;
 
@@ -16,6 +17,10 @@ function imageListFormat(state) {
 //////SETUP UNDO//////
 //////////////////////
 
+$(".clocks").removeClass("hidden");
+updateTime();
+setInterval(updateTime, 100);
+
 function initL10() {
 
     try {
@@ -27,7 +32,7 @@ function initL10() {
     }
 
 
-    updateTime();
+    //updateTime();
     resizing();
     if (meetingStart && (isLeader || !followLeader)) {
 
@@ -39,7 +44,7 @@ function initL10() {
         loadPage("startmeeting");
     }
 
-    setInterval(updateTime, 100);
+    //setInterval(updateTime, 100);
     $(window).resize(resizing);
 
     $(".agenda .agenda-items a").click(function () {
@@ -66,7 +71,7 @@ function initL10() {
         var title = dat.title || "Add a to-do";
         showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m, null, function () {
             debugger;
-            if ($('#modalBody').find(".select-user").val()== null)
+            if ($('#modalBody').find(".select-user").val() == null)
                 return "You must select at least one to-do owner.";
             return true;
         });
@@ -150,6 +155,10 @@ function updateTime() {
 
         if (typeof startTime != 'undefined') {
             var elapsed = ms2Time(now - startTime);
+            //if (elapsed.hours == 0)
+            //    $(".elapsed-time .hour-item").hide();
+            //else
+            //    $(".elapsed-time .hour-item").show();
             $(".elapsed-time .hour").html(elapsed.hours);
             $(".elapsed-time .minute").html(pad(elapsed.minutes, 2));
             $(".elapsed-time .second").html(pad(elapsed.seconds, 2));
@@ -160,7 +169,7 @@ function updateTime() {
 
 
         var nowUtc = new Date().getTime();
-        if (typeof currentPage != 'undefined' && currentPage != null) {
+        if (typeof currentPage != 'undefined' && currentPage != null && typeof countDown != 'undefined') {
             var ee = ms2Time(nowUtc - currentPageStartTime);
             setPageTime(currentPage, (ee.minutes + ee.hours * 60 + currentPageBaseMinutes + ee.seconds / 60));
         }
@@ -169,19 +178,21 @@ function updateTime() {
 }
 
 function setPageTime(pageName, minutes) {
-    var over = $(".page-" + pageName + " .page-time").data("over");
-    var sec = Math.floor(60 * (minutes - Math.floor(minutes)));
-    var displayMinutes = Math.floor(minutes);
-    if (countDown) {
-        displayMinutes = over - Math.floor(minutes);
-    }
+    if (typeof(meetingStart)!=="undefined" && meetingStart == true) {
+        var over = $(".page-" + pageName + " .page-time").data("over");
+        var sec = Math.floor(60 * (minutes - Math.floor(minutes)));
+        var displayMinutes = Math.floor(minutes);
+        if (countDown) {
+            displayMinutes = over - Math.floor(minutes);
+        }
 
-    $(".page-" + pageName + " .page-time").html(displayMinutes + "m<span class='second'>" + sec + "s</span>");
-    //$(".page-time.page-" + pageName).prop("title", Math.floor(minutes) + "m" + pad(sec, 2) + "s");
-    if (minutes >= over) {
-        $(".page-" + pageName + " .page-time").addClass("over");
-    } else {
-        $(".page-" + pageName + " .page-time").removeClass("over");
+        $(".page-" + pageName + " .page-time").html(displayMinutes + "m<span class='second'>" + sec + "s</span>");
+        //$(".page-time.page-" + pageName).prop("title", Math.floor(minutes) + "m" + pad(sec, 2) + "s");
+        if (minutes >= over) {
+            $(".page-" + pageName + " .page-time").addClass("over");
+        } else {
+            $(".page-" + pageName + " .page-time").removeClass("over");
+        }
     }
 
 }
@@ -240,7 +251,7 @@ function loadPage(location) {
     }
     //window.location.hash = location;
 }
-
+var locationLoading = null;
 function loadPageForce(location) {
     console.log("Loading:" + location);
     $(".issues-list").sortable("destroy");
@@ -253,21 +264,35 @@ function loadPageForce(location) {
     //if (location != myPage) {
     showLoader();
     myPage = location;
-    $.ajax({
-        url: "/L10/Load/" + MeetingId + "?page=" + location + "&connection=" + $.connection.hub.id,
-        success: function (data) {
-            replaceMainWindow(data, function () {
-                $(window).trigger("page-" + location.toLowerCase());
-            });
-        },
-        error: function () {
-            setTimeout(function () {
-                $("#alerts").html("");
-                showAlert("Page could not be loaded.");
-                replaceMainWindow("");
-            }, 1000);
-        }
-    });
+    if (locationLoading != location) {
+        locationLoading = location;
+        setTimeout(function () {
+            if (locationLoading == location) {
+                locationLoading = null;
+            }
+        }, 4000);
+        $.ajax({
+            url: "/L10/Load/" + MeetingId + "?page=" + location + "&connection=" + $.connection.hub.id,
+            success: function (data) {
+                replaceMainWindow(data, function () {
+                    $(window).trigger("page-" + location.toLowerCase());
+                });
+
+            },
+            error: function () {
+                setTimeout(function () {
+                    $("#alerts").html("");
+                    showAlert("Page could not be loaded.");
+                    replaceMainWindow("");
+                }, 1000);
+            },
+            complete: function () {
+                locationLoading = null;
+            }
+        });
+    } else {
+        console.log("Already Loading: " + location);
+    }
     //}
 }
 

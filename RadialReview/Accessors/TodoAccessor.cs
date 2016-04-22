@@ -53,12 +53,12 @@ namespace RadialReview.Accessors
                         var completionIcon = Config.BaseUrl(org) +@"Image/TodoCompletion?id="+HttpUtility.UrlEncode(Crypto.EncryptStringAES(""+todo.Id,_SharedSecretTodoPrefix(todo.AccountableUserId)))+"&userId="+todo.AccountableUserId;
                         table.Append(@"<tr><td width=""16px"" valign=""top"" style=""padding: 3px 0 0 0;""><img src='").Append(completionIcon).Append("' width='15' height='15'/>").Append(@"</td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
 							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List?todo="+todo.Id+@""">")
-							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" style=""" + color + @""">")
+							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" valign=""top"" style=""" + color + @""">")
 							.Append(todo.DueDate.ToShortDateString()).Append("</td></tr>");
 						
 						var details = await PadAccessor.GetHtml(todo.PadId);
 
-						if (!String.IsNullOrWhiteSpace(details.ToHtmlString())){
+						if (false && !String.IsNullOrWhiteSpace(details.ToHtmlString())){
 							table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">").Append(details.ToHtmlString()).Append("</a></i></td><td></td></tr>");
 						}
 
@@ -84,6 +84,8 @@ namespace RadialReview.Accessors
                 x => x.CreatedDuringMeeting,
                 x => x.ViewL10Meeting);
 
+            if (todo.OrganizationId == 0 && todo.Organization == null)
+                todo.OrganizationId = perms.GetCaller().Organization.Id;
             perms.ConfirmAndFix(todo,
                 x => x.OrganizationId,
                 x => x.Organization,
@@ -94,11 +96,17 @@ namespace RadialReview.Accessors
                 x => x.ForRecurrence,
                 x => x.ViewL10Recurrence);
 
+            
+
+            if (todo.CreatedById == 0 && todo.CreatedBy == null)
+                todo.CreatedById = perms.GetCaller().Id;
             perms.ConfirmAndFix(todo,
                 x => x.CreatedById,
                 x => x.CreatedBy,
                 x => y => x.ViewUserOrganization(y, false));
 
+            if (todo.AccountableUserId == 0 && todo.AccountableUser == null)
+                todo.AccountableUserId = perms.GetCaller().Id;
             perms.ConfirmAndFix(todo,
                 x => x.AccountableUserId,
                 x => x.AccountableUser,
@@ -127,7 +135,7 @@ namespace RadialReview.Accessors
             meetingHub.appendTodo(".todo-list", TodoData.FromTodo(todo));
 
             var updates = new AngularRecurrence(recurrenceId);
-            updates.Todos = new List<AngularTodo>() { new AngularTodo(todo) };
+            updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
             meetingHub.update(updates);
 
             Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));
@@ -171,17 +179,18 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static List<TodoModel> GetTodosForUser(UserOrganizationModel caller, long userId,bool excludeComplete =false)
+		public static List<TodoModel> GetTodosForUser(UserOrganizationModel caller, long userId,bool excludeCompleteDuringMeeting =false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
 					PermissionsUtility.Create(s, caller).ManagesUserOrganizationOrSelf(userId);
 					List<TodoModel> found;
-					if (!excludeComplete)
+                    var weekAgo = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday).AddDays(-7);
+                    if (!excludeCompleteDuringMeeting)
 						found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId).List().ToList();
 					else
-						found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId && x.CompleteTime==null).List().ToList();
+                        found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId && ((x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null)||x.CompleteTime==null)).List().ToList();
 
 					foreach (var f in found)
 					{

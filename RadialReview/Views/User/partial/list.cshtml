@@ -1,0 +1,77 @@
+﻿@{
+    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+    var selector = ViewBag.Selector as string ?? "model.Attendees";
+
+    var tableTitle = ViewBag.TableTitle ?? "Attendee";
+    var attrLookup = new Dictionary<string, string>(){
+        {"picture-column",""},
+        {"name-column",""},
+        {"createtime-column",""},
+        {"delete-column",""}
+    };
+    attrLookup[ViewBag.SortBy ?? "name-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
+
+}
+<div @(headers ? "ng-app=L10App" : "") class="ng-cloak user-list-container app">
+    <div @(headers || controller ? "ng-controller=L10Controller" : "")>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="Users" class="tab-pane user-pane scrollbox pull-left fullWidth">
+                    <div></div>
+                    <table ts-wrapper width="100%" class="component" ng-if="(@(selector)).length" click-anywhere-but-here="model.Selected = -1">
+                        <thead>
+                            <tr class="table-header">
+                                <th @(attrLookup["picture-column"]) class="picture-column" style="width: 32px; display: table-cell;">&nbsp;</th>
+                                <th @(attrLookup["name-column"]) class="name-column" ts-criteria="Owner.Name">@tableTitle</th>
+                                <th @(attrLookup["createtime-column"]) class="createtime-column" ts-criteria="CreateTime">Created</th>
+                                <th @(attrLookup["delete-column"]) class="delete-column"></th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in @(selector)  track by $index"
+                                ng-hide="user.Hide" id="todo_{{user.Id}}"
+                                class="" ts-repeat>
+                                <td class="picture-column">
+                                    <profile-image user="user"></profile-image>
+                                </td>
+                                <td class="user-name name-column" style="width:100%">
+                                    {{user.Name}}
+                                </td>
+                                <td class="alignCenter createtime-column" style="min-width: 75px;vertical-align: top;">
+                                    {{user.CreateTime | date:'MM/dd/yy'}}
+                                </td>
+                                <td class="delete-column">
+                                    <span class="delete-row" ng-click="functions.removeRow($event,user)"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+                    <div class="new-user-container" ng-class="{isSearching:ShowSearch}">
+                        <div class="create-row-container">
+                            <div class="create-row" ng-click="functions.showUserSearch($event)" data-toggle="tooltip" data-placement="left" title="Add @tableTitle"></div>
+                            <div class="livesearch-container" ng-show="ShowSearch == true">
+                                <span class="search-icon"></span>
+                                <live-search class="user-searchbox blend"
+                                             ng-blur="functions.blurSearch(this);"
+                                             live-search-callback="userSearchCallback"
+                                             live-search-selection-callback="functions.addAttendee"
+                                             live-search-item-template="{{result.first}} {{result.last}}"
+                                             live-search-select="name"
+                                             ng-model="model.Search"></live-search>
+                            </div>
+                        </div>
+                        <div class="create-user" ng-click="functions.createUser()" data-toggle="tooltip" data-placement="left" title="Create new user"></div>
+                        <div class="upload-users" ng-click="functions.uploadUsers()" data-toggle="tooltip" data-placement="left" title="Upload users"></div>
+                    </div>
+                    <div class="new-user-container-space"></div>
+                    <div class="gray no-todos empty-search" style="padding: 30px 15px;" ng-if="(@(selector) ).length==0">
+                        No users fit your search criteria.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -11,8 +11,7 @@
     }
 *@
 
-@using (Html.BeginStyles())
-{
+@using (Html.BeginStyles()) {
     <style>
         .bar {
         }
@@ -69,8 +68,7 @@
     </style>
 }
 
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
     <script>
         function newTitle(item, about) {
             var progressBar = $(item).find(".progress-bar");
@@ -95,11 +93,52 @@
             }
         }
 
-		function goToReview() {
-			document.location.href = "/Reviews/";
+        function duedateModal() {
+            var ids = $.map($("input[type='checkbox']:checked"), function (a) { return +$(a).attr("name").substr(4); });
+
+            var later = new Date();
+            later.setDate(later.getDate() + 2);
+
+            showModal({
+                title: "Edit Due Date",
+                pushUrl: "/Reviews/EditDueDateModal",
+                fields: { name: "dueDate", type: "Date", value: later },
+                reformat: function (data) {
+                    debugger;
+                    data.reviews = ids;
+                    return data;
+                },
+                success: function (data) {
+                    if (showJsonAlert(data)) {
+                        for (var i in data.Object.ids) {
+                            $("#row-" + data.Object.ids[i] + " .duedate").html(data.Object.due)
+                        }
+                    }
+                }
+            });           // showModal(, "/Reviews/EditDueDateModal/", , "duedateUpdate");
+        }
+
+        function duedateUpdate(obj) {
+            var id = obj.id
+            $("#row-" + id + " .duedate").html(obj.due);
+        }
+
+        function goToReview() {
+            document.location.href = "/Reviews/";
         }
 
         $(function () {
+            $("input[type='checkbox']").on("change", function () {
+                var checked = $("input[type='checkbox']:checked");
+                if (checked.length) {
+                    $(".globalButtons").hide();
+                    $(".selectionButtons").show();
+                } else {
+                    $(".globalButtons").show();
+                    $(".selectionButtons").hide();
+                }
+            })
+
             $(".bar.Self").attr("title", function () {
                 return newTitle(this, "self");
             });
@@ -133,55 +172,73 @@
     </div>
 
     <div class="table-responsive">
-        <table class="fullWidth equalWidth">
+        <table class="fullWidth equalWidth btn-bar">
             <tbody>
-                <tr>
+                <tr class="globalButtons">
                     <td>
-                        <div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Change due date", "/Reviews/DueDate/" + Model.Review.Id, "/Reviews/DueDate/")">
+                        <div class="btn btn-default fullWidth duedate-btn" onclick="@Html.ShowModal("Change due date", "/Reviews/DueDate/" + Model.Review.Id, "/Reviews/DueDate/")">
                             Change Due Date
                         </div>
                     </td>
-					<td>
-						<div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Edit Review Name", "/Reviews/EditNameModal/" + Model.Review.Id, "/Reviews/EditNameModal/")">
-							Edit @Html.ReviewName() Name
-						</div>
-					</td>
                     <td>
-                        <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Add Question", "/Reviews/AddQuestion/" + Model.Review.Id, "/Reviews/AddQuestion/")">
+                        <div class="btn btn-default fullWidth reviewname-btn" onclick="@Html.ShowModal("Edit Review Name", "/Reviews/EditNameModal/" + Model.Review.Id, "/Reviews/EditNameModal/")">
+                            Edit @Html.ReviewName() Name
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn btn-default fullWidth addquestion-btn" onclick="@Html.ShowModal("Add Question", "/Reviews/AddQuestion/" + Model.Review.Id, "/Reviews/AddQuestion/")">
                             Add Question
                         </div>
                     </td>
                     <td>
-                        <div class="btn btn-default fullWidth " onclick="@Html.ShowModal("Remove question", "/Reviews/RemoveQuestion/" + Model.Review.Id, "/Reviews/RemoveQuestion/", preSubmitCheck: "validateRemoval")">
+                        <div class="btn btn-default fullWidth removequestion-btn" onclick="@Html.ShowModal("Remove question", "/Reviews/RemoveQuestion/" + Model.Review.Id, "/Reviews/RemoveQuestion/", preSubmitCheck: "validateRemoval")">
                             <span style="font-size: 90%;"> Remove Question</span> &nbsp;
                         </div>
                     </td>
                     <td>
-                        <div class="btn btn-default  fullWidth" onclick="@Html.ShowModal("Add user", "/Reviews/Update/" + Model.Review.Id, "/Reviews/Update/")">
+                        <div class="btn btn-default  fullWidth adduser-btn" onclick="@Html.ShowModal("Add user", "/Reviews/Update/" + Model.Review.Id, "/Reviews/Update/")">
                             Add User
                         </div>
                     </td>
                     <td>
-                        <div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Remove user", "/Reviews/RemoveUser/" + Model.Review.Id, "/Reviews/RemoveUser/")">
+                        <div class="btn btn-default fullWidth removeuser-btn" onclick="@Html.ShowModal("Remove user", "/Reviews/RemoveUser/" + Model.Review.Id, "/Reviews/RemoveUser/")">
                             Remove User
                         </div>
                     </td>
-					<td>
-						<div class="btn btn-default fullWidth" onclick="@Html.ShowModal("Delete Review", "/Reviews/Delete/" + Model.Review.Id, "/Reviews/Delete/",onCompleteFunction:"goToReview")">
-							Delete @Html.ReviewName()
-						</div>
-					</td>
+                    <td>
+                        <div class="btn btn-default fullWidth deletereview-btn" onclick="@Html.ShowModal("Delete Review", "/Reviews/Delete/" + Model.Review.Id, "/Reviews/Delete/",onCompleteFunction:"goToReview")">
+                            Delete @Html.ReviewName()
+                        </div>
+                    </td>
+                </tr>
+                <tr class="selectionButtons" style="display:none">
+                    <td>
+                        <div class="btn btn-default fullWidth deletereview-btn" onclick="$('input[type=checkbox]:checked').prop('checked',null)">
+                            Deselect all
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn btn-default fullWidth deletereview-btn" onclick="$('input[type=checkbox]:unchecked').prop('checked','true')">
+                            Select all
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn btn-default fullWidth deletereview-btn" onclick="duedateModal()">
+                            Due Date
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 <tr>
-					<td colspan="2" class="alignCenter"><b>@Html.ReviewName() Created:</b>&nbsp; @Model.Review.DateCreated.ToString("MM-dd-yyyy") </td>
+                    <td colspan="2" class="alignCenter"><b>@Html.ReviewName() Created:</b>&nbsp; @Model.Review.DateCreated.ToString("MM-dd-yyyy") </td>
                     <td colspan="2" class="alignCenter"><b>@Html.ReviewName()s due:</b>&nbsp; @Model.Review.DueDate.Subtract(TimeSpan.FromDays(1)).ToString("MM-dd-yyyy") </td>
-                    <td colspan="2" class="alignCenter"><b>Reports due:</b>&nbsp;
-                        @if (Model.Review.ReportsDueDate != null)
-                        {
+                    <td colspan="2" class="alignCenter">
+                        <b>Reports due:</b>&nbsp;
+                        @if (Model.Review.ReportsDueDate != null) {
                             @Model.Review.ReportsDueDate.Value.Subtract(TimeSpan.FromDays(1)).ToString("MM-dd-yyyy")
-                        }
-                        else
-                        {
+                        } else {
                             <span class="gray">No due date</span>
                         }
                     </td>
@@ -190,22 +247,22 @@
         <table class="table table-condensed table-hover">
             <thead>
                 <tr style="height:30px;">
-					<th>User</th>
-					<th style="width:1px;">Due Date</th>
+                    <th style="width:1px;"></th>
+                    <th>User</th>
+                    <th style="width:1px;">Due Date</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ForUser.GetPersonallyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle()))
-                {
-                    <tr>
-						<td class="">@r.ForUser.GetNameAndTitle()</td>
-	                    <td class="">
-		                    <span style="padding: 0;" class="btn btn-link" 
-			                    onclick="@Html.ShowModal("Edit Due Date", "/Reviews/EditDueDateModal/" + r.Id, "/Reviews/EditDueDateModal")"
-							>
-			                    @r.DueDate.ToString("MM-dd-yyyy")
-		                    </span>
-	                    </td>
+                @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ForUser.GetPersonallyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle())) {
+                    <tr id="row-@r.Id">
+                        <td><input type="checkbox" name="box-@r.Id" /></td>
+                        <td class="">@r.ForUser.GetNameAndTitle()</td>
+                        <td class="">
+                            <span style="padding: 0;" class="btn btn-link duedate"
+                                  onclick="@Html.ShowModal("Edit Due Date", "/Reviews/EditDueDateModal/" + r.Id, "/Reviews/EditDueDateModal","duedateUpdate")">
+                                @r.DueDate.ToString("MM-dd-yyyy")
+                            </span>
+                        </td>
                     </tr>
                 }
             </tbody>

@@ -62,7 +62,7 @@ namespace RadialReview.Controllers
 			//public long SelectedAdminMember { get; set; }
 			public List<RockModel> Rocks { get; set; }
 
-            public static AddRockVm CreateRock(long recurrenceId, RockModel model)
+            public static AddRockVm CreateRock(long recurrenceId, RockModel model,bool allowBlankRock=false)
             {
                 if (model == null)
                     throw new ArgumentNullException("model", "Rock was null");
@@ -73,7 +73,7 @@ namespace RadialReview.Controllers
                     throw new ArgumentOutOfRangeException("You must specify an organization id");
                 if (recurrenceId <= 0)
                     throw new ArgumentOutOfRangeException("You must specify a recurrence id");
-                if (String.IsNullOrWhiteSpace(model.Rock))
+                if (String.IsNullOrWhiteSpace(model.Rock) && !allowBlankRock)
                     throw new ArgumentOutOfRangeException("You must specify a title for the rock");
 
                 return new AddRockVm() {
@@ -137,7 +137,7 @@ namespace RadialReview.Controllers
 			//public long SelectedAdminMember { get; set; }
 			public List<MeasurableModel> Measurables { get; set; }
 
-            public static AddMeasurableVm CreateNewMeasurable(long recurrenceId,MeasurableModel model)
+            public static AddMeasurableVm CreateNewMeasurable(long recurrenceId,MeasurableModel model,bool allowBlankMeasurable=false)
             {
                 if (model.AdminUserId <= 0)// && (model.AdminUser==null || model.AdminUser.Id<=0))
                     throw new ArgumentOutOfRangeException("You must specify an admin user id");
@@ -145,15 +145,19 @@ namespace RadialReview.Controllers
                     throw new ArgumentOutOfRangeException("You must specify an accountable user id");
                 if (model.OrganizationId <= 0)// && (model.Organization == null || model.Organization.Id <= 0))
                     throw new ArgumentOutOfRangeException("You must specify an organization id");
-                if (String.IsNullOrWhiteSpace(model.Title))
+                if (String.IsNullOrWhiteSpace(model.Title) && !allowBlankMeasurable)
                     throw new ArgumentOutOfRangeException("You must specify a title for the measurable");
+                if ((int)model.GoalDirection == 0) {
+                    model.GoalDirection = LessGreater.GreaterThan;
+                }
                 return new AddMeasurableVm() {
                     SelectedMeasurable = -3,
                     RecurrenceId = recurrenceId,
                     Measurables = new List<MeasurableModel>() { model }
                 };
             }
-	    }
+
+        }
 
 		// GET: L10Data
 		[Access(AccessLevel.UserOrganization)]
@@ -209,6 +213,14 @@ namespace RadialReview.Controllers
 			L10Accessor.CreateMeasurable(GetUser(), model.RecurrenceId, model);
 			return Json(ResultObject.SilentSuccess());
 		}
+        
+	    [HttpGet]
+	    [Access(AccessLevel.UserOrganization)]
+        public JsonResult RanFireworks(long id)
+        {
+            L10Accessor.MarkFireworks(GetUser(),id);
+            return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+        }
 
 	    [HttpPost]
 	    [Access(AccessLevel.UserOrganization)]

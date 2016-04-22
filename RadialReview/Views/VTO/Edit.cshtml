@@ -663,7 +663,11 @@
                             <br />
                             <div class="resize-group">
                                 <table class="table-bordered resize-item ">
-                                    <tr><th colspan=2>Goals for the year:</th><th>Who:</th></tr>
+                                    <tr><th colspan=2>Rocks for the Quarter:</th><th>Who:</th></tr>
+                                    @*@{
+                                        var rockFilter = Model.OnlyCompanyWideRocks ? ",Rock.CompanyRock:true" : "";                                    
+                                    }*@
+
                                     <tr ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false}">
                                         <td class="number">{{$index+1}}.</td>
                                         <td style="width: 80%;">{{item.Rock.Name}}</td>

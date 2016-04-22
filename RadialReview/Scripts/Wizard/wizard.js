@@ -14,12 +14,12 @@ function setCompletion(percentage) {
 
 var doneLoading = true;
 var currentPage = null;
-function changePage(page) {
+function changePage(page,first) {
     if (page[0] == "#")
         page = page.substr(1);
     while (!doneLoading) {
         setTimeout(function () {
-            changePage(page);
+            changePage(page, first);
             console.log("trying again to change page");
         }, 250);
         return;
@@ -27,19 +27,39 @@ function changePage(page) {
     var pages = $(".wizard-page:not(.hidden)");
     function showPage(pg) {
         console.log("Changing page");
-        $(".wizard-page[data-page='" + pg + "']").removeClass("hidden").fadeIn(function () {
+        var cpe = $(".wizard-page[data-page='" + pg + "']");
+        if (cpe.length == 0 && typeof(first)==="undefined") {
             doneLoading = true;
-            console.log("Changed page");
-            currentPage = page;
+            var fp = $(".wizard-page").first().attr("data-page");
+            if (typeof (fp) !== "undefined") {
+                changePage(fp, true);
+            }
+        } else {
+            cpe.removeClass("hidden").fadeIn(function () {
+                doneLoading = true;
+                console.log("Changed page");
+                currentPage = page;
+                
+                var total = $(".wizard-page");
+                var i = 1;
+                for (var t in total) {
+                    if ($(total[t]).attr("data-page") == pg)
+                        break;
+                    i=i + 1;
+                }
+                var completion = i / (total.length+1);
 
-            $("[href='#" + pg + "']").addClass("selected");
-            if ($(this).next(".wizard-page").length == 0) {
-                $(window).trigger("wizard:last-page");
-            }
-            if ($(this).prev(".wizard-page").length == 0) {
-                $(window).trigger("wizard:first-page");
-            }
-        });
+                $(window).trigger("wizard:changed-page", { page: page, completion: completion });
+
+                $("[href='#" + pg + "']").addClass("selected");
+                if ($(this).next(".wizard-page").length == 0) {
+                    $(window).trigger("wizard:last-page");
+                }
+                if ($(this).prev(".wizard-page").length == 0) {
+                    $(window).trigger("wizard:first-page");
+                }
+            });
+        }
     }
     if (pages.length == 0) {
         showPage(page);

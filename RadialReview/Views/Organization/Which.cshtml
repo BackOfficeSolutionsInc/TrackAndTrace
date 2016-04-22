@@ -11,10 +11,12 @@
 	<h1 style="color: orange" class="pull-left"><b> @Model.GetName() [@Model.Id]</b></h1>
 	@Html.EnumDropDownListFor(x => x.AccountType, new { onchange = "changeAccountType(this," + Model.Id + ")", style = "float:right;top:30px;position: relative;" })
 	<div class="clearfix"></div>
-	<a class="pull-right" href="/Organization/Which">Back to Listing...</a>
+    <a class="pull-right" href="/Organization/Which">Back to Listing...</a>
+
 	<h4 class="pull-left">Server Time</h4>
 	<h4 style="color:orange" class="pull-left"><b>@DateTime.UtcNow.ToString()</b></h4>
 	<div class="clearfix"></div>
+    <a class="pull-right" href="/Organization/Stats">Back to Stats...</a>
 
 
 	<h4 class="pull-left">Count</h4>

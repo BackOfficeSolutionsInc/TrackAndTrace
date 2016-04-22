@@ -557,6 +557,7 @@ body.dragging, body.dragging * {
     margin-bottom: 20px;
     overflow-y: auto;
     border-bottom: 1px solid #eee;
+        display: none;
 }
 
     .issueDetails > .dd-list:empty {
@@ -637,7 +638,7 @@ body.dragging, body.dragging * {
     min-height: 60px;
     white-space: pre-line;
 }
-
+>
 .ids .issues-container.columns .issues-list {
     overflow: hidden;
     border-top: 1px solid #ccc;
@@ -653,6 +654,10 @@ body.dragging, body.dragging * {
         margin: 0px;
         padding-left: 17px;
     }
+
+.ids .issues-container.columns .rank123:after{
+    left:0px;
+}
 
 .ids .issues-container.columns.double .issues-list > li {
     width: 50%;

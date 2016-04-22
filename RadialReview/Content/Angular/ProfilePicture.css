@@ -1,0 +1,52 @@
+﻿.profile-picture,
+.picture-container {
+  width: 32px;
+  height: 32px;
+  /* margin-top: -2px; */
+  /* margin-bottom: -2px; */
+  line-height: 29px;
+  position: relative;
+  top: 0px;
+  float: left;
+  font-size: 9px;
+}
+profile-image .picture-container {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #DDD;
+  padding: 1px;
+  background-color: white;
+  line-height: 29px;
+  text-align: center;
+  font-weight: bold;
+  color: #444444;
+  /* font-size: 14px; */
+  /* white-space: nowrap; */
+  overflow: hidden;
+}
+.profile-picture.desaturate,
+profile-image.desaturate {
+  filter: gray;
+  filter: grayscale(0.7);
+  -webkit-filter: grayscale(0.7);
+  opacity: 0.7;
+  -moz-transition: all ease .2s;
+  -o-transition: all ease .2s;
+  -webkit-transition: all ease .2s;
+  transition: all ease .2s;
+}
+.profile-picture.desaturate .picture-container,
+profile-image.desaturate .picture-container {
+  /*width: 22px;
+        height: 22px;
+        margin:2px;
+        margin-bottom: -11px;
+        line-height: 19px;*/
+}
+.profile-picture.desaturate:hover,
+profile-image.desaturate:hover {
+  filter: none;
+  filter: grayscale(0.3);
+  -webkit-filter: grayscale(0.3);
+  opacity: .9;
+}

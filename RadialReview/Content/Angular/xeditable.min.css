@@ -66,19 +66,20 @@ Build date: 2016-03-24
 
 .editable-click, a.editable-click {
     text-decoration: none;
-    color: #428bca;
-    border-bottom: dashed 1px #428bca;
+    /*color: #428bca;
+    border-bottom: dashed 1px #428bca;*/
+    cursor: pointer;
 }
 
     .editable-click:hover, a.editable-click:hover {
         text-decoration: none;
-        color: #2a6496;
-        border-bottom-color: #2a6496;
+        /*color: #2a6496;
+        border-bottom-color: #2a6496;*/
     }
 
 .editable-empty, .editable-empty:hover, .editable-empty:focus, a.editable-empty, a.editable-empty:hover, a.editable-empty:focus {
     font-style: italic;
-    color: #D14;
+    /*color: #D14;*/
     text-decoration: none;
 }
 
@@ -89,7 +90,7 @@ Build date: 2016-03-24
 
 .item-wrapper > * {
     /* make the link always show up */
-    display: inline !important;
+    display: inline-block !important;
 }
 
 .item-wrapper input {
@@ -168,30 +169,58 @@ Build date: 2016-03-24
 
 
     .item-wrapper.place-left form {
-        margin-right: inherit;
-        top: -18px;
-        right: 25px;
-        left: inherit;
+        top: -15px;   
+         margin-left: -160px;
     }
 
 
         .item-wrapper.place-left form:before {
-            bottom: 10px;
+            content:none;
+            /*bottom: 10px;
             right: -10px;
             left: inherit;
             border-right: none;
             border-top: 10px solid transparent;
             border-bottom: 10px solid transparent;
-            border-left: 10px solid #AAA;
+            border-left: 10px solid #AAA;*/
         }
 
 
         .item-wrapper.place-left form:after {
-            bottom: 11px;
+            content:none;
+            /*bottom: 11px;
             left: inherit;
             right: -9px;
             border-right: none;
             border-top: 9px solid transparent;
             border-bottom: 9px solid transparent;
-            border-left: 9px solid #FFF;
+            border-left: 9px solid #FFF;*/
+        }
+
+    .item-wrapper.place-bottom form {
+        /*margin-right: auto;
+            margin-left: auto;*/
+        top: 150%;
+        top: calc(100% + 10px);
+    }
+
+
+        .item-wrapper.place-bottom form:before {
+            top: -10px;
+            left: inherit;
+            border-top: none;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #AAA;
+        }
+
+
+        .item-wrapper.place-bottom form:after {
+            left: inherit;
+            top: -9px;
+            margin-left: 1px;
+            border-top: none;
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-bottom: 9px solid #FFF;
         }

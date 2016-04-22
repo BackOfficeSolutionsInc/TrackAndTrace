@@ -194,7 +194,6 @@ function updateServerScore(self) {
     var val = getScoreTransform(self);//$(self).attr("data-value");//.val();
     var dom = $(self).attr("id");
     var oldVal = $(self).attr("data-oldval");
-    debugger;
     $.ajax({
         url: "/l10/UpdateScore/" + MeetingId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val + "&dom=" + dom + "&connection=" + $.connection.hub.id,
         success: function (data) {
@@ -222,7 +221,11 @@ function updateServerScore(self) {
 function makeXEditable_Scorecard(selector) {
 
     var placement = $(this).attr("data-placement") || "left";
+    //var mode = "inline";
+    //if ($(this).hasClass("accountable"))
+    var mode = "popup";
     $(selector).editable({
+        mode:mode,
         savenochange: true,
         validate: function (value) {
             if ($(this).hasClass("numeric")) {
@@ -280,7 +283,6 @@ function makeXEditable_Scorecard(selector) {
                     name = picturesLookup[aid].name;
                     initials = picturesLookup[aid].initials;
                 }
-                debugger;
                 var mid = $(this).closest("tr").data("measurable");
 
                 $("tr[data-measurable='" + mid + "'] .who.accountable").html(profilePicture(url, name, initials));

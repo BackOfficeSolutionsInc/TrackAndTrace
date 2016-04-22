@@ -1,26 +1,29 @@
 ﻿<!--Add Question-->
 <form id="modalForm" style="position: fixed;z-index: 1041;">
     <div class="modal" id="modal" @*tabindex="-1"*@ role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 id="modalTitle" class="modal-title"></h4>
-                </div>
-                <div class="before-load"><div class="spinner"></div></div>
-                <div class="after-load">
-                    <div class="modal-body">
-                        <div id="modalMessage" class="alert alert-danger hidden"></div>
-                        <div class="smallBreak"></div>
-                        <div id="modalBody" class="">
+        <div id="class-container">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 id="modalTitle" class="modal-title"></h4>
+                        <span id="modal-icon" class="modal-icon"></span>
+                    </div>
+                    <div class="before-load"><div class="spinner"></div></div>
+                    <div class="after-load">
+                        <div class="modal-body">
+                            <div id="modalMessage" class="alert alert-danger hidden"></div>
+                            <div class="smallBreak"></div>
+                            <div id="modalBody" class="">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="modalCancel" type="button" class="btn btn-default" style="width:68px" data-dismiss="modal">Cancel</button>
+                            <button id="modalOk" type="submit" style="width:60px" class="btn btn-primary">@RadialReview.Properties.DisplayNameStrings.ok</button>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" style="width:68px" data-dismiss="modal">Cancel</button>
-                        <button id="modalOk" type="submit" style="width:60px" class="btn btn-primary">@RadialReview.Properties.DisplayNameStrings.ok</button>
-                    </div>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
 </form>

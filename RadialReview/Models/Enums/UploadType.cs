@@ -13,5 +13,6 @@ namespace RadialReview.Models.Enums
         Issues,
         Todos,
         VTO,
+        Users,
     }
 }

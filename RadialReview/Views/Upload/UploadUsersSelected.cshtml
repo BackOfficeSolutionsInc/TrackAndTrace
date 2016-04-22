@@ -1,0 +1,51 @@
+﻿@model RadialReview.Controllers.UploadController.UploadUsersSelectedDataVM
+
+
+@using (Html.BeginForm("SubmitUsers", "upload", FormMethod.Post)) {
+   <input type="hidden" name="Path" value="@Model.Path" />
+
+
+    <div class="clearfix"></div>
+    <div class="table-responsive">
+        <table class="table table-bordered resultTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th style="min-width: 120px;">First name</th>
+                    <th style="min-width: 120px;">Last name</th>
+                    <th style="min-width: 120px;">Email</th>                    
+                    @if (Model.IncludePositions) {
+                        <th style="min-width: 120px;">Position</th>                                                                                
+                    }
+                    @if (Model.IncludeManagers) {
+                        <th style="min-width: 120px;">Manager first name</th>
+                        <th style="min-width: 120px;">Manager last name</th>
+                    }
+                    <th style="min-width: 240px;">Warnings</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < Model.FNames.Count;i++ ) {                  
+                    <tr>
+                        <td>@Html.CheckBox("m_include_"+i,Model.ExistingUser[i]==null)</td>
+                        <td>@Html.TextBox("m_fn_" + i, Model.FNames[i], new { style = "width:100%;" })</td>
+                        <td>@Html.TextBox("m_ln_" + i, Model.LNames[i], new { style = "width:100%;" })</td>
+                        <td>@Html.TextBox("m_emails_" + i, Model.Emails[i], new { style = "width:100%;" })</td>
+                        @if (Model.IncludePositions) {
+                            <td>@Html.TextBox("m_pos_" + i, Model.Positions[i], new { style = "width:100%;" })</td>
+                        }
+                        @if (Model.IncludeManagers) {
+                            <td>@Html.TextBox("m_mfn_" + i, Model.ManagerFNames[i], new { style = "width:100%;" })</td>
+                            <td>@Html.TextBox("m_mln_" + i, Model.ManagerLNames[i], new { style = "width:100%;" })</td>
+                        }
+                        <td>
+                            @if (Model.ExistingUser[i] != null) {
+                                <i>User might already exist. Is this <b>@Model.ExistingUser[i]</b>?</i>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

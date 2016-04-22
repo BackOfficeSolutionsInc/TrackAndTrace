@@ -1,6 +1,7 @@
 ﻿@import "../variables";
+
 .tiny {
-    /* color: red !important; */ 
+    /* color: red !important; */
     padding: 0px;
 }
 
@@ -44,8 +45,8 @@
     width: 100%;
 }
 
-.dashboard .todo-list-container .due-date.red{
-    font-weight:normal;
+.dashboard .todo-list-container .due-date.red {
+    font-weight: normal;
 }
 
 .dashboard .todo-list-container .name {
@@ -124,11 +125,12 @@
 .dashboard .scorecard .measurable-column {
     padding-left: 4px;
 }
+
 .dashboard .scorecard .goal-column {
     padding-left: 3px;
 }
 
-.dashboard .scorecard-table .target.direction{
+.dashboard .scorecard-table .target.direction {
     padding-left: 5px;
 }
 
@@ -152,8 +154,8 @@
     overflow-x: hidden;
 }
 
-.dashboard .todo-pane .todo-text{
-    color:#5D5D5D
+.dashboard .todo-pane .todo-text {
+    color: #5D5D5D;
 }
 
 @media (max-width: 992px) {
@@ -176,7 +178,7 @@
     text-align: left;
 }
 
-.dashboard .rock-list-container .name{
+.dashboard .rock-list-container .name {
     color: #5D5D5D;
     font-weight: normal;
 }
@@ -204,6 +206,9 @@
 .dashboard .scorecard {
     /*max-height: calc(50vh - 80px);*/
     min-height: 60px;
+    /*bottom: 0px;
+    position: absolute;
+    top: 0px;*/
 }
 
 .dashboard .members-pane {
@@ -398,7 +403,8 @@
     padding: 2px;
     max-width: 100px !important;
 }
-.dashboard .rock-list-container .rock-completion-container:after{
+
+.dashboard .rock-list-container .rock-completion-container:after {
     top: 7px;
 }
 
@@ -561,6 +567,19 @@
 
     .priority-column .priority-container {
         padding-top: 2px;
+    }
+
+    input {
+        border: none;
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+        color: #5d5d5d;
+        background:none;
+        cursor:pointer;
+    }
+    input:focus{
+        outline:none;
     }
 }
 

@@ -129,7 +129,7 @@ namespace RadialReview.Controllers
                         if (long.TryParse(issue.KeyId, out l10Id))
                         {
                             var tile = new DashboardController.AngularTileId<AngularIssuesList>(issue.Id,l10Id, l10Lookup[l10Id].Name + " issues");
-                            tile.Contents = new AngularIssuesList() {
+                            tile.Contents = new AngularIssuesList(l10Id) {
                                 Issues = L10Accessor.GetIssuesForRecurrence(s, perms, l10Id).Select(x => new AngularIssue(x)).ToList(),
                                 Prioritization = l10Lookup[l10Id].Prioritization,
                             };

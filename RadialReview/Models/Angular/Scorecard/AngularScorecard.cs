@@ -12,6 +12,15 @@ namespace RadialReview.Models.Angular.Scorecard
 {
 	public class AngularScorecard : BaseAngular
 	{
+        //public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeetingMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart) 
+        //    : this(id,weekstart,timezoneOffset,)
+        //{
+
+        //}
+        public AngularScorecard(long id): base(id)
+        {
+
+        }
 		public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart) : base(id)
 		{
 			Weeks = TimingUtility.GetPeriods(weekstart, timezoneOffset, DateTime.UtcNow, currentWeek.NotNull(x => x.Value.AddDays(7)), /*scores,*/ true, scorecardPeriod,yearStart)
@@ -34,7 +43,6 @@ namespace RadialReview.Models.Angular.Scorecard
 
 		public AngularScorecard()
 		{
-            Id = -1;
 		}
 
 		public IEnumerable<AngularMeasurable> Measurables { get; set; }

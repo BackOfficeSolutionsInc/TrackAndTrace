@@ -115,7 +115,7 @@
   overflow-x: hidden;
 }
 .dashboard .todo-pane .todo-text {
-  color: #5d5d5d;
+  color: #5D5D5D;
 }
 @media (max-width: 992px) {
   .todo-pane {
@@ -156,6 +156,9 @@
 .dashboard .scorecard {
   /*max-height: calc(50vh - 80px);*/
   min-height: 60px;
+  /*bottom: 0px;
+    position: absolute;
+    top: 0px;*/
 }
 .dashboard .members-pane {
   max-height: calc(50vh - 80px);
@@ -463,6 +466,18 @@
 }
 .dashboard .issues-list-container .priority-column .priority-container {
   padding-top: 2px;
+}
+.dashboard .issues-list-container input {
+  border: none;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  color: #5d5d5d;
+  background: none;
+  cursor: pointer;
+}
+.dashboard .issues-list-container input:focus {
+  outline: none;
 }
 .dashboard .width_1 .issues-list-container {
   font-size: 11px;

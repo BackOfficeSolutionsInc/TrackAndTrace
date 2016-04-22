@@ -95,7 +95,7 @@ namespace RadialReview.Utilities.RealTime {
             _groups[name] = group;
             return group;
         }
-
+        
         public void Dispose()
         {
             if (!Executed)

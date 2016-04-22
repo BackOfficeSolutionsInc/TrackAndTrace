@@ -231,6 +231,9 @@ namespace RadialReview.Controllers
 		private PartialViewResult Todo(L10MeetingVM model)
 		{
 			model.Todos = L10Accessor.GetTodosForRecurrence(GetUser(), model.Recurrence.Id,model.Meeting.Id);
+            model.SeenTodoFireworks = model.Meeting._MeetingAttendees.NotNull(x => x.FirstOrDefault(yx => yx.User.Id == GetUser().Id).NotNull(z=>z.SeenTodoFireworks));
+
+            //ViewBag.TodoCompletion = L10Accessor.GetTodosCompletion(GetUser(), model.Meeting.Id);
 			return PartialView("Todo", model);
 		}
 		#endregion
@@ -271,13 +274,15 @@ namespace RadialReview.Controllers
 			{
 				//var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 				//var attendees = allMembers.Where(x => model.Attendees.Contains(x.Id)).ToList();
-                var allMembers = _OrganizationAccessor.GetAllOrganizationMemberIdsAcrossTime(GetUser(), GetUser().Organization.Id);
+                //var allMembers = _OrganizationAccessor.GetAllOrganizationMemberIdsAcrossTime(GetUser(), GetUser().Organization.Id);
 
 				var ratingKeys = form.AllKeys.Where(x => x.StartsWith("rating_"));
 				var ratingIds = ratingKeys.Where(x => form[x].TryParseDecimal()!=null).Select(x => long.Parse(x.Replace("rating_", ""))).ToList();
 
 				ratingValues = ratingIds.Select(x => Tuple.Create(x, form["rating_" + x].TryParseDecimal())).ToList();
-				allMembers./*Select(x => x.Id).*/EnsureContainsAll(ratingIds);
+				//allMembers./*Select(x => x.Id).*/EnsureContainsAll(ratingIds);
+
+                _OrganizationAccessor.EnsureAllAtOrganization(GetUser(), GetUser().Organization.Id, ratingIds);
 
 				foreach (var r in ratingValues)
 				{
