@@ -489,3 +489,21 @@ select:-webkit-autofill:focus {
   -moz-border-radius: 6px 0 6px 6px;
   border-radius: 6px 0 6px 6px;
 }
+.md-button.md-icon-button {
+  /*/
+/fill: currentColor;/
+/vertical-align: middle;/
+/display: inline-block;*/
+  /*padding:0px !important;*/
+}
+md-toolbar.md-table-toolbar .md-toolbar-tools md-icon {
+  color: inherit;
+}
+a.md-default-theme:not(.md-button),
+a:not(.md-button) {
+  color: inherit;
+}
+a.md-default-theme:not(.md-button):hover,
+a:not(.md-button):hover {
+  color: inherit;
+}

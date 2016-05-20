@@ -19,7 +19,7 @@ namespace RadialReview.Models
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
         public virtual OrganizationModel Organization { get; set; }
-        public virtual IList<InvoiceItemModel> InvoiceItems { get;set;}
+        public virtual IList<InvoiceItemModel> InvoiceItems { get; set; }
 
 		[Display(Name = "Date Paid"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
 		public virtual DateTime? PaidTime { get; set; }
@@ -33,6 +33,8 @@ namespace RadialReview.Models
 
 		[Display(Name = "Amount Due"), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
 	    public virtual decimal AmountDue { get; set; }
+
+        public virtual String EmailAddress { get; set; }
 
 	    public InvoiceModel()
         {
@@ -73,7 +75,9 @@ namespace RadialReview.Models
 			Map(x => x.DeleteTime);
 			Map(x => x.TransactionId);
 
-			Map(x => x.AmountDue);
+            Map(x => x.AmountDue);
+
+            Map(x => x.EmailAddress);
 
 			Map(x => x.ServiceStart);
 			Map(x => x.ServiceEnd);

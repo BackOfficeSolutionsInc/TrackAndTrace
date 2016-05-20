@@ -1,96 +1,99 @@
 ﻿@model RadialReview.Models.L10.VM.L10ListingVM
 
 @{
-	ViewBag.Title = "L10 Meetings";
-	Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "L10 Meetings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.FullWidth = true;
 }
 
 
 @section top{
-	<div class="jumbotron">
-		<h1>LEVEL 10</h1>
-	</div>
+    <div class="jumbotron">
+        <h1>LEVEL 10</h1>
+    </div>
 }
 
 @*<link href="~/Content/Theme.css" rel="stylesheet" />*@
+<br />
+<div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+        @if (ViewBag.IsManager ?? false) {
+            <div style="text-align: right;margin-bottom: 3px;">
+                <a class="btn btn-primary btn-invert" href="/L10/Create">Create New L10 Meeting</a>
+            </div>
+        }
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">L10 Meetings</h3>
+            </div>
+            @if (Model.Recurrences.Any()) {
+                <table class="table startHiddenGroup2 table-condensed table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th style="width:30px;padding:0"></th>
+                            <th class="startHidden" style="padding:0;width:42%;">@*Meeting:*@</th>
+                            @*<th style="width: 100px; text-align: center">@RadialReview.Properties.DisplayNameStrings.due</th>
+                                <th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>*@
+                            <th class="alignRight" style="width:42%;padding:0">@*Attendees*@</th>
+                            <th style="width: 110px;min-width: 110px;max-width: 110px;padding:0"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var meeting in Model.Recurrences.OrderByDescending(x => x.IsAttendee)) {
+                            <tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow")">
+                                <td onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
+                                    @if (meeting.Recurrence.MeetingInProgress != null) {
+                                        <div class="label label-success hoverable" style="height:16px; width: 80px;display: inline-block">in-progress</div>
+                                    } else {
+                                        <div class="label label-primary hoverable" style="width: 80px;display: inline-block">Go!</div>
+                                    }
+                                </td>
+                                <td class="table-hover-underline" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
+                                @*<td class="">
+                                        <a href="/Todo/Previous/@meeting.Recurrence.Id"><span class="glyphicon glyphicon-check" title="All Todos"></span></a>
+                                    </td>*@
+                                <td class="alignRight" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
+                                    @foreach (var a in meeting.Recurrence._DefaultAttendees) {
+                                        @Html.Partial("_ProfilePicture", a.User)
+                                    }
+                                </td>
+                                @*<td>
+                                        <a href="/L10/Edit/@meeting.Recurrence.Id"><span class="btn btn-default glyphicon glyphicon-cog" title="Archives"></span></a>
+                                    </td>*@
+                                <td class="alignCenter">
+                                    <div class="btn-group">
+                                        <a href="/L10/Details/@meeting.Recurrence.Id" class="btn btn-default btn-sm"><span style="top: 2px;" class="icon fontastic-icon-archive-1" title="View meeting archive"></span></a>
+                                       
+                                        <a @if (meeting.EditMeeting) {
+                                               @:href="/L10/Wizard/@meeting.Recurrence.Id"
+                                         } class="btn btn-default btn-sm @(meeting.EditMeeting?"":"disable")"><span style="top: 2px;" class="glyphicon glyphicon-edit" title="Edit meeting"></span></a> 
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                <span style="top: 2px;" class="glyphicon glyphicon-cog"></span>
+                                            </button>
+                                            <ul class="dropdown-menu alignLeft pull-right" role="menu">
+                                                <li><a href="/Quarterly/Printout/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf" title=""></span> Generate Quarterly Printout</a></li>
+                                                <li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>
+                                                <li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+                                                <li><a href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone"></span> Texting Actions</a></li>
+                                                @if (meeting.EditMeeting) {
+                                                    <li><a href="/L10/Edit/@meeting.Recurrence.Id"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            } else {
+                <div class="panel-body gray">
+                    <div>You have no L10 meetings.</div>
+                </div>
 
-@if (ViewBag.IsManager ?? false)
-{
-	<div style="text-align: right;margin-bottom: 3px;">
-		<a class="btn btn-primary btn-invert" href="/L10/Create">Create New L10 Meeting</a>
-	</div>
-}
+            }
+        </div>
 
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title">L10 Meetings</h3>
-	</div>
-	@if (Model.Recurrences.Any())
-	{
-			<table class="table startHiddenGroup2 table-condensed table-hover table-condensed">
-				<thead>
-					<tr>
-						<th style="width:30px;padding:0"></th>
-						<th class="startHidden" style="padding:0;width:42%;">@*Meeting:*@</th>
-						@*<th style="width: 100px; text-align: center">@RadialReview.Properties.DisplayNameStrings.due</th>
-						<th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>*@
-						<th class="alignRight" style="width:42%;padding:0">@*Attendees*@</th>
-						<th style="width: 78px;min-width: 78px;max-width: 78px;padding:0"></th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var meeting in Model.Recurrences.OrderByDescending(x=>x.IsAttendee))
-					{
-						<tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow")" >
-							<td onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
-								@if (meeting.Recurrence.MeetingInProgress!=null){
-									<div class="label label-success hoverable" style = "height:16px; width: 80px;display: inline-block">in-progress</div>
-								}
-								else{
-									<div class="label label-primary hoverable" style = "width: 80px;display: inline-block">Go!</div>
-								}
-							</td>
-							<td class="table-hover-underline" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
-							@*<td class="">
-								<a href="/Todo/Previous/@meeting.Recurrence.Id"><span class="glyphicon glyphicon-check" title="All Todos"></span></a>
-							</td>*@
-							<td class="alignRight" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
-								@foreach (var a in meeting.Recurrence._DefaultAttendees){
-									@Html.Partial("_ProfilePicture", a.User)
-								}
-							</td>
-							@*<td>
-								<a href="/L10/Edit/@meeting.Recurrence.Id"><span class="btn btn-default glyphicon glyphicon-cog" title="Archives"></span></a>
-							</td>*@
-							<td class="alignCenter">
-								<div class="btn-group">
-									<a href="/L10/Details/@meeting.Recurrence.Id" class="btn btn-default btn-sm"><span style="top: 2px;"  class="icon fontastic-icon-archive-1" title="View meeting archive"></span></a>
-									<div class="btn-group">
-									  <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-										<span style="top: 2px;" class="glyphicon glyphicon-cog"></span>
-									  </button>
-									  <ul class="dropdown-menu alignLeft pull-right" role="menu">
-                                        <li><a href="/Quarterly/Printout/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf" title=""></span> Generate Quarterly Printout</a></li>
-										<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;"  class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>
-										<li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank" ><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
-										<li><a href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone"></span> Texting Actions</a></li>
-										 @if (meeting.EditMeeting){
-											 <li><a href="/L10/Edit/@meeting.Recurrence.Id"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span> Settings</a></li>
-										 }
-									  </ul>
-									</div>
-								</div>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-	}
-	else
-	{
-		<div class="panel-body gray">
-			<div>You have no L10 meetings.</div>
-		</div>
-
-	}
+    </div>
 </div>

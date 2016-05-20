@@ -51,13 +51,14 @@
 						{
 							<th style="width: 90px;" data-title="Your Report">Your Report</th>
 						}
-						<th style="min-width: 120px">@Html.ReviewName() @RadialReview.Properties.DisplayNameStrings.name</th>
+						<th style="min-width: 100%">@Html.ReviewName() @RadialReview.Properties.DisplayNameStrings.name</th>
 						@*<th style="width:100px" class="alignCenter">Created</th>*@
 						<th style="width:100px" class="alignCenter">Due</th>
 						@*<th style="width: 120px; padding-right: 0px; padding-left: 0px; " class="alignCenter">Completion</th>*@
 
 						@if (ViewBag.IsManager ?? false)
 						{
+                            <th style="width: 110px;"></th>
 							@*<th style="width: 20px;" class="alignCenter" data-title="Review statistics"></th>*@
 							<th class="alignCenter" style="width:1px" @*data-title="Send review reminders"*@></th>
 							@*<th class="alignCenter" style="width:1px" data-title="Edit your subordinate's reports"></th>
@@ -211,6 +212,9 @@
 									<td class="alignCenter">
 										<a href="/Reports/Index/@review.Review.Id#Stats"><span class="glyphicon glyphicon-stats" title="View review stats" ></span></a>
 									</td>*@
+                                <td class="alignCenter clickable">
+                                    <a href="/Reports/List/@review.Review.Id">Report Builder</a>
+                                </td>
 								<td class="alignCenter clickable">
 									<a href="/Reports/Index/@review.Review.Id">@*<span class="icon fontastic-icon-checklist" title="Manage this @Html.ReviewName().ToLower()"></span>*@ Manage</a>
 								</td>
@@ -219,7 +223,7 @@
 							@if (review.Editable && Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
 							{
 								<td class="alignCenter clickable">
-									<a href="/Reviews/Edit/@review.Review.Id">@*<span class="glyphicon glyphicon-cog" title="Edit the @Html.ReviewName().ToLower()"></span>*@Edit</a>
+									<a href="/Reviews/Edit/@review.Review.Id">@*<span class="glyphicon glyphicon-cog" title="Edit the @Html.ReviewName().ToLower()"></span>*@Settings</a>
 								</td>
 							}
 							@*if (ViewBag.ManagingOrganization ?? false)

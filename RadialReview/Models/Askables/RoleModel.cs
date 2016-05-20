@@ -8,6 +8,9 @@ namespace RadialReview.Models.Askables {
 		public virtual long? FromTemplateItemId { get; set; }	
 		public virtual long OrganizationId { get; set; }
 		public virtual long ForUserId { get; set; }
+
+        public virtual UserOrganizationModel Owner { get; set; }
+
 		public virtual String Role { get; set; }
 		
 		public override QuestionType GetQuestionType(){
@@ -28,7 +31,8 @@ namespace RadialReview.Models.Askables {
 			public RMMap()
 			{
 				Map(x => x.OrganizationId);
-				Map(x => x.ForUserId);
+				Map(x => x.ForUserId).Column("ForUserId");
+                References(x => x.Owner).Column("ForUserId").LazyLoad().ReadOnly();
 				Map(x => x.Role);
 				Map(x => x.FromTemplateItemId);
 			}

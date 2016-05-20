@@ -3,23 +3,29 @@
 
 @Html.SecuredHiddenFor(x => x.RecurrenceId)
 	
-<div class="form-group">
-	@Html.LabelFor(x => x.SelectedRock)
+<div class="form-group @(Model.AvailableRocks.Count()==1?"hidden":"")" >
+    <label>Select a rock</label>
 	@Html.DropDownListFor(x => x.SelectedRock, Model.AvailableRocks, new { id = "rockSelector", @class = "form-control", placeholder = "Select a rock..." })
 </div>
 <div class="createNewRock hidden">
-	<hr/>
-		<div class="contents spinner" style="min-height:40px;"></div>
-	<hr/>
+    <label>Create a new rock</label>
+    @*<div class="row">
+        <div class="col-xs-8 col-xs-offset-1">*@
+            <div class="contents spinner" style="min-height:40px;"></div>
+        @*</div>
+    </div>
+    <hr/>*@
 </div>
 
 
 <script>
     function Update_AddRock() {
         if ($("#rockSelector").val() == -3) {
-			$(".createNewRock").removeClass("hidden");
+            $(".createNewRock").removeClass("hidden");
+            var companyRock = "@(Model.AllowCreateCompanyRock?"&companyRock=true":"")";
+
 	        $.ajax({
-				url:"/Rocks/BlankEditorRow?includeUsers=true",
+	            url: "/Rocks/BlankEditorRow?includeUsers=true&excludeDelete=true&recurrenceId=@(Model.RecurrenceId)" + companyRock,
 				success:function(data) {
 					$(".createNewRock .contents").html(data);
 				}

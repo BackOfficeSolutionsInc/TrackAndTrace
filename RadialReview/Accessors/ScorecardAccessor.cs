@@ -15,6 +15,7 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Synchronize;
 using RadialReview.Utilities.RealTime;
+using RadialReview.Models.Application;
 
 namespace RadialReview.Accessors
 {
@@ -40,14 +41,43 @@ namespace RadialReview.Accessors
 
 			var managing = caller.Organization.Id == organizationId && caller.ManagingOrganization;
 			IQueryOver<MeasurableModel, MeasurableModel> q;
+            
+            List<long> userIds=null;
+            List<NameId> visibleMeetings=null;
+		    var getUserIds = new Func<List<long>>(()=>{userIds = userIds??DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);return userIds;});
+		    var getVisibleMeetings = new Func<List<NameId>>(()=>{
+                if (visibleMeetings==null)
+                    visibleMeetings = getUserIds().SelectMany(x=>L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, x, true)).Distinct(x=>x.Id).ToList();
+                return visibleMeetings;
+            });
+            
+
 			if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou && !managing)
 			{
-				var userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
-				q = s.QueryOver<MeasurableModel>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUserId).IsIn(userIds);
+				//var userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
+                q = s.QueryOver<MeasurableModel>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUserId).IsIn(getUserIds());
 				if (loadUsers)
 					q=q.Fetch(x => x.AccountableUser).Eager;
 
-				return q.List().ToList();
+                var results = q.List().ToList();
+
+                var visibleMeetingIds = getVisibleMeetings().Select(x=>x.Id).ToList();
+                var additionalFromL10 = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x=>x.DeleteTime==null)
+                    .WhereRestrictionOn(x=>x.L10Recurrence.Id).IsIn(visibleMeetingIds)
+                    .Select(x=>x.Measurable).List<MeasurableModel>().ToList();
+                results.AddRange(additionalFromL10);
+                results = results.Distinct(x => x.Id).ToList();
+                if (loadUsers) {
+                    foreach (var r in results) {
+                        try {
+                            r.AccountableUser.GetName();
+                        } catch (Exception e) {
+
+                        }
+                    }
+                }
+
+                return results;
 			}
 			else
 			{
@@ -57,7 +87,26 @@ namespace RadialReview.Accessors
 				}
 				else
 				{
-					return GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers, false,true);
+					var results = GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers, false,true);
+
+                    var visibleMeetingIds = getVisibleMeetings().Select(x => x.Id).ToList();
+                    var additionalFromL10 = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null)
+                        .WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(visibleMeetingIds)
+                        .Select(x => x.Measurable).List<MeasurableModel>().ToList();
+                    results.AddRange(additionalFromL10);
+                    results = results.Distinct(x => x.Id).ToList();
+
+                    if (loadUsers) {
+                        foreach (var r in results) {
+                            try {
+                                r.AccountableUser.GetName();
+                            } catch (Exception e) {
+
+                            }
+                        }
+                    }
+
+                    return results;
 				}
 			}
 

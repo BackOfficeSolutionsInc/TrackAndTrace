@@ -20,6 +20,8 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Angular.Issues;
 using RadialReview.Models.L10;
+using RadialReview.Models.Angular.Roles;
+using RadialReview.Models.Angular.CompanyValue;
 
 namespace RadialReview.Controllers
 {
@@ -29,19 +31,26 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         //[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
         //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-        public JsonResult Data2(long id, bool completed = false, string name = null)
+        public JsonResult Data2(long id, bool completed = false, string name = null,long? start=null, long? end=null, bool fullScorecard=false)
 		{
             //Response.AddHeader("Content-Encoding", "gzip");
 			var userId = id;
             var dash = DashboardAccessor.GetPrimaryDashboardForUser(GetUser(), id);
             var tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
+            DateTime startRange;
+            DateTime endRange;
             
-			var start = TimingUtility.PeriodsAgo(DateTime.UtcNow,13, GetUser().Organization.Settings.ScorecardPeriod);
-			var end = DateTime.UtcNow.AddDays(14);
+            if (start==null)    startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
+            else                startRange = start.Value.ToDateTime();
+
+            if (end == null)    endRange = DateTime.UtcNow.AddDays(14);
+            else                endRange = end.Value.ToDateTime();
+
 			if (completed){
-				start = DateTime.UtcNow.AddDays(-1);
-				end = DateTime.UtcNow.AddDays(2);
+				startRange = Math2.Min(DateTime.UtcNow.AddDays(-1),startRange);
+				endRange = Math2.Max(DateTime.UtcNow.AddDays(2),endRange);
 			}
+            var dateRange = new DateRange(startRange, endRange);
 
             var output = new DashboardController.ListDataVM(id)
             {
@@ -50,25 +59,28 @@ namespace RadialReview.Controllers
                 //Scorecard = sc,
                 //Rocks = rocks,
                 //Members = directReports,
-                date = new AngularDateRange() { startDate = start, endDate = end }
+                date = new AngularDateRange() { startDate = startRange, endDate = endRange }
 
                 //Name = "All to-dos for " + m.GetName()
             };
 
             if (tiles.Any(x => x.Type == TileType.Todo || (x.DataUrl??"").Contains("UserTodo"))) { 
 			    //Todos
-			    var todos = TodoAccessor.GetTodosForUser(GetUser(), id, !completed).Select(x => new AngularTodo(x));
+                var todos = TodoAccessor.GetTodosForUser(GetUser(), id, !completed, dateRange).Select(x => new AngularTodo(x));
 			    var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
                 output.Todos = todos.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
 
             }
 
-            if (tiles.Any(x => x.Type == TileType.Scorecard|| (x.DataUrl??"").Contains("UserScorecard")))
+            if (tiles.Any(x => x.Type == TileType.Scorecard || (x.DataUrl??"").Contains("UserScorecard")))
             {
                 //Scorecard
                 var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), userId, ordered: true, includeAdmin: true);
 
-                var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, start, end, includeAdmin: true);
+                var scorecardStart = fullScorecard? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod):startRange;
+                var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
+
+                var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, scorecardStart, scorecardEnd, includeAdmin: true);
                 output.Scorecard = new AngularScorecard(-1,
                     GetUser().Organization.Settings.WeekStart,
                     GetUser().Organization.GetTimezoneOffset(),
@@ -92,7 +104,6 @@ namespace RadialReview.Controllers
                 output.Rocks = rocks;
             }
 
-			// var directReports = _UserAccessor.GetDirectSubordinates(GetUser(), GetUser().Id).Select(x=>AngularUser.CreateUser(x));
             if (tiles.Any(x => x.Type == TileType.Manage || (x.DataUrl ?? "").Contains("UserManage")))
             {
                 var directReports = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails)
@@ -104,6 +115,19 @@ namespace RadialReview.Controllers
                 //}
                 output.Members = directReports;
             }
+
+            if (tiles.Any(x => x.Type == TileType.Roles || (x.DataUrl ?? "").Contains("UserRoles"))) {
+                var roles = _RoleAccessor.GetRoles(GetUser(), GetUser().Id).Select(x => new AngularRole(x)).ToList();
+                output.Roles = roles;
+            }
+
+            if (tiles.Any(x => x.Type == TileType.Values || (x.DataUrl ?? "").Contains("OrganizationValues"))) {
+                var values = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id).Select(x => AngularCompanyValue.Create(x)).ToList();
+                output.CoreValues = values;
+            }
+
+
+
             var caller = GetUser();
             using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -209,6 +233,10 @@ namespace RadialReview.Controllers
                 public DateTime startDate { get; set; }
                 public DateTime endDate { get; set; }
             }
+
+            public IEnumerable<AngularRole> Roles { get; set; }
+            public IEnumerable<AngularCompanyValue> CoreValues { get; set; }
+
 
             public List<AngularTileId<AngularScorecard>> L10Scorecards { get; set; }
             public List<AngularTileId<List<AngularRock>>> L10Rocks { get; set; }

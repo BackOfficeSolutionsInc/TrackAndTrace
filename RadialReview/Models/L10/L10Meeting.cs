@@ -124,7 +124,7 @@ namespace RadialReview.Models.L10
 					case RockState.Indeterminate:	return name;
 					case RockState.AtRisk:			return name + " is marked 'Off Track'";
 					case RockState.OnTrack:			return name + " is marked 'On Track'";
-					case RockState.Complete:		return name + " is marked 'Complete'";
+					case RockState.Complete:		return name + " is marked 'Done'";
 					default:throw new ArgumentOutOfRangeException();
 				}
 			}

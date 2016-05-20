@@ -47,7 +47,7 @@ namespace RadialReview.Accessors {
 				if (user==null || user.DeleteTime != null)
 					continue;
 
-	            var allAskables=GetAskables(caller, perms, dataInteraction, revieweeIds, reviewerId,reviewContainer.PeriodId,range);
+	            var allAskables=GetAskables(caller, perms, dataInteraction, revieweeIds, reviewerId,/*reviewContainer.PeriodId,*/range);
 				
 				if (allAskables.Any()) {
 					QuestionAccessor.GenerateReviewForUser(context,dataInteraction, perms, caller, user, reviewContainer, allAskables);
@@ -95,7 +95,7 @@ namespace RadialReview.Accessors {
 		public async Task<ResultObject> CreateReviewFromCustom(
 			HttpContext context,
 			UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, bool anonFeedback,
-			List<Tuple<long, long>> whoReviewsWho, long periodId, long nextPeriodId)
+			List<Tuple<long, long>> whoReviewsWho/*, long periodId, long nextPeriodId*/)
 		{
             var unsentEmails = new List<Mail>();
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -129,8 +129,8 @@ namespace RadialReview.Accessors {
                         ReviewSubordinates = reviewSubordinates,
                         ReviewTeammates = reviewTeammates,
 
-						PeriodId = periodId,
-						NextPeriodId = nextPeriodId,
+						/*PeriodId = periodId,
+						NextPeriodId = nextPeriodId,*/
 
                         ForTeamId = forTeamId
                     };
@@ -226,13 +226,13 @@ namespace RadialReview.Accessors {
         public static void CreateReviewContainer(ISession s, PermissionsUtility perms, UserOrganizationModel caller, ReviewsModel reviewContainer) {
             using (var tx = s.BeginTransaction()) {
                 perms.ManagerAtOrganization(caller.Id, caller.Organization.Id);
-				foreach(var pid in new[] {reviewContainer.NextPeriodId,reviewContainer.PeriodId})
-	            {
-		            var p = s.Get<PeriodModel>(pid);
-					if (p.OrganizationId != caller.Organization.Id){
-						throw new PermissionsException("You do not have access to this session.");
-					}
-	            }
+				//foreach(var pid in new[] {reviewContainer.NextPeriodId,reviewContainer.PeriodId})
+	            //{
+		        //    var p = s.Get<PeriodModel>(pid);
+				//	if (p.OrganizationId != caller.Organization.Id){
+				//		throw new PermissionsException("You do not have access to this session.");
+				//	}
+	            //}
 
 	            reviewContainer.CreatedById = caller.Id;
                 reviewContainer.ForOrganizationId = caller.Organization.Id;
@@ -256,7 +256,7 @@ namespace RadialReview.Accessors {
             try {
 				var askables = GetAskablesBidirectional(
 					dataInteraction, perms, caller, beingReviewedUser,
-					team, parameters, accessibleUsers.Select(x=>x.Id).ToList(),reviewContainer.PeriodId,range);
+					team, parameters, accessibleUsers.Select(x=>x.Id).ToList(),/*reviewContainer.PeriodId,*/range);
 
                 //Create the Review
                 if (askables.Askables.Any()) {

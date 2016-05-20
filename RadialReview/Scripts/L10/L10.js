@@ -1,17 +1,10 @@
 ﻿
 var myPage = "";
 var followLeader = true;
-var meetingStart = false;
+var meetingStart = meetingStart || false;
 //var isLeader = false;
 //var meetingStart = false;
 
-function imageListFormat(state) {
-    if (!state.id) {
-        return state.text;
-    }
-    var $state = $('<span><img style="max-width:32;max-height:32px"  src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
-    return $state;
-};
 
 
 //////SETUP UNDO//////
@@ -52,30 +45,30 @@ function initL10() {
         loadPage(loc);
     });
 
-    $("body").on("click", ".issuesModal:not(.disabled)", function () {
-        var dat = $(this).data();
-        var parm = $.param(dat);
-        var m = $(this).data("method");
-        if (!m)
-            m = "Modal";
-        var title = dat.title || "Add an issue";
-        showModal(title, "/Issues/" + m + "?" + parm, "/Issues/" + m);
-    });
+    //$("body").on("click", ".issuesModal:not(.disabled)", function () {
+    //    var dat = $(this).data();
+    //    var parm = $.param(dat);
+    //    var m = $(this).data("method");
+    //    if (!m)
+    //        m = "Modal";
+    //    var title = dat.title || "Add an issue";
+    //    showModal(title, "/Issues/" + m + "?" + parm, "/Issues/" + m);
+    //});
 
-    $("body").on("click", ".todoModal:not(.disabled)", function () {
-        var dat = $(this).data();
-        var parm = $.param(dat);
-        var m = $(this).data("method");
-        if (!m)
-            m = "Modal";
-        var title = dat.title || "Add a to-do";
-        showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m, null, function () {
-            debugger;
-            if ($('#modalBody').find(".select-user").val() == null)
-                return "You must select at least one to-do owner.";
-            return true;
-        });
-    });
+    //$("body").on("click", ".todoModal:not(.disabled)", function () {
+    //    var dat = $(this).data();
+    //    var parm = $.param(dat);
+    //    var m = $(this).data("method");
+    //    if (!m)
+    //        m = "Modal";
+    //    var title = dat.title || "Add a to-do";
+    //    showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m, null, function () {
+    //        debugger;
+    //        if ($('#modalBody').find(".select-user").val() == null)
+    //            return "You must select at least one to-do owner.";
+    //        return true;
+    //    });
+    //});
 
 
 }
@@ -364,15 +357,16 @@ function printIframe(id) {
 }
 
 function fixSidebar() {
+    //debugger;
     if ($(document).width() < 991) {
         $(".fixed-pos").css("top", 0);
     } else {
-        $(".fixed-pos").css("top", $(document).scrollTop());
+        $(".fixed-pos").css("top", $(".slider-container.level-10").scrollTop());
     }
 }
 
-$(document).scroll(fixSidebar);
-$(document).resize(fixSidebar);
+$(".slider-container.level-10").scroll(fixSidebar);
+$(".slider-container.level-10").resize(fixSidebar);
 
 
 $(document).on("scroll-to", ".arrowkey", function () {
@@ -413,18 +407,18 @@ $(document).keydown(function (event) {
     var f1 = $(".arrowkey.selected,.arrowkey.selected");
     if (event.which == 38) {
         if (f1.length > 0) {
-            f1.prev(".arrowkey").click().trigger("scroll-to");
+            f1.prevAll(".arrowkey:not(.issue-row[data-checked=true]):not(.issue-row[data-checked=True])").first().click().trigger("scroll-to");
             event.preventDefault();
         } else {
-            $(".arrowkey").last().click().trigger("scroll-to");
+            $(".arrowkey:not(.issue-row[data-checked=true]):not(.issue-row[data-checked=True])").last().click().trigger("scroll-to");
             event.preventDefault();
         }
     } else if (event.which == 40) {
         if (f1.length > 0) {
-            f1.next(".arrowkey").click().trigger("scroll-to");
+            f1.nextAll(".arrowkey:not(.issue-row[data-checked=true]):not(.issue-row[data-checked=True])").first().click().trigger("scroll-to");
             event.preventDefault();
         } else {
-            $(".arrowkey").first().click().trigger("scroll-to");
+            $(".arrowkey:not(.issue-row[data-checked=true]):not(.issue-row[data-checked=True])").first().click().trigger("scroll-to");
             event.preventDefault();
         }
     } else if (event.which == 32 || event.which == 13) {

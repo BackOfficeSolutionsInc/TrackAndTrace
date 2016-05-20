@@ -98,25 +98,26 @@ namespace RadialReview.Models.Todo
 		}
 
 		public virtual async Task<string> GetIssueMessage()
-		{
-			if (CreatedDuringMeeting != null){
-				if (CreatedDuringMeeting.StartTime.HasValue && !CreatedDuringMeeting.CompleteTime.HasValue && CreateTime > CreatedDuringMeeting.StartTime.Value && CompleteTime == null){
-					//Created during meeting
-					return "";
-				}
-				if (CreatedDuringMeeting.StartTime.HasValue && CreateTime < CreatedDuringMeeting.StartTime.Value && CompleteTime == null){
-					//Incomplete from previous meeting
-					return "Todo was not completed";
-				}
-			}
-			else{
-				if (CompleteTime == null)
-					return "Todo was not completed";
-				else
-					return "";
-
-			}
-			return "";
+        {
+            return "Incomplete: '" + Message + "'";//"Todo was not completed";
+            //if (CreatedDuringMeeting != null){
+            //    if (CreatedDuringMeeting.StartTime.HasValue && !CreatedDuringMeeting.CompleteTime.HasValue && CreateTime > CreatedDuringMeeting.StartTime.Value && CompleteTime == null){
+            //        //Created during meeting
+            //        return "";
+            //    }
+            //    if (CreatedDuringMeeting.StartTime.HasValue && CreateTime < CreatedDuringMeeting.StartTime.Value && CompleteTime == null){
+            //        //Incomplete from previous meeting
+            //        return "Incomplete: '" + Message + "'";//"Todo was not completed";
+            //        //return "Todo was not completed";
+            //    }
+            //}
+            //else{
+            //    if (CompleteTime == null)
+            //        return "Incomplete: '"+Message+"'";//"Todo was not completed";
+            //    else
+            //        return "";
+            //}
+            //return "";
 		}
 
 		public virtual async Task<string> GetIssueDetails()

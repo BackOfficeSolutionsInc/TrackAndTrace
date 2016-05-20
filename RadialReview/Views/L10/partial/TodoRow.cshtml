@@ -1,40 +1,46 @@
 ﻿@model RadialReview.Models.Todo.TodoModel
 
 <li class="todo-row dd-item arrowkey"
-	data-createtime="@(Model.CreateTime.ToJavascriptMilliseconds())"
-	data-duedate="@(Model.DueDate.ToJavascriptMilliseconds())"
-	data-checked="@(Model.CompleteTime==null?"False":"True")"
-	data-todo="@Model.Id"
-	data-message="@Model.Message.EscapeHtml()"
-	data-details="@Model.Details.EscapeHtml()"
-    data-name="@Model.AccountableUser.GetName()" 
-    data-accountable="@Model.AccountableUser.Id" 
-	data-padid = "@Model.PadId"
+    data-createtime="@(Model.CreateTime.ToJavascriptMilliseconds())"
+    data-duedate="@(Model.DueDate.ToJavascriptMilliseconds())"
+    data-checked="@(Model.CompleteTime==null?"False":"True")"
+    data-todo="@Model.Id"
+    data-message="@Model.Message.EscapeHtml()"
+    data-details="@Model.Details.EscapeHtml()"
+    data-name="@Model.AccountableUser.GetName()"
+    data-accountable="@Model.AccountableUser.Id"
+    data-padid="@Model.PadId"
     data-imageurl="@Model.AccountableUser.ImageUrl(true,ImageSize._64)"
-
-    data-createdBefore="@(ViewBag.MeetingStart == null?false:Model.CreateTime<((DateTime)ViewBag.MeetingStart))"
->
-	<input data-todo="@Model.Id" class="todo-checkbox" type="checkbox" @(Model.CompleteTime == null ? "" : "checked") />
-	<div class="move-icon noselect dd-handle">
-		<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>
-		<span class="inner icon fontastic-icon-primitive-square"></span>
-	</div>
-	<div class="btn-group pull-right">
+    data-createdbefore="@(ViewBag.MeetingStart == null?false:Model.CreateTime<((DateTime)ViewBag.MeetingStart))">
+    <input data-todo="@Model.Id" class="todo-checkbox" type="checkbox" @(Model.CompleteTime == null ? "" : "checked") />
+    <div class="move-icon noselect dd-handle">
+        <span class="outer icon fontastic-icon-three-bars icon-rotate"></span>
+        <span class="inner icon fontastic-icon-primitive-square"></span>
+    </div>
+    <div class="btn-group pull-right">
+        @if (Model.CreateTime > ViewBag.MeetingStart) {
+            <div class="label label-success new-indicator" title="Created during this meeting.">new</div>
+        } else {
+            if (Model.DueDate < DateTime.UtcNow) {
+                <div class="label label-danger overdue-indicator" title="This to-do is overdue">late</div>
+            }
+        }
         <span class="icon fontastic-icon-pinboard issuesModal issuesButton"
               data-method="issuefromtodo"
               data-todo="@Model.Id"
               data-recurrence="@Model.ForRecurrenceId"
               data-meeting="@ViewData["MeetingId"]"
               title="Create a Context-Aware Issue™"></span>
-	</div>
-	<span class="profile-image">@Html.Partial("_ProfilePicture", Model.AccountableUser)</span>
-	@*<div class="btn-group pull-right">
-			<span class='issuesModal issuesButton icon fontastic-icon-forward-1'
-				  data-copyto="@Model.ForRecurrenceId"
-				  data-recurrence_issue="@Model.Id"
-				  data-method='copymodal'></span>
-		</div>*@
-	<div class="message" data-todo="@Model.Id">@Model.Message</div>
-	<div class="todo-details-container"><div class="todo-details" data-todo="@Model.Id">@Model.Details</div></div>
-	<div class="due-date @(Model.DueDate.Date<Html.ConvertFromUtc(DateTime.UtcNow).Date?"red":"")">@Model.DueDate.Date.ToShortDateString()</div>
+    </div>
+    <span class="profile-image">@Html.Partial("_ProfilePicture", Model.AccountableUser)</span>
+    @*<div class="btn-group pull-right">
+            <span class='issuesModal issuesButton icon fontastic-icon-forward-1'
+                  data-copyto="@Model.ForRecurrenceId"
+                  data-recurrence_issue="@Model.Id"
+                  data-method='copymodal'></span>
+        </div>*@
+    <div class="message" data-todo="@Model.Id">@Model.Message</div>
+    <div class="todo-details-container"><div class="todo-details" data-todo="@Model.Id">@Model.Details</div></div>
+    <div class="due-date @(Model.DueDate.Date<Html.ConvertFromUtc(DateTime.UtcNow).Date?"red":"")">@Model.DueDate.Date.ToShortDateString()</div>
+  
 </li>

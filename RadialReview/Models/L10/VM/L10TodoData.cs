@@ -32,10 +32,12 @@ namespace RadialReview.Models.L10.VM
 				accountableUserId = todo.AccountableUserId,
 				todo = todo.Id,
 				padId = todo.PadId,
-				duedate = todo.DueDate,//.ToJavascriptMilliseconds()
+				duedate = todo.DueDate,//.ToJavascriptMilliseconds()                
 			};
 		}
-	}
+
+        public bool isNew { get; set; }
+    }
 	public class TodoEdit
 	{
 		public long? ParentTodoId { get; set; }

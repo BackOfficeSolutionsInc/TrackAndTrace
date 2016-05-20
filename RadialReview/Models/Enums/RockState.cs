@@ -14,7 +14,7 @@ namespace RadialReview.Models.Enums
         AtRisk = 0,
         [Display(Name = "On Track")]
         OnTrack = 1,
-        [Display(Name = "Complete")]
+        [Display(Name = "Done")]
 		Complete = 2,
 	}
 }

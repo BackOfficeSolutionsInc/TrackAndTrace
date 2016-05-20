@@ -9,8 +9,14 @@
     var selector = ViewBag.Selector as string ?? "model.IssuesList";
     //var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
     var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
-    var detailsCode = showDetails?"issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key":"";
+    var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key" : "";
 
+    var filter = (ViewBag.Filter ?? " | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)");
+
+
+    var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+    var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
+    
     var attrLookup = new Dictionary<string, string>(){
         {"checkbox-column",""},
         {"priority-column",""},
@@ -18,7 +24,7 @@
         {"issue-column",""},
         {"createtime-column",""},
         {"complete-column",""},
-        {"vto-column",""},        
+        {"vto-column",""},
         {"delete-column",""}
     };
     attrLookup[ViewBag.SortBy ?? "createtime-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
@@ -28,67 +34,71 @@
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak issues-list-container app ">
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
         <div class="row">
-            <div class="col-md-12">
-                <table ts-wrapper width="100%" class="component priority-{{(@selector).Prioritization}}" ng-show="((@(selector)).Issues| filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length >
-                    0" click-anywhere-but-here="model.Selected = -1">
-                    <thead>
-                        <tr>
-                            <th @(attrLookup["checkbox-column"]) class="checkbox-column" ts-criteria="Complete">&nbsp;</th>
-                            <th @(attrLookup["priority-column"]) class="priority-column" ts-criteria="Priority">Priority</th>
-                            <th @(attrLookup["owner-column"]) class="owner-column" ts-criteria="Owner.Name">&nbsp;</th>
-                            <th @(attrLookup["issue-column"]) class="issue-column" ts-criteria="Name" style="padding-left: 4px;">Issue</th>
-                            <th @(attrLookup["createtime-column"]) class="createtime-column" ts-criteria="CreateTime">Created</th>
-                            <th @(attrLookup["complete-column"]) class="complete-column" ts-criteria="CompleteTime">Completed</th>
-                            <td @(attrLookup["vto-column"]) class="vto-column"></td>
-                            <td @(attrLookup["delete-column"]) class="delete-column"></td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-hide="issue.Hide" ng-repeat="issue in ((@(selector)).Issues)  | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)"
-                            ng-class="{grayRow: issue.Complete}"
-                            @*ng-if="model.Selected!=issue.Key"*@
-                            class="clickable"
-                            ts-repeat>
-                            <td class="checkbox-column" style="vertical-align: top;min-width: 25px;text-align: center;top:5px;position: relative">
-                                <input type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />
-                            </td>
-                            <td class="priority-column" style="vertical-align: top;padding-top: 5px;">
-                                <priority ng-model="issue.Priority" ng-change="functions.sendUpdate(issue)"></priority>
-                            </td>
-                            <td style="vertical-align: top" class="owner-column">
-                                <a href="#" data-display="false" data-value="{{issue.Owner.Id}}" data-placement="right" class="inlineEdit" data-type="select" data-pk="{{::issue.Id}}" data-url="/L10/XUpdateIssue" data-name="owner" data-source="/Dropdown/MeetingMembers/{{::model.Id}}?userId=true">
-                                    <profile-image user="issue.Owner"></profile-image>
-                                </a>
-                            </td>
-                            <td class="issue-column" style="width:100%;padding-left:2px" ng-click="@(detailsCode)">
-                                @*<div style="padding-top: 6px;">{{issue.Name}}</div><div style="padding-top: 6px;"></div>*@
+            <div class="col-md-12 priority-{{@(selector).Prioritization}}">
+                <md-table-container>
+                    <table md-table @*ts-wrapper*@ width="100%" class="component "
+                           click-anywhere-but-here="model.Selected = -1"
+                           ng-show="((@(selector)).Issues @(filter)).length">
+                        <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
+                            <tr md-row>
+                                <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" md-order-by="Complete">&nbsp;</th>
+                                <th md-column @(attrLookup["priority-column"]) class="priority-column" md-order-by="Priority">Priority</th>
+                                <th md-column @(attrLookup["owner-column"]) class="owner-column" md-order-by="Owner.Name">&nbsp;</th>
+                                <th md-column @(attrLookup["issue-column"]) class="issue-column" md-order-by="Name" style="padding-left: 4px;">Issue</th>
+                                <th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="CreateTime">Created</th>
+                                <th md-column md-numeric @(attrLookup["complete-column"]) class="complete-column" md-order-by="CompleteTime">Completed</th>
+                                <th md-column md-numeric @(attrLookup["vto-column"]) class="vto-column"></th>
+                                <th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
+                            </tr>
+                        </thead>
+                        <tbody md-body>
+                            <tr ng-hide="issue.Hide" ng-repeat="issue in ((@(selector)).Issues) | orderBy: @(orderVariable) @(filter)"
+                                ng-class="{grayRow: issue.Complete}"
+                                class="clickable"
+                                md-row>
+                                <td md-cell class="checkbox-column" @*style="vertical-align: top;min-width: 25px;text-align: center;top:5px;position: relative" *@>
+                                    @*<input type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />*@
+                                    <md-checkbox aria-label="Complete" ng-model="issue.Complete" class="md-warn md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)"></md-checkbox>
 
-                                <input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 400}" type="text" @*ng-if="model.Selected!=issue.Key"*@ ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" />
-                                <div class="" ng-if="model.Selected==issue.Key">
-                                    @*<input ng-model-options="{debounce: 400}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" />*@
-                                    <iframe class="details-row" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
-                                </div>
-                                <table class="sub-issue-column">
-                                    <tr ng-repeat="sub in issue.Children" class="gray">
-                                        <td style="width:20px;"></td>
-                                        <td>{{::sub.Name}}</td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td class="alignCenter createtime-column" style="min-width: 75px;">{{issue.CreateTime | date:'MM/dd/yy'}}</td>
-                            <td class="alignCenter complete-column" style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
-                            <td class="vto-column">
-                                <span class="move-to-vto" ng-click="functions.moveToVto(issue)"></span>
-                            </td>
-                            <td class="delete-column">
-                                <span class="delete-row" ng-click="functions.removeRow($event,issue)"></span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </td>
+                                <td md-cell class="priority-column" style="vertical-align: top;padding-top: 5px;">
+                                    <priority ng-model="issue.Priority" ng-change="functions.sendUpdate(issue)"></priority>
+                                </td>
+                                <td md-cell style="vertical-align: top" class="owner-column picture-column">
+                                    <a href="#" data-display="false" data-value="{{issue.Owner.Id}}" data-placement="right" class="inlineEdit" data-type="select" data-pk="{{::issue.Id}}" data-url="/L10/XUpdateIssue" data-name="owner" data-source="/Dropdown/MeetingMembers/{{::model.Id}}?userId=true">
+                                        <profile-image user="issue.Owner"></profile-image>
+                                    </a>
+                                </td>
+                                <td md-cell class="issue-column" style="width:100%;padding-left:2px" ng-click="@(detailsCode)">
+                                    @*<div style="padding-top: 6px;">{{issue.Name}}</div><div style="padding-top: 6px;"></div>*@
+
+                                    <input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 400}" type="text" @*ng-if="model.Selected!=issue.Key"*@ ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
+                                    <div class="" ng-if="model.Selected==issue.Key">
+                                        @*<input ng-model-options="{debounce: 400}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" />*@
+                                        <iframe class="details-row" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
+                                    </div>
+                                    <table class="sub-issue-column">
+                                        <tr ng-repeat="sub in issue.Children" class="gray">
+                                            <td style="width:20px;"></td>
+                                            <td>{{::sub.Name}}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td md-cell class="alignCenter createtime-column" style="min-width: 75px;">{{issue.CreateTime | date:'MM/dd/yy'}}</td>
+                                <td md-cell class="alignCenter complete-column" style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
+                                <td md-cell class="vto-column">
+                                    <span class="move-to-vto" ng-click="functions.moveToVto(issue)"></span>
+                                </td>
+                                <td md-cell class="delete-column">
+                                    <span class="delete-row" ng-click="functions.removeRow($event,issue)"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </md-table-container>
                 <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
                 <div class="create-row" ng-click="functions.addRow($event,'AngularIssue')" data-toggle="tooltip" data-placement="left" title="New Issue"></div>
-                <div class="component gray empty-search" style="padding: 30px 15px;clear: both;" ng-show="((@(selector)).Issues | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)).length==0">
+                <div class="component gray empty-search" style="padding: 30px 15px;clear: both;" ng-show="((@(selector)).Issues @(filter)).length==0">
                     No issues fit your search criteria.
                 </div>
             </div>

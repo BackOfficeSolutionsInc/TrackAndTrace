@@ -13,14 +13,14 @@ namespace RadialReview.Controllers
 {
     public class ReportsController : BaseController
     {
-	    private ReviewsViewModel GenModel(long reviewContainerId)
+	    private ReviewsViewModel GenModel(long reviewContainerId,bool deep=true)
 	    {
        
 			var user = GetUser().Hydrate().ManagingUsers(true).Execute();
 
 			//TODO remove first true, we dont want all answers
 
-			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, reviewContainerId, true, true);
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, reviewContainerId, deep, deep);
 		
 			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
@@ -62,6 +62,11 @@ namespace RadialReview.Controllers
 			return model;
 	    }
 
+        //[Access(AccessLevel.UserOrganization)]
+        //public ActionResult List(long id)
+        //{
+        //    return View(GenModel(id, false));
+        //}
 
         //
         // GET: /Reports/

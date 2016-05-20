@@ -87,7 +87,7 @@
                         <div class="panel-body">
                             @Html.ListBoxFor(x =>
                                 x.SelectedMeasurables,
-                                Model.PossibleMeasurables.ToSelectList(x => x.Title + " (Owner: " + x.AccountableUser.GetName() + ")", x => x.Id).OrderBy(x => x.Text),
+                                Model.PossibleMeasurables.ToSelectList(x => x.Title + " (Owner: " + x.AccountableUser.NotNull(y=>y.GetName()) + ")", x => x.Id).OrderBy(x => x.Text),
                                 new { @class = "Xselect2 duel-list form-control measurables editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typing a measurable..." })
 
 
@@ -339,6 +339,11 @@
 
     <script src="~/Scripts/components/jquery.bootstrap-duallistbox.js"></script>
     <script>
+
+        $("body").on("mousemove",".bootstrap-duallistbox-container select",function(){
+            var h=$(this).height();
+            $(this).closest(".bootstrap-duallistbox-container").find("select").each(function(){$(this).height(h);});
+        });
 
         var selectedTodoList = @Model.Recurrence.DefaultTodoOwner;
         var changes = false;

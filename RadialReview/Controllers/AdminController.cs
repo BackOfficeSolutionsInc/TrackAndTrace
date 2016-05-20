@@ -35,13 +35,48 @@ using RadialReview.Utilities.Productivity;
 using RadialReview.Models.Todo;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Scorecard;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Controllers {
 
     public class AdminController : BaseController {
+        
+        [Access(AccessLevel.Radial)]
+        public async Task<ActionResult> ShiftScorecard(long recurrence=0,int weeks=0)
+        {
+            if (recurrence == 0 || weeks == 0)
+                return Content("Requires a recurrence and weeks parameter ?recurrence=&weeks= <br/>Warning: this command will shift the measurable regardless of whether it has been shifted for another meeting.");
+            var messages = new List<string>();
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var measurables =s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
+                        .Fetch(x=>x.Measurable).Eager
+                        .Select(x => x.Measurable).List<MeasurableModel>().ToList();
+
+                    foreach (var measurable in measurables) {
+                        if (measurable != null) {
+                            var message = "Measurable [" + string.Format("{0,-18}", measurable.Id) + "] shifted (" + string.Format("{0,-5}", weeks) + ") weeks.";
+                            messages.Add(message);
+                            log.Info(message);
+                            var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.Measurable.Id == measurable.Id).List().ToList();
+                            foreach (var score in scores) {
+                                score.DateDue = score.DateDue.AddDays(7 * weeks);
+                                score.ForWeek = score.ForWeek.AddDays(7 * weeks);
+                                s.Update(score);
+                            }
+                        }
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return Content(string.Join("<br/>", messages));
+        }
+
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> ResetDemo()
+        public async Task<ActionResult> ResetDemo(long recurId = 1)
         {
             if (GetUser().Id==600 || GetUser().IsRadialAdmin || GetUser().User.IsRadialAdmin){
                 //fall through
@@ -58,7 +93,7 @@ namespace RadialReview.Controllers {
                  };
 
 
-            var recurId = 1;
+            //var recurId = 1;
             var recur = L10Accessor.GetAngularRecurrence(GetUser(), recurId);
             var possibleUsers = recur.Attendees.Select(x => x.Id).ToList();
             possibleUsers.Add(600);
@@ -74,6 +109,11 @@ namespace RadialReview.Controllers {
 
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
+                    var recur1 = s.Get<L10Recurrence>(recurId);
+
+                    if (recur1.OrganizationId != 592)
+                        throw new Exception("Cannot edit meetings outside of Gart Sports");
+
                     var caller = s.Get<UserOrganizationModel>(600L);
                     var perms = PermissionsUtility.Create(s, caller);
 

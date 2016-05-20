@@ -53,7 +53,8 @@ angular.module('puElasticInput', []).directive('puElasticInput', ['$document', '
 
             function update() {
                 var v = element.val() || attrs.placeholder || '';
-                if (typeof (element.attr("fcsa-number")) !== "undefined") {
+                if (typeof (element.attr("fcsa-number")) !== "undefined" && v.indexOf(",") == -1
+                    && v.indexOf("$") == -1 && v.indexOf("%") == -1) {
                     var len =v.length;
                     for (var i = 0; i < len / 3;i++)
                         v +=",";

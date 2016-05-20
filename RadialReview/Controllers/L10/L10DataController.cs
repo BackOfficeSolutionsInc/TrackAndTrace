@@ -62,6 +62,8 @@ namespace RadialReview.Controllers
 			//public long SelectedAdminMember { get; set; }
 			public List<RockModel> Rocks { get; set; }
 
+            public bool AllowCreateCompanyRock { get; set; }
+
             public static AddRockVm CreateRock(long recurrenceId, RockModel model,bool allowBlankRock=false)
             {
                 if (model == null)
@@ -110,6 +112,7 @@ namespace RadialReview.Controllers
 				AvailableRocks = addableRocks.ToSelectList(x => x.ToFriendlyString(), x => x.Id),
 				//AvailableMembers = allMembers.ToSelectList(x => x.GetName(), x => x.Id),
 				RecurrenceId = recurrenceId,
+                AllowCreateCompanyRock = recurrence.TeamType == L10TeamType.LeadershipTeam
 			};
 
 			am.AvailableRocks.Add(new SelectListItem() { Text = "<Create Rock>", Value = "-3" });

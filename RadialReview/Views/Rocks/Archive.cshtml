@@ -1,0 +1,35 @@
+﻿@model List<RadialReview.Models.Askables.RockModel>
+@{
+    ViewBag.Title = "Archive";
+}
+
+
+@*@{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml");}*@
+
+<table class="tablesorter">
+    <thead>
+        <tr>
+            <th style="min-width:50px"></th>
+            <th style="width:100%">Rock</th>
+            <th style="min-width:120px"></th>
+            <th style="min-width:160px">Archive Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{var i = 1;}
+        @foreach (var r in Model) {
+            <tr>
+                <td>@i.</td>
+                <td>@r.Rock</td>
+                <td>@(new MvcHtmlString(r.CompanyRock ? "<span class='label label-success'>Company Rock</span>" : ""))</td>
+                <td>@(r.DeleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToString()))</td>
+            </tr>
+            i += 1;
+        }
+    </tbody>
+</table>
+@using (Html.BeginScripts()) {
+    <script>
+        $("table").tablesorter();
+    </script>
+}

@@ -1,17 +1,148 @@
 ﻿@{
-	var forceMin = ViewBag.ForceMin == null?"":","+((int)ViewBag.ForceMin);
-    var scorecardKey = ViewBag.ScorecardKey as string??"model.Scorecard.Key";
+    var forceMin = ViewBag.ForceMin == null ? "" : "," + ((int)ViewBag.ForceMin);
+    var scorecardKey = ViewBag.ScorecardKey as string ?? "model.Scorecard.Key";
 }
 
-<div class="btn-group pull-right" style="padding: 5px 3px;">
-	<a class="btn btn-default btn-xs" href="/L10/ExportScorecard/{{::meetingId}}?type=csv" target="_blank"><span class="glyphicon glyphicon-save"></span> Export (.csv)</a>
-</div>
-<div class="btn-group pull-right" style="padding: 5px 0px;">
-	<div class="btn btn-default btn-xs measurableModal" data-recurrence="{{::meetingId}}"><span class="icon fontastic-icon-science-laboratory"></span> Add Measurable</div>
-</div>
+@*<div class="btn-group pull-right" style="padding: 5px 3px;">
+        <a class="btn btn-default btn-xs" href="/L10/ExportScorecard/{{::meetingId}}?type=csv" target="_blank"><span class="glyphicon glyphicon-save"></span> Export (.csv)</a>
+    </div>
+    <div class="btn-group pull-right" style="padding: 5px 0px;">
+        <div class="btn btn-default btn-xs measurableModal" data-recurrence="{{::meetingId}}"><span class="icon fontastic-icon-science-laboratory"></span> Add Measurable</div>
+    </div>*@
+@*<md-fab-toolbar md-open="demo.isOpen" count="demo.count" md-direction="{{demo.selectedDirection}}">
+        <md-fab-trigger class="align-with-text">
+            <md-button aria-label="menu" class="md-fab md-primary">
+                <md-icon md-svg-src="img/icons/menu.svg"></md-icon>
+            </md-button>
+        </md-fab-trigger>
+        <md-toolbar>
+            <md-fab-actions class="md-toolbar-tools">
+                <md-button aria-label="comment" class="md-icon-button">
+                    <md-icon md-svg-src="img/icons/ic_comment_24px.svg"></md-icon>
+                </md-button>
+                <md-button aria-label="label" class="md-icon-button">
+                    <md-icon md-svg-src="img/icons/ic_label_24px.svg"></md-icon>
+                </md-button>
+                <md-button aria-label="photo" class="md-icon-button">
+                    <md-icon md-svg-src="img/icons/ic_photo_24px.svg"></md-icon>
+                </md-button>
+            </md-fab-actions>
+        </md-toolbar>
+    </md-fab-toolbar>*@
 
+@*<div class="lock-size" layout="row" layout-align="end center">
+    <md-fab-speed-dial md-open="demo.isOpen" md-direction="left" class="md-scale">
+        <md-fab-trigger>
+            <md-button aria-label="menu" class="md-fab md-accent">
+                <md-icon>menu</md-icon>
+            </md-button>
+        </md-fab-trigger>
+        <md-fab-actions>
+            <span class="measurableModal" data-recurrence="{{::meetingId}}">
+                <md-button class="md-icon-button md-fab md-raised md-mini" aria-label="Add Measurable">
+                    <md-tooltip md-direction="left">
+                        Add Measurable
+                    </md-tooltip>
+                    <md-icon>add</md-icon>
+                </md-button>
+            </span>
+            <md-button class="md-icon-button md-fab md-raised md-mini" aria-label="Export Scorecard" href="/L10/ExportScorecard/{{::meetingId}}?type=csv" target="_blank">
+                <md-tooltip md-direction="left">
+                    Export Scorecard
+                </md-tooltip>
+                <md-icon>file_download</md-icon>
+            </md-button>
+            <md-button class="md-icon-button md-fab md-raised md-mini" aria-label="Filter" ng-click="filter.show = true">
+                <md-tooltip md-direction="left">
+                    Filter
+                </md-tooltip>
+                <md-icon>filter_list</md-icon>
+            </md-button>
+        </md-fab-actions>
+    </md-fab-speed-dial>
+</div>*@
+
+
+
+<md-toolbar class="md-table-toolbar md-default" ng-hide="filter.show == true">
+    <div class="md-toolbar-tools">
+        <span>Scorecard</span>
+        <span flex></span>
+      
+        <md-button class="md-icon-button" aria-label="Export Scorecard" href="/L10/ExportScorecard/{{::meetingId}}?type=csv" target="_blank">
+            <md-tooltip md-direction="left">
+                Export Scorecard
+            </md-tooltip>
+            <md-icon>file_download</md-icon>
+        </md-button>@*<span class="measurableModal" data-recurrence="{{::meetingId}}">*@
+        <md-button class="md-icon-button measurableModal" aria-label="Add Measurable" data-recurrence="{{::meetingId}}">
+            <md-tooltip md-direction="left">
+                Add Measurable
+            </md-tooltip>
+            <md-icon>add</md-icon>
+        </md-button>
+        @*</span>*@
+        @*<md-button class="md-icon-button md-fab md-raised md-mini" aria-label="Filter" ng-click="filter.show = true">
+            <md-tooltip md-direction="left">
+                Filter
+            </md-tooltip>
+            <md-icon>filter_list</md-icon>
+        </md-button>*@
+    </div>
+</md-toolbar>
+
+@*<md-fab-toolbar class="md-table-toolbar md-default" count="3" md-direction="left">
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>Scorecard</span>
+            </h2>
+            <span flex></span>
+            @*<md-fab-speed-dial md-open="demo.isOpen" count="3" md-direction="left" @*class="md-scale">*
+            <md-fab-trigger class="align-with-text">
+                <md-button aria-label="menu" class="md-fab md-primary">
+                    <md-icon>more_vert</md-icon>
+                </md-button>
+            </md-fab-trigger>
+            <md-fab-actions class="md-toolbar-tools">
+                <span class="measurableModal" data-recurrence="{{::meetingId}}">
+                    <md-button class="md-icon-button md-fab md-raised md-mini" aria-label="Add Measurable">
+                        <md-tooltip md-direction="left">
+                            Add Measurable
+                        </md-tooltip>
+                        <md-icon>add</md-icon>
+                    </md-button>
+                </span>
+                <md-button class="md-icon-button md-fab md-raised md-mini" aria-label="Export Scorecard" href="/L10/ExportScorecard/{{::meetingId}}?type=csv" target="_blank">
+                    <md-tooltip md-direction="left">
+                        Export Scorecard
+                    </md-tooltip>
+                    <md-icon>file_download</md-icon>
+                </md-button>
+                <md-button class="md-icon-button md-fab md-raised md-mini" aria-label="Filter" ng-click="filter.show = true">
+                    <md-tooltip md-direction="left">
+                        Filter
+                    </md-tooltip>
+                    <md-icon>filter_list</md-icon>
+                </md-button>
+                @*<md-button aria-label="Google Hangout" class="md-fab md-raised md-mini">
+                        <md-icon md-svg-src="img/icons/hangout.svg" aria-label="Google Hangout"></md-icon>
+                    </md-button>*
+            </md-fab-actions>
+            @*</md-fab-speed-dial>*
+        </div>
+
+
+        @*<span class="todoModal" data-method="CreateTodo" data-recurrence="{{::meetingId}}">
+                <md-button class="md-icon-button" aria-label="Add To-do">
+                    <md-tooltip md-direction="left">
+                        Add To-do
+                    </md-tooltip>
+                    <md-icon>add</md-icon>
+                </md-button>
+            </span>*
+    </md-fab-toolbar>*@
 @{
-Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary(){
+    Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary(){
         {"AddHeaders", false},
         {"AddController", false},
         {"DisableName", false},
@@ -21,67 +152,70 @@ Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDiction
     }); }
 
 
-@using (Html.BeginScripts())
-{
-	<script src="~/Scripts/jquery/jquery.ui.sortable.js"></script>
-	<script src="~/Scripts/L10/L10Scorecard.js"></script>
-	<script>
-		
-		$(function () {
-			fixHelperModified = function (e, tr) {
-				var $originals = tr.children();
-				var $helper = tr.clone();
-				$helper.children().each(function (index) {
-					$(this).width($originals.eq(index).width());
-				});
-				return $helper;
-			};
+@using (Html.BeginScripts()) {
+    <script src="~/Scripts/jquery/jquery.ui.sortable.js"></script>
+    <script src="~/Scripts/L10/L10Scorecard.js"></script>
+    <script>
 
-			var updateIndex = function (e, ui) {
-				var order = [];
-				var i = 0;
-				$('tr', ui.item.parent()).each(function (i) {
-						order.push(+$(this).attr("data-measurable"));
-				});
+        $(function () {
+            fixHelperModified = function (e, tr) {
+                var $originals = tr.children();
+                var $helper = tr.clone();
+                $helper.children().each(function (index) {
+                    $(this).width($originals.eq(index).width());
+                });
+                return $helper;
+            };
 
-				var data = {
-					ordering: order,
-					recurrenceId: angular.element(document.querySelector('#ScorecardContainer')).scope().meetingId
-				};
-				$.ajax({
-					url: "/L10/UpdateRecurrenceMeasurableOrdering",
-					method: "POST",
-					data: $.param(data, true),
-					success: function(d) {
-						showJsonAlert(d);
-						angular.element(document.querySelector('#ScorecardContainer')).scope().$apply();
-					}
-				});
-			};
+            var updateIndex = function (e, ui) {
+                var order = [];
+                var i = 0;
+                $('tr', ui.item.parent()).each(function (i) {
+                    order.push(+$(this).attr("data-measurable"));
+                });
 
-			$(".scorecard-table tbody").xsortable({
-				items: ">.reorderable",
-				handle: ".handle",
-				helper: fixHelperModified,
-				stop: updateIndex,
-				placeholder: "xsortable-placeholder"
-			}).disableSelection();
-		});
-	</script>
+                var data = {
+                    ordering: order,
+                    recurrenceId: angular.element(document.querySelector('#ScorecardContainer')).scope().meetingId
+                };
+                $.ajax({
+                    url: "/L10/UpdateRecurrenceMeasurableOrdering",
+                    method: "POST",
+                    data: $.param(data, true),
+                    success: function (d) {
+                        showJsonAlert(d);
+                        angular.element(document.querySelector('#ScorecardContainer')).scope().$apply();
+                    }
+                });
+            };
+
+            $(".scorecard-table tbody").xsortable({
+                items: ">.reorderable",
+                handle: ".handle",
+                helper: fixHelperModified,
+                stop: updateIndex,
+                placeholder: "xsortable-placeholder"
+            }).disableSelection();
+        });
+    </script>
 }
 
 @using (Html.BeginStyles()) {
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
     <style>
         /*.inlineEdit:hover {
-            text-decoration: none;
-            border-bottom: dashed 1px #08C;
-            cursor: pointer;
-        }*/
+                    text-decoration: none;
+                    border-bottom: dashed 1px #08C;
+                    cursor: pointer;
+                }*/
 
         .grid.gray {
             background-color: #eee;
             height: 100%;
         }
+
+        /*md-fab-actions .md-button.md-fab md-icon{
+            vertical-align: top !important;
+        }*/
     </style>
 }

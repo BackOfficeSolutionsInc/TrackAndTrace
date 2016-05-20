@@ -220,11 +220,18 @@ h3 {
 }
 
 .agenda ol {
-    padding-left: 24px;
+    padding-left: 7px;
+}
+
+.agenda ol.agenda-items > li{
+    list-style-type: none;
 }
 
 .agenda .page-item:not(.current) .page-time {
     opacity: .35;
+    -moz-transition: ease opacity .2s;
+    -o-transition: ease opacity .2s;
+    -webkit-transition: ease opacity .2s;
     transition: ease opacity .2s;
 }
 

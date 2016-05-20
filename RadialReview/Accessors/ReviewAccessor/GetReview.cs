@@ -871,11 +871,11 @@ namespace RadialReview.Accessors {
 
 					var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 
-					if (reviewContainer.PeriodId != null)
+					/*if (reviewContainer.PeriodId != null)
 						reviewContainer.Period = s.Get<PeriodModel>(reviewContainer.PeriodId);
 					if (reviewContainer.NextPeriodId != null)
 						reviewContainer.NextPeriod = s.Get<PeriodModel>(reviewContainer.NextPeriodId);
-
+                    */
 					var a=reviewContainer.ForOrganization.Settings.Branding;
 
 					if (sensitive)

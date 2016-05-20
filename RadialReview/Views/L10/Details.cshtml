@@ -39,13 +39,16 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.FullWidth = true;
 
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+
 }
-@using (Html.BeginStyles())
-{
+@using (Html.BeginStyles()) {
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
     @Styles.Render("~/styles/L10")
     @Styles.Render("~/styles/meeting")
+    @Styles.Render("~/styles/archive")
+
     <style>
         input.due-date {
             border: none;
@@ -92,11 +95,10 @@
             border-right-width: 2px;
         }*/
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>
+    @*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>*@
 
 }
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
     <script src="~/Scripts/L10/charts/sparklines.min.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
     <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
@@ -104,6 +106,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>*@
     @Scripts.Render("~/bundles/meeting")
+
 
     <script src="~/Scripts/L10/L10.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
@@ -129,21 +132,33 @@
         }
 
         $(function() {
-            $('a[data-toggle="tabajax"]').on('shown.bs.tab', function (e) {
+            $('md-tab-item').on('click',"body", function (e) {
                 var target = $(e.target).attr("href") // activated tab
                 //angular.element($('[ng-controller="L10Controller"]')).scope().model
                 //debugger;
-                setpage(target);
+                //setpage(target);
+                window.location.hash = target;
             });
 
             function setpage(page){
-                var $scope = angular.element($('[ng-controller="L10Controller"]')).scope();
-                $scope.$apply(function() {
-                    $scope.selectedTab = page;
-                });
+                debugger;
+                page = page.replace(/^[#\/]*/gm,'');
+                var found = $("md-tab[href='"+page+"']");
+                if (found.length==1){
+                    
+                    var id = $("md-tab").index(found);                    
+                    var $scope = angular.element($('[ng-controller="L10Controller"]')).scope();
+                    $scope.$apply(function() {
+                        $scope.selectedTab = id;
+                    });
+                    return true;
+                }
+                return false;
             }
-            if (window.location.hash)
-                setpage(window.location.hash);
+            if (window.location.hash){
+                if (!setpage(window.location.hash))
+                    setpage("#Scorecard");
+            }
             else
                 setpage("#Scorecard");
 
@@ -172,21 +187,21 @@
 
             }, 1000);
 
-            $("body").on("click", ".issuesModal:not(.disabled)", function() {
-                var parm = $.param($(this).data());
-                var m = $(this).data("method");
-                if (!m)
-                    m = "Modal";
-                showModal("Add an issue", "/Issues/" + m + "?" + parm, "/Issues/" + m);
-            });
+            //$("body").on("click", ".issuesModal:not(.disabled)", function() {
+            //    var parm = $.param($(this).data());
+            //    var m = $(this).data("method");
+            //    if (!m)
+            //        m = "Modal";
+            //    showModal("Add an issue", "/Issues/" + m + "?" + parm, "/Issues/" + m);
+            //});
 
-            $("body").on("click", ".todoModal:not(.disabled)", function() {
-                var parm = $.param($(this).data());
-                var m = $(this).data("method");
-                if (!m)
-                    m = "Modal";
-                showModal("Add a to-do", "/Todo/" + m + "?" + parm, "/Todo/" + m);
-            });
+            //$("body").on("click", ".todoModal:not(.disabled)", function() {
+            //    var parm = $.param($(this).data());
+            //    var m = $(this).data("method");
+            //    if (!m)
+            //        m = "Modal";
+            //    showModal("Add a to-do", "/Todo/" + m + "?" + parm, "/Todo/" + m);
+            //});
 
             $("body").on("click", ".measurableModal:not(.disabled)", function() {
                 var m = $(this).data("recurrence");
@@ -271,15 +286,15 @@
 
         //                /*var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
 
-		//				if ($(this).data("name") == "direction") {
-		//					$(items).attr("data-goal-dir", $(this).attr("data-value"));
-		//				} else if ($(this).data("name") == "target") {
-		//					$(items).attr("data-goal", $(this).attr("data-value"));
-		//				}
-		//				$(items).each(function (d) {
-		//					updateScore(this);
-		//				});
-		//				debugger;*/
+        //				if ($(this).data("name") == "direction") {
+        //					$(items).attr("data-goal-dir", $(this).attr("data-value"));
+        //				} else if ($(this).data("name") == "target") {
+        //					$(items).attr("data-goal", $(this).attr("data-value"));
+        //				}
+        //				$(items).each(function (d) {
+        //					updateScore(this);
+        //				});
+        //				debugger;*/
         //            }
         //        });
         //        $(this).attr("editable", "1");
@@ -291,17 +306,18 @@
 <div ng-app="L10App" class="meeting-review ng-cloak meeting-archive">
     <div ng-controller="L10Controller">
         <div class="pull-left"><h3 id="meeting-name" style="margin-top: 5px;">{{::model.Basics.Name}}</h3></div>
-        <div class="calendar-container pull-right" style="width:240px;">
+        @*<div class="calendar-container pull-right" style="width:240px;">
             <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-            <input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="model.date" options="opts" required placeholder="Select a date range..." />
+            <input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="model.dataDateRange" options="opts" required placeholder="Select a date range..." />
             <b class="caret"></b>
-        </div>
-        <div style="/*height:90px*/"></div>
+        </div>*@
+        @{Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");}
+        <div style="/*height:90px*/" class="clearfix"></div>
 
-        <ul class="nav nav-pills tabs-up" id="pages" style="clear:both">
+        @*<ul class="nav nav-pills tabs-up" id="pages" style="clear:both">
             <li class="active"><a href="#Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-window-list"></span> Scorecard </a></li>
             <li><a href="#Rocks" data-target="#Rocks" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-trophy-1"></span> @(Html.Organization().Settings.RockName ?? "Rocks")</a></li>
-            @if (ViewBag.IncludeHeadlines??true) { 
+            @if (ViewBag.IncludeHeadlines ?? true) {
                 <li><a href="#Headlines" data-target="#Headlines" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"><span class="icon fontastic-icon-results-demographics"></span> Headlines </a></li>
             }
             <li><a href="#Todo" data-target="#Todo" class="media_node span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"><span class="glyphicon glyphicon-check"></span> To-Do List </a></li>
@@ -318,8 +334,64 @@
             <div id="Issues" class="tab-pane"><div ng-if="(selectedTab=='#Issues')">@Html.Partial("~/Views/L10/Details/issues.cshtml")</div></div>
             <div id="VTO" class="tab-pane"><div ng-if="(selectedTab=='#VTO')"><div class="pull-right btn btn-sm btn-default" onclick="printIframe('vto-frame')"><span class="glyphicon glyphicon-print"></span> Print</div><iframe id="vto-frame" class="vto-frame" data-src="/vto/edit/@(ViewBag.VtoId)?noheading=true" src="/vto/edit/@(ViewBag.VtoId)?noheading=true"></iframe></div></div>
             <div id="Notes" class="tab-pane"><div ng-if="(selectedTab=='#Notes')">@Html.Partial("~/Views/L10/Details/notes.cshtml")</div></div>
-        </div>
+        </div>*@
         @*<input type="text" ng-model="selectedTab" />
             <input type="text" ng-model="$$watchersCount" />*@
+
+
+
+        <div ng-cloak >
+            <md-content>
+                <md-tabs md-dynamic-height md-border-bottom md-selected="selectedTab">
+                    <md-tab label="Scorecard" ng-href="Scorecard" md-on-select="functions.setHash('/Scorecard')">
+                        <md-content class="md-padding">
+                            @*<h1 class="md-display-2">Scorecard</h1>*@
+                            @Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", ViewBag.NumberOfWeeks } })
+                        </md-content>
+                    </md-tab>                   
+                    <md-tab label="Rocks" href="Rocks" md-on-select="functions.setHash('Rocks')">
+                        <md-content class="md-padding">
+                            @*<h1 class="md-display-2">Rocks</h1>*@
+                            @Html.Partial("~/Views/L10/Details/rocks.cshtml")
+                        </md-content>
+                    </md-tab>
+                    @if (ViewBag.IncludeHeadlines ?? true) {
+                        <md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
+                            <md-content class="md-padding">
+                                @*<h1 class="md-display-2">Headlines</h1>*@
+                                @Html.Partial("~/Views/L10/Details/headlines.cshtml")
+                            </md-content>
+                        </md-tab>
+                    }
+                    <md-tab label="To-dos" href="Todos" md-on-select="functions.setHash('Todos')">
+                        <md-content class="md-padding">
+                            @*<h1 class="md-display-2">To-do List</h1>*@
+                            @Html.Partial("~/Views/L10/Details/todo.cshtml")
+                        </md-content>
+                    </md-tab>
+
+                    <md-tab label="Issues" href="Issues" md-on-select="functions.setHash('Issues')">
+                        <md-content class="md-padding">
+                            @*<h1 class="md-display-2">Issues</h1>*@
+                            @Html.Partial("~/Views/L10/Details/issues.cshtml")
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="V/TO" href="VTO" md-on-select="functions.setHash('VTO')">
+                        <md-content class="md-padding">
+                            @*<h1 class="md-display-2">Vision/Traction Organizer</h1>*@
+                            <iframe id="vto-frame" class="vto-frame" data-src="/vto/edit/@(ViewBag.VtoId)?noheading=true" src="/vto/edit/@(ViewBag.VtoId)?noheading=true"></iframe>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Notes" href="Notes" md-on-select="functions.setHash('Notes')">
+                        <md-content class="md-padding">
+                            @*<h1 class="md-display-2">Notes</h1>*@
+                            @Html.Partial("~/Views/L10/Details/notes.cshtml")
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+
+
     </div>
 </div>

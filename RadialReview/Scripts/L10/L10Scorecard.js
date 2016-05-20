@@ -124,6 +124,15 @@ function transformNumber(value, units) {
 
         return "$" + addCommasToInteger(value) + post;
     }
+    if (units == "pounds" || units == "pound") {
+        var post = "";
+        if (value >= 1000000) {
+            post = "M";
+            value = "" + (Math.round(value / 10000.0) / 100);
+        }
+
+        return "£" + addCommasToInteger(value) + post;
+    }
 
     if (units == "%" || units == "percent") {
         return addCommasToInteger(value) + "%";
@@ -247,9 +256,15 @@ function makeXEditable_Scorecard(selector) {
 
                 if ((value != null && (value.toLowerCase() == "dollar" || value.toLowerCase() == "dollars" || value == "$")) ||
 					(value == null && ($(this).text().toLowerCase() == "dollar" || $(this).text().toLowerCase() == "dollars" || $(this).text().toLowerCase() == "$"))
+
 				) {
                     //Only edit dollars
                     $(this).text("$");
+                    $(parent.find(".unit")).insertBefore(parent.find(".numeric"));
+                } else if ((value != null && (value.toLowerCase() == "pound" || value.toLowerCase() == "pounds" || value == "£")) ||
+					(value == null && ($(this).text().toLowerCase() == "pound" || $(this).text().toLowerCase() == "pounds" || $(this).text().toLowerCase() == "£"))) {
+
+                    $(this).text("£");
                     $(parent.find(".unit")).insertBefore(parent.find(".numeric"));
                 } else {
                     if ((value != null && (value.toLowerCase() == "percent" || value.toLowerCase() == "percentage" || value == "%")) ||
@@ -282,10 +297,11 @@ function makeXEditable_Scorecard(selector) {
                     url = picturesLookup[aid].url;
                     name = picturesLookup[aid].name;
                     initials = picturesLookup[aid].initials;
-                }
-                var mid = $(this).closest("tr").data("measurable");
 
-                $("tr[data-measurable='" + mid + "'] .who.accountable").html(profilePicture(url, name, initials));
+                    var mid = $(this).closest("tr").data("measurable");
+                    if (typeof (picturesLookup) !== "undefined")
+                        $("tr[data-measurable='" + mid + "'] .who.accountable").html(profilePicture(url, name, initials));
+                }
             }
             if ($(this).hasClass("adminSelection"))
                 $(this).text("/" + getInitials($(this).text()));

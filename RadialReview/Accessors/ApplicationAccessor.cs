@@ -260,7 +260,7 @@ namespace RadialReview.Accessors
 		public List<long> AllowedPhoneNumbers = new List<long>(){
 			6467599497, 6467599498, 6467599499,
 			6467603167, 6467603168, 6467603169,
-            441234480162 ,441234480352
+            441234480162L ,441234480352L
 
 		};
 		public void ConstructPhoneNumbers(ISession s)
@@ -428,8 +428,12 @@ namespace RadialReview.Accessors
 		    public decimal? SupportMinsPerDemoClient { get; set; }
 		    public decimal? NumberOfSupportCalls { get; set; }
 		    public decimal? AverageSupportCallTime_min { get; set; }
-		    public decimal? MRR { get; set; }
-		    public decimal? ImplementerLogins { get; set; }
+            public decimal? MRR { get; set; }
+            public decimal? ImplementerLogins { get; set; }
+            public decimal? ProspectInTrial1 { get; set; }
+            public decimal? ProspectInTrial2 { get; set; }
+            public decimal? ProspectInTrial3 { get; set; }
+            public decimal? ProspectInTrial4 { get; set; }
 	    }
 
 		public static AppStat Stats()
@@ -450,9 +454,13 @@ namespace RadialReview.Accessors
 				    //UserLookup userLookup = null;
 				    var usersLoggedInThisWeek = s.QueryOver<UserLookup>().Where(x => x.LastLogin != null && x.LastLogin >= lastWeek && x.LastLogin < thisWeek && x.IsRadialAdmin == false).List().ToList();
 
-				    var loggedInThisWeek = usersLoggedInThisWeek.GroupBy(x => x.OrganizationId)
-					    .Select(x => x.Key).Distinct()
-					    .Intersect(demoOrgs.Select(y => y.Id))
+                    /*var loggedInThisWeekOrgs = usersLoggedInThisWeek.GroupBy(x => x.OrganizationId)
+                        .Select(x => x.Key).Distinct()
+                        .Intersect(demoOrgs.Select(y => y.Id));*/
+
+                    var loggedInThisWeek = usersLoggedInThisWeek.GroupBy(x => x.OrganizationId)
+                        .Select(x => x.Key).Distinct()
+                        .Intersect(demoOrgs.Select(y => y.Id))
 					    .Count();
 
 				    var haventLoggedInThisWeek = demoOrgs.Count - loggedInThisWeek;
@@ -491,7 +499,7 @@ namespace RadialReview.Accessors
 				    var MRR = PaymentAccessor.CalculateTotalCharge(s, PaymentAccessor.GetPayingOrganizations(s));
 
 
-				    var implementerLogins = usersLoggedInThisWeek.Count(x => orgLookup[x.OrganizationId].AccountType == AccountType.Implementer);
+				    var implementerLogins = usersLoggedInThisWeek.Where(x => orgLookup[x.OrganizationId].AccountType == AccountType.Implementer).GroupBy(x=>x.OrganizationId).Count();
 				    var numberOfDemoClients = demoOrgs.Count();
 
 
@@ -530,6 +538,15 @@ namespace RadialReview.Accessors
 					Number of prospects in demo period 1
 					*/
 
+                    var prospectInTrial = new List<int>();
+                    var today = DateTime.UtcNow;
+
+                    for(var i =0;i<6;i++){
+                        prospectInTrial.Add(demoOrgs
+                            .Where(x => 
+                                today.AddDays(-7*(i+1))<x.CreationTime && x.CreationTime <= today.AddDays(-7*i)
+                            ).Count());
+                    }
 				    /*
 					Ave support hours per clients in first 90 days
 					support hours total -- paying
@@ -559,12 +576,16 @@ namespace RadialReview.Accessors
 					    AverageSupportHoursPerClientInLast90Days = avgSupportHours_last90Days_perClient,
 
 					    SupportMinsPerDemoClient = supportMin_per_demoClient,
-
-
+                        
 					    NumberOfSupportCalls = numberOfSupportCalls,
 					    AverageSupportCallTime_min = averageSupportCallTime,
 					    MRR = MRR,
 					    ImplementerLogins = implementerLogins,
+
+                        ProspectInTrial1 = prospectInTrial[0],
+                        ProspectInTrial2 = prospectInTrial[1],
+                        ProspectInTrial3 = prospectInTrial[2],
+                        ProspectInTrial4 = prospectInTrial[3]
 				    };
 			    }
 		    }

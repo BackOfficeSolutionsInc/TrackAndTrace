@@ -1,0 +1,131 @@
+﻿@import url('../Upload.css');
+@import (reference) "../MaterialDesign/Components/Shading";
+@import "../MaterialDesign/Components/Inputs.min.css";
+@import (reference)"../MaterialDesign/Components/Buttons";
+@import "../MaterialDesign/Components/MaterialDesign";
+@import (reference) "../MaterialDesign/Components/Snackbar";
+
+body,
+#wrap {
+    background-color: rgb(238,238,238) !important;
+}
+
+.upload-container {
+    & > .component {
+        .BoxShadowHelper(2);
+    }
+
+    h2 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        margin-left: 10px;
+    }
+
+    #window {
+        padding: 15px;
+    }
+
+    .btn {
+        .material-button-flat();
+    }
+
+    .instructions {
+        margin-left: 30px;
+        color: rgba(0,0,0,0.73);
+        padding: 0px 20px;
+        border-left: 3px solid rgba(0,0,0,0.33);
+        background-color: white;
+        padding-bottom: 1px;
+        /* margin-top: 23px; */
+        padding-top: 0px;
+        margin-bottom: 10px;
+
+        p {
+            padding-left: 5px;
+        }
+    }
+
+    #notifications {
+        .alert {
+            background: none;
+            border: none;
+            font-family: 'Roboto',san-sarif;
+            font-size: 20px;
+            color: @traction-black;
+
+            &.errors {
+                color: @brand-danger;
+                font-size: 14px;
+                padding: 5px 15px 0px;
+                margin-bottom: -15px;
+                margin-top: -10px;
+            }
+        }
+    }
+
+    .tdItem {
+        padding-left: 3px !important;
+        -moz-transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
+        -o-transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
+        -webkit-transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
+        transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    .wasSelected {
+        background-color: rgba(62, 57, 53, 0.2);
+    }
+
+    .ui-selecting {
+        background-color: @traction-orange-60;
+        border-color: @traction-orange-60 !important;
+    }
+
+    .ui-selected {
+        background-color: @traction-orange-80;
+        border-color: @traction-orange-80 !important;
+        color: @traction-black;
+    }
+
+    table.noselect {
+        cursor: cell;
+    }
+
+    .resultTable td {
+        border: none !important;
+        padding: 0 !important;
+
+        input[type='text'] {
+            padding: 0 4px !important;
+            // border:none;
+            width: 100%;
+            height: 20px;
+        }
+
+        &:first-child {
+            text-align: center;
+        }
+
+        input[type='checkbox'] {
+            margin: 2px;
+            width: 15px;
+            height: 15px;
+        }
+
+        i {
+            padding-left: 9px;
+
+            b {
+                color: @brand-danger;
+            }
+        }
+    }
+
+    .finalSubmit {
+        float: right;
+        margin-top: -94px;
+    }
+}
+
+#alerts {
+    .material-snackbar();
+}

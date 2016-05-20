@@ -4,10 +4,13 @@
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	ViewBag.FullWidth = true;
 
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+
 }
 @using (Html.BeginStyles())
 {
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>
+	@*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>*@
+    @
 	@Styles.Render("~/styles/L10")
 }
 @using (Html.BeginScripts())

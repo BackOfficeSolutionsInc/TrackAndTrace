@@ -6,14 +6,24 @@
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" })) {
         @Html.AntiForgeryToken()
 
-        @Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
-			{ "ImageTitle", ((string)ViewBag.UsersName) },
-			{ "Initials", ViewBag.UserInitials },
-			{ "Color", ViewBag.UserColor }
-		})
-        <ul class="nav navbar-nav navbar-right1">
+        <span class="pull-left navbar-icon-container">
+            @if (((int?)ViewBag.Organizations ?? 0) > 0) {
+                <span class="navbar-icon-button glyphicon glyphicon-pushpin issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+                <span class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
+            }
+        </span>
 
+        <span class="hidden-sm hidden-xs">
+            @Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
+			    { "ImageTitle", ((string)ViewBag.UsersName) },
+			    { "Initials", ViewBag.UserInitials },
+			    { "Color", ViewBag.UserColor }
+		    })
+        </span>
+        <ul class="nav navbar-nav navbar-right1">
             <li>
+
+
                 <div class="btn-group heading" style="padding:8px;">
                     <button type="button" href="@Url.Action("Details", "User", new { id = ViewBag.UserId })"
                             style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap; max-width:256px;padding-right:11px;"
@@ -54,20 +64,20 @@
                             <li class="divider"></li>
                         }
 
-                    
-                        <li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
+
                         @if (((int?)ViewBag.Organizations ?? 0) > 0) {
 
-                            <li>@Html.ActionLink("My Accountabilities", "Details", "User", new { id = ViewBag.UserId },null)</li>
-                        }    
-                       
+                            <li>@Html.ActionLink("My Accountabilities", "Details", "User", new { id = ViewBag.UserId }, null)</li>
+                        }
+                        <li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
+
                         <li class="divider"></li>
                         @if (((int?)ViewBag.Organizations ?? 0) > 1) {
                             <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")">
                                 @if (((int?)ViewBag.Organizations ?? 0) > 1) {
-                                    @Html.ActionLink("Change Roles", "Role", "Account", new { ReturnUrl = Request.Url.AbsolutePath }, null)
+                                    @Html.ActionLink("Change Organization", "Role", "Account", new { ReturnUrl = Request.Url.AbsolutePath }, null)
                                 } else {
-                                    <a href="#">Change Roles</a>
+                                    <a href="#">Change Organization</a>
                                 }
                             </li>
                         }
@@ -79,6 +89,7 @@
             </li>
             <li></li>
         </ul>
+
     }
 
     using (var s = Html.BeginScripts()) {

@@ -3,7 +3,7 @@
 @foreach (var person in Model.GroupBy(x => x.ForRock.ForUserId))
 {
     <div class="component rock-group rock-group-user-id-@person.First().ForRock.AccountableUser.Id">
-        @Html.Partial("_Picture", person.First().ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
+        @Html.Partial("_ProfilePicture", person.First().ForRock.AccountableUser)
         <span class="owner">
             @person.First().ForRock.AccountableUser.GetName()
         </span>

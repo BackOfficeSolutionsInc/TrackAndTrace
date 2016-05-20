@@ -74,12 +74,13 @@
                    
                     var measurable = Model.Measurables[i];
                     var goal = Model.Goals[i];
+                    var dir = Model.Direction[i];
                     <tr>
                         <td style="font-style:italic">@Model.Users[i]</td>
                         <td>@Html.DropDownList("m_user_" + i, users)</td>
                         <td>@Html.TextBox("m_measurable_" + i, measurable, new { style="width:100%;"})</td>
                         <td>@Html.TextBox("m_goal_" + i, goal, new { type = "numeric", step = "any" })</td>
-                        <td>@Html.EnumDropDownList("m_goaldir_" + i, RadialReview.Models.Enums.LessGreater.GreaterThan)</td>
+                        <td>@Html.EnumDropDownList("m_goaldir_" + i, dir)</td>
                         @foreach (var c in row) {
                             <td>@c</td>
                         }

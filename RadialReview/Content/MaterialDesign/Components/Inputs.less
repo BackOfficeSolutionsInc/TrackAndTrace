@@ -1,0 +1,274 @@
+﻿
+@import (reference) "../../bootstrap/variables";
+@import (reference) "Animations";
+
+
+label {
+    font-family: 'Roboto', sans-serif;
+    padding-top: 11px;
+}
+
+.form-control.blend {
+    max-width: 95%;
+    max-width: ~"calc(100% - 30px)";
+    border-radius: 0;
+    box-shadow: none;
+}
+
+input[type='checkbox'].blend {
+}
+
+select.blend,
+input.blend {
+    //margin-top: 7px;
+    width: 100%;
+    //max-width: 280px;
+    border: none;
+    cursor: pointer;
+    /*border-bottom: 1px solid transparent;*/
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid rgba(0,0,0,.11);
+    background: none;
+    height: 36px;
+    padding-top: 12px;
+    margin-bottom: 4px;
+    padding-bottom: 7px;
+    font-size: 13px;
+    font-family: 'Roboto', sans-serif;
+    color: @traction-black;
+    -moz-transition: all .08s ease;
+    -o-transition: all .08s ease;
+    -webkit-transition: all .08s ease;
+    transition: all .08s ease;
+
+    &:not(:disabled):hover {
+    }
+
+    &:not(:disabled):focus {
+        outline: none;
+    }
+
+    &:disabled {
+        cursor: default;
+        background-color: inherit;
+    }
+
+    &::-webkit-input-placeholder {
+        color: @traction-gray;
+    }
+
+    &:-moz-placeholder {
+        color: @traction-gray;
+    }
+
+    &::-moz-placeholder {
+        color: @traction-gray;
+    }
+
+    &:-ms-input-placeholder {
+        color: @traction-gray;
+    }
+}
+
+input.blend {
+    padding-left: 4px;
+
+    &:not(:disabled):focus {
+        border-bottom: 2px solid @traction-orange;
+    }
+}
+
+select.blend {
+    padding-left: 0px;
+
+    &:not(:disabled):focus {
+        border-bottom: 1px solid @traction-orange;
+    }
+}
+
+input.blend[type='file'] {
+    /*opacity: .5;
+    display: inline-block;
+    width: 100%;
+    padding: 120px 0 0 0;
+    height: 100px;
+    overflow: hidden;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 20px;
+    background-size: 150px 100px;
+    outline: none;
+    cursor: pointer;
+    position: absolute;
+    top: 0;*/
+    /*clip: rect(0 265px 22px 155px);
+    clip: rect(0, 265px, 22px, 125px);*/
+}
+
+* > input[type='file'].blend, x:-webkit-any-link {
+    outline: none;
+    cursor: pointer;
+    position: absolute;
+    clip: rect(0px 320px 42px 89px);
+    /* z-index: 2; */
+    /* opacity: 0; */
+    max-width: 320px;
+    left: -90px;
+}
+
+input[type=checkbox].blend {
+    -webkit-appearance: none; /* Hides the default checkbox style */
+    height: 47px;
+    width: 47px;
+    /*height: 18px;
+    width: 18px;*/
+    cursor: pointer;
+    position: relative;
+    padding: 0px;
+    border: none;
+    background-color: transparent;
+    border-radius: 36px;
+    margin-top: -3px;
+    margin-bottom: -10px;    
+    margin-left: -10px;
+    -moz-transform: scale(.6);
+    -ms-transform: scale(.6);
+    -o-transform: scale(.6);
+    -webkit-transform: scale(.6);
+    transform: scale(.6);
+
+    &, &:before, &:after {
+        -webkit-transition: transform 0s,background-color .2s,border-color .4s;
+        -moz-transition: transform 0s,background-color .2s,border-color .4s;
+        -o-transition: transform 0s,background-color .2s,border-color .4s;
+        transition: transform 0s,background-color .2s,border-color .4s;
+    }
+
+    &:before {
+        content: "";
+        height: 18px;
+        width: 18px;
+        border: 2px solid fade(@traction-black,40);
+        background-color: white;
+        position: absolute;
+        margin-left: 14px;
+        margin-top: 14px;
+        -moz-transform: scale(1.666);
+        -ms-transform: scale(1.666);
+        -o-transform: scale(1.666);
+        -webkit-transform: scale(1.666);
+        transform: scale(1.666);
+    }
+
+    &:hover:before {
+        border: 2px solid fade(@traction-black,60);
+    }
+    
+    &:not(:active):checked {
+        -moz-animation: flash .5s ease;
+        -o-animation: flash .5s ease;
+        -webkit-animation: flash .5s ease;
+        animation: flash .5s ease;
+    }
+    &:not(:active):not(:checked) {
+        -moz-animation: flash-black .5s ease;
+        -o-animation: flash-black .5s ease;
+        -webkit-animation: flash-black .5s ease;
+        animation: flash-black .5s ease;
+    }
+
+    &:active,
+    &:focus
+    /*&:focus*/ {
+        border: none;
+        -moz-transform: scale(1) !important;
+        -ms-transform: scale(1) !important;
+        -o-transform: scale(1) !important;
+        -webkit-transform: scale(1) !important;
+        transform: scale(1) !important;
+        -moz-transition: transform .4s,background-color .2s,border-color .4s;
+        -o-transition: transform .4s,background-color .2s,border-color .4s;
+        -webkit-transition: transform .4s,background-color .2s,border-color .4s;
+        transition: transform .4s,background-color .2s,border-color .4s;
+       
+
+        &:after,
+        &:before {
+            -moz-transform: scale(1) !important;
+            -ms-transform: scale(1) !important;
+            -o-transform: scale(1) !important;
+            -webkit-transform: scale(1) !important;
+            transform: scale(1) !important;
+            -moz-transition: transform .3s,background-color .2s,border-color .4s;
+            -o-transition: transform .3s,background-color .2s,border-color .4s;
+            -webkit-transition: transform .3s,background-color .2s,border-color .4s;
+            transition: transform .3s,background-color .2s,border-color .4s;
+        }
+    }
+
+
+    &:checked {
+        &:before {
+            border: 0px;
+            background-color: @traction-orange;
+        }
+
+        &:after {
+            content: "✔";
+            margin: 13px 17px;
+            position: absolute;
+            font-weight: bold;
+            color: white;
+            -moz-transform: scale(1.666);
+            -ms-transform: scale(1.666);
+            -o-transform: scale(1.666);
+            -webkit-transform: scale(1.666);
+            transform: scale(1.666);
+        }
+    }
+}
+
+
+@-webkit-keyframes flash {
+    .flash-sustain(fade(@traction-orange,60));
+} 
+
+@-moz-keyframes flash {
+    .flash-sustain(fade(@traction-orange,60));
+}
+
+@-ms-keyframes flash {
+    .flash-sustain(fade(@traction-orange,60));
+}
+
+@-o-keyframes flash {
+    .flash-sustain(fade(@traction-orange,60));
+}
+
+@keyframes flash {
+    .flash-sustain(fade(@traction-orange,60));
+}
+
+@-webkit-keyframes flash-black {
+    .flash-sustain(fade(@traction-black,30));
+}
+
+@-moz-keyframes flash-black {
+    .flash-sustain(fade(@traction-black,30));
+}
+
+@-ms-keyframes flash-black {
+    .flash-sustain(fade(@traction-black,30));
+}
+
+@-o-keyframes flash-black {
+    .flash-sustain(fade(@traction-black,30));
+}
+
+@keyframes flash-black {
+    .flash-sustain(fade(@traction-black,30));
+}

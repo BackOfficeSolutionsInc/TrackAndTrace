@@ -69,6 +69,11 @@ namespace RadialReview.Controllers
 			if (model.MeetingId != -1)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
+            var adjust = 0.0;
+            if (GetUser()._ClientTimestamp!=null)
+                adjust = Math.Round((GetUser()._ClientTimestamp.Value.ToDateTime() - DateTime.UtcNow).TotalHours * 2) / 2 *60;
+
+            
 
            // foreach (var m in model.AccountabilityId) {
                 await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel() {
@@ -81,7 +86,7 @@ namespace RadialReview.Controllers
                     ForModelId = -1,
                     Organization = GetUser().Organization,
                     AccountableUserId = GetUser().Id,
-                    DueDate = model.DueDate
+                    DueDate = model.DueDate.AddMinutes(adjust)
                 });
            // }
 			return Json(ResultObject.SilentSuccess().NoRefresh());

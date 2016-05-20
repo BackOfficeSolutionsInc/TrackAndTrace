@@ -218,7 +218,7 @@
 	content: "ON TRACK";
 }
 .table-io.rocks .fill.Complete:after, .gwc-details-square .Complete:after, .roleTable .Complete:after {
-	content: "COMPLETE";
+	content: "DONE";
 }
 
 /*

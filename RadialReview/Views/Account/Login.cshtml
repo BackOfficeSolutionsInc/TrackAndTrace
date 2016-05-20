@@ -2,8 +2,14 @@
 @model RadialReview.Models.LoginViewModel
 
 @{
-	ViewBag.Title = "Log in";
+    ViewBag.Title = "Traction Tools - EOS Software for your business";
 	ViewBag.FullLogo = true;
+}
+
+@using (Html.BeginStyles()) {
+
+    <meta name="description" content="Using EOS in your business? Traction Tools gets you. We've made productivity easy with software for Level 10 Meetings, V/TO, Accountability and more." />
+    <meta name="keywords" content="Traction, tractiontools, traction tools, EOS model, EOS, Traction Software" />
 }
 
 @using (Html.BeginStyles())
@@ -115,6 +121,19 @@
 	</div>
 
 </div>
+@*<br />
+<hr />
+<br />*@
+<br />
+<div class="alignCenter" style="padding-top: 90px;">
+    <a class="btn btn btn-primary btn-invert" href="http://mytractiontools.com"> Learn more about Traction Tools</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6"></div>
+    <div class="col-md-6"></div>
+</div>
+
 @section Scripts {
 	@Scripts.Render("~/bundles/jqueryval")
 }

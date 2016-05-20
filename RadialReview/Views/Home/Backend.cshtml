@@ -37,9 +37,9 @@
 	<div ng-controller="L10Controller">	
 		@if (Model.IncludeTodos || Model.IncludeScorecard || Model.IncludeRocks || ViewBag.IsManager)
 		{
-							@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
-								  { "IncludeComplete", false}
-							})
+			@Html.Partial("~/Views/Angular/_L10App.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
+					{ "IncludeComplete", false}
+			})
 		} 
 		
 		<div class="row">

@@ -39,9 +39,18 @@ namespace RadialReview.Controllers
 				await PaymentAccessor.ChargeOrganization(id, taskId, false);
 			}catch (PaymentException e){
 				capturedPaymentException = e;
-			}catch (Exception e){
+            } catch (FallthroughException e) {
+                log.Error("FallthroughException", e);
+                Response.StatusCode = 501;
+                return Json(new {
+                    charged = false,
+                    payment_exception = true,
+                    error = capturedPaymentException.Type,
+                    message = e.Message
+                }, JsonRequestBehavior.AllowGet);
+            } catch (Exception e) {
 				capturedException = e;
-			}
+            }
 
 			if (capturedPaymentException != null){
 

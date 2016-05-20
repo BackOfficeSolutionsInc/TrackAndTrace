@@ -384,7 +384,8 @@ namespace RadialReview.Utilities
             enversConf.Audit<RoleModel>();
             enversConf.Audit<UserOrganizationModel>()
                 .ExcludeRelationData(x => x.Groups)
-                .ExcludeRelationData(x => x.ManagingGroups);
+                .ExcludeRelationData(x => x.ManagingGroups)
+                .Exclude(x => x.Cache);
             //.ExcludeRelationData(x => x.CustomQuestions);
             enversConf.Audit<PositionDurationModel>();
             enversConf.Audit<QuestionModel>();
@@ -398,7 +399,8 @@ namespace RadialReview.Utilities
             enversConf.Audit<ResponsibilityGroupModel>();
             enversConf.Audit<ResponsibilityModel>();
             enversConf.Audit<TempUserModel>();
-            enversConf.Audit<UserLookup>();
+            //enversConf.Audit<UserLookup>()
+            //    .Exclude(x => x.LastLogin);
             enversConf.Audit<UserModel>();
             enversConf.Audit<UserLogin>();
             enversConf.Audit<UserRoleModel>();

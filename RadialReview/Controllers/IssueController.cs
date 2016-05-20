@@ -68,9 +68,9 @@ namespace RadialReview.Controllers
                     form["ReviewName"],
                     form["SendEmails"].ToBooleanJS(),//.ToBoolean(),
 					form["Anonymous"].ToBooleanJS(),
-					customized.ToList(),
-					form["SessionId"].ToLong(),
-					form["NextSessionId"].ToLong()
+					customized.ToList()//,
+                    //form["SessionId"].ToLong(),
+                    //form["NextSessionId"].ToLong()
 
                     );
             }
@@ -84,9 +84,9 @@ namespace RadialReview.Controllers
                     form["DueDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
                     form["PrereviewDate"].ToDateTime("MM-dd-yyyy", form["TimeZoneOffset"].ToDouble() + 24),
                     form["EnsureDefault"].ToBooleanJS(),
-					form["Anonymous"].ToBooleanJS(),
-					form["SessionId"].ToLong(),
-					form["NextSessionId"].ToLong()
+					form["Anonymous"].ToBooleanJS()//,
+					//form["SessionId"].ToLong(),
+					//form["NextSessionId"].ToLong()
                     );
 
             }
@@ -106,11 +106,11 @@ namespace RadialReview.Controllers
 
             var model = _ReviewEngine.GetCustomizeModel(GetUser(), teamId, false);
 
-			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToList();
-			var plist = periods.ToSelectList(x => x.Name, x => x.Id);
-			plist.Add(new SelectListItem() { Text = "<Create New>", Value = "-3" });
-
-	        model.Periods = plist;
+			//var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToList();
+			//var plist = periods.ToSelectList(x => x.Name, x => x.Id);
+			//plist.Add(new SelectListItem() { Text = "<Create New>", Value = "-3" });
+            //
+	        //model.Periods = plist;
 
 			var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false)
 				.Cast<ResponsibilityGroupModel>().ToList();

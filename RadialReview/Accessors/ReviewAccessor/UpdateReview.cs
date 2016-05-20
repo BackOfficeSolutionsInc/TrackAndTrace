@@ -206,7 +206,7 @@ namespace RadialReview.Accessors
 
 				var range = new DateRange(reviewContainer.DateCreated, DateTime.UtcNow);
 
-				var askables = ReviewAccessor.GetAskables(caller, perms, s, new[] { aboutUserId }, byUserId, reviewContainer.PeriodId, range);
+				var askables = ReviewAccessor.GetAskables(caller, perms, s, new[] { aboutUserId }, byUserId, /*reviewContainer.PeriodId,*/ range);
 
 				var forUser = s.Get<UserOrganizationModel>(review.ForUserId);
 				//var review=s.QueryOver<ReviewModel>().Where(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).SingleOrDefault();

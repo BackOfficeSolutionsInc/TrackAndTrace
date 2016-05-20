@@ -81,6 +81,25 @@ namespace RadialReview.Controllers {
             ViewBag.Title = "Upload " + title;
             ViewBag.UploadScript = "Upload" + title + ".js";
 
+            var dictinary = new DefaultDictionary<string, MvcHtmlString>(x => null);
+
+            dictinary["todos"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload either a .txt file or .csv file.</h3>" +
+                "<p>If uploading a .csv file, please have a column for your to-dos. You can also optionally add a column for to-do details, to-do owners, and due dates.</p>" +
+                "<p>If uploading a .txt file, please add one to-do per line</p>");
+            dictinary["scorecard"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload as a .csv file.</h3>" +
+                "<p>Please upload a .csv with a column for the title of your measurable, the owner, the goal, and columns for your weekly data.</p><p>Please have a row with the week-start dates above your data.</p>");
+            dictinary["issues"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload either a .txt file or .csv file.</h3>" +
+                "<p>If uploading a .csv file, please have a column for your issues. You can also optionally add a column for issue details, and issue owners.</p>" +
+                "<p>If uploading a .txt file, please add one issue per line</p>");
+            dictinary["rocks"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload either a .txt file or .csv file.</h3>" +
+                "<p>If uploading a .csv file, please have a column for your rocks. You can also optionally add a column for rock details, rock due-dates, and rock owners.</p>" +
+                "<p>If uploading a .txt file, please add one rock per line</p>");
+            dictinary["users"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload as a .csv file.</h3>" +
+                "<p>Please upload a .csv with a column for first names, last names, and e-mails. You can also optionally add a column for positions, and managers. If adding a column for managers, please separate into two columns for managers' first and last names</p>" +
+                "<p>If uploading a .txt file, please add one rock per line</p>");
+            ViewBag.Instructions = dictinary[title.ToLower()];
+
+
             return View("UploadL10");
         }
 

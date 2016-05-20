@@ -1,30 +1,71 @@
 ﻿
 @import (reference) "../bootstrap/variables";
 @import url('../Angular/xeditable.min.css');
-@import "../bootstrap/custom/mixins";
 @import (reference) "../bootstrap/glyphicons";
 @import url('../Angular/tablesort.css');
 @import "../Angular/ProfilePicture";
 @import url('../Angular/livesearch.css');
+@import "../MaterialDesign/Components/Buttons.less";
+@import "../MaterialDesign/Components/Shading.less";
+@import "../MaterialDesign/Components/Inputs.less";
+@import "../MaterialDesign/Components/Progress.less";
+@import "../MaterialDesign/Components/Snackbar";
 
 /*#wrap {
     background-color: #F9F9F9 !important;
 }*/
 
-[ng-controller].loading .loader-container {
-    .material-indefinite-spinner(colors-rainbow);
-    display: block !important;
-    position: absolute;
-    bottom: 50px;
-    left: 0;
-    right: 0;
 
-    .loader {
-        width: 25px;
+body,
+#wrap {
+    background-color: rgb(238,238,238) !important;
+}
+
+[ng-controller] {
+
+    &.loading {
+
+        .loader-container {
+            -moz-transition: opacity 0s;
+            -o-transition: opacity 0s;
+            -webkit-transition: opacity 0s;
+            transition: opacity 0s;
+            opacity: 1;
+        }
+    }
+
+    .loader-container {
+        opacity: 0;
+        .material-indefinite-spinner(colors-rainbow);
+        display: block !important;
+        position: absolute;
+        // bottom: 0px;
+        left: 0;
+        right: 0;
+        -moz-transition: opacity .5s;
+        -o-transition: opacity .5s;
+        -webkit-transition: opacity .5s;
+        transition: opacity .5s;
+
+        .loader {
+            width: 25px;
+        }
     }
 }
 
 .wizard {
+
+    a:not(:hover) {
+        color: (@traction-black);
+    }
+
+    .md-cell {
+        border-top: 0px solid transparent !important;
+    }
+
+    .picture-column {
+        padding: 0px !important;
+    }
 
     .upload {
         background-image: url(https://s3.amazonaws.com/Radial/icons/tinyupload-black.png);
@@ -35,15 +76,14 @@
         padding: 15px;
         width: 48px;
         height: 48px;
-        -moz-transition: opacity .15s cubic-bezier(.4,0,.2,1),background-color .35s cubic-bezier(.4,0,.2,1);
-        -o-transition: opacity .15s cubic-bezier(.4,0,.2,1),background-color .35s cubic-bezier(.4,0,.2,1);
-        -webkit-transition: opacity .15s cubic-bezier(.4,0,.2,1),background-color .35s cubic-bezier(.4,0,.2,1);
-        transition: opacity .15s cubic-bezier(.4,0,.2,1),background-color .35s cubic-bezier(.4,0,.2,1);
+        -moz-transition: opacity .15s cubic-bezier(.4,0,.2,1),background-color .1s cubic-bezier(.4,0,.2,1);
+        -o-transition: opacity .15s cubic-bezier(.4,0,.2,1),background-color .1s cubic-bezier(.4,0,.2,1);
+        -webkit-transition: opacity .15s cubic-bezier(.4,0,.2,1),background-color .1s cubic-bezier(.4,0,.2,1);
+        transition: opacity .15s cubic-bezier(.4,0,.2,1),background-color .1s cubic-bezier(.4,0,.2,1);
         cursor: pointer;
         position: relative;
         border-radius: 24px;
-            
-        margin: 3px 6px;
+        margin: 3px 16px;
 
         &:hover {
             background-image: url(https://s3.amazonaws.com/Radial/icons/tinyupload.png);
@@ -320,6 +360,7 @@
         .complete-column,
         .details-row,
         .due-column,
+        .empty-cell,
         .createtime-column, thead {
             display: none;
         }
@@ -356,12 +397,11 @@
 
         .new-user-container {
             position: absolute;
-            right: 14px;
+            right: 15px;
         }
 
         .new-user-container-space:before {
             float: left;
-            background-color: red;
             height: 80px;
             display: block;
             position: relative;
@@ -521,6 +561,10 @@
                 border: none;
                 padding: 5px;
                 margin-top: 1px;
+                left: 38px;
+                right: 0;
+                position: absolute;
+                width: 292px;
             }
 
             &:after {
@@ -554,69 +598,15 @@
         .glyphicon-trash;
         cursor: pointer;
         vertical-align: top;
-        padding-left: 15px;
-        padding-right: 15px;
+        padding-left: 5px;
+        padding-right: 32px;
         padding-top: 2px;
         color: rgba(0,0,0,.54);
+        font-size: 15px;
     }
 
     .delete-row:hover {
         color: @traction-black;
-    }
-}
-
-body,
-#wrap {
-    background-color: rgb(238,238,238) !important;
-}
-
-#alerts {
-    position: fixed;
-    left: 20px;
-    bottom: 15px;
-    opacity: 1;
-    color: white;
-    -moz-transition: opacity .2s cubic-bezier(.4,0,.2,1),opacity .2s cubic-bezier(.4,0,.2,1),bottom .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1);
-    -o-transition: opacity .2s cubic-bezier(.4,0,.2,1),opacity .2s cubic-bezier(.4,0,.2,1),bottom .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1);
-    -webkit-transition: opacity .2s cubic-bezier(.4,0,.2,1),opacity .2s cubic-bezier(.4,0,.2,1),bottom .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1);
-    transition: opacity .2s cubic-bezier(.4,0,.2,1),opacity .2s cubic-bezier(.4,0,.2,1),bottom .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1);
-    display: flex;
-    -ms-flex-direction: column-reverse;
-    -webkit-flex-direction: column-reverse;
-    flex-direction: column-reverse;
-
-    &:empty {
-        bottom: 0px;
-        opacity: 0;
-        color: transparent;
-    }
-
-    .alert {
-        width: 408px;
-        /* height: 48px; */
-        /* padding-left: 24px; */
-        font-family: 'Roboto',sans-serif;
-        .BoxShadowHelper(2);
-        background-color: rgb(50,50,50);
-        color: white;
-        border: none;
-        margin: 0px;
-        padding-left: 15px;
-        margin-bottom: 5px;
-        /*-moz-animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;
-        -o-animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;
-        -webkit-animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;
-        animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;*/
-        .close {
-            position: relative;
-            top: -2px;
-            right: 0px;
-            color: inherit;
-        }
-
-        strong {
-            display: none;
-        }
     }
 }
 
@@ -640,11 +630,12 @@ body,
         height: 36px;
         margin: 0;
         padding: 9px;
+        .material-button-flat();
     }
+    /*.btn-primary {
 
-    .btn-primary {
         background-color: @traction-orange;
-    }
+    }*/
 }
 
 /*@-moz-keyframes grow-in {
@@ -692,4 +683,8 @@ body,
             }
         }
     }
+}
+
+#alerts {
+    .material-snackbar();
 }

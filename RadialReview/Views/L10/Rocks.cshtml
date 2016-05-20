@@ -7,7 +7,7 @@
 				<div class="pull-right">
 					<div class="btn-group">
 						<div class="btn btn-default btn-xs @(Model.CanEdit?"":"disabled")" onclick="@(Model.CanEdit?Html.ShowModal("Add Rock", "/L10/AddRock/" + Model.Recurrence.Id, "/L10/AddRock/"):new HtmlString(""))">
-							<span class="icon fontastic-icon-science-laboratory"></span> Add Rock
+                            <span class="icon fontastic-icon-plus-3"></span> Add Rock
 						</div>
 					</div>
 					@Html.Partial("partial/ButtonBar", Model)

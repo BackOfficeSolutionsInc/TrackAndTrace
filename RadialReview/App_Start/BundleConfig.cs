@@ -3,12 +3,10 @@ using System.Web.Optimization;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities;
 
-namespace RadialReview
-{
-	public class BundleConfig
-	{
-		// For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
-		public static void RegisterBundles(BundleCollection bundles)
+namespace RadialReview {
+    public class BundleConfig {
+        // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
+        public static void RegisterBundles(BundleCollection bundles)
 		{
 			var angularHelpers_Scripts = new[]{
 				"~/Scripts/Main/moment.min.js",
@@ -29,12 +27,19 @@ namespace RadialReview
 				"~/Scripts/Angular/Helpers/Directives/fcsaNumber.js",
 				"~/Scripts/Angular/Helpers/angular-timer.min.js",
 				"~/Scripts/Angular/Helpers/angular-elastic-input.js",
+                     
+                //"~/bower_components/angular-animate/angular-animate.js",           
+               // "~/bower_components/angular-aria/angular-aria.js",
+               // "~/bower_components/angular-material/angular-material.js",
+
 				"~/Scripts/Angular/helpers.js", 
 			};
 			var angularHelpers_Styles = new[]{
 				"~/Content/components/daterangepicker-bs3.css",
                 "~/Content/Angular/tablesort.css",
-                "~/Content/Angular/xeditable.min.css"
+                "~/Content/Angular/xeditable.min.css",
+                
+                //"~/bower_components/angular-material/angular-material.css"
 			};
 
 
@@ -190,7 +195,12 @@ namespace RadialReview
                     "~/Scripts/VTO/vto.js"
 				));
 			bundles.Add(new StyleBundle("~/styles/meeting")
-				.Include(angularHelpers_Styles));
+				.Include(angularHelpers_Styles)
+            );
+
+            bundles.Add(new StyleBundle("~/styles/archive")
+                .Include("~/Content/L10/Archive/Archive.css")
+            );
 
 
 			bundles.Add(new ScriptBundle("~/bundles/main").Include(
@@ -219,10 +229,16 @@ namespace RadialReview
 				"~/Scripts/video/RTCMultiConnection.js",
 				"~/Scripts/video/FileBufferReader.js",
 				"~/Scripts/video/socket.io.js",
-				"~/Scripts/video/hark.js"
-
-				
+				"~/Scripts/video/hark.js"				
 			));
+
+            bundles.Add(new ScriptBundle("~/bundles/Angular").Include(
+                //"~/bower_components/angular-material-data-table/dist/md-data-table.min.js"
+            ));
+
+           bundles.Add(new StyleBundle("~/styles/Angular").Include(
+               //"~/bower_components/angular-material-data-table/dist/md-data-table.min.css"
+            ));
 
 			BundleTable.EnableOptimizations = Config.OptimizationEnabled();
 			/*
@@ -233,5 +249,5 @@ namespace RadialReview
 #endif
 			 */
 		}
-	}
+    }
 }

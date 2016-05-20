@@ -495,11 +495,13 @@ namespace RadialReview.Accessors
 			{
 				var managerTeam = s.Where<OrganizationTeamModel>(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.Managers).SingleOrDefault();
 				//Populate(s,managerTeam);
-				teams.Add(new TeamDurationModel() { Start = forUser.AttachTime, Id = -2, Team = managerTeam, User = forUser });
+				if (managerTeam!=null)
+                    teams.Add(new TeamDurationModel() { Start = forUser.AttachTime, Id = -2, Team = managerTeam, User = forUser });
 			}
 			var allMembersTeam = s.Where<OrganizationTeamModel>(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.AllMembers).SingleOrDefault();
 			//Populate(s,allMembersTeam);
-			teams.Add(new TeamDurationModel() { Start = forUser.AttachTime, Id = -2, Team = allMembersTeam, User = forUser });
+            if (allMembersTeam!=null)
+			    teams.Add(new TeamDurationModel() { Start = forUser.AttachTime, Id = -2, Team = allMembersTeam, User = forUser });
 			//teams.ForEach(x => Populate(s, x.Team));
 			return teams;
 		}

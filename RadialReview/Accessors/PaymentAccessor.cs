@@ -74,7 +74,83 @@ namespace RadialReview.Accessors {
             public string card_number { get; set; }
         }
 
-        public static async Task<PaymentResult> ChargeOrganization(long organizationId, long taskId, bool forceUseTest = false,bool sendInvoice=true,DateTime? executeTime=null)
+        public static async Task<InvoiceModel> SendInvoice(string email,long organizationId, long taskId,DateTime executeTime,  bool forceUseTest = false,DateTime? calculateTime=null)
+        {
+            //PaymentResult result = null;
+            InvoiceModel invoice = null;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var org = s.Get<OrganizationModel>(organizationId);
+
+                    if (org == null)
+                        throw new NullReferenceException("Organization does not exist");
+
+                    if (org.DeleteTime != null)
+                        throw new FallthroughException("Organization was deleted.");
+
+                    var plan = org.PaymentPlan;
+
+                    if (plan.Task == null)
+                        throw new PermissionsException("Task was null.");
+                    if (plan.Task.OriginalTaskId == 0)
+                        throw new PermissionsException("PaymentPlan OriginalTaskId was 0.");
+
+                    var task = s.Get<ScheduledTask>(taskId);
+
+                    if (task.OriginalTaskId == 0)
+                        throw new PermissionsException("ScheduledTask OriginalTaskId was 0.");
+                    if (plan.Task.OriginalTaskId != task.OriginalTaskId)
+                        throw new PermissionsException("ScheduledTask and PaymentPlan do not have the same task.");
+
+                    if (task.Executed != null)
+                        throw new PermissionsException("Task was already executed.");
+
+                    //executeTime = executeTime;
+                    calculateTime = calculateTime ?? DateTime.UtcNow;
+                    try {
+                        var itemized = CalculateCharge(s, org, plan, calculateTime.Value);
+                        invoice = CreateInvoice(s, org, plan, executeTime, itemized);
+                    } finally {
+
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
+
+
+            await EmailInvoice(email, invoice, executeTime);
+
+            return invoice;
+        }
+
+        [Obsolete("Unsafe")]
+        public static async Task<bool> EmailInvoice(string emailAddress,InvoiceModel invoice,DateTime chargeTime)
+        {
+                var ProductName = Config.ProductName(invoice.Organization);
+                var SupportEmail = ProductStrings.SupportEmail;
+                var OrgName = invoice.Organization.GetName();
+                var Charged = invoice.AmountDue;
+                //var CardLast4 = result.card_number ?? "NA";
+                //var TransactionId = result.id ?? "NA";
+                var ChargeTime = chargeTime;
+                var ServiceThroughDate = invoice.ServiceEnd.ToString("yyyy-MM-dd");
+                var Address = ProductStrings.Address;
+
+                var localChargeTime = invoice.Organization.ConvertFromUTC(ChargeTime);
+                var lctStr = localChargeTime.ToString("dd MMM yyyy hh:mmtt") + " " + invoice.Organization.GetTimeZoneId(localChargeTime);
+
+                var email = Mail.Bcc(EmailTypes.Receipt, ProductStrings.PaymentReceiptEmail);
+                if (emailAddress != null) {
+                    email = email.AddBcc(emailAddress);
+                }
+                var toSend = email.SubjectPlainText("[" + ProductName + "] Invoice for " + invoice.Organization.GetName())
+                    //[ProductName, SupportEmail, OrgName, Charged, CardLast4, TransactionId, ChargeTime, ServiceThroughDate, Address]
+                    .Body(EmailStrings.PaymentReceipt_Body, ProductName, SupportEmail, OrgName, String.Format("{0:C}", Charged), "", "", lctStr, ServiceThroughDate, Address);
+                await Emailer.SendEmail(toSend);
+                return true;
+        }
+        public static async Task<PaymentResult> ChargeOrganization(long organizationId, long taskId, bool forceUseTest = false,bool sendReceipt=true,DateTime? executeTime=null)
         {
             PaymentResult result = null;
             InvoiceModel invoice = null;
@@ -86,7 +162,7 @@ namespace RadialReview.Accessors {
                         throw new NullReferenceException("Organization does not exist");
 
                     if (org.DeleteTime != null)
-                        throw new PermissionsException("Organization was deleted.");
+                        throw new FallthroughException("Organization was deleted.");
 
                     var plan = org.PaymentPlan;
 
@@ -117,7 +193,7 @@ namespace RadialReview.Accessors {
                     }
                 }
             }
-            if (sendInvoice) {
+            if (sendReceipt) {
                 await SendReceipt(result, invoice);
             }
 
@@ -327,6 +403,10 @@ namespace RadialReview.Accessors {
                     for (var i = 0; i < Json.Decode(result).errors.Length; i++) {
                         builder.Add(Json.Decode(result).errors[i].message + " (" + Json.Decode(result).errors[i].code + ").");
                     }
+                    var org1 = s.Get<OrganizationModel>(organizationId);
+                    if (org1 != null && org1.AccountType == AccountType.Implementer)
+                        throw new FallthroughException("Failed to charge implementer account ("+org1.Id+"): $" + amount + " [" + String.Join(" ", builder)+"]");
+
                     throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.ResponseError, String.Join(" ", builder));
                 }
 

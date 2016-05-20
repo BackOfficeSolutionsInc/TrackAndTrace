@@ -1,29 +1,49 @@
 ﻿@model long
 @{
-	ViewBag.Title = "To-do List";
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	var dict = new ViewDataDictionary(ViewBag);
-	dict.Add(new KeyValuePair<string, object>("SetName", "All To-Dos"));
-	dict.Add(new KeyValuePair<string, object>("IncludeComplete", true));
-}
-@Html.Partial("~/Views/Todo/Partial/list.cshtml")
-@Html.Partial("~/Views/Todo/Partial/listscripts.cshtml",Model,dict)
+    ViewBag.Title = "To-do List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var dict = new ViewDataDictionary(ViewBag);
+    dict.Add(new KeyValuePair<string, object>("SetName", "All To-Dos"));
+    dict.Add(new KeyValuePair<string, object>("IncludeComplete", true));
+    //dict.Add(new KeyValuePair<string, object>("AddHeaders", false));
+    //dict.Add(new KeyValuePair<string, object>("AddController", false));
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 
-@section top{
-	<div class="jumbotron">
-		<h1>To-do List</h1>
-	</div>
 }
 
-@using (Html.BeginStyles()){
-	<style>
-		.height-placeholder {
-			min-height: 60px;
-		}
+<div ng-app="L10App" class="ng-cloak">
+    <div ng-controller="L10Controller">
+        @{
+            Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");
+            Html.RenderPartial("~/Views/Todo/Partial/list.cshtml",new ViewDataDictionary(){{"AddHeaders", false}});
+            Html.RenderPartial("~/Views/Angular/_L10App.cshtml", Model, dict);
 
-		.component {
-			margin: 0px;
-		}
+        }
+    </div>
+</div>
 
-	</style>
-}
+
+        @section top{
+            <div class="jumbotron">
+                <h1>To-do List</h1>
+            </div>
+        }
+
+        @using (Html.BeginStyles()) {
+            @Styles.Render("~/styles/archive")
+            <style>
+                .height-placeholder {
+                    min-height: 60px;
+                }
+
+                .component {
+                    margin: 0px;
+                }
+
+                .picture-column,
+                .delete-column,
+                .empty-cell {
+                    display: none;
+                }
+            </style>
+        }

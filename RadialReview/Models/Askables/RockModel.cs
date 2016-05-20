@@ -33,6 +33,7 @@ namespace RadialReview.Models.Askables {
 		public virtual UserOrganizationModel AccountableUser { get; set; }
 
         public virtual String PadId { get; set; }
+        public virtual bool Archived { get; set; }
 
 		public RockModel()
 		{
@@ -70,6 +71,7 @@ namespace RadialReview.Models.Askables {
 			public RockModelMap()
             {
                 Map(x => x.Rock);
+                Map(x => x.Archived);
                 Map(x => x.PadId);
 				Map(x => x.Completion);
 				Map(x => x.DueDate);
@@ -92,5 +94,6 @@ namespace RadialReview.Models.Askables {
 			angularizer.Add("Complete", x => x.CompleteTime != null);
 			angularizer.Add("Completion", x => x.Completion);
 		}
-	}
+
+    }
 }

@@ -1,7 +1,8 @@
 ﻿var currentTodoDetailsId;
 
 $(function () {
-    $("body").on("click", ".todo-list>.todo-row", function (evt) {
+    
+    var clickTodoRow = function (evt) {
         if ($(evt.target).hasClass("todo-checkbox"))
             return;
 
@@ -54,7 +55,8 @@ $(function () {
 				"</div>" +
 			"</div>");
 		fixTodoDetailsBoxSize();
-	});
+	}
+    $("body").on("click", ".todo-list>.todo-row", clickTodoRow);
 
 	$("body").on("click", ".todoDetails .doneButton", function () { $(this).find(">input").trigger("click"); });
 
@@ -142,6 +144,7 @@ $(function () {
 		$(selector).prop("disabled", true);
 		$(selector).prop("checked", checked);
 		$(selector2).data("checked", checked);
+		$(selector2).attr("data-checked", checked);
 		$.ajax({
 			url: "/l10/UpdateTodoCompletion/" + recurrenceId,
 			method: "post",
@@ -150,10 +153,12 @@ $(function () {
 				showJsonAlert(data, false, true);
 				$(selector).prop("checked", (!data.Error ? data.Object : !checked));
 				$(selector2).data("checked", (!data.Error ? data.Object : !checked));
+				$(selector2).attr("data-checked", (!data.Error ? data.Object : !checked));
 			},
 			error: function () {
-				$(selector).prop("checked", !checked);
-				$(selector2).data("checked", !checked);
+			    $(selector).prop("checked", !checked);
+			    $(selector2).data("checked", !checked);
+			    $(selector2).attr("data-checked", !checked);
 			},
 			complete: function () {
 				$(selector).prop("disabled", false);
@@ -194,7 +199,14 @@ function updateTodoDueDate(todo, duedate) {
 	var nowDate = new Date(nowDateStr.getYear()+1900, nowDateStr.getMonth(), nowDateStr.getDate());
 		
 	var found = row.find(".due-date");
-	$(found).toggleClass("red", dispDate.getTime() < nowDate.getTime());
+	var overdue =  dispDate.getTime() < nowDate.getTime();
+	$(found).toggleClass("red",overdue);
+	if (overdue) {
+	    if ($(row).find(".btn-group .label").length == 0)
+	        $(row).find(".btn-group").prepend("<div class=\"label label-danger overdue-indicator\" title=\"This to-do is overdue\">late</div>");
+	} else {
+	    $(row).find(".btn-group .overdue-indicator").remove();
+	}
 	found.html(dateFormatter(dispDate));
 	//$("input[data-todo=" + todo + "]").val(dateFormatter(new Date(duedate)));
 	$("input[data-todo=" + todo + "]").val(dateFormatter(dispDate));
@@ -309,7 +321,14 @@ function constructTodoRow(todo) {
     var duedate = new Date(duedateStr[0], duedateStr[1] - 1, duedateStr[2]).getTime();
 
     if (duedate < nowDate)
-		red = "red";
+        red = "red";
+
+    var labelIndicator = "";
+    if (todo.isNew)
+        labelIndicator = "<div class=\"label label-success new-indicator\" title=\"Created during this meeting.\">new</div>";
+    else if (todo.duedate < nowDate)
+        labelIndicator = "<div class=\"label label-danger overdue-indicator\" title=\"This to-do is overdue\">late</div>";
+
 	var date = new Date(new Date(todo.duedate).toUTCString().substr(0,16));
 	//Accountable user name populated?
 	return '<li class="todo-row dd-item arrowkey"' +
@@ -329,7 +348,8 @@ function constructTodoRow(todo) {
 			'	<span class="inner icon fontastic-icon-primitive-square"></span>' +
 			'	</div>' +
 		
-			'	<div class="btn-group pull-right">'+
+			'	<div class="btn-group pull-right">' +
+                    labelIndicator+
 			'		<span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="'+todo.todo+'" data-recurrence="'+MeetingId+'" data-meeting="'+meetingId+'"></span>'+
 			'	</div>'+
 			'	<span class="profile-image">'+
@@ -422,6 +442,8 @@ function appendTodo(selector, issue) {
 function updateTodoCompletion(todoId, complete) {
 	var selector = ".todo-checkbox[data-todo='" + todoId + "']";
 	$(selector).prop("checked", complete);
+	//$(selector).data("checked", complete);
+	//$(selector).attr("data-checked", complete);
 }
 
 function updateTodoMessage(id, message) {
@@ -446,13 +468,21 @@ function updateTodoAccountableUser(id, userId, name, image) {
 
 
 function checkFireworks() {
-    debugger;
+
+    var found = $(".todo-row[data-createdBefore='True']");
+    var total =found.length;
+    var complete = found.find(".todo-checkbox:checked").length;
+    $(".todo-completion-ratio").html(complete + "/" + total);
+    if (complete != 0) {
+        $(".todo-completion-percentage").html((Math.round(complete/total*100))+"%");
+    } else {
+        $(".todo-completion-percentage").html("-%")
+    }
+
     if (typeof (seenFireworks) !== "undefined" && !window.fireworksRan && !seenFireworks) {
-        var found = $(".todo-row[data-createdBefore='True']");
-        var total =found.length;
+
         if (total>0)
         {
-            var complete = found.find(".todo-checkbox:checked").length;
             if (complete / total >= .9) {
                 runFireworks();
             }
@@ -480,9 +510,9 @@ function runFireworks() {
             }
             //}
             if (Math.random() > .2) {
-                setTimeout(shootFirework, Math.random() * 1000 + 2000);
+                setTimeout(shootFirework, Math.random() * 1000 + 1500);
             } else {
-                setTimeout(shootFirework, Math.random() * 500 + 200);
+                setTimeout(shootFirework, Math.random() * 500 + 150);
             }
         }
     };

@@ -955,7 +955,7 @@ namespace RadialReview.Controllers
 
 			var reviewContainer = _ReviewAccessor.GetReviewContainer(GetUser(), review.ForReviewsId, false, false, false);
 
-			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), review.ForUserId, review.PeriodId,new DateRange(reviewContainer.DateCreated,DateTime.UtcNow));
+			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), review.ForUserId, /*review.PeriodId,*/new DateRange(reviewContainer.DateCreated,DateTime.UtcNow));
 			var activeQuestions = questions.Where(x => answers.Any(y => y.Askable.Id == x.Id)).ToList();
 
 			var chartTypes = new List<ReviewDetailsViewModel.ChartType>();
@@ -965,7 +965,7 @@ namespace RadialReview.Controllers
 			chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Show All (Uncolored)", ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/AllGray.png" });
 
 			var now = DateTime.UtcNow;
-			var nextRocks = _RockAccessor.GetRocks(GetUser(), review.ForUserId, reviewContainer.NextPeriodId).ToList();
+			var nextRocks = _RockAccessor.GetRocks(GetUser(), review.ForUserId/*, reviewContainer.NextPeriodId*/).ToList();
 
 			var model = new ReviewDetailsViewModel()
 			{
@@ -982,8 +982,8 @@ namespace RadialReview.Controllers
 				JobDescription = user.JobDescription,
 				ChartTypes = chartTypes,
 				NextRocks = nextRocks,
-				Period = reviewContainer.Period,
-				NextPeriod = reviewContainer.NextPeriod,
+				//Period = reviewContainer.Period,
+				//NextPeriod = reviewContainer.NextPeriod,
 			};
 			return model;
 		}

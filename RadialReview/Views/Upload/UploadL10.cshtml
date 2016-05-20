@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.FullWidth = true;
 
@@ -13,14 +12,23 @@
     <script src="~/Scripts/Upload/@ViewBag.UploadScript"></script>
 }
 @using (Html.BeginStyles()) {
-    <link href="~/Content/Upload.css" rel="stylesheet" />
+    @*<link href="~/Content/Upload.css" rel="stylesheet" />*@
+    <link href="~/Content/Upload/Upload.css" rel="stylesheet" />
 }
 
-<h2>@ViewBag.Title</h2>
 
-<div id="notifications"></div>
+<div class="upload-container">
+    <div class="component">
+        <h2>@ViewBag.Title</h2>
 
-<hr />
+        <hr />
+        <div id="notifications"></div>
 
-<div id="window"></div>
+        <div class="instructions">@ViewBag.Instructions</div>
+
+        <div id="window"></div>
+
+    </div>
+
+</div>
 

@@ -1,5 +1,6 @@
-﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', 'radial', 'meetingDataUrlBase', 'meetingId', "meetingCallback", "$compile", "$sce", "$q","$window",
-function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetingCallback, $compile, $sce, $q,$window) {
+﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', '$location',
+    'radial', 'meetingDataUrlBase', 'meetingId', "meetingCallback", "$compile", "$sce", "$q", "$window",
+function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetingId, meetingCallback, $compile, $sce, $q,$window) {
 
     $scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
     if (meetingId == null)
@@ -44,8 +45,7 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
             }
         }
     };
-
-
+    
 
     var r = radial($scope, 'meetingHub', rejoin);
 
@@ -53,19 +53,68 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
 
     $scope.functions = $scope.functions || {};
     $scope.filters = $scope.filters || {};
-    $scope.functions.reload = function (reload) {
-        if (typeof (reload) == "undefined") {
+
+    if (typeof(dataDateRange)==="undefined"){
+        dataDateRange = {};
+    }
+    if (typeof(dataDateRange.startDate)==="undefined"){
+        dataDateRange.startDate = moment().add('days',1).toDate();//.subtract('days', 6).toDate();
+    } else {
+        dataDateRange.startDate = moment(dataDateRange.startDate).toDate();
+    }
+    if (typeof(dataDateRange.end)==="undefined"){
+        dataDateRange.endDate = moment().add('days', 1).toDate();
+    } else {
+        dataDateRange.endDate = moment(dataDateRange.endDate).toDate();
+    }
+    $scope.model = $scope.model || {};
+    $scope.model.dataDateRange = dataDateRange;
+    $scope._alreadyLoaded = { startDate: dataDateRange.startDate.getTime(), endDate: dataDateRange.endDate.getTime() };
+    $scope.$watch('model.dataDateRange', function (newValue, oldValue) {
+        console.log("watch dataDateRange");
+        if (newValue.startDate < $scope._alreadyLoaded.startDate) {
+            var range1 = {
+                startDate: newValue.startDate,
+                endDate: Math.min($scope._alreadyLoaded.startDate, newValue.endDate)
+            };
+            $scope.functions.reload(true, range1);
+        }
+        if (newValue.endDate > $scope._alreadyLoaded.endDate) {
+            var range2 = {
+                startDate: Math.max(newValue.startDate, $scope._alreadyLoaded.endDate),
+                endDate: newValue.endDate
+            };
+            $scope.functions.reload(true, range2);
+        }
+        $scope._alreadyLoaded.startDate = Math.min($scope._alreadyLoaded.startDate, newValue.startDate);
+        $scope._alreadyLoaded.endDate = Math.max($scope._alreadyLoaded.endDate, newValue.endDate);
+    });
+    var dateToNumber = function (date) {
+        var type = typeof (date);
+        if (type == 'number') {
+            return date;
+        } else if (typeof(date._d) !== 'undefined') {
+            return +date;
+        } else if (date.getDate !== undefined) {
+            return date.getTime();
+        }
+        console.error("cant process:" + date);
+    }
+
+    $scope.functions.reload = function (reload, range, first) {
+        if (typeof (reload) === "undefined") {
             reload = true;
         }
+        if (typeof (first) === "undefined") {
+            first = false;
+        }
         if (reload) {
-
             if (!window.tzoffset) {
                 var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
                 window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
                              (jul.getTime() % 24 * 60 * 60 * 1000)
                              ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
             }
-
 
             console.log("reloading...");
             var url = meetingDataUrlBase;
@@ -82,11 +131,27 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
                 url += "?_clientTimestamp=" + date;
             }
 
+            if (typeof (range) !== "undefined" && typeof (range.startDate) !== "undefined")
+                url += "&start=" + dateToNumber(range.startDate);
+            if (typeof (range) !== "undefined" && typeof (range.endDate) !=="undefined")
+                url += "&end=" + dateToNumber(range.endDate);
+            if (first)
+                url += "&fullScorecard=true";
             $http({ method: 'get', url: url })
             .success(function (data, status) {
                 // r.updater.clearAndApply(data, status);
+                var ddr = undefined;
+                if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.dataDateRange) !== "undefined")
+                    ddr = $scope.model.dataDateRange;
+
                 r.updater.convertDates(data);
                 r.updater.clearAndApply(data);
+
+                if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.dataDateRange) === "undefined")
+                    $scope.model.dataDateRange = ddr;
+
+                //if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.Attendees) === "undefined")
+                //    $scope.model.dataDateRange = ddr;
                 //$scope.model = data;
 
                 if (meetingCallback) {
@@ -101,7 +166,7 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
         }
     }
 
-    $scope.functions.reload(true);
+    $scope.functions.reload(true,$scope.model.dataDateRange,true);
 
     $scope.functions.setHtml = function (element, data) {
         var newstuff = element.html(data);
@@ -249,7 +314,7 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
 
     $scope.now = moment();
 
-    $scope.rockstates = [{ name: 'Off Track', value: 'AtRisk' }, { name: 'On Track', value: 'OnTrack' }, { name: 'Complete', value: 'Complete' }];
+    $scope.rockstates = [{ name: 'Off Track', value: 'AtRisk' }, { name: 'On Track', value: 'OnTrack' }, { name: 'Done', value: 'Complete' }];
 
     $scope.opts = {
         ranges: {
@@ -289,6 +354,23 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
         };
     };
 
+    $scope.selectedTab = $location.url().replace("/","");
+
+    //$scope.filters.applyFilters = function (value, index, array) {
+    //    if (typeof ($scope.filters.filterList) === "undefined")
+    //        return true;
+    //    for (var i = 0; i < $scope.filters.filterList.length; i++) {
+    //        if ($filter('filter')([value], $scope.filters.filterList[i])[0] == false)
+    //            return false;
+    //    }
+
+    //    return true;        
+    //}
+
+    $scope.filters.completionFilterItems = [
+        { name: "Incomplete", value: {Completion:true}, short:"Incomplete" },
+    ];
+
     $scope.options = {};
     $scope.options.l10teamtypes = $scope.loadSelectOptions('/dropdown/type/l10teamtype');
 
@@ -300,8 +382,7 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
             showJsonAlert(data, true, true);
         });
     };
-
-
+    
     $scope.functions.removeRow = function (event, self) {
         var dat = angular.copy(self);
         var _clientTimestamp = new Date().getTime();
@@ -337,7 +418,7 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
     $scope.ShowSearch = false;
     $scope.functions.showUserSearch = function (event) {
         $scope.ShowSearch = true;
-        setTimeout(function(){
+        $timeout(function(){
             $(".user-list-container .livesearch-container input").focus();
         },1);
     };
@@ -348,7 +429,9 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
     }
 
     $scope.functions.createUser = function () {
-        $scope.functions.showModal('Add managed user', '/User/AddModal', '/nexus/AddManagedUserToOrganization?meeting=' + $scope.meetingId+"&refresh=false");
+        $timeout(function () {
+            $scope.functions.showModal('Add managed user', '/User/AddModal', '/nexus/AddManagedUserToOrganization?meeting=' + $scope.meetingId + "&refresh=false");
+        }, 1);
     }
 
     $scope.functions.goto = function (url) {
@@ -360,13 +443,13 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
             $scope.model.Search = '';
             self.visible = false;
             $scope.ShowSearch = false;
-        },1);
+        },150);
     }
 
     $scope.userSearchCallback = function (params) {
         var defer = $q.defer();
-
-        var ids = $.map($scope.model.Attendees, function (item) {
+        var attendees = $scope.model.Attendees || [];
+        var ids = $.map(attendees, function (item) {
             return item.Id;
         })
         $http.get("/User/Search?q=" + params + "&exclude=" + ids)
@@ -381,6 +464,12 @@ function ($scope, $http, $timeout, radial, meetingDataUrlBase, meetingId, meetin
         });
 
         return defer.promise;
+    };
+
+    $scope.functions.setHash = function (value) {
+        $timeout(function () {
+            $window.location.hash=value;
+        }, 1);
     };
 
     $scope.functions.uploadUsers = function () {

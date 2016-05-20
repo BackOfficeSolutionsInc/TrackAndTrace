@@ -195,7 +195,7 @@ namespace RadialReview.Controllers
                 _Priority = model.Priority
 
 			});
-			return Json(ResultObject.Success("Created issue").NoRefresh());
+			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
 
 		[HttpPost]

@@ -130,7 +130,6 @@
 				itemWidth = $(e.currentTarget).data('w'),
 				itemHeight = $(e.currentTarget).data('h');
 
-			debugger;
 			for (var i = 1; i <= Grid.currentSize; i++) {
 			    itemElement.removeClass("width_"+i);
 			}

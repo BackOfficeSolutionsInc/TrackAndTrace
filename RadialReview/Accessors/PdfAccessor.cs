@@ -849,7 +849,12 @@ namespace RadialReview.Accessors {
                 }
             } else if (o is Text) {
                 var txt = (Text)o;
-                var size = ctx.MeasureString(txt.Content, new XFont(fontName, fontSize.Inch * 6.0225));
+                XSize size;
+                try {
+                    size = ctx.MeasureString(txt.Content, new XFont(fontName, fontSize.Inch * 6.0225));
+                } catch (Exception e) {
+                    size = new XSize(1, 1);
+                }
                 s.Width = Math.Max(s.Width, size.Width);
                 s.Height += size.Height * Math.Ceiling(size.Width * 0.166044 / maxWidth.Inch);
             } else if (o is Paragraph) {

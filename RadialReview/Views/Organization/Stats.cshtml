@@ -22,7 +22,7 @@
 
 <table class="table table-condensed table-striped table-hover">
     <thead class="table-header">
-        <tr><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>Status</th><th>LastLogin</th><th>CreateTime</th><th>TrialEnd</th></tr>
+        <tr><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>CreateTime</th><th>Status</th><th>LastLogin</th><th>TrialEnd</th><th>Last Meeting</th></tr>
     </thead>
     @foreach (var i in Model) {
         <tr>
@@ -30,6 +30,7 @@
             <td class="alignRight"><a href="/Organization/Which/@i.OrgId">@i.OrgName</a></td>
             <td style="width:120px;">@i.Username  </td>
             <td>@i.Position</td>
+            <td class="alignLeft">@i.OrgCreateTime.NotNull(x => x.Value.ToShortDateString())</td>
             <td class="account-@i.Status {sorter: 'digit'} account">
                 <span style="display: none">@(scoreOrder[i.Status])</span>
                 @if (i.Status == AccountType.Cancelled) {
@@ -57,12 +58,28 @@
 					                         })??"darkred")">
                 @i.LastLogin.NotNull(x => x.Value.ToShortDateString())
             </td>
-            <td class="alignCenter">@i.OrgCreateTime.NotNull(x => x.Value.ToShortDateString())</td>
-            <td style="color:@(i.TrialEnd.NotNull(x => (x > DateTime.UtcNow) ? "green" : "red"))">
-                @if (i.TrialEnd != DateTime.MinValue) {
+            <td title="@i.TrialEnd.NotNull(x => x.Value.ToShortDateString())" style="color:white;background-color:@(i.Status!=AccountType.Demo?"blueviolet":i.TrialEnd.NotNull(x => (x > DateTime.UtcNow) ? "blueviolet" : "deeppink") ?? "blueviolet");">
+                @if (i.TrialEnd != DateTime.MinValue && i.Status == AccountType.Demo) {
                     @i.TrialEnd.NotNull(x => x.Value.ToShortDateString())
                 }
             </td>
+            <td class="alignRight" style="background-color:@(i.LastMeeting.NotNull(x =>{
+						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(28)))
+						                         {
+													 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
+													 {
+														 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(7))){
+                                                             return "#4AB94A";
+														 }
+														 return "lightgreen";
+							                         }
+                                                     return "#FFAE76";
+						                         }
+                                                 return "#FF7979";
+					                         })??"lightgray")">
+                @(i.LastMeeting.NotNull(x => x.Value.ToShortDateString()))
+            </td>
+
         </tr>
     }
 </table>
@@ -71,6 +88,7 @@
     <script>
         $("table").tablesorter({
             // sortForce: [[0, 1]],
+            sortList: [[0,1]],
             sortStable: true,
             headers: {
                 4: { sorter: 'attr' },

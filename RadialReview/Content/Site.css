@@ -556,6 +556,53 @@ body {
     transition: .15s linear !important;
 }
 
+
+.navbar-icon-container {
+    padding-right: 14px;
+}
+
+    .navbar-icon-container .navbar-icon-button {
+        padding: 16px;
+        color: rgba(255,255,255,.3);
+        font-size: 14px;
+        cursor: pointer;
+        -moz-transition: color ease .3s;
+        -o-transition: color ease .3s;
+        -webkit-transition: color ease .3s;
+        transition: color ease .3s;
+    }
+
+        .navbar-icon-container .navbar-icon-button:hover {
+            color: rgba(255,255,255,1);
+        }
+
+
+.body-full-width .navbar-icon-container {
+    padding-right: 8px;
+}
+
+.body-full-width .navbar-icon-button {
+    padding: 6px;
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .navbar-collapse.collapse.in .navbar-icon-container,
+    .navbar-collapse.collapsing .navbar-icon-container {
+        position: fixed;
+        top: 56px;
+        right: 0px;
+    }
+    .navbar-collapse.collapsing[aria-expanded="false"] .navbar-icon-container{
+        display:none;
+    }
+}
+
+.navbar .picture-container {
+    float: left;
+    position: inherit;
+}
+
 /*.navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-brand:hover {
             color: #98c7ff;
             text-shadow: 0px -1px 10px #286D9B;
@@ -973,8 +1020,8 @@ tr.danger .strikable {
     background-color: #b06869;
 }
 
-.nohover{
-    cursor:default;
+.nohover {
+    cursor: default;
 }
 
 /*
@@ -1333,9 +1380,9 @@ table.tablesorter thead tr .tablesorter-header:not(.tablesorter-headerDesc):not(
     color: #fff;
 }
 
-.panel > .table-responsive > table.tablesorter thead tr .headerSortDown, 
+.panel > .table-responsive > table.tablesorter thead tr .headerSortDown,
 .panel > .table-responsive > table.tablesorter thead tr :not(.tablesorter-headerUnSorted) .tablesorter-header-inner,
-.panel > table.tablesorter thead tr .headerSortDown, 
+.panel > table.tablesorter thead tr .headerSortDown,
 .panel > table.tablesorter thead tr :not(.tablesorter-headerUnSorted) .tablesorter-header-inner {
     color: #fff;
 }
@@ -1878,14 +1925,14 @@ textarea {
 }
 
 
-.multiline{
-    white-space:pre;
+.multiline {
+    white-space: pre;
 }
 
-.select2-selection .img-flag{
-    display:none;
+.select2-selection .img-flag {
+    display: none;
 }
 
-#modalMessage{
-        margin-top: -9px;
+#modalMessage {
+    margin-top: -9px;
 }

@@ -23,7 +23,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		private static List<AskableAbout> GetAskables(UserOrganizationModel caller,PermissionsUtility perms, DataInteraction dataInteraction,IEnumerable<long> revieweeIds,long reviewerId,long? periodId,DateRange range)
+		private static List<AskableAbout> GetAskables(UserOrganizationModel caller,PermissionsUtility perms, DataInteraction dataInteraction,IEnumerable<long> revieweeIds,long reviewerId,/*long? periodId,*/DateRange range)
 		{
 			var allAskables = new List<AskableAbout>();
 			var queryProvider = dataInteraction.GetQueryProvider();
@@ -35,7 +35,7 @@ namespace RadialReview.Accessors {
 				if (found == null || found.DeleteTime != null)
 					continue;
 
-				var revieweeAskables = AskableAccessor.GetAskablesForUser(caller, queryProvider, perms, revieweeId, periodId, range);
+				var revieweeAskables = AskableAccessor.GetAskablesForUser(caller, queryProvider, perms, revieweeId, /*periodId,*/ range);
 				var relationships = RelationshipAccessor.GetRelationships(perms, queryProvider, reviewerId, revieweeId);
 
 				//Merge relationships
@@ -227,7 +227,7 @@ namespace RadialReview.Accessors {
 		private static AskableUtility GetAskablesBidirectional(
 		DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller,
 		UserOrganizationModel reviewee, OrganizationTeamModel team, ReviewParameters parameters,
-		List<long> accessibleUsers, long? periodId,
+		List<long> accessibleUsers, /*long? periodId,*/
 		DateRange range) {
 			#region comment
 			/** Old questions way to do things.
@@ -247,7 +247,7 @@ namespace RadialReview.Accessors {
 			//Ensures uniqueness and removes people not in the review.
 			var askableUtil = new AskableUtility();
 			var reviewers= GetReviewersForUser(caller, perms, s, reviewee, parameters, team, accessibleUsers);
-			var questions = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewee.Id, periodId, range);
+			var questions = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewee.Id, /*periodId,*/ range);
 
 			if (parameters.ReviewSelf) {
 				askableUtil.AddUnique(questions, AboutType.Self, reviewee.Id);
@@ -256,7 +256,7 @@ namespace RadialReview.Accessors {
 			foreach (var reviewer in reviewers.Relationships) {
 				var reviewerId =/* aboutSelf ? beingReviewed.Id :*/ reviewer.Key.Id;
 
-				var reviewerAskables = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewerId, periodId,range);
+				var reviewerAskables = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, reviewerId, /*periodId,*/range);
 				/* .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, id)
 				 .SelectMany(x => x.Responsibilities).ToListAlive();*/
 				foreach (var relationship in reviewer.Value) {

@@ -155,7 +155,11 @@ function showTextAreaModal(title, callback, defaultText) {
 }
 
 
-function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess,onCancel) {
+function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel) {
+
+    $("#modal-icon").attr("class", "");
+    $("#modal #class-container").attr("class", "");
+
     if (typeof (title) === "object") {
         var obj = title;
         var push = pullUrl;
@@ -361,23 +365,31 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
     //Reregister submit button
     $("#modalForm").unbind('submit');
 
+    var onCloseArg = onClose;
+    var onCancelArg = onCancel;
+    var onSuccessArg = onSuccess;
+    var contentTypeArg = contentType;
+    var validationArg = validation;
+    var reformatArg = reformat;
+    var callbackArg = callback;
+
     $("#modalForm").submit(function (ev) {
         ev.preventDefault();
 
         var formData = $("#modalForm").serializeObject();
 
-        if (typeof (reformat) === "function") {
-            var o =reformat(formData);
+        if (typeof (reformatArg) === "function") {
+            var o = reformatArg(formData);
             if (typeof (o) !== "undefined" && o!=null)
                 formData = o;
         }
 
-        if (validation) {
+        if (validationArg) {
             var message = undefined;
-            if (typeof (validation) === "string") {
-                message = eval(validation + '()');
-            } else if (typeof (validation) === "function") {
-                message = validation();
+            if (typeof (validationArg) === "string") {
+                message = eval(validationArg + '()');
+            } else if (typeof (validationArg) === "function") {
+                message = validationArg();
             }
             if (message !== undefined && message != true) {
                 if (message == false) {
@@ -394,18 +406,18 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
         $("#modal").removeClass("loading");
         //onSuccess(formData);
 
-        if (onSuccess) {
-            if (typeof onSuccess === "string") {
-                eval(onSuccess + "(formData,"+contentType+")");
-            } else if (typeof onSuccess === "function") {
-                onSuccess(formData, contentType);
+        if (onSuccessArg) {
+            if (typeof onSuccessArg === "string") {
+                eval(onSuccessArg + "(formData," + contentTypeArg + ")");
+            } else if (typeof onSuccessArg === "function") {
+                onSuccessArg(formData, contentTypeArg);
             }
         }
-        if (onClose) {
-            if (typeof onClose === "string") {
-                eval(onClose + "()");
-            } else if (typeof onClose === "function") {
-                onClose();
+        if (onCloseArg) {
+            if (typeof onCloseArg === "string") {
+                eval(onCloseArg + "()");
+            } else if (typeof onCloseArg === "function") {
+                onCloseArg();
             }
         }
     });
@@ -414,15 +426,15 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 
    
     $("#modal button[data-dismiss='modal']").on("click.radialModal", function () {
-        if (typeof onCancel === "string") {
-            eval(onCancel + "()");
-        } else if (typeof onCancel === "function") {
-            onCancel();
+        if (typeof onCancelArg === "string") {
+            eval(onCancelArg + "()");
+        } else if (typeof onCancelArg === "function") {
+            onCancelArg();
         }
-        if (typeof onClose === "string") {
-            eval(onClose + "()");
-        } else if (typeof onClose === "function") {
-            onClose();
+        if (typeof onCancelArg === "string") {
+            eval(onCancelArg + "()");
+        } else if (typeof onCancelArg === "function") {
+            onCancelArg();
         }
     });
 
@@ -430,11 +442,11 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
     $('#modal').modal('show');
     var count = 0;
     setTimeout(function () {
-        if (callback) {
-            if (typeof (callback) === "string")
-                eval(callback + '()');
-            else if (typeof (callback) === "function")
-                callback();
+        if (callbackArg) {
+            if (typeof (callbackArg) === "string")
+                eval(callbackArg + '()');
+            else if (typeof (callbackArg) === "function")
+                callbackArg();
         } else {
             $('#modal input:not([type=hidden]):not(.disable):first').focus();
         }
@@ -462,6 +474,7 @@ function _submitModal(formData, pushUrl, onSuccess,useJson, contentType) {
         serialized = $("#modalForm").serialize();
         contentType = contentType || "application/x-www-form-urlencoded";
     }
+    var onSuccessArg = onSuccess;
 
     $.ajax({
         url: pushUrl,
@@ -475,11 +488,11 @@ function _submitModal(formData, pushUrl, onSuccess,useJson, contentType) {
                 $("#modal").removeClass("loading");
                 showAlert("Something went wrong. If the problem persists, please contact us.");
             } else {
-                if (onSuccess) {
-                    if (typeof onSuccess === "string") {
-                        eval(onSuccess + "(data)");
-                    } else if (typeof onSuccess === "function") {
-                        onSuccess(data);
+                if (onSuccessArg) {
+                    if (typeof onSuccessArg === "string") {
+                        eval(onSuccessArg + "(data)");
+                    } else if (typeof onSuccessArg === "function") {
+                        onSuccessArg(data);
                     }
                 } else {
                 }
@@ -1000,3 +1013,45 @@ function debounce(func, wait, immediate) {
 Constants = {
     StartHubSettings: { transport: ['webSockets', 'longPolling'] }
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Create issues or todos 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function imageListFormat(state) {
+    if (!state.id) {
+        return state.text;
+    }
+    var $state = $('<span><img style="max-width:32;max-height:32px"  src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+    return $state;
+};
+
+$("body").on("click", ".issuesModal:not(.disabled)", function () {
+    var dat = $(this).data();
+    var parm = $.param(dat);
+    var m = $(this).data("method");
+    if (!m)
+        m = "Modal";
+    var title = dat.title || "Add an issue";
+    showModal(title, "/Issues/" + m + "?" + parm, "/Issues/" + m);
+});
+
+$("body").on("click", ".todoModal:not(.disabled)", function () {
+    var dat = $(this).data();
+    var parm = $.param(dat);
+    var m = $(this).data("method");
+    if (!m)
+        m = "Modal";
+    var title = dat.title || "Add a to-do";
+    showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m, null, function () {
+        debugger;
+        var found = $('#modalBody').find(".select-user");
+        if (found.length && found.val() == null)
+            return "You must select at least one to-do owner.";
+        return true;
+    });
+});
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Debounce
+(function (n, t) { var $ = n.jQuery || n.Cowboy || (n.Cowboy = {}), i; $.throttle = i = function (n, i, r, u) { function o() { function o() { e = +new Date; r.apply(h, c) } function l() { f = t } var h = this, s = +new Date - e, c = arguments; u && !f && o(); f && clearTimeout(f); u === t && s > n ? o() : i !== !0 && (f = setTimeout(u ? l : o, u === t ? n - s : n)) } var f, e = 0; return typeof i != "boolean" && (u = r, r = i, i = t), $.guid && (o.guid = r.guid = r.guid || $.guid++), o }; $.debounce = function (n, r, u) { return u === t ? i(n, r, !1) : i(n, u, r !== !1) } })(this);

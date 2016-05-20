@@ -13,33 +13,6 @@
         <h1>Traction<sup style="top: -0.72em;font-size: 50%;">®</sup> Tools @*<small>Dashboard</small>*@</h1>
     </div>
 }
-@using (Html.BeginStyles())
-{
-    @*<link href="~/Content/bootstrap/custom/dashboard.css" rel="stylesheet" />*@
-    <style>
-        .welcome a {
-            color: #4A79FF;
-        }
-
-        h3 {
-            color: #6D6D6D;
-        }
-
-        .todo-pane {
-            max-height: 360px;
-            overflow: auto;
-            width: 100%;
-        }
-
-        #alerts .alert {
-            z-index: 1000;
-        }
-    </style>
-    @*<link href="~/Scripts/Grid/style.css" rel="stylesheet" />*@
-    
-    @Styles.Render("~/styles/Dashboard");
-}
-
 
 @using (Html.BeginScripts())
 {
@@ -51,8 +24,13 @@
         <script src="~/Scripts/Grid/load.js?v=2"></script>*@
 
     @Scripts.Render("~/bundles/DashboardGrid")
-
+    
     <script type="text/javascript">
+
+        dataDateRange = {
+            startDate : new Date().setDate(new Date().getDate() - 1)
+        };
+
 
         function buildGrid(data) {
             if (showJsonAlert(data, false, true)) {
@@ -170,13 +148,14 @@
 
         <li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do List</a></li>
         <li><a onclick="createTile('/TileData/UserScorecard2','Url')">Scorecard</a></li>
-        <li><a onclick="createTile('/TileData/UserRock2','Url')">@Html.Organization().Settings.RockName</a></li>
-        @if (ViewBag.IsManager)
-        {
+        <li><a onclick="createTile('/TileData/UserRock2','Url')">@Html.Organization().Settings.RockName</a></li>       
+        <li><a onclick="createTile('/TileData/UserRoles','Url')">Roles</a></li>
+        <li><a onclick="createTile('/TileData/OrganizationValues','Url')">Core Values</a></li>
+        @if (ViewBag.IsManager) {
             <li><a onclick=" createTile('/TileData/UserManage2', 'Url') ">Direct Reports</a></li>
         }
         <li><a onclick="createTile('/TileData/UserProfile2','Url')">Profile Picture</a></li>
-        <li><a onclick="createTile('/TileData/UserButtons','Url')">Quick Links</a></li>
+        @*<li><a onclick="createTile('/TileData/UserButtons','Url')">Quick Links</a></li>*@
         <li><a onclick="createTile('/TileData/SoftwareUpdates','Url')">Software Updates</a></li>
         </ul>
 </div>
@@ -184,7 +163,7 @@
 
 <div class="meeting-review ng-cloa2k grid-container">
     <div ng-controller2="L10Controller">
-        @Html.Partial("~/Views/Todo/Partial/listscripts.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
+        @Html.Partial("~/Views/Angular/_L10App.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
 			{ "IncludeComplete", false},
 			//{ "Callback", "initTiles"}
 		})
@@ -197,4 +176,33 @@
 @section bottomSection{
 </div>
 </div>
+}
+
+@using (Html.BeginStyles()) {
+    @*KEEP AT THE BOTTOM*@
+    
+    
+    @*<link href="~/Content/bootstrap/custom/dashboard.css" rel="stylesheet" />*@
+    <style>
+        .welcome a {
+            color: #4A79FF;
+        }
+
+        h3 {
+            color: #6D6D6D;
+        }
+
+        .todo-pane {
+            max-height: 360px;
+            overflow: auto;
+            width: 100%;
+        }
+
+        #alerts .alert {
+            z-index: 1000;
+        }
+    </style>
+    @*<link href="~/Scripts/Grid/style.css" rel="stylesheet" />*@
+
+    @Styles.Render("~/styles/Dashboard");
 }

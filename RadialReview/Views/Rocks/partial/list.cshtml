@@ -4,8 +4,12 @@
     var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
     var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
     var selector = ViewBag.Selector as string ?? "(model.Rocks)";
-    var filter = ViewBag.Filter as string ?? "";// | filter:filters.byRange('CompleteTime',model.date.startDate,model.date.endDate)";
+    var filter = ViewBag.Filter as string ?? "";// | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
     //var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
+
+    var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+    var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
+    
 
     var attrLookup = new Dictionary<string, string>(){
         {"status-column",""},
@@ -20,53 +24,54 @@
 }
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak rock-list-container app">
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
-        @if (datepicker) {
+        @*@if (datepicker) {
             <div class="calendar-container pull-right" style="width: 240px;">
                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
                 <input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="date" options="opts" required placeholder="Select a date range..." />
                 <b class="caret"></b>
             </div>
             <div class="height-placeholder" style="height:40px"></div>
-        }
-        <div id="Rocks" class="tab-pane rock-pane scrollbox">
+        }*@
+        <div id="Rocks_list" class="tab-pane rock-pane scrollbox">
             <div></div>
-            <table ts-wrapper width="100%" class="component" ng-show="(@(selector)  @(filter)).length">
-                <thead>
-                    <tr class="table-header">
-                        <th @(attrLookup["status-column"]) class="status-column hidden-width-1" ts-criteria="Completion">Status</th>
-                        <th @(attrLookup["picture-column"]) class="picture-column" style="width: 32px; display: table-cell;" ts-criteria="Owner.Name" title="Accountable">Acc</th>
-                        <th @(attrLookup["message-column"]) class="message-column" ts-criteria="Name">Rock</th>
-                        <th @(attrLookup["createtime-column"]) class="createtime-column alignCenter" ts-criteria="CreateTime">Create Time</th>
-                        <th @(attrLookup["due-column"]) class="due-column alignCenter" ts-criteria="DueDate">Due Date</th>
-                        <th @(attrLookup["delete-column"]) class="delete-column"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-hide="rock.Hide" ts-repeat class="{{rock.Completion}}" id="rock_{{rock.Id}}" ng-repeat="rock in @(selector) @(filter)">
-                        <td class="rock-completion-container hidden-width-1 status-column" style="min-width: 120px;text-align: center;vertical-align: top;">
-                            <select class="form-control rock-completion {{rock.Completion}}" ng-class="forRock_{{rock.Id}}" ng-model="rock.Completion" ng-options="item.value as item.name for item in rockstates" ng-change="functions.sendUpdate(rock)"></select>
-                        </td>
-                        <td class="picture-column">
-                            <span class="item-wrapper place-right">
-                                <span class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners">
-                                    <profile-image class="" user="rock.Owner"></profile-image>
+            <md-table-container>
+                <table md-table @*ts-wrapper*@ width="100%" class="component" ng-show="(@(selector)  @(filter)).length">
+                    <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
+                        <tr class="table-header" md-row>
+                            <th md-column @(attrLookup["status-column"]) class="status-column hidden-width-1" md-order-by="Completion">Status</th>
+                            <th md-column @(attrLookup["picture-column"]) class="picture-column" style="width: 32px; display: table-cell;" md-order-by="Owner.Name" title="Accountable">Acc</th>
+                            <th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Rock</th>
+                            <th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column alignCenter" md-order-by="CreateTime">Create Time</th>
+                            <th md-column md-numeric @(attrLookup["due-column"]) class="due-column alignCenter" md-order-by="DueDate">Due Date</th>
+                            <th md-column @(attrLookup["delete-column"]) class="delete-column"></th>
+                        </tr>
+                    </thead>
+                    <tbody md-body>
+                        <tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}" id="rock_{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
+                            <td md-cell class="rock-completion-container hidden-width-1 status-column" style="min-width: 120px;text-align: center;vertical-align: top;">
+                                <select class="form-control rock-completion {{rock.Completion}}" ng-class="forRock_{{::rock.Id}}" ng-model="rock.Completion" ng-options="item.value as item.name for item in rockstates" ng-change="functions.sendUpdate(rock)"></select>
+                            </td>
+                            <td md-cell class="picture-column">
+                                <span class="item-wrapper place-right">
+                                    <span class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners">
+                                        <profile-image class="" user="rock.Owner"></profile-image>
+                                    </span>
                                 </span>
-                            </span>
-                        </td>
-                        <td class="message-column name" style="width:100%">
-                            <input ng-model-options="{debounce: 400}" ng-model="rock.Name" placeholder="Enter rock here" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)">
-                        </td>
-                        <td class="createtime-column">
-                            {{rock.CreateTime | date:'MM/dd/yy'}}
-                        </td>
-                        <td class="due-column alignCenter due-date" style="min-width: 80px;">
-                            <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" ng-model-options="{debounce: 400}" />
-                        </td>
-                        <td class="delete-column" style="min-width: 15px;"><span class="delete-row" ng-click="functions.removeRow($event,rock)"></span></td>
-                    </tr>
-                    
-                </tbody>
-            </table>
+                            </td>
+                            <td md-cell class="message-column name" style="width:100%">
+                                <input ng-model-options="{debounce: 400}" ng-model="rock.Name" placeholder="Enter rock here" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)" title="{{rock.Name}}">
+                            </td>
+                            <td md-cell class="createtime-column">
+                                {{::rock.CreateTime | date:'MM/dd/yy'}}
+                            </td>
+                            <td md-cell class="due-column alignCenter due-date" style="min-width: 80px;">
+                                <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" ng-model-options="{debounce: 400}" />
+                            </td>
+                            <td md-cell class="delete-column" style="min-width: 15px;"><span class="delete-row" ng-click="functions.removeRow($event,rock)"></span></td>
+                        </tr>
+
+                    </tbody>
+                </table>
             <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
             @*</div>*@
             <div class="create-row" ng-click="functions.addRow($event,'AngularRock')" data-toggle="tooltip" data-placement="left" title="New Rock"></div>

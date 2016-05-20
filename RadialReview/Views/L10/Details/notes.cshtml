@@ -6,11 +6,11 @@
 
 <div class="scorecard meeting-page" style="clear: both;">
 	<div class="row">
-		<div class="col-md-12" click-anywhere-but-here="model.Selected = -1">
-            <div class="component">
-                <div class="" ng-repeat="note in model.Notes" style="padding:5px 10px;">
+		<div class="col-md-12" >
+            <div class="component" click-anywhere-but-here="model.Selected = -1">
+                <div class="" ng-repeat="note in model.Notes" style="padding:5px 10px;" ng-click="note.DetailsUrl_Src=note.DetailsUrl;model.Selected = note.Key">
                     <div ng-hide="model.Selected==note.Key">
-                        <div ng-click="note.DetailsUrl_Src=note.DetailsUrl;model.Selected = note.Key" class="clickable" style="padding: 5px 0 ;"><span class="glyphicon glyphicon-chevron-right  gray"></span> <b>{{note.Title}}</b></div>
+                        <div class="clickable" style="padding: 5px 0 ;"><span class="glyphicon glyphicon-chevron-right  gray"></span> <b>{{note.Title}}</b></div>
                     </div>
                     <div ng-show="model.Selected==note.Key">
                         <div style="padding: 5px 0;" class=""><span class="glyphicon glyphicon-chevron-down gray"></span> <b>{{note.Title}}</b><span class="pull-right glyphicon glyphicon-trash clickable" ng-click="functions.showModal('Delete note?','/L10/DeleteNote/'+note.Id,'/L10/DeleteNote',null,null,alert('asdf'))"></span></div>
@@ -29,3 +29,10 @@
 		</div>
 	</div>
 </div>
+
+<style>
+    div:focus {
+        outline:none;
+
+    }
+</style>

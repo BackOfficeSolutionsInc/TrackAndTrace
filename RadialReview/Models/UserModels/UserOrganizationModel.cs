@@ -261,37 +261,61 @@ namespace RadialReview.Models
 			if (Cache==null)
 				Cache=new UserLookup();
 			
-			Cache.OrganizationId = Organization.Id;
-			Cache._ImageUrlSuffix = this.ImageUrl(true, ImageSize._suffix);
-			Cache.AttachTime = AttachTime;
-			Cache.CreateTime = CreateTime;
-			Cache.DeleteTime = DeleteTime;
-			Cache.IsRadialAdmin = this.IsRadialAdmin;
-			Cache.Email = this.GetEmail();
-			Cache.IsClient = this.IsClient;
-			Cache.HasJoined = User != null;
-			Cache.HasSentInvite = !(TempUser != null && TempUser.LastSent == null);
-			Cache.IsAdmin = ManagingOrganization;
-			Cache.IsManager = this.IsManager();
-			Cache.Managers = String.Join(", ", ManagedBy.ToListAlive().Select(x => x.Manager.GetName()));
-			Cache.Positions = String.Join(", ", Positions.ToListAlive().Select(x => x.Position.CustomName));
+            if (Cache.OrganizationId != Organization.Id)
+                Cache.OrganizationId = Organization.Id;
+            if (Cache._ImageUrlSuffix != this.ImageUrl(true, ImageSize._suffix))
+                Cache._ImageUrlSuffix = this.ImageUrl(true, ImageSize._suffix);
+            if (Cache.AttachTime != AttachTime)
+                Cache.AttachTime = AttachTime;
+            if (Cache.CreateTime != CreateTime)
+                Cache.CreateTime = CreateTime;
+            if (Cache.DeleteTime != DeleteTime)
+                Cache.DeleteTime = DeleteTime;
+            if (Cache.IsRadialAdmin != this.IsRadialAdmin)
+                Cache.IsRadialAdmin = this.IsRadialAdmin;
+            if (Cache.Email != this.GetEmail())
+                Cache.Email = this.GetEmail();
+            if (Cache.IsClient != this.IsClient)
+                Cache.IsClient = this.IsClient;
+            if (Cache.HasJoined != (User != null))
+                Cache.HasJoined = User != null;
+            if (Cache.HasSentInvite != (!(TempUser != null && TempUser.LastSent == null)))
+                Cache.HasSentInvite = !(TempUser != null && TempUser.LastSent == null);
+            if (Cache.IsAdmin != this.ManagingOrganization)
+                Cache.IsAdmin = ManagingOrganization;
+            if (Cache.IsManager != this.IsManager())
+                Cache.IsManager = this.IsManager();
+            var managers = String.Join(", ", ManagedBy.ToListAlive().Select(x => x.Manager.GetName()));
+            if (Cache.Managers != managers)
+                Cache.Managers = managers;
+            var positions=String.Join(", ", Positions.ToListAlive().Select(x => x.Position.CustomName));
+            if (Cache.Positions != positions)
+                Cache.Positions = positions;
 
-			Cache.IsImplementer = IsImplementer;
+            if (Cache.IsImplementer != IsImplementer)
+			    Cache.IsImplementer = IsImplementer;
 
 			var teams = s.QueryOver<TeamDurationModel>().Where(x => x.DeleteTime == null && x.UserId == Id).Select(x => x.Team).List<OrganizationTeamModel>().ToList();
 
-			Cache.Teams = String.Join(", ", teams.Select(x => x.Name));
+            var teamsStr = String.Join(", ", teams.Select(x => x.Name));
+            if (Cache.Teams != teamsStr)
+                Cache.Teams = teamsStr;
+            if (Cache.Name !=  this.GetName())
 			Cache.Name = this.GetName();
 
 			var measurable=s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == Id).ToRowCountQuery().FutureValue<int>();
 			var role=s.QueryOver<RoleModel>().Where(x => x.DeleteTime == null && x.ForUserId == Id).ToRowCountQuery().FutureValue<int>();
 			var rock=s.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.ForUserId == Id).ToRowCountQuery().FutureValue<int>();
 
-			Cache.NumMeasurables = measurable.Value;
-			Cache.NumRoles = role.Value;
-			Cache.NumRocks = rock.Value;
+            if (Cache.NumMeasurables !=  measurable.Value)
+                Cache.NumMeasurables = measurable.Value;
+            if (Cache.NumRoles != role.Value)
+                Cache.NumRoles = role.Value;
+            if (Cache.NumRocks != rock.Value)
+			    Cache.NumRocks = rock.Value;
 
-			Cache.UserId = Id;
+            if (Cache.UserId != Id)
+			    Cache.UserId = Id;
 			
 			s.SaveOrUpdate(Cache);
 			try{

@@ -1,0 +1,169 @@
+﻿@import (reference) "../../bootstrap/variables";
+@import "MaterialDesign";
+@import (reference) "Animations";
+
+
+.material-indefinite-spinner(@colors) {
+    .path {
+        stroke-dasharray: 187;
+        stroke-dashoffset: 0;
+        -webkit-transform-origin: center;
+        -moz-transform-origin: center;
+        -ms-transform-origin: center;
+        -o-transform-origin: center;
+        transform-origin: center;
+        -webkit-animation: dash 1.4s ease-in-out infinite, @colors 5.6s ease-in-out infinite;
+        -moz-animation: dash 1.4s ease-in-out infinite, @colors 5.6s ease-in-out infinite; 
+        -o-animation: dash 1.4s ease-in-out infinite, @colors 5.6s ease-in-out infinite;
+        animation: dash 1.4s ease-in-out infinite, @colors 5.6s ease-in-out infinite;
+    }
+
+    .showbox {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 5%;
+    }
+
+    .loader {
+        position: relative;
+        margin: 0px auto;
+        width: 100px;
+    }
+
+    .loader:before {
+        content: '';
+        display: block;
+        padding-top: 100%;
+    }
+
+    .circular {
+        -webkit-animation: rotator 2s linear infinite;
+        -moz-animation: rotator 2s linear infinite;
+        -o-animation: rotator 2s linear infinite;
+        animation: rotator 2s linear infinite;
+        height: 100%;
+        -webkit-transform-origin: center center;
+        -moz-transform-origin: center center;
+        -ms-transform-origin: center center;
+        -o-transform-origin: center center;
+        transform-origin: center center;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
+}
+
+
+@-webkit-keyframes rotator {
+    .rotator;
+}
+
+@-moz-keyframes rotator {
+    .rotator;
+}
+
+@-ms-keyframes rotator {
+    .rotator;
+}
+
+@-o-keyframes rotator {
+    .rotator;
+}
+
+@keyframes rotator {
+    .rotator;
+}
+
+.rotator() {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+
+@-webkit-keyframes colors-rainbow {
+    .colors-rainbow;
+}
+
+@-moz-keyframes colors-rainbow {
+    .colors-rainbow;
+}
+
+@-ms-keyframes colors-rainbow {
+    .colors-rainbow;
+}
+
+@-o-keyframes colors-rainbow {
+    .colors-rainbow;
+}
+
+@keyframes colors-rainbow {
+    .colors-rainbow;
+}
+
+.colors-rainbow() {
+    0% {
+        stroke: #4285F4;
+    }
+
+    25% {
+        stroke: #DE3E35;
+    }
+
+    50% {
+        stroke: #F7C223;
+    }
+
+    75% {
+        stroke: #1B9A59;
+    }
+
+    100% {
+        stroke: #4285F4;
+    }
+}
+
+@-webkit-keyframes dash {
+    .dash;
+}
+
+@-moz-keyframes dash {
+    .dash;
+}
+
+@-ms-keyframes dash {
+    .dash;
+}
+
+@-o-keyframes dash {
+    .dash;
+}
+
+@keyframes dash {
+    .dash;
+}
+
+.dash() {
+    0% {
+        stroke-dasharray: 1,200;
+        stroke-dashoffset: 0;
+    }
+
+    50% {
+        stroke-dasharray: 89,200;
+        stroke-dashoffset: -35px;
+    }
+
+    100% {
+        stroke-dasharray: 89,200;
+        stroke-dashoffset: -124px;
+    }
+}

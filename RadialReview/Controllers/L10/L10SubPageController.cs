@@ -139,9 +139,9 @@ namespace RadialReview.Controllers
 			if (ModelState.IsValid)
 			{
 
-				var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+				var allMembers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id).Select(x=>x.Item3);
 
-				var attendees = allMembers.Where(x => model.Attendees.Contains(x.Id)).ToList();
+				var attendees = allMembers.Where(x => model.Attendees.Contains(x)).ToList();
 				L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees);
 				var tempRecur = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, false);
 				var p = L10Accessor.GetDefaultStartPage(tempRecur);
@@ -158,7 +158,7 @@ namespace RadialReview.Controllers
 		#region Segue
 		private PartialViewResult Segue(L10MeetingVM model)
 		{
-			ViewBag.Segue_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.Segue_Subheading,"Share good news from the last 7 days. One personal and one professional.");
+			ViewBag.Segue_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.Segue_Subheading,"Share good news from the last 7 days.<br/> One personal and one professional.");
 			
 			return PartialView("Segue", model);
 		}
@@ -221,7 +221,7 @@ namespace RadialReview.Controllers
 		#region Headlines
 		private PartialViewResult Headlines(L10MeetingVM model)
 		{
-            ViewBag.CEH_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share headlines about customers/clients and people in the company. Good and bad. Drop down (to the issues list) anything that needs discussion.");
+            ViewBag.CEH_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.");
 			model.HeadlinesId=model.Recurrence.HeadlinesId;
 			return PartialView("Headlines", model);
 		}

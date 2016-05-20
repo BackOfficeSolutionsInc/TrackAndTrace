@@ -1,17 +1,20 @@
 ﻿@model long
 <div class="review smallBreak2 loading tiny " style2="min-height:30px;">
-	<div class="todo-heading heading" style="@(ViewBag.HeadingStyle)">        
+    <div class="todo-heading heading" style="@(ViewBag.HeadingStyle)">
+        <span class="clickable pull-right new hidden-width-1" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")">Create New <span class='glyphicon glyphicon-unchecked'></span></span>
+        <span class="clickable pull-right new visible-width-1" style="text-decoration: none;" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")"><span class='glyphicon glyphicon-unchecked'></span></span>
         {{(model.L10Todos | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Todos" class=""> (View all)</a>
 
-		<span class="clickable pull-right new hidden-width-1" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")">Create New <span class='glyphicon glyphicon-unchecked'></span></span>
-		<span class="clickable pull-right new visible-width-1" style="text-decoration: none;" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")"><span class='glyphicon glyphicon-unchecked'></span></span>
-	</div><div class="tile l10-todo-list-container">
-    @{ Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary(){
+
+    </div><div class="tile l10-todo-list-container">
+        @{ Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary(){
 		                           {"AddHeaders", false},
 		                           {"AddController", false},
 		                           {"AddCompletion", false},
 		                           {"AddDatePicker", false},
                                    {"Selector","(model.L10Todos | filter:{KeyId:"+(Model)+"})[0].Contents"},
+                                   {"DefaultSort","'DueDate'"}
 
 	                           }); }<div ng-show="(model.L10Todos | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Todos | filter:{KeyId:@(Model)}).length==0)">Please wait</div>
-</div></div>
+    </div>
+</div>

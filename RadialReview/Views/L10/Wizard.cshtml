@@ -3,10 +3,11 @@
     ViewBag.Title = "L10 Wizard";
     ViewBag.FullWidth = true;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
 @using (Html.BeginStyles()) {
     <link href="~/Content/L10/L10Wizard.css" rel="stylesheet" />
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>
+    @*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>*@
 
 }
 
@@ -77,7 +78,7 @@
                         }
                     </div>
                     <div class="component wizard-page" data-page="Scorecard">
-                        <div class="upload upload-scorecard" ng-click="functions.goto('/upload/l10/scorecard?recurrence='+meetingId)"></div>
+                        <div class="upload upload-scorecard" ng-click="functions.goto('/upload/l10/scorecard?recurrence='+meetingId)" data-toggle="tooltip" data-placement="left" title="Upload Scorecard"></div>
                         <div class="title-bar">Scorecard Measurables</div>
                         @{Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary{
                               {"AddHeaders",false},
@@ -88,8 +89,9 @@
                           });
                         }
                     </div>
+
                     <div class="component wizard-page" data-page="Rocks">
-                        <div class="upload upload-rocks" ng-click="functions.goto('/upload/l10/rocks?recurrence='+meetingId)"></div>
+                        <div class="upload upload-rocks" ng-click="functions.goto('/upload/l10/rocks?recurrence='+meetingId)" data-toggle="tooltip" data-placement="left" title="Upload Rocks"></div>
                         <div class="title-bar">Quarterly Rocks</div>
                         @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml",new ViewDataDictionary{
                               {"SortBy","createtime-column"},
@@ -101,19 +103,20 @@
                         }
                     </div>
                     <div class="component wizard-page" data-page="Todos">
-                        <div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+meetingId)"></div>
+                        <div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+meetingId)" data-toggle="tooltip" data-placement="left" title="Upload To-dos"></div>
                         <div class="title-bar">To-do List</div>
                         @{Html.RenderPartial("~/Views/Todo/partial/list.cshtml", new ViewDataDictionary{
                               {"AddHeaders",false},
                               {"ShowDetails",false},
                               {"SortBy","createtime-column"},
                               {"AddDatePicker",false},
+                              {"DefaultSort","CreateTime"},
                               {"Order","| orderBy: ['DateCreated','Id']"}
                           });
                         }
                     </div>
                     <div class="component wizard-page" data-page="Issues">
-                        <div class="upload upload-issues" ng-click="functions.goto('/upload/l10/issues?recurrence='+meetingId)"></div>
+                        <div class="upload upload-issues" ng-click="functions.goto('/upload/l10/issues?recurrence='+meetingId)" data-toggle="tooltip" data-placement="left" title="Upload Issues"></div>
                         <div class="title-bar">Issues List</div>
                         @{Html.RenderPartial("~/Views/Issues/partial/list.cshtml", new ViewDataDictionary{
                               {"AddHeaders",false},

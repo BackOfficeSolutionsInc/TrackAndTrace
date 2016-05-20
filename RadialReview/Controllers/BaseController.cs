@@ -717,7 +717,7 @@ namespace RadialReview.Controllers
                                 filterContext.Controller.ViewBag.UserOrganization = oneUser;
                                 filterContext.Controller.ViewBag.ConsoleLog = oneUser.User.NotNull(x=>x.ConsoleLog);
 
-								filterContext.Controller.ViewBag.TaskCount = _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
+                                filterContext.Controller.ViewBag.TaskCount = 0;// _TaskAccessor.GetUnstartedTaskCountForUser(s, oneUser.Id, DateTime.UtcNow);
 								//filterContext.Controller.ViewBag.Hints = oneUser.User.Hints;
 								filterContext.Controller.ViewBag.UserName = name;
 								filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;

@@ -1,73 +1,81 @@
 ﻿@using RadialReview.Models
 @model RadialReview.Models.Askables.RockModel
 @{
-	var guid = Guid.NewGuid().ToString().Replace("-", "");
+    var guid = Guid.NewGuid().ToString().Replace("-", "");
 
-	var lockedClass = Model.FromTemplateItemId.HasValue ? "disable unlockRR-" + guid : " unlockRR-" + guid;
+    var lockedClass = Model.FromTemplateItemId.HasValue ? "disable unlockRR-" + guid : " unlockRR-" + guid;
 }
 <div class="roleRow arrowkey">
-	@using (Html.BeginCollectionItem("Rocks"))
-	{
-		<div class="roww">
-			
-			<div style="width:calc( 100% - 52px );display:inline-block">
-				@Html.HiddenFor(x => x.Id)
-				@Html.TextBoxFor(x => x.Rock, new { @class = "form-control roleItem " + lockedClass, placeholder = "Name" })
-				@Html.HiddenFor(x => x.DeleteTime)
-				@Html.HiddenFor(x => x.CreateTime)
-				@Html.HiddenFor(x => x.CompleteTime)
-				@Html.HiddenFor(x => x.Completion)
-				@Html.HiddenFor(x => x.FromTemplateItemId, new { @class = "templateId " + lockedClass })
-			</div>
-			@if (ViewBag.ShowCompany != null && ViewBag.ShowCompany == true)
-			{
-				@*<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>*@
-				@Html.CheckBoxFor(x => x.CompanyRock, new { @class = "", style = "margin-left: 4px;", title = "Company Rock" })
-			}
-			else
-			{
-				@Html.HiddenFor(x => x.CompanyRock)
-			}
-			@if (ViewBag.HideDelete == null || ViewBag.HideDelete == false)
-			{
-				<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>
-			}
-			@if (Model.FromTemplateItemId != null)
-			{
-				<span style="padding-left: 8px;" class="icon fontastic-icon-link-broken lock" onclick="$('.unlockRR-@guid').removeClass('disable');$(this).remove();$('.templateId.unlockRR-@guid').prop('value',false);" title="This was created by a template. Click to disassociate."></span>
-			}
-		</div>
+    @using (Html.BeginCollectionItem("Rocks")) {
+        <div class="roww">
+            <table>
+                <tr>
+                    <td style="width:100%">
+                        @Html.HiddenFor(x => x.Id)
+                        @Html.TextBoxFor(x => x.Rock, new { @class = "form-control roleItem " + lockedClass, placeholder = "Name" })
+                        @Html.HiddenFor(x => x.DeleteTime)
+                        @Html.HiddenFor(x => x.Archived)
+                        @Html.HiddenFor(x => x.CreateTime)
+                        @Html.HiddenFor(x => x.CompleteTime)
+                        @Html.HiddenFor(x => x.Completion)
+                        @Html.HiddenFor(x => x.FromTemplateItemId, new { @class = "templateId " + lockedClass })
+                    </td>
+                    <td style="width:1px">
+                        @if (ViewBag.PossibleUsers != null) {
+                            <div class="lineAfter" style="min-width:250px; display: inline-block">
+                                @Html.DropDownListFor(x => x.ForUserId, ((IEnumerable<UserOrganizationModel>)ViewBag.PossibleUsers).ToSelectList(x => x.GetNameAndTitle(), x => x.Id),
+                                    new { @class = "form-control " + lockedClass + " " + ((Model.FromTemplateItemId != null) ? "disabled" : ""), style = "width: 100%;" })
+                            </div>
+                        } else {
+                            @Html.HiddenFor(x => x.ForUserId)
+                        }
+                    </td>
+                    <td style="width:1px">
+                        @if (ViewBag.ShowCompany != null && ViewBag.ShowCompany == true) {
+                            @*<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>*@
+                            @Html.CheckBoxFor(x => x.CompanyRock, new { @class = "", style = "margin-left: 4px;", title = "Company Rock" })
+                        } else {
+                            @Html.HiddenFor(x => x.CompanyRock)
+                        }
+                    </td>
+                    <td style="width:1px">
+                        @if (Model.FromTemplateItemId != null) {
+                            <span style="padding-left: 8px;" class="icon fontastic-icon-link-broken lock" onclick="$('.unlockRR-@guid').removeClass('disable');$(this).remove();$('.templateId.unlockRR-@guid').prop('value',false);" title="This was created by a template. Click to disassociate."></span>
+                        }
+                    </td>
+                    <td style="width:1px">
+                        @if (ViewBag.HideDelete == null || ViewBag.HideDelete == false) {
+                            <span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>
+                        }
+                    </td>
+                    <td style="width:1px">
+                        @if (ViewBag.HideArchive == null || ViewBag.HideArchive == false) {
+                            <span style="padding-left: 8px;" class="icon fontastic-icon-archive archiveRow  clickable @lockedClass" title="Archive"></span>
+                        }
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-		<div class="lineAfter @(ViewBag.HidePeriod ?? false ? "hidden" : "")" style="width:calc( 100% - 52px );display:inline-block">
-			@Html.DropDownListFor(x => x.PeriodId, (IEnumerable<SelectListItem>)ViewBag.Periods, new { @class = "form-control " + lockedClass })
-		</div>
-		if (ViewBag.PossibleUsers != null)
-		{
-			<div class="lineAfter" style="width: calc(100% - 52px); display: inline-block">
-				@Html.DropDownListFor(x => x.ForUserId, ((IEnumerable<UserOrganizationModel>)ViewBag.PossibleUsers).ToSelectList(x => x.GetNameAndTitle(), x => x.Id),
-				new { @class = "form-control " + lockedClass + " " + ((Model.FromTemplateItemId != null) ? "disabled" : ""), style = "width: 100%;" })
-			</div>
-		}
-		else
-		{
-			@Html.HiddenFor(x => x.ForUserId)
-		}
-	}
-	<div class="smallBreak"></div>
-	<div class="smallBreak"></div>
-	@if (!(ViewBag.HidePeriod ?? false) || ViewBag.PossibleUsers != null)
-	{
-		<hr />
-	}
+        <div class="lineAfter @(ViewBag.HidePeriod ?? false ? "hidden" : "")" style="width:calc( 100% - 52px );display:inline-block">
+            @Html.DropDownListFor(x => x.PeriodId, (IEnumerable<SelectListItem>)ViewBag.Periods, new { @class = "form-control " + lockedClass })
+        </div>
+
+    }
+    <div class="smallBreak"></div>
+    <div class="smallBreak"></div>
+    @if (!(ViewBag.HidePeriod ?? false) /*|| ViewBag.PossibleUsers != null*/) {
+        <hr />
+    }
 </div>
 
 
 @*@if (ViewBag.PossibleUsers != null)
-	{
-		<script>
-			$(".user-@guid").select2({
-				templateResult: formatState,
-				templateSelection: formatState
-			});
-		</script>
-	}*@
+    {
+        <script>
+            $(".user-@guid").select2({
+                templateResult: formatState,
+                templateSelection: formatState
+            });
+        </script>
+    }*@

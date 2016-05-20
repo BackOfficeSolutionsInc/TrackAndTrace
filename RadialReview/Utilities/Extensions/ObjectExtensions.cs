@@ -34,7 +34,7 @@ namespace RadialReview
         public static decimal? TryParseDecimal(this string str)
         {
             decimal o;
-            str = str.NotNull(x => x.TrimEnd('%','$'));
+            str = str.NotNull(x => x.TrimEnd('%', '$').TrimStart('%', '$'));
             if (decimal.TryParse(str, out o))
                 return o;
             return null;

@@ -490,6 +490,7 @@
     <Compile Include="Exceptions\MeetingExceptions\MeetingException.cs" />
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
     <Compile Include="Exceptions\PaymentException.cs" />
+    <Compile Include="Exceptions\FallthroughException.cs" />
     <Compile Include="Exceptions\PhoneException.cs" />
     <Compile Include="Exceptions\SchedulerException.cs" />
     <Compile Include="Exceptions\SyncException.cs" />
@@ -519,6 +520,7 @@
     <Compile Include="Models\Angular\Meeting\AngularRecurrence.cs" />
     <Compile Include="Models\Angular\Meeting\AngularWeek.cs" />
     <Compile Include="Models\Angular\Rocks\AngularRock.cs" />
+    <Compile Include="Models\Angular\Roles\AngularRole.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularMeasurable.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularScore.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularScorecard.cs" />
@@ -914,6 +916,9 @@
     <Compile Include="Models\Audit\LogModel.cs" />
     <Content Include="Areas\RouteDebugger\Content\rdstyle.css" />
     <Content Include="Areas\RouteDebugger\Scripts\detect.js" />
+    <None Include=".bin\bower.cmd" />
+    <None Include=".bin\git.cmd" />
+    <None Include=".bin\node.cmd" />
     <None Include="Content\AccountabilityChart\AccountabilityChart.less" />
     <Content Include="Content\AccountabilityChart\AccountabilityChart.css">
       <DependentUpon>AccountabilityChart.less</DependentUpon>
@@ -943,11 +948,53 @@
     <Content Include="Content\Angular\tablesort.css" />
     <Content Include="Content\Angular\xeditable.min.css" />
     <Content Include="Content\bootstrap-duallistbox.css" />
-    <Content Include="Content\bootstrap\custom\mixins.css">
-      <DependentUpon>mixins.less</DependentUpon>
+    <Content Include="Content\L10\Archive\Archive.css">
+      <DependentUpon>Archive.less</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap\custom\mixins.min.css">
-      <DependentUpon>mixins.css</DependentUpon>
+    <Content Include="Content\L10\Archive\Archive.min.css">
+      <DependentUpon>Archive.css</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Animations.css">
+      <DependentUpon>Animations.less</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Animations.min.css">
+      <DependentUpon>Animations.css</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Buttons.css">
+      <DependentUpon>Buttons.less</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Buttons.min.css">
+      <DependentUpon>Buttons.css</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\DataTable.css">
+      <DependentUpon>DataTable.less</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\DataTable.min.css">
+      <DependentUpon>DataTable.css</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\MaterialDesign.css">
+      <DependentUpon>MaterialDesign.less</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\MaterialDesign.min.css">
+      <DependentUpon>MaterialDesign.css</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Shading.css">
+      <DependentUpon>Shading.less</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Shading.min.css">
+      <DependentUpon>Shading.css</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Inputs.css">
+      <DependentUpon>Inputs.less</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Inputs.min.css">
+      <DependentUpon>Inputs.css</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Progress.css">
+      <DependentUpon>Progress.less</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Progress.min.css">
+      <DependentUpon>Progress.css</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\custom\modal.css">
       <DependentUpon>modal.less</DependentUpon>
@@ -1002,7 +1049,19 @@
     <Content Include="Content\L10\L10Wizard.min.css">
       <DependentUpon>L10Wizard.css</DependentUpon>
     </Content>
+    <Content Include="Content\MaterialDesign\Components\Snackbar.css">
+      <DependentUpon>Snackbar.less</DependentUpon>
+    </Content>
+    <Content Include="Content\MaterialDesign\Components\Snackbar.min.css">
+      <DependentUpon>Snackbar.css</DependentUpon>
+    </Content>
     <Content Include="Content\Upload.css" />
+    <Content Include="Content\Upload\Upload.css">
+      <DependentUpon>Upload.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Upload\Upload.min.css">
+      <DependentUpon>Upload.css</DependentUpon>
+    </Content>
     <Content Include="Data\nickname.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1023,8 +1082,17 @@
     <Content Include="Content\Angular\Issues.less" />
     <Content Include="IIS\install.zip" />
     <Content Include="Content\bootstrap\custom\modal.less" />
-    <Content Include="Content\bootstrap\custom\mixins.less" />
+    <Content Include="Content\MaterialDesign\Components\Progress.less" />
     <Content Include="Content\Angular\ProfilePicture.less" />
+    <Content Include="Content\MaterialDesign\Components\MaterialDesign.less" />
+    <Content Include="Content\MaterialDesign\Components\Shading.less" />
+    <Content Include="Content\MaterialDesign\Components\Buttons.less" />
+    <Content Include="Content\MaterialDesign\Components\Inputs.less" />
+    <Content Include="Content\Upload\Upload.less" />
+    <Content Include="Content\MaterialDesign\Components\Snackbar.less" />
+    <Content Include="Content\MaterialDesign\Components\Animations.less" />
+    <Content Include="Content\MaterialDesign\Components\DataTable.less" />
+    <Content Include="Content\L10\Archive\Archive.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1050,6 +1118,9 @@
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
     <Content Include="Scripts\jquery\jquery.autoNumeric.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.js" />
+    <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.min.js">
+      <DependentUpon>jquery.ba-throttle-debounce.js</DependentUpon>
+    </Content>
     <Content Include="Scripts\knockout-2.2.1.debug.js" />
     <Content Include="Scripts\knockout-2.2.1.js" />
     <Content Include="Scripts\L10\fireworks.js" />
@@ -1441,6 +1512,10 @@
     <Content Include="Views\User\partial\list.cshtml" />
     <Content Include="Views\Upload\UploadUsers.cshtml" />
     <Content Include="Views\Upload\UploadUsersSelected.cshtml" />
+    <Content Include="Views\TileData\OrganizationValues.cshtml" />
+    <Content Include="Views\TileData\UserRoles.cshtml" />
+    <Content Include="Views\Roles\partial\list.cshtml" />
+    <Content Include="Views\Rocks\Archive.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1865,6 +1940,13 @@
     <Content Include="Views\Quarterly\Modal.cshtml" />
     <Content Include="Views\L10\Wizard.cshtml" />
     <Content Include="Views\L10\Details\_oldScorecard.cshtml" />
+    <Content Include="Views\CDN\Angular.cshtml" />
+    <Content Include="Views\CoreValues\partial\list.cshtml" />
+    <Content Include="Views\Angular\_L10App.cshtml" />
+    <Content Include="Views\Angular\_DateRange.cshtml" />
+    <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.min.js.map">
+      <DependentUpon>jquery.ba-throttle-debounce.min.js</DependentUpon>
+    </Content>
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -2158,7 +2240,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\fonts\fonts\" />
-    <Folder Include="Content\NewFolder1\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
     <Folder Include="Models\Rocks\" />

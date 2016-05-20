@@ -229,12 +229,36 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;This is an invoice for your {0} account. To avoid interruptions in service, please ensure your credit card is up-to-date.  Your credit card will be charged automatically. We appreciate your business!&lt;/p&gt;
+        ///
+        ///&lt;p&gt;Questions? Contact us anytime at {1}.&lt;/p&gt;
+        ///
+        ///&lt;p&gt;------------------------------------
+        ///&lt;br/&gt;{0} Invoice - Subscription - {2}
+        ///&lt;br/&gt;
+        ///&lt;br/&gt;Amount: USD {3}*
+        ///&lt;br/&gt;
+        ///&lt;br/&gt;Charged to: ({4})
+        ///&lt;br/&gt;Date: {6}
+        ///&lt;br/&gt;For service through: {7}
+        ///&lt;br/&gt;
+        ///&lt;br/&gt;{8}
+        ///&lt;br/&gt;-----------------------------------&lt;/p&gt;
+        ///&lt;p  [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string PaymentInvoice_Body {
+            get {
+                return ResourceManager.GetString("PaymentInvoice_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;p&gt;We received payment for your {0} subscription. Thanks for your business!&lt;/p&gt;
         ///
         ///&lt;p&gt;Questions? Contact us anytime at {1}.&lt;/p&gt;
         ///
         ///&lt;p&gt;------------------------------------
-        ///&lt;br/&gt;{0} Receipt - Pro Subscription - {2}
+        ///&lt;br/&gt;{0} Receipt - Subscription - {2}
         ///&lt;br/&gt;
         ///&lt;br/&gt;Amount: USD {3}
         ///&lt;br/&gt;

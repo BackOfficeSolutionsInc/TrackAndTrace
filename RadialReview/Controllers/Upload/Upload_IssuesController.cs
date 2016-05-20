@@ -39,7 +39,7 @@ namespace RadialReview.Controllers {
             var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
             //var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
             m.AllUsers = allUsers.ToSelectList(x => x.Item1 + " " + x.Item2, x => x.Item3);
-            if (fileType == FileType.CSV && (users != null || details != null)) {
+            if (fileType == FileType.CSV) {
                 var csvData = ui.Csv;
 
                 if (users != null) {

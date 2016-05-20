@@ -13,17 +13,17 @@ using RadialReview.Utilities.Query;
 namespace RadialReview.Accessors {
 	public class AskableAccessor : BaseAccessor{
 
-		public List<Askable> GetAskablesForUser(UserOrganizationModel caller, long forUserId, long? periodId, DateRange range)
+		public List<Askable> GetAskablesForUser(UserOrganizationModel caller, long forUserId, /*long? periodId,*/ DateRange range)
 		{
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (s.BeginTransaction()){
 					var perm = PermissionsUtility.Create(s, caller);
-					return GetAskablesForUser(caller, s.ToQueryProvider(true), perm, forUserId, periodId,range);
+					return GetAskablesForUser(caller, s.ToQueryProvider(true), perm, forUserId, /*periodId,*/range);
 				}
 			}
 		}
 		/*[Obsolete("Includes dead askables. Call with ToListAlive()", false)]*/
-		public static List<Askable> GetAskablesForUser(UserOrganizationModel caller, AbstractQuery queryProvider, PermissionsUtility perms, long forRGMId,long? periodId, DateRange range)
+		public static List<Askable> GetAskablesForUser(UserOrganizationModel caller, AbstractQuery queryProvider, PermissionsUtility perms, long forRGMId,/*long? periodId,*/ DateRange range)
 		{
 			var allAskables = new List<Askable>();
 
@@ -39,7 +39,7 @@ namespace RadialReview.Accessors {
 				allAskables.AddRange(ApplicationAccessor.GetApplicationQuestions(queryProvider));
 				allAskables.AddRange(ResponsibilitiesAccessor.GetResponsibilitiesForUser(caller, queryProvider, perms, forRGMId, range));
 				allAskables.AddRange(QuestionAccessor.GetQuestionsForUser(queryProvider, perms, forRGMId, range));
-				allAskables.AddRange(RockAccessor.GetRocks(queryProvider, perms, forRGMId, periodId, range));
+				allAskables.AddRange(RockAccessor.GetRocks(queryProvider, perms, forRGMId/*, periodId*/, range));
 				allAskables.AddRange(RoleAccessor.GetRoles(queryProvider, perms, forRGMId, range));
 				allAskables.AddRange(OrganizationAccessor.GetCompanyValues(queryProvider, perms, orgId, range));
 			}

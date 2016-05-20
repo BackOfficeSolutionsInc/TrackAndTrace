@@ -26,23 +26,23 @@ namespace RadialReview.Accessors
 {
 	public class RockAccessor
 	{
-		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId, long? periodId, DateRange range = null)
+		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId,/* long? periodId,*/ DateRange range = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
 					var perm = PermissionsUtility.Create(s, caller);
-					return GetRocks(s.ToQueryProvider(true), perm, forUserId, periodId, range);
+					return GetRocks(s.ToQueryProvider(true), perm, forUserId, /*periodId,*/ range);
 				}
 			}
 		}
-		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId, long? periodId, DateRange range)
+		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId, /*long? periodId,*/ DateRange range)
 		{
 			perms.ViewUserOrganization(forUserId, false);
-			if (periodId == null)
-				return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId).FilterRange(range).ToList();
-			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId && x.PeriodId == periodId).FilterRange(range).ToList();
+			//if (periodId == null)
+			//	return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId).FilterRange(range).ToList();
+			return queryProvider.Where<RockModel>(x => x.ForUserId == forUserId /*&& x.PeriodId == periodId*/).FilterRange(range).ToList();
 		}
 
 		public static void EditCompanyRocks(ISession s, PermissionsUtility perm, long organizationId, List<RockModel> rocks)
@@ -154,7 +154,7 @@ namespace RadialReview.Accessors
 						if (updateOutstandingReviews && added)
 						{
 							var r1 = r;
-							foreach (var o in outstanding.Where(x => x.PeriodId == r1.PeriodId))
+							foreach (var o in outstanding/*.Where(x => x.PeriodId == r1.PeriodId)*/)
 							{
 								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perm, o.Id, userId, r.Id);
 							}
@@ -358,6 +358,18 @@ namespace RadialReview.Accessors
                         csv.Add(r.Rock, "Status",  ""+r.Completion);
                     }
                     return csv;
+                }
+            }
+        }
+
+        public static List<RockModel> GetArchivedRocks(UserOrganizationModel caller, long userId)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).EditUserDetails(caller.Id);
+
+                    var archived = s.QueryOver<RockModel>().Where(x => x.Archived == true && x.AccountableUser.Id == userId).List().ToList();
+                    return archived;
                 }
             }
         }

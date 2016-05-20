@@ -14,8 +14,9 @@ namespace RadialReview.Models.Enums
 	public enum UnitType
 	{
 		[Display(Name = "No units")] [Description("No units")] None = 0,
-		[Display(Name = "Dollars")] [Description("Dollars")] Dollar = 1,
-		[Display(Name = "Percent")] [Description("Percent")] Percent = 2,
+		[Display(Name = "Dollars")]  [Description("Dollars")] Dollar = 1,
+		[Display(Name = "Percent")]  [Description("Percent")] Percent = 2,
+		[Display(Name = "Pounds")]   [Description("Pounds")] Pound = 3,
 
 	}
 }
@@ -29,8 +30,9 @@ public static class UnitTypeExtensions
 			switch (type)
 			{
 				case UnitType.None: return "units";
-				case UnitType.Dollar: return "dollars";
-				case UnitType.Percent: return "%";
+                case UnitType.Dollar: return "dollars";
+                case UnitType.Percent: return "%";
+                case UnitType.Pound: return "pounds";
 				default:
 					throw new ArgumentOutOfRangeException("type");
 			}
@@ -43,6 +45,7 @@ public static class UnitTypeExtensions
 				case UnitType.None: return string.Format("{0}", value);
 				case UnitType.Dollar: return string.Format("${0}", value);
 				case UnitType.Percent: return string.Format("{0}%", value);
+                case UnitType.Pound: return string.Format("£{0}", value);
 				default:
 					throw new ArgumentOutOfRangeException("type");
 			}

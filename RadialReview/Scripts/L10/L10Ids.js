@@ -782,6 +782,9 @@ $(function () {
         console.log("current priority:" + p);
         if (e.button == 0) {
             p += 1;
+
+            if (p > 6)
+                p = 0;
         } else if (e.button == 2 || e.which==3) {
             p -= 1;
             p = Math.max(0, p);
@@ -789,6 +792,8 @@ $(function () {
             return false;
         }
         // $(this).data("priority", p);
+
+
         console.log("new priority:" + p);
         var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
 

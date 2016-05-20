@@ -35,6 +35,7 @@ function UploadSteps(args) {
     var instructionAlert = function () { return this.notificationSelector + " .instruction"; }
     var errorAlert = function () { return this.notificationSelector + " .errors"; }
     var nextButton = function () { return this.notificationSelector + " .nextButton"; }
+    var backButton = function () { return this.notificationSelector + " .backButton"; }
     var skipButton = function () { return this.notificationSelector + " .skipButton"; }
     var tableSelector = function () { return this.windowSelector + " .selector-table"; }
     var that = this;
@@ -58,6 +59,8 @@ function UploadSteps(args) {
         $(this.windowSelector).html("<center><div class='loader centered alignCenter'><div class='component '><div>Loading</div><img src='/Content/select2-spinner.gif' /></div></div></center>");
     }
 
+    this.stackRect = [[]];
+
     this.initFileSelect = function () {
         var data = $.extend({}, this.defaultData, this.uploadFileData);
 
@@ -68,13 +71,15 @@ function UploadSteps(args) {
         }
         //var submit = $("<input class='btn btn-primary'/>");
         // 
+        $(".instructions").show();
+
         var uploadForm = $("<form action='javascript:;' enctype='multipart/form-data' method='post' accept-charset='utf-8'>   " +
         "    <div class='row'>                                                                 " +
         "        <div class='col-xs-2'>                                                        " +
         "            <label for='file'>Filename:</label>                                       " +
         "        </div>                                                                        " +
         "        <div class='col-xs-8'>                                                        " +
-        "            <input type='file' name='File' id='File' />                               " +
+        "            <input class='blend' type='file' name='File' id='File' />                 " +
         "        </div>                                                                        " +
         "        <div class='col-xs-2 submit'>                                                 " +
         "            <input class='btn btn-primary' type='submit'/>                            " +
@@ -106,6 +111,7 @@ function UploadSteps(args) {
                         that.afterUpload(d);
                     $(that.windowSelector).html(html);
                     that.initSelection();
+                    $(".instructions").hide();
                 },
                 error: function (d,e) {
                     showAlert(e);
@@ -120,17 +126,22 @@ function UploadSteps(args) {
     }
 
     this.initSelection = function () {
-        var button = $("<button disabled class='nextButton btn btn-info pull-right btn-sm' style='margin-top:-5px;'>Next</button>");
+        var button = $("<button disabled class='nextButton btn btn-primary pull-right btn-sm' style='margin-top:-4px;'>Next</button>");
         $(button).click(function () {
             that.nextSelectionStep();
         });
-        var btnSkip = $("<button class='skipButton btn btn-default pull-right btn-sm' style='margin-top:-5px;'>Skip</button>");
+        var btnSkip = $("<button class='skipButton btn btn-default pull-right btn-sm' style='margin-top:-4px;'>Skip</button>");
         $(btnSkip).click(function () {
             that.skipSelectionStep();
         });
+        var btnBack = $("<button class='backButton btn btn-default pull-right btn-sm' style='margin-top:-4px;'>Back</button>");
+        $(btnBack).click(function () {
+            that.backSelectionStep();
+        });
         $(notificationSelector).html("<div class='alert alert-info next-container'><span class='instruction'>Please wait...</span></div><div class=' errors alert alert-danger'></div>")
-        $(notificationSelector).find(".next-container").append(btnSkip);
         $(notificationSelector).find(".next-container").append(button);
+        $(notificationSelector).find(".next-container").append(btnBack);
+        $(notificationSelector).find(".next-container").append(btnSkip);
         $(notificationSelector + " .errors").hide();
         $(skipButton()).hide();
         this.currentSelectionStep = 0;
@@ -210,6 +221,7 @@ function UploadSteps(args) {
 
                 if (validationFunc != null) {
                     var rect = getRect();
+                    that.stackRect[that.stackRect.length - 1] = rect;
                     if (validationFunc(rect)) {
                         $(errorAlert()).html("").hide();
                         $(nextButton()).attr("disabled", null);
@@ -235,7 +247,7 @@ function UploadSteps(args) {
 
     this.initConfirmSelection = function (html) {
         var form = $("<form action='javascript:;' enctype='multipart/form-data' method='post' accept-charset='utf-8'>   " +
-            "<input class='btn btn-success' type='submit' value='Submit'/>"+     
+            "<input class='btn btn-success finalSubmit' type='submit' value='Submit'/>"+     
                  html +
             "</form>");
         $(that.windowSelector).html(form);
@@ -252,11 +264,24 @@ function UploadSteps(args) {
     }
 
     this.skipSelectionStep = function () {
+        $(".ui-selected").removeClass("ui-selected");
+        that.stackRect[that.stackRect.length-1]=[];
         this.nextSelectionStep();
     };
 
+    //this.backSelectionStep = function () {
+    //    this.currentSelectionStep -= 2;
+    //    this.nextSelectionStep();
+    //};
+
     this.nextSelectionStep = function () {
-        $("." + this.currentlySelectedClass).addClass(this.previouslySelectedClass);
+        $("." + this.currentlySelectedClass).addClass(this.previouslySelectedClass).removeClass(this.currentlySelectedClass);
+        if (this.currentSelectionStep == 0)
+            $(backButton()).hide();
+        else
+            $(backButton()).show();
+
+
         if (this.currentSelectionStep >= this.selectionSteps.length) {
             $(instructionAlert()).html("Please wait...");
             $(nextButton()).attr("disabled", "true");
@@ -279,11 +304,17 @@ function UploadSteps(args) {
         //$("#table").selectable("refresh");
         $(tableSelector()).css("display", null);
         validationFunc = this.selectionSteps[this.currentSelectionStep].func;
+        that.stackRect.push([]);
         this.currentSelectionStep += 1;
     }
 
     this.backSelectionStep = function () {
-        this.currentSelectionStep = Math.max(0, this.currentSelectionStep - 1);
+        this.currentSelectionStep = Math.max(0, this.currentSelectionStep - 2);
+        var selection = that.stackRect.pop();
+        deselectRect(selection,"ui-selected");
+        var selection = that.stackRect.pop();
+        deselectRect(selection,"wasSelected");
+
         this.nextSelectionStep();
     }
 
@@ -361,6 +392,16 @@ function UploadSteps(args) {
 
     this.addSelectionStep = function (instructions, validate,skipable) {
         this.selectionSteps.push({ message: instructions, func: validate, skipable:skipable });
+    }
+
+    var deselectRect = function (rect, toremove) {
+        for (var i = rect[0]; i <= rect[2]; i++) {
+            for (var j = rect[1]; j <= rect[3]; j++) {
+                $("[data-row=" + j + "][data-col=" + i + "]").removeClass(toremove);
+            }
+        }
+        //var y = $(this).data("row");
+        //var x = $(this).data("col");
     }
 
     var getRect = function () {

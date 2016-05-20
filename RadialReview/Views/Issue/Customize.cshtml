@@ -37,7 +37,7 @@
 			    </div>
 		    </div>
 	    </div>
-		<div class="row smallBreak2">
+		@*<div class="row smallBreak2">
 			<div class="col-md-6" title="Which session is this for?">
 				<label class="control-label">This Session:</label>
 			</div>
@@ -52,7 +52,7 @@
 			<div class="col-md-4">
 				@Html.DropDownList("NextSessionId", Model.Periods, new { @class = "form-control SessionForm", id = "NextSessionId" })
 			</div>
-		</div>
+		</div>*@
 	    <div class="row smallBreak2">
 			<div class="col-md-6" title="Send an email notifying employees of the @Html.ReviewName().ToLower().">
 				<label class="control-label">Email employees:</label>

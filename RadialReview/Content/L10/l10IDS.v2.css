@@ -129,8 +129,8 @@
 
 
 .ids .issue-row[data-checked="True"],
-.ids .issue-row[data-checked="true"] {
-    display: none;
+.ids .issue-row[data-checked="true"]{
+    display: none !important;
 }
 
 .ids .priority {
@@ -359,6 +359,9 @@ ol.sortable li {
     display: none;
 }
 
+.issues-list .issue-details-container iframe{
+    min-height: 120px;
+}
 
 .issues-list .issue-row .issue-row .message {
     font-size: 15px;

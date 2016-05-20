@@ -33,6 +33,14 @@ namespace RadialReview.Controllers
 
 		}
 
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Archive(long id)
+        {
+            var userId = id;
+            var archivedRocks = RockAccessor.GetArchivedRocks(GetUser(), userId);
+            return View(archivedRocks);
+        }
+
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult ModalSingle(long id,long userId,long periodId)
 		{
@@ -59,14 +67,21 @@ namespace RadialReview.Controllers
 		    return Json(ResultObject.SilentSuccess());
 	    }
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult BlankEditorRow(bool includeUsers = false, bool companyRock = false, long? periodId = null, bool hideperiod = false, bool showCompany = false)
+		public PartialViewResult BlankEditorRow(bool includeUsers = false, bool companyRock = false, long? periodId = null, bool hideperiod = false, bool showCompany = false,bool excludeDelete=false,long? recurrenceId = null)
 		{
 			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
-			if (includeUsers)
-				ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+            if (includeUsers) {
+                if (recurrenceId != null) {
+                    ViewBag.PossibleUsers = L10Accessor.GetAttendees(GetUser(), recurrenceId.Value);
+                } else {
+                    ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+                }
+            }
 
-			ViewBag.HidePeriod = hideperiod;
-			ViewBag.ShowCompany = showCompany;
+            ViewBag.HidePeriod = true;// hideperiod;
+            ViewBag.ShowCompany = showCompany;
+            ViewBag.HideDelete = excludeDelete;
+            ViewBag.HideArchive = excludeDelete;
 
 			return PartialView("_RockRow", new RockModel(){
 				CreateTime = DateTime.UtcNow,

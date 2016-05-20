@@ -79,13 +79,13 @@ namespace TractionTools.Tests.Accessors {
             Assert.IsNotNull(org.PaymentPlan.Task);
             Assert.IsNotNull(org.PaymentPlan.Description);
 
-            var result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now);
+            var result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now);
             Assert.AreEqual(0, result.amount_settled);
 
-            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(29));
+            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(29));
             Assert.AreEqual(0, result.amount_settled);
 
-            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(31));
+            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(31));
             Assert.AreEqual(baseCharge, result.amount_settled);
             var ids = new List<long>();
             DbCommit(s => {
@@ -96,7 +96,7 @@ namespace TractionTools.Tests.Accessors {
                 }
             });
 
-            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(62));
+            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(62));
             Assert.AreEqual(baseCharge, result.amount_settled);
 
             DbCommit(s => {
@@ -105,11 +105,11 @@ namespace TractionTools.Tests.Accessors {
                 }
             });
 
-            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(73));
+            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(73));
             Assert.AreEqual(chargeAnd19Users_L10, result.amount_settled);
 
 
-            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(93));
+            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(93));
             Assert.AreEqual(chargeAnd19Users_L10_Review, result.amount_settled);
 
 
@@ -121,10 +121,10 @@ namespace TractionTools.Tests.Accessors {
                 }
             });
 
-            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(73));
+            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(73));
             Assert.AreEqual(chargeAnd19Users_L10, result.amount_settled);
 
-            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(94));
+            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(94));
             Assert.AreEqual(chargeAnd17Users_L10_Review, result.amount_settled);
 
 
@@ -134,7 +134,7 @@ namespace TractionTools.Tests.Accessors {
                 }
             });
 
-            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(94));
+            result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(94));
             Assert.AreEqual(chargeAnd107Users_L10_Review, result.amount_settled);
         }
 

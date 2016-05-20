@@ -116,7 +116,7 @@ namespace RadialReview.Accessors
                 ForReviewsId = reviewContainer.Id,
                 DueDate = reviewContainer.DueDate,
                 Name = reviewContainer.ReviewName,
-				PeriodId = reviewContainer.PeriodId,
+				//PeriodId = reviewContainer.PeriodId,
             };
 			if (context!=null)
 				new Cache(new HttpContextWrapper(context)).InvalidateForUser(forUser, CacheKeys.UNSTARTED_TASKS);

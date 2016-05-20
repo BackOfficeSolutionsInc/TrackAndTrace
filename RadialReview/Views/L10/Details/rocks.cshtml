@@ -1,23 +1,38 @@
-﻿<div class="btn-group pull-right" style="padding: 5px 0px;">
-    <div class="btn btn-default btn-xs rockModal" data-recurrence="{{::meetingId}}"><span class="icon fontastic-icon-trophy-1"></span> Add Rock</div>
-</div>
+﻿@*<div class="btn-group pull-right" style="padding: 5px 0px;">
+        <div class="btn btn-default btn-xs rockModal" data-recurrence="{{::meetingId}}"><span class="icon fontastic-icon-trophy-1"></span> Add Rock</div>
+    </div>*@
 
 
-<div class="scorecard meeting-page" style="clear: both;">
+@*<div class="scorecard meeting-page" style="clear: both;">
     <div class="row">
         <div class="col-md-12" click-anywhere-but-here="model.Selected = -1">
-            <div class="component" ng-repeat1="note in model.HeadlinesUrl" style="padding:5px 10px;">
-                @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml", new ViewDataDictionary(){
+            <div class="component"  style="padding:5px 10px;">*@
+
+<md-toolbar class="md-table-toolbar md-default" ng-hide="filter.show == true">
+    <div class="md-toolbar-tools">
+        <span>Rocks</span>
+        <span flex></span>
+
+        <md-button class="md-icon-button rockModal" aria-label="Add Rock" data-recurrence="{{::meetingId}}">
+            <md-tooltip md-direction="left">
+                Add Rock
+            </md-tooltip>
+            <md-icon>add</md-icon>
+        </md-button>       
+    </div>
+</md-toolbar>
+
+@{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml", new ViewDataDictionary(){
 		                           {"AddHeaders", false},
                 {"AddController", false},
                 {"AddDatePicker", false},
                 {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))},
                 {"Filter",""}
                 });}
+@*</div>
             </div>
         </div>
-    </div>
-</div>
+    </div>*@
 @using (Html.BeginScripts()) {
     <script>
         $("body").on("click", ".rockModal", function () {

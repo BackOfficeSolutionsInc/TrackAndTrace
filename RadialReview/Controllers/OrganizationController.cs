@@ -21,6 +21,8 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Extensions;
 using RadialReview.Models.Payments;
+using RadialReview.Models.L10;
+using NHibernate.Criterion;
 
 namespace RadialReview.Controllers
 {
@@ -53,6 +55,7 @@ namespace RadialReview.Controllers
             public string Position { get; set; }
             public DateTime? OrgCreateTime { get; set; }
             public DateTime? TrialEnd { get; set; }
+            public DateTime? LastMeeting { get; set; }
 
             public AccountType Status { get; set; }
         }
@@ -69,6 +72,15 @@ namespace RadialReview.Controllers
 
                     var tokens = s.QueryOver<PaymentSpringsToken>().Where(x => x.Active == true && x.DeleteTime == null).List().ToDictionary(x => x.OrganizationId, x => x);
 
+                    var meetingLastLU = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && x.CompleteTime != null)
+                        .OrderBy(x => x.CompleteTime).Desc.List()
+                        .GroupBy(x=>x.OrganizationId).Select(x=>x.First())
+                        .ToDictionary(x=>x.OrganizationId,x=>x.CompleteTime);
+                        //.Select(
+                        //    Projections.Distinct(Projections.Property("OrganizationId")),
+                        //    Projections.Property("CompleteTime")
+                        //).List<object[]>().ToDictionary(x => (long)x[0], x => (DateTime?)x[1]);
+
                     var stats=    orgs.Select(x=>{
                             var user = list.Where(y=>y.OrganizationId==x.Id).OrderByDescending(y=>y.LastLogin).FirstOrDefault();
                             return new OrgStats()
@@ -79,6 +91,7 @@ namespace RadialReview.Controllers
                                 LastLogin = user.NotNull(y => y.LastLogin),
                                 OrgCreateTime = x.NotNull(u => u.CreationTime),
                                 Status = x.NotNull(y=>y.AccountType),
+                                LastMeeting = meetingLastLU.GetOrDefault(x.NotNull(y=>y.Id),null),
                                 TrialEnd  = tokens.ContainsKey(x.Id)?(DateTime?)null:x.NotNull(u => u.PaymentPlan.FreeUntil)
                             };
                         }).ToList();
@@ -111,7 +124,20 @@ namespace RadialReview.Controllers
 
 					var org = s.Get<OrganizationModel>(id);
 
-					ViewBag.Members = OrganizationAccessor.GetOrganizationMembersLookup(s, perms, id.Value, false);
+                    ViewBag.Members = OrganizationAccessor.GetOrganizationMembersLookup(s, perms, id.Value, false);
+                    var meetings = s.QueryOver<L10Meeting>()
+                        .Fetch(x=>x.L10Recurrence).Lazy
+                        .Where(x => x.OrganizationId == id && x.CreateTime>DateTime.UtcNow.AddDays(-90))
+                        .List().ToList();
+
+                    var attendees = s.QueryOver<L10Meeting.L10Meeting_Attendee>().WhereRestrictionOn(x => x.L10Meeting.Id).IsIn(meetings.Select(x => x.Id).ToList()).Select(x => x.L10Meeting.Id).List<long>().ToList();
+
+                    var attendeeslookup = attendees.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+
+                    foreach (var m in meetings)
+                        m._MeetingAttendees = Enumerable.Range(0, attendeeslookup.GetOrDefault(m.Id, 0)).Select(x => (L10Meeting.L10Meeting_Attendee)null).ToList();
+
+                    ViewBag.Meetings = meetings;
 					return View(org);
 
 				}

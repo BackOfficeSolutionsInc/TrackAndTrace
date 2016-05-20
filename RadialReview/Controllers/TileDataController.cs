@@ -16,6 +16,23 @@ namespace RadialReview.Controllers
     {
         // GET: TileData
 
+
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult OrganizationValues()
+        {
+            return PartialView("OrganizationValues");
+        }
+
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult UserRoles()
+        {
+            return PartialView("UserRoles");
+        }
+
+
+
 		[Access(AccessLevel.Any)]
 		//[OutputCache(Duration = 600, VaryByParam = "none",Location=OutputCacheLocation.Server)]
 		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]

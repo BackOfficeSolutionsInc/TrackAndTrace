@@ -19,6 +19,8 @@ namespace RadialReview.Utilities {
             var version = GetAppSetting("dbVersion", "0");
             var dir = Path.Combine(Path.GetTempPath(), "TractionTools");
             var file = Path.Combine(dir, "dbversion" + env + ".txt");
+            if (!File.Exists(file))
+                File.CreateText(file).Close();
             while (FileUtilities.IsFileLocked(new FileInfo(file))) {
                 Thread.Sleep(100);
             }

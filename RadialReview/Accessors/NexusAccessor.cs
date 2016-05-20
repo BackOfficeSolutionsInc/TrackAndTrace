@@ -25,7 +25,12 @@ namespace RadialReview.Accessors {
         public TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, out UserOrganizationModel createdUser, bool isClient, string organizationName)
         {
             if (!Emailer.IsValid(email))
-                throw new RedirectException(ExceptionStrings.InvalidEmail);
+                throw new PermissionsException(ExceptionStrings.InvalidEmail);
+            if (firstName == null)
+                throw new PermissionsException("First name cannot be empty.");
+            if (lastName == null)
+                throw new PermissionsException("Last name cannot be empty.");
+
 
             var nexusId = Guid.NewGuid();
             String id = null;

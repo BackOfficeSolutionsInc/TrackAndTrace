@@ -61,6 +61,14 @@
 .company-rock-container .owner {
     font-size: 17px;
 }
+.company-rock-container .message {
+    padding-left: 0px;
+    width:100%;    
+    padding-bottom: 0px;
+}
+.company-rock-container td.picture {
+    width: 42px;
+}
 
 .rocks-container .picture-container {
     width: 30px;

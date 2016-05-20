@@ -1,0 +1,29 @@
+﻿@{
+    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+    var selector = ViewBag.Selector as string ?? "model.CoreValues";
+    //var filter = ViewBag.Filter as string ?? "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
+    //var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
+    //var attrLookup = new Dictionary<string, string>(){
+    //    {"number-column",""},
+    //    {"name-column",""},
+    //    {"details-column",""},
+    //};
+    //attrLookup[ViewBag.SortBy ?? "due-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
+}
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak value-list-container app">
+    <div @(headers || controller ? "ng-controller=L10Controller" : "")>
+        <div class="table-responsive">
+            <table class="table">
+                <tr ng-repeat-start="value in @(selector)" >
+                    @*<td class="number-column">{{$index+1}}.</td>*@
+                    <td class="name-column">{{value.CompanyValue}}</td>
+                </tr>
+                <tr class="details-row" ng-repeat-end ng-if="value.CompanyValueDetails!=null">
+                    @*<td></td>*@
+                    <td class="details-column">{{value.CompanyValueDetails}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,198 @@
+﻿@import (reference) "../../bootstrap/variables";
+
+
+.material-button(@color;) {
+    height: 56px;
+    position: relative;
+    width: 56px;
+    background-color: @color;
+    box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    pointer-events: auto;
+    margin: 12px 12px 12px 2px;
+    border-radius: 56px;
+
+    &.disabled {
+        background-color: #DFDFDF;
+        box-shadow: none;
+        cursor: default;
+        -moz-transition: background-color 250ms cubic-bezier(0,0,.2,1),box-shadow 250ms cubic-bezier(0,0,.2,1) !important;
+        -o-transition: background-color 250ms cubic-bezier(0,0,.2,1),box-shadow 250ms cubic-bezier(0,0,.2,1) !important;
+        -webkit-transition: background-color 250ms cubic-bezier(0,0,.2,1),box-shadow 250ms cubic-bezier(0,0,.2,1) !important;
+        transition: background-color 250ms cubic-bezier(0,0,.2,1),box-shadow 250ms cubic-bezier(0,0,.2,1) !important;
+
+        &:hover {
+            box-shadow: none;
+        }
+    }
+
+    &:hover {
+        box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
+        -moz-transition: box-shadow 150ms cubic-bezier(0,0,.2,1);
+        -o-transition: box-shadow 150ms cubic-bezier(0,0,.2,1);
+        -webkit-transition: box-shadow 150ms cubic-bezier(0,0,.2,1);
+        transition: box-shadow 150ms cubic-bezier(0,0,.2,1);
+    }
+
+    &:before {
+        opacity: 1;
+        content: "\0020";
+        width: 56px;
+        height: 56px;
+        position: absolute;
+        -moz-transition: all .1s cubic-bezier(.4,0,.2,1);
+        -o-transition: all .1s cubic-bezier(.4,0,.2,1);
+        -webkit-transition: all .1s cubic-bezier(.4,0,.2,1);
+        transition: all .1s cubic-bezier(.4,0,.2,1);
+    }
+
+    &:after {
+        width: 56px;
+        height: 56px;
+        position: absolute;
+        opacity: 0;
+        content: "\0020";
+        -moz-transition: all .1s cubic-bezier(.4,0,.2,1);
+        -o-transition: all .1s cubic-bezier(.4,0,.2,1);
+        -webkit-transition: all .1s cubic-bezier(.4,0,.2,1);
+        transition: all .1s cubic-bezier(.4,0,.2,1);
+    }
+}
+
+.material-button-tiny() {
+    height: 40px;
+    width: 40px;
+    clear: both;
+    margin-right: 20px;
+
+    &:before,
+    &:after {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+
+.material-button-icon(@url) {
+    background-image: url(@url);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+.material-button-plus {
+    .material-button-icon("https://s3.amazonaws.com/Radial/icons/thinplus.png");
+}
+
+.material-button-rock {
+    .material-button-icon("https://s3.amazonaws.com/Radial/icons/tinyrock.png");
+}
+
+.material-button-measurable {
+    .material-button-icon("https://s3.amazonaws.com/Radial/icons/measurableTiny.png");
+}
+
+.material-button-issues {
+    .material-button-icon("https://s3.amazonaws.com/Radial/icons/tinyissues.png");
+    background-size: 20px;
+}
+
+.material-button-search {
+    .material-button-icon("https://s3.amazonaws.com/Radial/icons/tinysearch.png");
+}
+
+.material-button-upload {
+    .material-button-icon("https://s3.amazonaws.com/Radial/icons/tinyupload.png");
+}
+
+.material-button-todos {
+    .material-button-icon("https://s3.amazonaws.com/Radial/icons/tinycheck.png");
+}
+
+.material-button-users {
+    .material-button-icon("https://s3.amazonaws.com/Radial/icons/tinyperson.png");
+}
+
+.material-button-fade {
+    &:after {
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+
+    &:hover:before {
+        -moz-transform: rotate(225deg);
+        -ms-transform: rotate(225deg);
+        -o-transform: rotate(225deg);
+        -webkit-transform: rotate(225deg);
+        transform: rotate(225deg);
+        opacity: 0;
+    }
+
+    &:hover:after {
+        opacity: 1;
+        -moz-transform: scale(1) rotate(360deg);
+        -ms-transform: scale(1) rotate(360deg);
+        -o-transform: scale(1) rotate(360deg);
+        -webkit-transform: scale(1) rotate(360deg);
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+.material-button-flat() {
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    min-width: 88px;
+    height: 36px;
+    margin: 0 8px;
+    padding: 9px 8px;
+    border-radius: 2px;
+    -moz-transition: background-color .4s cubic-bezier(.4,0,.2,1);
+    -o-transition: background-color .4s cubic-bezier(.4,0,.2,1);
+    -webkit-transition: background-color .4s cubic-bezier(.4,0,.2,1);
+    transition: background-color .4s cubic-bezier(.4,0,.2,1);
+    font-family: 'Roboto',san-sarif;
+    outline: none;
+
+    &:disabled, &.disabled,
+    &:disabled:active, &.disabled:active,
+    &:disabled:active:hover, &.disabled:active:hover {
+        color: rgba(0,0,0,.26) !important;
+        background-color: transparent !important;
+        cursor: default;
+    }
+    
+    &.btn-primary {
+       .material-button-flat-part(@traction-orange);
+    }
+    &.btn-default {
+       .material-button-flat-part(#5e5e5e);
+    }
+}
+
+.material-button-flat-part(@color) {
+    /*background-color: @traction-orange;*/
+    background-color: transparent;
+    color: @color;
+
+    &:not(:disabled):not(.disabled):focus,
+    &:not(:disabled):not(.disabled):hover {
+        background-color: transparent !important;
+        color: @color !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        outline: none;
+    }
+
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled):active:hover {
+        background-color: fade(@color,12) !important;
+    }
+}

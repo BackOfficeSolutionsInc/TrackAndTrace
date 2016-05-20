@@ -15,8 +15,12 @@ function setCompletion(percentage) {
 var doneLoading = true;
 var currentPage = null;
 function changePage(page,first) {
-    if (page[0] == "#")
-        page = page.substr(1);
+    if (page[0] == "#") {
+        if (page[1] == "/")
+            page = page.substr(2);
+        else
+            page = page.substr(1);
+    }
     while (!doneLoading) {
         setTimeout(function () {
             changePage(page, first);
@@ -35,7 +39,12 @@ function changePage(page,first) {
                 changePage(fp, true);
             }
         } else {
-            cpe.removeClass("hidden").fadeIn(function () {
+            cpe.css("display", "none");
+            //cpe.css("opacity", "0");
+            setTimeout(function () { cpe.removeClass("hidden"); }, 2);
+
+            cpe.fadeIn( function () {
+                cpe.removeClass("hidden")
                 doneLoading = true;
                 console.log("Changed page");
                 currentPage = page;

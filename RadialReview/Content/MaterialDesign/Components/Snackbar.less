@@ -1,0 +1,51 @@
+﻿@import (reference) "Shading";
+
+.material-snackbar(){
+    position: fixed;
+    left: 20px;
+    bottom: 15px;
+    opacity: 1;
+    color: white;
+    -moz-transition: opacity .2s cubic-bezier(.4,0,.2,1),opacity .2s cubic-bezier(.4,0,.2,1),bottom .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1);
+    -o-transition: opacity .2s cubic-bezier(.4,0,.2,1),opacity .2s cubic-bezier(.4,0,.2,1),bottom .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1);
+    -webkit-transition: opacity .2s cubic-bezier(.4,0,.2,1),opacity .2s cubic-bezier(.4,0,.2,1),bottom .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1);
+    transition: opacity .2s cubic-bezier(.4,0,.2,1),opacity .2s cubic-bezier(.4,0,.2,1),bottom .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1);
+    display: flex;
+    -ms-flex-direction: column-reverse;
+    -webkit-flex-direction: column-reverse;
+    flex-direction: column-reverse;
+
+    &:empty {
+        bottom: 0px;
+        opacity: 0;
+        color: transparent;
+    }
+
+    .alert {
+        width: 408px;
+        /* height: 48px; */ 
+        /* padding-left: 24px; */
+        font-family: 'Roboto',sans-serif;
+        .BoxShadowHelper(2);
+        background-color: rgb(50,50,50);
+        color: white;
+        border: none;
+        margin: 0px;
+        padding-left: 15px;
+        margin-bottom: 5px;
+        /*-moz-animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;
+        -o-animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;
+        -webkit-animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;
+        animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;*/
+        .close {
+            position: relative;
+            top: -2px;
+            right: 0px;
+            color: inherit;
+        }
+
+        strong {
+            display: none;
+        }
+    }
+}

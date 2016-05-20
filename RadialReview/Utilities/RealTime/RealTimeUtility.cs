@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using log4net;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
@@ -10,6 +11,8 @@ using System.Web;
 
 namespace RadialReview.Utilities.RealTime {
     public partial class RealTimeUtility : IDisposable{
+
+        protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         protected Dictionary<string, AngularUpdate> _updaters = new Dictionary<string, AngularUpdate>();
         protected Dictionary<string, dynamic> _groups = new Dictionary<string, dynamic>();
@@ -54,11 +57,21 @@ namespace RadialReview.Utilities.RealTime {
             if (Executed)
                 throw new PermissionsException("Cannot execute again.");
             Executed = true;
-            _actions.ForEach(f => f());
+            _actions.ForEach(f => {
+                try {
+                    f();
+                } catch (Exception e) {
+                    log.Error("RealTime exception", e);
+                }
+            });
             foreach (var b in _updaters) {
-                var group = _groups[b.Key];
-                var angularUpdate = b.Value;
-                group.update(angularUpdate);
+                try {
+                    var group = _groups[b.Key];
+                    var angularUpdate = b.Value;
+                    group.update(angularUpdate);
+                } catch (Exception e) {
+                    log.Error("SignalR exception", e);
+                }
             }
             return true;
         }

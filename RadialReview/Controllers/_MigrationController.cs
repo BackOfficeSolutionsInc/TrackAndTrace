@@ -179,7 +179,7 @@ namespace RadialReview.Controllers {
                 using (var tx = s.BeginTransaction()) {
                     foreach (var a in s.QueryOver<ReviewsModel>().Where(x => x.ForOrganizationId == orgId).List()) {
                         var update = false;
-                        if (a.PeriodId == 0) {
+                       /* if (a.PeriodId == 0) {
                             a.PeriodId = periodId;
                             update = true;
                         }
@@ -187,7 +187,7 @@ namespace RadialReview.Controllers {
 
                             a.NextPeriodId = nextPeriodId;
                             update = true;
-                        }
+                        }*/
 
                         if (update) {
                             s.Update(a);
@@ -556,11 +556,11 @@ namespace RadialReview.Controllers {
                     var review = s.Get<ReviewsModel>(reviewId);
                     if (review == null)
                         return "Review not exist";
-                    if (review.PeriodId == null)
-                        return "Period is null";
+                    /*if (review.PeriodId == null)
+                        return "Period is null";*/
 
 
-                    var cr = s.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.PeriodId == review.PeriodId).List().ToList();
+                    var cr = s.QueryOver<RockModel>().Where(x => x.DeleteTime == null /*&& x.PeriodId == review.PeriodId*/).List().ToList();
                     var ar = s.QueryOver<RockAnswer>().Where(x => x.DeleteTime == null && x.ForReviewContainerId == reviewId).List().ToList();
                     var rrs = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null && x.ForReviewContainer.Id == reviewId).List().ToList();
                     foreach (var o in cr) {

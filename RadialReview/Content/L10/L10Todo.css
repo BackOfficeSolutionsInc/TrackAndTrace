@@ -128,6 +128,40 @@
     display: none;
 }
 
+.todo-list .label {
+    position: relative;
+    top: 6px;
+    text-transform: uppercase;
+    opacity: .85;
+    -moz-transition: opacity .1s ease,color .2s ease;
+    -o-transition: opacity .1s ease,color .2s ease;
+    -webkit-transition: opacity .1s ease,color .2s ease;
+    transition: opacity .1s ease,color .2s ease;
+    cursor:default;
+    /*background-color:#eee;
+    color:gray;
+    border:1px solid gray;*/
+
+}
+.todo-list .label:hover {
+    opacity:1;
+}
+.todo-list .overdue-indicator {
+}
+
+.todo-list .todo-checkbox:checked ~ .btn-group .overdue-indicator{
+    opacity:0;
+    background-color:#650000 !important;
+}
+
+.todo-list .todo-checkbox:checked ~ .btn-group .new-indicator {
+    opacity:.1;
+    background-color:#006500 !important;
+}
+
+.todo-details-container iframe{
+    min-height: 120px;
+}
 
 .todo-list .message {
     display: inline-block;
@@ -140,7 +174,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 70%;
-    width: calc(100% - 77px);
+    width: calc(100% - 142px);
     font-size: 18px;
     min-height: 19px;
 }

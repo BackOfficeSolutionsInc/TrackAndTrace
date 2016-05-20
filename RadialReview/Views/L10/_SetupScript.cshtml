@@ -19,19 +19,19 @@
 
         @if (Model.Meeting != null){
 			@:var isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-                                        			@:var currentPage = "@Model.Meeting._MeetingLeaderCurrentPage";
-                                        			@:var currentPageStartTime = @Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds());
-                                        			@:var currentPageBaseMinutes = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0);
-                                        			@:meetingStart = true;
+            @:var currentPage = "@Model.Meeting._MeetingLeaderCurrentPage";
+            @:var currentPageStartTime = @Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds());
+            @:var currentPageBaseMinutes = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0);
+            @:meetingStart = true;
 
 			@:var meetingId = @Model.Meeting.Id;
-                                        			@:console.log("Setting meetingid="+meetingId);
-                                        		}
+            @:console.log("Setting meetingid="+meetingId);
+        }
 		else{
 
 			@:var meetingStart = false;
-                                        			@:var isLeader = false;
-                                        		}
+            @:var isLeader = false;
+        }
       
 </script>
 

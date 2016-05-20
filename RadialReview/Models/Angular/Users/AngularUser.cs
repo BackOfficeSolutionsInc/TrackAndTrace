@@ -13,7 +13,7 @@ namespace RadialReview.Models.Angular.Users
 			
 		}
 
-		public static AngularUser CreateUser(UserOrganizationModel user, ImageSize imageSize = ImageSize._64, bool managing = false)
+		public static AngularUser CreateUser(UserOrganizationModel user, ImageSize imageSize = ImageSize._64, bool? managing = null)
 		{
 			if (user == null)
 				return NoUser();
@@ -27,7 +27,7 @@ namespace RadialReview.Models.Angular.Users
                 CreateTime = user.CreateTime,
 			};
 		}
-		public static AngularUser CreateUser(UserModels.UserLookup user,ImageSize imageSize = ImageSize._64,bool managing = false)
+		public static AngularUser CreateUser(UserModels.UserLookup user,ImageSize imageSize = ImageSize._64,bool? managing = null)
 		{
 			if (user == null)
 				return NoUser();

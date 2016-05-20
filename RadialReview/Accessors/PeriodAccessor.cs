@@ -109,7 +109,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static PeriodModel GetPeriodForReviewContainer(UserOrganizationModel caller, long reviewContainerId)
+		/*public static PeriodModel GetPeriodForReviewContainer(UserOrganizationModel caller, long reviewContainerId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -126,7 +126,7 @@ namespace RadialReview.Accessors
 					return null;
 				}
 			}
-		}
+		}*/
 
         public static PeriodModel GetCurrentPeriod(ISession s, PermissionsUtility perms, long organizationdId)
         {

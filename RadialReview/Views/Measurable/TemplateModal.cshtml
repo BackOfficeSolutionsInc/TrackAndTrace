@@ -4,6 +4,7 @@
 <div class="form">
 	@Html.HiddenFor(x => x.TemplateId)
 	<div class="">
+        <div class="btn btn-default clickable noPad" onclick="addRow();">Add Measurable</div>
 		<div class="row">
 			<div class="col-sm-12" id="allRows">
 				<div style="width:calc( 100% - 25px );display:inline-block">
@@ -18,8 +19,6 @@
 				}
 			</div>
 		</div>
-		<div class="btn btn-link clickable noPad" onclick="addRow();">Add Measureable</div>
-
 	</div>
 </div>
 <script>

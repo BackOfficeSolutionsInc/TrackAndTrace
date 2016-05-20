@@ -23,6 +23,7 @@ using RadialReview.Accessors.TodoIntegrations;
 using RadialReview.Utilities.Encrypt;
 using RadialReview.Controllers;
 using NHibernate;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Accessors
 {
@@ -132,7 +133,11 @@ namespace RadialReview.Accessors
 
             var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
             var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
-            meetingHub.appendTodo(".todo-list", TodoData.FromTodo(todo));
+            var todoData = TodoData.FromTodo(todo);
+
+            if (todo.CreatedDuringMeetingId != null)
+                todoData.isNew = true; 
+            meetingHub.appendTodo(".todo-list", todoData);
 
             var updates = new AngularRecurrence(recurrenceId);
             updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
@@ -179,7 +184,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static List<TodoModel> GetTodosForUser(UserOrganizationModel caller, long userId,bool excludeCompleteDuringMeeting =false)
+		public static List<TodoModel> GetTodosForUser(UserOrganizationModel caller, long userId,bool excludeCompleteDuringMeeting =false,DateRange range = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -187,10 +192,15 @@ namespace RadialReview.Accessors
 					PermissionsUtility.Create(s, caller).ManagesUserOrganizationOrSelf(userId);
 					List<TodoModel> found;
                     var weekAgo = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday).AddDays(-7);
-                    if (!excludeCompleteDuringMeeting)
-						found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId).List().ToList();
-					else
-                        found = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId && ((x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null)||x.CompleteTime==null)).List().ToList();
+                    var q = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId);
+                    if (excludeCompleteDuringMeeting)
+                        q = q.Where(x => ((x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null)||x.CompleteTime==null));
+
+                    if (range != null)
+                        q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime>=range.StartTime && x.CompleteTime<=range.EndTime));
+
+                    found = q.List().ToList();
+
 
 					foreach (var f in found)
 					{

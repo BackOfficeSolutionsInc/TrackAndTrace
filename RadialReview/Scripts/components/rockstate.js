@@ -55,7 +55,7 @@ function recalculatePercentage() {
 
 		for (var i = 0; i < inputs.length; i++) {
 			var val = $(inputs[i]).val();
-			if (val == "AtRisk" || val=="Indeterminate") {
+			if (val == "AtRisk" || val=="Indeterminate" || val=="OnTrack") {
 				offtrack += 1;
 			} else {
 				ontrack += 1;

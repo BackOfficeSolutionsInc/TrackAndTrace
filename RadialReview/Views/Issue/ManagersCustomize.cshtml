@@ -7,7 +7,7 @@
 	<div class="col-md-5 col-md-push-7 ">
 		<p class="well">
 			Great! Managers will need some time to customize the reviews. During this pre-@Html.ReviewName().ToLower() period, supervisors will be able to customize who their direct reports review.
-			Please specify when you want the prereview period to end. Afterwards, please specify when you want employees to be finished with their reviews.
+			Please specify when you want the prereview period to end. Afterwards, specify when you want employees to be finished with their reviews.
 			<br />
 			The @Html.ReviewName().ToLower() will automatically be generated after the pre-@Html.ReviewName().ToLower() deadline.
 		</p>
@@ -50,7 +50,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="row smallBreak2">
+		@*<div class="row smallBreak2">
 			<div class="col-md-6" title="Which session is this for?">
 				<label class="control-label">This Session:</label>
 			</div>
@@ -66,9 +66,8 @@
 			<div class="col-md-4">
 				@Html.DropDownList("NextSessionId", Model.Periods, new { @class = "form-control SessionForm", id = "NextSessionId" })
 			</div>
-		</div>
+		</div>*@
 		<div class="row smallBreak2">
-
 			<div class="col-md-6" title="Any @Html.ReviewName().ToLower()s resulting from supervisors that do not customize their pre-@Html.ReviewName().ToLower() will automatically be populated with a default @Html.ReviewName().ToLower() group consisting of themselves and thier peers, supervisors, and teammates.">
 				<label class="control-label">Ensure default:</label>
 			</div>
