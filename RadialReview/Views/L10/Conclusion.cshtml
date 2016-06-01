@@ -21,7 +21,7 @@
             {
                 <div class="centered" style="width: 75%; max-width: 700px; margin-bottom: 47px; margin-top: -22px; ">
                     <div class="component meeting-stats">
-                        <h3 style="font-size: 20px; color: #444;">Recap Our New To-Dos</h3>
+                        <h3 style="font-size: 20px; color: #444;">Recap Our To-Dos</h3>
                         <div class="todo-container ">
                             <ol class="todo-list sortable">@foreach (var i in ((List<TodoModel>)ViewBag.TodosCreated).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)){@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
                                 var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id } };
@@ -34,6 +34,7 @@
             
             <div class="centered" style="width: 87%; max-width: 760px; margin-bottom: 47px; margin-top: -22px; ">
                 <div class="component cascading-messages">
+                    <div class="pull-right"><div class="btn btn-default btn-xs todoModal " data-method="createtodo" data-meeting="@Model.Meeting.Id" data-recurrence="@Model.Recurrence.Id"><span class="glyphicon glyphicon-unchecked"></span> New Todo</div></div>
                     <h3 style="font-size: 20px; color: #444;">Cascading Messages</h3>
                     <h4 class="cascading-messages-container" style="padding-bottom:15px;">Do we need to tell anyone about any of the decisions we made?</h4>
                 </div>

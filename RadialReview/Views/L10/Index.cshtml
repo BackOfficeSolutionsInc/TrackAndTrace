@@ -19,10 +19,10 @@
     <div class="col-sm-8 col-sm-offset-2">
         @if (ViewBag.IsManager ?? false) {
             <div style="text-align: right;margin-bottom: 3px;">
-                <a class="btn btn-primary btn-invert" href="/L10/Create">Create New L10 Meeting</a>
+                <a class="btn btn-primary btn-invert" href="/L10/Wizard" id="l10-create-meeting">Create New L10 Meeting</a>
             </div>
         }
-        <div class="panel panel-primary">
+        <div class="panel panel-primary" id="l10-meeting-list">
             <div class="panel-heading">
                 <h3 class="panel-title">L10 Meetings</h3>
             </div>
@@ -40,7 +40,7 @@
                     </thead>
                     <tbody>
                         @foreach (var meeting in Model.Recurrences.OrderByDescending(x => x.IsAttendee)) {
-                            <tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow")">
+                            <tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow") l10-row">
                                 <td onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
                                     @if (meeting.Recurrence.MeetingInProgress != null) {
                                         <div class="label label-success hoverable" style="height:16px; width: 80px;display: inline-block">in-progress</div>
@@ -48,11 +48,11 @@
                                         <div class="label label-primary hoverable" style="width: 80px;display: inline-block">Go!</div>
                                     }
                                 </td>
-                                <td class="table-hover-underline" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
+                                <td class="table-hover-underline" onclick="gotoMeeting(@(meeting.Recurrence.Id))"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
                                 @*<td class="">
                                         <a href="/Todo/Previous/@meeting.Recurrence.Id"><span class="glyphicon glyphicon-check" title="All Todos"></span></a>
                                     </td>*@
-                                <td class="alignRight" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
+                                <td class="alignRight" onclick="gotoMeeting(@(meeting.Recurrence.Id))">
                                     @foreach (var a in meeting.Recurrence._DefaultAttendees) {
                                         @Html.Partial("_ProfilePicture", a.User)
                                     }
@@ -69,15 +69,19 @@
                                          } class="btn btn-default btn-sm @(meeting.EditMeeting?"":"disable")"><span style="top: 2px;" class="glyphicon glyphicon-edit" title="Edit meeting"></span></a> 
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                                <span style="top: 2px;" class="glyphicon glyphicon-cog"></span>
+                                                <span style="top: 2px;" class="glyphicon glyphicon-chevron-down"></span>
                                             </button>
                                             <ul class="dropdown-menu alignLeft pull-right" role="menu">
-                                                <li><a href="/Quarterly/Printout/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf" title=""></span> Generate Quarterly Printout</a></li>
-                                                <li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>
-                                                <li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
                                                 <li><a href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone"></span> Texting Actions</a></li>
+                                                <li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>
+                                                <li role="separator" class="divider"></li>
+                                                <li><a href="/Quarterly/Printout/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf" title=""></span> Generate Quarterly Printout</a></li>
+                                                <li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+
                                                 @if (meeting.EditMeeting) {
-                                                    <li><a href="/L10/Edit/@meeting.Recurrence.Id"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span> Settings</a></li>
+
+                                                    <li role="separator" class="divider"></li>
+                                                    <li><a href="/L10/Edit/@meeting.Recurrence.Id" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span>Advanced Settings</a></li>
                                                 }
                                             </ul>
                                         </div>
@@ -97,3 +101,21 @@
 
     </div>
 </div>
+
+<style>
+    .table .btn-default {
+        color: #5e5e5e!important;
+    }
+</style>
+
+@using (Html.BeginScripts()) {
+    <script>
+        function gotoMeeting(id) {
+            var additional = "";
+            if (tname != "")
+                additional = "?tname=" + tname + "&tmethod=" + tmethod;
+
+            location.href = "/l10/meeting/" + id + additional;
+        }
+    </script>    
+}

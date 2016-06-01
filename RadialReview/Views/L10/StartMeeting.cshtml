@@ -7,7 +7,7 @@
 }
 
 <div class="centered start-meeting" style="width:50%;">
-    <div class="component">
+    <div class="component" id="l10-meeting-startpage">
         <div class="meeting-manager">
             <div class="title">Who's attending this meeting?</div>
             @using (Ajax.BeginForm("StartMeeting", new AjaxOptions() {
@@ -39,7 +39,7 @@
                     }
                 </table>
                 <div class="alignCenter">
-                    <input type="submit" class="btn btn-primary center startButton" value="Start Meeting as Leader"  />
+                    <input type="submit" class="btn btn-primary center startButton" value="Start Meeting as Leader" id="l10-meeting-startbutton" />
                 </div>
             }
             <hr />
@@ -108,20 +108,4 @@
         });
     }
 
-    function showPrint() {
-        //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
-        showModal("Generate Quarterly Printout", "/Quarterly/Modal", "/Quarterly/Printout/@Model.Recurrence.Id","callbackPrint");
-    }
-    function callbackPrint() {
-
-        $("#modalForm").unbind("submit");
-        $("#modalForm").attr("target", "_blank");
-        $("#modalForm").attr("method", "post");
-        $("#modalForm").attr("action", "/Quarterly/Printout/@Model.Recurrence.Id");
-        $("#modalForm").bind("submit", function () {
-            $("#modal").modal('hide');
-        });
-
-       // $("#modalForm").bind("submit");
-    }
 </script>  

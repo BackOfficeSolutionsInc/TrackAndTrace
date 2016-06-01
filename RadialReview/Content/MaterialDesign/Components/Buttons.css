@@ -39,6 +39,12 @@
   background-repeat: no-repeat;
   background-position: 50% 50%;
 }
+.material-button-usersAdd {
+  background-image: url("https://s3.amazonaws.com/Radial/icons/tinyAddUser.png");
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-position: 33% 50%;
+}
 .material-button-fade:after {
   -moz-transform: scale(1);
   -ms-transform: scale(1);

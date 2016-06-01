@@ -18,5 +18,7 @@ namespace RadialReview.Models.ViewModels
         public ManageUserViewModel Manage { get; set; }
 
 	    public List<SelectListItem> PossibleTimes { get; set; }
+
+        public string UserId { get; set; }
     }
 }

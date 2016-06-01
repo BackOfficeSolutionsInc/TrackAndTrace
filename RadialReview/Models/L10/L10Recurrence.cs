@@ -37,6 +37,7 @@ namespace RadialReview.Models.L10
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
+        public virtual bool Pristine { get; set; }
 
         public virtual bool CountDown { get; set; }
 
@@ -78,6 +79,7 @@ namespace RadialReview.Models.L10
         public virtual bool ShowHeadlinesBox { get; set; }
         public virtual L10TeamType TeamType { get; set; }
         public virtual bool IsLeadershipTeam { get; set; }
+        public virtual bool CombineRocks { get; set; }
 
         public virtual PrioritizationType Prioritization { get; set; }
 
@@ -100,6 +102,7 @@ namespace RadialReview.Models.L10
             Prioritization = PrioritizationType.Rank;
             ShowHeadlinesBox=false;
             TeamType = L10TeamType.LeadershipTeam;
+            CombineRocks = false;
 
 		}
 
@@ -110,6 +113,8 @@ namespace RadialReview.Models.L10
 				Id(x => x.Id);
                 Map(x => x.Name).Length(10000);
                 Map(x => x.VideoId);
+                Map(x => x.CombineRocks);
+                Map(x => x.Pristine);
                 Map(x => x.ShowHeadlinesBox);
 				Map(x => x.HeadlinesId);
 				Map(x => x.CreateTime);
@@ -281,6 +286,7 @@ namespace RadialReview.Models.L10
 
 
 
-        
+
+
     }
 }

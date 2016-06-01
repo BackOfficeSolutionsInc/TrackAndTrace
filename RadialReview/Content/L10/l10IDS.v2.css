@@ -8,7 +8,7 @@
         padding-top: 26px;
         background-color: #F7F7F7;
         box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
-        z-index: 1;
+        z-index: 100;
     }
 
 .ids .notesButton {
@@ -129,7 +129,7 @@
 
 
 .ids .issue-row[data-checked="True"],
-.ids .issue-row[data-checked="true"]{
+.ids .issue-row[data-checked="true"] {
     display: none !important;
 }
 
@@ -359,9 +359,9 @@ ol.sortable li {
     display: none;
 }
 
-.issues-list .issue-details-container iframe{
-    min-height: 120px;
-}
+    .issues-list .issue-details-container iframe {
+        min-height: 120px;
+    }
 
 .issues-list .issue-row .issue-row .message {
     font-size: 15px;
@@ -560,7 +560,7 @@ body.dragging, body.dragging * {
     margin-bottom: 20px;
     overflow-y: auto;
     border-bottom: 1px solid #eee;
-        display: none;
+    display: none;
 }
 
     .issueDetails > .dd-list:empty {
@@ -641,25 +641,25 @@ body.dragging, body.dragging * {
     min-height: 60px;
     white-space: pre-line;
 }
->
-.ids .issues-container.columns .issues-list {
+
+> .ids .issues-container.columns .issues-list {
     overflow: hidden;
     border-top: 1px solid #ccc;
     padding: 0px;
     margin: 0px;
 }
 
-    .ids .issues-container.columns .issues-list > li {
-        line-height: 1.5em;
-        border-bottom: 1px solid #ccc;
-        float: left;
-        display: inline;
-        margin: 0px;
-        padding-left: 17px;
-    }
+.ids .issues-container.columns .issues-list > li {
+    line-height: 1.5em;
+    border-bottom: 1px solid #ccc;
+    float: left;
+    display: inline;
+    margin: 0px;
+    padding-left: 17px;
+}
 
-.ids .issues-container.columns .rank123:after{
-    left:0px;
+.ids .issues-container.columns .rank123:after {
+    left: 0px;
 }
 
 .ids .issues-container.columns.double .issues-list > li {
@@ -751,22 +751,21 @@ body.dragging, body.dragging * {
 }
 
 .issues-container .rank123 {
-    
     background-color: #cfcfcf;
 }
 
-.issues-container .rank123[data-rank='0']{
-    background-color: #B9B9B9;
-}
+    .issues-container .rank123[data-rank='0'] {
+        background-color: #B9B9B9;
+    }
 
     .issues-container .rank123[data-rank='1']:after {
         background-image: url('/content/img/123.png');
         content: "";
         position: absolute;
         height: 38px;
-        background-size: 58px;
+        background-size: 58px 38px;
         background-repeat: no-repeat;
-        z-index: 1000000000;
+        z-index: 10;
         /* background-color: green; */
         width: 12px;
         left: -7px;
@@ -778,14 +777,14 @@ body.dragging, body.dragging * {
         content: "";
         position: absolute;
         height: 38px;
-        background-size: 58px;
+        background-size: 58px 38px;
         background-repeat: no-repeat;
-        z-index: 1000000000;
+        z-index: 10;
         /* background-color: green; */
         width: 23px;
         left: -13px;
         top: -4px;
-        background-position-x: -13px;
+        background-position: -13px 0px;
     }
 
     .issues-container .rank123[data-rank='3']:after {
@@ -794,13 +793,13 @@ body.dragging, body.dragging * {
         position: absolute;
         height: 38px;
         width: 26px;
-        background-size: 58px;
+        background-size: 58px 38px;
         background-repeat: no-repeat;
-        z-index: 1000000000;
+        z-index: 10;
         /* background-color: green; */
         left: -13px;
         top: -7px;
-        background-position-x: -39px;
+        background-position: -39px 0px;
     }
 
 .issues-container .rank123 {
@@ -827,12 +826,12 @@ body.dragging, body.dragging * {
     padding-top: 7px;
     padding-left: 1px;
     padding-right: 2px;
-    height:24px;
+    height: 24px;
 }
 
 
-.ids.rank-full .issues-container .rank123[data-rank='0']{
-    cursor:not-allowed;
+.ids.rank-full .issues-container .rank123[data-rank='0'] {
+    cursor: not-allowed;
 }
 
 .issues-container.prioritization-Rank .number-priority .rank123 {
@@ -868,6 +867,6 @@ body.dragging, body.dragging * {
     content: "";
 }
 
-.ids .number-priority .number{
-    display:none;
+.ids .number-priority .number {
+    display: none;
 }

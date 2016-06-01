@@ -15,7 +15,7 @@
     background-color: #F9F9F9 !important;
 }*/
 
-
+html,
 body,
 #wrap {
     background-color: rgb(238,238,238) !important;
@@ -55,6 +55,59 @@ body,
 
 .wizard {
 
+    .wizard-nav-bar {
+        /*background-color:@traction-orange;*/
+        padding-top: 13px;
+
+        tr {
+            background-color: transparent !important;
+        }
+
+        td {
+            vertical-align: top;
+        }
+
+        .button {
+            opacity: .8;
+            padding-top: 1px;
+            cursor: pointer;
+            color: @traction-black;
+            -moz-transition: opacity .2s ease, color .2s ease;
+            -o-transition: opacity .2s ease, color .2s ease;
+            -webkit-transition: opacity .2s ease, color .2s ease;
+            transition: opacity .2s ease, color .2s ease;
+
+            &:hover {
+                /*color:@traction-orange;*/
+                opacity: 1;
+            }
+            &:active{
+                opacity: 1;
+                color:@traction-orange;
+            }
+
+            &.backButton {
+                padding-right: 4px;
+            }
+
+            &.nextButton {
+                padding-left: 4px;
+            }
+        }
+
+        .button.disabled {
+            opacity: 0;
+        }
+    }
+
+    .checkbox-column {
+        padding-right: 20px !important;
+    }
+
+    .delete-column {
+        padding-right: 0px !important;
+    }
+
     a:not(:hover) {
         color: (@traction-black);
     }
@@ -65,6 +118,14 @@ body,
 
     .picture-column {
         padding: 0px !important;
+    }
+
+    *:focus {
+        outline: none;
+    }
+
+    [data-toggle="tooltip"]:not(:hover) + .tooltip {
+        display: none !important;
     }
 
     .upload {
@@ -146,6 +207,7 @@ body,
 
     .wizard-menu {
         font-family: 'Roboto', sans-serif;
+        font-size: 17px;
 
         ol {
             padding-left: 17px;
@@ -488,7 +550,7 @@ body,
         }
 
         .isSearching .create-user:before {
-            .material-button-users;
+            .material-button-usersAdd;
         }
 
         .isSearching .upload-users:before {
@@ -599,7 +661,7 @@ body,
         cursor: pointer;
         vertical-align: top;
         padding-left: 5px;
-        padding-right: 32px;
+        padding-right: 33px;
         padding-top: 2px;
         color: rgba(0,0,0,.54);
         font-size: 15px;
@@ -687,4 +749,5 @@ body,
 
 #alerts {
     .material-snackbar();
+    z-index: 1;
 }

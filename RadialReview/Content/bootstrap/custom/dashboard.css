@@ -572,6 +572,7 @@ html {
 .dashboard .rock-list-container .picture-column,
 .dashboard .rock-list-container .createtime-column,
 .dashboard .rock-list-container .due-column,
+.dashboard .rock-list-container .company-rock-column,
 .dashboard .rock-list-container .delete-column {
   display: none;
 }
@@ -743,6 +744,13 @@ html {
 }
 .dashboard .todo-list-container th.due-column {
   text-align: right;
+}
+.dashboard .width_1 .faq-tile ul {
+  font-size: 11px !important;
+  padding-left: 1px;
+}
+.dashboard .width_1 .faq-tile ul li {
+  padding-bottom: 5px;
 }
 .dashboard .width_1 .role-list-container,
 .dashboard .width_1 .value-list-container {

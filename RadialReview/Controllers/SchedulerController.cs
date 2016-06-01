@@ -160,31 +160,31 @@ namespace RadialReview.Controllers
 
 						var overDue = userTodos.Value.Count(x => x.DueDate.Date <= nowLocal.Date.AddDays(-1) && x.CompleteTime == null);
 						if (overDue == 1)
-							subject = "You have an overdue task";
+							subject = "You have an overdue to-do";
 						else if (overDue > 1)
-							subject = "You have " + overDue + " overdue tasks";
+							subject = "You have " + overDue + " overdue to-dos";
 						else
 						{
 							var dueToday = userTodos.Value.Count(x => x.DueDate.Date == nowLocal.Date && x.CompleteTime == null);
 
 							if (dueToday == 1)
-								subject = "You have a task due today";
+								subject = "You have a to-do due today";
 							else if (dueToday > 1)
-								subject = "You have " + dueToday + " tasks due today";
+								subject = "You have " + dueToday + " to-dos due today";
 							else
 							{
 								var dueTomorrow = userTodos.Value.Count(x => x.DueDate.Date == nowLocal.AddDays(1).Date && x.CompleteTime == null);
 								if (dueTomorrow == 1)
-									subject = "You have a task due tomorrow";
+									subject = "You have a to-do due tomorrow";
 								else if (dueTomorrow > 1)
-									subject = "You have " + dueTomorrow + " tasks due tomorrow";
+									subject = "You have " + dueTomorrow + " to-dos due tomorrow";
 								else
 								{
 									var dueSoon = userTodos.Value.Count(x => x.DueDate.Date > nowLocal.AddDays(1).Date && x.CompleteTime == null);
 									if (dueSoon == 1)
-										subject = "You have a task due soon";
+										subject = "You have a to-do due soon";
 									else if (dueSoon > 1)
-										subject = "You have " + dueSoon + " tasks due soon";
+										subject = "You have " + dueSoon + " to-dos due soon";
 								}
 							}
 						}

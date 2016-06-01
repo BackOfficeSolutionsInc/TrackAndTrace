@@ -389,7 +389,10 @@ namespace RadialReview.Controllers
 			var prefix = "Resent";
 			if (model.LastSent == null)
 				prefix = "Sent";
-			return Json(result.ToResults(prefix + " invite to " + model.Name() + "."));
+            var o = result.ToResults(prefix + " invite to " + model.Name() + ".");
+            o.Object = model;
+            
+			return Json(o);
 		}
 
 

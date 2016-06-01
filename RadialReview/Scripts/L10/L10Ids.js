@@ -138,7 +138,7 @@ $(function () {
         $("#issueDetails").append("<div class='button-bar'>" +
 			"<div style='height:28px;'>" +
 			"<span class='btn-group pull-right'>" +
-				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Resolved</span>" +
+				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox hidden' type='checkbox' " + (checked ? "checked" : "") + "/> Resolve</span>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
 			"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + MeetingId + "'><span class='icon fontastic-icon-forward-1' title='Move issue to another L10'></span> Move To</span>" +
@@ -455,11 +455,12 @@ function constructRow(issue) {
         + ' <span class="rank123 badge" data-rank="' + issue.rank + '">IDS</span>\n'
 		+ '</div>\n'
 		+ '<span class="profile-image">\n'
-		+ '		<span class="profile-picture">\n'
-		+ '			<span class="picture-container" title="' + issue.owner + '">\n'
-		+ '				<span class="picture" style="background: url(' + issue.imageUrl + ') no-repeat center center;"></span>\n'
-		+ '			</span>\n'
-		+ '		</span>\n'
+        + ' '+profilePicture(issue.imageUrl,issue.owner)+' '
+		//+ '		<span class="profile-picture">\n'
+		//+ '			<span class="picture-container" title="' + issue.owner + '">\n'
+		//+ '				<span class="picture" style="background: url(' + issue.imageUrl + ') no-repeat center center;"></span>\n'
+		//+ '			</span>\n'
+		//+ '		</span>\n'
 		+ '	</span>\n'
 		+ '	<div class="message" data-recurrence_issue=' + issue.issue + '>' + issue.message + '</div>\n'
 		+ '	<div class="issue-details-container"><div class="issue-details" data-recurrence_issue=' + issue.issue + '>' + details + '</div></div>\n'

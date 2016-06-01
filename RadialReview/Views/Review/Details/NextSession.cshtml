@@ -59,7 +59,7 @@
 
 		$(function () {
 			@foreach (var r in Model.NextRocks){
-				@:appendRow("@r.Id","@r.GetQuestion()","@r.Period.Name");
+				@:appendRow("@r.Id","@r.GetQuestion()","@r.Period.NotNull(x=>x.Name)");
 			}
 			CheckEmpty();
 

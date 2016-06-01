@@ -190,15 +190,16 @@ namespace RadialReview.Controllers
         // GET: /Account/Login
         [AllowAnonymous]
         [Access(AccessLevel.SignedOut)]
-        public ActionResult Login(string returnUrl, String message,string username)
+        public ActionResult Login(string returnUrl, String message,string username,String info=null)
         {
             //ViewBag.IsLogin = true;
             if (User.Identity.GetUserId() != null)
             {
                 AuthenticationManager.SignOut();
-                return RedirectToAction("Login", new { returnUrl = returnUrl, message = message, username = username });
+                return RedirectToAction("Login", new { returnUrl = returnUrl, message = message, info = info, username = username });
             }
             ViewBag.Message = message;
+            ViewBag.Info = info;
             ViewBag.ReturnUrl = returnUrl;
             var model=new LoginViewModel
             {
@@ -419,6 +420,7 @@ namespace RadialReview.Controllers
 				ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid),
 				SendTodoTime = user.SendTodoTime,
 				PossibleTimes = GetPossibleTimes(user.SendTodoTime),
+                UserId=user.Id
 			};
 	    }
 

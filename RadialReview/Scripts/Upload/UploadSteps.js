@@ -283,7 +283,7 @@ function UploadSteps(args) {
 
 
         if (this.currentSelectionStep >= this.selectionSteps.length) {
-            $(instructionAlert()).html("Please wait...");
+            $(instructionAlert()).css("color", "rgba(0, 0, 0, 0.73)").html("Please wait...");
             $(nextButton()).attr("disabled", "true");
             validationFunc = null;
             this.submitSelection();
@@ -300,7 +300,7 @@ function UploadSteps(args) {
         $(nextButton()).attr("disabled", "true");
         $(errorAlert()).hide();
         errors = [];
-        $(instructionAlert()).html(this.selectionSteps[this.currentSelectionStep].message).show();
+        $(instructionAlert()).css("color", "#ef7622").html(this.selectionSteps[this.currentSelectionStep].message).show();
         //$("#table").selectable("refresh");
         $(tableSelector()).css("display", null);
         validationFunc = this.selectionSteps[this.currentSelectionStep].func;

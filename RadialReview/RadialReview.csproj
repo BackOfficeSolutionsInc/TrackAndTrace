@@ -325,6 +325,7 @@
     <Compile Include="Accessors\MessageAccessor.cs" />
     <Compile Include="Accessors\NetworkAccessor.cs" />
     <Compile Include="Accessors\NexusAccessor.cs" />
+    <Compile Include="Accessors\OnboardingAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
     <Compile Include="Accessors\PadAccessor.cs" />
@@ -402,6 +403,7 @@
     <Compile Include="Controllers\HealthCheckController.cs" />
     <Compile Include="Controllers\L10\L10AngularController.cs" />
     <Compile Include="Controllers\LogController.cs" />
+    <Compile Include="Controllers\GetStartedController.cs" />
     <Compile Include="Controllers\QuarterlyController.cs" />
     <Compile Include="Controllers\Upload\Upload_RocksController.cs" />
     <Compile Include="Controllers\Upload\Upload_UsersController.cs" />
@@ -596,6 +598,7 @@
     <Compile Include="Models\L10\AV\AudioVideoUser.cs" />
     <Compile Include="Models\L10\Transcript.cs" />
     <Compile Include="Models\Log\LogItem.cs" />
+    <Compile Include="Models\Onboard\OnboardingUser.cs" />
     <Compile Include="Models\Payments\CreditCardVM.cs" />
     <Compile Include="Models\Payments\Itemized.cs" />
     <Compile Include="Models\Payments\PaymentErrorLog.cs" />
@@ -948,6 +951,7 @@
     <Content Include="Content\Angular\tablesort.css" />
     <Content Include="Content\Angular\xeditable.min.css" />
     <Content Include="Content\bootstrap-duallistbox.css" />
+    <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\L10\Archive\Archive.css">
       <DependentUpon>Archive.less</DependentUpon>
     </Content>
@@ -1055,6 +1059,7 @@
     <Content Include="Content\MaterialDesign\Components\Snackbar.min.css">
       <DependentUpon>Snackbar.css</DependentUpon>
     </Content>
+    <Content Include="Content\Tour\anno.css" />
     <Content Include="Content\Upload.css" />
     <Content Include="Content\Upload\Upload.css">
       <DependentUpon>Upload.less</DependentUpon>
@@ -1130,6 +1135,10 @@
     <Content Include="Scripts\L10\L10Wizard.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
     <Content Include="Scripts\speechrecog.js" />
+    <Content Include="Scripts\Tour\startL10.js" />
+    <Content Include="Scripts\Tour\createL10.js" />
+    <Content Include="Scripts\Tour\lib\anno.js" />
+    <Content Include="Scripts\Tour\lib\jquery.scrollintoview.min.js" />
     <Content Include="Scripts\undo.js" />
     <Content Include="Scripts\Upload\UploadRocks.js" />
     <Content Include="Scripts\Upload\UploadUsers.js" />
@@ -1516,6 +1525,7 @@
     <Content Include="Views\TileData\UserRoles.cshtml" />
     <Content Include="Views\Roles\partial\list.cshtml" />
     <Content Include="Views\Rocks\Archive.cshtml" />
+    <Content Include="Views\TileData\FAQTips.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1947,6 +1957,7 @@
     <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.min.js.map">
       <DependentUpon>jquery.ba-throttle-debounce.min.js</DependentUpon>
     </Content>
+    <Content Include="Views\GetStarted\TheBasics.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -2255,6 +2266,7 @@
     <Folder Include="Views\MeetingData\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
+    <Folder Include="Views\Onboard\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
     <Folder Include="Views\Transcript\" />

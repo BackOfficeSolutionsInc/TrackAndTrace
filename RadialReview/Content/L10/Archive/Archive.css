@@ -517,6 +517,7 @@ html {
   padding-left: 8px !important;
 }
 .meeting-archive .rock-list-container .delete-column,
+.meeting-archive .rock-list-container .company-rock-column,
 .meeting-archive .rock-list-container .due-column {
   display: none;
 }

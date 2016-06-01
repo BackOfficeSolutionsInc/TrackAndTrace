@@ -488,6 +488,8 @@ namespace RadialReview.Accessors {
         public static List<NameId> GetVisibleL10Meetings_Tiny(ISession s, PermissionsUtility perms, long userId, out List<long> recurrencesPersonallyAttending)
         {
 
+            //IMPORTANT. Make sure the pristine flag is being set correctly on L10Recurrence.
+
             var caller = perms.GetCaller();
             perms.ViewUsersL10Meetings(userId);
 
@@ -495,7 +497,7 @@ namespace RadialReview.Accessors {
             //var allRecurrences = new List<L10Recurrence>();
             var allRecurrenceIds = new List<NameId>();
             if (caller.ManagingOrganization) {
-                var orgRecurrences = s.QueryOver<L10Recurrence>().Where(x => x.OrganizationId == caller.Organization.Id && x.DeleteTime == null)
+                var orgRecurrences = s.QueryOver<L10Recurrence>().Where(x => x.OrganizationId == caller.Organization.Id && x.DeleteTime == null && !x.Pristine)
                     .Select(x => x.Name, x => x.Id).List<object[]>().ToList();
                 allRecurrenceIds.AddRange(orgRecurrences.Select(x => new NameId((string)x[0], (long)x[1])));
             }
@@ -532,6 +534,7 @@ namespace RadialReview.Accessors {
             var additionalRecurrenceIdsFromPerms = allViewPerms.Where(x => !allRecurrenceIds.Any(y => y.Id == x)).ToList();
 
             var additionalRecurrenceFromViewPerms = s.QueryOver<L10Recurrence>()
+                .Where(x=> !x.Pristine)
                 .WhereRestrictionOn(x => x.Id).IsIn(additionalRecurrenceIdsFromPerms)
                 .Select(x => x.Name, x => x.Id)
                 .List<object[]>().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
@@ -1403,7 +1406,7 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-        public static void UpdateRock(UserOrganizationModel caller, long id, String rockMessage, RockState? state, long? ownerId, string connectionId, bool? delete = null)
+        public static void UpdateRock(UserOrganizationModel caller, long id, String rockMessage, RockState? state, long? ownerId, string connectionId, bool? delete = null, bool? companyRock = null)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -1433,6 +1436,17 @@ namespace RadialReview.Accessors {
                                 hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.Item1), connectionId).updateRockName(r.Item2, rockMessage);
                             }
                         }
+
+                        if (companyRock != null && companyRock != rock.CompanyRock) {
+                            rock.CompanyRock = companyRock.Value;
+                            s.Update(rock);
+                            updated = true;
+
+                            //foreach (var r in rockRecurs()) {
+                            //    hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.Item1), connectionId).updateRockName(r.Item2, rockMessage);
+                            //}
+                        }
+
                         if (ownerId != null && ownerId != rock.ForUserId) {
                             rock.ForUserId = ownerId.Value;
                             perms.ViewUserOrganization(ownerId.Value, false);
@@ -2844,6 +2858,9 @@ namespace RadialReview.Accessors {
 
             var recur = s.Get<L10Recurrence>(recurrenceId);
 
+            recur.Pristine = false;
+            s.Update(recur);
+
 
             //var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
             //var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
@@ -3131,7 +3148,6 @@ namespace RadialReview.Accessors {
 
         public static void Update(UserOrganizationModel caller, BaseAngular model, string connectionId)
         {
-
             if (model.Type == typeof(AngularIssue).Name) {
                 var m = (AngularIssue)model;
                 //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
@@ -3152,7 +3168,7 @@ namespace RadialReview.Accessors {
                 EditNote(caller, m.Id, m.Contents, m.Title, connectionId);
             } else if (model.Type == typeof(AngularRock).Name) {
                 var m = (AngularRock)model;
-                UpdateRock(caller, m.Id, m.Name, m.Completion, m.Owner.NotNull(x => x.Id), connectionId);
+                UpdateRock(caller, m.Id, m.Name, m.Completion, m.Owner.NotNull(x => x.Id), connectionId, companyRock: m.CompanyRock);
             } else if (model.Type == typeof(AngularMeasurable).Name) {
                 var m = (AngularMeasurable)model;
                 UpdateArchiveMeasurable(caller, m.Id, m.Name, m.Direction, m.Target, m.Owner.NotNull(x => x.Id), m.Admin.NotNull(x => x.Id), connectionId);
@@ -3178,11 +3194,13 @@ namespace RadialReview.Accessors {
                         if (name != null && recurrence.Name != name) {
                             recurrence.Name = name;
                             angular.Name = name;
+                            recurrence.Pristine = false;
                         }
 
                         if (teamType != null && recurrence.TeamType != teamType) {
                             recurrence.TeamType = teamType.Value;
                             angular.TeamType = teamType;
+                            recurrence.Pristine = false;
                         }
 
                         s.Update(recurrence);
@@ -3504,6 +3522,7 @@ namespace RadialReview.Accessors {
                     int issuesSolved = 0;
                     int todoComplete = 0;
                     List<TodoModel> todosCreated;
+                    List<TodoModel> allTodos;
 
                     var rating = double.NaN;
 
@@ -3511,11 +3530,13 @@ namespace RadialReview.Accessors {
                         var createTime = meeting.NotNull(x => x.CreateTime);
                         issuesSolved = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.Recurrence.Id == recurrenceId && x.CloseTime > createTime).List().Count;
                         todosCreated = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CreateTime > createTime).List().ToList();
+                        allTodos = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CompleteTime==null).List().ToList();
                         if (prevMeeting != null && prevMeeting.CompleteTime != null)
                             todoComplete = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CompleteTime > prevMeeting.CompleteTime).List().Count;
                     } else {
                         issuesSolved = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.Recurrence.Id == recurrenceId && x.CloseTime > meeting.CreateTime && x.CloseTime < meeting.CompleteTime).List().Count;
                         todosCreated = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CreateTime > meeting.CreateTime && x.CreateTime < meeting.CompleteTime).List().ToList();
+                        allTodos = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CompleteTime == null).List().ToList();
                         if (prevMeeting != null && prevMeeting.CompleteTime != null)
                             todoComplete = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CompleteTime > prevMeeting.CompleteTime && x.CompleteTime < meeting.CompleteTime).List().Count;
                         var ratings = s.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x => x.L10Meeting.Id == meeting.Id && x.DeleteTime == null).List().Where(x => x.Rating != null).Select(x => x.Rating.Value).ToList();
@@ -3538,7 +3559,8 @@ namespace RadialReview.Accessors {
                         StartTime = meeting.NotNull(x => x.StartTime),
                         EndTime = meeting.NotNull(x => x.CompleteTime),
                         TodoCompleted = todoComplete,
-                        AverageRating = rating
+                        AverageRating = rating,
+                        AllTodos = allTodos,
                     };
 
                     if (stats.StartTime != null)
@@ -3613,6 +3635,8 @@ namespace RadialReview.Accessors {
 
             var recur = s.Get<L10Recurrence>(recurrenceId);
 
+            recur.Pristine = false;
+            s.Update(recur);
 
             var now = DateTime.UtcNow;
             RockModel rock;
@@ -3805,9 +3829,45 @@ namespace RadialReview.Accessors {
 
                     var recur = new L10Recurrence() {
                         OrganizationId = orgId,
+                        Pristine = true,
+                        VideoId = Guid.NewGuid().ToString(),
+                        EnableTranscription = false,
+                        HeadlinesId = Guid.NewGuid().ToString(),
+                        CountDown = true,
+                        CreatedById = caller.Id,
+                        CreateTime = DateTime.UtcNow
                     };
 
+
                     s.Save(recur);
+
+
+                    var vto = VtoAccessor.CreateRecurrenceVTO(s, perms, recur.Id);
+
+                    s.Save(new PermItem() {
+                        CanAdmin = true,
+                        CanEdit = true,
+                        CanView = true,
+                        AccessorType = PermItem.AccessType.Creator,
+                        AccessorId = caller.Id,
+                        ResType = PermItem.ResourceType.L10Recurrence,
+                        ResId = recur.Id,
+                        CreatorId = caller.Id,
+                        OrganizationId = caller.Organization.Id,
+                        IsArchtype = false,
+                    });
+                    s.Save(new PermItem() {
+                        CanAdmin = true,
+                        CanEdit = true,
+                        CanView = true,
+                        AccessorType = PermItem.AccessType.Members,
+                        AccessorId = -1,
+                        ResType = PermItem.ResourceType.L10Recurrence,
+                        ResId = recur.Id,
+                        CreatorId = caller.Id,
+                        OrganizationId = caller.Organization.Id,
+                        IsArchtype = false,
+                    });
 
                     tx.Commit();
                     s.Flush();
@@ -3855,13 +3915,18 @@ namespace RadialReview.Accessors {
                         var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.User.Id == userorgid && x.L10Recurrence.Id == recurrenceId).List().ToList();
                         if (existing.Any())
                             throw new PermissionsException("User is already an attendee.");
+                        var recur = s.Get<L10Recurrence>(recurrenceId);
+                        recur.Pristine = false;
+                        s.Update(recur);
 
                         var attendee = new L10Recurrence.L10Recurrence_Attendee() {
-                            L10Recurrence = s.Load<L10Recurrence>(recurrenceId),
+                            L10Recurrence = recur,
                             User = user,
                         };
-
+                        
                         s.Save(attendee);
+
+
 
                         var curr = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false);
                         if (curr != null) {

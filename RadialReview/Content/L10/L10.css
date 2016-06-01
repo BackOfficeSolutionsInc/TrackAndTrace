@@ -21,18 +21,18 @@ body {
     margin-bottom: 5px;
 }
 
-    .level-10 .component{
-        box-shadow: 0px 6px 5px -2px rgba(0,0,0,0.1);
-    }
+.level-10 .component {
+    box-shadow: 0px 6px 5px -2px rgba(0,0,0,0.1);
+}
 
-    .component.flash {
-        -webkit-animation: flash .5s ease 0 infinite alternate; /* Chrome, Safari, Opera */
-        -moz-animation: flash .5s ease 0 infinite alternate;
-        -ms-animation: flash .5s ease 0 infinite alternate;
-        -o-animation: flash .5s ease 0 infinite alternate;
-        animation: flash .5s ease 0 infinite alternate;
-        border-width: 4px;
-    }
+.component.flash {
+    -webkit-animation: flash .5s ease 0 infinite alternate; /* Chrome, Safari, Opera */
+    -moz-animation: flash .5s ease 0 infinite alternate;
+    -ms-animation: flash .5s ease 0 infinite alternate;
+    -o-animation: flash .5s ease 0 infinite alternate;
+    animation: flash .5s ease 0 infinite alternate;
+    border-width: 4px;
+}
 
 @-webkit-keyframes flash {
     from {
@@ -223,9 +223,9 @@ h3 {
     padding-left: 7px;
 }
 
-.agenda ol.agenda-items > li{
-    list-style-type: none;
-}
+    .agenda ol.agenda-items > li {
+        list-style-type: none;
+    }
 
 .agenda .page-item:not(.current) .page-time {
     opacity: .35;
@@ -461,6 +461,8 @@ profile-image {
         top: 3px;
     }
 
+
+
 .slider-container {
     position: fixed;
     left: 0px;
@@ -470,6 +472,11 @@ profile-image {
     overflow-x: hidden;
     margin: 5px;
 }
+
+    .slider-container.static {
+        position: static;
+        margin: -5px -16px;
+    }
 
     .slider-container .slider {
         position: absolute;
@@ -520,11 +527,10 @@ profile-image {
         width: 57px;
     }
 
-iframe {
+iframe:not([src="about:blank"]) {
     background: url('/Content/select2-spinner.gif');
     background-repeat: no-repeat;
-    background-position-x: 50%;
-    background-position-y: 20%;
+    background-position: 50% 50%;
 }
 
 
@@ -606,6 +612,6 @@ profile-image.desaturate {
         opacity: .9;
     }
 
-    .editable-click, a.editable-click, a.editable-click:hover{
-        border-bottom:none !important;
-    }
+.editable-click, a.editable-click, a.editable-click:hover {
+    border-bottom: none !important;
+}

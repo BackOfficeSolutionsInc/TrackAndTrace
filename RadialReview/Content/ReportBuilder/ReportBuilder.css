@@ -259,7 +259,7 @@ ul.empty:empty {
 .panel-includable:not(.isIncluded) .panel-heading{
 	background-color: #baa0a0;
 	background-image: url("/Content/img/graystripe.png");
-	background-position-x: 5px;
+	background-position: 5px 0px;
 }
 .panel-includable:not(.isIncluded) .panel-heading span{
 	color: #F5F5F5 !important; 

@@ -91,6 +91,10 @@
 .meeting-stats .todo-list .todo-row .issuesButton{ 
 	display: none;
 }
+.meeting-stats .todo-list .todo-row .label{
+    position:absolute;
+    right:10px;
+}
 
 .meeting-stats .due-date {
 	    float: right;

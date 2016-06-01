@@ -131,17 +131,19 @@ namespace RadialReview.Controllers
 		{
 			ValidateValues(model, x => x.Recurrence.Id);
 
-			if (model.Attendees == null || model.Attendees.Count() == 0)
+			/*if (model.Attendees == null || model.Attendees.Count() == 0)
 			{
 				ModelState.AddModelError("Attendees", "At least one attendee is required.");
-			}
+			}*/
 
 			if (ModelState.IsValid)
 			{
 
 				var allMembers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id).Select(x=>x.Item3);
 
-				var attendees = allMembers.Where(x => model.Attendees.Contains(x)).ToList();
+                List<long> attendees = new List<long>();
+                if (model.Attendees!=null)
+                    attendees=allMembers.Where(x => model.Attendees.Contains(x)).ToList();
 				L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees);
 				var tempRecur = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, false);
 				var p = L10Accessor.GetDefaultStartPage(tempRecur);
@@ -257,10 +259,18 @@ namespace RadialReview.Controllers
 			model.Meeting._MeetingAttendees.ForEach(x=>x.Rating=x.Rating??10);
 			
 			var stats=L10Accessor.GetStats(GetUser(), model.Recurrence.Id);
-			ViewBag.TodosCreated = stats.TodosCreated.Where(x=>x.CompleteTime == null).ToList();
+			ViewBag.TodosCreated = stats.AllTodos.Where(x=>x.CompleteTime == null).ToList();
 
 			return PartialView("Conclusion", model);
 		}
+
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<ActionResult> ForceConclude(long id)
+        {
+            await L10Accessor.ConcludeMeeting(GetUser(), id,new List<Tuple<long,decimal?>>(), false);
+            return Content("Done");
+        }
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
@@ -310,8 +320,8 @@ namespace RadialReview.Controllers
 					 
 					//return RedirectToAction("Load", new { id = model.Recurrence.Id, page = "stats" });
 					//return Json(ResultObject.SilentSuccess().NoRefresh());
-					//return MeetingStats(model.Recurrence.Id);
-                    return Content("Please Wait");
+					return MeetingStats(model.Recurrence.Id);
+                    //return Content("Please Wait");
 
 				}
 			}

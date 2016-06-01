@@ -342,26 +342,29 @@ function constructTodoRow(todo) {
 			'data-todo="' + todo.todo + '" ' +
 			'data-message="' + todo.message + '" ' +
 			'data-details="' + todo.details + '">' +
-			'	<input data-todo="' + todo.todo + '" class="todo-checkbox" type="checkbox" ' + (todo.checked ? "checked" : "") + '/>' +
-			'	<div class="move-icon noselect dd-handle">' +
-			'	<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>' +
-			'	<span class="inner icon fontastic-icon-primitive-square"></span>' +
-			'	</div>' +
+			 '  <input data-todo="' + todo.todo + '" class="todo-checkbox" type="checkbox" ' + (todo.checked ? "checked" : "") + '/>' +
+			 '  <div class="move-icon noselect dd-handle">' +
+			 '  <span class="outer icon fontastic-icon-three-bars icon-rotate"></span>' +
+			 '  <span class="inner icon fontastic-icon-primitive-square"></span>' +
+			 '  </div>' +
 		
-			'	<div class="btn-group pull-right">' +
+			 '  <div class="btn-group pull-right">' +
                     labelIndicator+
-			'		<span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="'+todo.todo+'" data-recurrence="'+MeetingId+'" data-meeting="'+meetingId+'"></span>'+
-			'	</div>'+
-			'	<span class="profile-image">'+
-			'		<span class="profile-picture">' +
-			'			<span class="picture-container" title="' + todo.accountableUser + '">' +
-			'				<span class="picture" style="background: url(' + todo.imageurl + ') no-repeat center center;"></span>' +
-			'			</span>' +
-			'		</span>'+
-			'	</span>' +
-			'	<div class="message" data-todo=' + todo.todo + '>' + todo.message + '</div>' +
-			'	<div class="todo-details-container"><div class="todo-details" data-todo=' + todo.todo + '>' + todo.details + '</div></div>' +
-			'	<div class="due-date '+red+'">'+dateFormatter(date)+'</div>'+
+			 '  <span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="'+todo.todo+'" data-recurrence="'+MeetingId+'" data-meeting="'+meetingId+'"></span>'+
+			 '  </div>' +        
+            '<span class="profile-image">'+
+                profilePicture(todo.imageurl, todo.accountableUser) +
+            '</span>'+
+			//'	<span class="profile-image">'+
+			//'		<span class="profile-picture">' +
+			//'			<span class="picture-container" title="' + todo.accountableUser + '">' +
+			//'				<span class="picture" style="background: url(' + todo.imageurl + ') no-repeat center center;"></span>' +
+			//'			</span>' +
+			//'		</span>'+
+			//'	</span>' +
+			'   <div class="message" data-todo=' + todo.todo + '>' + todo.message + '</div>' +
+			'   <div class="todo-details-container"><div class="todo-details" data-todo=' + todo.todo + '>' + todo.details + '</div></div>' +
+			'   <div class="due-date '+red+'">'+dateFormatter(date)+'</div>'+
 			'</li>';
 }
 

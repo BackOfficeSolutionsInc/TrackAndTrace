@@ -138,6 +138,20 @@
 	        });
 	    }
 
+	    function afterResend(data) {
+
+	        if (data.Object) {
+	            console.log(data.Object);
+	            var row = $('.row_' + data.Object.UserOrganizationId);
+	            var name = data.Object.FirstName + " " + data.Object.LastName;
+	            var email = data.Object.Email;
+	            row.find(".nameField").attr("title", name);
+	            row.find(".nameField a").text(name);
+	            row.find(".emailField").attr("title", email);
+	            row.find(".emailField a").text(email);
+	        }
+	    }
+
         function SendEmails() {
             $("#send").prop("disabled", true);
             $.ajax({
@@ -346,16 +360,16 @@
 								{
 									if (p.EmailEvent.HasValue)
 									{										
-										<span data-sort="@(lookup[p.EmailEvent.Value].Item3)" title="@(lookup[p.EmailEvent.Value].Item1)" class="glyphicon glyphicon-envelope @(lookup[p.EmailEvent.Value].Item2) clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+										<span data-sort="@(lookup[p.EmailEvent.Value].Item3)" title="@(lookup[p.EmailEvent.Value].Item1)" class="glyphicon glyphicon-envelope @(lookup[p.EmailEvent.Value].Item2) clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id,onComplete:"afterResend")"></span>
 									}
 									else
 									{
-										<span data-sort="2" title="Awaiting Response. Click here to resend email." class="glyphicon glyphicon-envelope strokeRed resendEmail red clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+										<span data-sort="2" title="Awaiting Response. Click here to resend email." class="glyphicon glyphicon-envelope strokeRed resendEmail red clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id, onComplete: "afterResend")"></span>
 									}
 								}
 								else
 								{
-                                    <span data-sort="1" class="glyphicon glyphicon-envelope glyphicon-exclamation-sign1 red strokeRed unsentEmail clickable icon" title="Invitation not sent. Click here to send." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id)"></span>
+                                    <span data-sort="1" class="glyphicon glyphicon-envelope glyphicon-exclamation-sign1 red strokeRed unsentEmail clickable icon" title="Invitation not sent. Click here to send." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id, onComplete: "afterResend")"></span>
 								}
 							}
                         </td>
@@ -368,13 +382,13 @@
                         <td class="alignCenter" title="Scorecard Measurables">
                             <a href="~/Manage/UserDetails/@p.Id">@p.NumMeasurables</a>
                         </td>
-                        <td class="noOverflow" style="max-width: 160px;" title="@p.Name">
+                        <td class="noOverflow nameField" style="max-width: 160px;" title="@p.Name">
                             <a href="~/Manage/UserDetails/@p.Id">
                                 @p.Name
                             </a>
                         </td>
-                        <td class="noOverflow" style="max-width: 150px;" title="@p.Email">
-                            <a href="~/Manage/UserDetails/@p.Id">@p.Email</a>
+                        <td class="noOverflow emailField" style="max-width: 150px;" title="@p.Email">
+                            <a href="~/Manage/UserDetails/@p.Id" class="">@p.Email</a>
                         </td>
                         <td class="NalignCenter noOverflow" style="max-width: 200px;">
                             <a href="@Url.Action("Positions","User",new {id = p.Id})" class="fullWidth">

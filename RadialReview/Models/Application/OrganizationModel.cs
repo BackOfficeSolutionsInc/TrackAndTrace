@@ -58,6 +58,8 @@ namespace RadialReview.Models
 
 			public virtual bool EnableSurvey { get; set; }
 
+            public virtual String DateFormat { get; set; }
+
             public virtual int GetTimezoneOffset()
             {
                 var zone = TimeZoneId ?? "Central Standard Time";
@@ -92,6 +94,8 @@ namespace RadialReview.Models
 
 				EnableL10 = false;
 				EnableReview = false;
+
+                DateFormat = "MM-dd-yyyy";
 
 				RockName = "Rocks";
 			}
@@ -128,7 +132,8 @@ namespace RadialReview.Models
 					Map(x => x.EnableReview);
 					Map(x => x.EnableSurvey);
 
-					Map(x => x.RockName);
+                    Map(x => x.RockName);
+                    Map(x => x.DateFormat);
 
 					Map(x => x.Branding).CustomType<BrandingType>();
 					Map(x => x.ScorecardPeriod).CustomType<ScorecardPeriod>();
@@ -143,7 +148,12 @@ namespace RadialReview.Models
 
 			public virtual Month StartOfYearMonth { get; set; }
 			public virtual DateOffset StartOfYearOffset { get; set; }
-		}
+
+            public String GetDateFormat()
+            {
+                return DateFormat??"MM-dd-yyyy";
+            }
+        }
 
 		/// <summary>
 		/// In minutes

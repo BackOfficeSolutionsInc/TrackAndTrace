@@ -55,12 +55,12 @@ namespace RadialReview.Models.Askables {
 				b += " (Owner: " + AccountableUser.GetName() + ")";
 
 			var p = "";
-			if (Period != null)
-				p = Period.Name+" ";
+            //if (Period != null)
+            //    p = Period.Name+" ";
 
 			if (CompanyRock)
 				b += "[" + p + "Company Rock]";
-			else if (Period!=null)
+			else if (!string.IsNullOrWhiteSpace(p))
 				b += "[" + p.Trim() + "]";
 
 			return b ;

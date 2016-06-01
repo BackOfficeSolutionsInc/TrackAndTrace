@@ -119,12 +119,12 @@ function ForceUnhide() {
                 $(e2).addClass("unhide");
             }, speed * i);
         });
-    });    
+    });
 }
 
-function ForceHide() {$(".startHidden").removeClass("startHidden").removeClass("unhide").addClass("startHidden");}
+function ForceHide() { $(".startHidden").removeClass("startHidden").removeClass("unhide").addClass("startHidden"); }
 
-function refresh() {location.reload();}
+function refresh() { location.reload(); }
 
 /*
 if callback returns text or bool, there is an error
@@ -166,7 +166,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
         var cback = pushUrl;
         return showModalObject(obj, push, cback);
     }
-    
+
     $("#modalMessage").html("");
     $("#modalMessage").addClass("hidden");
     $("#modal").addClass("loading");
@@ -217,11 +217,11 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 ///  }                                                                                                                          ///
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
-function showModalObject(obj,pushUrl,onSuccess,onCancel) {
+function showModalObject(obj, pushUrl, onSuccess, onCancel) {
     if (typeof (pushUrl) === "undefined")
         pushUrl = obj["push"] || obj["pushUrl"];
     if (typeof (onSuccess) === "undefined")
-        onSuccess = obj["success"];  
+        onSuccess = obj["success"];
     if (typeof (onSuccess) !== "undefined" && typeof (pushUrl) !== "undefined") {
         var oldSuccess = onSuccess;
         onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, oldSuccess, true, contentType); };
@@ -249,8 +249,8 @@ function showModalObject(obj,pushUrl,onSuccess,onCancel) {
     var iconType = typeof (obj.icon);
     if (iconType !== "undefined") {
         obj.modalClass += " modal-icon";
-        $("#modal-icon").attr("class", "modal-icon");            
-        if (iconType==="string")
+        $("#modal-icon").attr("class", "modal-icon");
+        if (iconType === "string")
             obj.modalClass += " modal-icon-" + obj.icon;
         else if (iconType === "object") {
             var time = +new Date();
@@ -262,7 +262,7 @@ function showModalObject(obj,pushUrl,onSuccess,onCancel) {
             var title = escapeString(obj.icon.title || "Hey!");
             var color = escapeString(obj.icon.color || "#5bc0de");
             $("#modal-icon").addClass(icon);
-            icon=icon.replace(" ",".")
+            icon = icon.replace(" ", ".")
             document.styleSheets[0].addRule("." + custom + " ." + icon + ":after", 'content: "' + title + '";');
             document.styleSheets[0].addRule("." + custom + " ." + icon + ":before", 'background-color: ' + color + ';');
             document.styleSheets[0].addRule("." + custom + " #modalOk", 'background-color: ' + color + ';');
@@ -270,7 +270,7 @@ function showModalObject(obj,pushUrl,onSuccess,onCancel) {
 
     }
 
-    $("#modal #class-container").attr("class",obj.modalClass);
+    $("#modal #class-container").attr("class", obj.modalClass);
 
     $("#modalMessage").html("");
     $("#modalMessage").addClass("hidden");
@@ -278,8 +278,8 @@ function showModalObject(obj,pushUrl,onSuccess,onCancel) {
     $('#modal').modal('show');
 
     var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span", "h1", "h2", "h3", "h4", "h5", "h6", "file"];
-    var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time","file"];
-    var tags = ["span","h1", "h2", "h3", "h4", "h5", "h6"];
+    var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "file"];
+    var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6"];
     var anyFields = ""
     if (typeof (obj.field) !== "undefined") {
         if (typeof (obj.fields) !== "undefined") {
@@ -289,31 +289,31 @@ function showModalObject(obj,pushUrl,onSuccess,onCancel) {
         }
     }
 
-    if (typeof (obj.fields) === "object"){
-        var allDeep =true;
-        for(var f in obj.fields){
-            if (typeof (obj.fields[f]) !== "object"){
-                allDeep=false;
+    if (typeof (obj.fields) === "object") {
+        var allDeep = true;
+        for (var f in obj.fields) {
+            if (typeof (obj.fields[f]) !== "object") {
+                allDeep = false;
                 break;
             }
         }
-        if (!allDeep){
+        if (!allDeep) {
             obj.fields = [obj.fields];
         }
     }
-    
+
     var fieldsTypeIsArray = Array.isArray(obj.fields);//typeof (obj.fields);
-    
+
     var contentType = null;
 
     var builder = '<div class="form-horizontal modal-builder">';
     for (var f in obj.fields) {
-        try{
+        try {
             var field = obj.fields[f];
-            var name = field.name||f;
+            var name = field.name || f;
             var label = typeof (field.text) !== "undefined" || !fieldsTypeIsArray;
             var text = field.text || name;
-            var value = field.value||"";
+            var value = field.value || "";
             var placeholder = field.placeholder;
             var type = (field.type || "text").toLowerCase();
 
@@ -325,20 +325,20 @@ function showModalObject(obj,pushUrl,onSuccess,onCancel) {
             else placeholder = "";
             var input = "";
             var inputIndex = allowed.indexOf(type);
-            if (inputIndex == -1){
+            if (inputIndex == -1) {
                 console.warn("Input type not allowed:" + type);
                 continue;
             }
-            if (Object.prototype.toString.call(value) === '[object Date]' && type=="date") {
+            if (Object.prototype.toString.call(value) === '[object Date]' && type == "date") {
                 value = value.toISOString().substring(0, 10);
             }
 
             if (type == "file")
                 contentType = 'enctype="multipart/form-data"';
 
-            if (tags.indexOf(type)!=-1) {
+            if (tags.indexOf(type) != -1) {
                 input = "<" + type + " name=" + escapeString(name) + '" id="' + escapeString(name) + '">' + value + '</' + type + '>';
-            }else if (type == "textarea") {
+            } else if (type == "textarea") {
                 input = '<textarea class="form-control blend verticalOnly" rows=5 name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
             } else {
                 input = '<input type="' + escapeString(type) + '" class="form-control blend" name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + ' value="' + escapeString(value) + '"/>';
@@ -380,7 +380,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 
         if (typeof (reformatArg) === "function") {
             var o = reformatArg(formData);
-            if (typeof (o) !== "undefined" && o!=null)
+            if (typeof (o) !== "undefined" && o != null)
                 formData = o;
         }
 
@@ -424,7 +424,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 
     $("#modal button[data-dismiss='modal']").unbind('click.radialModal');
 
-   
+
     $("#modal button[data-dismiss='modal']").on("click.radialModal", function () {
         if (typeof onCancelArg === "string") {
             eval(onCancelArg + "()");
@@ -453,7 +453,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
     }, 50);
 }
 
-function _submitModal(formData, pushUrl, onSuccess,useJson, contentType) {
+function _submitModal(formData, pushUrl, onSuccess, useJson, contentType) {
     ///FORM DATA IS NOT USED
     ///TODO use form data;
     var serialized
@@ -463,14 +463,14 @@ function _submitModal(formData, pushUrl, onSuccess,useJson, contentType) {
     if (typeof (contentType) === "undefined")
         contentType = null;
     var processData = null;
-    if (useJson && contentType==null) {
+    if (useJson && contentType == null) {
         serialized = JSON.stringify(formData);
         contentType = "application/json; charset=utf-8";
     } else if (contentType == 'enctype="multipart/form-data"') {
         serialized = new FormData($('#modalForm')[0]);
         processData = false;
         contentType = false;
-    }else{
+    } else {
         serialized = $("#modalForm").serialize();
         contentType = contentType || "application/x-www-form-urlencoded";
     }
@@ -481,7 +481,7 @@ function _submitModal(formData, pushUrl, onSuccess,useJson, contentType) {
         type: "POST",
         contentType: contentType,
         data: serialized,// JSON.stringify(formData),
-        processData:processData,
+        processData: processData,
         success: function (data, status, jqxhr) {
             if (!data) {
                 $("#modal").modal("hide");
@@ -688,7 +688,7 @@ function profilePicture(url, name, initials) {
             }
             hash = hash % 360;
 
-            initials = getInitials(name, initials);
+            initials = getInitials(name, initials).toUpperCase();
             //initials = name.match(/\b\w/g).join(' ');
             picture = "<span class='picture' style='background-color:hsla(" + hash + ", 36%, 49%, 1);color:hsla(" + hash + ", 36%, 72%, 1)'><span class='initials'>" + initials + "</span></span>";
 
@@ -1051,7 +1051,280 @@ $("body").on("click", ".todoModal:not(.disabled)", function () {
     });
 });
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
 
+//function ensureLoaded(scriptPath,onLoad) {
+//    var tagName = "script";
+//    var attr = "src"
+//    if (scriptPath.indexOf(".css") != -1) {
+//        tagName = "link";
+//        attr = "href";
+//    }
+
+//    var list = document.getElementsByTagName(tagName);
+//    var i = list.length, flag = false;
+//    while (i--) {
+//        if (list[i][attr] == scriptPath) {
+//            flag = true;
+//        }
+//    }
+//    if (!flag) {
+//        var tag = document.createElement(tagName);
+//        tag[attr] = scriptPath;
+//        if (typeof(onLoad)!=="undefined")
+//            tag["onload"] = onLoad;
+//        document.getElementsByTagName('body')[0].appendChild(tag);
+//    }
+//}
+
+jQuery.cachedScript = function (url, options) {
+    // Allow user to set any option except for dataType, cache, and url
+    options = $.extend(options || {}, {
+        dataType: "script",
+        cache: true,
+        url: url
+    });
+    // Use $.ajax() since it is more flexible than $.getScript
+    // Return the jqXHR object so we can chain callbacks
+    return jQuery.ajax(options);
+};
+
+var tname = "";
+var tmethod = ""
+function startTour(name, method) {
+    if (typeof (method) === "undefined" || method == null || (typeof (method) === "string" && method.trim() == ""))
+        method = "start";
+    $.getScript("/Scripts/Tour/lib/anno.js").done(function () {
+
+        //ensureLoaded("/Scripts/Tour/lib/jquery.scrollintoview.min.js");
+        //ensureLoaded("/Content/Tour/lib/anno.css");
+        if (typeof (Tours) === "undefined") {
+            Tours = {
+                /*waitToProgress: function (a, ms) {
+                    var an = a;
+                    var existingShow = a.onShow;
+                    var existingHide = a.onHide;
+
+                    var handler = function ( evt) {
+                        evt.preventDefault();
+                        waitUntil(function () { return $(aa._chainNext.target).length > 0; }, function () {
+                            var that = aa;
+                            console.log("Found Element");
+                            setTimeout(function () { c.call(that, aa, evt); }, 1);
+                        }, function () { showAlert("Error loading tour."); });
+                    };
+                    an.onShow = function (anno, $target, $annoElem) {
+                        var aanno = anno;
+
+                        if (typeof (ms) === "undefined")
+                            ms = 6000;
+                        if (!anno._chainNext)
+                            throw "No anno follows this one.";                      
+                        var found = $annoElem.find(".anno-btn-container button").filter(function () { var txt = $(this).text(); return txt == "Next" || txt == "Done"; });
+                        if (found.length > 0)
+                            found[0].click(handler);
+                        else
+                            console.error("Could not add wait to button. Button not found.");
+                        if (typeof (existingShow) !== "undefined")
+                            existingShow(anno, $target, $annoElem);
+                    }
+
+                    an.onHide = function (anno, $target, $annoElem) {
+                        var aanno = anno;                   
+                        var found = $annoElem.find(".anno-btn-container button").filter(function () { var txt = $(this).text(); return txt == "Next" || txt == "Done"; });
+                        if (found.length > 0)
+                            try {
+                                $(found[0]).unbind(handler);
+                            } catch (e) { }
+                        else
+                            console.error("Could not remove wait from button. Button not found.");
+                        if (typeof (existingHide) !== "undefined")
+                            existingHide(anno, $target, $annoElem);
+                    }
+                    return an;
+                },*/
+                NextButton: function(){
+                    return {
+                        text: "Next1",
+                        click: function (a, e) {
+                            var anno = a;
+                            $(anno.target).click();
+                            e.preventDefault();
+                        }
+                    };
+                },
+                clickToAdvance: function (anno) {
+
+                    var existingShow = anno.onShow;
+                    var existingHide = anno.onHide;
+
+                    anno.onShow = function (anno, $target, $annoElem) {
+                        var an = anno;
+                        if (typeof (existingShow) !== "undefined")
+                            existingShow(anno, $target, $annoElem);
+                        var handler = function (e) {
+                            console.log("c2a handler");
+                            if (anno._chainNext != null) {
+                                waitUntil(function () { return $(anno._chainNext.target).length > 0; }, function () {
+                                    setTimeout(function () {
+                                        if (typeof (anno.action) === "function")
+                                            anno.action();
+                                        an.switchToChainNext();
+                                    }, 250);
+                                }, function () {
+                                    showAlert("Could not load tour.");
+                                });
+                            } else {
+                                if (typeof (anno.action) === "function")
+                                    anno.action();
+                                an.switchToChainNext();
+                            }
+                        }
+                        
+                        $target[0].addEventListener('click', handler, true) // `true` is essential
+                       /* if (an.buttons) {
+                            for (var i = 0; i < an.buttons.length; i++) {
+                                if (an.buttons[i].text == "Next" || an.buttons[i].text == "Done") {
+                                    an.buttons[i] = jQuery.extend({}, an.buttons[i]);
+                                    var c = an.buttons[i].click;
+                                    an.buttons[i].click = function (a, evt) {
+                                        $(an.target).click();
+                                        c.call(this, a, evt);
+                                    }
+                                }
+                            }
+                        }
+                        if (an._chainNext) {
+                            if (an._chainNext.buttons) {
+                                for (var i = 0; i < an.buttons.length; i++) {
+                                    if (an.buttons[i].text == "Back") {
+                                        an.buttons[i] = jQuery.extend({}, an.buttons[i]);
+                                        var c = an.buttons[i].click;
+                                        an.buttons[i].click = function (a, evt) {
+                                            $(an.target).click();
+                                            c.call(this, a, evt);
+                                        }
+                                    }
+                                }
+                            }
+                        }*/
+                        return handler
+                    };
+                    //if (typeof (anno.onHide) !== "undefined") console.warn("Anno already has an onHide. It will be replaced by clickToAdvance.", anno);
+                    anno.onHide = function (anno, $target, $annoElem, handler) {
+                        if (typeof (existingHide) !== "undefined")
+                            existingHide(anno, $target, $annoElem);
+                        if ($target.length > 0) {
+                            $target[0].removeEventListener('click', handler, true);
+                        }
+                    }
+                    return anno;
+                },
+                appendParams: function (anno, selector, tourName, tourMethod) {
+                    var existingShow = anno.onShow;
+                    var existingHide = anno.onHide;
+
+                    anno.onShow = function (anno, $target, $annoElem) {
+                        if (typeof (existingShow) !== "undefined")
+                            existingShow(anno, $target, $annoElem);
+                        tname = tourName;
+                        tmethod = tourMethod;
+                        var handler = function (e) {
+                            if (typeof (e.target.href) !== "undefined" && $(e.target).is(selector)) {
+                                e.preventDefault();
+                                if (e.target.href.indexOf("?") != -1) window.location.href = e.target.href + '&tname=' + tourName + "&tmethod=" + tourMethod;
+                                else window.location.href = e.target.href + '?tname=' + tourName + "&tmethod=" + tourMethod;
+                            }
+                            if (typeof (e.target.onclick) !== "undefined" && $(e.target).is(selector)) {
+                                e.preventDefault();
+                                var str = "" + e.target.onclick;
+                                var findQ = "'";
+                                var idx = str.indexOf("location.href='");
+                                if (idx == -1) {
+                                    idx = str.indexOf('location.href="');
+                                    var findQ = '"';
+                                }
+                                if (idx != -1) {
+                                    idx += 14;
+                                    var endQ = str.indexOf(findQ, idx + 1);
+                                    var query = (str.substr(idx, endQ - idx).indexOf("?") == -1) ? "?" : "&";
+                                    str = str.substr(0, endQ) + query + 'tname=' + tourName + "&tmethod=" + tourMethod + str.substr(endQ);
+                                    e.target.onclick = eval(str);
+                                }
+                            }
+                        }
+                        $target[0].addEventListener('click', handler, true) // `true` is essential
+                        return handler
+                    };
+
+                    anno.onHide = function (anno, $target, $annoElem, handler) {
+                        if (typeof (existingHide) !== "undefined")
+                            existingHide(anno, $target, $annoElem, handler);
+                        $target[0].removeEventListener('click', handler, true);
+                        tname = "";
+                        tmethod = "";
+                    }
+                    return anno;
+                }
+            }
+        };
+        try {
+            $.getScript("/Scripts/Tour/" + name + ".js").done(function () { Tours[name][method](); });
+        } catch (e) {
+            showAlert("Tour could not be loaded.");
+        }
+    });
+}
+
+function shouldBeginTour() {
+    var tourName = getParameterByName("tname");
+    if (typeof (tourName) !== "undefined" && tourName != null && (typeof (tourName) === "string" && tourName.trim() != "")) {
+        startTour(tourName, getParameterByName("tmethod"));
+    }
+}
+shouldBeginTour();
+
+
+/**
+ * @brief Wait for something to be ready before triggering a timeout
+ * @param {callback} isready Function which returns true when the thing we're waiting for has happened
+ * @param {callback} success Function to call when the thing is ready
+ * @param {callback} error Function to call if we time out before the event becomes ready
+ * @param {int} count Number of times to retry the timeout (default 300 or 6s)
+ * @param {int} interval Number of milliseconds to wait between attempts (default 20ms)
+// */
+function waitUntil(isready, success, error, count, interval) {
+    if (count === undefined) {
+        count = 300;
+    }
+    if (interval === undefined) {
+        interval = 20;
+    }
+    if (isready()) {
+        success();
+        return;
+    }
+    // The call back isn't ready. We need to wait for it
+    setTimeout(function () {
+        if (!count) {
+            // We have run out of retries
+            if (error !== undefined) {
+                error();
+            }
+        } else {
+            // Try again
+            waitUntil(isready, success, error, count - 1, interval);
+        }
+    }, interval);
+}
 
 //Debounce
 (function (n, t) { var $ = n.jQuery || n.Cowboy || (n.Cowboy = {}), i; $.throttle = i = function (n, i, r, u) { function o() { function o() { e = +new Date; r.apply(h, c) } function l() { f = t } var h = this, s = +new Date - e, c = arguments; u && !f && o(); f && clearTimeout(f); u === t && s > n ? o() : i !== !0 && (f = setTimeout(u ? l : o, u === t ? n - s : n)) } var f, e = 0; return typeof i != "boolean" && (u = r, r = i, i = t), $.guid && (o.guid = r.guid = r.guid || $.guid++), o }; $.debounce = function (n, r, u) { return u === t ? i(n, r, !1) : i(n, u, r !== !1) } })(this);

@@ -1,4 +1,5 @@
-﻿.rock-completion {
+﻿@import url('../../Tour/anno.css');
+.rock-completion {
   font-weight: bold;
   color: white;
   border: none;

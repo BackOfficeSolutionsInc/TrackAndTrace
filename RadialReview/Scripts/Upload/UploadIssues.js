@@ -8,8 +8,8 @@ var uploader = UploadSteps({
         uploader.addSelectionStep("Select issues (Do not select header)", validateIssue);
 
         if (d.Data.FileType == "CSV") {
-            uploader.addSelectionStep("Select details (Do not select header)", validateDetails, true);
-            uploader.addSelectionStep("Select owners (Do not select header)", validateUsers, true);
+            uploader.addSelectionStep("Select issue details (Do not select header)", validateDetails, true);
+            uploader.addSelectionStep("Select issue owners (Do not select header)", validateUsers, true);
         }
     }
 });

@@ -396,10 +396,12 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					var found = s.Get<UserOrganizationModel>(userOrgId);
+                    var found = s.Get<UserOrganizationModel>(userOrgId);
+                    if (found == null || found.DeleteTime!=null)
+                        throw new PermissionsException("User does not exist.");
 					var tempUser = found.TempUser;
 					if (tempUser == null)
-						throw new PermissionsException();
+						throw new PermissionsException("User has already joined.");
 
 					bool changed = false;
 
@@ -417,6 +419,8 @@ namespace RadialReview.Accessors
 					if (tempUser.Email != email)
 					{
 						tempUser.Email = email;
+                        found.EmailAtOrganization = email;
+                        s.Update(found);
 						changed = true;
 					}
 
@@ -429,6 +433,18 @@ namespace RadialReview.Accessors
 					if (changed)
 					{
 						PermissionsUtility.Create(s, caller).ManagesUserOrganization(userOrgId, false,PermissionType.EditEmployeeDetails);
+
+                        var guid = s.Get<NexusModel>(tempUser.Guid);
+                        if (guid != null) {
+                            var existingArg = guid.GetArgs();
+                            existingArg[1] = tempUser.Email;
+                            existingArg[3] = tempUser.FirstName;
+                            existingArg[4] = tempUser.LastName;
+                            guid.SetArgs(existingArg);
+                            s.Update(guid);
+                        }
+
+
 						s.Update(tempUser);
 						if (found!=null)
 							found.UpdateCache(s);

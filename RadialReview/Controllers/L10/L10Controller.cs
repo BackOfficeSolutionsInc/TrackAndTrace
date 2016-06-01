@@ -183,7 +183,7 @@ namespace RadialReview.Controllers
                 //ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
 
                 var l10 = L10Accessor.CreateBlankRecurrence(GetUser(),GetUser().Organization.Id);
-                return RedirectToAction("Wizard", new { id = l10.Id });
+                return RedirectToAction("Wizard", new { id = l10.Id, tname = Request["tname"], tmethod = Request["tmethod"] });
             } else {
                 //var recurrenceId = id.Value;
                 //_PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));

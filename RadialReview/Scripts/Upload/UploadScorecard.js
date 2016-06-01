@@ -9,7 +9,7 @@ var uploader = UploadSteps({
 uploader.addSelectionStep("Select accountable users (Do not select header)", validateUsers);
 uploader.addSelectionStep("Select measurable titles (Do not select header)", validateMeasurables);
 uploader.addSelectionStep("Select goals (Do not select header)", validateGoal);
-uploader.addSelectionStep("Select dates (Start of week)", validateDate);
+uploader.addSelectionStep("Select dates (Start of week)", validateDate, true);
 
 function validateUsers(rect) {
 
@@ -52,7 +52,10 @@ function validateGoal(rect) {
 function validateDate(rect) {
     var allTrue = true;
     //var rect = getRect();
-    allTrue = allTrue && uploader.verify.atLeastOneCell(rect);
+    var oneCell = uploader.verify.atLeastOneCell(rect);
+    if (!oneCell)
+        return true;
+    allTrue = allTrue && oneCell;
     allTrue = allTrue && uploader.verify.eitherColumnOrRow(rect);
     allTrue = allTrue && uploader.verify.eitherAboveOrBelow(userRect, rect);
 

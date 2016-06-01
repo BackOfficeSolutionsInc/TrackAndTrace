@@ -34,15 +34,33 @@
         <div class="wizard hidden">
             <div class="row">
                 <div class="col-sm-3 wizard-menu">
-                    <div class="component">
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                <span class="sr-only">60% Complete</span>
-                            </div>
-                        </div>
+                    <div class="component" id="l10-wizard-menu">
+                        <table style="width:100%" class="wizard-nav-bar">
+                            <tr>
+                                <td>
+                                    <span class="button backButton pull-left glyphicon glyphicon-chevron-left" onclick="backPage()"></span>
+                                </td>
+                                <td style="width:100%">
+                                    <div class="progress" id="l10-wizard-progress">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                                            <span class="sr-only">60% Complete</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="button nextButton pull-right glyphicon glyphicon-chevron-right" onclick="nextPage()"></div>
+                                </td>
+                            </tr>
+                        </table>
+
+
+                        @*<div class="wizard-nav-bar">
+
+                            </div>*@
+                        <div class="clearfix"></div>
                         <ol>
                             <li><a href="#Basics">Basics</a></li>
-                            <li><a href="#Attendees">Attendees</a></li>
+                            <li><span id="l10-wizard-attendees-btn"><a href="#Attendees">Attendees</a></span></li>
                             <li><a href="#Scorecard">Scorecard</a></li>
                             <li><a href="#Rocks">Rocks</a></li>
                             <li><a href="#Todos">To-dos</a></li>
@@ -53,23 +71,29 @@
                     </div>
                 </div>
                 <div class="col-sm-9">
-                    <div class="component wizard-page" data-page="Basics">
+                    @*<div class="pull-right">
+                            <div class="btn btn-default" onclick="backPage()">Back</div>
+                            <div class="btn btn-primary" onclick="nextPage()">Next</div>
+                        </div>
+                        <div class="clearfix smallBreak2"></div>*@
+                    <div class=" component wizard-page" data-page="Basics" id="l10-wizard-basics">
                         <div class="form-horizontal">
                             <div class="form-group">
                                 <label class="col-md-3 control-label">Meeting Name:</label>
-                                <div class="col-md-9">
+                                <div class="col-md-9" id="l10-wizard-name">
                                     <input class="blend" type="text" ng-model-options="{ debounce: 300 }" ng-model="model.Basics.Name" ng-change="functions.sendUpdate(model.Basics)" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-3 control-label">Type of team:</label>
-                                <div class="col-md-9">
-                                    <select class="blend" ng-model="model.Basics.TeamType" ng-change="functions.sendUpdate(model.Basics)" ng-options=" s.value as s.text for s in options.l10teamtypes" ></select>
+                                <div class="col-md-9" id="l10-wizard-teamtype">
+                                    <select class="blend" ng-model="model.Basics.TeamType" ng-change="functions.sendUpdate(model.Basics)" ng-options=" s.value as s.text for s in options.l10teamtypes"></select>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="component wizard-page" data-page="Attendees">
+                    <div class="component wizard-page" data-page="Attendees" id="l10-wizard-attendees">
+                        <div class="upload upload-attendees" ng-click="functions.goto('/upload/L10/users?recurrence='+meetingId)" data-toggle="tooltip" data-placement="left" title="Upload Attendees"></div>
                         <div class="title-bar">Attendees List</div>
                         @{Html.RenderPartial("~/Views/User/partial/list.cshtml", new ViewDataDictionary{
                               {"AddHeaders",false},
@@ -85,7 +109,7 @@
                               {"AddDatePicker",false},
                               {"EditOwner",true},
                               {"ElasticInput",false},
-                              {"Order","| orderBy: ['Owner.Name','DateCreated','Id']"}
+                              {"Order","| orderBy: ['DateCreated','Id']"}
                           });
                         }
                     </div>
@@ -93,12 +117,12 @@
                     <div class="component wizard-page" data-page="Rocks">
                         <div class="upload upload-rocks" ng-click="functions.goto('/upload/l10/rocks?recurrence='+meetingId)" data-toggle="tooltip" data-placement="left" title="Upload Rocks"></div>
                         <div class="title-bar">Quarterly Rocks</div>
-                        @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml",new ViewDataDictionary{
+                        @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml", new ViewDataDictionary{
                               {"SortBy","createtime-column"},
                               {"AddHeaders",false},
                               {"AddDatePicker",false},
                               {"Filter",""},
-                              {"Order","| orderBy: ['Owner.Name','DateCreated','Id']"}
+                              {"Order","| orderBy: ['DateCreated','Id']"}
                           });
                         }
                     </div>
@@ -128,8 +152,8 @@
                         }
                     </div>
                     @*<div class="component wizard-page" data-page="VTO">
-                        VTO!!
-                    </div>*@
+                            VTO!!
+                        </div>*@
                 </div>
             </div>
         </div>

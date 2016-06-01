@@ -118,9 +118,16 @@
                                       x.SelectedRocks,
                                       Model.PossibleRocks.ToSelectList(x => x.ToFriendlyString(), x => x.Id).OrderBy(x => x.Text),
                                       new { @class = "Xselect2  duel-list form-control rocks editable", style = "max-width:600px;width:100%;", multiple = "", placeholder = "Click here or begin typeing one of your " + Html.Organization().Settings.RockName + "..." })
+
+                            <br />
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Combine company and personal rocks:</label>
+                                <div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.CombineRocks, new { @class = "editable", style = "margin-top: 11px;" })</div>
+                            </div>
                         </div>
                     </div>
-                </div><div class="panel panel-default">
+                </div>
+                <div class="panel panel-default">
                     <div class="panel-heading" role="tab" id="headingHeadlines">
                         <h4 class="panel-title">
                             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseHeadlines" aria-expanded="false" aria-controls="collapseHeadlines">
@@ -415,7 +422,7 @@
             moveOnSelect: false,
             moveSelectedLabel: "Add selected",
             moveAllLabel: "Add all",
-            nonSelectedFilter: '@Model.PossibleRocks.Where(x=>x.Period!=null).Select(x=>x.Period).OrderByDescending(x=>x.EndTime).FirstOrDefault().NotNull(x=>x.Name)',
+            //nonSelectedFilter: '@Model.PossibleRocks.Where(x=>x.Period!=null).Select(x=>x.Period).OrderByDescending(x=>x.EndTime).FirstOrDefault().NotNull(x=>x.Name)',
             infoTextFiltered:'<span class="label label-warning">This list is filtered</span> {0} from {1}'
 
         });

@@ -179,15 +179,15 @@ namespace RadialReview.Controllers {
                 using (var tx = s.BeginTransaction()) {
                     foreach (var a in s.QueryOver<ReviewsModel>().Where(x => x.ForOrganizationId == orgId).List()) {
                         var update = false;
-                       /* if (a.PeriodId == 0) {
-                            a.PeriodId = periodId;
-                            update = true;
-                        }
-                        if (a.NextPeriodId == 0) {
+                        /* if (a.PeriodId == 0) {
+                             a.PeriodId = periodId;
+                             update = true;
+                         }
+                         if (a.NextPeriodId == 0) {
 
-                            a.NextPeriodId = nextPeriodId;
-                            update = true;
-                        }*/
+                             a.NextPeriodId = nextPeriodId;
+                             update = true;
+                         }*/
 
                         if (update) {
                             s.Update(a);
@@ -1074,10 +1074,10 @@ namespace RadialReview.Controllers {
                 using (var tx = s.BeginTransaction()) {
                     //Fix TempUser userIds
 
-                    var recur = s.QueryOver<L10Recurrence>().Where(x=>x.TeamType==L10TeamType.Invalid || x.TeamType==null).List().ToList();
+                    var recur = s.QueryOver<L10Recurrence>().Where(x => x.TeamType == L10TeamType.Invalid || x.TeamType == null).List().ToList();
 
                     foreach (var r in recur) {
-                        r.TeamType = r.IsLeadershipTeam?L10TeamType.LeadershipTeam:L10TeamType.Other;
+                        r.TeamType = r.IsLeadershipTeam ? L10TeamType.LeadershipTeam : L10TeamType.Other;
                         s.Update(r);
                         f++;
                     }
@@ -1093,30 +1093,90 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.Radial)]
         public string M4_17_2016()
         {
-             var f = 0;
-             using (var s = HibernateSession.GetCurrentSession()) {
-                 using (var tx = s.BeginTransaction()) {
-                     //Fix TempUser userIds
+            var f = 0;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    //Fix TempUser userIds
 
-                     var eosWW = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id==1795).List().ToList();
+                    var eosWW = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == 1795).List().ToList();
 
-                     foreach (var e in eosWW) {
-                         if (e.User.SendTodoTime != -1) {
+                    foreach (var e in eosWW) {
+                        if (e.User.SendTodoTime != -1) {
 
-                             e.User.SendTodoTime = -1;
-                             s.Update(e.User);
-                             f += 1;
-                         }
-                     }
-                     
+                            e.User.SendTodoTime = -1;
+                            s.Update(e.User);
+                            f += 1;
+                        }
+                    }
+
                     tx.Commit();
                     s.Flush();
 
                     return "EOSWW SetTime:" + f;
                 }
-             }
+            }
 
         }
 
+        [Access(Controllers.AccessLevel.Radial)]
+        public string M05_23_2016(long id)
+        {
+            var caller = GetUser();
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+
+                    var recur = s.Get<L10Recurrence>(id);
+
+                    //s.Save(recur);
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var build = "";
+                    if (recur.VtoId == 0) {
+                        VtoAccessor.CreateRecurrenceVTO(s, perms, recur.Id);
+                        build += " VTO";
+                    }
+                    var egs = s.QueryOver<PermItem>().Where(x =>
+                        x.ResType == PermItem.ResourceType.L10Recurrence &&
+                        x.ResId == recur.Id)
+                    .List().ToList();
+
+                    if (!egs.Any(x => x.AccessorType == PermItem.AccessType.Creator)) {
+                        s.Save(new PermItem() {
+                            CanAdmin = true,
+                            CanEdit = true,
+                            CanView = true,
+                            AccessorType = PermItem.AccessType.Creator,
+                            AccessorId = caller.Id,
+                            ResType = PermItem.ResourceType.L10Recurrence,
+                            ResId = recur.Id,
+                            CreatorId = caller.Id,
+                            OrganizationId = caller.Organization.Id,
+                            IsArchtype = false,
+                        });
+
+                        build += " Creator";
+                    }
+                    if (!egs.Any(x => x.AccessorType == PermItem.AccessType.Members)) {
+                        s.Save(new PermItem() {
+                            CanAdmin = true,
+                            CanEdit = true,
+                            CanView = true,
+                            AccessorType = PermItem.AccessType.Members,
+                            AccessorId = -1,
+                            ResType = PermItem.ResourceType.L10Recurrence,
+                            ResId = recur.Id,
+                            CreatorId = caller.Id,
+                            OrganizationId = caller.Organization.Id,
+                            IsArchtype = false,
+                        });
+                        build += " Creator";
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+
+                    return "Added." + build;
+                }
+            }
+        }
     }
 }

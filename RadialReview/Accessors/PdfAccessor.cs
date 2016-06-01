@@ -1307,7 +1307,7 @@ namespace RadialReview.Accessors {
 
         private static void AddVtoTraction(Document doc, AngularVTO vto)
         {
-            var section = AddVtoPage(doc, vto.Name, "TRACTION");
+            var section = AddVtoPage(doc, vto.Name??"", "TRACTION");
 
             var table = section.AddTable();
             table.AddColumn(Unit.FromInch(3.47));

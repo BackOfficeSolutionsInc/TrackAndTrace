@@ -14,8 +14,7 @@
     </div>
 }
 
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
 
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     @*<script src="~/Scripts/Grid/fixtures.js"></script>
@@ -24,7 +23,7 @@
         <script src="~/Scripts/Grid/load.js?v=2"></script>*@
 
     @Scripts.Render("~/bundles/DashboardGrid")
-    
+
     <script type="text/javascript">
 
         dataDateRange = {
@@ -123,13 +122,11 @@
         Add Tile <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
-        @if (Model.L10s.Any())
-        {
+        @if (Model.L10s.Any()) {
             <li class="dropdown-submenu">
                 <a tabindex="-1" href="#">L10s</a>
                 <ul class="dropdown-menu" style="">
-                    @foreach (var i in Model.L10s)
-                    {
+                    @foreach (var i in Model.L10s) {
                         <li class="dropdown-submenu">
                             <a tabindex="-1" href="#">@i.Text</a>
                             <ul class="dropdown-menu">
@@ -148,7 +145,7 @@
 
         <li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do List</a></li>
         <li><a onclick="createTile('/TileData/UserScorecard2','Url')">Scorecard</a></li>
-        <li><a onclick="createTile('/TileData/UserRock2','Url')">@Html.Organization().Settings.RockName</a></li>       
+        <li><a onclick="createTile('/TileData/UserRock2','Url')">@Html.Organization().Settings.RockName</a></li>
         <li><a onclick="createTile('/TileData/UserRoles','Url')">Roles</a></li>
         <li><a onclick="createTile('/TileData/OrganizationValues','Url')">Core Values</a></li>
         @if (ViewBag.IsManager) {
@@ -157,7 +154,10 @@
         <li><a onclick="createTile('/TileData/UserProfile2','Url')">Profile Picture</a></li>
         @*<li><a onclick="createTile('/TileData/UserButtons','Url')">Quick Links</a></li>*@
         <li><a onclick="createTile('/TileData/SoftwareUpdates','Url')">Software Updates</a></li>
-        </ul>
+        @*<li class="divider"></li>
+        <li><a onclick="createTile('/TileData/FAQTips','Url')">FAQ Guide</a></li>*@
+
+    </ul>
 </div>
 
 
@@ -167,8 +167,7 @@
 			{ "IncludeComplete", false},
 			//{ "Callback", "initTiles"}
 		})
-        <ul id="grid" class="grid">
-        </ul>
+        <ul id="grid" class="grid"></ul>
     </div>
 </div>
 
@@ -180,8 +179,8 @@
 
 @using (Html.BeginStyles()) {
     @*KEEP AT THE BOTTOM*@
-    
-    
+
+
     @*<link href="~/Content/bootstrap/custom/dashboard.css" rel="stylesheet" />*@
     <style>
         .welcome a {

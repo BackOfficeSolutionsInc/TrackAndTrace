@@ -78,7 +78,7 @@ namespace RadialReview.Controllers {
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Recurrence(recurrence));
             ViewBag.RecurrenceId = recurrence;
             var title = id.ToTitleCase();
-            ViewBag.Title = "Upload " + title;
+            ViewBag.Title = "Upload " + title.Replace("Todos", "To-dos");
             ViewBag.UploadScript = "Upload" + title + ".js";
 
             var dictinary = new DefaultDictionary<string, MvcHtmlString>(x => null);
@@ -96,7 +96,7 @@ namespace RadialReview.Controllers {
                 "<p>If uploading a .txt file, please add one rock per line</p>");
             dictinary["users"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload as a .csv file.</h3>" +
                 "<p>Please upload a .csv with a column for first names, last names, and e-mails. You can also optionally add a column for positions, and managers. If adding a column for managers, please separate into two columns for managers' first and last names</p>" +
-                "<p>If uploading a .txt file, please add one rock per line</p>");
+                "");
             ViewBag.Instructions = dictinary[title.ToLower()];
 
 

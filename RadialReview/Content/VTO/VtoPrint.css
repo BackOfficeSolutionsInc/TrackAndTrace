@@ -109,8 +109,7 @@
         /*background-image: url('https://s3.amazonaws.com/Radial/base/Vto/EOS_Wheel.png') !important;*/
         background-size: auto 85% !important;
         background-repeat: no-repeat !important;
-        background-position-x: 0.25in !important;
-        background-position-y: 0.18in !important;
+        background-position: 0.25in 0.18in !important;
     }
 
         .vto-print .eos-icon img {

@@ -60,6 +60,12 @@
 					<strong>Error!</strong> @ViewBag.Message
 				</div>
 			}
+            @if (ViewBag.Info != null) {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Info!</strong> @ViewBag.Info
+                </div>
+            }
 		</div>
 	</div>
 	<div class="row">

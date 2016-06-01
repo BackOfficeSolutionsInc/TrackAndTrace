@@ -19,12 +19,11 @@
 	<div class="col-sm-7">
 		<div class="form-group">
 		@Html.LabelFor(x => x.AccountabilityId)
-		<select name="@Html.NameFor(x => x.AccountabilityId)" class="select-user form-control" style="width: 100%;height:64px;">
-			@foreach (var u in Model.PossibleUsers)
-			{
-				<option data-img="@u.imageUrl" value="@u.id">@u.name</option>
-			}
-		</select>
+            <select name="@Html.NameFor(x => x.AccountabilityId)" class="select-user form-control" style="width: 100%;height:64px;" multiple="multiple">
+                @foreach (var u in Model.PossibleUsers) {
+                    <option data-img="@u.imageUrl" value="@u.id" @(Model.AccountabilityId.Any(x => x == u.id) ? "selected" : "")>@u.name</option>
+                }
+            </select>
 		</div>
 	</div>
 	<div class="col-sm-5">

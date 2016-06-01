@@ -114,6 +114,9 @@ namespace RadialReview.Accessors
                 x => y => x.ViewUserOrganization(y, false));
 
             var r = s.Get<L10Recurrence>(recurrenceId);
+            r.Pristine = false;
+            s.Update(r);
+
             ExternalTodoAccessor.AddLink(s, perms, ForModel.Create(r), todo.AccountableUserId, todo);
 
             if (String.IsNullOrWhiteSpace(todo.PadId))

@@ -102,10 +102,9 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;br/&gt; Please join {1} on {4} by clicking the following link:&lt;/p&gt;
-        ///&lt;br&gt; 
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;br/&gt; Join {1} on {4} by clicking the following link and creating a password:&lt;/p&gt;
         ///    &lt;a href=&quot;{2}&quot;&gt;{3}&lt;/a&gt;
-        ///&lt;br /&gt;&lt;br /&gt;If you are prompted for an access code, please use the following:
+        ///&lt;br /&gt;&lt;br /&gt;If you are prompted for an Access Code, please use the following:
         ///&lt;br/&gt;
         ///&lt;br/&gt;
         ///&lt;table  width=&quot;100%&quot; align=&quot;center&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot;&gt;
@@ -116,7 +115,7 @@ namespace RadialReview.Properties {
         ///			&lt;table width=&quot;450&quot; style=&quot;background-color:#f3f4f4&quot; cellpadding=&quot;10&quot; border=&quot;0&quot; bgcolor=&quot;#F3F4F4&quot; align=&quot;center&quot;&gt;
         ///				&lt;tbody&gt;
         ///					&lt;tr align=&quot;center&quot; &gt;
-        ///							&lt;td style=&quot;color:#777&quot;&gt;Access Code:&lt;/t [rest of string was truncated]&quot;;.
+        ///							&lt;td style=&quot;color:#777&quot;&gt;Acces [rest of string was truncated]&quot;;.
         /// </summary>
         public static string JoinOrganizationUnderManager_Body {
             get {

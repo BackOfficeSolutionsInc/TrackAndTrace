@@ -63,7 +63,8 @@ namespace RadialReview.Accessors {
                         ManagerAtOrganization = true,
                         ManagingOrganization = true,
                         EmailAtOrganization = user.Email,
-                        AttachTime = now
+                        AttachTime = now,
+                        CreateTime = now
                     };
 
 
@@ -431,8 +432,19 @@ namespace RadialReview.Accessors {
                         else
                             throw new PermissionsException("You cannot change whether managers are admins at the organization.");
                     }
-                    if (organizationName != null)
+                    if (!String.IsNullOrWhiteSpace(organizationName) && org.Name.Standard != organizationName) {
                         org.Name.UpdateDefault(organizationName);
+                        var managers = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.Managers).List().FirstOrDefault();
+                        if (managers != null) {
+                            managers.Name = "Managers at " + organizationName;
+                            s.Update(managers);
+                        }
+                        var allTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.AllMembers).List().FirstOrDefault();
+                        if (allTeam != null) {
+                            allTeam.Name = organizationName;
+                            s.Update(allTeam);
+                        }
+                    }
                     if (strictHierarchy != null)
                         org.StrictHierarchy = strictHierarchy.Value;
 

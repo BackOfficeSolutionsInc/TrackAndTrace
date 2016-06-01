@@ -147,10 +147,9 @@
     <comment>[productName]</comment>
   </data>
   <data name="JoinOrganizationUnderManager_Body" xml:space="preserve">
-    <value>&lt;p&gt;{0},&lt;br/&gt; Please join {1} on {4} by clicking the following link:&lt;/p&gt;
-&lt;br&gt; 
+    <value>&lt;p&gt;{0},&lt;br/&gt; Join {1} on {4} by clicking the following link and creating a password:&lt;/p&gt;
     &lt;a href="{2}"&gt;{3}&lt;/a&gt;
-&lt;br /&gt;&lt;br /&gt;If you are prompted for an access code, please use the following:
+&lt;br /&gt;&lt;br /&gt;If you are prompted for an Access Code, please use the following:
 &lt;br/&gt;
 &lt;br/&gt;
 &lt;table  width="100%" align="center" cellspacing="0" cellpadding="0"&gt;
@@ -169,9 +168,23 @@
 		&lt;/td&gt;
 		&lt;td&gt;&lt;/td&gt;
 		&lt;/tr&gt;
+		&lt;tr&gt;
+		&lt;td&gt;&lt;/td&gt;
+		&lt;td&gt;
+		&lt;table width="450" style="" cellpadding="0" border="0"  align="center"&gt;
+			&lt;tbody&gt;
+					&lt;tr align="center" &gt;
+							&lt;td&gt;&lt;/td&gt;
+							&lt;td style="color:#333"&gt;&lt;div style="font-size:9px;text-align:right"&gt;*Your Access Code should not be used as your password.&lt;/div&gt;&lt;/td&gt;
+					&lt;/tr&gt;
+			&lt;/tbody&gt;
+		&lt;/table&gt;
+				&lt;/td&gt;
+		&lt;td&gt;&lt;/td&gt;
+		&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;br /&gt;If you have any questions, you can reply to this e-mail address.
+&lt;br /&gt;If you have any questions about {4}, you can reply to this e-mail address.
 &lt;br /&gt;
 &lt;br /&gt;
 Sincerely,&lt;br/&gt;

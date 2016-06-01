@@ -98,7 +98,8 @@
                 </md-table-container>
                 <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
                 <div class="create-row" ng-click="functions.addRow($event,'AngularIssue')" data-toggle="tooltip" data-placement="left" title="New Issue"></div>
-                <div class="component gray empty-search" style="padding: 30px 15px;clear: both;" ng-show="((@(selector)).Issues @(filter)).length==0">
+
+                <div class="component gray empty-search" style="padding: 30px 15px;clear: both;;display: inline-block;" ng-show="((@(selector)).Issues @(filter)).length==0">
                     No issues fit your search criteria.
                 </div>
             </div>

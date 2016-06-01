@@ -16,6 +16,12 @@ namespace RadialReview.Controllers
     {
         // GET: TileData
 
+        [Access(AccessLevel.Any)]
+        public PartialViewResult FAQTips()
+        {
+            return PartialView("FAQTips");
+        }
+
 
 
         [Access(AccessLevel.Any)]

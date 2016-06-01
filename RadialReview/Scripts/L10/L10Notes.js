@@ -124,6 +124,7 @@ function createNote(id, name,padId) {
 	$(".notes iframe").data("name", name);
 	$(".notes iframe").attr("disabled", false);
 	$(row).click();
+	$(".notes-instruction").hide();
 
 }
 function updateNoteName(id, name) {

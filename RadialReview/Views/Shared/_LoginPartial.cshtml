@@ -8,23 +8,23 @@
 
         <span class="pull-left navbar-icon-container">
             @if (((int?)ViewBag.Organizations ?? 0) > 0) {
-                <span class="navbar-icon-button glyphicon glyphicon-pushpin issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
-                <span class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
+                <span id="header-tab-new-issue" class="navbar-icon-button glyphicon glyphicon-pushpin issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+                <span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
             }
         </span>
 
-        <span class="hidden-sm hidden-xs">
-            @Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
+    <span class="hidden-sm hidden-xs" id="header-tab-profile-picture">
+        @Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
 			    { "ImageTitle", ((string)ViewBag.UsersName) },
 			    { "Initials", ViewBag.UserInitials },
 			    { "Color", ViewBag.UserColor }
 		    })
-        </span>
+    </span>
         <ul class="nav navbar-nav navbar-right1">
             <li>
 
 
-                <div class="btn-group heading" style="padding:8px;">
+                <div class="btn-group heading" style="padding:8px;" id="header-tab-dropdown">
                     <button type="button" href="@Url.Action("Details", "User", new { id = ViewBag.UserId })"
                             style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap; max-width:256px;padding-right:11px;"
                             class="btn btn-default heading " data-toggle="dropdown">
@@ -38,7 +38,7 @@
                         @{var doDivider = false;}
                         @if (ViewBag.IsManager ?? false) {
                             <li>
-                                <a href="@Url.Action("Index", "Manage")" title1="Add members, edit teams, rocks, roles and measurables">
+                                <a href="@Url.Action("Index", "Manage")" title1="Add members, edit teams, rocks, roles and measurables" id="header-tab-dropdown-manageorganization">
                                     Manage Organization@*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@
                                     <span id="ManageNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
                                 </a>
@@ -46,14 +46,14 @@
                             doDivider = true;
                         }
                         @*<li>
-                                <a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
-                                    Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
-                                </a>
-                            </li>*@
+                    <a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
+                        Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
+                    </a>
+                </li>*@
                         @if (ViewBag.ManagingOrganization ?? false) {
                             <li>
-                                <a href="@Url.Action("Advanced", "Manage")" title1="Add credit card information, edit advanced settings">
-                                    @*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@Organization Settings
+                                <a href="@Url.Action("Advanced", "Manage")" title1="Add credit card information, edit advanced settings" id="header-tab-dropdown-advancedsettings">
+                                    @*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@Advanced Settings
                                 </a>
                             </li>
                             doDivider = true;
@@ -67,13 +67,13 @@
 
                         @if (((int?)ViewBag.Organizations ?? 0) > 0) {
 
-                            <li>@Html.ActionLink("My Accountabilities", "Details", "User", new { id = ViewBag.UserId }, null)</li>
+                            <li id="header-tab-dropdown-myaccountabilities">@Html.ActionLink("My Accountabilities", "Details", "User", new { id = ViewBag.UserId }, null)</li>
                         }
                         <li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
 
                         <li class="divider"></li>
                         @if (((int?)ViewBag.Organizations ?? 0) > 1) {
-                            <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")">
+                            <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")" id="header-tab-dropdown-changeorganization">
                                 @if (((int?)ViewBag.Organizations ?? 0) > 1) {
                                     @Html.ActionLink("Change Organization", "Role", "Account", new { ReturnUrl = Request.Url.AbsolutePath }, null)
                                 } else {
@@ -81,7 +81,7 @@
                                 }
                             </li>
                         }
-                        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                        <li><a href="javascript:document.getElementById('logoutForm').submit()" id="header-tab-dropdown-logoff">Log off</a></li>
                     </ul>
                 </div>
 

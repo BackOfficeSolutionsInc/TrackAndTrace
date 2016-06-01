@@ -390,17 +390,18 @@ $(document).keydown(function (event) {
         $(".modal").modal('hide');
     }
 
-
     if ($(':focus').length || $(".modal.in").length || event.ctrlKey || event.metaKey || event.altKey) {
         return;
     }
 
     if (event.which == 73 && event.shiftKey) {
-        $(".button-bar .issuesModal:not(.disabled)").click();
+        $(".top-button-bar .issuesModal:not(.disabled)").click();
+        event.preventDefault();
         return;
     }
     if (event.which == 84 && event.shiftKey) {
-        $(".button-bar .todoModal:not(.disabled)").click();
+        $(".top-button-bar .todoModal:not(.disabled)").click();
+        event.preventDefault();
         return;
     }
 
@@ -426,8 +427,10 @@ $(document).keydown(function (event) {
         return false;
     } else if (event.which == 73) {
         $(f1).find(".issuesModal:not(.disabled)").click();
+        event.preventDefault();
     } else if (event.which == 84) {
         $(f1).find(".todoModal:not(.disabled)").click();
+        event.preventDefault();
     }/*else if (event.which == 67) {
 		$(f1).find(".todoModal").click();
 	}*/else if (event.which == 9) {
@@ -439,3 +442,22 @@ $(document).keydown(function (event) {
 	    $(".page-item.current").next().find("a").click();
 	}
 });
+
+
+
+function showPrint() {
+    //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
+    showModal("Generate Quarterly Printout", "/Quarterly/Modal", "/Quarterly/Printout/"+recurrenceId, "callbackPrint");
+}
+function callbackPrint() {
+
+    $("#modalForm").unbind("submit");
+    $("#modalForm").attr("target", "_blank");
+    $("#modalForm").attr("method", "post");
+    $("#modalForm").attr("action", "/Quarterly/Printout/"+recurrenceId);
+    $("#modalForm").bind("submit", function () {
+        $("#modal").modal('hide');
+    });
+
+    // $("#modalForm").bind("submit");
+}

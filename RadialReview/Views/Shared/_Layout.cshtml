@@ -7,7 +7,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@if (ViewBag.IsLocal ?? false) {
+    <link rel="SHORTCUT ICON" href="/content/favicon-local.ico?v=4" />
+} else {
     <link rel="SHORTCUT ICON" href="/content/favicon.ico?v=3" />
+}
     <link href='https://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
 
     <title>@ViewBag.Title - @Html.ProductName()</title>
@@ -99,7 +103,7 @@
                                                 </a>
                                             </li>*@
                                         <li>
-                                            <a href="@Url.Action("Index", "Home")">
+                                            <a href="@Url.Action("Index", "Home")" id="header-tab-workspace">
                                                 Workspace
                                                 <span id="DashboardNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
                                             </a>
@@ -108,7 +112,7 @@
                                         if (ViewBag.ShowL10 ?? false)
                                         {
                                             <li>
-                                                <a href="@Url.Action("Index", "L10")">
+                                                <a href="@Url.Action("Index", "L10")" id="header-tab-l10">
                                                     L10
                                                     <span id="L10Notification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
                                                 </a>
@@ -117,7 +121,7 @@
                                         if (ViewBag.ShowReview ?? false)
                                         {
                                             <li>
-                                                <a href="@Url.Action("Index", "Reviews")">
+                                                <a href="@Url.Action("Index", "Reviews")" id="header-tab-reviews">
                                                     @(Html.ReviewName())s
                                                     <span id="ReviewsNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
                                                 </a>
@@ -126,7 +130,7 @@
                                         if (ViewBag.ShowSurvey ?? false)
                                         {
                                             <li>
-                                                <a href="@Url.Action("Index", "Survey")">
+                                                <a href="@Url.Action("Index", "Survey")" id="header-tab-survey">
                                                     Surveys
                                                     <span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
                                                 </a>

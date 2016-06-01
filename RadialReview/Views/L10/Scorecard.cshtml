@@ -40,7 +40,7 @@
 						{
 							@:<div class="table-responsive scroll-right" style="min-height: 100px;">
 						}
-						<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm resizable Flipped" : "")">
+						<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm resizable Flipped" : "")" onload="alert()">
 							<thead class="Content">
 								<tr>
 									<th colspan="5">
@@ -282,11 +282,24 @@
 		$(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());
 	}
 
+	function scrollRight(){
+        
+	    if ($(".scroll-right").length>0){
+	        setTimeout(function(){
+	            debugger;
+	            $(".scroll-right").scrollLeft(4000);
+	        },1);
+	    }else{
+	        debugger;
+	        setTimeout(scrollRight,100);
+	    }
+	}
+
 	setTimeout(function() {
 		updateScorecardNumbers();
 		$(".score.current input").each(function() { updateScore(this); });
-		$(".scroll-right").scrollLeft(4000);
-		
+
+		scrollRight();
 
 		$("#ScorecardTable_Over").resizable({
 			handles: 'e',

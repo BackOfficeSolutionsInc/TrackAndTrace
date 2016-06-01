@@ -168,8 +168,9 @@
 							<input type="submit" class="btn btn-primary btn-invert col-md-4 col-md-offset-4 col-xs-12" value="Register" />
 						</div>
 						@if (ViewBag.ReturnUrl != null){
+                            <br />
 							<div class="row alignCenter">
-								@Html.ActionLink("or link to an existing account", "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "loginLink", @class = "btn btn-link gray", style = "text-decoration: underline;" })
+								@Html.ActionLink("or link to an existing Traction® Tools account", "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl,info="Login with your existing credentials to link your accounts" }, htmlAttributes: new { id = "loginLink", @class = "btn btn-link gray", style = "text-decoration: underline;" })
 							</div>
 						}
 					</div>

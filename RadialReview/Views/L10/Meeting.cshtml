@@ -1,7 +1,7 @@
 ﻿@using ImageResizer.Configuration
 @model RadialReview.Models.L10.VM.L10MeetingVM
 @{
-    ViewBag.Title = "Meeting";
+    ViewBag.Title = Model.Recurrence.Name;
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.FullWidth = true;
     if (ViewBag.VideoChatRoom == null) {
@@ -310,6 +310,8 @@
     <div class="row">
         <div class="col-xs-9 noPadLeft noPadRight">
             <div class="container main">
+                <span class="notes-instruction" @(Model.Recurrence.NotNull(x=>x._MeetingNotes.Any())?"style=display:none":"")>No notes to show. Click the Add Page button to create a custom note.</span>
+
                 @*<textarea cols="9" class="verticalOnly"></textarea>*@
                 <iframe class="" style="background-color: white" width="100%" src="about:blank"></iframe>
             </div>

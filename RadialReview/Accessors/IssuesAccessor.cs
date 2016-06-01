@@ -73,6 +73,9 @@ namespace RadialReview.Accessors
             o.IssueModel = issue;
             var r = s.Get<L10Recurrence>(recurrenceId);
 
+            r.Pristine = false;
+            s.Update(r);
+
             var recur = new IssueModel.IssueModel_Recurrence()
             {
                 CopiedFrom = null,

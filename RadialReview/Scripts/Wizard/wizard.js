@@ -120,3 +120,17 @@ window.onhashchange = function () {
     if (window.location.hash)
         changePage(window.location.hash);
 };
+
+$(function () {
+    $("body").on("click", "[data-toggle='tooltip']", function () {
+        $(".tooltip").tooltip('hide');
+    });
+    $(window).scroll(function () {
+        if (window.innerWidth > 768) {
+            $(".wizard-menu").css("top", window.scrollY);
+        } else {
+            $(".wizard-menu").css("top", 0);
+        }
+    });
+});
+

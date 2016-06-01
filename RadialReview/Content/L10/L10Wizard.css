@@ -95,6 +95,12 @@ profile-image.desaturate:hover {
   background-repeat: no-repeat;
   background-position: 50% 50%;
 }
+.material-button-usersAdd {
+  background-image: url("https://s3.amazonaws.com/Radial/icons/tinyAddUser.png");
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-position: 33% 50%;
+}
 .material-button-fade:after {
   -moz-transform: scale(1);
   -ms-transform: scale(1);
@@ -620,6 +626,7 @@ input[type=checkbox].blend:checked:after {
 /*#wrap {
     background-color: #F9F9F9 !important;
 }*/
+html,
 body,
 #wrap {
   background-color: #eeeeee !important;
@@ -710,6 +717,49 @@ body,
         color: #000;
     }*/
 }
+.wizard .wizard-nav-bar {
+  /*background-color:@traction-orange;*/
+  padding-top: 13px;
+}
+.wizard .wizard-nav-bar tr {
+  background-color: transparent !important;
+}
+.wizard .wizard-nav-bar td {
+  vertical-align: top;
+}
+.wizard .wizard-nav-bar .button {
+  opacity: .8;
+  padding-top: 1px;
+  cursor: pointer;
+  color: #3e3935;
+  -moz-transition: opacity .2s ease, color .2s ease;
+  -o-transition: opacity .2s ease, color .2s ease;
+  -webkit-transition: opacity .2s ease, color .2s ease;
+  transition: opacity .2s ease, color .2s ease;
+}
+.wizard .wizard-nav-bar .button:hover {
+  /*color:@traction-orange;*/
+  opacity: 1;
+}
+.wizard .wizard-nav-bar .button:active {
+  opacity: 1;
+  color: #ef7622;
+}
+.wizard .wizard-nav-bar .button.backButton {
+  padding-right: 4px;
+}
+.wizard .wizard-nav-bar .button.nextButton {
+  padding-left: 4px;
+}
+.wizard .wizard-nav-bar .button.disabled {
+  opacity: 0;
+}
+.wizard .checkbox-column {
+  padding-right: 20px !important;
+}
+.wizard .delete-column {
+  padding-right: 0px !important;
+}
 .wizard a:not(:hover) {
   color: #3e3935;
 }
@@ -718,6 +768,12 @@ body,
 }
 .wizard .picture-column {
   padding: 0px !important;
+}
+.wizard *:focus {
+  outline: none;
+}
+.wizard [data-toggle="tooltip"]:not(:hover) + .tooltip {
+  display: none !important;
 }
 .wizard .upload {
   background-image: url(https://s3.amazonaws.com/Radial/icons/tinyupload-black.png);
@@ -786,6 +842,7 @@ body,
 }
 .wizard .wizard-menu {
   font-family: 'Roboto', sans-serif;
+  font-size: 17px;
 }
 .wizard .wizard-menu ol {
   padding-left: 17px;
@@ -1550,9 +1607,10 @@ body,
   z-index: 10;
 }
 .wizard .user-list-container .isSearching .create-user:before {
-  background-image: url("https://s3.amazonaws.com/Radial/icons/tinyperson.png");
+  background-image: url("https://s3.amazonaws.com/Radial/icons/tinyAddUser.png");
   background-repeat: no-repeat;
   background-position: 50% 50%;
+  background-position: 33% 50%;
 }
 .wizard .user-list-container .isSearching .upload-users:before {
   background-image: url("https://s3.amazonaws.com/Radial/icons/tinyupload.png");
@@ -1674,7 +1732,7 @@ body,
   cursor: pointer;
   vertical-align: top;
   padding-left: 5px;
-  padding-right: 32px;
+  padding-right: 33px;
   padding-top: 2px;
   color: rgba(0, 0, 0, 0.54);
   font-size: 15px;
@@ -1834,6 +1892,7 @@ body,
   -ms-flex-direction: column-reverse;
   -webkit-flex-direction: column-reverse;
   flex-direction: column-reverse;
+  z-index: 1;
 }
 #alerts:empty {
   bottom: 0px;

@@ -1011,7 +1011,7 @@ tr.danger .strikable {
 }
 
 .resendEmail:not(.nohover):hover {
-    color: #79a9cf;
+    color: #79a9cf !important;
     background-color: #49789f;
 }
 

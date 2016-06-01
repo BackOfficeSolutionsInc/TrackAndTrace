@@ -11,8 +11,39 @@
   */
     /* Then we define how is distributed the remaining space */
     /*justify-content: space-around;*/
-        margin-bottom: 24px;
+    margin-bottom: 24px;
 }
+
+    .rocks-container.rocks-combine .company-rock-container {
+        display: none;
+    }
+
+    .rocks-container .rock-row.rock-type-company {
+        /*color:#B8860B;*/
+        text-shadow:0px 0px 0px hsl(43, 100%, 50%)
+    }
+
+        .rocks-container .rock-row.rock-type-company .message:before {
+            content: "\e415";
+            font-family: "fontastic" !important;
+            font-style: normal !important;
+            font-weight: normal !important;
+            font-variant: normal !important;
+            text-transform: none !important;
+            speak: none;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: inline;
+            position: relative;
+            top: 5px;
+            left: -30px;
+            float: left;
+            width: 0px;
+            color:#B8860B;
+            text-shadow:none;
+            /*color: #897000;*/
+        }
 
     .rocks-container .rocks-item {
         padding: 5px;
@@ -61,11 +92,13 @@
 .company-rock-container .owner {
     font-size: 17px;
 }
+
 .company-rock-container .message {
     padding-left: 0px;
-    width:100%;    
+    width: 100%;
     padding-bottom: 0px;
 }
+
 .company-rock-container td.picture {
     width: 42px;
 }

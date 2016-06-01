@@ -25,8 +25,10 @@
         </div>
     </div>
 }
+<div style="color:white;font-size:4px;">@Model.Guid</div>
 @Html.Hidden("TempId", "" + Model.Id)
 @Html.HiddenFor(x => x.Guid)
 @Html.HiddenFor(x => x.EmailStatus)
+@Html.HiddenFor(x => x.UserOrganizationId)
 @Html.HiddenFor(x => x.EmailStatusUnseen)
 @Html.HiddenFor(x => x.LastSentByUserId)

@@ -60,17 +60,22 @@ namespace RadialReview.Controllers {
             userRect.EnsureSameRangeAs(measurableRect);
             userRect.EnsureSameRangeAs(goalsRect);
 
-            var dateRect = new Rect(dates);
+            Rect dateRect = null;
+            if (dates!=null)
+                dateRect = new Rect(dates);
 
-            if (userRect.GetType() != dateRect.GetType())
+            if (dateRect!=null && userRect.GetType() != dateRect.GetType())
                 throw new ArgumentOutOfRangeException("rect", "Date selection and owner selection must be of different selection types (either row or column)");
 
             var userStrings = userRect.GetArray1D(csvData);
             var measurableStrings = measurableRect.GetArray1D(csvData);
             var goals1 = goalsRect.GetArray1D(csvData, x => ParceScore(x) ?? 0m);
 
-            var dateStrings = dateRect.GetArray1D(csvData);
-            var dates1 = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
+            List<DateTime> dates1 =new List<DateTime>();
+            if (dateRect != null) {
+                var dateStrings = dateRect.GetArray1D(csvData);
+                dates1 = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
+            }
 
 
             var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
@@ -79,20 +84,33 @@ namespace RadialReview.Controllers {
             var userLookups = DistanceUtility.TryMatch(userStrings, allUsers);
 
             Rect scoreRect = null;
-            if (dateRect.GetRectType() == RectType.Row) {
-                scoreRect = new Rect(dateRect.MinX, userRect.MinY, dateRect.MaxX, userRect.MaxY);
+            List<List<Decimal?>> scores;
+            if (dateRect != null) {
+                if (dateRect.GetRectType() == RectType.Row) {
+                    scoreRect = new Rect(dateRect.MinX, userRect.MinY, dateRect.MaxX, userRect.MaxY);
+                } else {
+                    scoreRect = new Rect(userRect.MinX, dateRect.MinY, userRect.MaxX, dateRect.MaxY);
+                }
+
+                scores = scoreRect.GetArray(csvData, x => ParceScore(x));
             } else {
-                scoreRect = new Rect(userRect.MinX, dateRect.MinY, userRect.MaxX, dateRect.MaxY);
+                scores = goals1.Select(x => new List<Decimal?>()).ToList();
             }
-
-            var scores = scoreRect.GetArray(csvData, x => ParceScore(x));
-
-            var direction = goalsRect.GetArray1D(csvData, x =>{
+            var direction = goalsRect.GetArray1D(csvData, x => {
                 if (x.Contains("<"))
                     return LessGreater.LessThan;
                 if (x.Contains(">"))
                     return LessGreater.GreaterThan;
                 return LessGreater.GreaterThan;
+            });
+            var units = goalsRect.GetArray1D(csvData, x => {
+                if (x.Contains("$") || x.ToLower().Contains("usd"))
+                    return UnitType.Dollar;
+                if (x.Contains("%"))
+                    return UnitType.Percent;
+                if (x.Contains("£") || x.Contains("₤") || x.ToLower().Contains("gbp"))
+                    return UnitType.Pound;
+                return UnitType.None;
             });
 
             var m = new UploadScorecardSelectedDataVM() {
@@ -106,11 +124,12 @@ namespace RadialReview.Controllers {
                 RecurrenceId = recurrenceId,
                 Path = path,
                 //UseAWS = useAWS,
-                ScoreRange = string.Join(",", scoreRect.ToString()),
-                MeasurableRectType = "" + dateRect.GetRectType(),
-                DateRange = string.Join(",", dateRect.ToString()),
+                ScoreRange = scoreRect.NotNull(x=>string.Join(",", x.ToString())),
+                MeasurableRectType = "" + dateRect.NotNull(x=>x.GetRectType()),
+                DateRange = dateRect.NotNull(x=>string.Join(",", x.ToString())),
                 AllUsers = allUsers.Select(x => new SelectListItem() { Text = x.Item1 + " " + x.Item2, Value = x.Item3 + "" }).ToList(),
-                Direction = direction
+                Direction = direction,
+                Units = units
             };
             return PartialView("UploadScorecardSelected", m);
 
@@ -125,8 +144,12 @@ namespace RadialReview.Controllers {
             var path = model["Path"].ToString();
             var recurrence = model["recurrenceId"].ToLong();
             var measurableRectType = model["MeasurableRectType"].ToString();
-            var scoreRect = new Rect(model["ScoreRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
-            var dateRect = new Rect(model["DateRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
+            Rect scoreRect = null;
+            if (!string.IsNullOrWhiteSpace(model["ScoreRange"]))
+                scoreRect = new Rect(model["ScoreRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
+            Rect dateRect = null;
+            if (!string.IsNullOrWhiteSpace(model["DateRange"]))
+                dateRect = new Rect(model["DateRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
 
             _PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
             var ui = await UploadAccessor.DownloadAndParse(GetUser(), path);
@@ -141,12 +164,18 @@ namespace RadialReview.Controllers {
                 .ToDictionary(x => x.SubstringAfter("m_user_").ToInt(), x => model[x].ToLong());
             var goalDirs = keys.Where(x => x.StartsWith("m_goaldir_"))
                 .ToDictionary(x => x.SubstringAfter("m_goaldir_").ToInt(), x => (LessGreater)Enum.Parse(typeof(LessGreater), model[x]));
+            var goalUnits = keys.Where(x => x.StartsWith("m_goalunits_"))
+                .ToDictionary(x => x.SubstringAfter("m_goalunits_").ToInt(), x => (UnitType)Enum.Parse(typeof(UnitType), model[x]));
 
-            var scores = scoreRect.GetArray(csvData, (x, c) => x.TryParseDecimal());
+            List<List<Decimal?>> scores = null;
+            if (scoreRect!=null)
+                scores = scoreRect.GetArray(csvData, (x, c) => x.TryParseDecimal());
 
-
-            var dateStrings = dateRect.GetArray1D(csvData);
-            var dates = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
+            List<DateTime> dates = new List<DateTime>();
+            if (dateRect != null) {
+                var dateStrings = dateRect.GetArray1D(csvData);
+                dates = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
+            }
 
             var caller = GetUser();
             var now = DateTime.UtcNow;
@@ -176,18 +205,19 @@ namespace RadialReview.Controllers {
 
                             L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateNewMeasurable(recurrence, measurable), skipRealTime: true);
                             measurableLookup[ident] = measurable;
-                            var scoreRow = measurableRectType == "Row"
-                                ? new Rect(scoreRect.MinX, scoreRect.MinY + ident, scoreRect.MaxX, scoreRect.MinY + ident)
-                                : new Rect(scoreRect.MinX + ident, scoreRect.MinY, scoreRect.MinX + ident, scoreRect.MaxY);
+                            if (scoreRect != null) {
+                                var scoreRow = measurableRectType == "Row"
+                                    ? new Rect(scoreRect.MinX, scoreRect.MinY + ident, scoreRect.MaxX, scoreRect.MinY + ident)
+                                    : new Rect(scoreRect.MinX + ident, scoreRect.MinY, scoreRect.MinX + ident, scoreRect.MaxY);
 
-                            var scoresFound = scoreRow.GetArray1D(csvData, x => x.TryParseDecimal());
+                                var scoresFound = scoreRow.GetArray1D(csvData, x => x.TryParseDecimal());
 
-                            for (var i = 0; i < dates.Count; i++) {
-                                var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday));
-                                var score = scoresFound[i];
-                                L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
+                                for (var i = 0; i < dates.Count; i++) {
+                                    var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday));
+                                    var score = scoresFound[i];
+                                    L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
+                                }
                             }
-
 
 
                         }
@@ -216,6 +246,7 @@ namespace RadialReview.Controllers {
 
         public class UploadScorecardSelectedDataVM {
 
+            public List<UnitType> Units { get; set; }
             public List<LessGreater> Direction { get; set; }
             public List<string> Measurables { get; set; }
             public List<string> Users { get; set; }

@@ -3,23 +3,24 @@
 @import "../../Angular/Rocks";
 @import "../../Angular/Issues";
 @import "modal";
+@import url('../../Tour/anno.css'); 
 
 tr.grayRow {
     background-image: url("/Content/img/graystripe.png");
     //background-color: lighten(@traction-orange,40%);
 }
 
-.btn.heading:focus,
-.btn.heading:active {
-    outline: none;
-}
-
-
-.table-hover > tbody > tr:hover,
+.btn.heading:focus, 
+.btn.heading:active { 
+    outline: none;  
+} 
+ 
+  
+.table-hover > tbody > tr:hover, 
 .table-hover > tbody > tr.grayRow:hover {
     background-color: lighten(@traction-orange,40%);
 }
-
+ 
 .clickable {
     /*color: @traction-orange;*/
 }

@@ -17,6 +17,7 @@
         {"message-column",""},
         {"due-column",""},
         {"createtime-column",""},
+        {"company-rock-column",""},
         {"delete-column",""}
     };
     attrLookup[ViewBag.SortBy ?? "picture-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
@@ -43,6 +44,7 @@
                             <th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Rock</th>
                             <th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column alignCenter" md-order-by="CreateTime">Create Time</th>
                             <th md-column md-numeric @(attrLookup["due-column"]) class="due-column alignCenter" md-order-by="DueDate">Due Date</th>
+                            <th md-column @(attrLookup["company-rock-column"]) class="company-rock-column checkbox-column">Company Rock</th>
                             <th md-column @(attrLookup["delete-column"]) class="delete-column"></th>
                         </tr>
                     </thead>
@@ -67,7 +69,10 @@
                             <td md-cell class="due-column alignCenter due-date" style="min-width: 80px;">
                                 <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" ng-model-options="{debounce: 400}" />
                             </td>
-                            <td md-cell class="delete-column" style="min-width: 15px;"><span class="delete-row" ng-click="functions.removeRow($event,rock)"></span></td>
+                            <td md-cell class="company-rock-column checkbox-column" style="min-width: 15px;">
+                                <md-checkbox aria-label="Company Rock" ng-model="rock.CompanyRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Company Rock"></md-checkbox>
+                            </td>
+                            <td md-cell class="delete-column" style="min-width: 15px;"><span class="delete-row" ng-click="functions.removeRow($event,rock)" title="Delete Rock"></span></td>
                         </tr>
 
                     </tbody>

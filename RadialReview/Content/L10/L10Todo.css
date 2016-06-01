@@ -69,7 +69,7 @@
 
 .todo-list .todo-checkbox:checked ~ *,
 .todo-list .todo-checkbox:checked ~ * * {
-    color: #ccc !important;
+    color: #B1B1B1 !important;
 }
 
 /*.todo-list .todo-checkbox:checked ~ * .message,*/
@@ -137,29 +137,30 @@
     -o-transition: opacity .1s ease,color .2s ease;
     -webkit-transition: opacity .1s ease,color .2s ease;
     transition: opacity .1s ease,color .2s ease;
-    cursor:default;
+    cursor: default;
     /*background-color:#eee;
     color:gray;
     border:1px solid gray;*/
+}
 
-}
-.todo-list .label:hover {
-    opacity:1;
-}
+    .todo-list .label:hover {
+        /*opacity:1;*/
+    }
+
 .todo-list .overdue-indicator {
 }
 
-.todo-list .todo-checkbox:checked ~ .btn-group .overdue-indicator{
-    opacity:0;
-    background-color:#650000 !important;
+.todo-list .todo-checkbox:checked ~ .btn-group .overdue-indicator {
+    opacity: 0;
+    background-color: #650000 !important;
 }
 
 .todo-list .todo-checkbox:checked ~ .btn-group .new-indicator {
-    opacity:.1;
-    background-color:#006500 !important;
+    opacity: .1;
+    background-color: #006500 !important;
 }
 
-.todo-details-container iframe{
+.todo-details-container iframe {
     min-height: 120px;
 }
 
@@ -402,6 +403,7 @@ body.dragging, body.dragging * {
     width: 100%;
     resize: vertical;
     height: 116px;
+    min-height: 116px;
 }
 
 .todoDetails > .dd-list {
