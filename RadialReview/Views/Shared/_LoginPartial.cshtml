@@ -72,6 +72,8 @@
                         <li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
 
                         <li class="divider"></li>
+                            <li><a href="mailto:support@mytractiontools.com">Contact Support</a></li>
+                        <li class="divider"></li>
                         @if (((int?)ViewBag.Organizations ?? 0) > 1) {
                             <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")" id="header-tab-dropdown-changeorganization">
                                 @if (((int?)ViewBag.Organizations ?? 0) > 1) {

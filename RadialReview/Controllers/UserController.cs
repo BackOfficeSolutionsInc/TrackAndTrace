@@ -495,6 +495,15 @@ namespace RadialReview.Controllers {
         }
 
         [HttpGet]
+        [Access(AccessLevel.User)]
+        public ActionResult Styles()
+        {
+            return Content(UserAccessor.GetStyles(GetUserModel().Id),"text/css");
+
+
+        }
+
+        [HttpGet]
         [Access(AccessLevel.UserOrganization)]
         public JsonResult Search(string q,int results = 4,string exclude=null)
         {

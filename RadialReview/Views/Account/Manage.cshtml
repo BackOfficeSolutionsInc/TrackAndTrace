@@ -38,6 +38,10 @@
 						<div class="col-md-3">  Time to send To-Do Email:</div>
 						<div class="col-md-9">  @Html.DropDownListFor(x => x.SendTodoTime, Model.PossibleTimes, new { @class = "form-control" })</div>
 					</div>
+                    <div class="row smallBreak">
+						<div class="col-md-3">  Show color on scorecard:</div>
+						<div class="col-md-9">  @Html.CheckBoxFor(x => x.ShowScorecardColors, new { @class = "checkbox" })</div>
+					</div>
 					<div class="row">
 						<div class="col-md-offset-2 col-md-10">
 							<div class="row alignCenter">

@@ -29,6 +29,7 @@ using RadialReview.Utilities.NHibernate;
 using TrelloNet;
 using System.Net;
 using System.Collections.Specialized;
+using NHibernate.Criterion;
 
 namespace RadialReview.Accessors {
     public class PaymentAccessor : BaseAccessor {
@@ -290,11 +291,22 @@ namespace RadialReview.Accessors {
                 var plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(paymentPlan);
                 var rangeStart = executeTime.Subtract(TimespanExtensions.OneMonth());
                 var rangeEnd = executeTime;
+                
+                UserModel u = null;
+                UserOrganizationModel uo = null;
+                var allPeopleList = s.QueryOver<UserOrganizationModel>(() => uo)
+                    .Left.JoinAlias(() => uo.User, () => u)
+                    //.Where(Restrictions.Or(
+                    //    Restrictions.On(()=>uo.User).IsNull,
+                    //    Restrictions.Eq(Projections.Property(()=>uo.User.IsRadialAdmin),false)
+                    //))
+                    .Where(() => uo.Organization.Id == org.Id && uo.CreateTime < rangeEnd && (uo.DeleteTime == null || uo.DeleteTime > rangeStart) && !uo.IsRadialAdmin)
+                    .Select(x => x.Id, x => u.IsRadialAdmin)
+                    .List<object[]>();
 
-                var allPeople = s.QueryOver<UserOrganizationModel>()
-                    .Where(x => x.Organization.Id == org.Id && x.CreateTime < rangeEnd && (x.DeleteTime == null || x.DeleteTime > rangeStart) && !x.IsRadialAdmin)
-                    .Select(x => x.Id)
-                    .List<long>().Count();
+
+
+               var allPeople = allPeopleList.Count();
 
                 var people = Math.Max(0, allPeople - plan.FirstN_Users_Free);
                 var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(org.Id, rangeStart, rangeEnd).ToList();
@@ -371,6 +383,10 @@ namespace RadialReview.Accessors {
                             .List().ToList();
 
             var token = tokens.OrderByDescending(x => x.CreateTime).FirstOrDefault();
+
+            var org2 = s.Get<OrganizationModel>(organizationId);
+            if (org2 != null && org2.AccountType == AccountType.Implementer)
+                throw new FallthroughException("Failed to charge implementer account (" + org2.Id + ") "+org2.GetName());
 
             if (token == null) {
                 throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.MissingToken);

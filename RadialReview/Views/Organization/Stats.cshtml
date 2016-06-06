@@ -11,6 +11,48 @@
         {AccountType.Other, 5},
         {AccountType.Paying, 6},
     };
+
+    var creditCardTxt = new Func<RadialReview.Controllers.OrganizationController.OrgStats, string>(x => {
+        if (x.CreditCardExp == null) {
+            if (x.Status == AccountType.Demo) {
+                if (x.TrialEnd < DateTime.UtcNow) {
+                    return DateTime.UtcNow.AddDays(0).ToShortDateString();
+                } else if (x.TrialEnd < DateTime.UtcNow.AddDays(-9)) {
+                    return DateTime.UtcNow.AddDays(2).ToShortDateString();
+                } else {
+                    return DateTime.UtcNow.AddDays(3).ToShortDateString();
+                }
+            } else {
+                return DateTime.UtcNow.AddDays(4).ToShortDateString();                
+            }
+        }
+        return x.CreditCardExp.Value.ToShortDateString();
+    });
+    
+    var creditCardBG = new Func<RadialReview.Controllers.OrganizationController.OrgStats, string>(x => {
+        if (x.CreditCardExp != null) {
+            if (x.CreditCardExp < DateTime.UtcNow) {
+                return "#ff7979";
+            } else if (x.CreditCardExp < DateTime.UtcNow.Subtract(TimeSpan.FromDays(60))) {
+                return "orange";
+            } else {
+                return "transparent";
+            }
+        } else {
+            if (x.Status == AccountType.Demo) {
+                if (x.TrialEnd < DateTime.UtcNow) {
+                    return "#ff7979";
+                } else if (x.TrialEnd < DateTime.UtcNow.AddDays(-9)) {
+                    return "orange";
+                } else {
+                    return "transparent";
+                }
+            } else {
+                return "transparent";
+            }
+        }
+    });
+
 }
 
 <div class="clearfix"></div>
@@ -45,7 +87,7 @@
 
 <table class="table table-condensed table-striped table-hover">
     <thead class="table-header">
-        <tr><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>CreateTime</th><th>Status</th><th>LastLogin</th><th>TrialEnd</th><th>Last Meeting</th></tr>
+        <tr><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>CreateTime</th><th>Status</th><th>LastLogin</th><th>TrialEnd</th><th>Last Meeting</th><th>cc exp</th></tr>
     </thead>
     @foreach (var i in Model) {
         <tr>
@@ -102,6 +144,9 @@
 					                         })??"lightgray")">
                 @(i.LastMeeting.NotNull(x => x.Value.ToShortDateString()))
             </td>
+            <td class="alignRight" style="background-color:@creditCardBG(i);color:@(i.CreditCardExp.NotNull(x=>"black")??"transparent")">
+                @(creditCardTxt(i))
+            </td>
 
         </tr>
     }
@@ -121,7 +166,7 @@
         var acType = {
             @foreach (var kv in scoreOrder) {
                 @:@(kv.Key):@(kv.Value),
-                                                                                    }
+                                                                                                }
         };
 
         $("select").on('focus', function () {

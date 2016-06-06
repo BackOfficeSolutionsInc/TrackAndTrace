@@ -665,6 +665,7 @@
     <Compile Include="Models\UserModels\ProfilePictureVM.cs" />
     <Compile Include="Models\UserModels\TempUserModel.cs" />
     <Compile Include="Models\UserModels\UserLookup.cs" />
+    <Compile Include="Models\UserModels\UserStyleSettings.cs" />
     <Compile Include="Models\UserTemplate\IUserTemplateItem.cs" />
     <Compile Include="Models\UserTemplate\UserTemplate.cs" />
     <Compile Include="Models\UserTemplate\UserTemplateVM.cs" />
@@ -1526,6 +1527,7 @@
     <Content Include="Views\Roles\partial\list.cshtml" />
     <Content Include="Views\Rocks\Archive.cshtml" />
     <Content Include="Views\TileData\FAQTips.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />

@@ -1013,7 +1013,6 @@ namespace RadialReview.Controllers {
                 }
             }
         }
-        #endregion
 
         [Access(AccessLevel.Radial)]
         public string M3_08_2016()
@@ -1175,6 +1174,85 @@ namespace RadialReview.Controllers {
                     s.Flush();
 
                     return "Added." + build;
+                }
+            }
+        }
+        #endregion
+
+        [Access(Controllers.AccessLevel.Radial)]
+        public string M06_04_2016()
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+
+                    var users = s.QueryOver<UserModel>().List();
+                    var build = 0;
+
+                    foreach (var u in users) {
+                        var style = s.Get<UserStyleSettings>(u.Id);
+                        if (style == null) {
+                            style = new UserStyleSettings() {
+                                Id = u.Id,
+                                ShowScorecardColors = true,
+                            };
+                            s.Save(style);
+                            build += 1;
+                        }
+                    }
+                    var b2 = 0;
+                    var pictures = s.QueryOver<VtoModel.ThreeYearPictureModel>().List().ToList();
+                    foreach (var p in pictures) {
+                        var any = false;
+                        if (p.Profit != null && p.ProfitStr == null) {
+                            p.ProfitStr = string.Format("{0:c0}", p.Profit);
+                            any = true;
+                        }
+                        if (p.Revenue != null && p.RevenueStr == null) {
+                            p.RevenueStr = string.Format("{0:c0}", p.Revenue);
+                            any = true;
+                        }
+                        if (any) {
+                            b2 += 1;
+                            s.Update(p);
+                        }
+                    }
+                    var one = s.QueryOver<VtoModel.OneYearPlanModel>().List().ToList();
+                    foreach (var p in one) {
+                        var any = false;
+                        if (p.Profit != null && p.ProfitStr == null) {
+                            p.ProfitStr = string.Format("{0:c0}", p.Profit);
+                            any = true;
+                        }
+                        if (p.Revenue != null && p.RevenueStr == null) {
+                            p.RevenueStr = string.Format("{0:c0}", p.Revenue);
+                            any = true;
+                        }
+                        if (any) {
+                            b2 += 1;
+                            s.Update(p);
+                        }
+                    }
+                    var rocks = s.QueryOver<VtoModel.QuarterlyRocksModel>().List().ToList();
+                    foreach (var p in rocks) {
+                        var any = false;
+                        if (p.Profit != null && p.ProfitStr == null) {
+                            p.ProfitStr = string.Format("{0:c0}", p.Profit);
+                            any = true;
+                        }
+                        if (p.Revenue != null && p.RevenueStr == null) {
+                            p.RevenueStr = string.Format("{0:c0}", p.Revenue);
+                            any = true;
+                        }
+                        if (any) {
+                            b2 += 1;
+                            s.Update(p);
+                        }
+                    }
+                    
+                    tx.Commit();
+                    s.Flush();
+
+                    return "Added." + build+" adjusted VTO sections:"+b2;
                 }
             }
         }

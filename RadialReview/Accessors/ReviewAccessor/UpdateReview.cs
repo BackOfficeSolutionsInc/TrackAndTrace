@@ -687,9 +687,9 @@ namespace RadialReview.Accessors
 
 					review.DueDate = dueDate;
 					s.Update(review);
-					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
 					tx.Commit();
 					s.Flush();
+					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
 				}
 			}
 		}

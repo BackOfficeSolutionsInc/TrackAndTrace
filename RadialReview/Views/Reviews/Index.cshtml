@@ -184,7 +184,7 @@
 
 							@*<td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>*@
 							<td class="alignCenter">
-								@review.Review.DueDate.Subtract(TimeSpan.FromDays(1)).ToShortDateString()
+								@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",review.Review.DueDate.Subtract(TimeSpan.FromDays(1)))
 							</td>
 							
 							@*<td style="padding-right: 0px; padding-left: 0px; ">

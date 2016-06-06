@@ -18,7 +18,7 @@
         display: none;
     }
 
-    .rocks-container .rock-row.rock-type-company {
+    .rocks-container .rock-row.rock-type-company .message {
         /*color:#B8860B;*/
         text-shadow:0px 0px 0px hsl(43, 100%, 50%)
     }

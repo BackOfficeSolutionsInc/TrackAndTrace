@@ -30,6 +30,7 @@ namespace RadialReview.Models.ViewModels
 		public ScorecardPeriod ScorecardPeriod { get; set; }
 		public Month StartOfYearMonth { get; set; }
 		public DateOffset StartOfYearOffset { get; set; }
+        public string DateFormat { get; set; }
 
 		public List<SelectListItem> TimeZones
 		{

@@ -118,26 +118,29 @@
             });           // showModal(, "/Reviews/EditDueDateModal/", , "duedateUpdate");
         }
 
-        function duedateUpdate(obj) {
-            var id = obj.id
-            $("#row-" + id + " .duedate").html(obj.due);
+        function duedateUpdate(data) {
+            if (showJsonAlert(data)) {
+                for (var i in data.Object.ids) {
+                    $("#row-" + data.Object.ids[i] + " .duedate").html(data.Object.due)
+                }
+            }
         }
 
         function goToReview() {
             document.location.href = "/Reviews/";
         }
-
+        function updateTabs() {
+            var checked = $("input[type='checkbox']:checked");
+            if (checked.length) {
+                $(".globalButtons").hide();
+                $(".selectionButtons").show();
+            } else {
+                $(".globalButtons").show();
+                $(".selectionButtons").hide();
+            }
+        }
         $(function () {
-            $("input[type='checkbox']").on("change", function () {
-                var checked = $("input[type='checkbox']:checked");
-                if (checked.length) {
-                    $(".globalButtons").hide();
-                    $(".selectionButtons").show();
-                } else {
-                    $(".globalButtons").show();
-                    $(".selectionButtons").hide();
-                }
-            })
+            $("input[type='checkbox']").on("change", updateTabs);
 
             $(".bar.Self").attr("title", function () {
                 return newTitle(this, "self");
@@ -213,12 +216,12 @@
                 </tr>
                 <tr class="selectionButtons" style="display:none">
                     <td>
-                        <div class="btn btn-default fullWidth deletereview-btn" onclick="$('input[type=checkbox]:checked').prop('checked',null)">
+                        <div class="btn btn-default fullWidth deletereview-btn" onclick="$('input[type=checkbox]:checked').prop('checked', null); updateTabs();">
                             Deselect all
                         </div>
                     </td>
                     <td>
-                        <div class="btn btn-default fullWidth deletereview-btn" onclick="$('input[type=checkbox]:unchecked').prop('checked','true')">
+                        <div class="btn btn-default fullWidth deletereview-btn" onclick="$('input[type=checkbox]:not(:checked)').prop('checked', 'true'); updateTabs();">
                             Select all
                         </div>
                     </td>
@@ -231,18 +234,22 @@
                     <td></td>
                     <td></td>
                 </tr>
+                @try{
                 <tr>
-                    <td colspan="2" class="alignCenter"><b>@Html.ReviewName() Created:</b>&nbsp; @Model.Review.DateCreated.ToString("MM-dd-yyyy") </td>
-                    <td colspan="2" class="alignCenter"><b>@Html.ReviewName()s due:</b>&nbsp; @Model.Review.DueDate.Subtract(TimeSpan.FromDays(1)).ToString("MM-dd-yyyy") </td>
+                    <td colspan="2" class="alignCenter"><b>@Html.ReviewName() Created:</b>&nbsp; @Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", Model.Review.DateCreated)</td>
+                    <td colspan="2" class="alignCenter"><b>@Html.ReviewName()s due:</b>&nbsp;@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Model.Review.DueDate.Subtract(TimeSpan.FromDays(1))) (End of day)</td>
                     <td colspan="2" class="alignCenter">
                         <b>Reports due:</b>&nbsp;
                         @if (Model.Review.ReportsDueDate != null) {
-                            @Model.Review.ReportsDueDate.Value.Subtract(TimeSpan.FromDays(1)).ToString("MM-dd-yyyy")
+                            @Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Model.Review.ReportsDueDate.Value.Subtract(TimeSpan.FromDays(1)))
                         } else {
                             <span class="gray">No due date</span>
                         }
                     </td>
                 </tr>
+                }catch(Exception e){
+                    <tr><td>Error with dates.</td></tr>
+                }
         </table>
         <table class="table table-condensed table-hover">
             <thead>
@@ -259,8 +266,8 @@
                         <td class="">@r.ForUser.GetNameAndTitle()</td>
                         <td class="">
                             <span style="padding: 0;" class="btn btn-link duedate"
-                                  onclick="@Html.ShowModal("Edit Due Date", "/Reviews/EditDueDateModal/" + r.Id, "/Reviews/EditDueDateModal","duedateUpdate")">
-                                @r.DueDate.ToString("MM-dd-yyyy")
+                                  onclick="@Html.ShowModal("Edit Due Date", "/Reviews/EditDueDateModal/" + r.Id, "/Reviews/EditDueDateModal",onComplete:"duedateUpdate")">
+                                @Html.DisplayFor(x=>r.DueDate)
                             </span>
                         </td>
                     </tr>

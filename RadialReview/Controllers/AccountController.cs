@@ -299,8 +299,10 @@ namespace RadialReview.Controllers
                 model.Email = model.Email.ToLower();
 
                 var user = new UserModel() { UserName = model.Email, FirstName = model.fname, LastName = model.lname };
-                var resultx = UserManager.CreateAsync(user, model.Password);
-                var result = await resultx;
+
+                var result = await UserAccessor.CreateUser(UserManager, user, model.Password);
+
+                //var result = await resultx;
                 if (result.Succeeded)
                 {
                     await SignInAsync(user, isPersistent: false);
@@ -393,7 +395,7 @@ namespace RadialReview.Controllers
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
 
-            var user = GetUserModel();
+            var user = GetUserModel(true);
             try
             {
                 ViewBag.ImageUrl = user.ImageUrl();
@@ -402,8 +404,7 @@ namespace RadialReview.Controllers
             {
                 ViewBag.ImageUrl = ConstantStrings.ImageUserPlaceholder;
             }
-
-
+            
 
 	        var model = constructProfileViewModel(user);
 
@@ -420,7 +421,8 @@ namespace RadialReview.Controllers
 				ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid),
 				SendTodoTime = user.SendTodoTime,
 				PossibleTimes = GetPossibleTimes(user.SendTodoTime),
-                UserId=user.Id
+                UserId=user.Id,
+                ShowScorecardColors=user._StylesSettings.ShowScorecardColors,
 			};
 	    }
 
@@ -436,7 +438,8 @@ namespace RadialReview.Controllers
 				model.LastName, 
 				null,
 				model.SendTodoTime!=null,
-				model.SendTodoTime);
+				model.SendTodoTime,
+                model.ShowScorecardColors);
             return RedirectToAction("Index","Home");
         }
 
@@ -594,15 +597,16 @@ namespace RadialReview.Controllers
                     return View("ExternalLoginFailure");
                 }
                 var user = new UserModel() { UserName = model.UserName };
-                var result = await UserManager.CreateAsync(user);
+                //var result = await UserManager.CreateAsync(user);
+                var result = await UserAccessor.CreateUser(UserManager, user, info);
                 if (result.Succeeded)
                 {
-                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                    if (result.Succeeded)
-                    {
+                    //result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                    //if (result.Succeeded)
+                    //{
                         await SignInAsync(user, isPersistent: false);
                         return RedirectToLocal(returnUrl);
-                    }
+                    //}
                 }
                 AddErrors(result);
             }

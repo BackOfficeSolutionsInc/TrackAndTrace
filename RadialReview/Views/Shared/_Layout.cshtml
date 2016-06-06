@@ -13,7 +13,6 @@
     <link rel="SHORTCUT ICON" href="/content/favicon.ico?v=3" />
 }
     <link href='https://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
-
     <title>@ViewBag.Title - @Html.ProductName()</title>
     @*<link href="" rel="stylesheet" />*@
     @Styles.Render("~/Content/css")
@@ -23,6 +22,7 @@
     {
         <link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
     }
+    <link href="/User/styles" rel="stylesheet" type="text/css" />
 
 </head>
 @if (ViewBag.HasBaseController == null)
@@ -179,6 +179,7 @@
         {
 				<!--script src="~/Scripts/Main/radial.js"></script-->
             <script>
+                window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
                 $(function () {
                     //qtip();
                     $('[data-toggle="tooltip"]').tooltip();

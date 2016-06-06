@@ -377,7 +377,7 @@ namespace RadialReview.Accessors
 
         }
 
-        public static void UpdateThreeYearPicture(UserOrganizationModel caller, long id, DateTime? futuredate = null, decimal? revenue = null, decimal? profit = null, string measurables = null, string threeYearPictureTitle = null, string connectionId = null)
+        public static void UpdateThreeYearPicture(UserOrganizationModel caller, long id, DateTime? futuredate = null, string revenue = null, string profit = null, string measurables = null, string threeYearPictureTitle = null, string connectionId = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -393,8 +393,8 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 
                     threeYear.FutureDate = futuredate;
-                    threeYear.Revenue = revenue;
-                    threeYear.Profit = profit;
+                    threeYear.RevenueStr = revenue;
+                    threeYear.ProfitStr = profit;
                     threeYear.Measurables = measurables;
                     threeYear.ThreeYearPictureTitle = threeYearPictureTitle;
                     s.Update(threeYear);
@@ -411,7 +411,7 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        public static void UpdateQuarterlyRocks(UserOrganizationModel caller, long id, DateTime? futuredate = null, decimal? revenue = null, decimal? profit = null, string measurables = null, string rocksTitle = null, string connectionId = null)
+        public static void UpdateQuarterlyRocks(UserOrganizationModel caller, long id, DateTime? futuredate = null, string revenue = null, string profit = null, string measurables = null, string rocksTitle = null, string connectionId = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -427,8 +427,8 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 
                     quarterlyRocks.FutureDate = futuredate;
-                    quarterlyRocks.Revenue = revenue;
-                    quarterlyRocks.Profit = profit;
+                    quarterlyRocks.RevenueStr = revenue;
+                    quarterlyRocks.ProfitStr = profit;
                     quarterlyRocks.Measurables = measurables;
                     quarterlyRocks.RocksTitle = rocksTitle;
                     s.Update(quarterlyRocks);
@@ -446,7 +446,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static void UpdateOneYearPlan(UserOrganizationModel caller, long id, DateTime? futuredate = null, decimal? revenue = null, decimal? profit = null, string measurables = null, string oneYearPlanTitle = null, string connectionId = null)
+        public static void UpdateOneYearPlan(UserOrganizationModel caller, long id, DateTime? futuredate = null, string revenue = null, string profit = null, string measurables = null, string oneYearPlanTitle = null, string connectionId = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -462,8 +462,8 @@ namespace RadialReview.Accessors
                     PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 
                     plan.FutureDate = futuredate;
-                    plan.Revenue = revenue;
-                    plan.Profit = profit;
+                    plan.RevenueStr = revenue;
+                    plan.ProfitStr = profit;
                     plan.Measurables = measurables;
                     plan.OneYearPlanTitle = oneYearPlanTitle;
                     s.Update(plan);
@@ -1159,8 +1159,8 @@ namespace RadialReview.Accessors
                     var currentCulture =Thread.CurrentThread.CurrentCulture;
                     //Three Year Picture
                     vto.ThreeYearPicture.FutureDate  = threeYearFuture.TryParseDateTime();
-                    vto.ThreeYearPicture.Revenue     = threeYearRevenue.TryParseDecimal(currencyStyle, currentCulture);
-                    vto.ThreeYearPicture.Profit      = threeYearProfit.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.ThreeYearPicture.RevenueStr     = threeYearRevenue;//.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.ThreeYearPicture.ProfitStr      = threeYearProfit;//.TryParseDecimal(currencyStyle, currentCulture);
                     vto.ThreeYearPicture.Measurables = threeYearMeasurables;
 
                     foreach (var t in threeYearLooksList) {
@@ -1188,8 +1188,8 @@ namespace RadialReview.Accessors
 
                     //One Year Plan
                     vto.OneYearPlan.FutureDate  = oneYearFuture.TryParseDateTime();
-                    vto.OneYearPlan.Revenue     = oneYearRevenue.TryParseDecimal(currencyStyle, currentCulture);
-                    vto.OneYearPlan.Profit      = oneYearProfit.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.OneYearPlan.RevenueStr = oneYearRevenue;//.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.OneYearPlan.ProfitStr      = oneYearProfit;//.TryParseDecimal(currencyStyle, currentCulture);
                     vto.OneYearPlan.Measurables = oneYearMeasurables;
 
                     foreach (var t in oneYearPlanGoals) {                        
@@ -1198,8 +1198,8 @@ namespace RadialReview.Accessors
 
                     //Rocks
                     vto.QuarterlyRocks.FutureDate   = rocksFuture.TryParseDateTime();
-                    vto.QuarterlyRocks.Revenue      = rocksRevenue.TryParseDecimal(currencyStyle, currentCulture);
-                    vto.QuarterlyRocks.Profit       = rocksProfit.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.QuarterlyRocks.RevenueStr   = rocksRevenue;//.TryParseDecimal(currencyStyle, currentCulture);
+                    vto.QuarterlyRocks.ProfitStr    = rocksProfit;//.TryParseDecimal(currencyStyle, currentCulture);
                     vto.QuarterlyRocks.Measurables  = rocksMeasurables;
 
                     var allUsers = OrganizationAccessor.GetMembers_Tiny(s,perms,vto.Organization.Id);

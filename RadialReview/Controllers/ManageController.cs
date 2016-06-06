@@ -227,7 +227,9 @@ namespace RadialReview.Controllers
 				ScorecardPeriod = user.Organization.Settings.ScorecardPeriod,
 
 				StartOfYearMonth = user.Organization.Settings.StartOfYearMonth,
-				StartOfYearOffset = user.Organization.Settings.StartOfYearOffset
+				StartOfYearOffset = user.Organization.Settings.StartOfYearOffset,
+
+                DateFormat = user.Organization.Settings.DateFormat
 
 			};
 
@@ -269,7 +271,8 @@ namespace RadialReview.Controllers
 				model.WeekStart,
 				model.ScorecardPeriod,
 				model.StartOfYearMonth,
-				model.StartOfYearOffset);
+				model.StartOfYearOffset,
+                model.DateFormat);
 			ViewBag.Success = "Successfully Saved.";
 
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)

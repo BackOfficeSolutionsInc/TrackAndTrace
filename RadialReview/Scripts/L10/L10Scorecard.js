@@ -115,23 +115,37 @@ function transformNumber(value, units) {
         return value;
     }
 
-    if (units == "dollars" || units == "dollar") {
+    if (units == "dollars" || units == "$" || units == "dollar") {
         var post = "";
         if (value >= 1000000) {
             post = "M";
             value = "" + (Math.round(value / 10000.0) / 100);
+        } else if (value >= 1000) {
+            value = "" + (Math.round(value));
         }
 
         return "$" + addCommasToInteger(value) + post;
     }
-    if (units == "pounds" || units == "pound") {
+    if (units == "pounds" || units == "£" || units == "pound") {
         var post = "";
         if (value >= 1000000) {
             post = "M";
             value = "" + (Math.round(value / 10000.0) / 100);
+        } else if (value >= 1000) {
+            value = "" + (Math.round(value));
         }
 
         return "£" + addCommasToInteger(value) + post;
+    } if (units == "euros" || units == "€" || units == "euro") {
+        var post = "";
+        if (value >= 1000000) {
+            post = "M";
+            value = "" + (Math.round(value / 10000.0) / 100);
+        } else if (value >= 1000) {
+            value = "" + (Math.round(value));
+        }
+
+        return "€" + addCommasToInteger(value) + post;
     }
 
     if (units == "%" || units == "percent") {
@@ -142,6 +156,8 @@ function transformNumber(value, units) {
     if (value >= 1000000) {
         post = "M";
         value = "" + (Math.round(value / 10000.0) / 100);
+    } else if (value >= 1000) {
+        value = "" + (Math.round(value));
     }
 
     return addCommasToInteger(value) + post;

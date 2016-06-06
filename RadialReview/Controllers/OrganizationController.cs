@@ -56,6 +56,7 @@ namespace RadialReview.Controllers
             public DateTime? OrgCreateTime { get; set; }
             public DateTime? TrialEnd { get; set; }
             public DateTime? LastMeeting { get; set; }
+            public DateTime? CreditCardExp { get; set; }
 
             public AccountType Status { get; set; }
         }
@@ -92,7 +93,8 @@ namespace RadialReview.Controllers
                                 OrgCreateTime = x.NotNull(u => u.CreationTime),
                                 Status = x.NotNull(y=>y.AccountType),
                                 LastMeeting = meetingLastLU.GetOrDefault(x.NotNull(y=>y.Id),null),
-                                TrialEnd  = tokens.ContainsKey(x.Id)?(DateTime?)null:x.NotNull(u => u.PaymentPlan.FreeUntil)
+                                TrialEnd  = tokens.ContainsKey(x.Id)?(DateTime?)null:x.NotNull(u => u.PaymentPlan.FreeUntil),
+                                CreditCardExp = !tokens.ContainsKey(x.Id)?(DateTime?)null:new DateTime(tokens[x.Id].YearExpire,tokens[x.Id].MonthExpire,1)
                             };
                         }).ToList();
                     return View(stats);

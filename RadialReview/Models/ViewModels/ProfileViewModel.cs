@@ -12,7 +12,7 @@ namespace RadialReview.Models.ViewModels
         public String LastName { get; set; }
         public String ImageUrl { get;set; }
 
-		public bool EmailTodos { get; set; }
+		//public bool EmailTodos { get; set; }
 		public int? SendTodoTime { get; set; }
 
         public ManageUserViewModel Manage { get; set; }
@@ -20,5 +20,7 @@ namespace RadialReview.Models.ViewModels
 	    public List<SelectListItem> PossibleTimes { get; set; }
 
         public string UserId { get; set; }
+
+        public bool ShowScorecardColors { get; set; }
     }
 }

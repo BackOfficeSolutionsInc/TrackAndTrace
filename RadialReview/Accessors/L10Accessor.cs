@@ -3551,6 +3551,11 @@ namespace RadialReview.Accessors {
                         todo.AccountableUser.NotNull(x => x.ImageUrl(true));
                     }
 
+                    foreach (var todo in allTodos) {
+                        todo.AccountableUser.NotNull(x => x.GetName());
+                        todo.AccountableUser.NotNull(x => x.ImageUrl(true));
+                    }
+
 
                     var stats = new L10MeetingStatsVM() {
                         IssuesSolved = issuesSolved,

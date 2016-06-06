@@ -95,6 +95,7 @@ namespace RadialReview.Models
 		    get { return _UserOrganizationIds == null ? null : _UserOrganizationIds.Split(new[]{'~'}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.ToLong()).ToArray(); }
 		    set { _UserOrganizationIds = String.Join("~", value); }
 	    }
+        public virtual UserStyleSettings _StylesSettings { get; set; }
 
 	    public class UserModelMap : ClassMap<UserModel>
 		{
@@ -122,6 +123,7 @@ namespace RadialReview.Models
 				HasMany(x => x.Claims).Cascade.SaveUpdate();
 			}
 		}
+
 
     }
 

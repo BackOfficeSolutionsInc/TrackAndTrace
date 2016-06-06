@@ -51,7 +51,7 @@
                             LoadingElementDuration = 1000,
                             InsertionMode = InsertionMode.Replace,
                             OnSuccess = "ConclusionSuccess",
-                            OnBegin = "$('.concludeButton').attr('disabled',true).css('cursor','progress');"
+                            OnBegin = "$('.concludeButton').attr('disabled',true).css('cursor','progress'); $(this).attr('novalidate','novalidate');"                          
                         })) {
                             @Html.ValidationSummaryMin()
                             @Html.SecuredHiddenFor(x => x.Recurrence.Id)

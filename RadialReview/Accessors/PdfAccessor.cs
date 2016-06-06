@@ -808,16 +808,20 @@ namespace RadialReview.Accessors {
             o.Add(revenue);
             revenue.AddFormattedText("Revenue: ", TextFormat.Bold);
             revenue.Format.Font.Name = "Arial Narrow";
-            if (section.Revenue.HasValue)
-                revenue.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Revenue.Value), TextFormat.NotBold);
+            if (section.Revenue != null) {
+                //revenue.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Revenue.Value), TextFormat.NotBold);
+                revenue.AddFormattedText( section.Revenue, TextFormat.NotBold);
+            }
 
             var profit = new Paragraph();
             o.Add(profit);
             profit.Format.SpaceBefore = Unit.FromPoint(.3 * fontSize.Point);
             profit.AddFormattedText("Profit: ", TextFormat.Bold);
             profit.Format.Font.Name = "Arial Narrow";
-            if (section.Profit.HasValue)
-                profit.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Profit.Value), TextFormat.NotBold);
+            if (section.Profit != null) {
+                //profit.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Profit.Value), TextFormat.NotBold);
+                profit.AddFormattedText( section.Profit, TextFormat.NotBold);
+            }
 
             var measurables = new Paragraph();
             measurables.Format.SpaceBefore = Unit.FromPoint(.3 * fontSize.Point);

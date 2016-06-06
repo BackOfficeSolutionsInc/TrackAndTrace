@@ -283,12 +283,12 @@
                                             </div>
                                             <div>
                                                 <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                    <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.ThreeYearPicture).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
+                                                    <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
                                                 </span>
                                             </div>
                                             <div>
                                                 <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                    <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.ThreeYearPicture).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
+                                                    <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
                                                 </span>
                                             </div>
                                             <div>
@@ -369,12 +369,12 @@
                                         </div>
                                         <div>
                                             <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.OneYearPlan).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
+                                                <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.OneYearPlan).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
+                                                <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
                                             </span>
                                         </div>
                                         <div>
@@ -428,12 +428,12 @@
                                         </div>
                                         <div>
                                             <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.QuarterlyRocks).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
+                                                <input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                <input @*type="number"*@ fcsa-number="{ prepend: '$' }" ng-model='(model.QuarterlyRocks).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
+                                                <input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
                                             </span>
                                         </div>
                                         <div>
@@ -600,8 +600,8 @@
                         </div>
                         <div class="column-data cell-border">
                             <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.ThreeYearPicture).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
-                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.ThreeYearPicture).Revenue| currency:"$":0}}</span></div>
-                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.ThreeYearPicture).Profit | currency:"$":0}}</span></div>
+                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.ThreeYearPicture).Revenue }}</span></div>
+                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.ThreeYearPicture).Profit }}</span></div>
                             <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.ThreeYearPicture).Measurables}}</span></div>
                             <br />
                             <div class="looks-like">What does that look like?</div>
@@ -634,8 +634,8 @@
                         </div>
                         <div class="column-data cell-border">
                             <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.OneYearPlan).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
-                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.OneYearPlan).Revenue| currency:"$":0}}</span></div>
-                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.OneYearPlan).Profit | currency:"$":0}}</span></div>
+                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.OneYearPlan).Revenue}}</span></div>
+                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.OneYearPlan).Profit }}</span></div>
                             <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.OneYearPlan).Measurables}}</span></div>
                             <br />
                             <div class="resize-group">
@@ -658,8 +658,8 @@
                         </div>
                         <div class="resize-group column-data cell-border">
                             <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.QuarterlyRocks).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
-                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.QuarterlyRocks).Revenue| currency:"$":0}}</span></div>
-                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.QuarterlyRocks).Profit| currency:"$":0}}</span></div>
+                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.QuarterlyRocks).Revenue}}</span></div>
+                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.QuarterlyRocks).Profit}}</span></div>
                             <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.QuarterlyRocks).Measurables}}</span></div>
                             <br />
                             <div class="resize-group">

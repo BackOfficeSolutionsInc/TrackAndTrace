@@ -158,7 +158,7 @@ namespace RadialReview.Controllers
                     ids.Add(m);
                 }
             }
-            return Json(ResultObject.Create(new { due = model.DueDate.ToString("MM-dd-yyyy"), ids = ids }, "Updated Due Date"));
+            return Json(ResultObject.Create(new { due = model.DueDate.ToString(GetUser().Organization.Settings.GetDateFormat()), ids = ids }, "Updated Due Date"));
 	    }
 
 		[Access(AccessLevel.Manager)]
@@ -503,9 +503,9 @@ namespace RadialReview.Controllers
         public class EditDueDate
         {
             public long ReviewContainerId { get; set; }
-            public String ReviewDueDate { get; set; }
-            public String ReportDueDate { get; set; }
-            public String PrereviewDueDate { get; set; }
+            public DateTime ReviewDueDate { get; set; }
+            public DateTime ReportDueDate { get; set; }
+            public DateTime PrereviewDueDate { get; set; }
             public bool HasPrereview { get; set; }
             public double Offset { get; set; }
         }
@@ -532,9 +532,9 @@ namespace RadialReview.Controllers
             var model = new EditDueDate()
             {
                 ReviewContainerId = id,
-                PrereviewDueDate = (review.PrereviewDueDate ?? minDate).ToString("MM-dd-yyyy"),
-                ReviewDueDate       = review.DueDate.ToString("MM-dd-yyyy"),
-                ReportDueDate = (review.ReportsDueDate ?? maxDate).ToString("MM-dd-yyyy"),
+                PrereviewDueDate = (review.PrereviewDueDate ?? minDate),
+                ReviewDueDate       = review.DueDate,
+                ReportDueDate = (review.ReportsDueDate ?? maxDate),
                 HasPrereview = review.HasPrereview,
             };
 
@@ -547,13 +547,13 @@ namespace RadialReview.Controllers
         {
             DateTime? prereview,report;
             try{
-                prereview = model.PrereviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
+                prereview = GetUser().Organization.ConvertToUTC(model.PrereviewDueDate);//model.PrereviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
             }catch(FormatException){
                 prereview=null;
             }
-            DateTime review = model.ReviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
+            DateTime review = GetUser().Organization.ConvertToUTC(model.ReviewDueDate);// model.ReviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
             try{
-                report = model.ReportDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
+                report = GetUser().Organization.ConvertToUTC(model.ReportDueDate);//model.ReportDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
             }catch (FormatException){
                 report = null;
             }

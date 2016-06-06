@@ -153,7 +153,88 @@ function showTextAreaModal(title, callback, defaultText) {
         }
     });
 }
+function generateGuid() {
+    var result, i, j;
+    result = '';
+    for (j = 0; j < 32; j++) {
+        if (j == 8 || j == 12 || j == 16 || j == 20)
+            result = result + '-';
+        i = Math.floor(Math.random() * 16).toString(16).toUpperCase();
+        result = result + i;
+    }
+    return result;
+}
 
+function getFormattedDate(date) {
+
+    if (typeof (date) === "undefined") {
+        date = new Date();
+    } else if (typeof (date) === "string") {
+        console.error("Could not determine format from date string: " + date)
+    }
+
+    var _d = date.getDate(),
+                dd = _d > 9 ? _d : '0' + _d,
+                _m = date.getMonth() + 1,
+                mm = _m > 9 ? _m : '0' + _m,
+                yyyy = date.getFullYear(),
+                formatted = mm + '-' + dd + '-' + (yyyy);
+
+    var _userFormat = window.dateFormat
+        .replace(/mm/gi, mm).replace(/m/gi, _m)
+        .replace(/dd/gi, dd).replace(/d/gi, _d)
+        .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy - 2000));
+    return _userFormat;
+}
+
+function generateDatepicker(selector,date,name,id) {
+    if (typeof(date)==="undefined"){
+        date = new Date();
+    }else if (typeof(date)==="string"){
+        console.error("Could not determine format from date string: "+date)
+    }
+
+    if (typeof (name) === "undefined")
+        name = "Date";
+    if (typeof (id) === "undefined")
+        id = name;
+
+    var _d = date.getDate(),
+                dd = _d > 9 ? _d : '0' + _d,
+                _m = date.getMonth()+1,
+                mm = _m > 9 ? _m : '0' + _m,
+                yyyy = date.getFullYear(),
+                formatted = mm + '-' + dd + '-' + (yyyy);
+
+    var _userFormat = window.dateFormat
+        .replace(/mm/gi, mm).replace(/m/gi, _m)
+        .replace(/dd/gi, dd).replace(/d/gi, _d)
+        .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy-2000));
+
+    var guid = generateGuid();
+    var builder = '<div class="input-append date ' + guid + '">';
+    builder += '<input class="form-control client-date" data-val="true"' +
+               ' data-val-date="The field Model must be a date." type="text" ' +
+               'value="' + _userFormat + '">';
+    builder += '<span class="add-on"><i class="icon-th"></i></span>';
+    builder += '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="'+formatted+'" />';
+    builder += '</div>';
+    var dp = $(builder);
+    $(selector).append(dp);
+    $('.' + guid + ' .client-date').datepickerX({
+        format: window.dateFormat.toLowerCase(),
+        //onRender: function (date) {
+        //    return date.valueOf() <= now.valueOf() ? 'disabled' : '';
+        //}
+    }).on('changeDate', function (e) {
+        var _d = e.date.getDate(),
+            d = _d > 9 ? _d : '0' + _d,
+            _m = e.date.getMonth() + 1,
+            m = _m > 9 ? _m : '0' + _m,
+            formatted = m + '-' + d + '-' + (e.date.getFullYear());
+        $('.' + guid + ' .server-date').val(formatted);
+    });
+}
 
 function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel) {
 
@@ -307,12 +388,14 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
     var contentType = null;
 
     var builder = '<div class="form-horizontal modal-builder">';
+    var runAfter = [];
     for (var f in obj.fields) {
         try {
             var field = obj.fields[f];
             var name = field.name || f;
             var label = typeof (field.text) !== "undefined" || !fieldsTypeIsArray;
             var text = field.text || name;
+            var originalValue = field.value;
             var value = field.value || "";
             var placeholder = field.placeholder;
             var type = (field.type || "text").toLowerCase();
@@ -340,6 +423,14 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
                 input = "<" + type + " name=" + escapeString(name) + '" id="' + escapeString(name) + '">' + value + '</' + type + '>';
             } else if (type == "textarea") {
                 input = '<textarea class="form-control blend verticalOnly" rows=5 name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
+            } else if (type == "date") {
+                var guid = generateGuid();
+                var curName = name;
+                var curVal = originalValue;
+                input = '<div class="date-container date-' + guid + '"></div>';
+                runAfter.push(function () {
+                    generateDatepicker('.date-' + guid, curVal, curName, curName);
+                });
             } else {
                 input = '<input type="' + escapeString(type) + '" class="form-control blend" name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + ' value="' + escapeString(value) + '"/>';
             }
@@ -355,7 +446,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
     }
     builder += "</div>";
     _bindModal(builder, obj.title, undefined, undefined, onSuccess, onCancel, reformat, onClose, contentType);
-
+    for (var i = 0; i < runAfter.length; i++) {
+        runAfter[i]();
+    }
 }
 
 function _bindModal(html, title, callback, validation, onSuccess, onCancel, reformat, onClose, contentType) {

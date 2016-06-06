@@ -419,7 +419,8 @@ namespace RadialReview.Accessors {
                                                                             DayOfWeek? weekStart = null,
                                                                             ScorecardPeriod? scorecardPeriod = null,
                                                                             Month? startOfYearMonth = null,
-                                                                            DateOffset? startOfYearOffset = null
+                                                                            DateOffset? startOfYearOffset = null,
+                                                                            string dateFormat = null
             )
         {
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -472,6 +473,9 @@ namespace RadialReview.Accessors {
 
                     if (scorecardPeriod != null)
                         org.Settings.ScorecardPeriod = scorecardPeriod.Value;
+
+                    if (dateFormat != null)
+                        org.Settings.DateFormat = dateFormat;
 
                     if (managersCanCreateSurvey != null)
                         org.Settings.ManagersCanCreateSurvey = managersCanCreateSurvey.Value;

@@ -93,6 +93,7 @@ namespace RadialReview.Controllers
             }
             catch (Exception e){
 				log.Error("Error executing nexus", e);
+                ViewBag.Message = "Could not access resource. Make sure you're logging in with the correct account.";
 	            throw;
 				/*log.Error("Error executing nexus",e);
 				ViewBag.Message = "There was an error in your request.";

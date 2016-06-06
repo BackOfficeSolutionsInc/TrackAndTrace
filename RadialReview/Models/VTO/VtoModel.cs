@@ -182,6 +182,8 @@ namespace RadialReview.Models.VTO
 			public virtual DateTime? FutureDate { get; set; }
 			public virtual decimal? Revenue { get; set; }
 			public virtual decimal? Profit { get; set; }
+            public virtual string RevenueStr { get; set; }
+            public virtual string ProfitStr { get; set; }
 			public virtual string Measurables { get; set; }
             public virtual string ThreeYearPictureTitle { get; set; }
 			public virtual List<VtoItem_String> _LooksLike { get; set; }
@@ -201,9 +203,11 @@ namespace RadialReview.Models.VTO
 				{
 					Id(x => x.Id);
 					References(x => x.Vto).Nullable().LazyLoad();
-					Map(x => x.FutureDate);
-					Map(x => x.Revenue);
+                    Map(x => x.FutureDate);
+                    Map(x => x.Revenue);
                     Map(x => x.Profit);
+                    Map(x => x.RevenueStr);
+                    Map(x => x.ProfitStr);
                     Map(x => x.Measurables);
                     Map(x => x.ThreeYearPictureTitle);
 					Table("VTO_ThreeYearPicture");
@@ -224,7 +228,9 @@ namespace RadialReview.Models.VTO
 			public virtual VtoModel Vto { get; set; }
 			public virtual DateTime? FutureDate { get; set; }
 			public virtual decimal? Revenue { get; set; }
-			public virtual decimal? Profit { get; set; }
+            public virtual decimal? Profit { get; set; }
+            public virtual string RevenueStr { get; set; }
+            public virtual string ProfitStr { get; set; }
 			public virtual string Measurables { get; set; }
             public virtual string OneYearPlanTitle { get; set; }
 			public virtual List<VtoItem_String> _GoalsForYear { get; set; }
@@ -243,9 +249,11 @@ namespace RadialReview.Models.VTO
 				public OneYearPlanMap()
 				{
 					Id(x => x.Id);
-					References(x => x.Vto).Nullable().LazyLoad();
-					Map(x => x.Revenue);
-					Map(x => x.Profit);
+                    References(x => x.Vto).Nullable().LazyLoad();
+                    Map(x => x.Revenue);
+                    Map(x => x.Profit);
+                    Map(x => x.RevenueStr);
+                    Map(x => x.ProfitStr);
                     Map(x => x.Measurables);
                     Map(x => x.FutureDate);
                     Map(x => x.OneYearPlanTitle);
@@ -264,9 +272,11 @@ namespace RadialReview.Models.VTO
 		{
 			public virtual long Id { get; set; }
 			public virtual VtoModel Vto { get; set; }
-			public virtual DateTime? FutureDate { get; set; }
-			public virtual decimal? Revenue { get; set; }
-			public virtual decimal? Profit { get; set; }
+            public virtual DateTime? FutureDate { get; set; }
+            public virtual decimal? Revenue { get; set; }
+            public virtual decimal? Profit { get; set; }
+            public virtual string RevenueStr { get; set; }
+            public virtual string ProfitStr { get; set; }
 			public virtual string Measurables { get; set; }
             public virtual string RocksTitle { get; set; }
 			public virtual List<Vto_Rocks> _Rocks { get; set; }
@@ -284,9 +294,11 @@ namespace RadialReview.Models.VTO
 				public QuarterlyRocksMap()
 				{
 					Id(x => x.Id);
-					References(x => x.Vto).Nullable().LazyLoad();
-					Map(x => x.Revenue);
-					Map(x => x.Profit);
+                    References(x => x.Vto).Nullable().LazyLoad();
+                    Map(x => x.Revenue);
+                    Map(x => x.Profit);
+                    Map(x => x.RevenueStr);
+                    Map(x => x.ProfitStr);
                     Map(x => x.Measurables);
                     Map(x => x.FutureDate);
                     Map(x => x.RocksTitle);

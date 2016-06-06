@@ -9,11 +9,12 @@
         <label class="control-label">Pre-reviews are due:</label>
     </div>
     <div class="col-md-4">
-        <div class="date" data-date="@(Model.PrereviewDueDate)" data-date-format="mm-dd-yyyy">
-            @Html.TextBoxFor(x => x.PrereviewDueDate, null, new { @class = "form-control datePicker", id = "PrereviewDueDate" })
-            <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
-            <span class="add-on"><i class="icon-th"></i></span>
-        </div>
+        @Html.EditorFor(x=>x.PrereviewDueDate)@*
+    <div class="date" data-date="@(Model.PrereviewDueDate)" data-date-format="mm-dd-yyyy">
+        @Html.TextBoxFor(x => x.PrereviewDueDate, null, new { @class = "form-control datePicker", id = "PrereviewDueDate" })
+        <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+        <span class="add-on"><i class="icon-th"></i></span>
+    </div>*@
     </div>
 </div>
 }else{
@@ -25,11 +26,13 @@
         <label class="control-label">Reviews are due:</label>
     </div>
     <div class="col-md-4">
-        <div class="date" data-date="@(Model.ReviewDueDate)" data-date-format="mm-dd-yyyy">
-            @Html.TextBoxFor(x => x.ReviewDueDate, null, new { @class = "form-control datePicker" , id = "ReviewDueDate"})
-            <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
-            <span class="add-on"><i class="icon-th"></i></span>
-        </div>
+        @Html.EditorFor(x=>x.ReviewDueDate)
+        @*
+    <div class="date" data-date="@(Model.ReviewDueDate)" data-date-format="mm-dd-yyyy">
+        @Html.TextBoxFor(x => x.ReviewDueDate, null, new { @class = "form-control datePicker" , id = "ReviewDueDate"})
+        <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+        <span class="add-on"><i class="icon-th"></i></span>
+    </div>*@
     </div>
 </div>
 
@@ -38,11 +41,13 @@
         <label class="control-label">Reports are due:</label>
     </div>
     <div class="col-md-4">
-        <div class="date" data-date="@(Model.ReportDueDate)" data-date-format="mm-dd-yyyy">
-            @Html.TextBoxFor(x => x.ReportDueDate, null, new { @class = "form-control datePicker", id = "ReportDueDate" })
-            <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
-            <span class="add-on"><i class="icon-th"></i></span>
-        </div>
+        @Html.EditorFor(x => x.ReportDueDate)
+    @*
+    <div class="date" data-date="@(Model.ReportDueDate)" data-date-format="mm-dd-yyyy">
+        @Html.TextBoxFor(x => x.ReportDueDate, null, new { @class = "form-control datePicker", id = "ReportDueDate" })
+        <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+        <span class="add-on"><i class="icon-th"></i></span>
+    </div>*@
     </div>
 </div>
 
@@ -53,13 +58,13 @@
         var offset = new Date().getTimezoneOffset();
         $("#TimeZoneOffset").val(offset / 60);
 
-
+        /*
         var nowTemp = new Date();
         var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
 
         var checkin = $('#ReviewDueDate').datepickerX({
-            format: 'mm-dd-yyyy',
-            onRender: function (date) {return date.valueOf() < now.valueOf() ? 'disabled' : '';}
+            format: 'Html.Organization().Settings.GetDateFormat().ToLower()',
+            onRender: function (date) { return date.valueOf() < now.valueOf() ? 'disabled' : ''; }
         }).on('changeDate', function (ev) {
             if (ev.date.valueOf() > checkout.date.valueOf()) {
                 var newDate = new Date(ev.date)
@@ -71,7 +76,7 @@
         }).data('datepicker');
 
         var checkout = $('#ReportDueDate').datepickerX({
-            format: 'mm-dd-yyyy',
+            format: 'Html.Organization().Settings.GetDateFormat().ToLower()',
             onRender: function (date) {
                 return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
             }
@@ -81,12 +86,12 @@
 
 
         var checkout2 = $('#PrereviewDueDate').datepickerX({
-            format: 'mm-dd-yyyy',
+            format: 'Html.Organization().Settings.GetDateFormat().ToLower()',
             onRender: function (date) { return date.valueOf() < now.valueOf() ? 'disabled' : ''; }
         }).on('changeDate', function (ev) {
             checkout2.hide();
         }).data('datepicker');
-
+    */
     }
 </script>
 

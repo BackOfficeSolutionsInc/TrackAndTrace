@@ -6,6 +6,7 @@ using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Dashboard;
 using RadialReview.Models.Enums;
+using RadialReview.Models.L10;
 using RadialReview.Models.Log;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Models.Tasks;
@@ -434,6 +435,9 @@ namespace RadialReview.Accessors
             public decimal? ProspectInTrial2 { get; set; }
             public decimal? ProspectInTrial3 { get; set; }
             public decimal? ProspectInTrial4 { get; set; }
+
+            public int NumberL10s { get; set; }
+            public int NumberPayingClients { get; set; }
 	    }
 
 		public static AppStat Stats()
@@ -566,6 +570,18 @@ namespace RadialReview.Accessors
 				    if (demoOrgs.Any())
 					    supportMin_per_demoClient = supportHoursTotal_Demo*60m/demoOrgs.Count();
 
+                    var recentL10s = s.QueryOver<L10Meeting>().Where(x=>
+                        x.DeleteTime==null &&
+                        x.CreateTime>DateTime.UtcNow.AddDays(-7) &&
+                        x.CreateTime<DateTime.UtcNow
+
+                       // &&(x.CompleteTime==null || x.CompleteTime-x.StartTime>TimeSpan.FromMinutes(20))
+                        ).List().ToList();
+                    var numberL10s = recentL10s.Where(x => x.MeetingLeaderId != 600 && x.OrganizationId != 592 && (x.CompleteTime == null || x.CompleteTime - x.StartTime > TimeSpan.FromMinutes(20))).Count();
+
+                    var payingClients = s.QueryOver<OrganizationModel>().Where(x =>x.DeleteTime == null && x.AccountType == AccountType.Paying).RowCount();
+
+
 					return new AppStat{
 					    DemoClientsHaveLoggedInThisWeek = loggedInThisWeek,
 					    DemoClientsHaventLoggedInThisWeek = haventLoggedInThisWeek,
@@ -585,7 +601,9 @@ namespace RadialReview.Accessors
                         ProspectInTrial1 = prospectInTrial[0],
                         ProspectInTrial2 = prospectInTrial[1],
                         ProspectInTrial3 = prospectInTrial[2],
-                        ProspectInTrial4 = prospectInTrial[3]
+                        ProspectInTrial4 = prospectInTrial[3],
+                        NumberL10s = numberL10s,
+                        NumberPayingClients = payingClients,
 				    };
 			    }
 		    }

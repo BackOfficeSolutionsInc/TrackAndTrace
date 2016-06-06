@@ -92,24 +92,31 @@ namespace RadialReview.Controllers
 		protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
 		#endregion
 		#region GetUserModel
-		protected UserModel GetUserModel()
+		protected UserModel GetUserModel(bool styles=false)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					return GetUserModel(s);
+					return GetUserModel(s,styles);
 				}
 			}
 		}
 
-		protected UserModel GetUserModel(ISession s)
+		protected UserModel GetUserModel(ISession s,bool styles=false)
 		{
-			return new Cache().GetOrGenerate(CacheKeys.USER, x =>
+			return new Cache().GetOrGenerate(CacheKeys.USER+"~"+styles, x =>
 			{
 				x.LifeTime = LifeTime.Request/*Session*/;
 				var id = User.Identity.GetUserId();
-				return _UserAccessor.GetUserById(s, id);
+
+				var user = _UserAccessor.GetUserById(s, id);
+                if (styles) {
+                    user._StylesSettings = s.Get<UserStyleSettings>(id);
+                }
+
+                return user;
+
 			});
 		}
 		#endregion
