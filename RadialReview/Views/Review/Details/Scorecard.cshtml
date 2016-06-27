@@ -1,0 +1,20 @@
+﻿@model long
+
+@{
+    ViewBag.Title = "Scorecard";
+    Html.RenderPartial("~/Views/Angular/_L10App.cshtml", 0L, new ViewDataDictionary() { { "PullUrl", "/Review/ScorecardData/" + Model+"?" } });
+
+}
+
+
+<div class="ng-cloak2 zoom8" ng-app="L10App">
+    <div ng-controller="L10Controller">
+        @{Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary(){
+        {"AddHeaders", false},
+        {"AddController", false},
+        {"ElasticInput", true},
+        {"DisableName", true},
+        { "ForceMin", ViewBag.NumberOfWeeks??13*7 }
+        });}
+    </div>
+</div>

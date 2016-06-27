@@ -1,0 +1,8 @@
+﻿Mobile-Friendly Dashboard
+---------------
+Tiles are retooled to be easily accessable from a mobile phone. 
+*No more zooming required.
+
+Tile-resize
+---------------
+Tiles can now be resized by dragging the edges.

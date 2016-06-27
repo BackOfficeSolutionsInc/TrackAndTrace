@@ -34,11 +34,12 @@ namespace RadialReview.Controllers {
                 mult = 1000000;
             else if (s.Contains("k") && Regex.IsMatch(s, "[\\d]\\s*k(\\s+|$)", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                 mult = 1000;
-            
-            s = Regex.Replace(s, "[^0-9\\.-]", "");
-            s = s.Trim();
 
-            var parsed = s.TryParseDecimal();
+            //s = Regex.Replace(s, "[^0-9\\.-\\s]", "");
+            var parsed = Regex.Replace(score, "[^0-9\\s\\.-]", "").Trim().Split(new char[] { ' ', '\t' }).Select(x => x.TryParseDecimal()).FirstOrDefault(x => x != null);
+            //s = s.Trim();
+
+            //var parsed = s.TryParseDecimal();
             if (parsed != null)
                 return parsed.Value * mult;
             return null;
@@ -50,89 +51,94 @@ namespace RadialReview.Controllers {
         [HttpPost]
         public async Task<PartialViewResult> ProcessScorecardSelection(IEnumerable<int> users, IEnumerable<int> dates, IEnumerable<int> measurables, IEnumerable<int> goals, long recurrenceId, string path)
         {
-            var ui = await UploadAccessor.DownloadAndParse(GetUser(), path);
-            var csvData = ui.Csv;
-            var userRect = new Rect(users);
-            var measurableRect = new Rect(measurables);
-            var goalsRect = new Rect(goals);
+            try {
+                var ui = await UploadAccessor.DownloadAndParse(GetUser(), path);
+                var csvData = ui.Csv;
+                var userRect = new Rect(users);
+                var measurableRect = new Rect(measurables);
+                var goalsRect = new Rect(goals);
 
-            userRect.EnsureRowOrColumn();
-            userRect.EnsureSameRangeAs(measurableRect);
-            userRect.EnsureSameRangeAs(goalsRect);
+                userRect.EnsureRowOrColumn();
+                userRect.EnsureSameRangeAs(measurableRect);
+                userRect.EnsureSameRangeAs(goalsRect);
 
-            Rect dateRect = null;
-            if (dates!=null)
-                dateRect = new Rect(dates);
+                Rect dateRect = null;
+                if (dates != null)
+                    dateRect = new Rect(dates);
 
-            if (dateRect!=null && userRect.GetType() != dateRect.GetType())
-                throw new ArgumentOutOfRangeException("rect", "Date selection and owner selection must be of different selection types (either row or column)");
+                if (dateRect != null && userRect.GetType() != dateRect.GetType())
+                    throw new ArgumentOutOfRangeException("rect", "Date selection and owner selection must be of different selection types (either row or column)");
 
-            var userStrings = userRect.GetArray1D(csvData);
-            var measurableStrings = measurableRect.GetArray1D(csvData);
-            var goals1 = goalsRect.GetArray1D(csvData, x => ParceScore(x) ?? 0m);
+                var userStrings = userRect.GetArray1D(csvData);
+                var measurableStrings = measurableRect.GetArray1D(csvData);
+                var goals1 = goalsRect.GetArray1D(csvData, x => ParceScore(x) ?? 0m);
 
-            List<DateTime> dates1 =new List<DateTime>();
-            if (dateRect != null) {
-                var dateStrings = dateRect.GetArray1D(csvData);
-                dates1 = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
-            }
-
-
-            var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
-            var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
-            // var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
-            var userLookups = DistanceUtility.TryMatch(userStrings, allUsers);
-
-            Rect scoreRect = null;
-            List<List<Decimal?>> scores;
-            if (dateRect != null) {
-                if (dateRect.GetRectType() == RectType.Row) {
-                    scoreRect = new Rect(dateRect.MinX, userRect.MinY, dateRect.MaxX, userRect.MaxY);
-                } else {
-                    scoreRect = new Rect(userRect.MinX, dateRect.MinY, userRect.MaxX, dateRect.MaxY);
+                List<DateTime> dates1 = new List<DateTime>();
+                if (dateRect != null) {
+                    var dateStrings = dateRect.GetArray1D(csvData);
+                    dates1 = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
                 }
 
-                scores = scoreRect.GetArray(csvData, x => ParceScore(x));
-            } else {
-                scores = goals1.Select(x => new List<Decimal?>()).ToList();
-            }
-            var direction = goalsRect.GetArray1D(csvData, x => {
-                if (x.Contains("<"))
-                    return LessGreater.LessThan;
-                if (x.Contains(">"))
+
+                var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
+                var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
+                // var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
+                var userLookups = DistanceUtility.TryMatch(userStrings, allUsers);
+
+                Rect scoreRect = null;
+                List<List<Decimal?>> scores;
+                if (dateRect != null) {
+                    if (dateRect.GetRectType() == RectType.Row) {
+                        scoreRect = new Rect(dateRect.MinX, userRect.MinY, dateRect.MaxX, userRect.MaxY);
+                    } else {
+                        scoreRect = new Rect(userRect.MinX, dateRect.MinY, userRect.MaxX, dateRect.MaxY);
+                    }
+
+                    scores = scoreRect.GetArray(csvData, x => ParceScore(x));
+                } else {
+                    scores = goals1.Select(x => new List<Decimal?>()).ToList();
+                }
+                var direction = goalsRect.GetArray1D(csvData, x => {
+                    if (x.Contains("<"))
+                        return LessGreater.LessThan;
+                    if (x.Contains(">"))
+                        return LessGreater.GreaterThan;
                     return LessGreater.GreaterThan;
-                return LessGreater.GreaterThan;
-            });
-            var units = goalsRect.GetArray1D(csvData, x => {
-                if (x.Contains("$") || x.ToLower().Contains("usd"))
-                    return UnitType.Dollar;
-                if (x.Contains("%"))
-                    return UnitType.Percent;
-                if (x.Contains("£") || x.Contains("₤") || x.ToLower().Contains("gbp"))
-                    return UnitType.Pound;
-                return UnitType.None;
-            });
+                });
+                var units = goalsRect.GetArray1D(csvData, x => {
+                    if (x.Contains("$") || x.ToLower().Contains("usd") || x.ToLower().Contains("dollar"))
+                        return UnitType.Dollar;
+                    if (x.Contains("%"))
+                        return UnitType.Percent;
+                    if (x.Contains("£") || x.Contains("₤") || x.ToLower().Contains("gbp") || x.ToLower().Contains("pound"))
+                        return UnitType.Pound;
+                    if (x.Contains("€") || x.Contains("€") || x.ToLower().Contains("euro") || x.ToLower().Contains("eur"))
+                        return UnitType.Euros;
+                    return UnitType.None;
+                });
 
-            var m = new UploadScorecardSelectedDataVM() {
-                Rows = csvData,
-                Users = userStrings,
-                UserLookup = userLookups,
-                Measurables = measurableStrings,
-                Dates = dates1,
-                Goals = goals1,
-                Scores = scores,
-                RecurrenceId = recurrenceId,
-                Path = path,
-                //UseAWS = useAWS,
-                ScoreRange = scoreRect.NotNull(x=>string.Join(",", x.ToString())),
-                MeasurableRectType = "" + dateRect.NotNull(x=>x.GetRectType()),
-                DateRange = dateRect.NotNull(x=>string.Join(",", x.ToString())),
-                AllUsers = allUsers.Select(x => new SelectListItem() { Text = x.Item1 + " " + x.Item2, Value = x.Item3 + "" }).ToList(),
-                Direction = direction,
-                Units = units
-            };
-            return PartialView("UploadScorecardSelected", m);
-
+                var m = new UploadScorecardSelectedDataVM() {
+                    Rows = csvData,
+                    Users = userStrings,
+                    UserLookup = userLookups,
+                    Measurables = measurableStrings,
+                    Dates = dates1,
+                    Goals = goals1,
+                    Scores = scores,
+                    RecurrenceId = recurrenceId,
+                    Path = path,
+                    //UseAWS = useAWS,
+                    ScoreRange = scoreRect.NotNull(x => string.Join(",", x.ToString())),
+                    MeasurableRectType = "" + dateRect.NotNull(x => x.GetRectType()),
+                    DateRange = dateRect.NotNull(x => string.Join(",", x.ToString())),
+                    AllUsers = allUsers.Select(x => new SelectListItem() { Text = x.Item1 + " " + x.Item2, Value = x.Item3 + "" }).ToList(),
+                    Direction = direction,
+                    Units = units
+                };
+                return PartialView("UploadScorecardSelected", m);
+            } catch (Exception e) {
+                throw new Exception(e.Message + "[" + path + "]", e);
+            }
         }
 
 
@@ -140,108 +146,112 @@ namespace RadialReview.Controllers {
         [HttpPost]
         public async Task<JsonResult> SubmitScorecard(FormCollection model)
         {
-            //var useAws = model["UseAWS"].ToBoolean();
             var path = model["Path"].ToString();
-            var recurrence = model["recurrenceId"].ToLong();
-            var measurableRectType = model["MeasurableRectType"].ToString();
-            Rect scoreRect = null;
-            if (!string.IsNullOrWhiteSpace(model["ScoreRange"]))
-                scoreRect = new Rect(model["ScoreRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
-            Rect dateRect = null;
-            if (!string.IsNullOrWhiteSpace(model["DateRange"]))
-                dateRect = new Rect(model["DateRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
+            try {
+                //var useAws = model["UseAWS"].ToBoolean();
+                var recurrence = model["recurrenceId"].ToLong();
+                var measurableRectType = model["MeasurableRectType"].ToString();
+                Rect scoreRect = null;
+                if (!string.IsNullOrWhiteSpace(model["ScoreRange"]))
+                    scoreRect = new Rect(model["ScoreRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
+                Rect dateRect = null;
+                if (!string.IsNullOrWhiteSpace(model["DateRange"]))
+                    dateRect = new Rect(model["DateRange"].ToString().Split(',').Select(x => x.ToInt()).ToList());
 
-            _PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
-            var ui = await UploadAccessor.DownloadAndParse(GetUser(), path);
-            var csvData = ui.Csv;
+                _PermissionsAccessor.Permitted(GetUser(), x => x.AdminL10Recurrence(recurrence));
+                var ui = await UploadAccessor.DownloadAndParse(GetUser(), path);
+                var csvData = ui.Csv;
 
-            var keys = model.Keys.OfType<string>();
-            var measurables = keys.Where(x => x.StartsWith("m_measurable_"))
-                .ToDictionary(x => x.SubstringAfter("m_measurable_").ToInt(), x => (string)model[x]);
-            var goals = keys.Where(x => x.StartsWith("m_goal_"))
-                .ToDictionary(x => x.SubstringAfter("m_goal_").ToInt(), x => model[x].TryParseDecimal(0));
-            var users = keys.Where(x => x.StartsWith("m_user_"))
-                .ToDictionary(x => x.SubstringAfter("m_user_").ToInt(), x => model[x].ToLong());
-            var goalDirs = keys.Where(x => x.StartsWith("m_goaldir_"))
-                .ToDictionary(x => x.SubstringAfter("m_goaldir_").ToInt(), x => (LessGreater)Enum.Parse(typeof(LessGreater), model[x]));
-            var goalUnits = keys.Where(x => x.StartsWith("m_goalunits_"))
-                .ToDictionary(x => x.SubstringAfter("m_goalunits_").ToInt(), x => (UnitType)Enum.Parse(typeof(UnitType), model[x]));
+                var keys = model.Keys.OfType<string>();
+                var measurables = keys.Where(x => x.StartsWith("m_measurable_"))
+                    .ToDictionary(x => x.SubstringAfter("m_measurable_").ToInt(), x => (string)model[x]);
+                var goals = keys.Where(x => x.StartsWith("m_goal_"))
+                    .ToDictionary(x => x.SubstringAfter("m_goal_").ToInt(), x => ParceScore(model[x])??0);
+                var users = keys.Where(x => x.StartsWith("m_user_"))
+                    .ToDictionary(x => x.SubstringAfter("m_user_").ToInt(), x => model[x].ToLong());
+                var goalDirs = keys.Where(x => x.StartsWith("m_goaldir_"))
+                    .ToDictionary(x => x.SubstringAfter("m_goaldir_").ToInt(), x => (LessGreater)Enum.Parse(typeof(LessGreater), model[x]));
+                var goalUnits = keys.Where(x => x.StartsWith("m_goalunits_"))
+                    .ToDictionary(x => x.SubstringAfter("m_goalunits_").ToInt(), x => (UnitType)Enum.Parse(typeof(UnitType), model[x]));
 
-            List<List<Decimal?>> scores = null;
-            if (scoreRect!=null)
-                scores = scoreRect.GetArray(csvData, (x, c) => x.TryParseDecimal());
+                List<List<Decimal?>> scores = null;
+                if (scoreRect != null)
+                    scores = scoreRect.GetArray(csvData, (x, c) => ParceScore(x));
 
-            List<DateTime> dates = new List<DateTime>();
-            if (dateRect != null) {
-                var dateStrings = dateRect.GetArray1D(csvData);
-                dates = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
-            }
+                List<DateTime> dates = new List<DateTime>();
+                if (dateRect != null) {
+                    var dateStrings = dateRect.GetArray1D(csvData);
+                    dates = TimingUtility.FixOrderedDates(dateStrings, new CultureInfo("en-US"));
+                }
 
-            var caller = GetUser();
-            var now = DateTime.UtcNow;
-            var measurableLookup = new Dictionary<int, MeasurableModel>();
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    using (var rt = RealTimeUtility.Create(false)) {
-                        var org = s.Get<L10Recurrence>(recurrence).Organization;
-                        var perms = PermissionsUtility.Create(s, caller).ViewOrganization(org.Id);
-                        var ii = 1;
-                        foreach (var m in measurables) {
-                            var ident = m.Key;
-                            var owner = users[ident];
-                            var goal = goals[ident];
-                            var goaldir = goalDirs[ident];
-                            var measurable = new MeasurableModel() {
-                                Title = m.Value,
-                                OrganizationId = org.Id,
-                                Goal = goal,
-                                GoalDirection = goaldir,
-                                AccountableUserId = owner,
-                                AdminUserId = owner,
-                                CreateTime = now,
-                                _Ordering = ii
-                            };
-                            ii += 1;
+                var caller = GetUser();
+                var now = DateTime.UtcNow;
+                var measurableLookup = new Dictionary<int, MeasurableModel>();
+                using (var s = HibernateSession.GetCurrentSession()) {
+                    using (var tx = s.BeginTransaction()) {
+                        using (var rt = RealTimeUtility.Create(false)) {
+                            var org = s.Get<L10Recurrence>(recurrence).Organization;
+                            var perms = PermissionsUtility.Create(s, caller).ViewOrganization(org.Id);
+                            var ii = 1;
+                            foreach (var m in measurables) {
+                                var ident = m.Key;
+                                var owner = users[ident];
+                                var goal = goals[ident];
+                                var goaldir = goalDirs[ident];
+                                var measurable = new MeasurableModel() {
+                                    Title = m.Value,
+                                    OrganizationId = org.Id,
+                                    Goal = goal,
+                                    GoalDirection = goaldir,
+                                    AccountableUserId = owner,
+                                    AdminUserId = owner,
+                                    CreateTime = now,
+                                    _Ordering = ii
+                                };
 
-                            L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateNewMeasurable(recurrence, measurable), skipRealTime: true);
-                            measurableLookup[ident] = measurable;
-                            if (scoreRect != null) {
-                                var scoreRow = measurableRectType == "Row"
-                                    ? new Rect(scoreRect.MinX, scoreRect.MinY + ident, scoreRect.MaxX, scoreRect.MinY + ident)
-                                    : new Rect(scoreRect.MinX + ident, scoreRect.MinY, scoreRect.MinX + ident, scoreRect.MaxY);
+                                L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateNewMeasurable(recurrence, measurable), skipRealTime: true,rowNum:ii);
+                                ii += 1;
+                                measurableLookup[ident] = measurable;
+                                if (scoreRect != null) {
+                                    var scoreRow = measurableRectType == "Row"
+                                        ? new Rect(scoreRect.MinX, scoreRect.MinY + ident, scoreRect.MaxX, scoreRect.MinY + ident)
+                                        : new Rect(scoreRect.MinX + ident, scoreRect.MinY, scoreRect.MinX + ident, scoreRect.MaxY);
 
-                                var scoresFound = scoreRow.GetArray1D(csvData, x => x.TryParseDecimal());
+                                    var scoresFound = scoreRow.GetArray1D(csvData, x => ParceScore(x));
 
-                                for (var i = 0; i < dates.Count; i++) {
-                                    var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday));
-                                    var score = scoresFound[i];
-                                    L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
+                                    for (var i = 0; i < dates.Count; i++) {
+                                        var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday));
+                                        var score = scoresFound[i];
+                                        L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
+                                    }
                                 }
+
+
                             }
+                            var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+                                .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
+                                .Select(x => x.User.Id)
+                                .List<long>().ToList();
 
-
+                            foreach (var u in users.Where(x => !existing.Any(y => y == x.Value)).Select(x => x.Value).Distinct()) {
+                                s.Save(new L10Recurrence.L10Recurrence_Attendee() {
+                                    User = s.Load<UserOrganizationModel>(u),
+                                    L10Recurrence = s.Load<L10Recurrence>(recurrence),
+                                    CreateTime = now,
+                                });
+                            }
+                            tx.Commit();
+                            s.Flush();
                         }
-                        var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
-                            .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
-                            .Select(x => x.User.Id)
-                            .List<long>().ToList();
-
-                        foreach (var u in users.Where(x => !existing.Any(y => y == x.Value)).Select(x => x.Value).Distinct()) {
-                            s.Save(new L10Recurrence.L10Recurrence_Attendee() {
-                                User = s.Load<UserOrganizationModel>(u),
-                                L10Recurrence = s.Load<L10Recurrence>(recurrence),
-                                CreateTime = now,
-                            });
-                        }
-                        tx.Commit();
-                        s.Flush();
                     }
                 }
+
+                //ShowAlert("Uploaded Scorecard", AlertType.Success);
+
+                return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Scorecard", "Uploaded Scorecard"));
+            } catch (Exception e) {
+                throw new Exception(e.Message + "[" + path + "]", e);
             }
-
-            //ShowAlert("Uploaded Scorecard", AlertType.Success);
-
-            return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Scorecard", "Uploaded Scorecard"));
         }
 
         public class UploadScorecardSelectedDataVM {

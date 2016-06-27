@@ -186,7 +186,7 @@ namespace RadialReview.Controllers
                 return RedirectToAction("Wizard", new { id = l10.Id, tname = Request["tname"], tmethod = Request["tmethod"] });
             } else {
                 //var recurrenceId = id.Value;
-                //_PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
+                _PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
                 //var model = AddExtras(recurrenceId, new L10EditVM() { Return = @return });
                 return View("Wizard", id.Value);
             }

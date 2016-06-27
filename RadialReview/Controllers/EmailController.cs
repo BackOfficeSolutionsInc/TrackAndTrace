@@ -82,6 +82,7 @@ namespace RadialReview.Controllers
 
 		    var url = Config.BaseUrl(review.ForOrganization) + "Tasks";
 
+            var format = GetUser().NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
 		    //var users = _UserAccessor.GetUsersByIds(model.UserIds);
 			var organization = GetUser().Organization.GetName();
 			
@@ -90,7 +91,7 @@ namespace RadialReview.Controllers
 				.Subject(EmailStrings.ReminderReview_Subject, organization)
 				.Body(EmailStrings.RemindReview_Body,
 					x.ForUser.GetFirstName(),
-					review.DueDate.AddDays(-1).ToShortDateString(),
+					review.DueDate.AddDays(-1).ToString(format),
 					url,
 					url,
 					Config.ProductName(review.ForOrganization))

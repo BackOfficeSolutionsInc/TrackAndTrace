@@ -1,38 +1,12 @@
 ﻿@model long
 
 <div class="review smallBreak2 loading tiny l10-issue-tile" style="min-height:30px">
-    <div class="l10-issue-heading heading" style="@(ViewBag.HeadingStyle)">
+    <div class="l10-issue-heading heading" style="@(ViewBag.HeadingStyle)" data-style="@(ViewBag.HeadingStyle)">
         {{(model.L10Issues | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Issues" class=""> (View all)</a>
         <a href="/todo/list" class="gray"></a>
     </div><div class="tile">@{ Html.RenderPartial("~/Views/Issues/Partial/list.cshtml", new ViewDataDictionary(){
 		{"AddHeaders", false},
 		{"AddController", false},
 		{"Selector", "((model.L10Issues )| filter:{KeyId:"+Model+"})[0].Contents "},
-	}); }<div ng-show="(model.L10Issues  | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Issues | filter:{KeyId:@(Model)}).length==0)">Please wait</div></div>
+	}); }<div ng-show="(model.L10Issues  | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Issues | filter:{KeyId:@(Model)}).length==0)">Please wait</div><div ng-if="(model.L10Issues  | filter:{KeyId:@(Model)})[0].HasError" class="gray alignCenter">{{(model.L10Issues  | filter:{KeyId:@(Model)})[0].Message}}</div></div>
 </div>
-
-@*<style>
-	.width_1 .rock-tile .name {
-		font-size: 11px;
-		padding: 2px 3px;
-	}
-
-	.width_1 .rock-tile .AtRisk {
-		color: #a94442;
-		background-color: #f2dede;
-	}
-
-	.width_1 .rock-tile .OnTrack {
-		color: #31708f;
-		background-color: #d9edf7;
-	}
-
-	.width_1 .rock-tile .Complete {
-		color: #3c763d;
-		background-color: #dff0d8;
-	}
-
-	.rock-tile .rock-list-container {
-		padding: 0px;
-	}
-</style>*@

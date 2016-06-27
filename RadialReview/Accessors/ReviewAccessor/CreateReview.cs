@@ -34,6 +34,8 @@ namespace RadialReview.Accessors {
             IHubContext hub = null, String userId = null, int total = 0) {
             int count = 0;
 
+            var format = perms.GetCaller().NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
+
             var unsentEmails = new List<Mail>();
 	        var nw = DateTime.UtcNow;
 			var range = new DateRange(nw,nw);
@@ -67,7 +69,7 @@ namespace RadialReview.Accessors {
                     unsentEmails.Add(
 							Mail.To(EmailTypes.NewReviewIssued, user.GetEmail())
                             .Subject(EmailStrings.NewReview_Subject, organizationName)
-							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToShortDateString(), Config.BaseUrl(org) + "n/" + guid, Config.BaseUrl(org) + "n/" + guid, productName, reviewContainer.ReviewName)
+							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToString(format), Config.BaseUrl(org) + "n/" + guid, Config.BaseUrl(org) + "n/" + guid, productName, reviewContainer.ReviewName)
 						);
 					log.Info("CreateReview user=" + reviewerId + " for review=" + reviewContainer.Id);
                 }
@@ -253,6 +255,7 @@ namespace RadialReview.Accessors {
             List<UserOrganizationModel> accessibleUsers,
 			DateRange range) {
             var unsentEmails = new List<Mail>();
+            var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
             try {
 				var askables = GetAskablesBidirectional(
 					dataInteraction, perms, caller, beingReviewedUser,
@@ -272,7 +275,7 @@ namespace RadialReview.Accessors {
                     unsentEmails.Add(Mail
                         .To(EmailTypes.NewReviewIssued,beingReviewedUser.GetEmail())
                         .Subject(EmailStrings.NewReview_Subject, organization.Name.Translate())
-                        .Body(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), (dueDate.AddDays(-1)).ToShortDateString(),url,url, ProductStrings.ProductName,reviewContainer.ReviewName)
+                        .Body(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), (dueDate.AddDays(-1)).ToString(format),url,url, ProductStrings.ProductName,reviewContainer.ReviewName)
                     );
                 }
 

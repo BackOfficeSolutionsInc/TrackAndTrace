@@ -529,7 +529,7 @@ body {
 
     .nav.navbar-nav .btn-group.heading {
         width: 70%;
-        width: calc(100% - 66px);
+        width: calc(100% - 60px);
     }
 }
 
@@ -1778,7 +1778,7 @@ textarea {
     content: "Loading...";
 }
 
-.scrollbox {
+.scrollbox1 {
     overflow: auto;
     /*width: 200px;*/
     /*max-height: 200px;*/

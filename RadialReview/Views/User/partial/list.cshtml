@@ -40,7 +40,7 @@
                                     {{user.Name}}
                                 </td>
                                 <td class="alignCenter createtime-column" style="min-width: 75px;vertical-align: top;">
-                                    {{user.CreateTime | date:'MM/dd/yy'}}
+                                    {{user.CreateTime | date:dateFormat}}
                                 </td>
                                 <td class="delete-column">
                                     <span class="delete-row" ng-click="functions.removeRow($event,user)"></span>

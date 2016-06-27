@@ -56,6 +56,8 @@ namespace RadialReview.Models.Reviews
 
         }
 
+
+        public virtual bool IncludeScorecard { get; set; }
     }
 
     public class ClientReviewModelMap : ClassMap<ClientReviewModel>
@@ -75,6 +77,7 @@ namespace RadialReview.Models.Reviews
 
             Map(x => x.IncludeScatterChart);
             Map(x => x.IncludeTimelineChart);
+            Map(x => x.IncludeScorecard);
 
             Map(x => x.SignedTime);
 

@@ -112,6 +112,9 @@ namespace RadialReview.Controllers {
             // _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Recurrence(model.RecurrenceId));
             try {
                 var upload = await UploadAccessor.UploadAndParse(GetUser(), type, file, ForModel.Create<L10Recurrence>(recurrenceId));
+
+             
+
                 if (csv && upload.GetLikelyFileType() != FileType.CSV)
                     throw new FileNotFoundException("File must be a csv.");
                 var linedat = upload.GetLikelyFileType() == FileType.CSV ? upload.Csv : upload.Lines.Select(x => x.AsList()).ToList();
@@ -125,6 +128,17 @@ namespace RadialReview.Controllers {
 
             } catch (FileNotFoundException e) {
                 return Json(ResultObject.CreateError("An error has occurred. " + e.Message));
+            } catch (FileTypeException e) {
+                var err = "File file type cannot be used.";
+                if (e.FileType == FileType.XLS || e.FileType == FileType.XLSX) {
+
+                    err = "File cannot be in the Excel format (*."+(e.FileType).ToString().ToLower()+").";
+                    if (csv) {
+                        err += " Please open the file in Excel and use Save As... to save as a .CSV file and reupload.";
+                    }
+                }
+                return Json(ResultObject.CreateError(err));
+
             }
         }
 
@@ -153,9 +167,9 @@ namespace RadialReview.Controllers {
 
 
                 var a = 0;
-               
 
-                return RedirectToAction("Edit","VTO",new{id=vto.Id});
+
+                return RedirectToAction("Edit", "VTO", new { id = vto.Id });
             }
         }
         [Access(AccessLevel.UserOrganization)]

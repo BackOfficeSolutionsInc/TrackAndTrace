@@ -11,6 +11,12 @@ using RadialReview.Models.L10;
 
 namespace RadialReview.Models.Todo
 {
+    public enum TodoType {
+        Recurrence = 0,
+        Personal = 1,
+    }
+
+
 	[DebuggerDisplay("Message = {Message}, Owner={AccountableUser}")]
 	public class TodoModel : IDeletable, ILongIdentifiable, IIssue
 	{
@@ -40,6 +46,8 @@ namespace RadialReview.Models.Todo
 
 		public virtual String PadId { get; set; }
 
+        public virtual TodoType TodoType { get; set; }
+
         public virtual long? ClearedInMeeting { get; set; }
 
 		public TodoModel()
@@ -48,6 +56,7 @@ namespace RadialReview.Models.Todo
 			DueDate = CreateTime.AddDays(7);
             Ordering = -CreateTime.Ticks;
             PadId = Guid.NewGuid().ToString();
+            TodoType = TodoType.Recurrence;
 		}
 
 		public class IssueMap : ClassMap<TodoModel>
@@ -55,7 +64,9 @@ namespace RadialReview.Models.Todo
 			public IssueMap()
 			{
 				Id(x => x.Id);
-				Map(x => x.Ordering);
+                Map(x => x.Ordering);
+
+                Map(x => x.TodoType).CustomType<TodoType>();
 
                 Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
@@ -99,7 +110,10 @@ namespace RadialReview.Models.Todo
 
 		public virtual async Task<string> GetIssueMessage()
         {
-            return "Incomplete: '" + Message + "'";//"Todo was not completed";
+            if (CompleteTime == null)
+                return "Incomplete: '" + Message + "'";//"Todo was not completed";
+            return "'" + Message + "'";//"Todo was completed";
+
             //if (CreatedDuringMeeting != null){
             //    if (CreatedDuringMeeting.StartTime.HasValue && !CreatedDuringMeeting.CompleteTime.HasValue && CreateTime > CreatedDuringMeeting.StartTime.Value && CompleteTime == null){
             //        //Created during meeting

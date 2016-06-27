@@ -863,7 +863,7 @@
 
         setTimeout(refreshDocHeight, 1);
 
-        $(document).bind("keyup keydown", function(e){
+        $(window).bind("keyup keydown", function(e){
             if((e.ctrlKey || e.metaKey) && e.keyCode == 80){
                 //refreshDocHeight();
                 //window.print();

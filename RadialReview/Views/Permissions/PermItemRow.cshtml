@@ -5,7 +5,9 @@
 	<td class="name">@Model.Title</td>
 	<td>
 		@{Html.RenderPartial("~/Views/Shared/_Picture.cshtml", new ViewDataDictionary(Model.ImageUrl){
-			  {"ImageTitle",Model.Title}
+			  {"ImageTitle",Model.Title},
+              {"Initials",Model.Initials},
+              {"Color",Model.Color}
 		  });}
 	</td>
 	<td>

@@ -36,18 +36,17 @@ angular.module('priorityTemplates', []).directive("priority", ["$compile", funct
                 $scope.$eval(attrs.ngChange);
             });*/
             ngModelCtrl.$viewChangeListeners.push(function () {
-                debugger;
                 $scope.$parent.$eval(attrs.ngChange);
             });
             var refresh = function (value) {
-                console.log("ValChange:" + value);
+                //console.log("ValChange:" + value);
                 var html = "";
                 starClass = [];
                 angular.element($element[0].querySelector(".priority")).empty();
                 var p = ngModelCtrl.$modelValue;
                 if (p > 3) {
                     starClass.push("multiple");
-                    html = ("<span class='icon fontastic-icon-star-3'></span> x" + p);
+                    html = ("<span><span class='icon fontastic-icon-star-3'></span> x" + p+"</span>");
                 } else if (p > 0 && p <= 3) {
                     starClass.push("single");
                     starClass.push("single-" + p);
@@ -73,6 +72,8 @@ angular.module('priorityTemplates', []).directive("priority", ["$compile", funct
             $scope.add = function () {
                 console.log("add");
                 $scope.priority += 1;
+                if ($scope.priority > 6)
+                    $scope.priority = 0;
                 ngModelCtrl.$setViewValue($scope.priority);
                // console.log($scope.ngModel);
                // $scope.$parent.$eval($attrs.ngChange);
@@ -92,7 +93,7 @@ angular.module('priorityTemplates', []).directive("priority", ["$compile", funct
             };
 
             $scope.$watch(function () { return ngModelCtrl.$modelValue; }, refresh);
-            refresh(ngModelCtrl.$modelValue);
+            //refresh(ngModelCtrl.$modelValue);
         },
         controller: ["$scope", "$element","$attrs", function ($scope, $element, $attrs) {
            /* $scope.add = function () {

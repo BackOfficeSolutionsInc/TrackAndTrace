@@ -8,6 +8,17 @@
 //    });
 //}]);
 
+l10App.config(['$mdDateLocaleProvider', function ($mdDateLocaleProvider) {
+    $mdDateLocaleProvider.formatDate = function (date) {
+        return moment(date).format((window.dateFormat || "MM-dd-yyyy").toUpperCase());
+    };
+
+    $mdDateLocaleProvider.parseDate = function (dateString) {
+        var m = moment(dateString, (window.dateFormat || "MM-dd-yyyy").toUpperCase());
+        return m.isValid() ? m.toDate() : new Date(NaN);
+    };
+}]);
+
 l10App.config(['fcsaNumberConfigProvider', function(fcsaNumberConfigProvider) {
     fcsaNumberConfigProvider.setDefaultOptions({
         "preventInvalidInput": true
@@ -82,8 +93,8 @@ l10App.config(['$mdThemingProvider', function ($mdThemingProvider) {
         '800': '#a4a1a1',
         '900': '#989494',
         'A100': '#ffffff',
-        'A200': '#ffffff',
-        'A400': '#ffffff',
+        'A200': '#3E3935',//'#ffffff',
+        'A400': '#ffffff',//'#ffffff',
         'A700': '#8b8787'
     };
     $mdThemingProvider.definePalette('customBackground', customBackground);

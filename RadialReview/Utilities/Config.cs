@@ -77,13 +77,13 @@ namespace RadialReview.Utilities {
                     return "http://localhost:2200/";
                 case Env.production:
                     if (organization == null)
-                        return "https://review.radialreview.com/";
+                        return "https://traction.tools.com/";
 
                     switch (organization.Settings.Branding) {
                         case BrandingType.RadialReview:
-                            return "https://review.radialreview.com/";
+                            return "https://traction.tools.com/";
                         case BrandingType.RoundTable:
-                            return "https://radialroundtable.com/";
+                            return "https://traction.tools.com/";
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -177,7 +177,7 @@ namespace RadialReview.Utilities {
                 case Env.local_sqlite: return GetAppSetting("OptimizeBundles", "False").ToBoolean();
                 case Env.local_mysql: return GetAppSetting("OptimizeBundles", "False").ToBoolean();
                 case Env.production: return true;
-                case Env.local_test_sqlite: return GetAppSetting("OptimizeBundles", "False").ToBoolean();
+                case Env.local_test_sqlite: return GetAppSetting("OptimizeBundles", "True").ToBoolean();
                 default: throw new ArgumentOutOfRangeException();
             }
         }
@@ -302,9 +302,13 @@ namespace RadialReview.Utilities {
             }
         }
 
-        public static string NotesUrl()
+        public static string NotesUrl(string append="")
         {
-            return GetAppSetting("NotesServer", "https://notes.traction.tools");
+            var server =  GetAppSetting("NotesServer", "https://notes.traction.tools");
+            if (!string.IsNullOrWhiteSpace(append)) {
+                server=server.TrimEnd('/') + "/" + append;
+            }
+            return server;
         }
 
         internal static string NoteApiKey()

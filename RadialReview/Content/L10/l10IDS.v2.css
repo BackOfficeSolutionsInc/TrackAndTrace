@@ -218,7 +218,14 @@ ol.sortable li {
             top: -3px;
             position: relative;
             color: #3B70CB !important;
+            
         }
+        .prioritization-Invalid .issues-list > .issue-row.selected.prioritize > .message,
+        .prioritization-Priority .issues-list > .issue-row.selected.prioritize > .message
+        {
+            color: rgb(137, 112, 0) !important;
+        }
+
 
         .issues-list > .issue-row.selected > .move-icon {
             color: #7188B0 !important;
@@ -622,9 +629,23 @@ body.dragging, body.dragging * {
     display: none;
 }
 
+.issueDetails .clickable{    
+    color:black !important;
+}
+
 .issueDetails .message-input {
     width: 90%;
     width: calc(100% - 20px);
+    outline:none;
+    border:none;
+    margin-top:-1px;
+    border-bottom:2px solid #EF7622;
+    color:black !important;
+}
+
+.issueDetails .message:hover {
+    border-top:1px solid transparent;
+    border-bottom:1px solid #EF7622;
 }
 
 .issueDetails .issue-details {

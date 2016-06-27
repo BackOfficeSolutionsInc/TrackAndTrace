@@ -18,7 +18,7 @@ namespace RadialReview.Models.Application
         public virtual long OrganizationId { get; set; }
         public virtual UploadType UploadType { get; set; }
         public virtual string OriginalName { get; set; }
-        public virtual Guid Identifier { get; set; }
+        public virtual string Identifier { get; set; }
         public virtual string MimeType { get; set; }
         public virtual ForModel ForModel { get; set; }
         public virtual byte[] _Data { get; set; }
@@ -27,7 +27,7 @@ namespace RadialReview.Models.Application
         public UploadModel()
         {
             CreateTime = DateTime.UtcNow;
-            Identifier = Guid.NewGuid();
+            Identifier = Guid.NewGuid().ToString();
         }
 
 
@@ -50,7 +50,7 @@ namespace RadialReview.Models.Application
                 Map(x => x.DeleteTime);
                 Map(x => x.UploadType);
                 Map(x => x.OriginalName);
-                Map(x => x.Identifier);
+                Map(x => x.Identifier).Column("awsid");
                 Map(x => x.MimeType);
                 Component(x => x.ForModel).ColumnPrefix("ForModel_");
             }

@@ -138,7 +138,8 @@
 
 @using (Html.BeginScripts())
 {
-    <script src="~/Scripts/jquery/jquery.redirect.js"></script>
+    @*<script src="~/Scripts/jquery/jquery.redirect.js"></script>*@
+    @Scripts.Render("~/bundles/SetCard")
     <script>
         function AddResponse(code, msg, selector) {
             errorResponses[code] = { message: msg, selector: selector };

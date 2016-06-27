@@ -7,7 +7,7 @@
 		                                                     {"AddController", false},
 		                                                     {"ElasticInput", true},
 		                                                     {"DisableName", true},
-                                                             { "ForceMin", ViewBag.NumberOfWeeks??13*7 }
+                                                             { "ForceMin", (ViewBag.NumberOfWeeks??13)*7 }
 	                                                     }); }</div><div class="tile visible-width-1">@{Html.RenderPartial("~/Views/Scorecard/Partial/tile.cshtml", new ViewDataDictionary(){
 		                                                                                                    {"AddHeaders",false},
 		                                                                                                    {"AddController",false},

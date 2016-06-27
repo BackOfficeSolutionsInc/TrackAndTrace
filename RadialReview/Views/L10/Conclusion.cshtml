@@ -8,7 +8,7 @@
 <div class="conclusion meeting-page">
     <div class="row">
         <div class="col-md-12">
-            <hgroup class="page-header">
+            <hgroup class="page-header fixed-pos listing fader" style="border-bottom:none;">
                 <div class="pull-right">
                     @Html.Partial("partial/ButtonBar", Model)
                 </div>
@@ -35,7 +35,7 @@
             <div class="centered" style="width: 87%; max-width: 760px; margin-bottom: 47px; margin-top: -22px; ">
                 <div class="component cascading-messages">
                     <div class="pull-right"><div class="btn btn-default btn-xs todoModal " data-method="createtodo" data-meeting="@Model.Meeting.Id" data-recurrence="@Model.Recurrence.Id"><span class="glyphicon glyphicon-unchecked"></span> New Todo</div></div>
-                    <h3 style="font-size: 20px; color: #444;">Cascading Messages</h3>
+                    <h3 style="font-size: 20px; color: #444;margin-left: 91px;">Cascading Messages</h3>
                     <h4 class="cascading-messages-container" style="padding-bottom:15px;">Do we need to tell anyone about any of the decisions we made?</h4>
                 </div>
             </div>

@@ -316,8 +316,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.content;
 	  };
 
-	  Anno.prototype.contentElem = function() {
-	    return $("<div class='anno-content'>" + this.contentFn() + "</div>");
+	  Anno.prototype.contentElem = function () {
+	      var self = this;
+	      var closeButton = $("<div class='anno-close'>x</div>");
+	      closeButton.click(function () { self.hide() });
+	      var content = $("<div class='anno-content'>" + this.contentFn() + "</div>");
+	      content.prepend(closeButton);
+	      return content;
 	  };
 
 	  Anno.prototype.showOverlay = function() {
@@ -443,20 +448,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        $target.css('left', ppos.left);
 	      }
 	    }
+	      //box-shadow: 0 0px 2px 2px white;
+	    
 	    if (($target.css('backgroundColor') === 'rgba(0, 0, 0, 0)' || $target.css('backgroundColor') === 'transparent') && !$target.is("a")) {
 	      console.warn(("Anno.js target '" + this.target + "' has a transparent bg; ") + "filling it white temporarily.");
 	      origbg = $target.prop('style').background;
+	      origbs = $target.prop('style').boxShadow;
 	      (function(_this) {
 	        return (function(origbg) {
 	          return _this._undoEmphasise.push(function($t) {
 	            return $t.css({
-	              background: origbg
+	                background: origbg,
+                    boxShadow: origbs
 	            });
 	          });
 	        });
 	      })(this)(origbg);
 	      $target.css({
-	        background: 'white'
+	          background: 'white',
+	          boxShadow: '0px 0px 2px 2px white'
 	      });
 	    }
 	    origzindex = $target.prop('style').zIndex;

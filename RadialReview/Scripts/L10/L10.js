@@ -152,8 +152,8 @@ function updateTime() {
             //    $(".elapsed-time .hour-item").hide();
             //else
             //    $(".elapsed-time .hour-item").show();
-            $(".elapsed-time .hour").html(elapsed.hours);
-            $(".elapsed-time .minute").html(pad(elapsed.minutes, 2));
+           // $(".elapsed-time .hour").html(elapsed.hours);
+            $(".elapsed-time .minute").html(elapsed.hours*60+elapsed.minutes);
             $(".elapsed-time .second").html(pad(elapsed.seconds, 2));
             $(".elapsed-time").show();
         } else {
@@ -191,9 +191,13 @@ function setPageTime(pageName, minutes) {
 }
 function setupMeeting(_startTime, leaderId) {
     console.log("setupmeeting");
+    $(".over").removeClass(".over")
     $(".page-item .page-time").each(function () {
+        //var o = 0;
+        //if (countDown)
         var o = $(this).data("over");
         $(this).html("<span class='gray'>" + (Math.round(100 * o) / 100.0) + "m</span>")
+
     });
     meetingStart = true;
     isLeader = (leaderId == userId);
@@ -269,6 +273,7 @@ function loadPageForce(location) {
             success: function (data) {
                 replaceMainWindow(data, function () {
                     $(window).trigger("page-" + location.toLowerCase());
+                    fixSidebar();
                 });
 
             },
@@ -358,10 +363,22 @@ function printIframe(id) {
 
 function fixSidebar() {
     //debugger;
-    if ($(document).width() < 991) {
+    if ($(document).width() < 767) {
         $(".fixed-pos").css("top", 0);
+        $(".fixed-pos.fader").css("background-color", "rgba(247, 247, 247, 0)");
+        $(".fixed-pos.fader").css("box-shadow", "none");
+        $(".fixed-pos.fader").css("border-bottom", "1px solid #eeeeee");
+        $(".fixed-pos.fader").css("z-index", "-1");
+        $(".fixed-pos.fader").css("padding-bottom", "9px");
     } else {
         $(".fixed-pos").css("top", $(".slider-container.level-10").scrollTop());
+        $(".fixed-pos.fader").css("background-color", "rgba(247, 247, 247, " + (($(".slider-container.level-10").scrollTop() / 70)) + ")");
+        $(".fixed-pos.fader").css("box-shadow", "0 4px 2px -2px rgba(128, 128, 128, " + Math.min(.2,$(".slider-container.level-10").scrollTop() / 350) + ")");
+        //$(".fixed-pos.fader").css("border-bottom", "none");
+        $(".fixed-pos.fader").css("z-index", 2);//$(".slider-container.level-10").scrollTop() - 10);
+        $(".fixed-pos.fader").css("padding-bottom", (1-$(".slider-container.level-10").scrollTop() / 70) * 9);
+
+        
     }
 }
 

@@ -44,9 +44,11 @@
 
         </script>
 
-        <script src="~/Scripts/L10/AV/adapter.js"></script>
+        @*<script src="~/Scripts/L10/AV/adapter.js"></script>
         <script src="~/Scripts/L10/AV/connectionManager.js"></script>
-        <script src="~/Scripts/L10/AV/app.js"></script>
+        <script src="~/Scripts/L10/AV/app.js"></script>*@
+    @Scripts.Render("~/bundles/VideoChat2")
+
     }
 }
 
@@ -95,8 +97,9 @@
         <script src="@Html.VideoConferenceUrl("/RTCMultiConnection.js")"></script>
         <script src="@Html.VideoConferenceUrl("/dev/FileBufferReader.js")"></script>
         <script src="@Html.VideoConferenceUrl("/socket.io/socket.io.js")"></script>
-        <script src="/Scripts/video/hark.js"></script>
-        <script src="~/Scripts/video/video.js"></script>
+        @*<script src="/Scripts/video/hark.js"></script>
+        <script src="~/Scripts/video/video.js"></script>*@
+        @Scripts.Render("~/bundles/VideoChat1")
         @*@Scripts.Render("~/bundles/Video")*@
 
         <script>
@@ -114,6 +117,41 @@
             //    $(".videoconference-container").addClass("disabled");
             //    console.log("browser not compatible with video");
             //}
+            var iceServers = [];
+
+            connection.getExternalIceServers = false;
+            //connection.candidates = {
+            //    relay:     true,
+            //    reflexive: false,
+            //    host:      false
+            //};
+
+            var coturn = "52.33.4.211";
+            var u1 ="turn";
+            var p1 ="turn";
+
+            // STUN servers
+            iceServers.push({urls: 'stun:'+coturn+':3478'});
+            iceServers.push({urls: 'stun:'+coturn+':5349'});
+            iceServers.push({urls: 'stun:'+coturn+':3479'})
+            // TURN servers
+            iceServers.push({
+                urls: 'turn:'+coturn+':3478',
+                credential: p1,
+                username: u1
+            });
+            iceServers.push({
+                urls: 'turn:'+coturn+':5349',
+                credential: p1,
+                username: u1
+            });
+            iceServers.push({
+                urls: 'turn:'+coturn+':3479',
+                credential: p1,
+                username: u1
+            });
+            
+            connection.iceServers = iceServers;
 
             connection.socketURL = "@Html.VideoConferenceUrl():443";
             connection.enableFileSharing = true; // by default, it is "false".

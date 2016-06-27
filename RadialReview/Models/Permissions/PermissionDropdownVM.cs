@@ -23,7 +23,8 @@ namespace RadialReview.Models.Permissions
 
 		public string Title { get; set; }
 
-		public string Initials { get; set; }
+        public string Initials { get; set; }
+        public int Color{ get; set; }
 
 		public static PermItemVM Create(PermItem item)
 		{
@@ -34,6 +35,7 @@ namespace RadialReview.Models.Permissions
 				AccessorType = item.AccessorType,
 				ImageUrl = item._ImageUrl,
 				Title = item._DisplayText,
+                Color = item._Color,
 				CanAdmin = item.CanAdmin,
 				CanEdit = item.CanEdit,
 				CanView = item.CanView,

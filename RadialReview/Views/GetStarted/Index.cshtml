@@ -1,0 +1,515 @@
+﻿@model RadialReview.Models.Onboard.OnboardingUser
+@{
+    ViewBag.Title = "Sign Up";
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml", new ViewDataDictionary { { "Stepper", true }, { "FileUpload", true } });
+}@using (Html.BeginScripts()) {
+    @*<script src="~/Scripts/Angular/GettingStartd/GSController.js"></script>
+    <script src="~/Scripts/jquery/jquery.redirect.js"></script>
+    <script src="~/Scripts/jquery/jquery.vide.js"></script>*@
+    @Scripts.Render("~/bundles/GetStarted")
+    <script>
+        //$(document).ready(function () {
+        //    var v=$(document.body).vide('https://s3.amazonaws.com/Radial/videos/Volcano'); // Non declarative initialization
+        //    $("video")[0].playbackRate = .75;
+        //});
+
+
+
+        function AddResponse(code, msg, selector) {
+            errorResponses[code] = { message: msg, selector: selector };
+        }
+
+        $(".container.body-content > #alerts").remove();
+
+        var errorResponses = {};
+
+        AddResponse(11112, "Invalid card number or improper format", "#cc_number");
+        AddResponse(11301, "Invalid Visa number.", "#cc_number");
+        AddResponse(11303, "Invalid American Express number.", "#cc_number");
+        AddResponse(11306, "Invalid Discover number.", "#cc_number");
+        AddResponse(11305, "Invalid Diners Club number.", "#cc_number");
+        AddResponse(11302, "Invalid Mastercard number.", "#cc_number");
+        AddResponse(38501, "Amount must be sent as a number of cents greater than zero.", "");
+        AddResponse(11111, null, "#cardExpirationYear, #cardExpirationMonth");
+        AddResponse(234722, "Card security code (also called CVV on some cards) is either missing or invalid.", "#csc_number");
+
+        AddResponse(11102, "Card number is invalid.", "#cc_number");
+        AddResponse(91611, "Invalid card number.", "#cc_number");
+        AddResponse(21111, null, "#cardExpirationYear, #cardExpirationMonth");
+
+        AddResponse(81609, "Please use the two-character state abbreviation.", "#state");
+
+        $("body").on("click", ".ccButton", function (e) {
+            e.preventDefault();
+            $(".ccButton").attr("disabled", true);
+            $(".ccButton").html("Validating...");
+            $(".has-error").removeClass("has-error");
+
+
+            $.ajax({
+                url: "https://api.paymentspring.com/api/v1/tokens/jsonp",
+                dataType: "jsonp",
+                data: {
+                    public_api_key: "@RadialReview.Utilities.Config.PaymentSpring_PublicKey()",
+                    card_number: $("#cc_number").val(),
+                    csc: $("#csc_number").val(),
+                    card_exp_month: $("#cardExpirationMonth").text().trim(),
+                    card_exp_year: $("#cardExpirationYear").text().trim(),
+                    card_owner_name: $("#ccName").val(),
+                },
+                success: function (data) {
+                    console.log(data);
+                    if (typeof (data["errors"]) !== "undefined") {
+                        $(".ccButton").html("Submit");
+                        $(".ccButton").attr("disabled", false);
+
+                        var builder = [];
+                        var selector = [];
+                        for (var e in data["errors"]) {
+                            var code = data["errors"][e].code;
+                            var msg = data["errors"][e].message;
+                            if (code in errorResponses) {
+                                if (errorResponses[code].message != null) {
+                                    msg = errorResponses[code].message;
+                                }
+                                selector.push(errorResponses[code].selector);
+                            }
+                            builder.push(msg);
+                        }
+                        clearAlerts();
+                        showAlert(builder);
+                        $(selector.join(",")).parent("div").addClass("has-error");
+
+                    } else {
+                        $(".ccButton").html("Validated!");
+
+                        data.address_1 = $("#address_1").val();
+                        data.address_2 = $("#address_2").val();
+                        data.city = $("#city").val();
+                        data.state = $("#state").val();
+                        data.zip = $("#zip").val();
+                        data.country = $("#country").val();
+                        data.website = $("[name='website']").val();//$("#website").val();
+                        data.email = $("[name='email']").val();//$("#email").val();
+
+                        $.ajax({
+                            method: "post",
+                            url: '/GetStarted/Payment?submit=true',
+                            data: data,
+                            success: function () {
+                                $(".ccButton").html("Logging in!");
+                                $.redirect("/");
+                            },
+                            error: function (a, b, c) {
+                                $(".ccButton").html("Next");
+                                $(".ccButton").attr("disabled", false);
+                                console.log(a);
+                                console.log(b);
+                                console.log(c);
+
+                                clearAlerts();
+                                showAlert("An error has occurred. Please Refresh your browser. If the problem persists, please contact us.");
+                                //console.log(data);
+                                //$(".ccButton").html("Next");
+                                //$(".ccButton").attr("disabled", false);
+                            }
+                        });
+                        $("#result").html(JSON.stringify(data));
+                    }
+                },
+                error: function (data, err) {
+                    debugger;
+                    clearAlerts();
+                    showAlert("An error has occurred. Please try again later. If the problem persists, please contact us.");
+                    console.log(data);
+                    $(".ccButton").html("Next");
+                    $(".ccButton").attr("disabled", false);
+                }
+            });
+        });
+    </script>
+}
+@using (Html.BeginStyles()) {
+    @*<link href="~/Content/GettingStarted/GettingStarted.min.css" rel="stylesheet" />*@
+    @Styles.Render("~/Content/GetStarted")
+}
+
+<div class="row">
+    <div class="col-lg-6">
+
+        <div class="logo-container visible-lg">
+            <img src="~/Content/img/TRACTION-TOOLS_large_stacked_wh.png" />
+        </div>
+        <div class="logo-container-small hidden-lg">
+            <img src="~/Content/img/TRACTION-TOOLS_large_stacked_wh.png" />
+        </div>
+        <div class="guarantee">
+            <div class="focused">Your first 30 days? It's on us!</div>
+            <div class="titlebar">
+                <span class="title">GUARANTEE</span>
+                <div class="bar"><div class="sparkle"></div></div>
+               
+            </div>
+            
+            After that, if you're ever unhappy, we'll refund your last months payment and help you export your data.
+        </div>
+
+
+    </div>
+    <div class="col-lg-6">
+        <div id="alerts" class=""></div>
+        <div ng-app="GSApp">
+            <div ng-controller="GSCtrl as vm">
+                <md-content flex="nogrow" style="max-width:400px;max-width: 800px; margin: 0px auto">
+                    <div>
+                        <md-card>
+                            <md-stepper-card-content class="md-no-padding">
+                                <md-steppers md-dynamic-height md-stretch-steppers="always" md-selected="vm.selectedStep" md-busy-text="'Processing...'" md-busy="vm.showBusyText">
+                                    <md-step label="Personal" md-complete="vm.stepData[0].data.completed" ng-disabled="vm.stepProgress < 1">
+                                        <md-step-body>
+                                            <form name="step1" ng-submit="vm.submitCurrentStep(vm.stepData[0].data)">
+                                                <md-content class="md-padding">
+                                                    <div layout="row" layout-align="center top">
+                                                        <div flex="nogrow" style="width: 366px">
+                                                            <md-content layout-gt-sm="row">
+                                                                <md-input-container class="md-block1 ">
+                                                                    <label>First name</label>
+                                                                    <input name="fname" ng-model="vm.stepData[0].data.fname" required ng-disabled="vm.stepData[0].disable" />
+                                                                    <div ng-messages="step1.fname.$error">
+                                                                        <div ng-message="required">
+                                                                            First name is required to proceed
+                                                                        </div>
+                                                                    </div>
+                                                                </md-input-container>
+                                                                <md-input-container class="md-block1">
+                                                                    <label>Last name</label>
+                                                                    <input name="lname" ng-model="vm.stepData[0].data.lname" required ng-disabled="vm.stepData[0].disable" />
+                                                                    <div ng-messages="step1.lname.$error">
+                                                                        <div ng-message="required">
+                                                                            Last name is required to proceed
+                                                                        </div>
+                                                                    </div>
+                                                                </md-input-container>
+                                                            </md-content>
+                                                            <md-input-container class="md-block">
+                                                                <label>Title</label>
+                                                                <input name="title" ng-model="vm.stepData[0].data.title" ng-disabled="vm.stepData[0].disable" />
+                                                                <div ng-messages="step1.title.$error">
+                                                                    <div ng-message="required">
+                                                                        Title is required to proceed
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+                                                            <md-input-container class="md-block">
+                                                                <label>Phone number</label>
+                                                                <input name="phone" ng-model="vm.stepData[0].data.phone" ng-disabled="vm.stepData[0].disable" />
+                                                                <div ng-messages="step1.phone.$error">
+                                                                    <div ng-message="required">
+                                                                        Phone number is required to proceed
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+
+                                                        </div>
+                                                    </div>
+                                                </md-content>
+                                                <md-step-actions layout="row">
+                                                    <div flex layout="row" layout-align="end top">
+                                                        <md-button type="submit" ng-disabled="!vm.stepData[0].data.fname || !vm.stepData[0].data.lname  || vm.showBusyText" class="md-accent md-raised">NEXT</md-button>
+                                                    </div>
+                                                </md-step-actions>
+                                            </form>
+                                        </md-step-body>
+                                    </md-step>
+                                    <md-step label="Organization" md-complete="vm.stepData[1].data.completed" ng-disabled="vm.stepProgress < 2">
+                                        <md-step-body>
+                                            <form name="step2">
+                                                <md-content class="md-padding">
+                                                    <div layout="row" layout-align="center top">
+                                                        <div flex="nogrow" style="width: 400px">
+                                                            <md-input-container class="md-block">
+                                                                <label>Organization name</label>
+                                                                <input name="orgname" ng-model="vm.stepData[1].data.orgname" required ng-disabled="vm.stepData[1].disable" />
+                                                                <div ng-messages="step2.orgname.$error">
+                                                                    <div ng-message="required">
+                                                                        Organization name is required to proceed
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+                                                            <md-input-container class="md-block">
+                                                                <label>How long have you been using EOS?*</label>
+                                                                <md-select name="eosduration" ng-model="vm.stepData[1].data.eosduration" required ng-disabled="vm.stepData[1].disable">
+                                                                    <md-option ng-repeat="dur in vm.eosdurations" value="{{dur.value}}" ng-selected="{{ dur.value === vm.stepData[1].data.eosduration ? 'true' : 'false' }}">
+                                                                        {{dur.text}}
+                                                                    </md-option>
+                                                                </md-select>
+                                                                <div class="md-errors-spacer"></div>
+                                                                <div ng-messages="step2.eosduration.$error">
+                                                                    <div ng-message="required">
+                                                                        This field is required to proceed
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+                                                            <md-input-container class="md-block">
+                                                                <label>Implementer's name</label>
+                                                                <input name="implementer" ng-model="vm.stepData[1].data.implementer" ng-disabled="vm.stepData[1].disable" />
+                                                            </md-input-container>
+                                                            <md-input-container class="md-block">
+                                                                <label>Website</label>
+                                                                <input name="website" ng-model="vm.stepData[1].data.website" ng-disabled="vm.stepData[1].disable" />
+                                                            </md-input-container>
+                                                            @*<md-input-container class="md-block" style="padding-left:0;">
+                                                                    <lf-ng-md-file-input lf-files="files" lf-placeholder="Organization Logo" preview></lf-ng-md-file-input>
+                                                                </md-input-container>*@
+                                                        </div>
+                                                    </div>
+                                                </md-content>
+                                                <md-step-actions layout="row">
+                                                    <div flex>
+                                                        <md-button ng-click="vm.moveToPreviousStep()">PREVIOUS</md-button>
+                                                    </div>
+                                                    <div flex layout="row" layout-align="end top">
+
+                                                        <div flex layout="row" layout-align="end top">
+                                                            <md-button ng-click="vm.submitCurrentStep(vm.stepData[1].data, false)" type="submit" ng-disabled="!vm.stepData[1].data.orgname || !vm.stepData[1].data.eosduration || vm.showBusyText" class="md-accent md-raised">NEXT</md-button>
+                                                        </div>
+                                                        @*<md-button ng-disabled="vm.showBusyText" ng-click="vm.submitCurrentStep(vm.stepData[1].data, !(vm.stepData[1].data.firsname && vm.stepData[1].data.lastname))" class="md-accent md-raised">
+                                                                {{ vm.stepData[1].data.firsname && vm.stepData[1].data.lastname ? 'NEXT' : 'SKIP' }}
+                                                            </md-button>*@
+                                                    </div>
+                                                </md-step-actions>
+                                            </form>
+                                        </md-step-body>
+                                    </md-step>
+                                    <md-step label="Login" md-complete="vm.stepData[2].data.completed" ng-disabled="vm.stepProgress < 3">
+                                        <md-step-body>
+                                            <form name="step3">
+                                                @*YOU MUST UPDATE GSController.js if you add/remove files. THere is a custom config for this step.*@
+                                                <md-content class="md-padding">
+                                                    <div layout="row" layout-align="center top">
+                                                        <div flex="nogrow" style="width: 366px">
+                                                            <md-input-container class="md-block">
+                                                                <label>Email (This is your username)</label>
+                                                                <input name="email" autocomplete="off" type="email" ng-model="vm.stepData[2].data.email" required ng-disabled="vm.stepData[2].disable || vm.stepData[2].data.locked" />
+                                                                <div ng-messages="step3.email.$error">
+                                                                    <div ng-message="required">
+                                                                        Email is required to proceed
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+                                                            <md-input-container class="md-block">
+                                                                <label>Password</label>
+                                                                <input name="password" autocomplete="off" type="password" ng-model="vm.stepData[2].data.password" required ng-disabled="vm.stepData[2].disable || vm.stepData[2].data.locked" />
+                                                                <div ng-messages="step3.password.$error">
+                                                                    <div ng-message="required">
+                                                                        Password is required to proceed
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+                                                            <div ng-show="vm.stepData[2].data.profileUrl==null">
+                                                                <md-input-container class="md-block" style="padding-left:0;">
+                                                                    <lf-ng-md-file-input lf-files="profilePicture" lf-placeholder="Profile Picture" preview></lf-ng-md-file-input>
+                                                                </md-input-container>
+                                                            </div>
+                                                            @*<div layout="column" class="lf-ng-md-file-input" ng-if="vm.stepData[2].data.profileUrl!=null">
+                                                                    <div layout="column" class="lf-ng-md-file-input-preview-container" ng-class="{\'disabled\':isDisabled}" ng-show="isDrag || (isPreview && !isFilesNull)">
+                                                                        <img src="{{vm.stepData[2].data.profileUrl}}">
+                                                                    </div>
+                                                                </div>*@
+                                                            @*<div layout="column" class="lf-ng-md-file-input" ng-if="vm.stepData[2].data.profileUrl!=null">
+                                                                    <div layout="column" class="lf-ng-md-file-input-preview-container">
+                                                                        <div class="close lf-ng-md-file-input-x">&times;</div>
+                                                                        <div class="lf-ng-md-file-input-drag">
+                                                                            <div layout="row" layout-align="center center" class="lf-ng-md-file-input-drag-text-container">
+                                                                                <div class="lf-ng-md-file-input-drag-text"></div>
+                                                                            </div>
+                                                                            <div class="lf-ng-md-file-input-thumbnails">
+                                                                                <img src="{{vm.stepData[2].data.profileUrl}}">
+                                                                            </div>
+                                                                            <div class="clearfix" style="clear:both"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>*@
+                                                            <md-input-container class="md-block" style="padding-left:0;" ng-if="vm.stepData[2].data.profileUrl!=null">
+                                                                <div layout="column" class=" lf-ng-md-file-input ng-pristine ng-untouched ng-valid ng-isolate-scope ng-not-empty layout-column" preview="" aria-invalid="false">
+                                                                    <div layout="column" class="lf-ng-md-file-input-preview-container layout-column">
+                                                                        <div class="lf-ng-md-file-input-drag">
+                                                                            <div class="lf-ng-md-file-input-thumbnails">
+                                                                                <div class="lf-ng-md-file-input-frame ng-scope">
+                                                                                    <img src="{{vm.stepData[2].data.profileUrl}}" />
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="clearfix" style="clear:both"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+                                                        </div>
+                                                    </div>
+                                                </md-content>
+                                                <md-step-actions layout="row">
+                                                    <div flex>
+                                                        <md-button ng-click="vm.moveToPreviousStep()">PREVIOUS</md-button>
+                                                    </div>
+                                                    <div flex layout="row" layout-align="end top">
+
+                                                        <div flex layout="row" layout-align="end top">
+                                                            <md-button ng-click="vm.submitCurrentStep(vm.stepData[2].data, false)" type="submit" ng-disabled="(!vm.stepData[2].locked && (!vm.stepData[2].data.email || !vm.stepData[2].data.password)) || vm.showBusyText" class="md-accent md-raised">NEXT</md-button>
+                                                        </div>
+                                                        @*<md-button ng-disabled="vm.showBusyText" ng-click="vm.submitCurrentStep(vm.stepData[1].data, !(vm.stepData[1].data.firsname && vm.stepData[1].data.lastname))" class="md-accent md-raised">
+                                                                {{ vm.stepData[1].data.firsname && vm.stepData[1].data.lastname ? 'NEXT' : 'SKIP' }}
+                                                            </md-button>*@
+                                                    </div>
+                                                </md-step-actions>
+                                            </form>
+                                        </md-step-body>
+                                    </md-step>
+                                    <md-step label="Payment" md-complete="vm.stepData[3].data.completed" ng-disabled="vm.stepProgress < 4">
+                                        <md-step-body>
+                                            <form name="step4" ng-submit="vm.submitCurrentStep(vm.stepData[3].data)">
+                                                <md-content class="md-padding">
+                                                    <div layout="row" layout-align="center top">
+                                                        <div flex="nogrow" style="width: 366px">
+                                                            <div style="padding-bottom:10px;">
+                                                                <img title="American Express" alt="American Express" class="cardImg" src="/Content/creditcard_icon/amex.png">
+                                                                <img title="Discover" alt="Discover" class="cardImg" src="/Content/creditcard_icon/discover.png">
+                                                                <img title="Mastercard" alt="Mastercard" class="cardImg" src="/Content/creditcard_icon/mastercard.png">
+                                                                <img title="Visa" alt="Visa" class="cardImg" src="/Content/creditcard_icon/visa.png">
+                                                            </div>
+                                                            <md-input-container class="md-block">
+                                                                <label>Cardholder's name</label>
+                                                                <input name="ccName" id="ccName" ng-model="vm.stepData[3].data.ccName" required ng-disabled="vm.stepData[3].disable" />
+                                                                <div ng-messages="step4.ccName.$error">
+                                                                    <div ng-message="required">
+                                                                        Cardholder's name is required to proceed
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+                                                            <md-content layout-gt-xs="row">
+                                                                <md-input-container class="md-block1" style="width: 80%; width: calc(100% - 88px);">
+                                                                    <label>Credit Card Number</label>
+                                                                    <input name="cc_number" id="cc_number" ng-model="vm.stepData[3].data.cc_number" required ng-disabled="vm.stepData[3].disable" />
+                                                                    <div ng-messages="step4.cc_number.$error">
+                                                                        <div ng-message="required">
+                                                                            Credit Card Number is required to proceed
+                                                                        </div>
+                                                                    </div>
+                                                                </md-input-container>
+                                                                <md-input-container class="md-block1" style="width: 85px">
+                                                                    <label>CSC</label>
+                                                                    <input name="csc_number" id="csc_number" ng-model="vm.stepData[3].data.csc_number" required ng-disabled="vm.stepData[3].disable" />
+                                                                    <div ng-messages="step4.csc_number.$error">
+                                                                        <div ng-message="required">
+                                                                            CSC required
+                                                                        </div>
+                                                                    </div>
+                                                                </md-input-container>
+                                                            </md-content>
+
+                                                            <md-content layout-gt-xs="row">
+                                                                <md-input-container class="md-block" style="width: 50%;">
+                                                                    <label>Month</label>
+                                                                    <md-select name="cardExpirationMonth" id="cardExpirationMonth" ng-model="vm.stepData[3].data.cardExpirationMonth" required ng-disabled="vm.stepData[3].disable">
+                                                                        <md-option ng-repeat="dur in vm.months" value="{{dur.value}}">
+                                                                            {{dur.value}}
+                                                                        </md-option>
+                                                                    </md-select>
+                                                                    <div ng-messages="step4.cardExpirationMonth.$error">
+                                                                        <div ng-message="required">
+                                                                            Expiration Month is required
+                                                                        </div>
+                                                                    </div>
+                                                                </md-input-container>
+                                                                <md-input-container class="md-block" style="width: 50%;">
+                                                                    <label>Year</label>
+                                                                    <md-select name="cardExpirationYear" id="cardExpirationYear" ng-model="vm.stepData[3].data.cardExpirationYear" required ng-disabled="vm.stepData[3].disable">
+                                                                        <md-option ng-repeat="dur in vm.years" value="{{dur.value}}">
+                                                                            {{dur.value}}
+                                                                        </md-option>
+                                                                    </md-select>
+                                                                    <div ng-messages="step4.cardExpirationYear.$error">
+                                                                        <div ng-message="required">
+                                                                            Expiration Year is required
+                                                                        </div>
+                                                                    </div>
+                                                                </md-input-container>
+                                                            </md-content>
+                                                            @*<hr style="margin:40px -50px;" />*@
+                                                            <md-input-container class="md-block">
+                                                                <label>Address</label>
+                                                                <input name="address_1" id="address_1" ng-model="vm.stepData[3].data.address_1" required ng-disabled="vm.stepData[3].disable" />
+                                                                <div ng-messages="step4.address_1.$error">
+                                                                    <div ng-message="required">
+                                                                        Address is required to proceed
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+                                                            <md-input-container class="md-block">
+                                                                <label>Address 2</label>
+                                                                <input name="address_2" id="address_2" ng-model="vm.stepData[3].data.address_2" />
+                                                            </md-input-container>
+                                                            <md-content layout-gt-xs="row">
+                                                                <md-input-container class="md-block">
+                                                                    <label>City</label>
+                                                                    <input name="city" id="city" ng-model="vm.stepData[3].data.city" required ng-disabled="vm.stepData[3].disable" />
+                                                                    <div ng-messages="step4.city.$error">
+                                                                        <div ng-message="required">
+                                                                            City is required
+                                                                        </div>
+                                                                    </div>
+                                                                </md-input-container>
+                                                                <md-input-container class="md-block">
+                                                                    <label>State</label>
+                                                                    <input name="state" id="state" ng-model="vm.stepData[3].data.state" required ng-disabled="vm.stepData[3].disable" />
+                                                                    <div ng-messages="step4.state.$error">
+                                                                        <div ng-message="required">
+                                                                            State is required
+                                                                        </div>
+                                                                    </div>
+                                                                </md-input-container>
+                                                                <md-input-container class="md-block">
+                                                                    <label>Zip</label>
+                                                                    <input name="zip" id="zip" ng-model="vm.stepData[3].data.zip" required ng-disabled="vm.stepData[3].disable" />
+                                                                    <div ng-messages="step4.zip.$error">
+                                                                        <div ng-message="required">
+                                                                            Zip is required
+                                                                        </div>
+                                                                    </div>
+                                                                </md-input-container>
+                                                            </md-content>
+                                                            <md-input-container class="md-block">
+                                                                <label>Country</label>
+                                                                <input name="country" id="country" ng-model="vm.stepData[3].data.country" required ng-disabled="vm.stepData[3].disable" />
+                                                                <div ng-messages="step4.country.$error">
+                                                                    <div ng-message="required">
+                                                                        Country is required to proceed
+                                                                    </div>
+                                                                </div>
+                                                            </md-input-container>
+                                                        </div>
+                                                    </div>
+                                                    <md-step-actions layout="row">
+                                                        <div flex>
+                                                            <md-button ng-click="vm.moveToPreviousStep()">PREVIOUS</md-button>
+                                                        </div>
+                                                        <div flex layout="row" layout-align="end top">
+                                                            <md-button type="button" ng-disabled="!vm.stepData[3].data.ccName || !vm.stepData[3].data.cc_number || !vm.stepData[3].data.csc_number || !vm.stepData[3].data.cardExpirationMonth || !vm.stepData[3].data.cardExpirationYear || !vm.stepData[3].data.address_1 || !vm.stepData[3].data.city || !vm.stepData[3].data.state || !vm.stepData[3].data.zip || !vm.stepData[3].data.country  || vm.showBusyText" class="md-accent md-raised ccButton">NEXT</md-button>
+                                                        </div>
+                                                    </md-step-actions>
+                                            </form>
+                                            <div id="result" class="hidden"></div>
+                                        </md-step-body>
+                                    </md-step>
+                                </md-steppers>
+                            </md-stepper-card-content>
+                        </md-card>
+                    </div>
+                </md-content>
+            </div>
+        </div>
+        <a class="btn btn-link gray start-over" href="/getstarted/startover" style="">Start over</a>
+    </div>
+</div>
+
+
+

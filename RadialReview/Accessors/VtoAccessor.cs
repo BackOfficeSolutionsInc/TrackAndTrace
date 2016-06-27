@@ -106,7 +106,8 @@ namespace RadialReview.Accessors
                     var ang = AngularVTO.Create(vto);
                     if (ang.L10Recurrence != null) {
                         try {
-                            var isLeadership = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, false).TeamType == L10TeamType.LeadershipTeam;
+                            var recur = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, false);
+                            var isLeadership = recur.TeamType == L10TeamType.LeadershipTeam;
                             if (isLeadership) {
                                 ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
                             }

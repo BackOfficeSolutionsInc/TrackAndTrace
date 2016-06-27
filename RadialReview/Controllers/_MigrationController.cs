@@ -1248,13 +1248,53 @@ namespace RadialReview.Controllers {
                             s.Update(p);
                         }
                     }
-                    
+
                     tx.Commit();
                     s.Flush();
 
-                    return "Added." + build+" adjusted VTO sections:"+b2;
+                    return "Added." + build + " adjusted VTO sections:" + b2;
                 }
             }
         }
+
+
+        [Access(Controllers.AccessLevel.Radial)]
+        public string M06_27_2016()
+        {
+            var updated = 0;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+
+                    var users = s.QueryOver<PermItem>().List();
+                    var now = DateTime.UtcNow;
+                    foreach (var u in users.Where(x => x.AccessorType == RadialReview.Models.PermItem.AccessType.Creator)) {
+                        if (users.Any(x => x.ResType == u.ResType && x.ResId == u.ResId && x.AccessorType == RadialReview.Models.PermItem.AccessType.Admins))
+                            continue;
+                        var item = new PermItem() {
+                            AccessorId = -1,
+                            AccessorType = PermItem.AccessType.Admins,
+                            CanAdmin = true,
+                            CanEdit = true,
+                            CanView = true,
+                            CreateTime = now,
+                            CreatorId = u.CreatorId,
+                            IsArchtype = false,
+                            OrganizationId = u.OrganizationId,
+                            ResId = u.ResId,
+                            ResType = u.ResType
+                        };
+                        s.Save(item);
+                        updated += 1;
+                    }
+                    var b2 = 0;
+
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return ""+updated;
+        }
+
     }
 }

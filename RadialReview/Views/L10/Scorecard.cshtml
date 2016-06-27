@@ -11,24 +11,24 @@
 <div class="scorecard meeting-page">
 	<div class="row">
 		<div class="col-md-12">
-			<hgroup class="page-header">
-				<div class="pull-right">
-					<div class="btn-group hidden-firefox">
-						<div class="btn btn-default btn-xs" onclick="zoomIn()">
-							<span class="icon fontastic-icon-zoom-in-2"></span>
-						</div>
-						<div class="btn btn-default btn-xs" onclick="zoomOut()">
-							<span class="icon fontastic-icon-zoom-out-2"></span>
-						</div>
-					</div>
-					@Html.Partial("partial/ButtonBar", Model, new ViewDataDictionary(){{"Links",new Dictionary<string,string>{
+            <hgroup class="page-header fixed-pos listing">
+                <div class="pull-right">
+                    <div class="btn-group hidden-firefox">
+                        <div class="btn btn-default btn-xs" onclick="zoomIn()">
+                            <span class="icon fontastic-icon-zoom-in-2"></span>
+                        </div>
+                        <div class="btn btn-default btn-xs" onclick="zoomOut()">
+                            <span class="icon fontastic-icon-zoom-out-2"></span>
+                        </div>
+                    </div>
+                    @Html.Partial("partial/ButtonBar", Model, new ViewDataDictionary(){{"Links",new Dictionary<string,string>{
 						{"href","/L10/ExportScorecard/"+Model.Recurrence.Id+"?type=csv"},
 						{"text","Export Scorecard (.csv)"},
 						{"class","glyphicon glyphicon-save"}
 					}.AsList()}})
-				</div>
-				<h2>Scorecard<small></small></h2>
-			</hgroup>
+                </div>
+                <h2>Scorecard<small></small></h2>
+            </hgroup>
 				<div class="empty-holder scorecard-empty-holder @(Model.Meeting._MeetingMeasurables.Any() ? "hidden" : "")"></div>
 			<div class="component zoomable" style="margin-bottom:128px;">
 				<div class="clearfix"></div>
@@ -286,11 +286,11 @@
         
 	    if ($(".scroll-right").length>0){
 	        setTimeout(function(){
-	            debugger;
+	            //debugger;
 	            $(".scroll-right").scrollLeft(4000);
 	        },1);
 	    }else{
-	        debugger;
+	        //debugger;
 	        setTimeout(scrollRight,100);
 	    }
 	}

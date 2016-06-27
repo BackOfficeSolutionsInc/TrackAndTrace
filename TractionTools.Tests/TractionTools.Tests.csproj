@@ -134,7 +134,9 @@
     <Compile Include="Accessors\RockAccessorTests.cs" />
     <Compile Include="Accessors\ScorecardAccessorTests.cs" />
     <Compile Include="Accessors\PaymentPlanAccessorTests.cs" />
+    <Compile Include="Accessors\L10Accessor_AngularTests.cs" />
     <Compile Include="TestUtils\RouteHandler.cs" />
+    <Compile Include="Utilities\L10Utility.cs" />
     <Compile Include="Utilities\DistanceUtility_User.cs" />
     <Compile Include="TestUtils\BaseTest.cs" />
     <Compile Include="Accessors\L10AccessorTests.cs" />

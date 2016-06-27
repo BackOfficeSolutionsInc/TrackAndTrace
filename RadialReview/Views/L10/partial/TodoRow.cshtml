@@ -41,6 +41,6 @@
         </div>*@
     <div class="message" data-todo="@Model.Id">@Model.Message</div>
     <div class="todo-details-container"><div class="todo-details" data-todo="@Model.Id">@Model.Details</div></div>
-    <div class="due-date @(Model.DueDate.Date<Html.ConvertFromUtc(DateTime.UtcNow).Date?"red":"")">@Model.DueDate.Date.ToShortDateString()</div>
+    <div class="due-date @(Model.DueDate.Date<Html.ConvertFromUtc(DateTime.UtcNow).Date?"red":"")">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Model.DueDate.Date)</div>
   
 </li>

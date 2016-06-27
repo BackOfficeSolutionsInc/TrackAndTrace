@@ -10,6 +10,10 @@ body, html {
 }
 
 .meeting-archive {
+    .meeting-name{
+        font-family: 'Roboto','Lato',sans-serif;
+    }
+
     .owner-column {
         vertical-align: middle !important;
         padding-right: 24px !important;
@@ -117,6 +121,15 @@ body, html {
         input.due-date {
             text-align: right;
         }
+
+        .due-column, .complete-column {
+            text-align: left !important;
+        }
+
+        td.due-column, td.complete-column {
+            padding-top: 15px !important;
+            vertical-align: top !important;
+        }
     }
 
     .rock-list-container {
@@ -133,7 +146,7 @@ body, html {
             padding-right: 12px !important;
             padding-left: 8px !important;
         }
-        
+
         .delete-column,
         .company-rock-column,
         .due-column {
@@ -141,3 +154,18 @@ body, html {
         }
     }
 }
+
+.md-datepicker-button {
+    display: none;
+}
+
+.md-datepicker-input-container {
+    border-bottom: none;
+}
+
+.md-datepicker-input-mask {
+    height: 40px;
+    width: 308px;
+}
+
+

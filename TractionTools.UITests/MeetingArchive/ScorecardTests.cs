@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TractionTools.Tests.TestUtils;
 using RadialReview.Accessors;
@@ -14,6 +15,7 @@ using RadialReview.Utilities.RealTime;
 using RadialReview.Models.Scorecard;
 using System.Threading;
 using TractionTools.UITests.Utilities;
+using TractionTools.Tests.Utilities;
 
 namespace TractionTools.UITests.Selenium {
     [TestClass]
@@ -39,7 +41,7 @@ namespace TractionTools.UITests.Selenium {
         {
             var testId = Guid.NewGuid();
             //Ensure correct week
-            var recur = Generator.CreateRecurrence(MEETING_NAME);
+            var recur = L10Utility.CreateRecurrence(MEETING_NAME);
             var auc = await GetAdminCredentials(testId);
             var au = auc.User;
             var m101 = new MeasurableModel{
@@ -67,44 +69,49 @@ namespace TractionTools.UITests.Selenium {
                 var element = d.WaitForText(By.Id("meeting-name"), MEETING_NAME);
                 //Assert.AreEqual(MEETING_NAME, element.Text);
 
-                element = d.FindElementByText("TestMeasurable101");
+                element = d.FindElement(By.CssSelector(".measurable-column input"));
                 //element
 
                 Assert.IsNotNull(element);
 
                 var row = element.Closest(By.TagName("tr"));
-                Assert.AreEqual(auc.User.GetFirstName() + " " + auc.User.GetLastName(), row.FindElement(By.ClassName("who")).Text);
-                Assert.IsTrue(row.FindElement(By.CssSelector(".target.direction")).FindElement(By.TagName("span")).Matches(By.ClassName("direction_LessThan")));
-                Assert.AreEqual("101", row.FindElement(By.CssSelector(".target.value")).Text);
-                Assert.IsTrue(row.FindElement(By.CssSelector(".target.value")).FindElement(By.TagName("span")).Matches(By.ClassName("Dollar")));
-
-                var date1 = DateTime.Parse(d.FindElement(By.XPath("//*[@id='ScorecardTable']/thead/tr[1]/th[last()]")).Text);
+                Assert.AreEqual(auc.User.GetFirstName() + " " + auc.User.GetLastName(), row.Find(".who .picture-container").Title());
+                Assert.IsTrue(row.Find(".target.direction .direction").HasClass("direction_LessThan"));
+                Assert.AreEqual("$101", row.Find(".target.value input").Val());
+                Assert.IsTrue(row.Find(".target.value span").HasClass("modifiers-Dollar"));
+                var dateRows = d.Finds("#ScorecardTable thead tr");
+                var ths = dateRows[0].Finds("th");
+                var date1 = DateTime.Parse(ths[ths.Count-2].Text);
                 Assert.AreEqual(DayOfWeek.Sunday, date1.DayOfWeek);
-                var date2 = DateTime.Parse(d.FindElement(By.XPath("//*[@id='ScorecardTable']/thead/tr[2]/th[last()]")).Text);
+                var date2 = DateTime.Parse(dateRows[1].Finds("th")[ths.Count-2].Text);
                 Assert.AreEqual(DayOfWeek.Saturday, date2.DayOfWeek);
                 Assert.AreEqual(DayOfWeek.Sunday, au.Organization.Settings.WeekStart);
+                d.WaitForAlert();
             });
 
             TestView(auc, "/L10/meeting/" + recur.Id, d => {
                 d.WaitForAlert();
                 //Start the meeting
-                d.FindElement(By.Id("form0"),10).Submit();
+                d.Find("#form0",10).Submit();
                 //Click Scorecard
                 d.FindElement(By.PartialLinkText("Scorecard")).Click();
+
+                d.Find(".scorecard", 5);
 
                 var element = d.FindElementByText("TestMeasurable101");
                 var row = element.Closest(By.TagName("tr"));
 
-                Assert.AreEqual(auc.User.GetFirstName()[0] + " " + auc.User.GetLastName()[0], row.FindElement(By.ClassName("who")).Text);
-                Assert.IsTrue(row.FindElement(By.CssSelector(".target.direction")).FindElement(By.TagName("span")).Matches(By.ClassName("direction_LessThan")));
-                Assert.AreEqual("<",row.FindElement(By.CssSelector(".target.direction")).Text);
-                Assert.AreEqual("101", row.FindElement(By.CssSelector(".target.value")).Text);
-                Assert.IsTrue(row.FindElement(By.CssSelector(".target.value")).FindElement(By.TagName("span")).Matches(By.ClassName("Dollar")));
+                row.Find(".who").WaitForText(d, auc.User.GetFirstName()[0] + " " + auc.User.GetLastName()[0], 1);
 
-                d.FindElement(By.PartialLinkText("Conclude"), 10).Click();
-                d.FindElement(By.Id("SendEmail"), 10).Uncheck();
-                d.FindElement(By.Id("form0"), 10).Submit();
-                
+                //Assert.AreEqual(auc.User.GetFirstName()[0] + " " + auc.User.GetLastName()[0], row.Find(".who",d,5).Text);
+                Assert.AreEqual("LessThan", row.Find(".target.direction span").Data("value"));
+                Assert.AreEqual("<",row.Find(".target.direction").Text);
+                Assert.AreEqual("$101", row.Find(".target.value").Text);
+                Assert.AreEqual("Dollar",row.Find(".target.value span").Data("value"));
+
+
+
+                BaseSelenium.ConcludeMeeting(d);               
 
             });
 

@@ -6,10 +6,11 @@ using RadialReview.Models;
 
 namespace RadialReview.Exceptions
 {
-    public enum PaymentExceptionType{
+    public enum PaymentExceptionType {
         MissingToken = 1,
-        ResponseError =2,
-        
+        ResponseError = 2,
+        Fallthrough = 3,
+
     }
     public class PaymentException : Exception
     {

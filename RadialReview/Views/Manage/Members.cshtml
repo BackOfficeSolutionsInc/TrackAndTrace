@@ -109,8 +109,10 @@
 @using (Html.BeginScripts())
 {
 
-    <script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
-    <script src="~/Scripts/jquery/jquery.filtertable.min.js"></script>
+    @*<script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
+    <script src="~/Scripts/jquery/jquery.filtertable.min.js"></script>*@
+    @Scripts.Render("~/bundles/Manage")
+    
     <script>
 
 	    $(function() {

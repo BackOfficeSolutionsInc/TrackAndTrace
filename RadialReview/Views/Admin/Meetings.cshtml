@@ -1,0 +1,91 @@
+﻿@model IEnumerable<RadialReview.Models.L10.L10Meeting>
+
+@{
+    ViewBag.Title = "Meetings";
+}
+
+<h2>Meetings</h2>
+<h3>Server time: @DateTime.UtcNow.ToString()</h3>
+<h4>Recent and currently running meetings</h4>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>Running</th>
+            <th>
+                Duration
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CompleteTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrganizationId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.L10RecurrenceId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MeetingLeaderId)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model) {
+            var dur = Math.Round(10 * ((item.CompleteTime ?? DateTime.UtcNow) - item.CreateTime).TotalMinutes) / 10;
+            var color = "transparent";
+            if (item.CompleteTime == null) {
+                if (dur < 90) {
+                    color = "red";
+                }
+                if (dur < 120) {
+                    color = "rgba(255,0,0," + (1 - (dur - 90 / 90)) + ")";
+                }
+            }
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                <td style="background-color:@(item.CompleteTime == null?"red":"transparent")">@(item.CompleteTime == null)</td>
+                <td style="background-color:@(color)">@(dur)m</td>
+                <td>@item.CreateTime.ToString()</td>
+                <td>
+                    @item.StartTime.NotNull(x => x.Value.ToString())
+                </td>
+                <td>
+                    @item.CompleteTime.NotNull(x => x.Value.ToString())
+                </td>
+                <td>
+                    <a href="@("/organization/which/" + item.OrganizationId)">@item.OrganizationId</a>
+                </td>
+                <td>
+                    <a href="@("/l10/timeline/" + item.L10RecurrenceId)">@item.L10RecurrenceId</a>
+                    (<a style="color:darkred" href="@("/l10/wizard/" + item.L10RecurrenceId)" title="Wizard">W</a>, <a style="color:darkgreen" href="@("/l10/details/" + item.L10RecurrenceId)" title="Archive">A</a>, <a style="color:darkblue" href="@("/l10/meeting/" + item.L10RecurrenceId)" title="Meeting">M</a>)
+                </td>
+                <td>
+                    <a href="@("/user/details/" + item.MeetingLeaderId)">@item.MeetingLeaderId</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+@using (Html.BeginScripts()) {
+    <script>
+        $(function () {
+            $("table").tablesorter({
+                // sortForce: [[0, 1]],
+                sortList: [[0, 1]],
+                sortStable: true,
+            });
+        });
+    </script>
+}

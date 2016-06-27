@@ -16,57 +16,74 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.Synchronize;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Models.Application;
+using RadialReview.Models.Angular.Scorecard;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Utilities.DataTypes;
 
-namespace RadialReview.Accessors
-{
-	public class ScorecardAccessor
-	{
-		public static List<ScoreModel> GetScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end, bool loadUsers)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(organizationId);
-					var scores = s.QueryOver<ScoreModel>();
-					if (loadUsers)
-						scores = scores.Fetch(x => x.AccountableUser).Eager;
-					return scores.Where(x => x.OrganizationId == organizationId && x.DateDue >= start && x.DateDue <= end).List().ToList();
-				}
-			}
-		}
-		public static List<MeasurableModel> GetVisibleMeasurables(ISession s, PermissionsUtility perms, long organizationId, bool loadUsers)
-		{
-			var caller = perms.GetCaller();
+namespace RadialReview.Accessors {
+    public class ScorecardAccessor {
+        public static AngularScorecard GetAngularScorecardForUser(UserOrganizationModel caller, long userId, DateRange range, bool includeAdmin = true)
+        {
+            var measurables = ScorecardAccessor.GetUserMeasurables(caller, userId, ordered: true, includeAdmin: true);
 
-			var managing = caller.Organization.Id == organizationId && caller.ManagingOrganization;
-			IQueryOver<MeasurableModel, MeasurableModel> q;
-            
-            List<long> userIds=null;
-            List<NameId> visibleMeetings=null;
-		    var getUserIds = new Func<List<long>>(()=>{userIds = userIds??DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);return userIds;});
-		    var getVisibleMeetings = new Func<List<NameId>>(()=>{
-                if (visibleMeetings==null)
-                    visibleMeetings = getUserIds().SelectMany(x=>L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, x, true)).Distinct(x=>x.Id).ToList();
+            var scorecardStart = range.StartTime;
+            var scorecardEnd = range.EndTime;
+
+            var scores = ScorecardAccessor.GetUserScores(caller, userId, scorecardStart, scorecardEnd, includeAdmin: includeAdmin);
+            return new AngularScorecard(-1,
+                    caller.Organization.Settings.WeekStart,
+                    caller.Organization.GetTimezoneOffset(),
+                    measurables.Select(x => new AngularMeasurable(x) { }),
+                    scores.ToList(),
+                    DateTime.UtcNow,
+                    caller.Organization.Settings.ScorecardPeriod,
+                    new YearStart(caller.Organization)
+                );
+        }
+
+        public static List<ScoreModel> GetScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end, bool loadUsers)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(organizationId);
+                    var scores = s.QueryOver<ScoreModel>();
+                    if (loadUsers)
+                        scores = scores.Fetch(x => x.AccountableUser).Eager;
+                    return scores.Where(x => x.OrganizationId == organizationId && x.DateDue >= start && x.DateDue <= end).List().ToList();
+                }
+            }
+        }
+        public static List<MeasurableModel> GetVisibleMeasurables(ISession s, PermissionsUtility perms, long organizationId, bool loadUsers)
+        {
+            var caller = perms.GetCaller();
+
+            var managing = caller.Organization.Id == organizationId && caller.ManagingOrganization;
+            IQueryOver<MeasurableModel, MeasurableModel> q;
+
+            List<long> userIds = null;
+            List<NameId> visibleMeetings = null;
+            var getUserIds = new Func<List<long>>(() => { userIds = userIds ?? DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id); return userIds; });
+            var getVisibleMeetings = new Func<List<NameId>>(() => {
+                if (visibleMeetings == null)
+                    visibleMeetings = getUserIds().SelectMany(x => L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, x, true)).Distinct(x => x.Id).ToList();
                 return visibleMeetings;
             });
-            
 
-			if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou && !managing)
-			{
-				//var userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
+
+            if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou && !managing) {
+                //var userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
                 q = s.QueryOver<MeasurableModel>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUserId).IsIn(getUserIds());
-				if (loadUsers)
-					q=q.Fetch(x => x.AccountableUser).Eager;
+                if (loadUsers)
+                    q = q.Fetch(x => x.AccountableUser).Eager;
 
                 var results = q.List().ToList();
 
-                var visibleMeetingIds = getVisibleMeetings().Select(x=>x.Id).ToList();
-                var additionalFromL10 = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x=>x.DeleteTime==null)
-                    .WhereRestrictionOn(x=>x.L10Recurrence.Id).IsIn(visibleMeetingIds)
-                    .Select(x=>x.Measurable).List<MeasurableModel>().ToList();
+                var visibleMeetingIds = getVisibleMeetings().Select(x => x.Id).ToList();
+                var additionalFromL10 = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null)
+                    .WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(visibleMeetingIds)
+                    .Select(x => x.Measurable).List<MeasurableModel>().ToList();
                 results.AddRange(additionalFromL10);
-                results = results.Distinct(x => x.Id).ToList();
+                results = results.Where(x => x != null).Distinct(x => x.Id).ToList();
                 if (loadUsers) {
                     foreach (var r in results) {
                         try {
@@ -78,16 +95,12 @@ namespace RadialReview.Accessors
                 }
 
                 return results;
-			}
-			else
-			{
-				//q = s.QueryOver<MeasurableModel>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null);
-				if (perms.IsPermitted(x => x.ViewOrganizationScorecard(organizationId))){
-					return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
-				}
-				else
-				{
-					var results = GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers, false,true);
+            } else {
+                //q = s.QueryOver<MeasurableModel>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null);
+                if (perms.IsPermitted(x => x.ViewOrganizationScorecard(organizationId))) {
+                    return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
+                } else {
+                    var results = GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers, false, true);
 
                     var visibleMeetingIds = getVisibleMeetings().Select(x => x.Id).ToList();
                     var additionalFromL10 = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null)
@@ -107,171 +120,159 @@ namespace RadialReview.Accessors
                     }
 
                     return results;
-				}
-			}
+                }
+            }
 
-			/*
-			if (perms.IsPermitted(x => x.ViewOrganizationScorecard(organizationId))){
-				return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
-			}else{
-				return GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers,false);
-			}*/
+            /*
+            if (perms.IsPermitted(x => x.ViewOrganizationScorecard(organizationId))){
+                return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
+            }else{
+                return GetUserMeasurables(s, perms, perms.GetCaller().Id, loadUsers,false);
+            }*/
 
-		}
+        }
 
-		public static List<MeasurableModel> GetVisibleMeasurables(UserOrganizationModel caller, long organizationId, bool loadUsers)
-		{
-			using (var s = HibernateSession.GetCurrentSession()){
-				using (var tx = s.BeginTransaction()){
+        public static List<MeasurableModel> GetVisibleMeasurables(UserOrganizationModel caller, long organizationId, bool loadUsers)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
 
-					var perms = PermissionsUtility.Create(s, caller);
-					return GetVisibleMeasurables(s, perms, organizationId, loadUsers);
-				}
-			}
-		}
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetVisibleMeasurables(s, perms, organizationId, loadUsers);
+                }
+            }
+        }
 
-		public static List<MeasurableModel> GetOrganizationMeasurables(ISession s, PermissionsUtility perms, long organizationId, bool loadUsers)
-		{
+        public static List<MeasurableModel> GetOrganizationMeasurables(ISession s, PermissionsUtility perms, long organizationId, bool loadUsers)
+        {
 
-			perms.ViewOrganizationScorecard(organizationId);
-			var measurables = s.QueryOver<MeasurableModel>();
-			if (loadUsers)
-				measurables = measurables.Fetch(x => x.AccountableUser).Eager;
-			return measurables.Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
+            perms.ViewOrganizationScorecard(organizationId);
+            var measurables = s.QueryOver<MeasurableModel>();
+            if (loadUsers)
+                measurables = measurables.Fetch(x => x.AccountableUser).Eager;
+            return measurables.Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
 
-		}
+        }
 
-		public static List<MeasurableModel> GetOrganizationMeasurables(UserOrganizationModel caller, long organizationId, bool loadUsers)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+        public static List<MeasurableModel> GetOrganizationMeasurables(UserOrganizationModel caller, long organizationId, bool loadUsers)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
 
-					var perms = PermissionsUtility.Create(s, caller);
-					return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetOrganizationMeasurables(s, perms, organizationId, loadUsers);
 
-				}
-			}
-		}
+                }
+            }
+        }
 
-		public static List<MeasurableModel> GetPotentialMeetingMeasurables(UserOrganizationModel caller, long recurrenceId, bool loadUsers)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+        public static List<MeasurableModel> GetPotentialMeetingMeasurables(UserOrganizationModel caller, long recurrenceId, bool loadUsers)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
 
-					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
-					if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou){
-						userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
-					}
+                    var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
+                    if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
+                        userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
+                    }
 
-					var measurables = s.QueryOver<MeasurableModel>();
-					if (loadUsers)
-						measurables = measurables.Fetch(x => x.AccountableUser).Eager;
+                    var measurables = s.QueryOver<MeasurableModel>();
+                    if (loadUsers)
+                        measurables = measurables.Fetch(x => x.AccountableUser).Eager;
 
-					return measurables.Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUserId).IsIn(userIds).List().ToList();
-				}
-			}
-		}
+                    return measurables.Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUserId).IsIn(userIds).List().ToList();
+                }
+            }
+        }
 
-		public static List<MeasurableModel> GetUserMeasurables(ISession s, PermissionsUtility perms, long userId, bool loadUsers,bool ordered,bool includeAdmin)
-		{
-			perms.ViewUserOrganization(userId, false);
-			var foundQuery = s.QueryOver<MeasurableModel>().Where(x=>x.DeleteTime==null);
+        public static List<MeasurableModel> GetUserMeasurables(ISession s, PermissionsUtility perms, long userId, bool loadUsers, bool ordered, bool includeAdmin)
+        {
+            perms.ViewUserOrganization(userId, false);
+            var foundQuery = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null);
 
             if (includeAdmin)
-                foundQuery = foundQuery.Where(x=>x.AdminUserId == userId || x.AccountableUserId==userId);
+                foundQuery = foundQuery.Where(x => x.AdminUserId == userId || x.AccountableUserId == userId);
             else
                 foundQuery = foundQuery.Where(x => x.AccountableUserId == userId);
 
-			var found = foundQuery.List().ToList();
+            var found = foundQuery.List().ToList();
 
-			if (ordered){
-				var measuableIds = found.Select(x => x.Id).ToList();
-				var ordering = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
-					.Where(x => x.DeleteTime == null)
-					.WhereRestrictionOn(x => x.Measurable.Id).IsIn(measuableIds)
-					.Select(x => x.Measurable.Id, x => x._Ordering, x => x.L10Recurrence.Id)
-					.List<object[]>().ToList();
-				var orderedOrdering  = ordering.GroupBy(x => (long?) x[2]??0).SelectMany(y => y.OrderBy(x => (int?) x[1]??0)).Distinct(x=>(long)x[0]).ToList();
+            if (ordered) {
+                var measuableIds = found.Select(x => x.Id).ToList();
+                var ordering = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+                    .Where(x => x.DeleteTime == null)
+                    .WhereRestrictionOn(x => x.Measurable.Id).IsIn(measuableIds)
+                    .Select(x => x.Measurable.Id, x => x._Ordering, x => x.L10Recurrence.Id)
+                    .List<object[]>().ToList();
+                var orderedOrdering = ordering.GroupBy(x => (long?)x[2] ?? 0).SelectMany(y => y.OrderBy(x => (int?)x[1] ?? 0)).Distinct(x => (long)x[0]).ToList();
 
-				var newOrder = new List<MeasurableModel>();
-				var i = 0;
-				foreach (var o in orderedOrdering){
-					var newOrderItem = found.FirstOrDefault(x => x.Id == (long) o[0]);
-					if (newOrderItem != null){
-						newOrder.Add(newOrderItem);
-						newOrderItem._Ordering = i;
-						i++;
-					}
+                var newOrder = new List<MeasurableModel>();
+                var i = 0;
+                foreach (var o in orderedOrdering) {
+                    var newOrderItem = found.FirstOrDefault(x => x.Id == (long)o[0]);
+                    if (newOrderItem != null) {
+                        newOrder.Add(newOrderItem);
+                        newOrderItem._Ordering = i;
+                        i++;
+                    }
 
-				}
-				found = newOrder;
+                }
+                found = newOrder;
 
-			}
+            }
 
 
-			if (loadUsers)
-			{
-				foreach (var f in found)
-				{
-					var a = f.AdminUser.GetName();
-					var b = f.AdminUser.GetImageUrl();
-					var c = f.AccountableUser.GetName();
-					var d = f.AccountableUser.GetImageUrl();
-				}
-			}
-			return found;
-		}
+            if (loadUsers) {
+                foreach (var f in found) {
+                    var a = f.AdminUser.GetName();
+                    var b = f.AdminUser.GetImageUrl();
+                    var c = f.AccountableUser.GetName();
+                    var d = f.AccountableUser.GetImageUrl();
+                }
+            }
+            return found;
+        }
 
-		public static List<MeasurableModel> GetUserMeasurables(UserOrganizationModel caller, long userId,bool ordered=false,bool includeAdmin=false)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var perms = PermissionsUtility.Create(s, caller);
-					return GetUserMeasurables(s, perms, userId, true, ordered, includeAdmin);
-				}
-			}
-		}
+        public static List<MeasurableModel> GetUserMeasurables(UserOrganizationModel caller, long userId, bool ordered = false, bool includeAdmin = false)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetUserMeasurables(s, perms, userId, true, ordered, includeAdmin);
+                }
+            }
+        }
 
-		public static List<ScoreModel> GetMeasurableScores(UserOrganizationModel caller, long measurableId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var measureable = s.Get<MeasurableModel>(measurableId);
+        public static List<ScoreModel> GetMeasurableScores(UserOrganizationModel caller, long measurableId)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var measureable = s.Get<MeasurableModel>(measurableId);
 
-					PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(measureable.OrganizationId);
-					return s.QueryOver<ScoreModel>().Where(x => x.MeasurableId == measurableId && x.DeleteTime == null).List().ToList();
-				}
-			}
+                    PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(measureable.OrganizationId);
+                    return s.QueryOver<ScoreModel>().Where(x => x.MeasurableId == measurableId && x.DeleteTime == null).List().ToList();
+                }
+            }
 
-		}
+        }
 
-		/*public static List<ScoreModel> GetUnfinishedScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(organizationId);
-					return scores;
-				}
-			}
-		}*/
+        /*public static List<ScoreModel> GetUnfinishedScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(organizationId);
+                    return scores;
+                }
+            }
+        }*/
 
-		public static void EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables,bool updateAllL10s)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+        public static void EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables, bool updateAllL10s)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     using (var rt = RealTimeUtility.Create()) {
                         if (measurables.Any(x => x.AccountableUserId != userId))
                             throw new PermissionsException("Measurable UserId does not match UserId");
@@ -328,305 +329,376 @@ namespace RadialReview.Accessors
                         s.Flush();
 
                     }
-				}
-			}
-		}
+                }
+            }
+        }
 
-		public static List<ScoreModel> GetUserScoresIncomplete(UserOrganizationModel caller, long userId, DateTime? now = null)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
-					var nowPlus = (now ?? DateTime.UtcNow).Add(TimeSpan.FromDays(1));
-					var scorecards = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == userId && x.DateDue < nowPlus && x.DateEntered == null && x.DeleteTime == null).List().ToList();
+        public static List<ScoreModel> GetUserScoresIncomplete(UserOrganizationModel caller, long userId, DateTime? now = null)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
+                    var nowPlus = (now ?? DateTime.UtcNow).Add(TimeSpan.FromDays(1));
+                    var scorecards = s.QueryOver<ScoreModel>().Where(x => x.AccountableUserId == userId && x.DateDue < nowPlus && x.DateEntered == null && x.DeleteTime == null).List().ToList();
 
-					scorecards = scorecards.Where(x => x.Measurable.DeleteTime == null).ToList();
+                    scorecards = scorecards.Where(x => x.Measurable.DeleteTime == null).ToList();
 
-					return scorecards;
-				}
-			}
+                    return scorecards;
+                }
+            }
 
 
-		}
+        }
 
-		public static List<ScoreModel> GetUserScores(UserOrganizationModel caller, long userId, DateTime sd, DateTime ed,bool includeAdmin=false)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
-					var query = s.QueryOver<ScoreModel>().Where(x=> x.DeleteTime == null && x.DateDue >= sd && x.DateDue <= ed);
+        public static List<ScoreModel> GetUserScores(UserOrganizationModel caller, long userId, DateTime sd, DateTime ed, bool includeAdmin = false)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
+                    var query = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.DateDue >= sd && x.DateDue <= ed);
 
 
-                    if (includeAdmin){
+                    if (includeAdmin) {
                         var measurables = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && (x.AdminUserId == userId || x.AccountableUserId == userId)).Select(x => x.Id).List<long>().ToList();
-                        query = query.WhereRestrictionOn(x=>x.MeasurableId).IsIn(measurables);
-                    }else{
+                        query = query.WhereRestrictionOn(x => x.MeasurableId).IsIn(measurables);
+                    } else {
                         query = query.Where(x => x.AccountableUserId == userId);
                     }
                     return query.List().ToList();
-				}
-			}
-		}
+                }
+            }
+        }
 
-		public static void EditUserScores(UserOrganizationModel caller, List<ScoreModel> scores)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+        public static void EditUserScores(UserOrganizationModel caller, List<ScoreModel> scores)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
 
-					var oldScores = scores.ToList();
+                    var oldScores = scores.ToList();
 
-					scores = s.QueryOver<ScoreModel>().WhereRestrictionOn(x => x.Id).IsIn(scores.Select(x => x.Id).ToArray()).List().ToList();
+                    scores = s.QueryOver<ScoreModel>().WhereRestrictionOn(x => x.Id).IsIn(scores.Select(x => x.Id).ToArray()).List().ToList();
 
-					var now = DateTime.UtcNow;
+                    var now = DateTime.UtcNow;
 
-					var uid = scores.EnsureAllSame(x => x.AccountableUserId);
-					PermissionsUtility.Create(s, caller).EditUserScorecard(uid);
-					foreach (var x in scores)
-					{
-						x.Measured = oldScores.FirstOrDefault(y => y.Id == x.Id).NotNull(y => y.Measured);
-						if (x.Measured == null)
-						{
-							x.DateEntered = null;
-							x.DeleteTime = now;
-						}
-						else
-						{
-							x.DeleteTime = null;
-							x.DateEntered = now;
-						}
+                    var uid = scores.EnsureAllSame(x => x.AccountableUserId);
+                    PermissionsUtility.Create(s, caller).EditUserScorecard(uid);
+                    foreach (var x in scores) {
+                        x.Measured = oldScores.FirstOrDefault(y => y.Id == x.Id).NotNull(y => y.Measured);
+                        if (x.Measured == null) {
+                            x.DateEntered = null;
+                            x.DeleteTime = now;
+                        } else {
+                            x.DeleteTime = null;
+                            x.DateEntered = now;
+                        }
 
-						s.Update(x);
-					}
-					tx.Commit();
-					s.Flush();
-				}
-			}
-		}
+                        s.Update(x);
+                    }
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
 
-		public static ScoreModel UpdateScoreInMeeting(ISession s, PermissionsUtility perms, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom,string connectionId)
-		{
-			var now = DateTime.UtcNow;
-			DateTime? nowQ = now;
+        public static ScoreModel UpdateScoreInMeeting(ISession s, PermissionsUtility perms, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom, string connectionId)
+        {
+            var now = DateTime.UtcNow;
+            DateTime? nowQ = now;
 
-			perms.EditL10Recurrence(recurrenceId);
+            perms.EditL10Recurrence(recurrenceId);
 
-			var meeting = L10Accessor._GetCurrentL10Meeting(s, perms, recurrenceId);
-			var score = s.Get<ScoreModel>(scoreId);
+            var meeting = L10Accessor._GetCurrentL10Meeting(s, perms, recurrenceId);
+            var score = s.Get<ScoreModel>(scoreId);
 
 
-			if (score != null && score.DeleteTime != null)
-			{
-				SyncUtil.EnsureStrictlyAfter(perms.GetCaller(),s,SyncAction.UpdateScore(scoreId));
+            if (score != null && score.DeleteTime != null) {
+                SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(scoreId));
 
-				//Editable in this meeting?
-				var ms = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
-					.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.Measurable.Id == score.MeasurableId)
-					.SingleOrDefault<L10Meeting.L10Meeting_Measurable>();
-				if (ms == null)
-					throw new PermissionsException("You do not have permission to edit this score.");
-				score.Measured = value;
-				score.DateEntered = (value == null) ? null : nowQ;
-				s.Update(score);
-			}
-			else
-			{
-				var meetingMeasurables = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
-					.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.Measurable.Id == measurableId)
-					.SingleOrDefault<L10Meeting.L10Meeting_Measurable>();
+                //Editable in this meeting?
+                var ms = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
+                    .Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.Measurable.Id == score.MeasurableId)
+                    .SingleOrDefault<L10Meeting.L10Meeting_Measurable>();
+                if (ms == null)
+                    throw new PermissionsException("You do not have permission to edit this score.");
 
-				if (meetingMeasurables == null)
-					throw new PermissionsException("You do not have permission to edit this score.");
-				var m = meetingMeasurables.Measurable;
+                var all = s.QueryOver<ScoreModel>().Where(x => x.MeasurableId == score.MeasurableId && x.ForWeek == score.ForWeek).List().ToList();
+                foreach (var sc in all) {
+                    sc.Measured = value;
+                    sc.DateEntered = (value == null) ? null : (DateTime?)now;
+                    s.Update(sc);
+                }
+                //score.Measured = value;
+                //score.DateEntered = (value == null) ? null : nowQ;
+                //s.Update(score);
+            } else {
+                var meetingMeasurables = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
+                    .Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.Measurable.Id == measurableId)
+                    .SingleOrDefault<L10Meeting.L10Meeting_Measurable>();
 
-				//var SoW = m.Organization.Settings.WeekStart;
+                if (meetingMeasurables == null)
+                    throw new PermissionsException("You do not have permission to edit this score.");
+                var m = meetingMeasurables.Measurable;
 
-				var existingScores = s.QueryOver<ScoreModel>()
-					.Where(x => x.DeleteTime == null && x.Measurable.Id == measurableId)
-					.List().ToList();
+                //var SoW = m.Organization.Settings.WeekStart;
 
-				//adjust week..
-				week = week.StartOfWeek(DayOfWeek.Sunday);
+                var existingScores = s.QueryOver<ScoreModel>()
+                    .Where(x => x.DeleteTime == null && x.Measurable.Id == measurableId)
+                    .List().ToList();
 
-				//See if we can find it given week.
-				score = existingScores.OrderBy(x => x.Id).FirstOrDefault(x => (x.ForWeek == week));
+                //adjust week..
+                week = week.StartOfWeek(DayOfWeek.Sunday);
 
-				if (score != null && score.Measured != value)
-				{
-					//Found it with false id
-					SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(score.Id));
-					score.Measured = value;
-					score.DateEntered = (value == null) ? null : nowQ;
-					s.Update(score);
-				}
-				else
-				{
-					var ordered = existingScores.OrderBy(x => x.DateDue);
-					var minDate = ordered.FirstOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
-					var maxDate = ordered.LastOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
+                //See if we can find it given week.
+                var scores = existingScores.OrderBy(x => x.Id).Where(x => (x.ForWeek == week)).ToList();
+                if (scores.Any()) {
+                    SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(score.Id));
+                    foreach (var sc in scores) {
+                        if (sc.Measured != value) {
+                            sc.Measured = value;
+                            sc.DateEntered = (value == null) ? null : (DateTime?)now;
+                            s.Update(sc);
+                        }
+                    }
+                } else {
+                    var ordered = existingScores.OrderBy(x => x.DateDue);
+                    var minDate = ordered.FirstOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
+                    var maxDate = ordered.LastOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
 
-					minDate = minDate.StartOfWeek(DayOfWeek.Sunday);
-					maxDate = maxDate.StartOfWeek(DayOfWeek.Sunday);
-
-
-					DateTime start, end;
-
-					if (week > maxDate)
-					{
-						//Create going up until sufficient
-						var n = maxDate;
-						ScoreModel curr = null;
-						while (n < week)
-						{
-							var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int)m.DueDate).Add(m.DueTime);
-							curr = new ScoreModel()
-							{
-								AccountableUserId = m.AccountableUserId,
-								DateDue = nextDue,
-								MeasurableId = m.Id,
-								OrganizationId = m.OrganizationId,
-								ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
-							};
-							s.Save(curr);
-							m.NextGeneration = nextDue;
-							n = nextDue.StartOfWeek(DayOfWeek.Sunday);
-						}
-						curr.DateEntered = (value == null) ? null : nowQ;
-						curr.Measured = value;
-						score = curr;
-					}
-					else if (week < minDate)
-					{
-						var n = week;
-						var first = true;
-						while (n < minDate)
-						{
-							var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime);
-							var curr = new ScoreModel()
-							{
-								AccountableUserId = m.AccountableUserId,
-								DateDue = nextDue,
-								MeasurableId = m.Id,
-								OrganizationId = m.OrganizationId,
-								ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
-							};
-							if (first)
-							{
-								curr.Measured = value;
-								curr.DateEntered = (value == null) ? null : nowQ;
-								first = false;
-								s.Save(curr);
-							}
-
-							//m.NextGeneration = nextDue;
-							n = nextDue.AddDays(7).StartOfWeek(DayOfWeek.Sunday);
-							score = curr;
-						}
-					}
-					else
-					{
-						// cant create scores between these dates..
-						var curr = new ScoreModel()
-						{
-							AccountableUserId = m.AccountableUserId,
-							DateDue = week.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime),
-							MeasurableId = m.Id,
-							OrganizationId = m.OrganizationId,
-							ForWeek = week.StartOfWeek(DayOfWeek.Sunday),
-							Measured = value,
-							DateEntered = (value == null) ? null : nowQ
-						};
-						s.Save(curr);
-						score = curr;
-					}
-					s.Update(m);
-				}
-			}
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting),connectionId).updateTextContents(dom, value);
-
-			Audit.L10Log(s, perms.GetCaller(), recurrenceId, "UpdateScoreInMeeting",ForModel.Create(score), score.NotNull(x => x.Measurable.NotNull(y => y.Title)) + " updated to " + value);
-			return score;
-		}
-
-		public static ScoreModel UpdateScoreInMeeting(UserOrganizationModel caller, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom,string connectionId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-
-					var perms = PermissionsUtility.Create(s, caller);
-					var output = UpdateScoreInMeeting(s, perms, recurrenceId, scoreId, week, measurableId, value, dom,connectionId);
-
-					tx.Commit();
-					s.Flush();
-					return output;
-				}
-			}
-		}
-
-		public static ScoreModel GetScoreInMeeting(UserOrganizationModel caller, long scoreId, long recurrenceId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var perms = PermissionsUtility.Create(s, caller);
-					var meeting = L10Accessor._GetCurrentL10Meeting(s, perms, recurrenceId);
-					var score = s.Get<ScoreModel>(scoreId);
+                    minDate = minDate.StartOfWeek(DayOfWeek.Sunday);
+                    maxDate = maxDate.StartOfWeek(DayOfWeek.Sunday);
 
 
-					if (score != null && score.DeleteTime == null)
-					{
-						//Editable in this meeting?
-						var ms = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
-							.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.Measurable.Id == score.MeasurableId)
-							.SingleOrDefault<L10Meeting.L10Meeting_Measurable>();
-						if (ms == null)
-							throw new PermissionsException("You do not have permission to edit this score.");
+                    DateTime start, end;
 
-						var a = score.Measurable.AccountableUser.GetName();
-						var b = score.Measurable.AdminUser.GetName();
-						var c = score.AccountableUser.GetName();
+                    if (week > maxDate) {
+                        //Create going up until sufficient
+                        var n = maxDate;
+                        ScoreModel curr = null;
+                        while (n < week) {
+                            var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int)m.DueDate).Add(m.DueTime);
+                            curr = new ScoreModel() {
+                                AccountableUserId = m.AccountableUserId,
+                                DateDue = nextDue,
+                                MeasurableId = m.Id,
+                                OrganizationId = m.OrganizationId,
+                                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
+                            };
+                            s.Save(curr);
+                            m.NextGeneration = nextDue;
+                            n = nextDue.StartOfWeek(DayOfWeek.Sunday);
+                        }
+                        curr.DateEntered = (value == null) ? null : nowQ;
+                        curr.Measured = value;
+                        score = curr;
+                    } else if (week < minDate) {
+                        var n = week;
+                        var first = true;
+                        while (n < minDate) {
+                            var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime);
+                            var curr = new ScoreModel() {
+                                AccountableUserId = m.AccountableUserId,
+                                DateDue = nextDue,
+                                MeasurableId = m.Id,
+                                OrganizationId = m.OrganizationId,
+                                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
+                            };
+                            if (first) {
+                                curr.Measured = value;
+                                curr.DateEntered = (value == null) ? null : nowQ;
+                                first = false;
+                                s.Save(curr);
+                            }
 
-						return score;
-					}
-					return null;
-				}
-			}
-		}
+                            //m.NextGeneration = nextDue;
+                            n = nextDue.AddDays(7).StartOfWeek(DayOfWeek.Sunday);
+                            score = curr;
+                        }
+                    } else {
+                        // cant create scores between these dates..
+                        var curr = new ScoreModel() {
+                            AccountableUserId = m.AccountableUserId,
+                            DateDue = week.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime),
+                            MeasurableId = m.Id,
+                            OrganizationId = m.OrganizationId,
+                            ForWeek = week.StartOfWeek(DayOfWeek.Sunday),
+                            Measured = value,
+                            DateEntered = (value == null) ? null : nowQ
+                        };
+                        s.Save(curr);
+                        score = curr;
+                    }
+                    s.Update(m);
 
-		public static MeasurableModel GetMeasurable(UserOrganizationModel caller, long id)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					PermissionsUtility.Create(s,caller).ViewMeasurable(id);
-					return s.Get<MeasurableModel>(id);
-				}
-			}
-		}
+                }
+                //if (score != null && score.Measured != value)
+                //{
+                //    //Found it with false id
+                //    SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(score.Id));
+                //    score.Measured = value;
+                //    score.DateEntered = (value == null) ? null : nowQ;
+                //    s.Update(score);
+                //}
+                //else
+                //{
+                //    var ordered = existingScores.OrderBy(x => x.DateDue);
+                //    var minDate = ordered.FirstOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
+                //    var maxDate = ordered.LastOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
 
-		public static ScoreModel GetScore(UserOrganizationModel caller, long id)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction()){
-					var found = s.Get<ScoreModel>(id);
-					PermissionsUtility.Create(s, caller).ViewMeasurable(found.MeasurableId);
-					return found;
-				}
-			}
-		}
+                //    minDate = minDate.StartOfWeek(DayOfWeek.Sunday);
+                //    maxDate = maxDate.StartOfWeek(DayOfWeek.Sunday);
 
-        public static void CreateMeasurable(ISession s, PermissionsUtility perm, MeasurableModel measurable,bool checkEditDetails)
+
+                //    DateTime start, end;
+
+                //    if (week > maxDate)
+                //    {
+                //        //Create going up until sufficient
+                //        var n = maxDate;
+                //        ScoreModel curr = null;
+                //        while (n < week)
+                //        {
+                //            var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int)m.DueDate).Add(m.DueTime);
+                //            curr = new ScoreModel()
+                //            {
+                //                AccountableUserId = m.AccountableUserId,
+                //                DateDue = nextDue,
+                //                MeasurableId = m.Id,
+                //                OrganizationId = m.OrganizationId,
+                //                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
+                //            };
+                //            s.Save(curr);
+                //            m.NextGeneration = nextDue;
+                //            n = nextDue.StartOfWeek(DayOfWeek.Sunday);
+                //        }
+                //        curr.DateEntered = (value == null) ? null : nowQ;
+                //        curr.Measured = value;
+                //        score = curr;
+                //    }
+                //    else if (week < minDate)
+                //    {
+                //        var n = week;
+                //        var first = true;
+                //        while (n < minDate)
+                //        {
+                //            var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime);
+                //            var curr = new ScoreModel()
+                //            {
+                //                AccountableUserId = m.AccountableUserId,
+                //                DateDue = nextDue,
+                //                MeasurableId = m.Id,
+                //                OrganizationId = m.OrganizationId,
+                //                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
+                //            };
+                //            if (first)
+                //            {
+                //                curr.Measured = value;
+                //                curr.DateEntered = (value == null) ? null : nowQ;
+                //                first = false;
+                //                s.Save(curr);
+                //            }
+
+                //            //m.NextGeneration = nextDue;
+                //            n = nextDue.AddDays(7).StartOfWeek(DayOfWeek.Sunday);
+                //            score = curr;
+                //        }
+                //    }
+                //    else
+                //    {
+                //        // cant create scores between these dates..
+                //        var curr = new ScoreModel()
+                //        {
+                //            AccountableUserId = m.AccountableUserId,
+                //            DateDue = week.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime),
+                //            MeasurableId = m.Id,
+                //            OrganizationId = m.OrganizationId,
+                //            ForWeek = week.StartOfWeek(DayOfWeek.Sunday),
+                //            Measured = value,
+                //            DateEntered = (value == null) ? null : nowQ
+                //        };
+                //        s.Save(curr);
+                //        score = curr;
+                //    }
+                //    s.Update(m);
+                //}
+            }
+            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+            var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting), connectionId);
+            group.updateTextContents(dom, value);
+
+            var toUpdate = new AngularScore(score, false);
+            toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
+            toUpdate.Measured = toUpdate.Measured ?? Removed.Decimal();
+            group.update(new AngularUpdate() { toUpdate });
+
+            Audit.L10Log(s, perms.GetCaller(), recurrenceId, "UpdateScoreInMeeting", ForModel.Create(score), score.NotNull(x => x.Measurable.NotNull(y => y.Title)) + " updated to " + value);
+            return score;
+        }
+
+        public static ScoreModel UpdateScoreInMeeting(UserOrganizationModel caller, long recurrenceId, long scoreId, DateTime week, long measurableId, decimal? value, string dom, string connectionId)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var output = UpdateScoreInMeeting(s, perms, recurrenceId, scoreId, week, measurableId, value, dom, connectionId);
+
+                    tx.Commit();
+                    s.Flush();
+                    return output;
+                }
+            }
+        }
+
+        public static ScoreModel GetScoreInMeeting(UserOrganizationModel caller, long scoreId, long recurrenceId)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var meeting = L10Accessor._GetCurrentL10Meeting(s, perms, recurrenceId);
+                    var score = s.Get<ScoreModel>(scoreId);
+
+
+                    if (score != null && score.DeleteTime == null) {
+                        //Editable in this meeting?
+                        var ms = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
+                            .Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.Measurable.Id == score.MeasurableId)
+                            .SingleOrDefault<L10Meeting.L10Meeting_Measurable>();
+                        if (ms == null)
+                            throw new PermissionsException("You do not have permission to edit this score.");
+
+                        var a = score.Measurable.AccountableUser.GetName();
+                        var b = score.Measurable.AdminUser.GetName();
+                        var c = score.AccountableUser.GetName();
+
+                        return score;
+                    }
+                    return null;
+                }
+            }
+        }
+
+        public static MeasurableModel GetMeasurable(UserOrganizationModel caller, long id)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).ViewMeasurable(id);
+                    return s.Get<MeasurableModel>(id);
+                }
+            }
+        }
+
+        public static ScoreModel GetScore(UserOrganizationModel caller, long id)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var found = s.Get<ScoreModel>(id);
+                    PermissionsUtility.Create(s, caller).ViewMeasurable(found.MeasurableId);
+                    return found;
+                }
+            }
+        }
+
+        public static void CreateMeasurable(ISession s, PermissionsUtility perm, MeasurableModel measurable, bool checkEditDetails)
         {
             //Create new
             if (measurable == null)
@@ -653,5 +725,5 @@ namespace RadialReview.Accessors
 
         }
 
-	}
+    }
 }

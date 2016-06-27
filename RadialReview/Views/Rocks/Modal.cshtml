@@ -39,8 +39,8 @@
                 first = false;
         }
     </div>*@
-                <div class="pull-right" style="margin-bottom: 3px;margin-top: -16px;margin-right: 15px;"><b>Company Rock</b></div>
-                <div role="tabpanel" class="tab-pane">
+                <div class="pull-right" style="margin-top: -19px;"><b>Company Rock</b></div>
+                <div role="tabpanel" class="tab-pane" style="padding-top: 1px;">
                     @foreach (var r in Model.Rocks.Where(x=>x.DeleteTime==null)) {
                         Html.RenderPartial("_RockRow", r, new ViewDataDictionary(ViewData) { { "HidePeriod", true }, { "ShowCompany", showCompany } });
                     }

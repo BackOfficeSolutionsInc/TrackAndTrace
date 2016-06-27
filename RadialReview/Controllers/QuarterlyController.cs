@@ -50,7 +50,8 @@ namespace RadialReview.Controllers {
         {
             var vto = VtoAccessor.GetAngularVTO(GetUser(), id);
             var doc = PdfAccessor.CreateDoc(GetUser(), vto.Name+" Vision/Traction Organizer");
-            PdfAccessor.AddVTO(doc, vto);
+
+            PdfAccessor.AddVTO(doc, vto, GetUser().GetOrganizationSettings().GetDateFormat());
             var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
             return Pdf(doc, now + "_" + vto.Name + "_VTO.pdf", true);
         }
@@ -70,7 +71,7 @@ namespace RadialReview.Controllers {
             var anyPages = false;
             if (vto && recur.VtoId.HasValue && recur.VtoId > 0) {
                 var vtoModel = VtoAccessor.GetAngularVTO(GetUser(), recur.VtoId.Value);
-                PdfAccessor.AddVTO(doc, vtoModel);
+                PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat());
                 anyPages = true;
             }
             if (l10) { PdfAccessor.AddL10(doc, recur, L10Accessor.GetLastMeetingEndTime(GetUser(), id)); anyPages = true;}

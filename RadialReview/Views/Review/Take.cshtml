@@ -143,9 +143,10 @@
 
 @using (Html.BeginScripts())
 {
-	<script src="~/Scripts/review/review.js"></script>
+	@*<script src="~/Scripts/review/review.js"></script>
 	<script src="~/Scripts/review/translateSlider.js"></script>
-	<script src="~/Scripts/jquery/jquery-simple-slider.js"></script>
+	<script src="~/Scripts/jquery/jquery-simple-slider.js"></script>*@
+    @Scripts.Render("~/bundles/TakeReview")
 	<script>
 		var canUpdate = true;
 
@@ -387,8 +388,9 @@
 
 @using (Html.BeginStyles())
 {
-	<link href="~/Content/simple-slider.css" rel="stylesheet" />
-	<link href="~/Content/Review.css" rel="stylesheet" />
+	@*<link href="~/Content/simple-slider.css" rel="stylesheet" />
+	<link href="~/Content/Review.css" rel="stylesheet" />*@
+    @Styles.Render("~/Content/TakeReview")
 	<style>
 		.complete a {
 			/*color: #52AC52 !important;*/

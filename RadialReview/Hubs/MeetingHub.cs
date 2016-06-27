@@ -230,12 +230,18 @@ namespace RadialReview.Hubs
 		//}
 
 
-		public static string GenerateMeetingGroupId(long recurrenceId)
-		{
-			if (recurrenceId == 0)
-				throw new Exception();
-			return "L10MeetingRecurrence_" + recurrenceId;
-		}
+        public static string GenerateMeetingGroupId(long recurrenceId)
+        {
+            if (recurrenceId == 0)
+                throw new Exception();
+            return "L10MeetingRecurrence_" + recurrenceId;
+        }
+        public static string GenerateUserId(long userId)
+        {
+            if (userId <= 0)
+                throw new Exception();
+            return "UserRecurrence_" + userId;
+        }
 
 		public static string GenerateMeetingGroupId(L10Meeting meeting)
 		{

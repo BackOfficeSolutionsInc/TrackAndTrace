@@ -73,7 +73,7 @@
                                             </button>
                                             <ul class="dropdown-menu alignLeft pull-right" role="menu">
                                                 <li><a href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone"></span> Texting Actions</a></li>
-                                                <li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>
+                                                @*<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>*@
                                                 <li role="separator" class="divider"></li>
                                                 <li><a href="/Quarterly/Printout/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf" title=""></span> Generate Quarterly Printout</a></li>
                                                 <li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
@@ -106,6 +106,12 @@
     .table .btn-default {
         color: #5e5e5e!important;
     }
+
+    .body-full-width #alerts:not(:empty) {
+        margin-top: 20px;
+        margin-bottom: -15px;
+    }
+
 </style>
 
 @using (Html.BeginScripts()) {

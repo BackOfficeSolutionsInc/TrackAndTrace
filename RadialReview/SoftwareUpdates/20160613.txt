@@ -1,0 +1,10 @@
+﻿Edit Level 10 meetings
+---------------
+Editing L10 meetings has been stream-lined.
+*Access from  the L10 tab. Click the edit icon.
+*Optimized for use in quarterly off-sight
+
+Roles & Core Values Tile
+---------------
+Additional tiles to display your roles and your organizations values
+*Find under 'Add Tile' in the top left of your dashboard.

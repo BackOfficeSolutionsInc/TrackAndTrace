@@ -109,3 +109,5 @@ UpgradeLog*.XML
 Logs/*
 RadialReview/logs/*
 RadialReview/log-file.txt
+TractionTools.UITests/_Log/*
+

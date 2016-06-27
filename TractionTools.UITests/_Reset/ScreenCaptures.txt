@@ -1,0 +1,7 @@
+# Add one ImageId per line. 
+# The test framework will edit this file to remove the line once the ScreenCapture has been generated
+# Regenerate images at any time.
+# Use the hash to ignore a line.
+
+
+

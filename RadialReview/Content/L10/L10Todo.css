@@ -294,6 +294,7 @@ body.dragging, body.dragging * {
     margin: 0px;
     top: 3px;
     position: relative;
+    pointer-events: none;
 }
 
 .todoDetails .todo-checkbox {
@@ -462,16 +463,36 @@ body.dragging, body.dragging * {
 
 .todoDetails .message-input {
     width: 100%;
+    outline:none;
+    border:none;
+    border-bottom:2px solid #EF7622;
+    margin-top:-1px;
+    color:black !important;
 }
 
+
+.todoDetails .message:hover {
+    border-top:1px solid transparent;
+    border-bottom:1px solid #EF7622;
+}
+
+
+/*.todo .due-date.red input.md-datepicker-input,*/
 .todo .due-date.red, .todo-pane .due-date.red {
-    color: #E23737;
+    color: #E23737 !important;
     text-decoration: none;
     /*font-weight: bold;*/
 }
 
+
+.todo-pane .md-default-theme .md-datepicker-input, .todo-pane .md-datepicker-input {
+    color: inherit;
+    top: -4px;
+    position: relative;
+}
+/*.todo .due-date.green input.md-datepicker-input,*/
 .todo .due-date.green, .todo-pane .due-date.green {
-    color: green;
+    color: green !important;
     text-decoration: none;
 }
 

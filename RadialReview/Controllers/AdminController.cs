@@ -36,21 +36,50 @@ using RadialReview.Models.Todo;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.L10;
+using OxyPlot;
 
 namespace RadialReview.Controllers {
 
     public class AdminController : BaseController {
-        
+
+        //[Access(AccessLevel.Radial)]
+        //public async Task<ActionResult> Plot()
+        //{
+        //    //var stream = new MemoryStream();
+        //    //var pngExporter = new PdfExporter { Width = 400, Height = 400, Background = OxyColors.White };
+        //    //var s=_ChartsEngine.ReviewScatter2(GetUser(), 797, 198, "about-*", true, false);
+        //    //var chart = OxyplotAccessor.ScatterPlot(s);
+        //    //pngExporter.Export(chart, stream);
+            
+        //    return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(),))
+
+        //    return new FileStreamResult(new MemoryStream(stream.ToArray()), "application/pdf");
+        //}
+
+
         [Access(AccessLevel.Radial)]
-        public async Task<ActionResult> ShiftScorecard(long recurrence=0,int weeks=0)
+        public async Task<ActionResult> Meetings(int minutes = 120)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var recent = DateTime.UtcNow.AddMinutes(-minutes);
+                    var notRecent = DateTime.UtcNow.AddDays(-1);
+                    var measurables = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && (x.CompleteTime == null || x.CompleteTime >= recent) && x.CreateTime > notRecent).List().ToList();
+                    return View(measurables);
+                }
+            }
+        }
+
+        [Access(AccessLevel.Radial)]
+        public async Task<ActionResult> ShiftScorecard(long recurrence = 0, int weeks = 0)
         {
             if (recurrence == 0 || weeks == 0)
                 return Content("Requires a recurrence and weeks parameter ?recurrence=&weeks= <br/>Warning: this command will shift the measurable regardless of whether it has been shifted for another meeting.");
             var messages = new List<string>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var measurables =s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
-                        .Fetch(x=>x.Measurable).Eager
+                    var measurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
+                        .Fetch(x => x.Measurable).Eager
                         .Select(x => x.Measurable).List<MeasurableModel>().ToList();
 
                     foreach (var measurable in measurables) {
@@ -78,9 +107,10 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.UserOrganization)]
         public async Task<ActionResult> ResetDemo(long recurId = 1)
         {
-            if (GetUser().Id==600 || GetUser().IsRadialAdmin || GetUser().User.IsRadialAdmin){
+
+            if (GetUser().Id == 600 || GetUser().IsRadialAdmin || GetUser().User.IsRadialAdmin) {
                 //fall through
-            }else{
+            } else {
                 throw new PermissionsException();
             }
 
@@ -97,15 +127,15 @@ namespace RadialReview.Controllers {
             var recur = L10Accessor.GetAngularRecurrence(GetUser(), recurId);
             var possibleUsers = recur.Attendees.Select(x => x.Id).ToList();
             possibleUsers.Add(600);
-            
-            var addedTodos=0;
-            var addedIssues=0;
-            var addedScores=0;
-            var deletedTodos=0;
-            var deletedIssues=0;
-            var deletedScores=0;
 
-            DateTime start =DateTime.UtcNow;
+            var addedTodos = 0;
+            var addedIssues = 0;
+            var addedScores = 0;
+            var deletedTodos = 0;
+            var deletedIssues = 0;
+            var deletedScores = 0;
+
+            DateTime start = DateTime.UtcNow;
 
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -123,7 +153,7 @@ namespace RadialReview.Controllers {
                         var todo = s.Load<TodoModel>(at.Id);
                         todo.CompleteTime = DateTime.MinValue;
                         s.Update(todo);
-                        deletedTodos+=1;
+                        deletedTodos += 1;
                     }
                     var createTime = DateTime.UtcNow.AddDays(-5);
                     foreach (var todo in todos) {
@@ -132,13 +162,13 @@ namespace RadialReview.Controllers {
                             AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
                             Message = todo,
                             ForRecurrenceId = recurId,
-                            DueDate = DateTime.UtcNow.AddDays(r.Next(-3,1)),
+                            DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
                             CompleteTime = complete,
                             CreateTime = createTime,
                             OrganizationId = caller.Organization.Id,
                         });
-                        createTime= createTime.AddMinutes(r.Next(3,8));
-                        addedTodos+=1;
+                        createTime = createTime.AddMinutes(r.Next(3, 8));
+                        addedTodos += 1;
                     }
 
 
@@ -146,25 +176,25 @@ namespace RadialReview.Controllers {
                         var issue = s.Load<IssueModel.IssueModel_Recurrence>(at.Id);
                         issue.CloseTime = DateTime.MinValue;
                         s.Update(issue);
-                        deletedIssues+=1;
+                        deletedIssues += 1;
                     }
 
                     createTime = DateTime.UtcNow.AddDays(-5);
                     foreach (var issue in issues) {
                         //var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-                        var owner = possibleUsers[r.Next(possibleUsers.Count-1)];
-                        await IssuesAccessor.CreateIssue(s, perms, recurId,owner, new IssueModel {
+                        var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
+                        await IssuesAccessor.CreateIssue(s, perms, recurId, owner, new IssueModel {
                             Message = issue,
                             OrganizationId = caller.Organization.Id,
-                            CreateTime=createTime,
+                            CreateTime = createTime,
                         });
                         createTime = createTime.AddMinutes(r.Next(5, 15));
-                        addedIssues+=1;
+                        addedIssues += 1;
                     }
                     var current = recur.Scorecard.Weeks.FirstOrDefault(x => x.IsCurrentWeek).ForWeekNumber;
-                    var emptyMeasurable = recur.Scorecard.Measurables.ElementAtOrDefault(r.Next(recur.Scorecard.Measurables.Count()-1)).NotNull(x=>x.Id);
+                    var emptyMeasurable = recur.Scorecard.Measurables.ElementAtOrDefault(r.Next(recur.Scorecard.Measurables.Count() - 1)).NotNull(x => x.Id);
 
-                    foreach (var angScore in recur.Scorecard.Scores.Where(x=>x.ForWeek > current-13) ) {
+                    foreach (var angScore in recur.Scorecard.Scores.Where(x => x.ForWeek > current - 13)) {
                         if (angScore.Id > 0) {
                             if (angScore.ForWeek == current && angScore.Measurable.Id == emptyMeasurable) {
                                 var score = s.Load<ScoreModel>(angScore.Id);
@@ -176,26 +206,26 @@ namespace RadialReview.Controllers {
                                 var score = s.Load<ScoreModel>(angScore.Id);
                                 double stdDev = (double)(angScore.Measurable.Target.Value * (angScore.Measurable.Id.GetHashCode() % 5 * 2 + 1) / 100.0m);
                                 double mean = (double)angScore.Measurable.Target.Value;
-                                score.Measured = (decimal)Math.Floor(100*r.NextNormal(mean, stdDev))/100m;
+                                score.Measured = (decimal)Math.Floor(100 * r.NextNormal(mean, stdDev)) / 100m;
                                 s.Update(score);
                                 addedScores += 1;
                             }
                         }
 
                     }
-                    
+
                     tx.Commit();
                     s.Flush();
                 }
             }
-            var duration = (DateTime.UtcNow- start).TotalSeconds;
+            var duration = (DateTime.UtcNow - start).TotalSeconds;
 
             return Content("Todos: +" + addedTodos + "/-" + deletedTodos + " <br/>Issues: +" + addedIssues + "/-" + deletedIssues + " <br/>Scores: +" + addedScores + "/-" + deletedScores + " <br/>Duration: " + duration + "s");
         }
 
 
     }
-    public partial class AccountController : BaseController {
+    public partial class AccountController : UserManagementController {
         [Access(AccessLevel.Radial)]
 
         public ActionResult Headers()

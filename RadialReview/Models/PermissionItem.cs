@@ -15,8 +15,9 @@ namespace RadialReview.Models
 		{
 			Invalid = 0,
 			Creator = 100,
-			RGM		= 200,
-			Members = 300,
+            RGM     = 200,
+            Members = 300,
+            Admins  = 400,
 		}
 		public enum ResourceType
 		{
@@ -49,6 +50,7 @@ namespace RadialReview.Models
 		public virtual String _DisplayText { get; set; }
 		public virtual string _ImageUrl { get; set; }
 		public virtual string _DisplayInitials { get; set; }
+        public virtual int _Color { get; set; }
 		
 		public virtual bool HasFlags(AccessLevel level)
 		{
@@ -93,5 +95,6 @@ namespace RadialReview.Models
 				Map(x => x.OrganizationId);
 			}
 		}
-	}
+
+    }
 }

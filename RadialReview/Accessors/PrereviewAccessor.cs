@@ -113,6 +113,7 @@ namespace RadialReview.Accessors
                     EnsureDefault=ensureDefault,
                 };
                 ReviewAccessor.CreateReviewContainer(s, perms, caller, reviewContainer);
+                var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
                 using (var tx = s.BeginTransaction())
                 {
                     var dataInteraction = ReviewAccessor.GetReviewDataInteraction(s, caller.Organization.Id);
@@ -166,7 +167,7 @@ namespace RadialReview.Accessors
                                 unsentEmails.Add(
 									Mail.To(EmailTypes.NewPrereviewIssued, manager.GetEmail())
                                     .Subject(EmailStrings.Prereview_Subject,caller.Organization.GetName())
-									.Body(EmailStrings.Prereview_Body, manager.GetName(), reviewName, preReviewDue.Subtract(TimeSpan.FromDays(1)).ToShortDateString(), url, url, productName)
+									.Body(EmailStrings.Prereview_Body, manager.GetName(), reviewName, preReviewDue.Subtract(TimeSpan.FromDays(1)).ToString(format), url, url, productName)
                                     );
                             }
                             catch (Exception e)

@@ -1,0 +1,20 @@
+﻿@model string
+           @*@{
+               var guid = Guid.NewGuid().ToString();
+           }*@
+<div class="review smallBreak2 loading tiny notes-tile" style="min-height:30px">
+    <div class="notes-heading heading">
+        Personal Notes
+    </div><div class="tile">
+        <iframe class="keep-background" src="@Model" style="background-color: white" width="100%"></iframe>
+    </div>
+</div>
+
+@*<script>
+$("#@guid").load( function() {
+    debugger;
+    $('iframe').contents().find("#editbar").css("display","none");
+        @*.append($("<style type='text/css'>  @Html.Raw("@")media(max-width:200px){#editbar{display:none;}}  </style>"));*
+});
+
+</script>*@

@@ -32,6 +32,23 @@ function escapeString(str) {
     str = str.replace(/'/g, "&#39;");
     return str;
 }
+//Index of for IE
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (elt /*, from*/) {
+        var len = this.length >>> 0;
+
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0) ? Math.ceil(from) : Math.floor(from);
+        if (from < 0)
+            from += len;
+
+        for (; from < len; from++) {
+            if (from in this && this[from] === elt)
+                return from;
+        }
+        return -1;
+    };
+}
 
 (function ($) {
     $.fn.valList = function () {
@@ -669,10 +686,16 @@ function showJsonAlert(data, showSuccess, clearOthers) {
         if (clearOthers) {
             clearAlerts();
         }
+        var stdError = "Something went wrong. If the problem persists, please contact us.";
 
         if (!data) {
-            showAlert("Something went wrong. If the problem persists, please contact us.");
+            showAlert(stdError);
             debugger;
+        } if (typeof (data) === "string") {
+            if (data.trim().length < 300)
+                showAlert(data.trim(), "alert-danger", "Error");
+            else
+                showAlert(stdError);
         } else {
             var message = data.Message;
             if (message === undefined)
@@ -1200,50 +1223,7 @@ function startTour(name, method) {
         //ensureLoaded("/Scripts/Tour/lib/jquery.scrollintoview.min.js");
         //ensureLoaded("/Content/Tour/lib/anno.css");
         if (typeof (Tours) === "undefined") {
-            Tours = {
-                /*waitToProgress: function (a, ms) {
-                    var an = a;
-                    var existingShow = a.onShow;
-                    var existingHide = a.onHide;
-
-                    var handler = function ( evt) {
-                        evt.preventDefault();
-                        waitUntil(function () { return $(aa._chainNext.target).length > 0; }, function () {
-                            var that = aa;
-                            console.log("Found Element");
-                            setTimeout(function () { c.call(that, aa, evt); }, 1);
-                        }, function () { showAlert("Error loading tour."); });
-                    };
-                    an.onShow = function (anno, $target, $annoElem) {
-                        var aanno = anno;
-
-                        if (typeof (ms) === "undefined")
-                            ms = 6000;
-                        if (!anno._chainNext)
-                            throw "No anno follows this one.";                      
-                        var found = $annoElem.find(".anno-btn-container button").filter(function () { var txt = $(this).text(); return txt == "Next" || txt == "Done"; });
-                        if (found.length > 0)
-                            found[0].click(handler);
-                        else
-                            console.error("Could not add wait to button. Button not found.");
-                        if (typeof (existingShow) !== "undefined")
-                            existingShow(anno, $target, $annoElem);
-                    }
-
-                    an.onHide = function (anno, $target, $annoElem) {
-                        var aanno = anno;                   
-                        var found = $annoElem.find(".anno-btn-container button").filter(function () { var txt = $(this).text(); return txt == "Next" || txt == "Done"; });
-                        if (found.length > 0)
-                            try {
-                                $(found[0]).unbind(handler);
-                            } catch (e) { }
-                        else
-                            console.error("Could not remove wait from button. Button not found.");
-                        if (typeof (existingHide) !== "undefined")
-                            existingHide(anno, $target, $annoElem);
-                    }
-                    return an;
-                },*/
+            Tours = {             
                 NextButton: function(){
                     return {
                         text: "Next1",
@@ -1282,36 +1262,9 @@ function startTour(name, method) {
                             }
                         }
                         
-                        $target[0].addEventListener('click', handler, true) // `true` is essential
-                       /* if (an.buttons) {
-                            for (var i = 0; i < an.buttons.length; i++) {
-                                if (an.buttons[i].text == "Next" || an.buttons[i].text == "Done") {
-                                    an.buttons[i] = jQuery.extend({}, an.buttons[i]);
-                                    var c = an.buttons[i].click;
-                                    an.buttons[i].click = function (a, evt) {
-                                        $(an.target).click();
-                                        c.call(this, a, evt);
-                                    }
-                                }
-                            }
-                        }
-                        if (an._chainNext) {
-                            if (an._chainNext.buttons) {
-                                for (var i = 0; i < an.buttons.length; i++) {
-                                    if (an.buttons[i].text == "Back") {
-                                        an.buttons[i] = jQuery.extend({}, an.buttons[i]);
-                                        var c = an.buttons[i].click;
-                                        an.buttons[i].click = function (a, evt) {
-                                            $(an.target).click();
-                                            c.call(this, a, evt);
-                                        }
-                                    }
-                                }
-                            }
-                        }*/
+                        $target[0].addEventListener('click', handler, true) // `true` is essential                   
                         return handler
                     };
-                    //if (typeof (anno.onHide) !== "undefined") console.warn("Anno already has an onHide. It will be replaced by clickToAdvance.", anno);
                     anno.onHide = function (anno, $target, $annoElem, handler) {
                         if (typeof (existingHide) !== "undefined")
                             existingHide(anno, $target, $annoElem);
@@ -1370,6 +1323,9 @@ function startTour(name, method) {
             }
         };
         try {
+            Anno.prototype.overlayClick = function () {
+                console.log("overlay clicked");
+            };
             $.getScript("/Scripts/Tour/" + name + ".js").done(function () { Tours[name][method](); });
         } catch (e) {
             showAlert("Tour could not be loaded.");

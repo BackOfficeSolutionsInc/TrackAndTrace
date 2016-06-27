@@ -7,6 +7,7 @@
   appearance: none;
   border-bottom: 2px solid rgba(0, 0, 0, 0.15);
   outline: none;
+  background-color: #d0d0d0;
 }
 .rock-completion:active {
   border-top: 1px solid rgba(0, 0, 0, 0.15);
@@ -37,20 +38,21 @@
   color: black;
   background-color: white;
 }
-.rock-completion-container {
-  position: relative;
-}
-.rock-completion-container:after {
-  font-family: 'Glyphicons Halflings';
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  content: "\e114";
-  color: #FFF;
-  position: absolute;
-  right: 6.5px;
-  top: 10.5px;
-  z-index: 27;
-  pointer-events: none;
-}
+/*.rock-completion-container {
+    position: relative;
+
+    &:after {
+        font-family: 'Glyphicons Halflings';
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        content: "\e114";
+        color: #FFF;
+        position: absolute;
+        right: 6.5px;
+        top: 10.5px;
+        z-index: 27;
+        pointer-events: none;
+    }
+}*/

@@ -45,12 +45,12 @@
 						<div class="clearfix">
 							<span class="pull-left">
 								<b>Meeting:</b>
-								<span style="width:100px;text-align: center">@Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime).ToShortDateString()</span>
+								<span style="width:100px;text-align: center">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime))</span>
 							</span>
 							<span class="pull-right">
-								<span style="width:75px;text-align: right">@Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime).ToShortTimeString()</span>
+								<span style="width:75px;text-align: right">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime))</span>
 								<span> - </span>
-								<span style="width:75px">@(meeting.Meeting.CompleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToShortTimeString()) ?? "On-going")</span>
+								<span style="width:75px">@(Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", meeting.Meeting.CompleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value))))</span>
 							</span>
 							&nbsp;
 						</div>
@@ -117,7 +117,8 @@
 
 @using (Html.BeginScripts())
 {
-	<script src="/Scripts/jquery/jquery.filtertable.min.js"></script>
+	@*<script src="/Scripts/jquery/jquery.filtertable.min.js"></script>*@
+    @Scripts.Render("~/bundles/filtertable")
 	<script>
 		$(".tablefilter").filterTable({ inputSelector: '#input-filter', minRows: 0 });
 		$(".filter-switch").on("click", function () {
@@ -205,7 +206,6 @@
 		.alt {
 			background-color: #ffc;
 			background-color: rgba(255, 255, 0, 0.2);
-			;
 		}
 	</style>
 }

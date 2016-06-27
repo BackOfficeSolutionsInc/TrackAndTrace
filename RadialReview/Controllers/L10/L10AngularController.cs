@@ -86,11 +86,12 @@ namespace RadialReview.Controllers {
         public JsonResult AddAngularRock(long id)
         {
             var recurrenceId = id;
-            L10Accessor.CreateRock(GetUser(), recurrenceId, AddRockVm.CreateRock(recurrenceId, new RockModel() {
+            var rock = new RockModel() {
                 OrganizationId = GetUser().Organization.Id,
                 ForUserId = GetUser().Id,
-            }, true));
-            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+            };
+            L10Accessor.CreateRock(GetUser(), recurrenceId, AddRockVm.CreateRock(recurrenceId, rock, true));
+            return Json(ResultObject.SilentSuccess(rock), JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]

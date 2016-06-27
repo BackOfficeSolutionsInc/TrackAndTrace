@@ -6299,7 +6299,7 @@
       }
       return force.resume();
     };
-    force.resume = function() {
+    force.resume = function () {
       return force.alpha(.1);
     };
     force.stop = function() {

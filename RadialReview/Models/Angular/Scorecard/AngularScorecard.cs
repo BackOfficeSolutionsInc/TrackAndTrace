@@ -7,6 +7,7 @@ using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Application;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models.Angular.Scorecard
 {
@@ -21,9 +22,9 @@ namespace RadialReview.Models.Angular.Scorecard
         {
 
         }
-		public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart) : base(id)
+		public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart,DateRange range=null) : base(id)
 		{
-			Weeks = TimingUtility.GetPeriods(weekstart, timezoneOffset, DateTime.UtcNow, currentWeek.NotNull(x => x.Value.AddDays(7)), /*scores,*/ true, scorecardPeriod,yearStart)
+			Weeks = TimingUtility.GetPeriods(weekstart, timezoneOffset, DateTime.UtcNow, currentWeek.NotNull(x => x.Value.AddDays(7)), /*scores,*/ true, scorecardPeriod,yearStart,range:range)
                 .Select(x => new AngularWeek(x)).ToList();
 			Measurables = measurables.ToList();
 			Scores = scores.Select(x => new AngularScore(x,false)).ToList();

@@ -1,12 +1,14 @@
 ﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', '$location',
-    'radial', 'meetingDataUrlBase', 'meetingId', "meetingCallback", "$compile", "$sce", "$q", "$window",
-function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetingId, meetingCallback, $compile, $sce, $q,$window) {
+    'radial', 'meetingDataUrlBase'/*, 'dateFormat'*/, 'meetingId', "meetingCallback", "$compile", "$sce", "$q", "$window",
+function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetingId, meetingCallback, $compile, $sce, $q, $window) {
 
     $scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
     if (meetingId == null)
         throw Error("MeetingId was empty");
     $scope.disconnected = false;
     $scope.meetingId = meetingId;
+
+    $scope.dateFormat = window.dateFormat||"MM-dd-yyyy";
 
     function rejoin(connection, proxy, callback) {
         try {
@@ -32,9 +34,24 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
     function updateScorecard(data) {
         console.log("updateScorecard");
         $scope.ScoreLookup = $scope.ScoreLookup || {};
+        var luArr = [];
         if (data.Scorecard != null && data.Scorecard.Scores != null) {
 
-            var lu = data.Scorecard.Scores;
+            luArr.push(data.Scorecard.Scores);
+        }
+
+        if (typeof (data.L10Scorecards) !== "undefined") {
+            for (var sc in data.L10Scorecards) {
+                var i = data.L10Scorecards[sc];
+                if (typeof (i.Contents) !== "undefined" && typeof (i.Contents.Scores) !== "undefined") {
+                    luArr.push(i.Contents.Scores);
+                }
+            }
+        }
+
+
+        for (var luidx in luArr) {
+            var lu = luArr[luidx];
             for (var key in lu) {
                 var value = lu[key];
                 if (!(value.ForWeek in $scope.ScoreLookup))
@@ -45,7 +62,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
             }
         }
     };
-    
+
 
     var r = radial($scope, 'meetingHub', rejoin);
 
@@ -54,15 +71,15 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
     $scope.functions = $scope.functions || {};
     $scope.filters = $scope.filters || {};
 
-    if (typeof(dataDateRange)==="undefined"){
+    if (typeof (dataDateRange) === "undefined") {
         dataDateRange = {};
     }
-    if (typeof(dataDateRange.startDate)==="undefined"){
-        dataDateRange.startDate = moment().add('days',1).toDate();//.subtract('days', 6).toDate();
+    if (typeof (dataDateRange.startDate) === "undefined") {
+        dataDateRange.startDate = moment().add('days', 1).toDate();//.subtract('days', 6).toDate();
     } else {
         dataDateRange.startDate = moment(dataDateRange.startDate).toDate();
     }
-    if (typeof(dataDateRange.end)==="undefined"){
+    if (typeof (dataDateRange.end) === "undefined") {
         dataDateRange.endDate = moment().add('days', 1).toDate();
     } else {
         dataDateRange.endDate = moment(dataDateRange.endDate).toDate();
@@ -93,13 +110,34 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
         var type = typeof (date);
         if (type == 'number') {
             return date;
-        } else if (typeof(date._d) !== 'undefined') {
+        } else if (typeof (date._d) !== 'undefined') {
             return +date;
         } else if (date.getDate !== undefined) {
             return date.getTime();
         }
         console.error("cant process:" + date);
     }
+
+    $scope.functions.adjustToMidnight = function (date) {
+        debugger;
+       //tzoffset();
+        //adjusts local time to end of day local time
+        return new Date(((+date) + (24 * 60 * 60 * 1000 - 1)));// + window.tzoffset * 60 * 1000 - 1)));
+    }
+
+    var tzoffset = r.updater.tzoffset;
+    //    if (!window.tzoffset) {
+    //        var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
+    //        window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
+    //                     (jul.getTime() % 24 * 60 * 60 * 1000)
+    //                     ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
+    //    }
+    //    return window.tzoffset;
+    //}
+
+    //$scope.functions.debugger = function () {
+    //    debugger;
+    //};
 
     $scope.functions.reload = function (reload, range, first) {
         if (typeof (reload) === "undefined") {
@@ -109,12 +147,13 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
             first = false;
         }
         if (reload) {
-            if (!window.tzoffset) {
-                var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
-                window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
-                             (jul.getTime() % 24 * 60 * 60 * 1000)
-                             ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
-            }
+            //if (!window.tzoffset) {
+            //    var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
+            //    window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
+            //                 (jul.getTime() % 24 * 60 * 60 * 1000)
+            //                 ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
+            //}
+            tzoffset();
 
             console.log("reloading...");
             var url = meetingDataUrlBase;
@@ -133,19 +172,26 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 
             if (typeof (range) !== "undefined" && typeof (range.startDate) !== "undefined")
                 url += "&start=" + dateToNumber(range.startDate);
-            if (typeof (range) !== "undefined" && typeof (range.endDate) !=="undefined")
+            if (typeof (range) !== "undefined" && typeof (range.endDate) !== "undefined")
                 url += "&end=" + dateToNumber(range.endDate);
             if (first)
                 url += "&fullScorecard=true";
+            var stD = new Date();
             $http({ method: 'get', url: url })
             .success(function (data, status) {
                 // r.updater.clearAndApply(data, status);
+                console.log("A dur: " + (+(new Date() - stD)));
                 var ddr = undefined;
                 if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.dataDateRange) !== "undefined")
                     ddr = $scope.model.dataDateRange;
 
                 r.updater.convertDates(data);
-                r.updater.clearAndApply(data);
+                
+                if (first) {
+                    r.updater.clearAndApply(data);
+                } else {
+                    r.updater.applyUpdate(data);
+                }
 
                 if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.dataDateRange) === "undefined")
                     $scope.model.dataDateRange = ddr;
@@ -155,9 +201,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
                 //$scope.model = data;
 
                 if (meetingCallback) {
-                    setTimeout(function () {
+                    //setTimeout(function () {
                         meetingCallback();
-                    }, 1);
+                    //}, 1);
                 }
             }).error(function (data, status) {
                 console.log("Error");
@@ -166,7 +212,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
         }
     }
 
-    $scope.functions.reload(true,$scope.model.dataDateRange,true);
+    $scope.functions.reload(true, $scope.model.dataDateRange, true);
 
     $scope.functions.setHtml = function (element, data) {
         var newstuff = element.html(data);
@@ -199,6 +245,11 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
         var v = s.Measured;
         var goal = s.Measurable.Target;
         var dir = s.Measurable.Direction;
+        if (typeof (goal) === "undefined") {
+            goal = $("[data-measurable=" + s.Measurable.Id + "][data-week=" + s.ForWeek + "]").data("goal");
+            console.log("goal not found, trying element. Found: " + goal);
+        }
+
         if (!$.trim(v)) {
             return "";
         } else if ($.isNumeric(v)) {
@@ -222,12 +273,19 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
     $scope.proxyLookup = {};
     $scope.ScoreIdLookup = null;
 
+    $scope.functions.setValue=function(keyStr,value){
+        $scope[keyStr]=value;
+    }
 
     $scope.functions.getFcsa = function (measurable) {
         if (measurable.Modifiers == "Dollar") {
             return { prepend: "$" };
         } else if (measurable.Modifiers == "Percent") {
             return { append: "%" };
+        } else if (measurable.Modifiers == "Euros") {
+            return { prepend: "€" };
+        } else if (measurable.Modifiers == "Pound") {
+            return { prepend: "£" };
         }
     };
 
@@ -272,8 +330,16 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
         var wKey = week;
         if (!(wKey in $scope.proxyLookup))
             $scope.proxyLookup[wKey] = {};
-        if (!(measurableId in $scope.proxyLookup[wKey]))
-            $scope.proxyLookup[wKey][measurableId] = { Id: -1, Type: "AngularScore", Measurable: { Id: measurableId }, ForWeek: week, Measured: null };
+        if (!(measurableId in $scope.proxyLookup[wKey])) {
+            var measurable = { Id: measurableId };
+            if (("AngularMeasurable_" + measurableId) in $scope.model.Lookup)
+                measurable = $scope.model.Lookup["AngularMeasurable_" + measurableId];
+
+            $scope.proxyLookup[wKey][measurableId] = {
+                Id: -1, Type: "AngularScore", ForWeek: week, Measured: null,
+                Measurable: measurable
+            };
+        }
 
         return $scope.proxyLookup[wKey][measurableId];
     };
@@ -354,7 +420,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
         };
     };
 
-    $scope.selectedTab = $location.url().replace("/","");
+    $scope.selectedTab = $location.url().replace("/", "");
 
     //$scope.filters.applyFilters = function (value, index, array) {
     //    if (typeof ($scope.filters.filterList) === "undefined")
@@ -368,7 +434,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
     //}
 
     $scope.filters.completionFilterItems = [
-        { name: "Incomplete", value: {Completion:true}, short:"Incomplete" },
+        { name: "Incomplete", value: { Completion: true }, short: "Incomplete" },
     ];
 
     $scope.options = {};
@@ -378,11 +444,13 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
         var dat = angular.copy(self);
         var _clientTimestamp = new Date().getTime();
 
+        r.updater.convertDatesForServer(dat,tzoffset());
+
         $http.post("/L10/Update" + self.Type + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
             showJsonAlert(data, true, true);
         });
     };
-    
+
     $scope.functions.removeRow = function (event, self) {
         var dat = angular.copy(self);
         var _clientTimestamp = new Date().getTime();
@@ -418,9 +486,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
     $scope.ShowSearch = false;
     $scope.functions.showUserSearch = function (event) {
         $scope.ShowSearch = true;
-        $timeout(function(){
+        $timeout(function () {
             $(".user-list-container .livesearch-container input").focus();
-        },1);
+        }, 1);
     };
 
     $scope.functions.addAttendee = function (selected) {
@@ -443,7 +511,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
             $scope.model.Search = '';
             self.visible = false;
             $scope.ShowSearch = false;
-        },150);
+        }, 150);
     }
 
     $scope.userSearchCallback = function (params) {
@@ -468,7 +536,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 
     $scope.functions.setHash = function (value) {
         $timeout(function () {
-            $window.location.hash=value;
+            $window.location.hash = value;
         }, 1);
     };
 

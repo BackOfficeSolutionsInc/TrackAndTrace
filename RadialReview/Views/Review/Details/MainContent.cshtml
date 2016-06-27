@@ -34,8 +34,10 @@
 			@Html.CollapseSection("Notes", "Details/Notes", Model, "includeNotes")
 			@Html.CollapseSection("Charts", "Details/ChartBuilder3", Model, "includeScatter")
 			@Html.CollapseSection("Evaluation", "Details/EosEvaluation", Model, "includeEvaluation")
-
-
+            @********************************************
+                HEY THERE'S AN ANGULAR APP IN HERE
+            **********************************************@
+            @Html.CollapseSection("Scorecard", "Details/Scorecard", Model.Review.Id, "includeScorecard")
 
 
 

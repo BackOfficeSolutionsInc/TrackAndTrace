@@ -317,6 +317,9 @@ body,
 html {
   background-color: #F7F7F7;
 }
+.meeting-archive .meeting-name {
+  font-family: 'Roboto', 'Lato', sans-serif;
+}
 .meeting-archive .owner-column {
   vertical-align: middle !important;
   padding-right: 24px !important;
@@ -401,8 +404,8 @@ html {
 .meeting-archive .scorecard-list-container table input.blend,
 .meeting-archive .scorecard-list-container table select.blend {
   border-bottom: none;
-  margin-bottom: 0px;
-  margin-top: -4px;
+  margin-bottom: -4px;
+  margin-top: -1px;
   max-width: 100%;
 }
 .meeting-archive .scorecard-list-container table td.md-cell {
@@ -431,6 +434,7 @@ html {
   padding-left: 8px !important;
   padding-right: 6px !important;
   vertical-align: top;
+  padding-top: 2px !important;
 }
 .meeting-archive .scorecard-list-container table md-checkbox.md-checked ._md-icon:after {
   left: 5.57px;
@@ -505,6 +509,15 @@ html {
 .meeting-archive .todo-list-container input.due-date {
   text-align: right;
 }
+.meeting-archive .todo-list-container .due-column,
+.meeting-archive .todo-list-container .complete-column {
+  text-align: left !important;
+}
+.meeting-archive .todo-list-container td.due-column,
+.meeting-archive .todo-list-container td.complete-column {
+  padding-top: 15px !important;
+  vertical-align: top !important;
+}
 .meeting-archive .rock-list-container .status-column {
   padding: 2px !important;
 }
@@ -520,4 +533,14 @@ html {
 .meeting-archive .rock-list-container .company-rock-column,
 .meeting-archive .rock-list-container .due-column {
   display: none;
+}
+.md-datepicker-button {
+  display: none;
+}
+.md-datepicker-input-container {
+  border-bottom: none;
+}
+.md-datepicker-input-mask {
+  height: 40px;
+  width: 308px;
 }

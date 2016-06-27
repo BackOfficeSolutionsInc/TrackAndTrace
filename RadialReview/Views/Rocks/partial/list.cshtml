@@ -33,12 +33,13 @@
             </div>
             <div class="height-placeholder" style="height:40px"></div>
         }*@
-        <div id="Rocks_list" class="tab-pane rock-pane scrollbox">
+        <div id="Rocks_list" class="tab-pane rock-pane scrollbox scroller">
             <div></div>
             <md-table-container>
                 <table md-table @*ts-wrapper*@ width="100%" class="component" ng-show="(@(selector)  @(filter)).length">
                     <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
                         <tr class="table-header" md-row>
+                            <th class="icon-column"></th>
                             <th md-column @(attrLookup["status-column"]) class="status-column hidden-width-1" md-order-by="Completion">Status</th>
                             <th md-column @(attrLookup["picture-column"]) class="picture-column" style="width: 32px; display: table-cell;" md-order-by="Owner.Name" title="Accountable">Acc</th>
                             <th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Rock</th>
@@ -49,9 +50,14 @@
                         </tr>
                     </thead>
                     <tbody md-body>
-                        <tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}" id="rock_{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
-                            <td md-cell class="rock-completion-container hidden-width-1 status-column" style="min-width: 120px;text-align: center;vertical-align: top;">
-                                <select class="form-control rock-completion {{rock.Completion}}" ng-class="forRock_{{::rock.Id}}" ng-model="rock.Completion" ng-options="item.value as item.name for item in rockstates" ng-change="functions.sendUpdate(rock)"></select>
+                        <tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}  keep-background" id="rock_{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
+                            <td class="icon-column"></td>
+                            <td md-cell class="rock-completion-container hidden-width-1 status-column" style="min-width: 80px;;vertical-align: top;">
+                                <md-select aria-label="Status" ng-model="rock.Completion" ng-change="functions.sendUpdate(rock)" ng-class="forRock_{{::rock.Id}}" class="keep-background rock-completion1 {{rock.Completion}}">
+                                    <md-option ng-repeat="item in rockstates" value="{{item.value}}" ng-selected="{{ rock.Completion === item.value ? 'true' : 'false' }}">
+                                        {{item.name}}
+                                    </md-option>
+                                </md-select>
                             </td>
                             <td md-cell class="picture-column">
                                 <span class="item-wrapper place-right">
@@ -64,10 +70,10 @@
                                 <input ng-model-options="{debounce: 400}" ng-model="rock.Name" placeholder="Enter rock here" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)" title="{{rock.Name}}">
                             </td>
                             <td md-cell class="createtime-column">
-                                {{::rock.CreateTime | date:'MM/dd/yy'}}
+                                {{::rock.CreateTime | date:dateFormat}}
                             </td>
                             <td md-cell class="due-column alignCenter due-date" style="min-width: 80px;">
-                                <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:'MM/dd/yyyy'}}" ng-model-options="{debounce: 400}" />
+                                <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:dateFormat}}" n ng-model-options="{debounce: 400}" />
                             </td>
                             <td md-cell class="company-rock-column checkbox-column" style="min-width: 15px;">
                                 <md-checkbox aria-label="Company Rock" ng-model="rock.CompanyRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Company Rock"></md-checkbox>
@@ -77,12 +83,12 @@
 
                     </tbody>
                 </table>
-            <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
-            @*</div>*@
-            <div class="create-row" ng-click="functions.addRow($event,'AngularRock')" data-toggle="tooltip" data-placement="left" title="New Rock"></div>
-            <div class="gray empty-search" style="padding: 15px 15px;" ng-show="(@(selector)  @(filter)).length==0">
-                No @rockName fit your search criteria.
-            </div>
+                <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+                @*</div>*@
+                <div class="create-row" ng-click="functions.addRow($event,'AngularRock')" data-toggle="tooltip" data-placement="left" title="New Rock"></div>
+                <div class="gray empty-search" style="padding: 15px 15px;" ng-show="(@(selector)  @(filter)).length==0">
+                    No @rockName fit your search criteria.
+                </div>
         </div>
     </div>
 </div>

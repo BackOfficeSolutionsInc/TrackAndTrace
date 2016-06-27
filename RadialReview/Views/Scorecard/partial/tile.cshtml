@@ -1,49 +1,51 @@
 ﻿@{
 	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
 	var controller = (ViewBag.AddController == null || ((bool)ViewBag.AddController) == true);
-    var selector = ViewBag.Selector as string ?? "model.Scorecard";
+    var selector = ViewBag.Selector as string ?? "(model.Scorecard)";
     // var scorecardKey = ViewBag.ScorecardKey as string ?? "model.Scorecard.Key";
     var scorecardKey = "(" + selector + ").Key";
 }
-<div @(headers ? "ng-app=L10App" : "") class="scorecard-tile meeting-page app" style="clear: both;">
-	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
-		<div class="row">
-			<div class="col-md-12">
-				<div class="component">
-					<div class="clearfix"></div>
-					<div style="position: relative;" ng-hide="(@(selector)).Measurables.length==0">
+<div @(headers ? "ng-app=L10App" : "") class="scorecard-tile meeting-page app scroller" style="clear: both;">
+    <div @(headers || controller ? "ng-controller=L10Controller" : "")>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="component">
+                    <div class="clearfix"></div>
+                    <div style="position: relative;" ng-hide="(@(selector)).Measurables.length==0">
                         @*{{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))}}*@
-						<div class="scorecard-table ng-cloak " ng-repeat="measurable in (@(selector)).Measurables | orderBy: ['Ordering']">
-							<div ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate)" class="score zover" ng-if="week.IsCurrentWeek">
-								<div class="ellipsis alignCenter zover measurable-name" title="{{measurable.Name}}">{{measurable.Name}}</div>
-                                <input ng-class="{'inlineEdit': measurable.Disabled!=true}"
-                                       style="width:100%;"
-                                       data-goal="{{measurable.Target}}"
-                                       data-goal-dir="{{measurable.Direction}}"
-                                       data-row="{{$parent.$index}}"
-                                       data-col="{{$index}}"
-                                       type="text"
-                                       placeholder="N/A"
-                                       ng-model-options="{debounce: 400}"
-                                       ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)).Measured"
-                                       class="grid rt zover {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}"
-                                       data-scoreid="{{Id}}"
-                                       data-measurable="{{measurable.Id}}"
-                                       data-week="{{week.ForWeekNumber}}"
-                                       ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))"
-                                       id="{{functions.scorecardId(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)),$parent.$index,$index)}}" />
-								<div class="fill"></div>
-							</div>
-							<hr style="margin-top: 4px;margin-bottom: 0px;" />
-						</div>
-					</div>
-					<div class="gray" style="padding: 30px 15px;" ng-show="(@(selector)).Measurables.length==0">
-						No measurables fit your search criteria.
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <div class="scorecard-table ng-cloak " ng-repeat="measurable in (@(selector)).Measurables | orderBy: ['Ordering']">
+                            @*filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate)*@
+                        <div ng-repeat="week in (@(selector)).Weeks | filter:week.IsCurrentWeek " class="score zover" ng-if="week.IsCurrentWeek">
+                            <div class="ellipsis alignCenter zover measurable-name" title="{{measurable.Name}}">{{measurable.Name}}</div>
+                            <input ng-class="{'inlineEdit': measurable.Disabled!=true}"
+                                   style="width:99%;"
+                                   data-goal="{{measurable.Target}}"
+                                   data-goal-dir="{{measurable.Direction}}"
+                                   data-row="{{$parent.$index}}"
+                                   data-col="{{$index}}"
+                                   type="text"
+                                   placeholder="N/A"
+                                   ng-model-options="{debounce: 400}"
+                                   ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)).Measured"
+                                   class="grid rt zover {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id))}}"
+                                   data-scoreid="{{Id}}"
+                                   data-measurable="{{measurable.Id}}"
+                                   data-week="{{week.ForWeekNumber}}"
+                                   fcsa-number="{{functions.getFcsa(measurable)}}"
+                                   ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))"
+                                   id="{{functions.scorecardId(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)),$parent.$index,$index)}}" />
+                            <div class="fill"></div>
+                        </div>
+                        <hr style="margin-top: 4px;margin-bottom: 0px;" />
+                    </div>
+                </div>
+                <div class="gray" style="padding: 30px 15px;" ng-show="(@(selector)).Measurables.length==0">
+                    No measurables fit your search criteria.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <style>

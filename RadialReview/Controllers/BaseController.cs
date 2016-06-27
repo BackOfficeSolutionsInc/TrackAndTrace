@@ -41,10 +41,32 @@ using RadialReview.Models.Enums;
 using RadialReview.Utilities.Productivity;
 using PdfSharp.Drawing;
 using System.Drawing.Text;
+using RadialReview.NHibernate;
+using System.Threading.Tasks;
+using System.Net.Mime;
 
 
 namespace RadialReview.Controllers
 {
+    public class UserManagementController : BaseController {
+        
+        public UserManagementController() : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
+        {
+        }
+
+        protected UserManagementController(NHibernateUserManager userManager){
+            UserManager = userManager;
+        }
+
+        protected async Task SignInAsync(UserModel user, bool isPersistent=false){
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
+            var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+            AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
+        }
+
+        public NHibernateUserManager UserManager { get; protected set; }
+    }
+
 	public class BaseController : Controller
 	{
 		#region Helpers
@@ -353,7 +375,10 @@ namespace RadialReview.Controllers
             //if (inline){
             //    Response.AppendHeader("content-disposition", "inline; filename=\""+name+"\"");
             //}
-			return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
+
+            return new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
+
+			//return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
 		}
         private static string MappedAppPath()
         {
@@ -454,7 +479,7 @@ namespace RadialReview.Controllers
 		{
 			return User.Identity.GetUserId() != null;
 		}
-		protected IAuthenticationManager AuthenticationManager
+		public IAuthenticationManager AuthenticationManager
 		{
 			get
 			{
@@ -483,7 +508,10 @@ namespace RadialReview.Controllers
                     filterContext.HttpContext.Response.Headers.Remove("Content-Encoding");
 				var action = GetActionMethod(filterContext);
 
-				if (typeof (JsonResult).IsAssignableFrom(action.ReturnType)){
+                var isJsonResult = typeof (JsonResult).IsAssignableFrom(action.ReturnType);
+                isJsonResult = isJsonResult || (typeof(Task<JsonResult>)).IsAssignableFrom(action.ReturnType);
+                
+                if (isJsonResult) {
 					var exception = new ResultObject(filterContext.Exception);
 					if (filterContext.Exception is RedirectException){
 						var re = ((RedirectException) filterContext.Exception);

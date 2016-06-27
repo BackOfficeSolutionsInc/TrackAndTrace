@@ -143,7 +143,7 @@
     <comment>[htmlBody,footer,tableWidth_600]</comment>
   </data>
   <data name="Footer" xml:space="preserve">
-    <value>This message was generated automatically by {0} 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email.</value>
+    <value>This message was generated automatically by Traction Tools, a product of {0} 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email.</value>
     <comment>[productName]</comment>
   </data>
   <data name="JoinOrganizationUnderManager_Body" xml:space="preserve">

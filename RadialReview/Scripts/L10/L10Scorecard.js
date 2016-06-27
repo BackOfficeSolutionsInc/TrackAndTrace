@@ -268,34 +268,50 @@ function makeXEditable_Scorecard(selector) {
         placement: placement,
         display: function (value, sourceData) {
             if ($(this).hasClass("unit")) {
-                var parent = $(this).closest(".target.value");
 
-                if ((value != null && (value.toLowerCase() == "dollar" || value.toLowerCase() == "dollars" || value == "$")) ||
-					(value == null && ($(this).text().toLowerCase() == "dollar" || $(this).text().toLowerCase() == "dollars" || $(this).text().toLowerCase() == "$"))
+                $("[data-measurable=" + $(this).closest(".target.value").attr("data-measurable") + "].target.value .unit").each(function () {
+                    var parent = $(this).closest(".target.value");
+                    var tv = parent.find(".target-value");
+                    tv.css("paddingLeft", 0);
 
-				) {
-                    //Only edit dollars
-                    $(this).text("$");
-                    $(parent.find(".unit")).insertBefore(parent.find(".numeric"));
-                } else if ((value != null && (value.toLowerCase() == "pound" || value.toLowerCase() == "pounds" || value == "£")) ||
-					(value == null && ($(this).text().toLowerCase() == "pound" || $(this).text().toLowerCase() == "pounds" || $(this).text().toLowerCase() == "£"))) {
+                    if ((value != null && (value.toLowerCase() == "dollar" || value.toLowerCase() == "dollars" || value == "$")) ||
+                        (value == null && ($(this).text().toLowerCase() == "dollar" || $(this).text().toLowerCase() == "dollars" || $(this).text().toLowerCase() == "$"))
 
-                    $(this).text("£");
-                    $(parent.find(".unit")).insertBefore(parent.find(".numeric"));
-                } else {
-                    if ((value != null && (value.toLowerCase() == "percent" || value.toLowerCase() == "percentage" || value == "%")) ||
-						(value == null && ($(this).text().toLowerCase() == "percent" || $(this).text().toLowerCase() == "percentage" || $(this).text().toLowerCase() == "%"))
-					) {
-                        $(this).text("%");
+                    ) {
+                        //Only edit dollars
+                        $(this).text("$");
+                        $(parent.find(".unit")).insertBefore(parent.find(".numeric"));
+                        // parent.attr("data-unit", "Dollar");
+                    } else if ((value != null && (value.toLowerCase() == "pound" || value.toLowerCase() == "pounds" || value == "£")) ||
+                        (value == null && ($(this).text().toLowerCase() == "pound" || $(this).text().toLowerCase() == "pounds" || $(this).text().toLowerCase() == "£"))) {
+
+                        $(this).text("£");
+                        // parent.attr("data-unit", "Pound");
+                        $(parent.find(".unit")).insertBefore(parent.find(".numeric"));
+                    } else if ((value != null && (value.toLowerCase() == "euro" || value.toLowerCase() == "euros" || value == "€")) ||
+                        (value == null && ($(this).text().toLowerCase() == "euro" || $(this).text().toLowerCase() == "euros" || $(this).text().toLowerCase() == "€"))) {
+
+                        $(this).text("€");
+                        $(parent.find(".unit")).insertBefore(parent.find(".numeric"));
+                        // parent.attr("data-unit", "Euros");
+                    } else {
+                        if ((value != null && (value.toLowerCase() == "percent" || value.toLowerCase() == "percentage" || value == "%")) ||
+                            (value == null && ($(this).text().toLowerCase() == "percent" || $(this).text().toLowerCase() == "percentage" || $(this).text().toLowerCase() == "%"))
+                        ) {
+                            $(this).text("%");
+                            // parent.attr("data-unit", "Percent");
+                        }
+
+                        if (value != null && (value.toLowerCase() == "none")) {
+                            $(this).text("u");
+                            //parent.attr("data-unit", "None");
+                        }
+
+                        tv.css("paddingLeft", 8);
+                        $(parent.find(".numeric")).insertBefore(parent.find(".unit"));
+
                     }
-
-                    if (value != null && (value.toLowerCase() == "none")) {
-                        $(this).text(" units");
-                    }
-
-                    $(parent.find(".numeric")).insertBefore(parent.find(".unit"));
-
-                }
+                });
             }
 
             if ($(this).hasClass("target-value")) {

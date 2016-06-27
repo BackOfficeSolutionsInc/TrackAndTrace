@@ -133,6 +133,43 @@
         return dst;
     }
 
+    function tzoffset() {
+        if (!window.tzoffset) {
+            var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
+            window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
+                         (jul.getTime() % 24 * 60 * 60 * 1000)
+                         ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
+        }
+        return window.tzoffset;
+    }
+
+    //When sending data TO the server
+    function convertDatesForServer(obj) {
+
+
+
+        if (typeof(obj)==="undefined" || obj == null)
+            return obj;
+
+        //if (typeof (offsetMin) === "undefined") {
+        //    offsetMins = 
+        //}
+
+
+        for (var key in obj) {
+            var value = obj[key];
+            var type = typeof (value);
+            if (obj[key] == null) {
+                //Do nothing
+            } else if (obj[key].getDate !== undefined) {
+                obj[key] = new Date(obj[key].getTime() + tzoffset() * 60 * 1000); //obj[key].getTimezoneOffset() * 60000);
+            } else if (type == 'object') {
+                convertDates(value);
+            }
+        }
+    }
+
+    //When parsing data FROM the server
     function convertDates(obj) {
         var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
         //var dateRegex2 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
@@ -287,6 +324,9 @@
             preResolve: function (data, status) { },
             postResolve: function (data, status) { },
             convertDates: convertDates,
+            convertDatesForServer : convertDatesForServer,
+            tzoffset:tzoffset
+
             //transform:transform,
         };
 

@@ -121,9 +121,11 @@ namespace RadialReview.Controllers
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
-			var possible = recur._DefaultAttendees
-				.Select(x => x.User)
-				.Select(x => new IssueVM.AccountableUserVM(){
+            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+            people.Add(GetUser());
+            people = people.Distinct(x => x.Id).ToList();
+
+            var possible = people.Select(x => new IssueVM.AccountableUserVM(){
 					id = x.Id,
 					imageUrl = x.ImageUrl(true, ImageSize._32),
 					name = x.GetName()
@@ -248,8 +250,13 @@ namespace RadialReview.Controllers
 		    }
 
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
-		    var possibleUsers = recur._DefaultAttendees.Select(x => x.User).ToList();
-			var possible = possibleUsers
+		   // var possibleUsers = recur._DefaultAttendees.Select(x => x.User).ToList();
+
+            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+            people.Add(GetUser());
+            people = people.Distinct(x => x.Id).ToList();
+
+            var possible = people
 				.Select(x => new IssueVM.AccountableUserVM()
 				{
 					id = x.Id,
@@ -262,7 +269,7 @@ namespace RadialReview.Controllers
 		    bool useMessage = true;
 
 		    if (s!=null && score == 0 && userid.HasValue){
-			    s.AccountableUser = possibleUsers.FirstOrDefault(x => x.Id == s.AccountableUserId);
+			    s.AccountableUser = people.FirstOrDefault(x => x.Id == s.AccountableUserId);
 				s.Measurable.AccountableUser = s.AccountableUser;
 				s.Measurable.AdminUser = s.AccountableUser;
 			    if (s.Measured == null)
@@ -321,9 +328,12 @@ namespace RadialReview.Controllers
 
 			var s = RockAccessor.GetRockInMeeting(GetUser(), rock, meeting);
 			var recur = L10Accessor.GetCurrentL10RecurrenceFromMeeting(GetUser(), meeting);
-			var possible = recur._DefaultAttendees
-				.Select(x => x.User)
-				.Select(x => new IssueVM.AccountableUserVM()
+
+            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+            people.Add(GetUser());
+            people = people.Distinct(x => x.Id).ToList();
+
+			var possible = people.Select(x => new IssueVM.AccountableUserVM()
 				{
 					id = x.Id,
 					imageUrl = x.ImageUrl(true, ImageSize._32),

@@ -42,11 +42,14 @@ namespace RadialReview.Controllers
             } catch (FallthroughException e) {
                 log.Error("FallthroughException", e);
                 Response.StatusCode = 501;
+                var type = PaymentExceptionType.Fallthrough;
+                if (capturedPaymentException != null)
+                    type = capturedPaymentException.Type;
                 return Json(new {
                     charged = false,
                     payment_exception = true,
-                    error = capturedPaymentException.Type,
-                    message = e.Message
+                    error = type,
+                    message = e.NotNull(x=>x.Message)??"Exception was null"
                 }, JsonRequestBehavior.AllowGet);
             } catch (Exception e) {
 				capturedException = e;
@@ -305,6 +308,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Any)]
+        [AsyncTimeout(60000*20)]//20 minutes..
 		public async Task<bool> Reschedule()
 		{
 			var now = DateTime.UtcNow;

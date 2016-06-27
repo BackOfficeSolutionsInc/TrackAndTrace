@@ -124,6 +124,20 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+        public void SetIncludeScorecard(UserOrganizationModel caller, long reviewId, bool on)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
+
+                    var review = s.Get<ReviewModel>(reviewId);
+                    review.ClientReview.IncludeScorecard = on;
+                    s.Update(review);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
 		public void SetIncludeScatter(UserOrganizationModel caller, long reviewId, bool on)
 		{
 			using (var s = HibernateSession.GetCurrentSession())

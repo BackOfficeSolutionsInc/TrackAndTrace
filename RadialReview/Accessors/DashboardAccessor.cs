@@ -243,7 +243,7 @@ namespace RadialReview.Accessors
 
 					tiles = s.QueryOver<TileModel>()
 						.Where(x => x.DeleteTime == null && x.Dashboard.Id == dashboardId && x.Hidden==false)
-						.List().ToList();
+						.List().OrderBy(x=>x.Y).ThenBy(x=>x.X).ToList();
 
 				}
 			}

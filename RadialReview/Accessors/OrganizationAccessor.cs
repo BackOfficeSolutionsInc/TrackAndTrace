@@ -31,31 +31,38 @@ namespace RadialReview.Accessors {
     public class OrganizationAccessor : BaseAccessor {
 
 
-        public OrganizationModel CreateOrganization(UserModel user, string name, PaymentPlanType planType, DateTime now, out UserOrganizationModel newUser, bool enableL10, bool enableReview)
+        public OrganizationModel CreateOrganization(UserModel user, string name, PaymentPlanType planType, DateTime now, out UserOrganizationModel newUser, bool enableL10, bool enableReview,bool startDeactivated=false,string positionName=null)
         {
             UserOrganizationModel userOrgModel;
             OrganizationModel organization;
             OrganizationTeamModel allMemberTeam;
-            using (var db = HibernateSession.GetCurrentSession()) {
-                using (var tx = db.BeginTransaction()) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
 
                     organization = new OrganizationModel() {
                         CreationTime = now,
                         Name = new LocalizedStringModel() { Standard = name },
                         ManagersCanEdit = false,
                     };
+
+
+                    if (startDeactivated)
+                        organization.DeleteTime = new DateTime(1, 1, 1);
+
                     organization.Settings.EnableL10 = enableL10;
                     organization.Settings.EnableReview = enableReview;
-                    db.Save(organization);
+                    s.Save(organization);
                     var paymentPlan = PaymentAccessor.GeneratePlan(planType, now);
-                    PaymentAccessor.AttachPlan(db, organization, paymentPlan);
+                    PaymentAccessor.AttachPlan(s, organization, paymentPlan);
                     organization.PaymentPlan = paymentPlan;
                     organization.Organization = organization;
-                    db.Update(organization);
+                    s.Update(organization);
                     //db.Organizations.Add(organization);
                     //db.SaveChanges();
                     //db.UserModels.Attach(user);
-                    user = db.Get<UserModel>(user.Id);
+                    user = s.Get<UserModel>(user.Id);
+
+
 
                     userOrgModel = new UserOrganizationModel() {
                         Organization = organization,
@@ -67,6 +74,9 @@ namespace RadialReview.Accessors {
                         CreateTime = now
                     };
 
+
+                    s.Save(user);
+                    s.SaveOrUpdate(userOrgModel);
 
                     //userOrgModel.ManagingOrganizations.Add(organization);
                     //userOrgModel.BelongingToOrganizations.Add(organization);
@@ -80,13 +90,32 @@ namespace RadialReview.Accessors {
                         newArray = user.UserOrganizationIds.ToList();
                     newArray.Add(userOrgModel.Id);
                     user.UserOrganizationIds = newArray.ToArray();
+                    user.CurrentRole = userOrgModel.Id;
 
                     //organization.ManagedBy.Add(userOrgModel);
                     organization.Members.Add(userOrgModel);
 
-                    db.Save(user);
+                    s.Update(user);
 
-                    db.Save(organization);
+                    s.Save(organization);
+
+                    if (positionName != null) {
+                        var orgPos = new OrganizationPositionModel() {
+                            Organization = s.Load<OrganizationModel>(organization.Id),
+                            CreatedBy = userOrgModel.Id,
+                            CustomName = positionName,
+                        };
+                        s.Save(orgPos);
+                        var posDur = new PositionDurationModel() {
+                            UserId = userOrgModel.Id,
+                            Position = orgPos,
+                            PromotedBy = userOrgModel.Id,
+                            Start = DateTime.UtcNow
+                        };
+                        userOrgModel.Positions.Add(posDur);
+                        s.Update(userOrgModel);
+                    }
+                    
 
                     //Add team for every member
                     allMemberTeam = new OrganizationTeamModel() {
@@ -97,7 +126,7 @@ namespace RadialReview.Accessors {
                         InterReview = false,
                         Type = TeamType.AllMembers
                     };
-                    db.Save(allMemberTeam);
+                    s.Save(allMemberTeam);
                     //Add team for every manager
                     var managerTeam = new OrganizationTeamModel() {
                         CreatedBy = userOrgModel.Id,
@@ -107,10 +136,14 @@ namespace RadialReview.Accessors {
                         InterReview = false,
                         Type = TeamType.Managers
                     };
-                    db.Save(managerTeam);
+                    s.Save(managerTeam);
 
                     if (userOrgModel != null)
-                        userOrgModel.UpdateCache(db);
+                        userOrgModel.UpdateCache(s);
+
+
+
+
                     tx.Commit();
                     //db.UserOrganizationModels.Add(userOrgModel);
                     //db.SaveChanges();
@@ -118,11 +151,11 @@ namespace RadialReview.Accessors {
                     //organization.ManagedBy.Add(userOrgModel);
                     //db.SaveChanges();
                 }
-                using (var tx = db.BeginTransaction()) {
+                using (var tx = s.BeginTransaction()) {
 
                     var year = DateTime.UtcNow.Year;
                     foreach (var q in Enumerable.Range(1, 4)) {
-                        db.Save(new PeriodModel() {
+                        s.Save(new PeriodModel() {
                             Name = year + " Q" + q,
                             StartTime = new DateTime(year, 1, 1).AddDays((q - 1) * 13 * 7).StartOfWeek(DayOfWeek.Sunday),
                             EndTime = new DateTime(year, 1, 1).AddDays(q * 13 * 7).StartOfWeek(DayOfWeek.Sunday),
@@ -137,7 +170,7 @@ namespace RadialReview.Accessors {
 						"What should they start or stop doing?"
 	                }) {
                         var r = new ResponsibilityModel() {
-                            Category = ApplicationAccessor.GetApplicationCategory(db, ApplicationAccessor.FEEDBACK),
+                            Category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK),
                             ForOrganizationId = organization.Id,
                             ForResponsibilityGroup = allMemberTeam.Id,
                             CreateTime = now,
@@ -146,13 +179,13 @@ namespace RadialReview.Accessors {
                             Responsibility = defaultQ
                         };
                         r.SetQuestionType(QuestionType.Feedback);
-                        db.Save(r);
+                        s.Save(r);
 
                         allMemberTeam.Responsibilities.Add(r);
                     }
-                    db.Update(allMemberTeam);
+                    s.Update(allMemberTeam);
 
-                    db.Save(new DeepSubordinateModel {
+                    s.Save(new DeepSubordinateModel {
                         CreateTime = now,
                         Links = 1,
                         SubordinateId = userOrgModel.Id,
@@ -161,10 +194,10 @@ namespace RadialReview.Accessors {
                     });
                     newUser = userOrgModel;
 
-                    userOrgModel.UpdateCache(db);
+                    userOrgModel.UpdateCache(s);
 
                     tx.Commit();
-                    db.Flush();
+                    s.Flush();
                     return organization;
                 }
             }

@@ -345,4 +345,4 @@ var Charts;
     })(Base);
     Charts.Histogram = Histogram;
 })(Charts || (Charts = {}));
-//# sourceMappingURL=../~/Scripts/d3/Charts.js.map
+//# sourceMappingURL=Charts.js.map

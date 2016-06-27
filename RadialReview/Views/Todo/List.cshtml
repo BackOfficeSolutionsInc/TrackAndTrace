@@ -15,7 +15,7 @@
     <div ng-controller="L10Controller">
         @{
             Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");
-            Html.RenderPartial("~/Views/Todo/Partial/list.cshtml",new ViewDataDictionary(){{"AddHeaders", false}});
+            Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary() { { "AddHeaders", false } });
             Html.RenderPartial("~/Views/Angular/_L10App.cshtml", Model, dict);
 
         }
@@ -23,27 +23,60 @@
 </div>
 
 
-        @section top{
-            <div class="jumbotron">
-                <h1>To-do List</h1>
-            </div>
+@section top{
+    <div class="jumbotron">
+        <h1>To-do List</h1>
+    </div>
+}
+
+@using (Html.BeginScripts()) {
+    <script>
+        dataDateRange= {
+            endDate: moment().add(1, 'days').toDate(),
+            startDate: moment().toDate(),
+        };
+    </script>
+}
+
+@using (Html.BeginStyles()) {
+    @Styles.Render("~/styles/archive")
+    <style>
+        .height-placeholder {
+            min-height: 60px;
         }
 
-        @using (Html.BeginStyles()) {
-            @Styles.Render("~/styles/archive")
-            <style>
-                .height-placeholder {
-                    min-height: 60px;
-                }
-
-                .component {
-                    margin: 0px;
-                }
-
-                .picture-column,
-                .delete-column,
-                .empty-cell {
-                    display: none;
-                }
-            </style>
+        .component {
+            margin: 0px;
         }
+
+        .md-datepicker-button,
+        .createtime-column,
+        .picture-column,
+        .delete-column,
+        .empty-cell {
+            display: none;
+        }
+
+        input.blend, .md-datepicker-input-container {
+            border-bottom: none;
+        }
+        
+        td.message-column {
+            padding-top: 0px !important;
+        }
+
+        td{
+            padding-top: 10px !important;
+            vertical-align: top !important;
+        }
+        
+        .due-column,.complete-column {
+            text-align:left !important;
+            padding-top: 14px !important;
+        }
+        .md-datepicker-input-mask {
+            height: 40px;
+            width: 308px;
+        }
+    </style>
+}

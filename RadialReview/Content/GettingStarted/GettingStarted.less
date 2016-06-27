@@ -1,0 +1,322 @@
+﻿
+@import "../bootstrap/variables";
+
+.logo-container {
+    text-align: center;
+
+    img {
+        max-height: 33vh;
+        min-height: 250px;
+        max-width: 100%;
+    }
+}
+
+.logo-container-small {
+    text-align: center;
+
+    img {
+        width: 100%;
+    }
+}
+
+body, {
+    background-color: transparent;
+}
+
+
+#footer,
+html {
+    background-color: #1f1e1d;
+}
+
+
+/*body, html, #footer {
+    background-color: #1f1e1d; //@traction-black;
+}*/
+
+::selection {
+    background: @traction-gray; /* WebKit/Blink Browsers */
+}
+
+::-moz-selection {
+    background: @traction-gray; /* Gecko Browsers */
+}
+
+md-content.md-default-theme, md-content {
+    background-color: transparent;
+}
+
+.navbar {
+    display: none;
+}
+
+#main,
+.body-content {
+    padding-top: 0px;
+}
+//.md-button.md-default-theme.md-primary.md-raised:not([disabled]):hover, .md-button.md-primary.md-raised:not([disabled]):hover, .md-button.md-default-theme.md-primary.md-fab:not([disabled]):hover, .md-button.md-primary.md-fab:not([disabled]):hover,
+
+.md-step.md-complete md-step-label-wrapper::before {
+    background-color: @traction-black !important;
+}
+
+.md-step.md-active md-step-label-wrapper::before, .md-step.md-success md-step-label-wrapper::before {
+    background-color: @traction-orange !important;
+}
+
+md-step-label-wrapper span,
+md-input-container.md-default-theme:not(.md-input-invalid).md-input-focused label, md-input-container:not(.md-input-invalid).md-input-focused label {
+    color: @traction-black;
+}
+
+md-input-container.md-default-theme:not(.md-input-invalid).md-input-focused .md-input, md-input-container:not(.md-input-invalid).md-input-focused .md-input {
+    border-color: @traction-black;
+}
+/*.md-button.md-default-theme[disabled], .md-button[disabled], .md-button.md-default-theme.md-raised[disabled], .md-button.md-raised[disabled], .md-button.md-default-theme.md-fab[disabled], .md-button.md-fab[disabled], .md-button.md-default-theme.md-accent[disabled], .md-button.md-accent[disabled], .md-button.md-default-theme.md-warn[disabled], .md-button.md-warn[disabled]{
+    color:rgba(255,255,255,.38)
+}*/
+
+.md-step.md-disabled md-step-label-wrapper span {
+    color: @traction-gray;
+}
+
+.md-step.md-disabled md-step-label-wrapper::before {
+    background: @traction-gray;
+}
+
+//.md-button.md-default-theme.md-primary.md-raised, .md-button.md-primary.md-raised, .md-button.md-default-theme.md-primary.md-fab, .md-button.md-primary.md-fab,
+.lf-ng-md-file-input .lf-ng-md-file-input-preview-container {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.lf-ng-md-file-input .lf-ng-md-file-input-container .lf-ng-md-file-input-caption .lf-ng-md-file-input-caption-text {
+    white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.lf-ng-md-file-input .lf-ng-md-file-input-preview-container .lf-ng-md-file-input-frame .lf-ng-md-file-input-frame-caption,
+.lf-ng-md-file-input .lf-ng-md-file-input-preview-container .lf-ng-md-file-input-x {
+    display: none;
+}
+
+.lf-ng-md-file-input .lf-ng-md-file-input-preview-container .lf-ng-md-file-input-drag {
+    border: none;
+}
+
+md-icon.lf-icon.ng-scope.material-icons.lf-browse {
+    color: @traction-black;
+}
+
+.cardImg {
+    width: 55px;
+    height: 33px !important;
+    display: inline;
+}
+
+.lf-ng-md-file-input {
+    margin-top: -10px;
+    //margin-bottom: 15px;
+}
+
+.lf-ng-md-file-input .lf-ng-md-file-input-container {
+    border-bottom: 1px solid #dde1a7;
+    box-shadow: none;
+}
+
+.lf-ng-md-file-input .lf-ng-md-file-input-container .md-raised.lf-ng-md-file-input-button.lf-ng-md-file-input-button-brower,
+.lf-ng-md-file-input .lf-ng-md-file-input-container .md-raised.lf-ng-md-file-input-button.lf-ng-md-file-input-button-remove {
+    min-width: 0px;
+
+    span {
+        display: none;
+    }
+}
+
+.lf-ng-md-file-input .lf-ng-md-file-input-preview-container .lf-ng-md-file-input-frame {
+    margin: 0;
+}
+
+#alerts {
+    margin-bottom: -17px;
+    position: absolute;
+    z-index: 10;
+    left: 31px;
+    right: 31px;
+    top: 14px;
+
+    .alert {
+        border-radius: 2px;
+        max-width: 772px;
+        margin: auto;
+    }
+}
+
+md-step-content md-content md-content {
+    margin: -18px 0;
+    height: 94px;
+}
+
+.md-padding {
+    padding: 16px;
+}
+
+@media(max-width:500px) {
+    md-step-label-wrapper span {
+        display: none;
+    }
+}
+
+@media(max-width:1199px) {
+    @media(min-width:992px) {
+        .start-over {
+            margin-left: 70px;
+        }
+    }
+}
+
+
+.start-over {
+    color: rgba(255,255,255,.2) !important;
+    -moz-transition: ease .2s color;
+    -o-transition: ease .2s color;
+    -webkit-transition: ease .2s color;
+    transition: ease .2s color;
+    text-decoration: none;
+
+    &:hover {
+        color: rgba(255,255,255,.6) !important;
+    }
+}
+
+video {
+    -moz-transition: ease 20.5s opacity;
+    -o-transition: ease 20.5s opacity;
+    -webkit-transition: ease 20.5s opacity;
+    transition: ease 20.5s opacity;
+    -moz-transform: translate(-50%, -50%) rotate(180deg) !important;
+    -ms-transform: translate(-50%, -50%) rotate(180deg) !important;
+    -o-transform: translate(-50%, -50%) rotate(180deg) !important;
+    -webkit-transform: translate(-50%, -50%) rotate(180deg) !important;
+    transform: translate(-50%, -50%) rotate(180deg) !important;
+    opacity: 0 !important;
+}
+
+video.semitrans {
+    opacity: .2 !important;
+}
+
+
+img.fixBug {
+    width: 0px;
+}
+
+.guarantee {
+    padding-top: 0px;
+    color: #999999;
+    text-align: center;
+    width: 70%;
+    margin: auto;
+    font-size: 14px;
+    font-family:'Roboto', sans-serif;
+
+    .focused {
+        font-size: 28px;
+        padding-bottom: 22px;
+    }
+
+    .titlebar {
+        padding-bottom: 12px;
+        font-size: 20px;
+
+        .bar {
+            width: 100%;
+            height: 2px;
+            background-color: #999999;
+            position: relative;
+            top: -14px;
+            z-index: -1;
+        }
+
+        .title {
+            padding: 0 10px;
+            background-color: #1f1e1d;
+            z-index: 1;
+            animation: guaranteeColor;
+            animation-duration: 1.25s;
+            animation-delay: 2.75s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        .sparkle {
+            width: 7px;
+            height: 2px;
+            /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&0+0,1+50,0+100 */
+            background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
+            background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 */
+            -moz-animation-name: sparkle;
+            -o-animation-name: sparkle;
+            -webkit-animation-name: sparkle;
+            animation-name: sparkle;
+            -moz-animation-duration: 1.5s;
+            -o-animation-duration: 1.5s;
+            -webkit-animation-duration: 1.5s;
+            animation-duration: 1.5s;
+            -moz-animation-delay: 2.5s;
+            -o-animation-delay: 2.5s;
+            -webkit-animation-delay: 2.5s;
+            animation-delay: 2.5s;
+            -moz-animation-timing-function: ease-in;
+            -o-animation-timing-function: ease-in;
+            -webkit-animation-timing-function: ease-in;
+            animation-timing-function: ease-in;
+            position: absolute;
+            -moz-animation-iteration-count: 1;
+            -o-animation-iteration-count: 1;
+            -webkit-animation-iteration-count: 1;
+            animation-iteration-count: 1;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+    }
+}
+@keyframes fadein{
+    0%{
+        opacity:0;
+    }
+}
+
+@keyframes sparkle {
+    0% {
+        left: 0px;
+        opacity: 1;
+    }
+
+
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        left: 98%;
+        opacity: 0;
+    }
+}
+
+@keyframes guaranteeColor {
+    from {
+        color: gray;
+    }
+
+    to {
+        color: #DDDDDD;
+    }
+}

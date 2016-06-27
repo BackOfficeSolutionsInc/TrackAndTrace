@@ -1,7 +1,8 @@
 ﻿@model List<RadialReview.Models.AnswerModel>
 @using RadialReview.Models;
 @using (Html.BeginScripts()) {
-	<script src="~/Scripts/review/translateSlider.js"></script>
+	@*<script src="~/Scripts/review/translateSlider.js"></script>*@
+    @Scripts.Render("~/bundles/TranslateSliders")
 }
 
 <div class="table-responsive">

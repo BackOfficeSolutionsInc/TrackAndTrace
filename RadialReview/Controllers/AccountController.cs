@@ -24,18 +24,18 @@ using RadialReview.Utilities;
 namespace RadialReview.Controllers
 {
     [Authorize]
-    public partial class AccountController : BaseController
+    public partial class AccountController : UserManagementController
     {
 
-        public AccountController()
-            : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
-        {
-        }
+        //public AccountController()
+        //    : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
+        //{
+        //}
 
-        public AccountController(NHibernateUserManager userManager)
-        {
-            UserManager = userManager;
-        }
+        //public AccountController(NHibernateUserManager userManager)
+        //{
+        //    UserManager = userManager;
+        //}
 
         [AllowAnonymous]
         //[RecaptchaControlMvc.CaptchaValidator]
@@ -184,7 +184,6 @@ namespace RadialReview.Controllers
             return RedirectToLocal(ReturnUrl);
         }
 
-        public NHibernateUserManager UserManager { get; private set; }
 
         //
         // GET: /Account/Login
@@ -669,12 +668,10 @@ namespace RadialReview.Controllers
         private const string XsrfKey = "XsrfId";
 
 
-        private async Task SignInAsync(UserModel user, bool isPersistent)
-        {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-            var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-            AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
-        }
+        //private async Task SignInAsync(UserModel user, bool isPersistent)
+        //{
+        //    await LoginUtility.SignInAsync(this, user, isPersistent);
+        //}
 
         private void AddErrors(IdentityResult result)
         {

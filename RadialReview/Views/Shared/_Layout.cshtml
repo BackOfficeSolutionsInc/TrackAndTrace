@@ -7,41 +7,91 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-@if (ViewBag.IsLocal ?? false) {
-    <link rel="SHORTCUT ICON" href="/content/favicon-local.ico?v=4" />
-} else {
-    <link rel="SHORTCUT ICON" href="/content/favicon.ico?v=3" />
-}
+  
+    <link rel="apple-touch-icon" sizes="57x57" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-180x180.png">
+    @*<link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/favicon-32x32.png" sizes="32x32">*@
+    <link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/android-chrome-192x192.png" sizes="192x192">
+    <meta name="msapplication-square70x70logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/smalltile.png" />
+    <meta name="msapplication-square150x150logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/mediumtile.png" />
+    @*<meta name="msapplication-wide310x150logo" content="/widetile.png" />*@
+    <meta name="msapplication-square310x310logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/largetile.png" />
+
+    @if (ViewBag.IsLocal ?? false) {
+        <link rel="SHORTCUT ICON" href="/content/favicon-local.ico?v=4" />
+    } else {
+        <link rel="SHORTCUT ICON" href="/content/favicon.ico?v=3" />
+    }
+
+
+
+
     <link href='https://fonts.googleapis.com/css?family=Lato:400,900,100' rel='stylesheet' type='text/css'>
     <title>@ViewBag.Title - @Html.ProductName()</title>
     @*<link href="" rel="stylesheet" />*@
     @Styles.Render("~/Content/css")
     @RenderSection("styles", required: false)
     @Html.PageStyles()
-    @if (ViewBag.VideoChatRoom != null)
-    {
+    @if (ViewBag.VideoChatRoom != null) {
         <link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
     }
     <link href="/User/styles" rel="stylesheet" type="text/css" />
 
 </head>
-@if (ViewBag.HasBaseController == null)
-{
+@if (ViewBag.HasBaseController == null) {
     throw new Exception("You must extend from the base controller.");
 }
 <body class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width") @(ViewBag.LayoutClass??"")">
+    @if (RadialReview.Utilities.Config.GetEnv() == RadialReview.Models.Enums.Env.local_test_sqlite) {
+        <script type="text/javascript">
+            window.onerror=function(message, source, lineno, colno, error){
+                debugger;
+                $(".JSError").append($("<li><div class='error'>"+msg+"</div>"+
+                    "<div class='source'>"+source+"</div>"+
+                    "<div class='lineno'>"+lineno+"</div>"+
+                    "<div class='colno'>"+colno+"</div>"+
+                    "<div class='error'>"+error+"</div></li>"));
+            }
+            (function(){
+                var oldError = console.error;
+                console.error = function (a1,a2,a3,a4,a5,a6) {
+                    // DO MESSAGE HERE.
+                    $(".JSError").append($("<li class='console_error'>"+
+                  "<div class='a1'>"+a1+"</div>"+
+                  "<div class='a2'>"+a2+"</div>"+
+                  "<div class='a3'>"+a3+"</div>"+
+                  "<div class='a4'>"+a4+"</div>"+
+                  "<div class='a5'>"+a5+"</div>"+
+                  "<div class='a6'>"+a6+"</div></li>"));
+
+                    oldError.apply(console, [a1,a2,a3,a4,a5,a6]);
+                };
+            })();
+
+        </script>
+        <ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>
+    }
+
 
     @RenderSection("topSection", required: false)
 
-    @if (ViewBag.IsLocal ?? false)
-    {
+    @if (ViewBag.IsLocal ?? false) {
         <div id="local"></div>
+        <div class="debugger"></div>
     }
     <div class="statusContainer"><div id="status">No status</div></div>
     <div id="wrap">
         <div id="main">
-            @if (!(ViewBag.NoTitleBar ?? false))
-            {
+            @if (!(ViewBag.NoTitleBar ?? false)) {
                 <div class=" navbar navbar-inverse navbar-fixed-top">
                     <div class="container body-navbar">
                         <div class="navbar-header">
@@ -50,8 +100,7 @@
                                 <span class="icon-bar"></span>
                                 <span class="icon-bar"></span>
                             </button>
-                            @if (ViewBag.FullLogo as bool? != true)
-                            {
+                            @if (ViewBag.FullLogo as bool? != true) {
                                 <div id="logo">
                                     <div class="link">
                                         <a href="@Url.Action("Index", "Home")" class="navbar-brand">
@@ -61,9 +110,7 @@
                                         </a>
                                     </div>
                                 </div>
-                            }
-                            else
-                            {
+                            } else {
                                 <div id="logo">
                                     <div class="link">
                                         <a href="@Url.Action("Index", "Home")" class="navbar-brand">
@@ -74,13 +121,18 @@
                                     </div>
                                 </div>
                             }
+                            <span class="pull-right navbar-icon-container visible-xs">
+                                @if (((int?)ViewBag.Organizations ?? 0) > 0) {
+                                    <span id="header-tab-new-issue" class="navbar-icon-button glyphicon glyphicon-pushpin issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+                                    <span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
+                                }
+                            </span>
+
                         </div>
                         <div class="navbar-collapse collapse">
                             <ul class="nav navbar-nav">
-                                @if (Request.IsAuthenticated)
-                                {
-                                    if (((int?)ViewBag.Organizations ?? 0) == 0)
-                                    {
+                                @if (Request.IsAuthenticated) {
+                                    if (((int?)ViewBag.Organizations ?? 0) == 0) {
                                         <li>
                                             <a href="@Url.Action("Index", "Home")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
                                                 Access Code
@@ -90,8 +142,7 @@
                                     }
 
 
-                                    if (((int?)ViewBag.Organizations ?? 0) > 0)
-                                    {
+                                    if (((int?)ViewBag.Organizations ?? 0) > 0) {
                                         @*<li>
                                                 <a href="@Url.Action("Index", "Tasks")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
                                                     To-Dos
@@ -109,8 +160,7 @@
                                             </a>
                                         </li>
 
-                                        if (ViewBag.ShowL10 ?? false)
-                                        {
+                                        if (ViewBag.ShowL10 ?? false) {
                                             <li>
                                                 <a href="@Url.Action("Index", "L10")" id="header-tab-l10">
                                                     L10
@@ -118,8 +168,7 @@
                                                 </a>
                                             </li>
                                         }
-                                        if (ViewBag.ShowReview ?? false)
-                                        {
+                                        if (ViewBag.ShowReview ?? false) {
                                             <li>
                                                 <a href="@Url.Action("Index", "Reviews")" id="header-tab-reviews">
                                                     @(Html.ReviewName())s
@@ -127,8 +176,7 @@
                                                 </a>
                                             </li>
                                         }
-                                        if (ViewBag.ShowSurvey ?? false)
-                                        {
+                                        if (ViewBag.ShowSurvey ?? false) {
                                             <li>
                                                 <a href="@Url.Action("Index", "Survey")" id="header-tab-survey">
                                                     Surveys
@@ -144,17 +192,14 @@
                                                 </a>
                                             </li>*@
                                     }
-                                }
-                                else
-                                {
+                                } else {
                                     /*if (!(ViewBag.IsLogin ?? false))
                                 {
                                     <li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "Index", "Home")</li>
                                 }*/
                                 }
                             </ul>
-                            @if (!(ViewBag.IsLogin ?? false))
-                            {
+                            @if (!(ViewBag.IsLogin ?? false)) {
                                 Html.RenderPartial("_LoginPartial", (string)ViewBag.ReturnUrl);
                             }
                         </div>
@@ -175,8 +220,7 @@
             <div id="animationContainer"></div>
         </div>
         @{Html.RenderPartial("Partial/_Modal");}
-        @using (var s = Html.BeginScripts())
-        {
+        @using (var s = Html.BeginScripts()) {
 				<!--script src="~/Scripts/Main/radial.js"></script-->
             <script>
                 window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
@@ -186,14 +230,14 @@
                     ForceUnhide();
                     @if (ViewBag.Alert!=null){
 							@:showAlert("@ViewBag.Alert");
-                    						}
+                                        						}
                     @if(ViewBag.Success!=null){
 							@:showAlert("@ViewBag.Success", "alert-success", "Success!");
-                    						}
+                                        						}
 
                     @if(ViewBag.InfoAlert!=null){
 							@:showAlert("@ViewBag.InfoAlert", "alert-info", "Info!");
-                    						}
+                                        						}
                     UnstoreJsonAlert();
 
                 });
@@ -204,8 +248,7 @@
             </script>
         }
     </div>
-    @if (!(ViewBag.NoTitleBar ?? false))
-    {
+    @if (!(ViewBag.NoTitleBar ?? false)) {
         <div id="footer">
             <p>&copy; @DateTime.Now.Year - @RadialReview.Properties.ProductStrings.CompanyName &amp; EOS</p>
             @{ Html.RenderPartial("Partial/Footer"); }
@@ -261,8 +304,8 @@
         ga('send', 'pageview');
     </script>
 
-    @if (!(ViewBag.FullWidth ?? false))
-    {
+
+    @if (!(ViewBag.FullWidth ?? false)) {
         @*<script type="text/javascript" src="http://assets.freshdesk.com/widget/freshwidget.js"></script>
             <script type="text/javascript">
                 $(function () {

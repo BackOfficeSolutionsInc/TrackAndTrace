@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Users";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    //var format = Html.Organization().NotNull(y => y.Settings.NotNull(z => z.GetDateFormat())) ?? "MM-dd-yyyy";
 }
 
 <h2>User Archive</h2>
@@ -22,7 +23,7 @@
             <td>@user.GetName()</td>
             <td><a href="/User/Details/@user.Id">User Details</a></td>
             <td><a href="/User/Reviews/@user.Id">Reviews</a></td>
-            <td>@user.DeleteTime.Value.ToShortDateString()</td>
+            <td>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",user.DeleteTime.Value)</td>
             <td><a href="#r_@user.Id" onclick="$.ajax({url:'/user/undelete/@(user.Id)',success:function(){$('#r_@(user.Id)').remove();}})">Undelete</a></td>
         </tr>
     }

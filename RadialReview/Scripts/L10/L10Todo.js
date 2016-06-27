@@ -437,7 +437,7 @@ function deserializeTodos(selector, todoList) {
 
 function appendTodo(selector, issue) {
 	var li = $(constructTodoRow(issue));
-	$(selector).prepend(li);
+	$(selector).append(li);
 	$(li).flash();
 	refreshCurrentTodoDetails();
 }

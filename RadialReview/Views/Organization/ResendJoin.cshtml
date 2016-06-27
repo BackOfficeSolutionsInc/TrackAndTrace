@@ -21,7 +21,7 @@
 { 
     <div class="row">
         <div class="col-xs-12">
-            <h4 style="color: #CC2424">Last sent : @Html.Organization().ConvertFromUTC(Model.LastSent.Value).ToShortDateString() @Html.Organization().ConvertFromUTC(Model.LastSent.Value).ToShortTimeString()</h4>
+            <h4 style="color: #CC2424">Last sent : @Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Html.Organization().ConvertFromUTC(Model.LastSent.Value)) @Html.Organization().ConvertFromUTC(Model.LastSent.Value).ToShortTimeString()</h4>
         </div>
     </div>
 }

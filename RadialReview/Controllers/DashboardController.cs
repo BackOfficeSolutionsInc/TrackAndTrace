@@ -22,38 +22,44 @@ using RadialReview.Models.Angular.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.Angular.Roles;
 using RadialReview.Models.Angular.CompanyValue;
+using RadialReview.Exceptions;
 
-namespace RadialReview.Controllers
-{
+namespace RadialReview.Controllers {
     [SessionState(SessionStateBehavior.ReadOnly)]
-    public class DashboardDataController : BaseController
-    {
+    public class DashboardDataController : BaseController {
+
+        protected void ProcessDeadTile(Exception e)
+        {
+
+        }
+
+
         [Access(AccessLevel.UserOrganization)]
+
         //[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
         //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-        public JsonResult Data2(long id, bool completed = false, string name = null,long? start=null, long? end=null, bool fullScorecard=false)
-		{
+        public JsonResult Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false)
+        {
             //Response.AddHeader("Content-Encoding", "gzip");
-			var userId = id;
+            var userId = id;
             var dash = DashboardAccessor.GetPrimaryDashboardForUser(GetUser(), id);
             var tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
             DateTime startRange;
             DateTime endRange;
-            
-            if (start==null)    startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
-            else                startRange = start.Value.ToDateTime();
 
-            if (end == null)    endRange = DateTime.UtcNow.AddDays(14);
-            else                endRange = end.Value.ToDateTime();
+            if (start == null) startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
+            else startRange = start.Value.ToDateTime();
 
-			if (completed){
-				startRange = Math2.Min(DateTime.UtcNow.AddDays(-1),startRange);
-				endRange = Math2.Max(DateTime.UtcNow.AddDays(2),endRange);
-			}
+            if (end == null) endRange = DateTime.UtcNow.AddDays(14);
+            else endRange = end.Value.ToDateTime();
+
+            if (completed) {
+                startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
+                endRange = Math2.Max(DateTime.UtcNow.AddDays(2), endRange);
+            }
             var dateRange = new DateRange(startRange, endRange);
 
-            var output = new DashboardController.ListDataVM(id)
-            {
+            var output = new DashboardController.ListDataVM(id) {
                 Name = name,
                 //Todos = todos.OrderByDescending(x=>x.CompleteTime??DateTime.MaxValue).ThenBy(x=>x.DueDate),
                 //Scorecard = sc,
@@ -64,162 +70,213 @@ namespace RadialReview.Controllers
                 //Name = "All to-dos for " + m.GetName()
             };
 
-            if (tiles.Any(x => x.Type == TileType.Todo || (x.DataUrl??"").Contains("UserTodo"))) { 
-			    //Todos
-                var todos = TodoAccessor.GetTodosForUser(GetUser(), id, !completed, dateRange).Select(x => new AngularTodo(x));
-			    var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
-                output.Todos = todos.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
+            if (tiles.Any(x => x.Type == TileType.Todo || (x.DataUrl ?? "").Contains("UserTodo"))) {
+                try {
+                    //Todos
+                    var todos = TodoAccessor.GetTodosForUser(GetUser(), id, !completed, dateRange).Select(x => new AngularTodo(x));
+                    var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
+                    output.Todos = todos.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
+                } catch (Exception e) {
+                    ProcessDeadTile(e);
+                }
 
             }
 
-            if (tiles.Any(x => x.Type == TileType.Scorecard || (x.DataUrl??"").Contains("UserScorecard")))
-            {
-                //Scorecard
-                var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), userId, ordered: true, includeAdmin: true);
+            if (tiles.Any(x => x.Type == TileType.Scorecard || (x.DataUrl ?? "").Contains("UserScorecard"))) {
+                try {
+                    //Scorecard
+                    
+                    //var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), userId, ordered: true, includeAdmin: true);
 
-                var scorecardStart = fullScorecard? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod):startRange;
-                var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
+                    var scorecardStart = fullScorecard ? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod) : startRange;
+                    var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
 
-                var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, scorecardStart, scorecardEnd, includeAdmin: true);
-                output.Scorecard = new AngularScorecard(-1,
-                    GetUser().Organization.Settings.WeekStart,
-                    GetUser().Organization.GetTimezoneOffset(),
-                    measurables.Select(x => new AngularMeasurable(x) { }),
-                    scores.ToList(),
-                    DateTime.UtcNow,
-                    GetUser().Organization.Settings.ScorecardPeriod,
-                    new YearStart(GetUser().Organization)
-                    );
+                    output.Scorecard=ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true);
+
+                    //var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, scorecardStart, scorecardEnd, includeAdmin: true);
+                    //output.Scorecard = new AngularScorecard(-1,
+                    //    GetUser().Organization.Settings.WeekStart,
+                    //    GetUser().Organization.GetTimezoneOffset(),
+                    //    measurables.Select(x => new AngularMeasurable(x) { }),
+                    //    scores.ToList(),
+                    //    DateTime.UtcNow,
+                    //    GetUser().Organization.Settings.ScorecardPeriod,
+                    //    new YearStart(GetUser().Organization)
+                    //    );
+                } catch (Exception e) {
+                    ProcessDeadTile(e);
+                }
             }
 
-            if (tiles.Any(x => x.Type == TileType.Rocks || (x.DataUrl ?? "").Contains("UserRock")))
-            {
-                var now = DateTime.UtcNow;
-                var currentPeriod = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime).FirstOrDefault().NotNull(x=>x.Id);
-                var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id, currentPeriod).Select(x => new AngularRock(x));
-              //  var rocks = _RockAccessor.GetAllRocks(GetUser(), GetUser().Id)
-               //     .Where(x => currentPeriods.Any(y => y.Id == x.PeriodId))
-             //       .Select(x => new AngularRock(x));
+            if (tiles.Any(x => x.Type == TileType.Rocks || (x.DataUrl ?? "").Contains("UserRock"))) {
+                try {
+                    var now = DateTime.UtcNow;
+                    var currentPeriod = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime).FirstOrDefault().NotNull(x => x.Id);
+                    var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id, currentPeriod).Select(x => new AngularRock(x));
+                    //  var rocks = _RockAccessor.GetAllRocks(GetUser(), GetUser().Id)
+                    //     .Where(x => currentPeriods.Any(y => y.Id == x.PeriodId))
+                    //       .Select(x => new AngularRock(x));
 
-                output.Rocks = rocks;
+                    output.Rocks = rocks;
+                } catch (Exception e) {
+                    ProcessDeadTile(e);
+                }
             }
 
-            if (tiles.Any(x => x.Type == TileType.Manage || (x.DataUrl ?? "").Contains("UserManage")))
-            {
-                var directReports = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails)
-                    .Select(x => AngularUser.CreateUser(x, managing: true)).ToList();
-                //if (!GetUser().IsRadialAdmin)
-                //{
-                var managingIds = _DeepSubordianteAccessor.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
-                directReports = directReports.Where(x => managingIds.Contains(x.Id)).ToList();
-                //}
-                output.Members = directReports;
+            if (tiles.Any(x => x.Type == TileType.Manage || (x.DataUrl ?? "").Contains("UserManage"))) {
+
+                try {
+                    var directReports = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails)
+                        .Select(x => AngularUser.CreateUser(x, managing: true)).ToList();
+                    //if (!GetUser().IsRadialAdmin)
+                    //{
+                    var managingIds = _DeepSubordianteAccessor.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
+                    directReports = directReports.Where(x => managingIds.Contains(x.Id)).ToList();
+                    //}
+                    output.Members = directReports;
+                } catch (Exception e) {
+                    ProcessDeadTile(e);
+                }
             }
 
             if (tiles.Any(x => x.Type == TileType.Roles || (x.DataUrl ?? "").Contains("UserRoles"))) {
-                var roles = _RoleAccessor.GetRoles(GetUser(), GetUser().Id).Select(x => new AngularRole(x)).ToList();
-                output.Roles = roles;
+                try {
+                    var roles = _RoleAccessor.GetRoles(GetUser(), GetUser().Id).Select(x => new AngularRole(x)).ToList();
+                    output.Roles = roles;
+                } catch (Exception e) {
+                    ProcessDeadTile(e);
+                }
             }
 
             if (tiles.Any(x => x.Type == TileType.Values || (x.DataUrl ?? "").Contains("OrganizationValues"))) {
-                var values = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id).Select(x => AngularCompanyValue.Create(x)).ToList();
-                output.CoreValues = values;
+                try {
+                    var values = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id).Select(x => AngularCompanyValue.Create(x)).ToList();
+                    output.CoreValues = values;
+                } catch (Exception e) {
+                    ProcessDeadTile(e);
+                }
             }
 
 
 
             var caller = GetUser();
-            using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-                    var l10Lookup = new DefaultDictionary<long,L10Recurrence>(x=>L10Accessor.GetL10Recurrence(caller,x,false));
-                    var perms = PermissionsUtility.Create(s,caller);
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(caller, x, false));
+                    var perms = PermissionsUtility.Create(s, caller);
                     //L10 Todos
-                    foreach (var todo in tiles.Where(x => x.Type == TileType.L10Todos|| (x.DataUrl ?? "").Contains("L10Todos")).Distinct(x => x.KeyId))
-                    {
+                    foreach (var todo in tiles.Where(x => x.Type == TileType.L10Todos || (x.DataUrl ?? "").Contains("L10Todos")).Distinct(x => x.KeyId)) {
+
                         long l10Id = 0;
-                        if (long.TryParse(todo.KeyId, out l10Id))
-                        {
-                            var tile = new DashboardController.AngularTileId<List<AngularTodo>>(todo.Id,l10Id, l10Lookup[l10Id].Name + " to-dos");
-                            tile.Contents = L10Accessor.GetAllTodosForRecurrence(s, perms, l10Id,false).Select(x => new AngularTodo(x)).ToList();
-                            output.L10Todos.Add(tile);
+                        if (long.TryParse(todo.KeyId, out l10Id)) {
+                            try {
+                                var tile = new DashboardController.AngularTileId<List<AngularTodo>>(todo.Id, l10Id, l10Lookup[l10Id].Name + " to-dos");
+                                tile.Contents = L10Accessor.GetAllTodosForRecurrence(s, perms, l10Id, false).Select(x => new AngularTodo(x)).ToList();
+                                output.L10Todos.Add(tile);
+
+                            } catch (Exception e) {
+                                output.L10Todos.Add(DashboardController.AngularTileId<List<AngularTodo>>.Error(todo.Id, l10Id, e));
+                            }
                         }
                     }
                     //L10 Issues
-                    foreach (var issue in tiles.Where(x => x.Type == TileType.L10Issues|| (x.DataUrl ?? "").Contains("L10Issues")).Distinct(x => x.KeyId))
-                    {
+                    foreach (var issue in tiles.Where(x => x.Type == TileType.L10Issues || (x.DataUrl ?? "").Contains("L10Issues")).Distinct(x => x.KeyId)) {
+
                         long l10Id = 0;
-                        if (long.TryParse(issue.KeyId, out l10Id))
-                        {
-                            var tile = new DashboardController.AngularTileId<AngularIssuesList>(issue.Id,l10Id, l10Lookup[l10Id].Name + " issues");
-                            tile.Contents = new AngularIssuesList(l10Id) {
-                                Issues = L10Accessor.GetIssuesForRecurrence(s, perms, l10Id).Select(x => new AngularIssue(x)).ToList(),
-                                Prioritization = l10Lookup[l10Id].Prioritization,
-                            };
-                            output.L10Issues.Add(tile);
+                        if (long.TryParse(issue.KeyId, out l10Id)) {
+                            try {
+                                var tile = new DashboardController.AngularTileId<AngularIssuesList>(issue.Id, l10Id, l10Lookup[l10Id].Name + " issues");
+                                tile.Contents = new AngularIssuesList(l10Id) {
+                                    Issues = L10Accessor.GetIssuesForRecurrence(s, perms, l10Id).Select(x => new AngularIssue(x)).ToList(),
+                                    Prioritization = l10Lookup[l10Id].Prioritization,
+                                };
+                                output.L10Issues.Add(tile);
+                            } catch (Exception e) {
+                                output.L10Issues.Add(DashboardController.AngularTileId<AngularIssuesList>.Error(issue.Id, l10Id, e));
+                            }
                         }
+
+
                     }
                     //L10 Rocks
-                    foreach (var rock in tiles.Where(x => x.Type == TileType.L10Rocks|| (x.DataUrl ?? "").Contains("L10Rocks")).Distinct(x => x.KeyId))
-                    {
+                    foreach (var rock in tiles.Where(x => x.Type == TileType.L10Rocks || (x.DataUrl ?? "").Contains("L10Rocks")).Distinct(x => x.KeyId)) {
                         long l10Id = 0;
-                        if (long.TryParse(rock.KeyId, out l10Id))
-                        {
-                            var tile = new DashboardController.AngularTileId<List<AngularRock>>(rock.Id,l10Id, l10Lookup[l10Id].Name + " rocks");
-                            tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock)).ToList();
-                            output.L10Rocks.Add(tile);
+                        if (long.TryParse(rock.KeyId, out l10Id)) {
+                            try {
+                                var tile = new DashboardController.AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks");
+                                tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock)).ToList();
+                                output.L10Rocks.Add(tile);
+                            } catch (Exception e) {
+                                output.L10Rocks.Add(DashboardController.AngularTileId<List<AngularRock>>.Error(rock.Id, l10Id, e));
+                            }
                         }
                     }
                     //L10 Scorecard
-                    foreach (var scorecard in tiles.Where(x => x.Type == TileType.L10Scorecard || (x.DataUrl ?? "").Contains("L10Scorecard")).Distinct(x => x.KeyId))
-                    {
+                    foreach (var scorecard in tiles.Where(x => x.Type == TileType.L10Scorecard || (x.DataUrl ?? "").Contains("L10Scorecard")).Distinct(x => x.KeyId)) {
+
                         long l10Id = 0;
-                        if (long.TryParse(scorecard.KeyId, out l10Id))
-                        {
-                            var tile = new DashboardController.AngularTileId<AngularScorecard>(scorecard.Id, l10Id, l10Lookup[l10Id].Name + " scorecard");
-                            //tile.Contents;
+                        if (long.TryParse(scorecard.KeyId, out l10Id)) {
+                            try {
+                                var tile = new DashboardController.AngularTileId<AngularScorecard>(scorecard.Id, l10Id, l10Lookup[l10Id].Name + " scorecard");
+                                //tile.Contents;
 
-                            var scores = L10Accessor.GetScoresForRecurrence(s,perms,l10Id, false);
-                            var measurables = scores.Select(x => x.Measurable).Distinct(x => x.Id).ToList();
+                                var scores = L10Accessor.GetScoresForRecurrence(s, perms, l10Id, false);
+                                var measurables = scores.Select(x => x.Measurable).Distinct(x => x.Id).ToList();
 
-                            //var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, start, end, includeAdmin: true);
-                            tile.Contents= new AngularScorecard(scorecard.Id,
-                                GetUser().Organization.Settings.WeekStart,
-                                GetUser().Organization.GetTimezoneOffset(),
-                                measurables.Select(x => new AngularMeasurable(x) { }),
-                                scores.ToList(),
-                                DateTime.UtcNow,
-                                GetUser().Organization.Settings.ScorecardPeriod,
-                                new YearStart(GetUser().Organization)
-                                );
-                            output.L10Scorecards.Add(tile);
+                                //var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, start, end, includeAdmin: true);
+                                tile.Contents = new AngularScorecard(scorecard.Id,
+                                    GetUser().Organization.Settings.WeekStart,
+                                    GetUser().Organization.GetTimezoneOffset(),
+                                    measurables.Select(x => new AngularMeasurable(x) { }),
+                                    scores.ToList(),
+                                    DateTime.UtcNow,
+                                    GetUser().Organization.Settings.ScorecardPeriod,
+                                    new YearStart(GetUser().Organization)
+                                    );
+                                output.L10Scorecards.Add(tile);
+
+                            } catch (Exception e) {
+                                output.L10Scorecards.Add(DashboardController.AngularTileId<AngularScorecard>.Error(scorecard.Id, l10Id, e));
+                            }
                         }
                     }
                 }
-           }
+            }
 
-			return Json(output, JsonRequestBehavior.AllowGet);
-		}
+            return Json(output, JsonRequestBehavior.AllowGet);
+        }
+
     }
 
-    public class DashboardController : BaseController
-    {
-        public class AngularTileId<T> : BaseAngular
-        {
+    public class DashboardController : BaseController {
+        public class AngularTileId<T> : BaseAngular {
             public long KeyId { get; set; }
             public string Title { get; set; }
             public T Contents { get; set; }
+            public bool HasError { get; set; }
+            public string Message { get; set; }
 
-            public AngularTileId(long tile, long keyId, string title) : base(tile)
+            public AngularTileId(long tile, long keyId, string title)
+                : base(tile)
             {
                 KeyId = keyId;
                 Title = title;
             }
+
+            public static AngularTileId<T> Error(long tile, long keyId, Exception e)
+            {
+                var message = "Could not load tile";
+                if (e is PermissionsException)
+                    message = (e as PermissionsException).Message;
+
+                return new AngularTileId<T>(tile, keyId, "Error") {
+                    HasError = true,
+                    Message = message,
+                };
+            }
         }
 
-        public class ListDataVM : BaseAngular
-        {
+        public class ListDataVM : BaseAngular {
             public string Name { get; set; }
             public IEnumerable<AngularTodo> Todos { get; set; }
             public AngularScorecard Scorecard { get; set; }
@@ -228,8 +285,7 @@ namespace RadialReview.Controllers
 
             public AngularDateRange date { get; set; }
 
-            public class DateVM
-            {
+            public class DateVM {
                 public DateTime startDate { get; set; }
                 public DateTime endDate { get; set; }
             }
@@ -244,7 +300,8 @@ namespace RadialReview.Controllers
             public List<AngularTileId<List<AngularTodo>>> L10Todos { get; set; }
 
 
-            public ListDataVM(long id) : base(id)
+            public ListDataVM(long id)
+                : base(id)
             {
                 L10Scorecards = new List<AngularTileId<AngularScorecard>>();
                 L10Rocks = new List<AngularTileId<List<AngularRock>>>();
@@ -253,8 +310,7 @@ namespace RadialReview.Controllers
             }
         }
 
-        public class TileVM
-        {
+        public class TileVM {
             public int w { get; set; }
             public int h { get; set; }
             public int x { get; set; }
@@ -299,7 +355,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult CreateTile(long id, bool? hidden = null, int w = 1, int h = 1, int x = 0, int y = 0, TileType type = TileType.Invalid, string dataurl = null, string title = null,string keyId=null)
+        public JsonResult CreateTile(long id, bool? hidden = null, int w = 1, int h = 1, int x = 0, int y = 0, TileType type = TileType.Invalid, string dataurl = null, string title = null, string keyId = null)
         {
             var tile = DashboardAccessor.CreateTile(GetUser(), id, w, h, x, y, dataurl, title, type, keyId);
             tile.ForUser = null;
@@ -307,8 +363,7 @@ namespace RadialReview.Controllers
             return Json(ResultObject.SilentSuccess(tile), JsonRequestBehavior.AllowGet);
         }
 
-        public class DashboardVM
-        {
+        public class DashboardVM {
             public long DashboardId { get; set; }
             public String TileJson { get; set; }
             public List<SelectListItem> L10s { get; set; }
@@ -325,15 +380,14 @@ namespace RadialReview.Controllers
         {
             if (id == null)
                 id = DashboardAccessor.GetPrimaryDashboardForUser(GetUser(), GetUser().Id).NotNull(x => x.Id);
-            if (id == 0)
-            {
+            if (id == 0) {
                 id = DashboardAccessor.CreateDashboard(GetUser(), null, false, true).Id;
                 return RedirectToAction("Index", new { id = id });
             }
 
             var tiles = DashboardAccessor.GetTiles(GetUser(), id.Value);
 
-            var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id,true);
+            var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, true);
 
 
             var jsonTiles = Json(ResultObject.SilentSuccess(tiles), JsonRequestBehavior.AllowGet);
@@ -342,11 +396,10 @@ namespace RadialReview.Controllers
 
 
             ViewBag.UserId = GetUser().Id;
-            return View(new DashboardVM()
-            {
+            return View(new DashboardVM() {
                 DashboardId = id.Value,
                 TileJson = jsonTilesStr,
-                L10s = l10s.Select(x => new SelectListItem() { Value =""+x.Id,Text = x.Name}).ToList()
+                L10s = l10s.Select(x => new SelectListItem() { Value = "" + x.Id, Text = x.Name }).ToList()
             });
         }
 

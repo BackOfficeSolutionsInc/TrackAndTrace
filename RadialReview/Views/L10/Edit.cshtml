@@ -333,7 +333,8 @@
 
 @using (Html.BeginStyles()) {
 
-    <link href="~/Content/bootstrap-duallistbox.css" rel="stylesheet" />
+    @*<link href="~/Content/bootstrap-duallistbox.css" rel="stylesheet" />*@
+    @Styles.Render("~/Content/MeetingEdit")
     <style>
         .durations .form-group {
             margin-bottom: 4px;
@@ -344,7 +345,8 @@
 
 @using (Html.BeginScripts()) {
 
-    <script src="~/Scripts/components/jquery.bootstrap-duallistbox.js"></script>
+    @*<script src="~/Scripts/components/jquery.bootstrap-duallistbox.js"></script>*@
+    @Scripts.Render("~/bundles/MeetingEdit")
     <script>
 
         $("body").on("mousemove",".bootstrap-duallistbox-container select",function(){

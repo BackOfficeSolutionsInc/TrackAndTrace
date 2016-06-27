@@ -24,6 +24,11 @@ using RadialReview.Utilities.DataTypes;
 using System.Runtime.Serialization;
 using System.Security.Policy;
 using System.Web;
+using TractionTools.UITests.Utilities;
+using TractionTools.UITests.Utilities.Extensions;
+using System.Drawing;
+using OpenQA.Selenium.Remote;
+using System.Reflection;
 
 namespace TractionTools.UITests.Selenium {
     //http://stephenwalther.com/archive/2011/12/22/asp-net-mvc-selenium-iisexpress
@@ -62,6 +67,8 @@ namespace TractionTools.UITests.Selenium {
     [TestClass]
     public class BaseSelenium : BaseTest {
         const int iisPort = 2020;
+        public static List<WithBrowsers> AllBrowsers = new List<WithBrowsers> { WithBrowsers.Chrome, /*WithBrowsers.Firefox, WithBrowsers.IE*/ };
+
         //private static string _applicationName;
         //private static string _testName;
         private static Process _iisProcess;
@@ -74,15 +81,78 @@ namespace TractionTools.UITests.Selenium {
         public static FirefoxDriver _FirefoxDriver;
         public static ChromeDriver _ChromeDriver;
         public static InternetExplorerDriver _InternetExplorerDriver;
-        public static long Timestamp = DateTime.UtcNow.ToJavascriptMilliseconds() / (1000*60);
+        public static long Timestamp = DateTime.UtcNow.ToJavascriptMilliseconds() / (1000 * 60);
+
+        public static string ApplicationName { get; private set; }
+        public static string TestName { get; private set; }
+        public WithBrowsers RequiredBrowsers
+        {
+            get
+            {
+                _RequiredBrowsers = _RequiredBrowsers ?? (WithBrowsers)Config.GetAppSetting("RequiredBrowsers", "0").ToInt();
+                return _RequiredBrowsers.Value;
+            }
+        }
+
+
+        private static List<ImageId> ImagesNeedingGeneration = new List<ImageId>();
+        private static List<ImageId> ImagesDoNotMatch = new List<ImageId>();
+        private static List<ImageId> ExistingIds = new List<ImageId>();
+        private static List<Exception> Deferred = new List<Exception>();
 
         protected BaseSelenium() { }
 
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Parallel.ForEach(AllBrowsers, b => {
+                var driver = GetDriver(b);
+                driver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));
+                driver.WaitForAlert(.5);
+            });
+            Deferred = new List<Exception>();
+        }
+
+        [TestCleanup]
+        [DebuggerHidden]
+        public void TestCleanup()
+        {
+            if (Deferred.Any()) {
+                if (Deferred.All(x => x is AssertInconclusiveException)) {
+                    var builder = "";
+                    var noMatch=Deferred.Where(x => x.Message.StartsWith("Images do not match: "));
+                    if (noMatch.Any()){
+                        builder += "IMAGES DO NOT MATCH:\n===========================\n";
+                        builder+=String.Join("\n", noMatch.Select(x=>x.Message.SubstringAfter("Images do not match: ")))+"\n\n";
+                    }
+                    var noCompare=Deferred.Where(x => x.Message.StartsWith("No comparison image: "));
+
+                    if (noCompare.Any()){
+                        builder += "NO COMPARISON IMAGE:\n===========================\n";
+                        builder+=String.Join("\n", noCompare.Select(x=>x.Message.SubstringAfter("No comparison image: ")))+"\n\n";
+                    }
+                    var others=Deferred.Where(x => !x.Message.StartsWith("No comparison image: ") && !x.Message.StartsWith("Images do not match: "));
+                    
+                    if (others.Any()){
+                        builder += "DEFERRED EXCEPTIONS:\n===========================\n";
+                        builder+=String.Join("\n", others.Select(x=>x.Message))+"\n\n";
+                    }
+
+                    Assert.Inconclusive("The following exceptions occurred:\n\n" + builder);
+                }
+                if (Deferred.Count() == 1)
+                    throw Deferred[0];
+                throw new AggregateException(Deferred);
+            }
+        }
+
         [AssemblyInitialize]
-        public static void TestInitialize(TestContext ctx)
+        public static void AssemblyInitialize(TestContext ctx)
         {
             // Start IISExpress
-            StartIIS("RadialReview", "TractionTools.UITests");
+            ApplicationName = "RadialReview";
+            TestName = "TractionTools.UITests";
+            StartIIS();
             // Start Selenium drivers
             _ChromeDriver = new ChromeDriver();
             _ChromeDriver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));
@@ -90,7 +160,7 @@ namespace TractionTools.UITests.Selenium {
             //_InternetExplorerDriver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));
         }
         [AssemblyCleanup]
-        public static void TestCleanup()
+        public static void AssemblyCleanup()
         {
             // Ensure IISExpress is stopped
             KillAllISSExpress();
@@ -101,9 +171,27 @@ namespace TractionTools.UITests.Selenium {
                 _ChromeDriver.Quit();
             if (_InternetExplorerDriver != null)
                 _InternetExplorerDriver.Quit();
+
+            //if (ImagesDoNotMatch.Any()) {
+                //var p = Path.Combine(GetTestSolutionPath(), "_Log", GetShortTestId());
+                //Directory.CreateDirectory(p);
+                var lines = ImagesDoNotMatch.Select(x => x.GetName()).OrderBy(x => x);
+                var p = Path.Combine(GetTestSolutionPath(), "_Log", "current");
+                Directory.CreateDirectory(p);
+                File.WriteAllLines(Path.Combine(p, "NoMatch.txt"), lines);
+           // }
+            //if (ImagesNeedingGeneration.Any()) {
+                //var p = Path.Combine(GetTestSolutionPath(), "_Log", GetShortTestId());
+                //Directory.CreateDirectory(p);
+                lines = ImagesNeedingGeneration.Select(x => x.GetName()).OrderBy(x => x);
+                //File.WriteAllLines(Path.Combine(p, "NeedGeneration.txt"), lines);
+                p = Path.Combine(GetTestSolutionPath(), "_Log", "current");
+                Directory.CreateDirectory(p);
+                File.WriteAllLines(Path.Combine(p, "NeedGeneration.txt"), lines);
+            //}
         }
 
-        private IWebDriver GetDriver(WithBrowsers flag)
+        private static RemoteWebDriver GetDriver(WithBrowsers flag)
         {
             switch (flag) {
                 case WithBrowsers.Chrome: {
@@ -111,7 +199,12 @@ namespace TractionTools.UITests.Selenium {
                         return _ChromeDriver;
                     }
                 case WithBrowsers.Firefox: {
-                        if (_FirefoxDriver == null) _FirefoxDriver = new FirefoxDriver();
+                        if (_FirefoxDriver == null) {
+                            FirefoxProfile Prof = new FirefoxProfile();
+                            FirefoxBinary Bin = new FirefoxBinary(Config.GetAppSetting("FirefoxLocation"));
+                            _FirefoxDriver = new FirefoxDriver(Bin, Prof);
+                            // _FirefoxDriver = new FirefoxDriver();
+                        }
                         return _FirefoxDriver;
                     }
                 case WithBrowsers.IE: {
@@ -124,32 +217,72 @@ namespace TractionTools.UITests.Selenium {
 
         protected string AddScreenshot(IWebDriver driver, string name)
         {
-            var folder = Path.Combine(GetTempFile(), "screenshots");
-            var n = (""+Timestamp);
-            folder = Path.Combine(folder, n.Substring(0,4)+"-"+n.Substring(4));
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
+            var folder = GetScreenshotFolder();
             var file = Path.Combine(folder, name);
             driver.TakeScreenshot(file);
             return file;
         }
 
-        public void TestView(Credentials mockUser, string url, Action<IWebDriver> test, WithBrowsers browsers = WithBrowsers.All)
+        public void TestForConsoleErrors(TestCtx driver)
+        {
+            var errorContainer = driver.FindElement(By.ClassName("JSError"));
+            if (errorContainer != null) {
+                var any = errorContainer.FindElements(By.TagName("li"));
+                if (any != null && any.Any()) {
+                    Console.WriteLine("CONSOLE ERRORS:");
+                    foreach (var a in any) {
+                        Console.WriteLine(a);
+                    }
+                    driver.DeferException(new Exception("CONSOLE ERRORS", new AggregateException(any.Select(x => new Exception(x.Text)).ToArray())));                    
+                }
+            }
+        }
+
+        protected static string GetTestName()
+        {
+            var stackTrace = new StackTrace();
+            foreach (var stackFrame in stackTrace.GetFrames()) {
+                MethodBase methodBase = stackFrame.GetMethod();
+                Object[] attributes = methodBase.GetCustomAttributes(typeof(TestMethodAttribute), false);
+                if (attributes.Length >= 1) {
+                    return methodBase.Name;
+                }
+            }
+            Console.WriteLine(string.Join("\n", stackTrace.GetFrames().Select(x => x.GetMethod().Name)));
+            throw new Exception("Not called from a test method");
+            //return "Not called from a test method";
+        }
+
+        public void TestView(Credentials mockUser, string url, Action<TestCtx> test, WithBrowsers browsers = WithBrowsers.All)
         {
             var exceptions = new List<Exception>();
-            var flagDrivers = new List<WithBrowsers> { WithBrowsers.Chrome, WithBrowsers.Firefox, WithBrowsers.IE };
+            var flagDrivers = AllBrowsers;
+            var ctx = new TestCtx(url,GetTestName(), ExistingIds, ImagesNeedingGeneration, ImagesDoNotMatch);
+
+            ctx._Deferred = Deferred;
             Parallel.ForEach(flagDrivers, b => {
                 if (browsers.HasFlag(b)) {
                     var driver = GetDriver(b);
+                    ctx.CurrentBrowser = b;
+                    ctx.CurrentDriver = driver;
                     try {
-                        RunTestOnWebDriver(mockUser, url, driver, test);
+                        RunTestOnWebDriver(mockUser, url, ctx, test);
+                        TestForConsoleErrors(ctx);
+                        ctx.TestScreenshot("Complete");
                     } catch (Exception e) {
                         PreserveStackTrace(e);
-                        Console.WriteLine("Screenshot:" + AddScreenshot(driver, Guid.NewGuid() + ".png"));
                         exceptions.Add(e);
+                        try {
+                            Console.WriteLine("Screenshot:\n" + AddScreenshot(driver, Guid.NewGuid() + ".png"));
+                        } catch (Exception e2) {
+                            Console.WriteLine(e2.Message);
+                            Console.WriteLine(e2.StackTrace);
+
+                        }
                     }
                 }
             });
+            //exceptions.AddRange(testInfo.Defer);
             exceptions = exceptions.Where(x => x != null).ToList();
 
             if (exceptions.Any()) {
@@ -173,7 +306,18 @@ namespace TractionTools.UITests.Selenium {
 
         }
 
-        protected static void PreserveStackTrace(Exception e)
+
+
+        public static string GetAbsoluteUrl(string relativeUrl)
+        {
+            if (!relativeUrl.StartsWith("/")) {
+                relativeUrl = "/" + relativeUrl;
+            }
+            return String.Format("http://localhost:{0}{1}", iisPort, relativeUrl);
+        }
+
+        #region Private
+        public static void PreserveStackTrace(Exception e)
         {
             var ctx = new StreamingContext(StreamingContextStates.CrossAppDomain);
             var mgr = new ObjectManager(null, ctx);
@@ -185,44 +329,26 @@ namespace TractionTools.UITests.Selenium {
 
             // voila, e is unmodified save for _remoteStackTraceString
         }
-
-
-        public WithBrowsers RequiredBrowsers
-        {
-            get
-            {
-                _RequiredBrowsers = _RequiredBrowsers ?? (WithBrowsers)Config.GetAppSetting("RequiredBrowsers", "0").ToInt();
-                return _RequiredBrowsers.Value;
-            }
-        }
-        public static string GetAbsoluteUrl(string relativeUrl)
-        {
-            if (!relativeUrl.StartsWith("/")) {
-                relativeUrl = "/" + relativeUrl;
-            }
-            return String.Format("http://localhost:{0}{1}", iisPort, relativeUrl);
-        }
-
-        #region Private
-        private void RunTestOnWebDriver(Credentials mockUser, string url, IWebDriver driver, Action<IWebDriver> test)
+        private void RunTestOnWebDriver(Credentials mockUser, string url, TestCtx ctx, Action<TestCtx> test)
         {
             try {
 
-                if (!currentDriverUser.ContainsKey(driver) || !currentDriverUser[driver].Equals(mockUser)) {
-                    driver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login?ReturnUrl=" + HttpUtility.UrlEncode(url)));
-                    driver.FindElement(By.Name("UserName")).SendKeys(mockUser.Username);
-                    driver.FindElement(By.Name("Password")).SendKeys(mockUser.Password);
-                    driver.FindElement(By.Id("loginForm")).FindElement(By.TagName("form")).Submit();
+                if (!currentDriverUser.ContainsKey(ctx) || !currentDriverUser[ctx].Equals(mockUser)) {
+                    ctx.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login?ReturnUrl=" + HttpUtility.UrlEncode(url)));
+                    ctx.WaitForAlert(2);
+                    ctx.FindElement(By.Name("UserName")).SendKeys(mockUser.Username);
+                    ctx.FindElement(By.Name("Password")).SendKeys(mockUser.Password);
+                    ctx.FindElement(By.Id("loginForm")).FindElement(By.TagName("form")).Submit();
                     //driver.WaitForAlert();
-                    currentDriverUser[driver] = mockUser;
+                    currentDriverUser[ctx] = mockUser;
                 } else {
-                    driver.Navigate().GoToUrl(GetAbsoluteUrl(url));
+                    ctx.Navigate().GoToUrl(GetAbsoluteUrl(url));
                 }
-                
+
             } catch (NoSuchElementException e) {
-                throw new AssertFailedException("Could not login. (" + driver.GetType().Name + ")");
+                throw new AssertFailedException("Could not login. (" + ctx.GetType().Name + ")");
             }
-            test(driver);
+            test(ctx);
         }
         protected async Task<Credentials> GetAdminCredentials(Guid id)
         {
@@ -295,9 +421,9 @@ namespace TractionTools.UITests.Selenium {
                 File.Delete(pidFile);
             }
         }
-        private static void StartIIS(string appProjName, string testProjName)
+        private static void StartIIS()
         {
-            var applicationPath = GetApplicationPath(appProjName, testProjName);
+            var applicationPath = GetApplicationPath();
             var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 
             //Kill existing proc
@@ -313,17 +439,52 @@ namespace TractionTools.UITests.Selenium {
                 File.AppendAllLines(pidFile, (_iisProcess.Id + "").AsList());
             }
         }
+        #endregion
 
-        protected static string GetTempFile()
+        #region Directory Lookup
+        public static string GetTempFile()
         {
             return Path.Combine(Path.GetTempPath(), "TractionTools");
         }
 
-        protected static string GetApplicationPath(string applicationName, string testName)
+        public static string GetTestSolutionPath()
         {
             var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
-            var solutionPath = Path.Combine(solutionFolder, applicationName);
-            var testPath = Path.Combine(solutionFolder, testName);
+            var testPath = Path.Combine(solutionFolder, TestName);
+            return testPath;
+        }
+
+        public static string GetTractionToolsSolutionPath()
+        {
+            var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
+            var solutionPath = Path.Combine(solutionFolder, ApplicationName);
+            return solutionPath;
+        }
+
+        public static string GetShortTestId()
+        {
+            var n = ("" + Timestamp);
+            return n.Substring(0, 4) + "-" + n.Substring(4);
+        }
+
+        public static string GetScreenshotFolder(string subdir = null)
+        {
+            var folder = Path.Combine(GetTempFile(), "screenshots");
+
+            folder = Path.Combine(folder, GetShortTestId());
+
+            if (subdir != null) {
+                folder = Path.Combine(folder, subdir);
+            }
+            Directory.CreateDirectory(folder);
+
+            return folder;
+        }
+        protected static string GetApplicationPath()
+        {
+            //var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
+            var solutionPath = GetTractionToolsSolutionPath();// Path.Combine(solutionFolder, applicationName);
+            var testPath = GetTestSolutionPath();// Path.Combine(solutionFolder, testName);
 
             var temp = Path.Combine(Path.Combine(GetTempFile(), "ServerFiles"), Guid.NewGuid().ToString());
             Directory.CreateDirectory(temp);
@@ -356,5 +517,14 @@ namespace TractionTools.UITests.Selenium {
         }
         #endregion
 
+        protected static void ConcludeMeeting(TestCtx d)
+        {
+            d.TestScreenshot("BeforeConclude");
+
+            d.FindElement(By.PartialLinkText("Conclude"), 10).Click();
+            d.FindElement(By.Id("SendEmail"), 10).Uncheck();
+            d.FindElement(By.Id("form0"), 10).Submit();
+            d.FindElement(By.ClassName("meeting-stats"), 15);
+        }
     }
 }

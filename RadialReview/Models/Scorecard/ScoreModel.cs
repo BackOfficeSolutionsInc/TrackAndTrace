@@ -8,10 +8,12 @@ using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Utilities;
+using System.Diagnostics;
 
 namespace RadialReview.Models.Scorecard
 {
-	[DataContract]
+    [DataContract]
+    [DebuggerDisplay("{Id} = '{Measured}' @ {DataContract_ForWeek}")]
 	public class ScoreModel : ILongIdentifiable, IDeletable, IIssue,ITodo
 	{
 		[DataMember(Order = 0)]

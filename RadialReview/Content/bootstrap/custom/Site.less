@@ -3,24 +3,24 @@
 @import "../../Angular/Rocks";
 @import "../../Angular/Issues";
 @import "modal";
-@import url('../../Tour/anno.css'); 
+@import url('../../Tour/anno.css');
 
 tr.grayRow {
     background-image: url("/Content/img/graystripe.png");
     //background-color: lighten(@traction-orange,40%);
 }
 
-.btn.heading:focus, 
-.btn.heading:active { 
-    outline: none;  
-} 
- 
-  
-.table-hover > tbody > tr:hover, 
+.btn.heading:focus,
+.btn.heading:active {
+    outline: none;
+}
+
+
+.table-hover > tbody > tr:hover,
 .table-hover > tbody > tr.grayRow:hover {
     background-color: lighten(@traction-orange,40%);
 }
- 
+
 .clickable {
     /*color: @traction-orange;*/
 }
@@ -257,20 +257,89 @@ select:-webkit-autofill:focus {
 
 
 .md-button.md-icon-button {
-/*/
+    /*/
 /fill: currentColor;/
 /vertical-align: middle;/
 /display: inline-block;*/
-/*padding:0px !important;*/
+    /*padding:0px !important;*/
 }
 
-md-toolbar.md-table-toolbar .md-toolbar-tools md-icon{
+md-toolbar.md-table-toolbar .md-toolbar-tools md-icon {
     color: inherit;
 }
 
-a.md-default-theme:not(.md-button), a:not(.md-button){
-    color:inherit;
+a.md-default-theme:not(.md-button), a:not(.md-button) {
+    color: inherit;
 }
-a.md-default-theme:not(.md-button):hover, a:not(.md-button):hover{
-    color:inherit;
+
+a.md-default-theme:not(.md-button):hover, a:not(.md-button):hover {
+    color: inherit;
+}
+
+
+body.resizing, body.resizing * {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+body.resizing, body.resizing *::selection {
+  background: transparent; /* WebKit/Blink Browsers */
+}
+body.resizing, body.resizing *::-moz-selection {
+  background: transparent; /* Gecko Browsers */
+}
+
+.resize-vertical, .resize-vertical * {
+    cursor: ns-resize !important;
+}
+
+.resize-horizontal, .resize-horizontal * {
+    cursor: ew-resize !important;
+}
+
+.resize-nwse, .resize-nwse * {
+    cursor: nwse-resize !important;
+}
+
+.debugger {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: forestgreen;
+    color: white;
+    font-family: monospace;
+    padding: 7px;
+    z-index: 1000000000000000000;
+}
+
+.debugger:empty {
+    display: none;
+}
+
+.resizer {
+    width: 8px;
+    height: 8px;
+    position: absolute;
+}
+
+.resize-bottom {
+    width: 100%;
+    bottom: -4px;
+    right: 4px;
+}
+
+.resize-right {
+    height: 100%;
+    right: -4px;
+    bottom: 4px;
+}
+
+.resize-bottom-right {
+    width: 14px;
+    height: 14px;
+    bottom: -6px;
+    right: -6px;
 }

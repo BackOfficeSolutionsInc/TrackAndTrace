@@ -10,7 +10,7 @@
 }
 @using (Html.BeginStyles()) {
     @Styles.Render("~/styles/L10")
-    <link href="~/Content/bootstrap-switch.css" rel="stylesheet" />
+    @*<link href="~/Content/bootstrap-switch.css" rel="stylesheet" />*@
     <style>
         .bootstrap-switch.bootstrap-switch-small {
             min-width: 120px;
@@ -28,15 +28,17 @@
         var MeetingId = @Model.Recurrence.Id;
         @if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-                                                                																				}
+                                                                        																				}
 
 
     </script>
     @*<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
         <script src="~/signalr/hubs"></script>*@
-    <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
+    @*<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
     <script src="~/Scripts/jquery/jquery.scrollTo.js"></script>
-    <script src="~/Scripts/bootstrap-switch.js"></script>
+    <script src="~/Scripts/bootstrap-switch.js"></script>*@
+    @Scripts.Render("~/bundles/MeetingPage")
+    
 
 
     @*<script src="~/Scripts/L10/L10.js"></script>
@@ -45,111 +47,111 @@
     @Html.Partial("_SetupScript", Model)
     <script>
 
-    var picturesLookup={};
+        var picturesLookup={};
 
-    function addToPictureLookup(id,url,name,initials){
-        picturesLookup[id]= {url:url,name:name,initials:initials};
-    }
+        function addToPictureLookup(id,url,name,initials){
+            picturesLookup[id]= {url:url,name:name,initials:initials};
+        }
 
-    function afterLoad() {
-        console.log("called afterLoad");
-        userId = @(ViewBag.UserId);
-
-
+        function afterLoad() {
+            console.log("called afterLoad");
+            userId = @(ViewBag.UserId);
 
 
-        @if (Model.Meeting != null){
+
+
+            @if (Model.Meeting != null){
         foreach (var m in Model.MemberPictures.ToList()) {
             @:addToPictureLookup(@m.UserId,"@m.Url","@m.Name","@m.Initials");
-                }
+                            }
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-                                                                                                                                                        	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
+                                                                                                                                                                    	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
 
 				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
 					@:setPageTime("@i.Item1",@i.Item2);
-                                                                                                                                                        	}
+                                                                                                                                                                    	}
 			}
 			else{
 				@:isLeader =false;
-                                                                                                                                                        }
-        initL10();
-        try {
-            resetClickables();
-        } catch (e) {
+                                                                                                                                                                    }
+            initL10();
+            try {
+                resetClickables();
+            } catch (e) {
 
-        }
-    }
-
-    $(".switch").addClass("hide");
-
-    $(function() {
-        $('.switch').bootstrapSwitch();
-
-        $(".switch").removeClass("hide");
-        $('#Follow').on('switchChange', function(e, data) {
-            setFollowLeader(data.value);
-        });
-
-        // $(".slider-container").css({position:"relative",left:"0px",top:"0px",width:"100%",height:"100%"});
-        // $(".left-panel").css({position:"absolute",left:"0px",top:"0px",width:"100%",overflowX:"hidden"});
-        // $(".right-panel").css({position:"absolute",left:"100%",top:"0px",width:"100%",overflowX:"hidden","background-color":"red"});
-
-        $(".back-button").hide();
-        $(".print-vto-button").hide();
-        var page = "main";
-        var vtoLastScroll=0;
-        $(".vto-button").click(function(){
-            if (typeof($(".vto-frame").attr("src"))==="undefined"){
-                $(".vto-frame").attr("src",$(".vto-frame").attr("data-src"));
             }
-            $(".slider").css({marginLeft:"-100%"});
-            $(".slider-container").css("overflow-y","hidden");
-            $(".back-button").show();
-            $(".print-vto-button").show();
-            page="vto";
-            vtoLastScroll = $(".slider-container").scrollTop();
-            $(".slider-container").scrollTop(0);
-        });
+        }
 
-        $(".back-button").click(function(){
-            $(".slider").css({marginLeft:"0%"});
+        $(".switch").addClass("hide");
+
+        $(function() {
+            $('.switch').bootstrapSwitch();
+
+            $(".switch").removeClass("hide");
+            $('#Follow').on('switchChange', function(e, data) {
+                setFollowLeader(data.value);
+            });
+
+            // $(".slider-container").css({position:"relative",left:"0px",top:"0px",width:"100%",height:"100%"});
+            // $(".left-panel").css({position:"absolute",left:"0px",top:"0px",width:"100%",overflowX:"hidden"});
+            // $(".right-panel").css({position:"absolute",left:"100%",top:"0px",width:"100%",overflowX:"hidden","background-color":"red"});
+
             $(".back-button").hide();
             $(".print-vto-button").hide();
-            $(".slider-container").css("overflow-y","inherit");
-            page="main";
-
-            vtoLastScroll = $(".slider-container").scrollTop(vtoLastScroll)
-        });
-
-        $(document).bind("keyup keydown", function(e){
-            if(e.ctrlKey && e.keyCode == 80){
-                if (page=="vto"){
-                    printIframe("vto-frame");
-                    e.preventDefault();
-                }else if (page=="main"){
-                    $("#hidden12335325").remove();
-                    var embed = $("<div id='hidden12335325' style='display:none'></div>");
-                    embed.append($('<iframe  type="application/pdf" src="/quarterly/printout/@(Model.Recurrence.Id)" id="pdf-frame" width="100%" height="100%"></embeded>'));
-
-                    $("body").append(embed);
-                    //var documentId = "pdfDocument";
-                    //var doc = document.getElementById(documentId);
-
-                    ////Wait until PDF is ready to print
-                    //if (typeof doc.print === 'undefined') {
-                    //    setTimeout(function(){printDocument(documentId);}, 1000);
-                    //} else {
-                    //    doc.print();
-                    //}
-                    var PDF = document.getElementById("pdf-frame");
-                    PDF.focus();
-                    PDF.contentWindow.print();
-                    // printIframe("pdf-frame");
-                    e.preventDefault();
+            var page = "main";
+            var vtoLastScroll=0;
+            $(".vto-button").click(function(){
+                if (typeof($(".vto-frame").attr("src"))==="undefined"){
+                    $(".vto-frame").attr("src",$(".vto-frame").attr("data-src"));
                 }
-            }
+                $(".slider").css({marginLeft:"-100%"});
+                $(".slider-container").css("overflow-y","hidden");
+                $(".back-button").show();
+                $(".print-vto-button").show();
+                page="vto";
+                vtoLastScroll = $(".slider-container").scrollTop();
+                $(".slider-container").scrollTop(0);
+            });
+
+            $(".back-button").click(function(){
+                $(".slider").css({marginLeft:"0%"});
+                $(".back-button").hide();
+                $(".print-vto-button").hide();
+                $(".slider-container").css("overflow-y","inherit");
+                page="main";
+
+                vtoLastScroll = $(".slider-container").scrollTop(vtoLastScroll)
+            });
+
+            $(document).bind("keyup keydown", function(e){
+                if(e.ctrlKey && e.keyCode == 80){
+                    if (page=="vto"){
+                        printIframe("vto-frame");
+                        e.preventDefault();
+                    }else if (page=="main"){
+                        $("#hidden12335325").remove();
+                        var embed = $("<div id='hidden12335325' style='display:none'></div>");
+                        embed.append($('<iframe  type="application/pdf" src="/quarterly/printout/@(Model.Recurrence.Id)" id="pdf-frame" width="100%" height="100%"></embeded>'));
+
+                        $("body").append(embed);
+                        //var documentId = "pdfDocument";
+                        //var doc = document.getElementById(documentId);
+
+                        ////Wait until PDF is ready to print
+                        //if (typeof doc.print === 'undefined') {
+                        //    setTimeout(function(){printDocument(documentId);}, 1000);
+                        //} else {
+                        //    doc.print();
+                        //}
+                        var PDF = document.getElementById("pdf-frame");
+                        PDF.focus();
+                        PDF.contentWindow.print();
+                        // printIframe("pdf-frame");
+                        e.preventDefault();
+                    }
+                }
+            });
         });
-    });
 
 
     </script>
@@ -159,7 +161,7 @@
     <div class="slider">
         <div class="row full left-panel">
             <div class="col-sm-3 col-md-2 full fixed-pos" style="padding-bottom: 30px;">
-                <div class="">
+                <div class="clock-container">
                     <div class="component clocks hidden">
                         <div class="elapsed-time centered">
                             <span class="">
@@ -185,106 +187,108 @@
                 <div class="agenda">
                     <div class="component">
                         @*<div class="pull-left" style="width: 24px; height: 22px;"></div>*@
-                        
+
                         <div class="btn-group pull-left">
                             <span class="btn btn-default btn-xs dropdown-toggle print-button" data-toggle="dropdown" aria-expanded="false">
                                 <span class="icon fontastic-icon-print" style="top:2px;"></span>
                             </span>
                             <ul class="dropdown-menu" role="menu">
-                                <li ><a onclick="showPrint()"><span class="glyphicon glyphicon-book"></span> Quarterly Printout</a>
+                                <li>
+                                    <a onclick="showPrint()"><span class="glyphicon glyphicon-book"></span> Quarterly Printout</a>
                                 </li>
                                 <li><a class="" target="_blank" href="/L10/printout/@Model.Recurrence.Id"><span class="glyphicon glyphicon-file"></span> L10 Printout</a></li>
                             </ul>
                         </div>
-                                <div class="btn-group pull-right">
-                                    <span class="btn btn-default btn-xs dropdown-toggle settings-button" data-toggle="dropdown" aria-expanded="false">
-                                        <span class="glyphicon glyphicon-cog" style="top:2px;"></span>
-                                    </span>
-                                    <ul class="dropdown-menu pull-right" role="menu">
-                                        @if (ViewBag.Links != null) {
-                                            foreach (var link in ViewBag.Links) {
-                                                <li><a href="@(link["href"])" target="_blank"><span class="@(link["class"])"></span> @(link["text"])</a></li>
-                                            }
-                                            <li class="divider"></li>
-                                        }
-                                        @if (Model.CanAdmin) {
-                                            <li><a href="/L10/Edit/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-                                            <li class="divider"></li>
-                                        }
-                                        <li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})" target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
-
-
-                                        <li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
-
-                                    </ul>
-                                </div>
-                                <div class="title">Agenda</div>
-                                <ol class="agenda-items">
-                                    @if (Model.Recurrence.SegueMinutes > 0) {
-                                        <li class="page-item page-segue">		<a data-location="Segue" href="#Segue">Segue</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.SegueMinutes) minutes on your Segue" data-over="@Model.Recurrence.SegueMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.SegueMinutes))m</span></span></li>
+                        <div class="btn-group pull-right">
+                            <span class="btn btn-default btn-xs dropdown-toggle settings-button" data-toggle="dropdown" aria-expanded="false">
+                                <span class="glyphicon glyphicon-cog" style="top:2px;"></span>
+                            </span>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                @if (ViewBag.Links != null) {
+                                    foreach (var link in ViewBag.Links) {
+                                        <li><a href="@(link["href"])" target="_blank"><span class="@(link["class"])"></span> @(link["text"])</a></li>
                                     }
-                                    @if (Model.Recurrence.ScorecardMinutes > 0) {
-                                        <li class="page-item page-scorecard">	<a data-location="Scorecard" href="#Scorecard">Scorecard</a><span data-over="@Model.Recurrence.ScorecardMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes) minutes on your Scorecard" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes))m</span></span></li>
-                                    }
-                                    @if (Model.Recurrence.RockReviewMinutes > 0) {
-                                        <li class="page-item page-rocks">		<a data-location="Rocks" href="#Rocks">@Html.Organization().Settings.RockName Review</a><span data-over="@Model.Recurrence.RockReviewMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes) minutes on your @Html.Organization().Settings.RockName Review" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes))m</span></span></li>
-                                    }
-                                    @if (Model.Recurrence.HeadlinesMinutes > 0) {
-                                        <li class="page-item page-headlines">	<a data-location="Headlines" href="#Headlines">People Headlines</a><span data-over="@Model.Recurrence.HeadlinesMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes) minutes on Headlines" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes))m</span></span></li>
-                                    }
-                                    @if (Model.Recurrence.TodoListMinutes > 0) {
-                                        <li class="page-item page-todo">		<a data-location="Todo" href="#Todo">To-do List</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes) minutes on your Todo List" data-over="@Model.Recurrence.TodoListMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes))m</span></span></li>
-                                    }
-                                    @if (Model.Recurrence.IDSMinutes > 0) {
-                                        <li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.IDSMinutes))m</span></span></li>
-                                    }
-                                    <li class="page-item page-conclusion">	<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>
-                                </ol>
-
-                                @if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
-                                    <br />
-                                    <div class="alignCenter">
-                                        <div style="color: #bbb;">Follow meeting leader:</div>
-                                        <input id="Follow"
-                                               type="checkbox"
-                                               checked
-                                               class="switch switch-large fullWidth hide"
-                                               style="min-width: 138px;"
-                                               data-on-color="default"
-                                               data-off-color="info"
-                                               data-on-text="Locked"
-                                               data-off-text="Unlocked"
-                                               data-size="small"
-                                               data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
-
-                                    </div>
-                                    <br />
+                                    <li class="divider"></li>
                                 }
-                        </div>
-                        <div class="component additional-pages">
-                            @*<b class="title">Additional Pages</b>*@
-                            <div>
-                                @if (Model.VtoId != 0) {
-                                    <div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="Scorecard" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
+                                @if (Model.CanAdmin) {
+                                    <li><a href="/L10/Edit/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                                    <li class="divider"></li>
                                 }
-                            </div>
-                            @*<div class="alignCenter">
-                    <a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
-                </div>*@
+                                <li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})" target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
 
+
+                                <li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+
+                            </ul>
                         </div>
+                        <div class="title">Agenda</div>
+                        <ol class="agenda-items">
+                            @if (Model.Recurrence.SegueMinutes > 0) {
+                                <li class="page-item page-segue">		<a data-location="Segue" href="#Segue">Segue</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.SegueMinutes) minutes on your Segue" data-over="@Model.Recurrence.SegueMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.SegueMinutes))m</span></span></li>
+                            }
+                            @if (Model.Recurrence.ScorecardMinutes > 0) {
+                                <li class="page-item page-scorecard">	<a data-location="Scorecard" href="#Scorecard">Scorecard</a><span data-over="@Model.Recurrence.ScorecardMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes) minutes on your Scorecard" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes))m</span></span></li>
+                            }
+                            @if (Model.Recurrence.RockReviewMinutes > 0) {
+                                <li class="page-item page-rocks">		<a data-location="Rocks" href="#Rocks">@Html.Organization().Settings.RockName Review</a><span data-over="@Model.Recurrence.RockReviewMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes) minutes on your @Html.Organization().Settings.RockName Review" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes))m</span></span></li>
+                            }
+                            @if (Model.Recurrence.HeadlinesMinutes > 0) {
+                                <li class="page-item page-headlines">	<a data-location="Headlines" href="#Headlines">People Headlines</a><span data-over="@Model.Recurrence.HeadlinesMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes) minutes on Headlines" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes))m</span></span></li>
+                            }
+                            @if (Model.Recurrence.TodoListMinutes > 0) {
+                                <li class="page-item page-todo">		<a data-location="Todo" href="#Todo">To-do List</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes) minutes on your Todo List" data-over="@Model.Recurrence.TodoListMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes))m</span></span></li>
+                            }
+                            @if (Model.Recurrence.IDSMinutes > 0) {
+                                <li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.IDSMinutes))m</span></span></li>
+                            }
+                            <li class="page-item page-conclusion">	<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>
+                        </ol>
 
+                        @if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
+                            <br />
+                            <div class="alignCenter">
+                                <div style="color: #bbb;">Follow meeting leader:</div>
+                                <input id="Follow"
+                                       type="checkbox"
+                                       checked
+                                       class="switch switch-large fullWidth hide"
+                                       style="min-width: 138px;"
+                                       data-on-color="default"
+                                       data-off-color="info"
+                                       data-on-text="Locked"
+                                       data-off-text="Unlocked"
+                                       data-size="small"
+                                       data-label-icon="glyphicon glyphicon-chevron-right lightGrayOutlined" />
 
-                        @*Chat*@
-                        <div class="chat-container">
-                            <div class="component">
-                                <ul class="log"></ul>
-                                @*<div class="text typing">typing...</div>
-                    <div class="text log">log</div>*@
                             </div>
+                            <br />
+                        }
+                    </div>
+                    <div class="component additional-pages">
+                        @*<b class="title">Additional Pages</b>*@
+                        <div>
+                            @if (Model.VtoId != 0) {
+                                <div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="Scorecard" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
+                            }
                         </div>
+                        @*<div class="alignCenter">
+                                <a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
+                            </div>*@
 
                     </div>
+                    <div class="clearfix"></div>
+
+
+                    @*Chat*@
+                    <div class="chat-container">
+                        <div class="component">
+                            <ul class="log"></ul>
+                            @*<div class="text typing">typing...</div>
+                                <div class="text log">log</div>*@
+                        </div>
+                    </div>
+
+                </div>
             </div>
             <div class="col-sm-9 col-md-10  full">
 
@@ -310,7 +314,7 @@
     <div class="row">
         <div class="col-xs-9 noPadLeft noPadRight">
             <div class="container main">
-                <span class="notes-instruction" @(Model.Recurrence.NotNull(x=>x._MeetingNotes.Any())?"style=display:none":"")>No notes to show. Click the Add Page button to create a custom note.</span>
+                <span class="notes-instruction" @(Model.Recurrence.NotNull(x => x._MeetingNotes.Any()) ? "style=display:none" : "")>No notes to show. Click the Add Page button to create a custom note.</span>
 
                 @*<textarea cols="9" class="verticalOnly"></textarea>*@
                 <iframe class="" style="background-color: white" width="100%" src="about:blank"></iframe>
@@ -338,7 +342,7 @@
         @if (Model.EnableTranscript)
 		{
 		@:shouldStartTranscribe = true;
-                                                                                }
+                                                                                        }
 
 
 

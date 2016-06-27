@@ -73,6 +73,7 @@ namespace RadialReview.Models
             SendTodoTime = -1;
 			Roles = new List<UserRoleModel>();
             ConsoleLog = false;
+            CreateTime = DateTime.UtcNow;
         }
 
         public virtual long? GetCurrentRole()
@@ -113,8 +114,9 @@ namespace RadialReview.Models
 				Map(x => x.SecurityStamp);
 				Map(x => x.IsRadialAdmin);
 				Map(x => x.DeleteTime);
-				Map(x => x.ImageGuid);
+                Map(x => x.ImageGuid);
                 Map(x => x.Gender);
+                Map(x => x.CreateTime);
                 Map(x => x.UserOrganizationCount);
                 Map(x => x.ConsoleLog);
 				HasMany(x => x.UserOrganization).LazyLoad().Cascade.SaveUpdate();
@@ -125,6 +127,8 @@ namespace RadialReview.Models
 		}
 
 
+
+        public virtual DateTime CreateTime { get; set; }
     }
 
     

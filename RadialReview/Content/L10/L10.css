@@ -8,6 +8,7 @@ html {
     overflow: auto;
 }
 
+html,
 body {
     background-color: #F7F7F7;
 }
@@ -52,6 +53,10 @@ body {
     to {
         border-color: #A94442;
     }
+}
+
+.gray.hour-item{
+    display:none;
 }
 
 .component.danger {
@@ -530,7 +535,7 @@ profile-image {
 iframe:not([src="about:blank"]) {
     background: url('/Content/select2-spinner.gif');
     background-repeat: no-repeat;
-    background-position: 50% 50%;
+    background-position: 50% 100px;
 }
 
 
@@ -614,4 +619,36 @@ profile-image.desaturate {
 
 .editable-click, a.editable-click, a.editable-click:hover {
     border-bottom: none !important;
+}
+
+@media(max-width:767px) {
+    .additional-pages.component {
+        display: inline-block;
+        float: right;
+        padding: 5px 12px 5px 16px;
+    }
+
+    .clock-container,
+    .agenda {
+        width: 80%;
+        max-width:400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .rocks-container .message {
+        font-size: 12px;
+    }
+}
+@media(max-width:767px) {
+    .page-header.listing {
+        box-shadow:none !important;
+    }
+}
+
+.fader {
+    -moz-transition: ease .16s background-color;
+    -o-transition: ease .16s background-color;
+    -webkit-transition: ease .16s background-color;
+    transition: ease .16s background-color;
 }

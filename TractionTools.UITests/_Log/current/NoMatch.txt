@@ -1,0 +1,2 @@
+Chrome~Segue~_l10_meeting_{id}~notes.png
+Chrome~TestScorecard~_L10_meeting_{id}~Complete.png

@@ -26,6 +26,15 @@ using System.Reflection;
 using RadialReview.Properties;
 using RadialReview.Models.Angular.VTO;
 using System.Threading;
+using RadialReview.Controllers;
+using MigraDoc.DocumentObjectModel.Shapes.Charts;
+using RadialReview.Models.Charts;
+using RadialReview.Engines;
+using Table = MigraDoc.DocumentObjectModel.Tables.Table;
+using PdfSharp.Pdf.IO;
+using OxyPlot;
+using VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment;
+using OxyPlot.Wpf;
 
 namespace RadialReview.Accessors {
     public class LayoutHelper {
@@ -60,7 +69,7 @@ namespace RadialReview.Accessors {
         void CreatePage()
         {
             Page = _document.AddPage();
-            Page.Size = PageSize.A4;
+            Page.Size = PdfSharp.PageSize.A4;
             Gfx = XGraphics.FromPdfPage(Page);
             _currentPosition = _topPosition;
         }
@@ -69,7 +78,17 @@ namespace RadialReview.Accessors {
 
     public class PdfAccessor {
 
-        
+        static XRect GetRect(int index)
+        {
+            XRect rect = new XRect(0, 0, A4Width / 2 * 0.9, A4Height / 2 * 0.9);
+            rect.X = (index % 2) * A4Width / 2 + A4Width * 0.05 / 2;
+            rect.Y = (index / 2) * A4Height / 2 + A4Height * 0.05 / 2;
+            return rect;
+        }
+        static double A4Width = XUnit.FromCentimeter(21).Point;
+        static double A4Height = XUnit.FromCentimeter(29.7).Point;
+        static double LetterWidth = XUnit.FromInch(8.5).Point;
+        static double LetterHeight = XUnit.FromInch(11).Point;
         //public void AddFont(Uri baseUri, string familyName)
         //{
         //    if (String.IsNullOrEmpty(familyName))
@@ -113,17 +132,276 @@ namespace RadialReview.Accessors {
             document.DefaultPageSetup.PageHeight = Unit.FromInch(11);
 
 
-          
-
-
             return document;
+        }
+
+
+        public static byte[] LoadImage(MemoryStream st)
+        {
+            using (Stream stream = new MemoryStream(st.ToArray())) {
+                if (stream == null)
+                    throw new ArgumentException("No resource with name " + stream);
+
+                int count = (int)stream.Length;
+                byte[] data = new byte[count];
+                stream.Read(data, 0, count);
+                return data;
+            }
+        }
+        public static Document GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review,int margin)
+        {
+            var name = review.Review.ForUser.GetName();
+            //var doc = CreateDoc(caller, review.ReviewContainer.ReviewName + " - " + name);
+
+            PdfDocument document = new PdfDocument();
+            PdfPage page = document.AddPage();
+            page.Size = PdfSharp.PageSize.Letter;
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+            //// HACK²
+            gfx.MUH = PdfFontEncoding.Unicode;
+            gfx.MFEH = PdfFontEmbedding.Default;
+
+            // Create document from HalloMigraDoc sample
+            // Document doc = HelloMigraDoc.Documents.CreateDocument();
+            //var section = doc.AddSection();
+            //var chartPage = PdfAccessor.AddTitledPage(doc, name);
+            var scatter = new ChartsEngine().ReviewScatter2(caller, review.Review.ForUserId, review.Review.ForReviewContainer.Id, review.Review.ClientReview.ScatterChart.Groups, true, false);
+            var plot = OxyplotAccessor.ScatterPlot(scatter,margin);
+            //var pdfExporter = new PdfExporter { Width = 8.5 * 72, Height = 8.5 * 72, Background = OxyColors.White };
+
+            var stream = new MemoryStream();
+            //pdfExporter.Export(plot, stream);
+
+
+            //PdfDocument imgDoc = new PdfDocument(stream);
+            PngExporter.Export(plot, stream, 400, 400, OxyColor.FromRgb(255, 255, 255));
+
+
+            Document doc = CreateDoc(caller, "Printout");
+            var arr = LoadImage(stream);
+            var img = MigraDocFilenameFromByteArray(arr);
+
+            var section = doc.AddSection();
+            section.AddImage(img);
+
+            return doc;
+            var chartImg = XPdfForm.FromStream(new MemoryStream(stream.ToArray()));
+            XRect LetterRect = new XRect(0, 0, LetterWidth, LetterHeight);
+
+            var chartRect = new XRect(0, 0, LetterWidth / 2 * 0.9, LetterHeight / 2 * 0.9);
+            chartRect.X = LetterWidth * 0.05 / 2;
+            chartRect.Y = LetterHeight * 0.05 / 2;
+
+            XGraphicsContainer container = gfx.BeginContainer(chartRect, LetterRect, XGraphicsUnit.Point);
+                gfx.DrawImage(chartImg, new XRect(0, 0, chartImg.PointWidth, chartImg.PointHeight));
+            gfx.EndContainer(container);
+            ///////////////////////////////////////////
+            #region EOSCLIENT
+            //var Model = review;
+            //if (Model.CompanyValuesTable((long)review.ReviewContainer.Id).Rows.Any())
+            //{
+            //    var valueAnswers = Model.AnswersAbout.Where(x => x is CompanyValueAnswer).Cast<CompanyValueAnswer>().Where(x => x.IncludeReason);
+            //    if (Model.ReviewContainer.AnonymousByDefault)
+            //    {
+            //        //@Html.Partial("Table", Model.CompanyValuesScore)
+            //        throw new Exception("todo");
+            //    }
+            //    else
+            //    {
+            //        //@Html.Partial("Table", Model.CompanyValuesTable(Model.Review.ForReviewsId))
+            //        throw new Exception("todo");
+            //    }
+
+    //            if (valueAnswers.Any())
+    //            {
+    //                <table class="valueTable" style="width:100%;margin-left: 10px;">
+    //                    <thead>
+    //                        <tr>
+    //                            <th colspan="2">Value:</th>
+    //                        </tr>
+    //                    </thead>
+    //                    <tbody style="vertical-align: top;">
+    //                        @foreach (var r in valueAnswers.GroupBy(x => x.AboutUserId + "_" + x.Askable.Id + "_" + x.ByUserId).Select(x=>x.First()))
+    //                        {
+    //                            <tr style="border-top:1px solid #ddd;">
+    //                                <td class="block" rowspan="2"><div class="fill @r.Exhibits"></div></td>
+    //                                <td class="bold alignLeft valueTableQuestion">@r.Askable.GetQuestion()</td>
+
+    //                            </tr>
+    //                            <tr>
+    //                                <td class="valueTableReason" style="white-space: normal;">
+    //                                    <span class="italic">"@r.Reason"</span>
+    //                                    @if (!Model.ReviewContainer.AnonymousByDefault)
+    //                                    {
+    //                                        @:- @r.ByUser.GetName()
+    //                                    }
+    //                                </td>
+    //                            </tr>
+    //                        }
+    //                    </tbody>
+    //                </table>
+
+    //            }
+    //            <div class="evaluation-heading">Company Values</div>
+    //        </div>
+    //    </div>
+    //}
+    //@if (Model.RockTable((long)ViewBag.ReviewId).Rows.Any())
+    //{
+    //    <div class="print-col-xs-6 zoom8 fixHeight">
+    //        <div class="subsection subsection-rocks noBreak">
+    //            @*Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))*@
+    //            @{
+    //    var rrs = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>();
+    //    var first = true;
+    //            }
+
+    //            @**@
+    //            @foreach (var r in rrs.GroupBy(x=>x.Askable.Id).Select(x=>x.First()))
+    //            {
+    //                <div class="row smallBreak2">
+    //                    <div class="col-xs-3 print-col-xs-3 alignRight noPadLeft">
+    //                        @if (first)
+    //                        {
+    //                            <div style="height: 25px;"></div>
+    //                        }
+    //                        <div style="height: 8px;"></div>
+    //                        <div class="bold alignRight">
+    //                            @r.Askable.GetQuestion()
+    //                        </div>
+    //                    </div>
+    //                    <div class="col-xs-9">
+    //                        <div class="row zoom8">
+    //                            <div class="col-xs-7">
+    //                                @if (first)
+    //                                {
+    //                                    <div class="hidden-xs1 alignCenter bold" style="border-bottom: 2px solid #494949;color: #494949;">Supervisor</div>
+    //                                    <div class="hidden-xs1 fullWidth" style="height: 10px;"></div>
+    //                                }
+    //                                <div class="row">
+    //                                    <div class="col-xs-5 alignCenter">
+    //                                        @{
+    //                                            var state = Tristate.Indeterminate;
+    //                                            if (r.ManagerOverride == RockState.AtRisk)
+    //                                            {
+    //                                                state = Tristate.False;
+    //                                            }
+    //                                            else if (r.ManagerOverride == RockState.Complete)
+    //                                            {
+    //                                                state = Tristate.True;
+    //                                            }
+    //                                        }
+    //                                        @*<div style="padding-top:5px;"></div>*@
+
+
+
+    //                                        @Html.DisplayFor(x => state, "CompleteIncomplete")
+    //                                    </div>
+    //                                    <div class="col-xs-7 noPadRight">
+    //                                        <div style="" class="fullWidth verticalOnly reason rockReason">
+    //                                            @if (!String.IsNullOrWhiteSpace(r.OverrideReason))
+    //                                            {
+    //                                                @:"@r.OverrideReason"
+    //                                            }
+    //                                            else
+    //                                            {
+    //                                                <i class="gray">No comment provided.</i>
+    //                                            }
+    //                                        </div>
+    //                                    </div>
+    //                                </div>
+    //                            </div>
+
+    //                            <div class="col-xs-5">
+
+    //                                @if (first)
+    //                                {
+    //                                    <div class="hidden-sm1 hidden-xs1 alignCenter bold" style="border-bottom: 2px solid #494949;color: #494949;">@Model.Review.ForUser.GetName()</div>
+    //                                    <div class="hidden-sm1 hidden-xs1 fullWidth" style="height: 10px;"></div>
+    //                                }
+    //                                @{
+    //                first = false;
+    //                                }
+
+
+    //                                @*<div class="row">
+    //                                    <div class="col-xs-5 alignCenter">
+    //                                        @Html.DisplayFor(x => r.Completion)
+    //                                    </div>
+    //                                                                        <div class="col-xs-12" style="padding-left: 7px;">*@
+    //                                <div class="rockReasonHeight">
+    //                                    @if (!String.IsNullOrWhiteSpace(r.Reason))
+    //                                    {
+    //                                        <i>"@r.Reason"</i>
+    //                                    }
+    //                                    else
+    //                                    {
+    //                                        <span class="gray italic">No comment provided.</span>
+    //                                    }
+    //                                </div>
+    //                                <div class="gray markedAs">Marked as: <span class="completion toText @r.Completion"></span></div>
+										
+    //                                @*</div>
+    //                                    </div>*@
+    //                            </div>
+    //                        </div>
+    //                    </div>
+    //                </div>
+    //                @*<hr style="margin:10px;" class="visible-xs1" />*@
+    //            }
+
+    //            @**@
+
+
+    //            <div class="evaluation-heading">@Html.Organization().Settings.RockName</div>
+    //        </div>
+    //    </div>
+    //}
+
+            #endregion
+            //////////////////////////////
+
+            //// Create a renderer and prepare (=layout) the document
+            //MigraDoc.Rendering.DocumentRenderer docRenderer = new DocumentRenderer(doc);
+            //docRenderer.PrepareDocument();
+
+            //// For clarity we use point as unit of measure in this sample.
+            //// A4 is the standard letter size in Germany (21cm x 29.7cm).
+
+            //XRect A4Rect = new XRect(0, 0, A4Width, A4Height);
+
+            //int pageCount = docRenderer.FormattedDocument.PageCount;
+            //for (int idx = 0; idx < pageCount; idx++) {
+            //    XRect rect = GetRect(idx);
+
+            //    // Use BeginContainer / EndContainer for simplicity only. You can naturaly use you own transformations.
+            //    XGraphicsContainer container = gfx.BeginContainer(rect, A4Rect, XGraphicsUnit.Point);
+
+            //    // Draw page border for better visual representation
+            //    gfx.DrawRectangle(XPens.LightGray, A4Rect);
+
+            //    // Render the page. Note that page numbers start with 1.
+            //    docRenderer.RenderPage(gfx, idx + 1);
+
+            //    // Note: The outline and the hyperlinks (table of content) does not work in the produced PDF document.
+
+            //    // Pop the previous graphical state
+            //    gfx.EndContainer(container);
+            //}
+
+
+
+            //chartPage.ad
+
+
+            //return document;
         }
 
         private static Color TableGray = new Color(100, 100, 100, 100);
         private static Color TableDark = new Color(50, 50, 50);
         private static Color TableBlack = new Color(0, 0, 0);
 
-        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true,bool addPageNumber=true)
+        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true)
         {
             Section section;
 
@@ -149,12 +427,12 @@ namespace RadialReview.Accessors {
             frame.Width = Unit.FromInch(7.5);
             if (orientation == Orientation.Landscape)
                 frame.Width = Unit.FromInch(10);
-           // frame.LineFormat.Color = TableGray;
+            // frame.LineFormat.Color = TableGray;
             //frame.Left = ShapePosition.Center;
 
             frame.MarginRight = Unit.FromInch(1);
             frame.MarginLeft = Unit.FromInch(1);
-            
+
 
             var title = frame.AddTable();
             title.Borders.Color = TableBlack;
@@ -178,11 +456,11 @@ namespace RadialReview.Accessors {
             return section;
         }
 
-        public static Document AddL10(Document doc,  AngularRecurrence recur,DateTime? lastMeeting)
-        { 
+        public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting)
+        {
             //CreateDoc(caller,"THE LEVEL 10 MEETING");
-            var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™",addPageNumber:false);
-            var p=section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.Year + " EOS. All Rights Reserved.");
+            var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™", addPageNumber: false);
+            var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.Year + " EOS. All Rights Reserved.");
             p.Format.Font.Size = 8;
             p.Format.Font.Color = TableGray;
 
@@ -204,7 +482,7 @@ namespace RadialReview.Accessors {
             //p.Format.Alignment = ParagraphAlignment.Left;
 
             p = section.AddParagraph();
-            p.Format.SpaceAfter = Unit.FromInch(.25/2);
+            p.Format.SpaceAfter = Unit.FromInch(.25 / 2);
             p.Format.SpaceBefore = Unit.FromInch(0);
             p.Format.Alignment = ParagraphAlignment.Center;
             p.Format.Font.Size = 14;
@@ -237,18 +515,18 @@ namespace RadialReview.Accessors {
             r.Cells[1].AddParagraph("5 Minutes");
             r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
 
-            var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime>lastMeeting).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate).ToList();
+            var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime > lastMeeting).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate).ToList();
             var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
 
 
-            var fs = ResizeToFit(new Section(),Unit.FromInch(4.5),Unit.FromInch(5.25),(Cell,ffss)=>{
+            var fs = ResizeToFit(new Section(), Unit.FromInch(4.5), Unit.FromInch(5.25), (Cell, ffss) => {
                 var o = new List<Paragraph>();
-                for (var i = 0; i < todos.Count;i++ ){
+                for (var i = 0; i < todos.Count; i++) {
                     var pp = new Paragraph();
                     pp.Format.LeftIndent = Unit.FromInch(1.25);
                     pp.AddText(todos[i].Name ?? "");
                     pp.Format.TabStops.ClearAll();
-                    pp.Format.TabStops.AddTabStop(Unit.FromInch(6),TabAlignment.Right);
+                    pp.Format.TabStops.AddTabStop(Unit.FromInch(6), TabAlignment.Right);
                     pp.AddTab();
                     pp.AddText(todos[i].Owner.NotNull(x => x.Initials) ?? "");
                     o.Add(pp);
@@ -256,7 +534,7 @@ namespace RadialReview.Accessors {
 
                 for (var i = 0; i < issues.Count; i++) {
                     var pp = new Paragraph();
-                    pp.AddText(issues[i].Name??"");
+                    pp.AddText(issues[i].Name ?? "");
                     pp.Format.TabStops.ClearAll();
                     pp.Format.TabStops.AddTabStop(Unit.FromInch(6), TabAlignment.Right);
                     pp.AddTab();
@@ -264,25 +542,25 @@ namespace RadialReview.Accessors {
                     o.Add(pp);
                 }
                 return o;
-            },maxFontSize:9);
+            }, maxFontSize: 9);
 
             for (var i = 0; i < todos.Count; i++) {
                 var pp = new Table();
                 pp.Format.SpaceAfter = 0;
                 pp.AddColumn(Unit.FromInch(1.25));
-                pp.AddColumn(Unit.FromInch(4.75-.35));
+                pp.AddColumn(Unit.FromInch(4.75 - .35));
                 pp.AddColumn(Unit.FromInch(0.35));
                 pp.Format.Font.Color = TableDark;
                 var rr = pp.AddRow();
                 pp.Format.Font.Size = fs;
-                p=rr.Cells[1].AddParagraph(todos[i].Name ?? "");
+                p = rr.Cells[1].AddParagraph(todos[i].Name ?? "");
                 p.Format.FirstLineIndent = Unit.FromInch(-.1);
                 p.Format.LeftIndent = Unit.FromInch(.1);
-                rr.Cells[2].AddParagraph(todos[i].Owner.NotNull(x => x.Initials) ?? ""); 
+                rr.Cells[2].AddParagraph(todos[i].Owner.NotNull(x => x.Initials) ?? "");
                 rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
-                section.Add(pp);          
+                section.Add(pp);
             }
-        
+
             t = section.AddTable();
             t.Format.LeftIndent = Unit.FromInch(1);
             t.AddColumn(Unit.FromInch(3.75));
@@ -304,7 +582,7 @@ namespace RadialReview.Accessors {
                 //pp.Format.LeftIndent = Unit.FromInch(1.25);
                 pp.Format.Font.Size = fs;
                 pp.Format.Font.Color = TableDark;
-                p= rr.Cells[1].AddParagraph(issues[i].Name ?? "");
+                p = rr.Cells[1].AddParagraph(issues[i].Name ?? "");
                 p.Format.FirstLineIndent = Unit.FromInch(-.1);
                 p.Format.LeftIndent = Unit.FromInch(.1);
                 rr.Cells[2].AddParagraph(issues[i].Owner.NotNull(x => x.Initials) ?? "");
@@ -321,7 +599,7 @@ namespace RadialReview.Accessors {
             r.Cells[1].AddParagraph("5 Minutes");
             r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
             p = r.Cells[0].AddParagraph("Recap To-Do List");
-            p.Format.LeftIndent = Unit.FromInch(1+3/8.0);
+            p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
             p = r.Cells[0].AddParagraph("Cascading messages");
             p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
             p = r.Cells[0].AddParagraph("Rating 1-10");
@@ -337,6 +615,8 @@ namespace RadialReview.Accessors {
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
 
             var section = AddTitledPage(doc, "To-do List");
+
+            var format = caller.Organization.NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
 
             var table = section.AddTable();
             table.Format.Font.Size = 9;
@@ -393,7 +673,7 @@ namespace RadialReview.Accessors {
                 row.VerticalAlignment = VerticalAlignment.Top;
                 row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
                 //row.Cells[0].AddParagraph("" + mn + ".");
-                row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToShortDateString()) ?? "Not-set");
+                row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToString(format)) ?? "Not-set");
                 row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
                 row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
                 row.Cells[3].AddParagraph(m.Name);
@@ -509,6 +789,8 @@ namespace RadialReview.Accessors {
             int mn;
             Column column;
 
+            var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
+
             if (recur.Rocks.Any(x => x.CompanyRock ?? false)) {
                 table = section.AddTable();
                 table.Format.Font.Size = 9;
@@ -572,7 +854,7 @@ namespace RadialReview.Accessors {
                     row.VerticalAlignment = VerticalAlignment.Center;
                     row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
                     //row.Cells[0].AddParagraph("" + mn + ".");
-                    row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToShortDateString()) ?? "Not-set");
+                    row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToString(format)) ?? "Not-set");
                     row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
                     row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
                     row.Cells[3].AddParagraph("" + m.Completion.NotNull(x => x.Value.GetDisplayName()));
@@ -648,7 +930,7 @@ namespace RadialReview.Accessors {
                 // row.VerticalAlignment = VerticalAlignment.Center;
                 row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
                 // row.Cells[0].AddParagraph("" + mn + ".");
-                row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToShortDateString()) ?? "Not-set");
+                row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToString(format)) ?? "Not-set");
                 // row.Cells[1].Format.Font.Size = Unit.FromInch(.1);
                 row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
                 row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
@@ -790,7 +1072,7 @@ namespace RadialReview.Accessors {
 
         }
 
-        private static List<Paragraph> AddVtoSectionHeader(IVtoSectionHeader section, Unit fontSize)
+        private static List<Paragraph> AddVtoSectionHeader(IVtoSectionHeader section, Unit fontSize, string dateformat)
         {
             var o = new List<Paragraph>();
 
@@ -800,7 +1082,7 @@ namespace RadialReview.Accessors {
             futureDate.Format.Font.Name = "Arial Narrow";
             futureDate.AddFormattedText("Future Date: ", TextFormat.Bold);
             if (section.FutureDate.HasValue)
-                futureDate.AddFormattedText(section.FutureDate.Value.ToShortDateString(), TextFormat.NotBold);
+                futureDate.AddFormattedText(section.FutureDate.Value.ToString(dateformat), TextFormat.NotBold);
 
 
             var revenue = new Paragraph();
@@ -810,7 +1092,7 @@ namespace RadialReview.Accessors {
             revenue.Format.Font.Name = "Arial Narrow";
             if (section.Revenue != null) {
                 //revenue.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Revenue.Value), TextFormat.NotBold);
-                revenue.AddFormattedText( section.Revenue, TextFormat.NotBold);
+                revenue.AddFormattedText(section.Revenue, TextFormat.NotBold);
             }
 
             var profit = new Paragraph();
@@ -820,7 +1102,7 @@ namespace RadialReview.Accessors {
             profit.Format.Font.Name = "Arial Narrow";
             if (section.Profit != null) {
                 //profit.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Profit.Value), TextFormat.NotBold);
-                profit.AddFormattedText( section.Profit, TextFormat.NotBold);
+                profit.AddFormattedText(section.Profit, TextFormat.NotBold);
             }
 
             var measurables = new Paragraph();
@@ -879,19 +1161,19 @@ namespace RadialReview.Accessors {
                 var h = 0.0;
                 var w = 0.0;
                 var maxH = 0.0;
-                for (var i=0;i< table.Rows.Count;i++) {
-                    for (var j=0;j< table.Rows[i].Cells.Count;j++) {
+                for (var i = 0; i < table.Rows.Count; i++) {
+                    for (var j = 0; j < table.Rows[i].Cells.Count; j++) {
                         var curH = 0.0;
-                        for (var k=0;k< table.Rows[i].Cells[j].Elements.Count;k++) {
-                            var size = GetSize(ctx,table.Rows[i].Cells[j].Elements[k],family,fontSize,table.Columns[j].Width);
-                            curH+=size.Height;
+                        for (var k = 0; k < table.Rows[i].Cells[j].Elements.Count; k++) {
+                            var size = GetSize(ctx, table.Rows[i].Cells[j].Elements[k], family, fontSize, table.Columns[j].Width);
+                            curH += size.Height;
                         }
-                        maxH = Math.Max(maxH,curH);
+                        maxH = Math.Max(maxH, curH);
                     }
                     h += Math.Max(table.Rows[i].Height.Inch * 6.0225, maxH);
                     maxH = 0;
                 }
-                for(var i=0;i< table.Columns.Count;i++) {
+                for (var i = 0; i < table.Columns.Count; i++) {
                     w += table.Columns[i].Width.Inch * 6.0225;
                 }
                 s.Width += w;
@@ -912,7 +1194,7 @@ namespace RadialReview.Accessors {
             List<DocumentObject> paragraphsToAdd;
 
             if (!(cell is Cell || cell is Paragraph || cell is Section))
-                throw new Exception("cant handle:" + cell.NotNull(x=>x.GetType()));
+                throw new Exception("cant handle:" + cell.NotNull(x => x.GetType()));
 
             while (true) {
                 var curHeight = 0.0;
@@ -1053,7 +1335,7 @@ namespace RadialReview.Accessors {
 
             var box = frame.AddTable();
             box.Borders.Color = TableBlack;
-            box.Borders.Width =Unit.FromPoint(.75);
+            box.Borders.Width = Unit.FromPoint(.75);
             box.LeftPadding = Unit.FromInch(.1);
 
             var size = Unit.FromInch(5.63);
@@ -1068,7 +1350,7 @@ namespace RadialReview.Accessors {
             rr.HeightRule = RowHeightRule.Exactly;
             rr.VerticalAlignment = VerticalAlignment.Center;
             rr.Height = Unit.FromInch(0.38);
-           // rr.Format.Font.Size = Unit.FromInch(.2);
+            // rr.Format.Font.Size = Unit.FromInch(.2);
 
 
 
@@ -1079,30 +1361,30 @@ namespace RadialReview.Accessors {
             frame.MarginTop = Unit.FromInch(.05);
             //frame.LineFormat.Color = TableGray;
 
-            var p=frame.AddParagraph();
-            p.Format.Alignment= ParagraphAlignment.Center;
+            var p = frame.AddParagraph();
+            p.Format.Alignment = ParagraphAlignment.Center;
             p.Format.LeftIndent = Unit.FromInch(2);
             p.Format.SpaceBefore = Unit.FromInch(.11);
             var ft = p.AddFormattedText(pageName, TextFormat.Bold | TextFormat.Underline);
             ft.Font.Size = 20;
             ft.Font.Name = "Arial Narrow";
 
-                     
+
 
             return section;
         }
 
-        private static void AddVtoVision(Document doc, AngularVTO vto)
+        private static void AddVtoVision(Document doc, AngularVTO vto, string dateformat)
         {
 
             var TableGray = new Color(100, 100, 100, 100);
             var TableBlack = new Color(0, 0, 0);
             /////////////////////////////
 
-            var section = AddVtoPage(doc, vto.Name??"", "VISION");
+            var section = AddVtoPage(doc, vto.Name ?? "", "VISION");
 
             /////////////////////////////
-            
+
             var vision = section.AddTable();
             vision.Style = "Table";
             vision.Borders.Color = TableBlack;
@@ -1134,7 +1416,7 @@ namespace RadialReview.Accessors {
             cvTitle.Format.Font.Bold = true;
             cvTitle.Format.Font.Size = 14;
             cvTitle.Format.Font.Name = "Arial Narrow";
-            cvTitle.AddParagraph(vto.CoreValueTitle??"CORE VALUES");
+            cvTitle.AddParagraph(vto.CoreValueTitle ?? "CORE VALUES");
             cvTitle.Format.Alignment = ParagraphAlignment.Center;
             row.VerticalAlignment = VerticalAlignment.Center;
             var coreValue = row.Cells[1];//.AddParagraph("CV-asdf");
@@ -1184,14 +1466,14 @@ namespace RadialReview.Accessors {
             ResizeToFit(coreFocus, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
                 var o = new List<Paragraph>();
                 var p1 = new Paragraph();
-                var txt = p1.AddFormattedText((vto.CoreFocus.PurposeTitle??"Purpose/Cause/Passion").Trim().TrimEnd(':') + ": ", TextFormat.Bold);
+                var txt = p1.AddFormattedText((vto.CoreFocus.PurposeTitle ?? "Purpose/Cause/Passion").Trim().TrimEnd(':') + ": ", TextFormat.Bold);
                 p1.Format.Font.Name = "Arial Narrow";
-                p1.AddText(vto.CoreFocus.Purpose??"");
+                p1.AddText(vto.CoreFocus.Purpose ?? "");
                 o.Add(p1);
                 p1.Format.SpaceAfter = fs * 1.5;
                 var p2 = new Paragraph();
                 p2.AddFormattedText("Our Niche: ", TextFormat.Bold);
-                p2.AddText(vto.CoreFocus.Niche??"");
+                p2.AddText(vto.CoreFocus.Niche ?? "");
                 p2.Format.Font.Name = "Arial Narrow";
                 o.Add(p2);
                 return o;
@@ -1205,7 +1487,7 @@ namespace RadialReview.Accessors {
             var tyTitle = row.Cells[0];
             row.Height = Unit.FromInch(0.6);
             tyTitle.Shading.Color = TableGray;
-            tyTitle.AddParagraph(vto.TenYearTargetTitle??"10-YEAR TARGET™");
+            tyTitle.AddParagraph(vto.TenYearTargetTitle ?? "10-YEAR TARGET™");
             tyTitle.Format.Font.Name = "Arial Narrow";
             tyTitle.Format.Font.Bold = true;
             tyTitle.Format.Font.Size = 13.5;
@@ -1217,7 +1499,7 @@ namespace RadialReview.Accessors {
                 var o = new List<Paragraph>();
                 var p1 = new Paragraph();
                 p1.Format.Font.Name = "Arial Narrow";
-                p1.AddText(vto.TenYearTarget??"");
+                p1.AddText(vto.TenYearTarget ?? "");
                 o.Add(p1);
                 return o;
             }, maxFontSize: 10);
@@ -1226,7 +1508,7 @@ namespace RadialReview.Accessors {
             row = vtoLeft.AddRow();
             var msTitle = row.Cells[0];
             msTitle.Shading.Color = TableGray;
-            msTitle.AddParagraph(vto.Strategy.MarketingStrategyTitle??"MARKETING STRATEGY");
+            msTitle.AddParagraph(vto.Strategy.MarketingStrategyTitle ?? "MARKETING STRATEGY");
             msTitle.Format.Font.Name = "Arial Narrow";
             var marketingStrategy = row.Cells[1];
             msTitle.Format.Font.Bold = true;
@@ -1243,7 +1525,7 @@ namespace RadialReview.Accessors {
                 var p1 = new Paragraph();
                 var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
                 p1.Format.Font.Name = "Arial Narrow";
-                p1.AddText(vto.Strategy.TargetMarket??"");
+                p1.AddText(vto.Strategy.TargetMarket ?? "");
                 o.Add(p1);
 
                 var p2 = new Paragraph();
@@ -1261,14 +1543,14 @@ namespace RadialReview.Accessors {
                 p3.Format.SpaceBefore = fs * 1.5;
                 p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
                 p3.Format.Font.Name = "Arial Narrow";
-                p3.AddText(vto.Strategy.ProvenProcess??"");
+                p3.AddText(vto.Strategy.ProvenProcess ?? "");
                 o.Add(p3);
 
                 var p4 = new Paragraph();
                 p4.Format.SpaceBefore = fs * 1.5;
                 p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
                 p4.Format.Font.Name = "Arial Narrow";
-                p4.AddText(vto.Strategy.Guarantee??"");
+                p4.AddText(vto.Strategy.Guarantee ?? "");
                 o.Add(p4);
 
                 return o;
@@ -1285,7 +1567,7 @@ namespace RadialReview.Accessors {
             row.Height = Unit.FromInch(.55);
             var typTitle = row.Cells[0];
             typTitle.Shading.Color = TableGray;
-            typTitle.AddParagraph(vto.ThreeYearPicture.ThreeYearPictureTitle??"3-YEAR-PICTURE™");
+            typTitle.AddParagraph(vto.ThreeYearPicture.ThreeYearPictureTitle ?? "3-YEAR-PICTURE™");
             typTitle.Format.Font.Name = "Arial Narrow";
             typTitle.Format.Font.Bold = true;
             typTitle.Format.Font.Size = 14;
@@ -1295,11 +1577,11 @@ namespace RadialReview.Accessors {
 
             row = vtoRight.AddRow();
             var threeYear = row.Cells[0];
-            var looksList = vto.ThreeYearPicture.LooksLike.Where(x=>!string.IsNullOrWhiteSpace(x.Data)).Select(x => x.Data).ToList();
+            var looksList = vto.ThreeYearPicture.LooksLike.Where(x => !string.IsNullOrWhiteSpace(x.Data)).Select(x => x.Data).ToList();
 
             ResizeToFit(threeYear, Unit.FromInch(3.4), Unit.FromInch(5.15), (cell, fs) => {
                 var o = new List<Paragraph>();
-                o.AddRange(AddVtoSectionHeader(vto.ThreeYearPicture, fs));
+                o.AddRange(AddVtoSectionHeader(vto.ThreeYearPicture, fs, dateformat));
                 var p = new Paragraph();
                 p.AddFormattedText("What does it look like?", TextFormat.Bold | TextFormat.Underline);
                 p.Format.Font.Name = "Arial Narrow";
@@ -1309,9 +1591,9 @@ namespace RadialReview.Accessors {
             }, maxFontSize: 10);
         }
 
-        private static void AddVtoTraction(Document doc, AngularVTO vto)
+        private static void AddVtoTraction(Document doc, AngularVTO vto, string dateformat)
         {
-            var section = AddVtoPage(doc, vto.Name??"", "TRACTION");
+            var section = AddVtoPage(doc, vto.Name ?? "", "TRACTION");
 
             var table = section.AddTable();
             table.AddColumn(Unit.FromInch(3.47));
@@ -1322,7 +1604,7 @@ namespace RadialReview.Accessors {
             var tractionHeader = table.AddRow();
             tractionHeader.Shading.Color = TableGray;
             tractionHeader.Height = Unit.FromInch(0.55);
-            var paragraph = tractionHeader.Cells[0].AddParagraph(vto.OneYearPlan.OneYearPlanTitle??"1-YEAR PLAN");
+            var paragraph = tractionHeader.Cells[0].AddParagraph(vto.OneYearPlan.OneYearPlanTitle ?? "1-YEAR PLAN");
             paragraph.Format.Font.Name = "Arial Narrow";
             paragraph.Format.Font.Size = 14;
             paragraph.Format.Font.Bold = true;
@@ -1331,7 +1613,7 @@ namespace RadialReview.Accessors {
             //tractionHeader.Cells[0].Format.Shading.Color = TableGray;
 
 
-            paragraph = tractionHeader.Cells[1].AddParagraph(vto.QuarterlyRocks.RocksTitle??"ROCKS");
+            paragraph = tractionHeader.Cells[1].AddParagraph(vto.QuarterlyRocks.RocksTitle ?? "ROCKS");
             paragraph.Format.Font.Name = "Arial Narrow";
             paragraph.Format.Font.Size = 14;
             paragraph.Format.Font.Bold = true;
@@ -1339,7 +1621,7 @@ namespace RadialReview.Accessors {
             tractionHeader.Cells[1].VerticalAlignment = VerticalAlignment.Center;
             //tractionHeader.Cells[1].Format.Shading.Color = TableGray;
 
-            paragraph = tractionHeader.Cells[2].AddParagraph(vto.IssuesListTitle??"ISSUES LIST");
+            paragraph = tractionHeader.Cells[2].AddParagraph(vto.IssuesListTitle ?? "ISSUES LIST");
             paragraph.Format.Font.Name = "Arial Narrow";
             paragraph.Format.Font.Size = 14;
             paragraph.Format.Font.Bold = true;
@@ -1357,7 +1639,7 @@ namespace RadialReview.Accessors {
 
             ResizeToFit(oneYear, Unit.FromInch(3.47), Unit.FromInch(5.15), (cell, fs) => {
                 var o = new List<DocumentObject>();
-                o.AddRange(AddVtoSectionHeader(vto.OneYearPlan, fs));
+                o.AddRange(AddVtoSectionHeader(vto.OneYearPlan, fs, dateformat));
                 var gfy = new Paragraph();
 
                 gfy.Format.Font.Size = fs;
@@ -1381,7 +1663,7 @@ namespace RadialReview.Accessors {
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
                     p.Format.Alignment = ParagraphAlignment.Right;
-                    p = r.Cells[1].AddParagraph(goals[i]??"");
+                    p = r.Cells[1].AddParagraph(goals[i] ?? "");
                     p.Format.SpaceBefore = Unit.FromPoint(2);
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
@@ -1397,7 +1679,7 @@ namespace RadialReview.Accessors {
             quarterlyRocks.Format.LeftIndent = Unit.FromInch(.095);
             ResizeToFit(quarterlyRocks, Unit.FromInch(3.47), Unit.FromInch(5.15), (cell, fs) => {
                 var o = new List<DocumentObject>();
-                o.AddRange(AddVtoSectionHeader(vto.QuarterlyRocks, fs));
+                o.AddRange(AddVtoSectionHeader(vto.QuarterlyRocks, fs, dateformat));
                 var gfy = new Paragraph();
 
                 gfy.Format.Font.Size = fs;
@@ -1422,11 +1704,11 @@ namespace RadialReview.Accessors {
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
                     p.Format.Alignment = ParagraphAlignment.Right;
-                    p = r.Cells[1].AddParagraph(rocks[i].Rock.Name??"");
+                    p = r.Cells[1].AddParagraph(rocks[i].Rock.Name ?? "");
                     p.Format.SpaceBefore = Unit.FromPoint(2);
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
-                    p = r.Cells[2].AddParagraph(rocks[i].Rock.Owner.NotNull(X=>X.Initials)??"");
+                    p = r.Cells[2].AddParagraph(rocks[i].Rock.Owner.NotNull(X => X.Initials) ?? "");
                     p.Format.SpaceBefore = Unit.FromPoint(2);
                     p.Format.Alignment = ParagraphAlignment.Center;
                     p.Format.Font.Size = fs;
@@ -1440,7 +1722,7 @@ namespace RadialReview.Accessors {
 
 
             var issuesList = tractionData.Cells[2];
-            var issues = vto.Issues.Select(x=>x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
+            var issues = vto.Issues.Select(x => x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
 
             //issuesList.Elements.AddParagraph(" ").SpaceBefore = Unit.FromInch(0.095);
 
@@ -1454,7 +1736,7 @@ namespace RadialReview.Accessors {
                 t.Borders.Color = TableGray;
                 t.AddColumn(Unit.FromInch(.28));
                 t.AddColumn(Unit.FromInch(3));
-                var rspace=t.AddRow();
+                var rspace = t.AddRow();
                 rspace.Height = Unit.FromInch(0.095);
                 rspace.HeightRule = RowHeightRule.Exactly;
                 rspace.Borders.Left.Visible = false;
@@ -1470,7 +1752,7 @@ namespace RadialReview.Accessors {
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
                     p.Format.Alignment = ParagraphAlignment.Right;
-                    p = r.Cells[1].AddParagraph(issues[i]??"");
+                    p = r.Cells[1].AddParagraph(issues[i] ?? "");
                     p.Format.SpaceBefore = Unit.FromPoint(2);
                     p.Format.Font.Size = fs;
                     p.Format.Font.Name = "Arial Narrow";
@@ -1483,11 +1765,11 @@ namespace RadialReview.Accessors {
 
         }
 
-        public static void AddVTO(Document doc, AngularVTO vto)
+        public static void AddVTO(Document doc, AngularVTO vto, string dateformat)
         {
 
-            AddVtoVision(doc, vto);
-            AddVtoTraction(doc, vto);
+            AddVtoVision(doc, vto, dateformat);
+            AddVtoTraction(doc, vto, dateformat);
 
         }
 

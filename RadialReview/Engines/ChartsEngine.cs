@@ -296,7 +296,7 @@ namespace RadialReview.Engines
 				title = teamLookup[teamId].GetName()
 			});
 
-			var xAxis = "Company Values";
+			var xAxis = "Core Values";
 			var yAxis = "Roles";
 
 			/*var reportLookup = new DefaultDictionary<long, long?>(x => null);

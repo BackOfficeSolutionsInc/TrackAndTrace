@@ -14,7 +14,7 @@
     //attrLookup[ViewBag.SortBy ?? "due-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
 
 }
-<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak role-list-container app">
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak role-list-container app scroller">
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
         <div class="table-responsive">
             <table class="table">

@@ -37,7 +37,6 @@ namespace RadialReview.Models
 		[DataMember]
 		public virtual string UserName { get { return GetUsername(); } }
 
-
         public virtual TempUserModel TempUser { get; set; }
         public virtual String EmailAtOrganization { get; set; }
 		public virtual Boolean ManagerAtOrganization { get; set; }
@@ -97,6 +96,11 @@ namespace RadialReview.Models
         public virtual String GetSpecificNameForOrigin()
         {
             return this.GetName();
+        }
+
+        public virtual OrganizationModel.OrganizationSettings GetOrganizationSettings()
+        {
+            return Organization.NotNull(x => x.Settings) ?? new OrganizationModel.OrganizationSettings();
         }
 
         #region Helpers

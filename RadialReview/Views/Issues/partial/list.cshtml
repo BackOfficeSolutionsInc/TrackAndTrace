@@ -31,7 +31,7 @@
 
 }
 
-<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak issues-list-container app ">
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak issues-list-container app scroller">
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
         <div class="row">
             <div class="col-md-12 priority-{{@(selector).Prioritization}}">
@@ -73,9 +73,9 @@
                                     @*<div style="padding-top: 6px;">{{issue.Name}}</div><div style="padding-top: 6px;"></div>*@
 
                                     <input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 400}" type="text" @*ng-if="model.Selected!=issue.Key"*@ ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
-                                    <div class="" ng-if="model.Selected==issue.Key">
+                                    <div class="iframe-container" ng-if="model.Selected==issue.Key">
                                         @*<input ng-model-options="{debounce: 400}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" />*@
-                                        <iframe class="details-row" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
+                                        <iframe class="details-row keep-background" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
                                     </div>
                                     <table class="sub-issue-column">
                                         <tr ng-repeat="sub in issue.Children" class="gray">
@@ -84,8 +84,8 @@
                                         </tr>
                                     </table>
                                 </td>
-                                <td md-cell class="alignCenter createtime-column" style="min-width: 75px;">{{issue.CreateTime | date:'MM/dd/yy'}}</td>
-                                <td md-cell class="alignCenter complete-column" style="min-width: 75px;">{{issue.CompleteTime | date:'MM/dd/yy'}}</td>
+                                <td md-cell class="alignCenter createtime-column" style="min-width: 75px;">{{issue.CreateTime | date:dateFormat}}</td>
+                                <td md-cell class="alignCenter complete-column" style="min-width: 75px;">{{issue.CompleteTime | date:dateFormat}}</td>
                                 <td md-cell class="vto-column">
                                     <span class="move-to-vto" ng-click="functions.moveToVto(issue)"></span>
                                 </td>

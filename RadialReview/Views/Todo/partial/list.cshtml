@@ -11,8 +11,9 @@
 
     var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
     var detailsCode = showDetails ? "todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key;" : "";
-
-    var attrLookup = new Dictionary<string, string>(){
+    
+    var attrLookup = new Dictionary<string, string>(){        
+        {"todotype-column",""},
         {"checkbox-column",""},
         {"picture-column",""},
         {"message-column",""},
@@ -37,12 +38,13 @@
                     </div>
                     <div class="height-placeholder" style="height:40px"></div>
                 }*@
-                <div id="Todo" class="tab-pane todo-pane scrollbox pull-left fullWidth">
+                <div id="Todo" class="tab-pane todo-pane scrollbox pull-left fullWidth scroller">
                     <div></div>
                     <md-table-container>
-                        <table md-table @*ts-wrapper*@ width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" click-anywhere-but-here="model.Selected = -1">
-                            <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
+                        <table class="@(orderVariable)" md-table @*ts-wrapper*@ width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" click-anywhere-but-here="model.Selected = -1">
+                            <thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
                                 <tr class="table-header" md-row>
+                                    <th md-column @(attrLookup["todotype-column"]) class="todotype-column" style="width: 25px;" md-order-by="TodoType">&nbsp;</th>
                                     <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" style="width: 25px;" md-order-by="Complete">&nbsp;</th>
                                     <th md-column @(attrLookup["picture-column"]) class="picture-column owner-column" style="width: 32px;" md-order-by="Owner.Name">&nbsp;</th>
                                     <th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">To-Do</th>
@@ -61,8 +63,9 @@
                                 <tr ng-hide="todo.Hide" id="todo_{{todo.Id}}" @*'Complete','-CompleteTime','DueDate'*@
                                     ng-repeat="todo in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
                                     ng-class="{grayRow: todo.Complete}"
-                                    class="clickable" @*ts-repeat*@
+                                    class="clickable todotype-{{todo.TodoType}}" @*ts-repeat*@
                                     md-row>
+                                    <td class="todotype-column"></td>
                                     <td class="todo-checkbox-container clickable checkbox-column" style="min-width: 25px;text-align: center;" md-cell>
                                         @*<input type="checkbox" class="blend" ng-model="todo.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)" style="margin-top: 10px;" />*@
                                         <md-checkbox aria-label="Complete" ng-model="todo.Complete" class="md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(todo)"></md-checkbox>
@@ -84,20 +87,21 @@
                                         <div class="todo-text" ng-if="model.Selected==todo.Key">
                                             @*<input ng-model-options="{debounce: 400}" type="text" ng-model="todo.Name" style="width:90%;width:calc(100% - 20px);" ng-change="functions.sendUpdate(todo)" />*@
                                             <a class="pull-right" ng-if="todo.Link!=null" target="_blank" href="{{todo.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>
-                                            <iframe style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
+                                            <iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
                                         </div>
                                     </td>
 
                                     <td class="alignCenter createtime-column date-column" style=";" md-cell>
-                                        {{todo.CreateTime | date:'MM/dd/yy'}}
+                                        {{todo.CreateTime | date:dateFormat}}
                                     </td>
 
                                     <td class="alignCenter hidden-width-1 due-column date-column" style=";" md-cell>
-                                        <input ng-class="todo.Complete?(todo.DueDate>todo.CompleteTime? 'green' : 'red'):(todo.DueDate>=now? 'green' : 'red')" class="due-date" data-todo="{{todo.Id}}" type="text" ng-value="todo.DueDate | date:'MM/dd/yyyy'" />
+                                        <md-datepicker ng-model="todo.DueDate" md-placeholder="Due date" ng-click="$scope.@(orderVariable)=$index" ng-change="todo.DueDate=functions.adjustToMidnight(todo.DueDate);functions.sendUpdate(todo)" ng-class="todo.Complete?(todo.DueDate>todo.CompleteTime? 'green' : 'red'):(todo.DueDate>=now? 'green' : 'red')" class="due-date"></md-datepicker>
+                                        @*<input ng-class="todo.Complete?(todo.DueDate>todo.CompleteTime? 'green' : 'red'):(todo.DueDate>=now? 'green' : 'red')" class="due-date" data-todo="{{todo.Id}}" type="text" ng-value="todo.DueDate | date:dateFormat" />*@
                                     </td>
                                     <td class="empty-cell" style="min-width: 15px;" md-cell></td>
                                     @if (completion) {
-                                        <td class="alignCenter complete-column date-column" style=";" md-cell>{{todo.CompleteTime | date:'MM/dd/yy'}}</td>
+                                        <td class="alignCenter complete-column date-column" style=";" md-cell>{{todo.CompleteTime | date:dateFormat}}</td>
                                     }
                                     <td class="delete-column" md-cell>
                                         <span class="delete-row" ng-click="functions.removeRow($event,todo)"></span>
@@ -117,11 +121,12 @@
     </div>
 </div>
 
-<script defer='defer'>
+@*<script defer='defer'>
     var setupTodoListEvents = function () {
         if (typeof (window.once_todo_partial_list) == "undefined") {
             $(document).on('focus', ".due-date", function () {
                 if (!$(this).attr("init")) {
+                    //generateDatepicker($(this),)
 
                     var nowDateStr = new Date();
                     var now = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
@@ -129,16 +134,25 @@
 
                     var todo = $(this).attr("data-todo");
                     $(this).datepickerX({
-                        format: 'mm/dd/yyyy',
+                        format: (window.dateFormat||"mm-dd-yyyy").toLowerCase(),
                         //todayBtn: true
+                    }).on('show',function(){
+                        var $scope2 = angular.element($('.@(orderVariable)')).scope();
+                        $scope2.$apply(function () {
+                            $scope2.@(orderVariable)="$index";                        
+                        });
                     }).on('changeDate', function (ev) {
-                        debugger;
                         var data = { date: ev.date.valueOf() };
                         var $scope = angular.element($('[ng-controller="L10Controller"]')).scope();
                         $scope.$apply(function () {
+                            $scope.@(orderVariable)="";
                             var evdate = new Date(ev.date.getYear() + 1900, ev.date.getMonth(), ev.date.getDate());
                             $scope.model.Lookup["AngularTodo_" + todo].DueDate = new Date(evdate.getTime() + (new Date().getTimezoneOffset() * 60000));
                         });
+
+                       
+
+
                         //$("[data-todo=" + todo + "]").val(moment(ev.date).format('MM/DD/YYYY'));
                         $.ajax({
                             method: "POST",
@@ -166,4 +180,4 @@
         document.addEventListener("jquery-loaded", setupTodoListEvents);
 
 
-</script>
+</script>*@

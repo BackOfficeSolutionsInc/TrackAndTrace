@@ -38,7 +38,7 @@ namespace TractionTools.UITests.Selenium {
         [TestMethod]
         public void Parent()
         {
-            Assert.IsTrue(driver.FindElement(By.ClassName("brandname")).Parent().Matches(By.ClassName("pagetop")));
+            Assert.IsTrue(driver.FindElement(By.ClassName("hnname")).Parent().Matches(By.ClassName("pagetop")));
             Assert.IsTrue(driver.FindElement(By.Id("hnmain")).Parent().Matches(By.TagName("center")));
         }
 

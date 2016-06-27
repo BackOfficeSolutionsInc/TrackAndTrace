@@ -1131,6 +1131,7 @@ namespace RadialReview.Accessors {
 
         public async static Task<IdentityResult> CreateUser(NHibernateUserManager UserManager, UserModel user, string password)
         {
+            user.UserName = user.UserName.NotNull(x => x.ToLower());
             var resultx = await UserManager.CreateAsync(user, password);
             AddSettings(resultx, user);
             return resultx;
@@ -1155,5 +1156,7 @@ namespace RadialReview.Accessors {
 
             return builder.ToString();
         }
+
+      
     }
 }

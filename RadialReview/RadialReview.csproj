@@ -155,6 +155,18 @@
     <Reference Include="OpenPop">
       <HintPath>..\packages\OpenPop.NET.2.0.4.369\lib\net20\OpenPop.dll</HintPath>
     </Reference>
+    <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
+      <HintPath>..\packages\OxyPlot.Core.1.0.0-unstable2100\lib\net45\OxyPlot.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OxyPlot.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
+      <HintPath>..\packages\OxyPlot.Wpf.1.0.0-unstable2100\lib\net45\OxyPlot.Wpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OxyPlot.Xps, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OxyPlot.Wpf.1.0.0-unstable2100\lib\net45\OxyPlot.Xps.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PdfSharp, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\PdfSharp.dll</HintPath>
@@ -328,12 +340,14 @@
     <Compile Include="Accessors\OnboardingAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessor.cs" />
     <Compile Include="Accessors\OriginAccessor.cs" />
+    <Compile Include="Accessors\OxyplotAccessor.cs" />
     <Compile Include="Accessors\PadAccessor.cs" />
     <Compile Include="Accessors\PaymentAccessor.cs" />
     <Compile Include="Accessors\PdfAccessor.cs" />
     <Compile Include="Accessors\PeriodAccessor.cs" />
     <Compile Include="Accessors\PermissionsAccessor.cs" />
     <Compile Include="Accessors\PhoneAccessor.cs" />
+    <Compile Include="Accessors\PngExporter.cs" />
     <Compile Include="Accessors\PositionAccessor.cs" />
     <Compile Include="Accessors\PrereviewAccessor.cs" />
     <Compile Include="Accessors\QuestionAccessor.cs" />
@@ -489,6 +503,7 @@
     <Compile Include="Engines\BaseEngine.cs" />
     <Compile Include="Engines\ReviewEngine.cs" />
     <Compile Include="Engines\UserEngine.cs" />
+    <Compile Include="Exceptions\FileTypeException.cs" />
     <Compile Include="Exceptions\MeetingExceptions\MeetingException.cs" />
     <Compile Include="Exceptions\NoUserOrganizationException.cs" />
     <Compile Include="Exceptions\PaymentException.cs" />
@@ -837,6 +852,7 @@
     <Compile Include="Utilities\DataTypes\Rect.cs" />
     <Compile Include="Utilities\DbUtil.cs" />
     <Compile Include="Utilities\Encrypt\Crypto.cs" />
+    <Compile Include="Utilities\ExceptionUtility.cs" />
     <Compile Include="Utilities\Extensions\AuditExtensions.cs" />
     <Compile Include="Utilities\Extensions\ExpressionExtensions.cs" />
     <Compile Include="Utilities\Extensions\IssuesExtensions.cs" />
@@ -953,6 +969,12 @@
     <Content Include="Content\Angular\xeditable.min.css" />
     <Content Include="Content\bootstrap-duallistbox.css" />
     <Content Include="Content\favicon-local.ico" />
+    <Content Include="Content\GettingStarted\GettingStarted.css">
+      <DependentUpon>GettingStarted.less</DependentUpon>
+    </Content>
+    <Content Include="Content\GettingStarted\GettingStarted.min.css">
+      <DependentUpon>GettingStarted.css</DependentUpon>
+    </Content>
     <Content Include="Content\L10\Archive\Archive.css">
       <DependentUpon>Archive.less</DependentUpon>
     </Content>
@@ -1060,6 +1082,8 @@
     <Content Include="Content\MaterialDesign\Components\Snackbar.min.css">
       <DependentUpon>Snackbar.css</DependentUpon>
     </Content>
+    <Content Include="Content\MaterialDesign\Libraries\lf-ng-md-file-input.css" />
+    <Content Include="Content\MaterialDesign\Libraries\md-stepper.css" />
     <Content Include="Content\Tour\anno.css" />
     <Content Include="Content\Upload.css" />
     <Content Include="Content\Upload\Upload.css">
@@ -1099,6 +1123,7 @@
     <Content Include="Content\MaterialDesign\Components\Animations.less" />
     <Content Include="Content\MaterialDesign\Components\DataTable.less" />
     <Content Include="Content\L10\Archive\Archive.less" />
+    <Content Include="Content\GettingStarted\GettingStarted.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1107,26 +1132,38 @@
     <None Include="Resources\star.png" />
     <None Include="Resources\Unchecked.png" />
     <None Include="Resources\EOS_Model.png" />
+    <Content Include="Scripts\Angular\GettingStartd\GSApp.js" />
+    <Content Include="Scripts\Angular\GettingStartd\GSController.js" />
     <Content Include="Scripts\Angular\Helpers\angular-elastic-input.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\ElemReady.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\FastWidth.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\fcsaNumber.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\LiveSearch.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\PriorityTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\RightClick.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\ScoreTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\TableSort.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\angular-xeditable.js" />
     <Content Include="Scripts\Angular\Helpers\radialModule.js" />
     <Content Include="Scripts\Angular\Helpers\updater.js" />
+    <Content Include="Scripts\Angular\MaterialDesign\lf-ng-md-file-input.js" />
+    <Content Include="Scripts\Angular\MaterialDesign\lf-ng-md-file-input.min.js">
+      <DependentUpon>lf-ng-md-file-input.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\Angular\MaterialDesign\md-stepper.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\d3\accountabilityChart.js" />
+    <Content Include="Scripts\Dashboard\dashboard.js" />
+    <Content Include="Scripts\home\landscape.js" />
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
     <Content Include="Scripts\jquery\jquery.autoNumeric.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.js" />
     <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.min.js">
       <DependentUpon>jquery.ba-throttle-debounce.js</DependentUpon>
     </Content>
+    <Content Include="Scripts\jquery\jquery.vide.js" />
     <Content Include="Scripts\knockout-2.2.1.debug.js" />
     <Content Include="Scripts\knockout-2.2.1.js" />
     <Content Include="Scripts\L10\fireworks.js" />
@@ -1159,6 +1196,9 @@
     <Content Include="SoftwareUpdates\20151229.txt" />
     <Content Include="SoftwareUpdates\20160401.txt" />
     <Content Include="SoftwareUpdates\20160201.txt" />
+    <Content Include="SoftwareUpdates\20160613.txt" />
+    <Content Include="SoftwareUpdates\20160622.txt" />
+    <Content Include="SoftwareUpdates\20160620.txt" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />
@@ -1528,6 +1568,8 @@
     <Content Include="Views\Rocks\Archive.cshtml" />
     <Content Include="Views\TileData\FAQTips.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
+    <Content Include="Views\TileData\UserNotes.cshtml" />
+    <Content Include="Views\Review\Details\Scorecard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1806,15 +1848,6 @@
     <Content Include="Views\L10\partial\ScorecardRow.cshtml" />
     <Content Include="Views\L10\partial\RockGroup.cshtml" />
     <Content Include="Views\L10\RocksNew.cshtml" />
-    <Content Include="Views\Meeting\Attend.cshtml" />
-    <Content Include="Views\Meeting\Templates\Rocks.cshtml" />
-    <Content Include="Views\Meeting\Templates\Scorecard.cshtml" />
-    <Content Include="Views\Meeting\Templates\Headlines.cshtml" />
-    <Content Include="Views\Meeting\Templates\Segue.cshtml" />
-    <Content Include="Views\Meeting\Templates\Conclusion.cshtml" />
-    <Content Include="Views\Meeting\Templates\IDS.cshtml" />
-    <Content Include="Views\Meeting\Templates\Todos.cshtml" />
-    <Content Include="Views\Meeting\Templates\partials\ScorecardRow.cshtml" />
     <Content Include="Views\L10\Details\todo.cshtml" />
     <Content Include="Views\L10\Details\issues.cshtml" />
     <Content Include="Views\L10\Details\scorecard.cshtml" />
@@ -1959,7 +1992,11 @@
     <Content Include="Scripts\jquery\jquery.ba-throttle-debounce.min.js.map">
       <DependentUpon>jquery.ba-throttle-debounce.min.js</DependentUpon>
     </Content>
-    <Content Include="Views\GetStarted\TheBasics.cshtml" />
+    <Content Include="Views\GetStarted\Index.cshtml" />
+    <Content Include="Scripts\Angular\MaterialDesign\lf-ng-md-file-input.min.js.map">
+      <DependentUpon>lf-ng-md-file-input.min.js</DependentUpon>
+    </Content>
+    <Content Include="Views\Admin\Meetings.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -2009,7 +2046,6 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
@@ -2257,7 +2293,7 @@
     <Folder Include="logs\" />
     <Folder Include="Models\Rocks\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
-    <Folder Include="Views\Admin\" />
+    <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\Console\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
@@ -2277,6 +2313,7 @@
     <Folder Include="Views\Webhook\" />
     <Folder Include="Views\WebRtc\" />
     <Folder Include="Views\Wizard\" />
+    <Folder Include="Views\_Angular\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -220,8 +220,8 @@ namespace RadialReview.Accessors
 					};
 
 					s.Save(a);
-					a.Placeholder += a.Id;
-					s.Update(a);
+					//a.Placeholder += a.Id;
+					//s.Update(a);
 
 
 					tx.Commit();

@@ -3,11 +3,13 @@
 @foreach (var person in Model.GroupBy(x => x.ForRock.ForUserId))
 {
     <div class="component rock-group rock-group-user-id-@person.First().ForRock.AccountableUser.Id">
-        @Html.Partial("_ProfilePicture", person.First().ForRock.AccountableUser)
-        <span class="owner">
-            @person.First().ForRock.AccountableUser.GetName()
-        </span>
-        <span data-accountable="@person.First().ForRock.AccountableUser.Id" class="pull-right completion-percentage"><span class="ratio"></span><span class="percentage"></span></span>
+        <div class="top-bar">
+            @Html.Partial("_ProfilePicture", person.First().ForRock.AccountableUser)
+            <span class="owner">
+                @person.First().ForRock.AccountableUser.GetName()
+            </span>
+            <span data-accountable="@person.First().ForRock.AccountableUser.Id" class="pull-right completion-percentage"><span class="ratio"></span><span class="percentage"></span></span>
+        </div>
         <div class="table-responsive2">
             <table style="width: 100%">
                 <tr>

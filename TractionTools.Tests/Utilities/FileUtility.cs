@@ -9,38 +9,42 @@ namespace TractionTools.Tests.Utilities {
     public class FileUtility {
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, string[] skipTheseDirectories = null)
         {
-            skipTheseDirectories = skipTheseDirectories ?? new string[] { };
+            try {
+                skipTheseDirectories = skipTheseDirectories ?? new string[] { };
 
-            // Get the subdirectories for the specified directory.
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+                // Get the subdirectories for the specified directory.
+                DirectoryInfo dir = new DirectoryInfo(sourceDirName);
 
-            if (!dir.Exists) {
-                throw new DirectoryNotFoundException(
-                    "Source directory does not exist or could not be found: "
-                    + sourceDirName);
-            }
+                if (!dir.Exists) {
+                    throw new DirectoryNotFoundException(
+                        "Source directory does not exist or could not be found: "
+                        + sourceDirName);
+                }
 
-            DirectoryInfo[] dirs = dir.GetDirectories();
-            // If the destination directory doesn't exist, create it.
-            if (!Directory.Exists(destDirName)) {
-                Directory.CreateDirectory(destDirName);
-            }
+                DirectoryInfo[] dirs = dir.GetDirectories();
+                // If the destination directory doesn't exist, create it.
+                if (!Directory.Exists(destDirName)) {
+                    Directory.CreateDirectory(destDirName);
+                }
 
-            // Get the files in the directory and copy them to the new location.
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files) {
-                string temppath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(temppath, false);
-            }
+                // Get the files in the directory and copy them to the new location.
+                FileInfo[] files = dir.GetFiles();
+                foreach (FileInfo file in files) {
+                    string temppath = Path.Combine(destDirName, file.Name);
+                    file.CopyTo(temppath, false);
+                }
 
-            // If copying subdirectories, copy them and their contents to new location.
-            if (copySubDirs) {
-                foreach (DirectoryInfo subdir in dirs) {
-                    string temppath = Path.Combine(destDirName, subdir.Name);
-                    if (!skipTheseDirectories.Any(x => temppath.Contains(x))) {
-                        DirectoryCopy(subdir.FullName, temppath, copySubDirs,skipTheseDirectories);
+                // If copying subdirectories, copy them and their contents to new location.
+                if (copySubDirs) {
+                    foreach (DirectoryInfo subdir in dirs) {
+                        string temppath = Path.Combine(destDirName, subdir.Name);
+                        if (!skipTheseDirectories.Any(x => temppath.Contains(x))) {
+                            DirectoryCopy(subdir.FullName, temppath, copySubDirs, skipTheseDirectories);
+                        }
                     }
                 }
+            } catch (IOException e) {
+                throw new IOException("Files in '%temp%\\TractionTools\\ServerFiles' can be deleted.", e);
             }
         }
     }

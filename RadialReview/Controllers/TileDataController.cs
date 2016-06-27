@@ -37,6 +37,14 @@ namespace RadialReview.Controllers
             return PartialView("UserRoles");
         }
 
+        [Access(AccessLevel.Any)]
+        public PartialViewResult UserNotes()
+        {
+            var key = Config.NotesUrl("p/"+GetUser().Id + GetUser().User.Id);
+            return PartialView("UserNotes",key);
+        }
+
+
 
 
 		[Access(AccessLevel.Any)]
@@ -45,7 +53,7 @@ namespace RadialReview.Controllers
 		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
 		public PartialViewResult UserTodo2()
 		{
-			return PartialView("UserTodo");
+            return PartialView("UserTodo", GetUser().Id);
 		}
 
 		[Access(AccessLevel.Any)]
@@ -54,6 +62,12 @@ namespace RadialReview.Controllers
 		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
 		public PartialViewResult UserScorecard2()
 		{
+            ViewBag.NumberOfWeeks = 13;
+            switch (GetUser().GetOrganizationSettings().ScorecardPeriod) {
+                case Models.Scorecard.ScorecardPeriod.Monthly: ViewBag.NumberOfWeeks = 52; break;
+                case Models.Scorecard.ScorecardPeriod.Weekly: ViewBag.NumberOfWeeks = 13; break;
+                case Models.Scorecard.ScorecardPeriod.Quarterly: ViewBag.NumberOfWeeks = 52; break;
+            }
 			return PartialView("UserScorecard");
 		}
 		[Access(AccessLevel.Any)]

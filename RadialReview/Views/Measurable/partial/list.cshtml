@@ -8,6 +8,8 @@
     var selector = ViewBag.Selector as string ?? "(model.Scorecard)";
     var elasticInputs = ViewBag.ElasticInput == null || ((bool)ViewBag.ElasticInput) == true;
 
+    //var readOnly = ViewBag.ReadOnly as bool? ??false;
+    
     var elastic = elasticInputs ? "pu-elastic-input" : "";
     var scorecardKey = "(" + selector + ").Key";
 }
@@ -19,7 +21,7 @@
                 <div class="component">
                     <div class="clearfix"></div>
                     <div style="position: relative;" ng-hide="(@(selector)).Measurables.length==0">
-                        <div class="table-responsive scroll-right" style1="min-height: 200px;">
+                        <div class="table-responsive scroll-right scroller" style1="min-height: 200px;">
                             <table id="ScorecardTable" class="scorecard-table ng-cloak">
                                 <thead>
                                     <tr class="top-row">
@@ -32,7 +34,7 @@
                                         }
                                         <th class="measurable-column text-column">&nbsp;</th>
                                         <th class="goal-column data-column" colspan="2">&nbsp;</th>
-                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) " class="date score-column  data-column" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:'ForWeekNumber' " class="date score-column  data-column" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
                                             {{functions.subtractDays(week.DisplayDate,0) | date: (@(selector)).DateFormat1}}
                                         </th>
                                         <th class="delete-column"></th>
@@ -47,7 +49,7 @@
                                         }
                                         <th class=" measurable measurable-column text-column">Measurable</th>
                                         <th class=" target goal-column data-column" colspan="2">Goal</th>
-                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin))" class="date  data-column score-column" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:'ForWeekNumber' " class="date  data-column score-column" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
                                             {{functions.subtractDays(week.DisplayDate,-6) | date: (@(selector)).DateFormat2}}
                                         </th>
                                         <th class="delete-column button-column"></th>
@@ -63,8 +65,8 @@
                                                 <span class="item-wrapper place-right">
                                                     <span class=""
                                                           @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disabled"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @: onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @: onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  }>
                                                         <profile-image class="" user="measurable.Owner"></profile-image>
                                                     </span>
                                                 </span>
@@ -73,8 +75,8 @@
                                                 <span class="item-wrapper place-right">
                                                     <span class=""
                                                           @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @: onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  }>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @: onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }>
                                                         <profile-image class="desaturate" user="measurable.Admin"></profile-image>
                                                     </span>
                                                 </span>
@@ -82,7 +84,7 @@
                                         }
                                         <td class="measurable first1  measurable-column text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
                                             <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
-                                                <input ng-disabled="measurable.Disabled" placeholder="Enter measurable here" class="blend" ng-model-options="{ debounce: 400 }" ng-model="measurable.Name" @(elastic) ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
+                                                <input ng-disabled="measurable.Disabled" placeholder="Enter measurable here" class="blend" ng-model-options="{ debounce: 75 }" ng-model="measurable.Name" @(elastic) ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
                                             </span>
                                         </td>
                                         <td class="target direction goal-column  data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
@@ -99,28 +101,34 @@
                                                    @(elastic)
                                                    class="blend  modifiers {{measurable.Modifiers}}"
                                                    fcsa-number="{{functions.getFcsa(measurable)}}"
-                                                   ng-model-options="{ debounce: 400 }"
+                                                   ng-model-options="{ debounce: 75 }"
                                                    ng-model="measurable.Target"
                                                    ng-change="functions.sendUpdate(measurable)" />
                                             <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::meetingId}}" data-url="/L10/UpdateMeasurable"></span>
                                         </td>
-                                        <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin))" class="score score-column  data-column" ng-class="{current:week.IsCurrentWeek}">
-                                            <input data-goal="{{measurable.Target}}"
+                                        <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin))  | orderBy:'ForWeekNumber' " class="score score-column  data-column" ng-class="{current:week.IsCurrentWeek}">
+                                            @*<input data-goal="{{measurable.Target}}"
                                                    data-goal-dir="{{measurable.Direction}}"
                                                    data-row="{{$parent.$index}}"
                                                    data-col="{{$index}}"
                                                    type="text"
                                                    placeholder=""
-                                                   ng-model-options="{debounce: 400}"
+                                                   ng-model-options="{debounce: 75}"
                                                    ng-disabled="measurable.Disabled"
-                                                   ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)).Measured"
+                                                  // ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)).Measured"
                                                    class="grid rt1 ww_{{::week.ForWeekNumber}} {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))}}"
                                                    data-scoreid="{{::Id}}"
                                                    data-measurable="{{::measurable.Id}}"
                                                    data-week="{{::week.ForWeekNumber}}"
                                                    fcsa-number="{{functions.getFcsa(measurable)}}"
-                                                   ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))"
-                                                   id="{{functions.scorecardId(model,$parent.$index,$index)}}" />
+                                                   //ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))"
+                                                   id="{{functions.scorecardId(model,$parent.$index,$index)}}" />*@
+                                            <score week="week"
+                                                   score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"
+                                                   @*row="{{$parent.$index}}"
+                                                   col="{{$index}}"*@
+                                                   @*tt-onchange="functions.debugger()"*@
+                                                   tt-onchange="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))"></score>
 
                                         </td>
                                         <td class="delete-column button-column">
@@ -131,7 +139,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm ng-cloak resizable">
+                        <table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm ng-cloak resizable background-color">
                             <thead>
                                 <tr class="top-row">
                                     @if (reorderable) {
@@ -186,7 +194,7 @@
                                     }
                                     <td class="measurable first1 measurable-column  text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
                                         <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
-                                            <input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 150 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
+                                            <input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
                                         </span>
                                     </td>
                                     <td class="target direction  goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
@@ -202,7 +210,7 @@
                                     <td class="target value goal-column data-column" data-measurable="{{::measurable.Id}}">
                                         <input ng-disabled="measurable.Disabled"
                                                @(elastic)
-                                               ng-model-options="{ debounce: 400 }"
+                                               ng-model-options="{ debounce: 75 }"
                                                class="blend  modifiers {{measurable.Modifiers}}"
                                                fcsa-number="{{functions.getFcsa(measurable)}}"
                                                ng-model="measurable.Target"
@@ -243,9 +251,10 @@
     </style>
 }
 @using (Html.BeginScripts()) {
-    <script src="~/Scripts/jquery/jquery.ui.sortable.js"></script>
+    @*<script src="~/Scripts/jquery/jquery.ui.sortable.js"></script>*@
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    <script src="~/Scripts/L10/L10Scorecard.js"></script>
+    @*<script src="~/Scripts/L10/L10Scorecard.js"></script>*@
+    @Scripts.Render("~/bundles/MeasurableList")
     <script>
 
         $(function () {

@@ -14,6 +14,7 @@ using RadialReview.Models.Json;
 using RadialReview.Utilities;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Scorecard;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Controllers
 {
@@ -36,9 +37,12 @@ namespace RadialReview.Controllers
 		}
 
 	    [Access(AccessLevel.UserOrganization)]
-	    public JsonResult DetailsData(long id,bool scores = true,bool historical=true)
-	    {
-            var model = L10Accessor.GetAngularRecurrence(GetUser(), id, scores, historical);
+	    public JsonResult DetailsData(long id,bool scores = true,bool historical=true,long start=0, long end= long.MaxValue,bool fullScorecard = false)
+        {
+            var startRange = start.ToDateTime();
+            var endRange   = end.ToDateTime();
+
+            var model = L10Accessor.GetAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard,range:new DateRange(startRange, endRange));
             //model.Name=null;
 		    return Json(model, JsonRequestBehavior.AllowGet);
 	    }       		

@@ -14,6 +14,7 @@
 	function getHubProxy(connection,hubName,callback) {
 		if (hubName in window.angularSharedSignalR.proxies)
 			return window.angularSharedSignalR.proxies[hubName];
+		console.log("Beginning getHubProxy");
 		var proxy = connection.createHubProxy(hubName);
 		connection.start().done(function () {
 				console.log('Now connected, connection ID=' + connection.id);

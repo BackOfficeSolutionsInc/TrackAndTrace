@@ -3,7 +3,8 @@
 
 @using (Html.BeginScripts())
 {
-    <script src="~/Scripts/review/translateSlider.js"></script>
+    @*<script src="~/Scripts/review/translateSlider.js"></script>*@
+    @Scripts.Render("~/bundles/TranslateSliders")
 }
 
 @if (Model.Item1.Any())

@@ -1169,7 +1169,7 @@ namespace RadialReview.Utilities {
                     return this;
 
                 var meeting = session.Get<L10Meeting>(meetingId);
-                var meeting_OrgId = meeting.Organization.Id;
+                var meeting_OrgId = meeting.OrganizationId;
                 if (IsManagingOrganization(meeting_OrgId))
                     return this;
 
@@ -1341,12 +1341,16 @@ namespace RadialReview.Utilities {
         {
             if (model.ModelType == ForModel.GetModelType<L10Recurrence>())
                 return EditL10Recurrence(model.ModelId);
+            if (model.ModelType == ForModel.GetModelType<UserOrganizationModel>())
+                return EditUserOrganization(model.ModelId);
             throw new PermissionsException("ModelType unhandled");
         }
         public PermissionsUtility ViewForModel(ForModel model)
         {
             if (model.ModelType == ForModel.GetModelType<L10Recurrence>())
                 return ViewL10Recurrence(model.ModelId);
+            if (model.ModelType == ForModel.GetModelType<UserOrganizationModel>())
+                return ViewUserOrganization(model.ModelId,false);
             throw new PermissionsException("ModelType unhandled");
         }
         #endregion

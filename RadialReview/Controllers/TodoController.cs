@@ -54,11 +54,22 @@ namespace RadialReview.Controllers
 			var model = new TodoVM(GetUser().Id){
 				ByUserId = GetUser().Id,
 				AccountabilityId = new []{GetUser().Id},
-				MeetingId = -1
+				MeetingId = -1,
+                RecurrenceId = -2
+
 			};
-			ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false)
+
+
+			var meetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false)
 				.Select(x => new MeetingVm { name = x.Recurrence.Name, id = x.Recurrence.Id })
 				.ToList();
+
+            meetings.Add(new MeetingVm() {
+                name="Personal To-do list",
+                id = -2 // Personal todo list
+            });
+            ViewBag.PossibleMeetings = meetings;
+
 			return PartialView("CreateTodoRecurrence", model);
 	    }
 		[HttpPost]
@@ -66,17 +77,14 @@ namespace RadialReview.Controllers
 		public async Task<JsonResult> CreateTodoRecurrence(TodoVM model)
 		{
 			ValidateValues(model, x => x.ByUserId, x => x.MeetingId,x=>x.AccountabilityId);
-			if (model.MeetingId != -1)
+			if (model.MeetingId != -1 && model.MeetingId!=-2)
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
-
+            
             var adjust = 0.0;
             if (GetUser()._ClientTimestamp!=null)
                 adjust = Math.Round((GetUser()._ClientTimestamp.Value.ToDateTime() - DateTime.UtcNow).TotalHours * 2) / 2 *60;
 
-            
-
-           // foreach (var m in model.AccountabilityId) {
-                await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel() {
+            var todoModel =  new TodoModel() {
                     CreatedById = GetUser().Id,
                     ForRecurrenceId = model.RecurrenceId,
                     CreatedDuringMeetingId = model.MeetingId,
@@ -87,7 +95,16 @@ namespace RadialReview.Controllers
                     Organization = GetUser().Organization,
                     AccountableUserId = GetUser().Id,
                     DueDate = model.DueDate.AddMinutes(adjust)
-                });
+                };
+
+            if (model.RecurrenceId==-2){ // Personal todo list
+                todoModel.ForRecurrenceId=null;
+                todoModel.CreatedDuringMeetingId= null;
+                todoModel.TodoType = TodoType.Personal;
+            }
+
+           // foreach (var m in model.AccountabilityId) {
+                await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId,todoModel);
            // }
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 		}
@@ -99,6 +116,9 @@ namespace RadialReview.Controllers
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 
+            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+            people.Add(GetUser());
+            people = people.Distinct(x => x.Id).ToList();
 			var model = new TodoVM(recur.DefaultTodoOwner)
 			{
 				ForModelId = modelId,
@@ -107,9 +127,7 @@ namespace RadialReview.Controllers
 				ByUserId = GetUser().Id,
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
-				PossibleUsers = recur._DefaultAttendees
-					.Select(x=>x.User)
-					.Select(x=>new AccountableUserVM(){
+				PossibleUsers = people.Select(x=>new AccountableUserVM(){
 						id=x.Id,
 						imageUrl = x.ImageUrl(true,ImageSize._32),
 						name = x.GetName()
@@ -164,12 +182,16 @@ namespace RadialReview.Controllers
 			//var s = ScorecardAccessor.GetScoreInMeeting(GetUser(), score, recurrence);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 
+            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+            people.Add(GetUser());
+            people = people.Distinct(x => x.Id).ToList();
+
 			bool useMessage = true;
 
 			if (s != null && score == 0 && accountable.HasValue)
 			{
-				var possibleUsers = recur._DefaultAttendees.Select(x => x.User).ToList();
-				s.AccountableUser = possibleUsers.FirstOrDefault(x => x.Id == s.AccountableUserId);
+				//var possibleUsers = recur._DefaultAttendees.Select(x => x.User).ToList();
+                s.AccountableUser = people.FirstOrDefault(x => x.Id == s.AccountableUserId);
 				s.Measurable.AccountableUser = s.AccountableUser;
 				s.Measurable.AdminUser = s.AccountableUser;
 				if (s.Measured == null)
@@ -198,10 +220,7 @@ namespace RadialReview.Controllers
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
 				AccountabilityId = new []{accountable ?? recur.DefaultTodoOwner},
-				PossibleUsers = recur._DefaultAttendees
-					.Select(x => x.User)
-					.Select(x => new AccountableUserVM()
-					{
+                PossibleUsers = people.Select(x => new AccountableUserVM(){
 						id = x.Id,
 						imageUrl = x.ImageUrl(true, ImageSize._32),
 						name = x.GetName()
@@ -242,8 +261,11 @@ namespace RadialReview.Controllers
 			var s = RockAccessor.GetRockInMeeting(GetUser(), rock, meeting);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 
-			var model = new RockTodoVM(recur.DefaultTodoOwner)
-			{
+            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+            people.Add(GetUser());
+            people = people.Distinct(x => x.Id).ToList();
+
+			var model = new RockTodoVM(recur.DefaultTodoOwner){
 				ByUserId = GetUser().Id,
 				Message = await s.NotNull(async x=>await x.GetTodoMessage()),
 				Details = await s.NotNull(async x=>await x.GetTodoDetails()),
@@ -251,10 +273,7 @@ namespace RadialReview.Controllers
 				MeetingId = meeting,
 				RecurrenceId = recurrence,
 				AccountabilityId = new []{accountable ?? recur.DefaultTodoOwner},
-				PossibleUsers = recur._DefaultAttendees
-					.Select(x => x.User)
-					.Select(x => new AccountableUserVM()
-					{
+				PossibleUsers = people.Select(x => new AccountableUserVM(){
 						id = x.Id,
 						imageUrl = x.ImageUrl(true, ImageSize._32),
 						name = x.GetName()
@@ -298,6 +317,9 @@ namespace RadialReview.Controllers
 			var i = IssuesAccessor.GetIssue(GetUser(), issue);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence,true);
 
+            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+            people.Add(GetUser());
+            people = people.Distinct(x => x.Id).ToList();
 
 			var model = new TodoFromIssueVM(recur.DefaultTodoOwner)
 			{
@@ -308,9 +330,7 @@ namespace RadialReview.Controllers
 				IssueId = issue,
 				RecurrenceId = recurrence,
 				AccountabilityId = new []{L10Accessor.GuessUserId(i, recur.DefaultTodoOwner)},
-				PossibleUsers = recur._DefaultAttendees
-					.Select(x => x.User)
-					.Select(x => new AccountableUserVM()
+                PossibleUsers = people.Select(x => new AccountableUserVM()
 					{
 						id = x.Id,
 						imageUrl = x.ImageUrl(true, ImageSize._32),
@@ -359,12 +379,15 @@ namespace RadialReview.Controllers
         public PartialViewResult LinkToExternal(long recurrence, long user = 0)
 		{
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+
+            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+            people.Add(GetUser());
+            people = people.Distinct(x => x.Id).ToList();
+
 		    var model = new LinkExternalTodo(){
 				RecurrenceId = recurrence,
 				UserId = user,
-			    PossibleUsers = recur._DefaultAttendees
-				    .Select(x => x.User)
-				    .Select(x => new AccountableUserVM(){
+			    PossibleUsers = people.Select(x => new AccountableUserVM(){
 					    id = x.Id,
 					    imageUrl = x.ImageUrl(true, ImageSize._32),
 					    name = x.GetName()

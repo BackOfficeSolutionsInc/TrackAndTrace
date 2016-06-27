@@ -6,7 +6,7 @@
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" })) {
         @Html.AntiForgeryToken()
 
-        <span class="pull-left navbar-icon-container">
+        <span class="pull-left navbar-icon-container hidden-xs">
             @if (((int?)ViewBag.Organizations ?? 0) > 0) {
                 <span id="header-tab-new-issue" class="navbar-icon-button glyphicon glyphicon-pushpin issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
                 <span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>

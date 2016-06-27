@@ -16,7 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>872a8aca</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>2bd36fe1</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -60,6 +61,7 @@
       <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
@@ -118,6 +120,14 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="TestApiCore, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.TestApi.0.6.0.0\lib\net40\TestApiCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="TestApiWpf, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.TestApi.0.6.0.0\lib\net40\TestApiWpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WebDriver, Version=2.53.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Selenium.WebDriver.2.53.0\lib\net40\WebDriver.dll</HintPath>
       <Private>True</Private>
@@ -133,21 +143,20 @@
         <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
       </ItemGroup>
     </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-      </ItemGroup>
-    </Otherwise>
+    <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="MeetingArchive\MeetingTests.cs" />
     <Compile Include="MeetingArchive\VideoConferenceTest.cs" />
     <Compile Include="Selenium\BaseSelenium.cs" />
     <Compile Include="MeetingArchive\ScorecardTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Selenium\WebDriverExtensions_Test.cs" />
+    <Compile Include="Utilities\Extensions\ImageCompareUtil.cs" />
     <Compile Include="Utilities\Extensions\SingleElementSearchContext.cs" />
     <Compile Include="Utilities\Extensions\WebDriverExtensions.cs" />
     <Compile Include="Utilities\Generator.cs" />
+    <Compile Include="Utilities\TestCtx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -156,14 +165,19 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\packages\Selenium.WebDriver.ChromeDriver.2.21.0.0\driver\chromedriver.exe">
-      <Link>chromedriver.exe</Link>
+    <Content Include="..\packages\Selenium.Mozilla.Firefox.Webdriver.0.6.0.1\driver\wires-0.6.0-win.exe">
+      <Link>wires-0.6.0-win.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\packages\Selenium.WebDriver.IEDriver.2.53.0.0\driver\IEDriverServer.exe">
       <Link>IEDriverServer.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Readme.txt" />
+    <Content Include="_Histograms\Histogram.xml" />
+    <Content Include="_Log\current\NeedGeneration.txt" />
+    <Content Include="_Log\current\NoMatch.txt" />
+    <Content Include="_Reset\ScreenCaptures.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RadialReview\RadialReview.csproj">
@@ -175,6 +189,7 @@
       <Name>TractionTools.Tests</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
@@ -201,10 +216,12 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.99.0\build\net45\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.99.0\build\net45\System.Data.SQLite.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.22.0.0\build\Selenium.WebDriver.ChromeDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.ChromeDriver.2.22.0.0\build\Selenium.WebDriver.ChromeDriver.targets'))" />
   </Target>
   <PropertyGroup>
     <PreBuildEvent>taskkill /F /IM vstest.executionengine.x86.exe /FI "MEMUSAGE gt 1"</PreBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Selenium.WebDriver.ChromeDriver.2.22.0.0\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.22.0.0\build\Selenium.WebDriver.ChromeDriver.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -43,7 +43,7 @@
                     <tr>
                         <td>@card.Owner</td>
                         <td class="alignCenter" style="width:150px;">************@card.Last4</td>
-                        <td class="alignCenter" style="width:90px;" title="@Html.Organization().ConvertFromUTC(card.Created).ToString()">@Html.Organization().ConvertFromUTC(card.Created).ToShortDateString()</td>
+                        <td class="alignCenter" style="width:90px;" title="@Html.Organization().ConvertFromUTC(card.Created).ToString()">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Html.Organization().ConvertFromUTC(card.Created))</td>
                         <td class="alignCenter" style="width:90px;"><span style="width:56px;display:inline-block;" class="label label-@(card.Active ?"success":"default")">@(card.Active ? "Active" : "Inactive")</span></td>
                     </tr>
                 }
@@ -74,9 +74,9 @@
                     <tr>
                         <th>Base fee</th>
                         <td>
-                            @String.Format("$0.00", plan.BaselinePrice)
+                            @String.Format("{0:C}", plan.BaselinePrice)
                             @if (plan.FirstN_Users_Free > 0) {
-                                <span>(covers the first <b>"@plan.FirstN_Users_Free</b> users)</span>
+                                <span>(covers the first <b>@plan.FirstN_Users_Free</b> users)</span>
                             }
                         </td>
                     </tr>
@@ -98,7 +98,7 @@
                     </tr>
                     if (plan.L10FreeUntil != null && plan.L10FreeUntil > DateTime.UtcNow) {
                         <tr>
-                            <td>&nbsp;&nbsp;Free until <span>@plan.L10FreeUntil.Value.ToShortDateString()</span></td>
+                            <td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",plan.L10FreeUntil.Value)</span></td>
                             <td></td>
                         </tr>
                     }
@@ -122,7 +122,7 @@
                     </tr>
                     if (plan.ReviewFreeUntil != null && plan.ReviewFreeUntil > DateTime.UtcNow) {
                         <tr>
-                            <td>&nbsp;&nbsp;Free until <span>@plan.ReviewFreeUntil.Value.ToShortDateString()</span></td>
+                            <td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",plan.ReviewFreeUntil.Value)</span></td>
                             <td></td>
                         </tr>
                     }
@@ -155,7 +155,7 @@
                 if (Model.PaymentPlan is PaymentPlan_Monthly) {
                     var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
                     if (plan.FreeUntil.Date >= DateTime.UtcNow.Date) {
-                        extras.Add(new HtmlString("<li>Free until <b>" + plan.FreeUntil.ToShortDateString() + "</b>.</li>"));
+                        extras.Add(new HtmlString("<li>Free until <b>" + Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",plan.FreeUntil) + "</b>.</li>"));
                     }
                     if (plan.FirstN_Users_Free>0 && showExtra_freeusers) {
                         extras.Add(new HtmlString("<li>First <b>" + plan.FirstN_Users_Free+ "</b> are free.</li>"));

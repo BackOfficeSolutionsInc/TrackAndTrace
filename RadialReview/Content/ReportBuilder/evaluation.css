@@ -684,3 +684,12 @@ td.alt {
 	padding-left: 4px !important;
 	font-weight: bold;
 }
+
+
+.landscape-shift{
+    display:none;
+}
+
+.landscape-placeholder{
+    display:none;
+}

@@ -2,7 +2,7 @@
 <span class="picture-container" title="@(ViewData["ImageTitle"]??"")">
 	@if (Model != "/i/userplaceholder"){
 		<span class="picture" style="background: url(@Model) no-repeat center center;"></span>
-	}else{
-		<span class='picture' style='background-color:hsla(@(ViewBag.Color??0), 36%, 49%, 1);color:hsla(@(ViewBag.Color??0), 36%, 72%, 1)'><span class="initials">@ViewBag.Initials</span></span>
-	}
+    } else {
+        <span class='picture keep-background' style='background-color:hsla(@(ViewBag.Color??0), 36%, 49%, 1);color:hsla(@(ViewBag.Color??0), 36%, 72%, 1)'><span class="initials">@ViewBag.Initials</span></span>
+    }
 </span>

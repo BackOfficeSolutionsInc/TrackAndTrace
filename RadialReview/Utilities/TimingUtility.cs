@@ -14,10 +14,8 @@ using RadialReview.Utilities.DataTypes;
 using System.Globalization;
 using System.Threading;
 
-namespace RadialReview.Utilities
-{
-    public static class TimingUtility
-    {
+namespace RadialReview.Utilities {
+    public static class TimingUtility {
         public static TimeSpan ExcludeLongerThan = TimeSpan.FromMinutes(10);
         public static double? ReviewDurationMinutes(List<AnswerModel> answers, TimeSpan excludeLongerThan)
         {
@@ -28,18 +26,13 @@ namespace RadialReview.Utilities
             double counted = 0;
             double skipped = 0;
 
-            foreach (var o in ordered)
-            {
-                if (last != null)
-                {
+            foreach (var o in ordered) {
+                if (last != null) {
                     TimeSpan duration = o.time.Value - last.Value;
-                    if (duration < excludeLongerThan)
-                    {
+                    if (duration < excludeLongerThan) {
                         total = total.Add(duration);
                         counted += o.count;
-                    }
-                    else
-                    {
+                    } else {
                         skipped += o.count;
                     }
                 }
@@ -64,8 +57,7 @@ namespace RadialReview.Utilities
 
         public static TimeSpan ApproxDurationOfPeriod(ScorecardPeriod periods)
         {
-            switch (periods)
-            {
+            switch (periods) {
                 case ScorecardPeriod.Weekly: return TimeSpan.FromDays(7);
                 case ScorecardPeriod.Monthly: return TimeSpan.FromDays(30.436875);
                 case ScorecardPeriod.Quarterly: return TimeSpan.FromDays(13 * 7);
@@ -76,8 +68,7 @@ namespace RadialReview.Utilities
 
         public static DateTime AddDateOffset(this DateTime time, DateOffset offset)
         {
-            switch (offset)
-            {
+            switch (offset) {
                 case DateOffset.Invalid: return time;
                 case DateOffset.FirstOfMonth: return new DateTime(time.Year, time.Month, 1);
                 case DateOffset.FirstMondayOfTheMonth: return new DateTime(time.Year, time.Month, 1).AddDays(6).StartOfWeek(DayOfWeek.Monday);
@@ -91,8 +82,7 @@ namespace RadialReview.Utilities
             var extraDay = -1;
             if (inclusive)
                 extraDay = 0;
-            switch (scorecardType)
-            {
+            switch (scorecardType) {
                 case ScorecardPeriod.Weekly: return current.AddDays(7 + extraDay);
                 case ScorecardPeriod.Monthly: return new DateTime(current.Year, current.Month, 1).AddMonths(1).Add(TimeSpan.FromDays(extraDay));
                 case ScorecardPeriod.Quarterly: return new DateTime(current.Year, current.Month, 1).AddMonths(3).Add(TimeSpan.FromDays(extraDay));
@@ -102,8 +92,7 @@ namespace RadialReview.Utilities
 
         public static string ScorecardFormat1(ScorecardPeriod scorecardType)
         {
-            switch (scorecardType)
-            {
+            switch (scorecardType) {
                 case ScorecardPeriod.Weekly: return "MMM d";
                 case ScorecardPeriod.Monthly: return "MMM";
                 case ScorecardPeriod.Quarterly: return "MMM";
@@ -112,8 +101,7 @@ namespace RadialReview.Utilities
         }
         public static string ScorecardFormat2(ScorecardPeriod scorecardType)
         {
-            switch (scorecardType)
-            {
+            switch (scorecardType) {
                 case ScorecardPeriod.Weekly: return "MMM d";
                 case ScorecardPeriod.Monthly: return "yyyy";
                 case ScorecardPeriod.Quarterly: return "yyyy";
@@ -121,7 +109,7 @@ namespace RadialReview.Utilities
             }
         }
 
-        private static List<L10MeetingVM.WeekVM> GetWeeks(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, /*List<ScoreModel> scores,*/ bool includeNextWeek, bool useWeekstartForWeekNumber = false)
+        private static List<L10MeetingVM.WeekVM> GetWeeks(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, bool includeNextWeek, bool useWeekstartForWeekNumber = false,DateRange range = null)
         {
 
             //var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
@@ -140,6 +128,17 @@ namespace RadialReview.Utilities
             var s = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday).AddDays(-7 * 13);
             var e = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday);
 
+            if (range != null) {
+                s = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
+                if (range.EndTime.StartOfWeek(DayOfWeek.Sunday)==range.EndTime){
+                    e = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
+                }else{
+                    e = range.StartTime.AddDays(7).StartOfWeek(DayOfWeek.Sunday);
+
+                }
+            }
+
+
             DateTime arg;
 
             arg = now.StartOfWeek(DayOfWeek.Sunday);
@@ -157,8 +156,7 @@ namespace RadialReview.Utilities
             //if (StartDate >= EndDate)
             //	throw new PermissionsException("Date ordering incorrect");
             var weeks = new List<L10MeetingVM.WeekVM>();
-            while (true)
-            {
+            while (true) {
                 var currWeek = false;
                 var next = s.AddDays(7);
                 var s1 = s;
@@ -166,8 +164,7 @@ namespace RadialReview.Utilities
                     currWeek = true;
                 //var j = s.AddDays(-7);
                 var displayDate = s.AddDays(-7).AddDays(6).StartOfWeek(weekStart).AddMinutes(-diff);
-                weeks.Add(new L10MeetingVM.WeekVM()
-                {
+                weeks.Add(new L10MeetingVM.WeekVM() {
                     DisplayDate = displayDate,
                     StartDate = displayDate.AddMinutes(-diff),
                     ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
@@ -181,7 +178,7 @@ namespace RadialReview.Utilities
             return weeks;
         }
 
-        private static List<L10MeetingVM.WeekVM> GetMonths(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, /*List<ScoreModel> scores,*/ bool includeNextWeek, bool useWeekstartForWeekNumber = false)
+        private static List<L10MeetingVM.WeekVM> GetMonths(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, /*List<ScoreModel> scores,*/ bool includeNextWeek, bool useWeekstartForWeekNumber = false,DateRange range = null)
         {
 
             //var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
@@ -204,6 +201,14 @@ namespace RadialReview.Utilities
             var e = new DateTime(ed.Year, ed.Month, 1).AddDays(6).StartOfWeek(DayOfWeek.Sunday);
             var s = new DateTime(sd.Year, sd.Month, 1).AddDays(6).StartOfWeek(DayOfWeek.Sunday);
 
+            if (range != null) {
+                s = new DateTime(range.StartTime.Year, range.StartTime.Month, 1).AddDays(6).StartOfWeek(DayOfWeek.Sunday);
+                e = new DateTime(range.EndTime.Year, range.EndTime.Month, 1).AddDays(6).StartOfWeek(DayOfWeek.Sunday);
+                if (e != range.EndTime) {
+                    e=e.AddMonths(1);
+                }
+            }
+
             DateTime arg;
 
             arg = now.StartOfWeek(DayOfWeek.Sunday);
@@ -214,8 +219,7 @@ namespace RadialReview.Utilities
             //if (StartDate >= EndDate)
             //    throw new PermissionsException("Date ordering incorrect");
             var weeks = new List<L10MeetingVM.WeekVM>();
-            while (true)
-            {
+            while (true) {
                 var currWeek = false;
                 var n = s.AddMonths(1);
                 var next = new DateTime(n.Year, n.Month, 1).AddDays(6).StartOfWeek(DayOfWeek.Sunday);
@@ -224,8 +228,7 @@ namespace RadialReview.Utilities
                     currWeek = true;
                 //var j = s.AddDays(-7);
 
-                weeks.Add(new L10MeetingVM.WeekVM()
-                {
+                weeks.Add(new L10MeetingVM.WeekVM() {
                     StartDate = s.AddDays(6).StartOfWeek(weekStart).AddMinutes(-timezoneOffset),
                     DisplayDate = s.AddDays(6).StartOfWeek(weekStart),
                     ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
@@ -248,15 +251,14 @@ namespace RadialReview.Utilities
             var nextYearStart = yearStartDate.AddDays(52 * 7 * 2);
 
             var i = nextYearStart;
-            while (true)
-            {
+            while (true) {
                 i = i.AddDays(-7 * 13);
                 if (time >= i)
                     return i;
             }
         }
 
-        private static List<L10MeetingVM.WeekVM> GetQuarters(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, /*List<ScoreModel> scores,*/ bool includeNextWeek, YearStart yearStart, bool useWeekstartForWeekNumber = false)
+        private static List<L10MeetingVM.WeekVM> GetQuarters(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, /*List<ScoreModel> scores,*/ bool includeNextWeek, YearStart yearStart, bool useWeekstartForWeekNumber = false, DateRange range = null)
         {
 
             //var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
@@ -279,6 +281,14 @@ namespace RadialReview.Utilities
             var ed = GetQuarterStart(meetingStart ?? now, yearStart);
             var sd = ed.AddDays(-13 * 7 * 4 * 3);
 
+
+            if (range != null) {
+                sd = GetQuarterStart(range.StartTime, yearStart);
+                ed = GetQuarterStart(range.EndTime, yearStart);
+                if (ed != range.EndTime) {
+                    ed=ed.AddDays(7 * 13);
+                }
+            }
             var e = ed.AddDays(6).StartOfWeek(DayOfWeek.Sunday);
             var s = sd.AddDays(6).StartOfWeek(DayOfWeek.Sunday);
 
@@ -292,8 +302,7 @@ namespace RadialReview.Utilities
             //if (StartDate >= EndDate)
             //	throw new PermissionsException("Date ordering incorrect");
             var weeks = new List<L10MeetingVM.WeekVM>();
-            while (true)
-            {
+            while (true) {
                 var currWeek = false;
                 var n = s.AddDays(13 * 7);
                 var next = n.AddDays(6).StartOfWeek(DayOfWeek.Sunday);
@@ -302,8 +311,7 @@ namespace RadialReview.Utilities
                     currWeek = true;
                 //var j = s.AddDays(-7);
 
-                weeks.Add(new L10MeetingVM.WeekVM()
-                {
+                weeks.Add(new L10MeetingVM.WeekVM() {
                     DisplayDate = s.AddDays(6).StartOfWeek(weekStart),
                     StartDate = s.AddDays(6).StartOfWeek(weekStart).AddMinutes(-timezoneOffset),
                     ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
@@ -330,8 +338,7 @@ namespace RadialReview.Utilities
 
             //var periods = GetPeriods(weekStart, timezoneOffset, w, null, true, scorecardPeriod, yearStart);
             DateRange o;
-            switch (scorecardPeriod)
-            {
+            switch (scorecardPeriod) {
                 case ScorecardPeriod.Weekly:
                     var sw = w.StartOfWeek(DayOfWeek.Sunday).AddDays(6).StartOfWeek(weekStart).AddMinutes(-timezoneOffset);
                     return new DateRange(sw, sw.AddDays(7));
@@ -342,18 +349,15 @@ namespace RadialReview.Utilities
                 case ScorecardPeriod.Quarterly:
                     var soy = yearStart.GetDate(w.Year);
                     var year = w.Year;
-                    if (w < soy.AddMinutes(-timezoneOffset))
-                    {
+                    if (w < soy.AddMinutes(-timezoneOffset)) {
                         soy = yearStart.GetDate(w.Year - 1);
                         year = year - 1;
                     }
-                    for (var i = 1; i <= 4; i++)
-                    {
+                    for (var i = 1; i <= 4; i++) {
                         var end = yearStart.GetDate(year, i).AddMinutes(-timezoneOffset);
                         //if (i==4)
                         //    end = yearStart.GetDate(soy.Year + 1).AddMinutes(-timezoneOffset);
-                        if (w < end)
-                        {
+                        if (w < end) {
                             return new DateRange(
                                     yearStart.GetDate(year, i - 1).AddMinutes(-timezoneOffset),
                                     end
@@ -386,19 +390,18 @@ namespace RadialReview.Utilities
         }
 
         public static List<L10MeetingVM.WeekVM> GetPeriods(DayOfWeek weekStart, int timezoneOffset, DateTime now, DateTime? meetingStart, /*List<ScoreModel> scores,*/
-            bool includeNextWeek, ScorecardPeriod scorecardPeriod, YearStart yearStart, bool useWeekstartForWeekNumber = false)
+            bool includeNextWeek, ScorecardPeriod scorecardPeriod, YearStart yearStart, bool useWeekstartForWeekNumber = false,DateRange range = null)
         {
 
             //scores = scores ?? new List<ScoreModel>();
 
-            switch (scorecardPeriod)
-            {
+            switch (scorecardPeriod) {
                 case ScorecardPeriod.Weekly:
-                    return GetWeeks(weekStart, timezoneOffset, now, meetingStart, /*scores,*/ includeNextWeek, useWeekstartForWeekNumber);
+                    return GetWeeks(weekStart, timezoneOffset, now, meetingStart, /*scores,*/ includeNextWeek, useWeekstartForWeekNumber, range);
                 case ScorecardPeriod.Monthly:
-                    return GetMonths(weekStart, timezoneOffset, now, meetingStart, /*scores,*/ includeNextWeek, useWeekstartForWeekNumber);
+                    return GetMonths(weekStart, timezoneOffset, now, meetingStart, /*scores,*/ includeNextWeek, useWeekstartForWeekNumber, range);
                 case ScorecardPeriod.Quarterly:
-                    return GetQuarters(weekStart, timezoneOffset, now, meetingStart, /*scores,*/ includeNextWeek, yearStart, useWeekstartForWeekNumber);
+                    return GetQuarters(weekStart, timezoneOffset, now, meetingStart, /*scores,*/ includeNextWeek, yearStart, useWeekstartForWeekNumber, range);
                 default:
                     throw new ArgumentOutOfRangeException("scorecardPeriod");
             }
@@ -429,8 +432,7 @@ namespace RadialReview.Utilities
 
         public static DateTime PeriodsAgo(DateTime startTime, int periods, ScorecardPeriod scorecardPeriod)
         {
-            switch (scorecardPeriod)
-            {
+            switch (scorecardPeriod) {
                 case ScorecardPeriod.Weekly: return startTime.AddDays(-7 * periods);
                 case ScorecardPeriod.Monthly: return new DateTime(startTime.Year, startTime.Month, 1).AddMonths(-periods);
                 case ScorecardPeriod.Quarterly: return new DateTime(startTime.Year, startTime.Month, 1).AddMonths(-periods * 3);
@@ -465,16 +467,32 @@ namespace RadialReview.Utilities
         {
             if (dates.Count == 0)
                 return dates;
+            var upcount = 0;
+            var downcount = 0;
+            if (dates.Count > 3) {
+                for (var i = 1; i < dates.Count; i++) {
+                    if ((dates[i] - dates[i - 1]).Ticks > 0)
+                        upcount += 1;
+                    else {
+                        downcount += 1;
+                    }
+                }
+            }
+            var reverse = false;
+            if (upcount != 0 && downcount != 0 && downcount > upcount) {
+                dates.Reverse();
+                reverse = true;
+            }
+
+
             //var curYear = dates.Last().Year;
             var newOut = new List<DateTime>();
             var last = DateTime.MaxValue;
             var subYears = 0;
-            for (var i = dates.Count - 1; i >= 0; i--)
-            {
+            for (var i = dates.Count - 1; i >= 0; i--) {
                 DateTime cur;
-                while (true)
-                {
-                    cur = new DateTime(dates[i].Year-subYears,dates[i].Month,dates[i].Day,dates[i].Hour,dates[i].Minute,dates[i].Second,dates[i].Millisecond);//.Subtract(TimeSpan.FromDays(52 * 7 * subYears));
+                while (true) {
+                    cur = new DateTime(dates[i].Year - subYears, dates[i].Month, dates[i].Day, dates[i].Hour, dates[i].Minute, dates[i].Second, dates[i].Millisecond);//.Subtract(TimeSpan.FromDays(52 * 7 * subYears));
                     if (cur < last)
                         break;
                     subYears += 1;
@@ -482,7 +500,8 @@ namespace RadialReview.Utilities
                 last = cur;
                 newOut.Add(cur);
             }
-            newOut.Reverse();
+            if (!reverse)
+                newOut.Reverse();
             return newOut;
         }
         public static List<DateTime> FixOrderedDates(List<String> dates, CultureInfo culture = null)
@@ -490,40 +509,36 @@ namespace RadialReview.Utilities
             var c = culture ?? new CultureInfo("en-US");
             string format;
             List<DateTime> fixedDates;
-             try{
+            try {
 
-                fixedDates = _FixOrderedDates(dates, c, out format); 
+                fixedDates = _FixOrderedDates(dates, c, out format);
                 if (!format.Contains("y"))
                     fixedDates = _FixOrderedDates_Year(fixedDates);
                 return fixedDates;
-             }
-             catch (ArgumentOutOfRangeException e)
-             {
-                 var tempDates= dates.Select(x => { 
-                     DateTime o = DateTime.MinValue;
-                     if (DateTime.TryParse(x, out o))
-                         return (DateTime?)o; 
-                     else 
-                         return null; 
-                 }).ToList();
-                 var interp = 0;
-                 fixedDates= InterpolateDates(tempDates, out interp);
-                 fixedDates = _FixOrderedDates_Year(fixedDates);
-                 return fixedDates;
-             }
+            } catch (ArgumentOutOfRangeException e) {
+                var tempDates = dates.Select(x => {
+                    DateTime o = DateTime.MinValue;
+                    if (DateTime.TryParse(x, out o))
+                        return (DateTime?)o;
+                    else
+                        return null;
+                }).ToList();
+                var interp = 0;
+                fixedDates = InterpolateDates(tempDates, out interp);
+                fixedDates = _FixOrderedDates_Year(fixedDates);
+                return fixedDates;
+            }
 
-           
+
         }
         private static List<DateTime> _FixOrderedDates(List<String> dates, CultureInfo culture, out string format)
         {
             var histogram = new Multimap<string, string>();
-            foreach (var d in dates)
-            {
+            foreach (var d in dates) {
                 TimingUtility.GuessPatterns(d, culture).Where(x => x != null).ToList().ForEach(x => histogram.Add(x, x));
             }
-            if (!histogram.Any())
-            {
-                throw new ArgumentOutOfRangeException("date","Date column could not be parsed");
+            if (!histogram.Any()) {
+                throw new ArgumentOutOfRangeException("date", "Date column could not be parsed");
             }
 
             #region comments
@@ -557,8 +572,7 @@ namespace RadialReview.Utilities
 
             var highestCountFormat = histogram.OrderByDescending(x => x.Value.Count).First().Key;
             format = highestCountFormat;
-            var found = dates.Select(x =>
-            {
+            var found = dates.Select(x => {
                 DateTime o;
                 if (DateTime.TryParseExact(x, highestCountFormat, culture, DateTimeStyles.None, out o))
                     return (DateTime?)o;
@@ -588,35 +602,25 @@ namespace RadialReview.Utilities
             DateTime curJump;
             DateTime? firstDate = null;
             //Inner dates
-            foreach (var d in dates)
-            {
-                if (d == null && last == null)
-                {
+            foreach (var d in dates) {
+                if (d == null && last == null) {
                     initCount++;
-                }
-                else if (d == null)
-                {
+                } else if (d == null) {
                     count += 1;
-                }
-                else if (d != null)
-                {
+                } else if (d != null) {
                     if (firstDate == null)
                         firstDate = d.Value;
-                    if (count == 0)
-                    {
-                        if (last.HasValue){
+                    if (count == 0) {
+                        if (last.HasValue) {
                             var diff = d.Value - last.Value;
                             if (diff > TimeSpan.FromDays(-358.9))
                                 jumps.Add(diff);
                         }
-                    }
-                    else
-                    {
-                        var jump = new TimeSpan((d.Value - last.Value).Ticks / (count+1));
+                    } else {
+                        var jump = new TimeSpan((d.Value - last.Value).Ticks / (count + 1));
                         curJump = last.Value;
                         interpJumps.Add(jump);
-                        for (var i = 0; i < count; i++)
-                        {
+                        for (var i = 0; i < count; i++) {
                             curJump = curJump.Add(jump);
                             temp.Add(curJump);
                             interpolated++;
@@ -640,16 +644,14 @@ namespace RadialReview.Utilities
             //}
             //Add ending
             curJump = last.Value;
-            for (var i = 0; i < count; i++)
-            {
+            for (var i = 0; i < count; i++) {
                 curJump = curJump.Add(jumpAvg);
                 temp.Add(curJump);
                 interpolated++;
             }
             //Add begining
             curJump = firstDate.Value;
-            for (var i = 0; i < initCount; i++)
-            {
+            for (var i = 0; i < initCount; i++) {
                 curJump = curJump.Subtract(jumpAvg);
                 temp.Insert(0, curJump);
                 interpolated++;

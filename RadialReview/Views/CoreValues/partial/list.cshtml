@@ -11,11 +11,11 @@
     //};
     //attrLookup[ViewBag.SortBy ?? "due-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
 }
-<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak value-list-container app">
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak value-list-container app scroller">
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
         <div class="table-responsive">
             <table class="table">
-                <tr ng-repeat-start="value in @(selector)" >
+                <tr ng-repeat-start="value in @(selector)">
                     @*<td class="number-column">{{$index+1}}.</td>*@
                     <td class="name-column">{{value.CompanyValue}}</td>
                 </tr>

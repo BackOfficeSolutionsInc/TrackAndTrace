@@ -8,6 +8,7 @@
   appearance: none;
   border-bottom: 2px solid rgba(0, 0, 0, 0.15);
   outline: none;
+  background-color: #d0d0d0;
 }
 .rock-completion:active {
   border-top: 1px solid rgba(0, 0, 0, 0.15);
@@ -38,23 +39,24 @@
   color: black;
   background-color: white;
 }
-.rock-completion-container {
-  position: relative;
-}
-.rock-completion-container:after {
-  font-family: 'Glyphicons Halflings';
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  content: "\e114";
-  color: #FFF;
-  position: absolute;
-  right: 6.5px;
-  top: 10.5px;
-  z-index: 27;
-  pointer-events: none;
-}
+/*.rock-completion-container {
+    position: relative;
+
+    &:after {
+        font-family: 'Glyphicons Halflings';
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        content: "\e114";
+        color: #FFF;
+        position: absolute;
+        right: 6.5px;
+        top: 10.5px;
+        z-index: 27;
+        pointer-events: none;
+    }
+}*/
 .issues-list-container {
   /*    border: none;
         margin: 0;
@@ -507,4 +509,69 @@ a:not(.md-button) {
 a.md-default-theme:not(.md-button):hover,
 a:not(.md-button):hover {
   color: inherit;
+}
+body.resizing,
+body.resizing * {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+body.resizing,
+body.resizing *::selection {
+  background: transparent;
+  /* WebKit/Blink Browsers */
+}
+body.resizing,
+body.resizing *::-moz-selection {
+  background: transparent;
+  /* Gecko Browsers */
+}
+.resize-vertical,
+.resize-vertical * {
+  cursor: ns-resize !important;
+}
+.resize-horizontal,
+.resize-horizontal * {
+  cursor: ew-resize !important;
+}
+.resize-nwse,
+.resize-nwse * {
+  cursor: nwse-resize !important;
+}
+.debugger {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: forestgreen;
+  color: white;
+  font-family: monospace;
+  padding: 7px;
+  z-index: 1000000000000000000;
+}
+.debugger:empty {
+  display: none;
+}
+.resizer {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+}
+.resize-bottom {
+  width: 100%;
+  bottom: -4px;
+  right: 4px;
+}
+.resize-right {
+  height: 100%;
+  right: -4px;
+  bottom: 4px;
+}
+.resize-bottom-right {
+  width: 14px;
+  height: 14px;
+  bottom: -6px;
+  right: -6px;
 }

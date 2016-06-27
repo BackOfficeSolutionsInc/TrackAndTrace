@@ -9,7 +9,7 @@
 
 angular.module('puElasticInput', []).directive('puElasticInput', ['$document', '$window', function($document, $window) {
 
-    var wrapper = angular.element('<div style="position:fixed; top:-999px; left:0;"></div>');
+    var wrapper = angular.element('<div class="elastic-wrapper" style="position:fixed; top:-999px; left:0;"></div>');
     angular.element($document[0].body).append(wrapper);
 
     function setMirrorStyle(mirror, element, attrs) {
