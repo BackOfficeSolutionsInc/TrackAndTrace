@@ -445,6 +445,7 @@ function appendTodo(selector, issue) {
 function updateTodoCompletion(todoId, complete) {
 	var selector = ".todo-checkbox[data-todo='" + todoId + "']";
 	$(selector).prop("checked", complete);
+	checkFireworks();
 	//$(selector).data("checked", complete);
 	//$(selector).attr("data-checked", complete);
 }

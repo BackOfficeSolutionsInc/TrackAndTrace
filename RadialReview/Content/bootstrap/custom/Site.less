@@ -285,11 +285,13 @@ body.resizing, body.resizing * {
     -ms-user-select: none !important;
     user-select: none !important;
 }
+
 body.resizing, body.resizing *::selection {
-  background: transparent; /* WebKit/Blink Browsers */
+    background: transparent; /* WebKit/Blink Browsers */
 }
+
 body.resizing, body.resizing *::-moz-selection {
-  background: transparent; /* Gecko Browsers */
+    background: transparent; /* Gecko Browsers */
 }
 
 .resize-vertical, .resize-vertical * {
@@ -342,4 +344,13 @@ body.resizing, body.resizing *::-moz-selection {
     height: 14px;
     bottom: -6px;
     right: -6px;
+}
+
+
+@media(max-width:768px) {
+    .navbar-icon-button.issuesModal,
+    .navbar-icon-button.todoModal {
+        font-size: 16px;
+        padding: 6px 10px;
+    }
 }

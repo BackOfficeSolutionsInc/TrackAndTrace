@@ -30,7 +30,7 @@ namespace RadialReview.Controllers {
 
         protected void ProcessDeadTile(Exception e)
         {
-
+            int a = 0;
         }
 
 
@@ -91,7 +91,7 @@ namespace RadialReview.Controllers {
                     var scorecardStart = fullScorecard ? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod) : startRange;
                     var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
 
-                    output.Scorecard=ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true);
+                    output.Scorecard=ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true,now:DateTime.UtcNow);
 
                     //var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, scorecardStart, scorecardEnd, includeAdmin: true);
                     //output.Scorecard = new AngularScorecard(-1,
@@ -224,15 +224,9 @@ namespace RadialReview.Controllers {
                                 var measurables = scores.Select(x => x.Measurable).Distinct(x => x.Id).ToList();
 
                                 //var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, start, end, includeAdmin: true);
-                                tile.Contents = new AngularScorecard(scorecard.Id,
-                                    GetUser().Organization.Settings.WeekStart,
-                                    GetUser().Organization.GetTimezoneOffset(),
+                                tile.Contents = new AngularScorecard(scorecard.Id, GetUser(),
                                     measurables.Select(x => new AngularMeasurable(x) { }),
-                                    scores.ToList(),
-                                    DateTime.UtcNow,
-                                    GetUser().Organization.Settings.ScorecardPeriod,
-                                    new YearStart(GetUser().Organization)
-                                    );
+                                    scores.ToList(),DateTime.UtcNow);
                                 output.L10Scorecards.Add(tile);
 
                             } catch (Exception e) {

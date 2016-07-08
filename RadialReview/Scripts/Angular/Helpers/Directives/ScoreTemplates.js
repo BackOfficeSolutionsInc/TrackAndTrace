@@ -22,6 +22,21 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                 return "sc_" + s.Id;
             };
 
+            $scope.lastValue = $scope.score.Measured;
+            
+            $scope.changeFunc = function () {
+                if ($scope.lastValue != $scope.score.Measured) {
+                    if ($scope.change) {
+                        $scope.change();
+                    }
+                }
+                $scope.lastValue = $scope.score.Measured;
+            }
+            //    console.log("sending measurable");
+            //    if (typeof ($scope.change) === "function") {
+            //        $scope.change();
+            //    }
+            //};
            
 
             var scorecardColor = function (s) {
@@ -65,8 +80,8 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                     var newColor = scorecardColor($scope.score);
                     if (newColor !== $scope.scoreColor) {
                         $scope.scoreColor = newColor;
-                        if(typeof($scope.change)==="function")
-                            $scope.change();
+                        //if(typeof($scope.change)==="function")
+                        //    $scope.change();
                     }
                     var newFsca = $scope.getFcsa($scope.measurable);
                     if (newFsca !== $scope.fsca) {
@@ -131,7 +146,8 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                   " class='grid rt1 ww_{{::week.ForWeekNumber}} {{scoreColor}}'" +
                   " data-scoreid='{{::Id}}' data-measurable='{{::measurable.Id}}' data-week='{{::week.ForWeekNumber}}'" +
                   " fcsa-number='{{fcsa}}'" +
-                  //" ng-change='ttChange()'"+
+                  " ng-change='changeFunc()'" +
+                  " ng-blur='changeFunc()'" +
                   " id='{{scoreId}}' />"
     };
 }]);

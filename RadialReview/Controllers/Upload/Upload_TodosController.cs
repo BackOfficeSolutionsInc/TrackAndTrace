@@ -143,6 +143,7 @@ namespace RadialReview.Controllers {
                                 Details = dets,
                                 DueDate = dued,
                                 AccountableUserId = owner ?? caller.Id,
+                                ForRecurrenceId=recurrence,
                             });
 
                         }

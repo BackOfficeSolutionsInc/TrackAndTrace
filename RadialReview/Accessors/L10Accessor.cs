@@ -838,7 +838,7 @@ namespace RadialReview.Accessors {
                 List<TodoModel> todoCompletion = null;
                 todoCompletion = GetAllTodosForRecurrence(s, perm, recurrenceId);
 
-                var periods = TimingUtility.GetPeriods(perm.GetCaller().Organization, now1, currentTime, true);
+                var periods = TimingUtility.GetPeriods(perm.GetCaller(), now1, currentTime, true);
 
                 if (m.IncludeAggregateTodoCompletion) {
                     var todoScores = periods.Select(x => x.ForWeek).SelectMany(w => {
@@ -1458,6 +1458,14 @@ namespace RadialReview.Accessors {
                             .List<object[]>().Select(x => Tuple.Create((long)x[0], (long)x[1])).ToList();
                             return rockRecurrenceIds;
                         });
+                        List<Tuple<long, long>> rockVtoIds = null;
+                        var rockVtos = new Func<List<Tuple<long, long>>>(() => {
+                            rockVtoIds = rockVtoIds ?? s.QueryOver<VtoModel.Vto_Rocks>()
+                            .Where(x => x.DeleteTime == null && x.Rock.Id == id)
+                            .Select(x => x.Vto.Id, x => x.Id)
+                            .List<object[]>().Select(x => Tuple.Create((long)x[0], (long)x[1])).ToList();
+                            return rockVtoIds;
+                        });
 
                         var now = DateTime.UtcNow;
                         var updated = false;
@@ -1475,6 +1483,9 @@ namespace RadialReview.Accessors {
                             rock.CompanyRock = companyRock.Value;
                             s.Update(rock);
                             updated = true;
+
+                            //s.QueryOver<VtoModel.Vto_Rocks>().Where(x=>x.DeleteTime==null && x.ro)
+                            //hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.Item1), connectionId).updateRockName(r.Item2, rockMessage);
 
                             //foreach (var r in rockRecurs()) {
                             //    hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.Item1), connectionId).updateRockName(r.Item2, rockMessage);
@@ -1522,6 +1533,10 @@ namespace RadialReview.Accessors {
 
                         if (updated) {
                             rt.UpdateRecurrences(rockRecurs().Select(x => x.Item1)).Update(rid => new AngularRock(rock));
+                            rt.UpdateVtos(rockVtos().Select(x => x.Item1)).Update(rid => new AngularVtoRock() {
+                                Rock=new AngularRock(rock)
+                            });
+
 
                             tx.Commit();
                             s.Flush();
@@ -2887,7 +2902,7 @@ namespace RadialReview.Accessors {
                         var offset = current.Organization.GetTimezoneOffset();
                         var scorecardType = settings.ScorecardPeriod;
 
-                        var weeks = TimingUtility.GetPeriods(sow, offset, now, current.StartTime, /*l10Scores, */false, scorecardType, new YearStart(current.Organization));
+                        var weeks = TimingUtility.GetPeriods(current.Organization, now, current.StartTime, false);
 
                         var rowId = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId).RowCount();
                         // var rowId = l10Scores.GroupBy(x => x.MeasurableId).Count();
@@ -3024,7 +3039,7 @@ namespace RadialReview.Accessors {
                         var offset = current.Organization.GetTimezoneOffset();
                         var scorecardType = settings.ScorecardPeriod;
 
-                        var weeks = TimingUtility.GetPeriods(sow, offset, now, current.StartTime, /*l10Scores,*/ false, scorecardType, new YearStart(current.Organization));
+                        var weeks = TimingUtility.GetPeriods(current.Organization, now, current.StartTime, false);
 
                         //var rowId = l10Scores.GroupBy(x => x.MeasurableId).Count();
                         var rowId = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId).RowCount();
@@ -3070,7 +3085,7 @@ namespace RadialReview.Accessors {
             var offset = current.Organization.GetTimezoneOffset();
             var scorecardType = settings.ScorecardPeriod;
 
-            var weeks = TimingUtility.GetPeriods(sow, offset, now, current.StartTime, /*l10Scores,*/ false, scorecardType, new YearStart(current.Organization));
+            var weeks = TimingUtility.GetPeriods(current.Organization, now, current.StartTime, false);
 
             //var rowId = l10Scores.GroupBy(x => x.MeasurableId).Count();
 
@@ -3162,17 +3177,8 @@ namespace RadialReview.Accessors {
                         });
                     }
 
-                    recur.Scorecard = new AngularScorecard(
-                        recurrenceId,
-                        caller.Organization.Settings.WeekStart,
-                        caller.Organization.GetTimezoneOffset(),
-                        measurables,
-                        scores,
-                        DateTime.UtcNow,
-                        caller.Organization.Settings.ScorecardPeriod,
-                        new YearStart(caller.Organization),
-                        scorecardRange
-                    );
+                    recur.Scorecard = new AngularScorecard(recurrenceId,caller.GetTimeSettings(),measurables,scores,DateTime.UtcNow,scorecardRange);
+
                     recur.Rocks = recurrence._DefaultRocks.Select(x => new AngularRock(x.ForRock)).ToList();
                     recur.Todos = GetAllTodosForRecurrence(s, perms, recurrenceId, includeCompleted: includeHistorical, range: range).Select(x => new AngularTodo(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
                     recur.IssuesList.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId, includeCompleted: includeHistorical, range: range).Select(x => new AngularIssue(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
@@ -3233,18 +3239,18 @@ namespace RadialReview.Accessors {
             if (model.Type == typeof(AngularIssue).Name) {
                 var m = (AngularIssue)model;
                 //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
-                UpdateIssue(caller, m.Id, DateTime.UtcNow, m.Name ?? "", m.Details ?? "", m.Complete, connectionId, priority: m.Priority);
+                UpdateIssue(caller, m.Id, DateTime.UtcNow, m.Name ?? "", m.Details ?? "", m.Complete, connectionId, priority: m.Priority,owner: m.Owner.NotNull(x => x.Id));
             } else if (model.Type == typeof(AngularTodo).Name) {
                 var m = (AngularTodo)model;
                 UpdateTodo(caller, m.Id, m.Name ?? "", null, m.DueDate, m.Owner.NotNull(x => x.Id), m.Complete, connectionId);
             } else if (model.Type == typeof(AngularScore).Name) {
                 var m = (AngularScore)model;
                 if (m.Id > 0)
-                    UpdateScore(caller, m.Id, m.Measured, connectionId);
+                    UpdateScore(caller, m.Id, m.Measured, connectionId,true);
                 //else
                 //	throw new Exception("Shouldn't get here");
                 else
-                    UpdateScore(caller, m.Measurable.Id, m.ForWeek, m.Measured, connectionId);
+                    UpdateScore(caller, m.Measurable.Id, m.ForWeek, m.Measured, connectionId,true);
             } else if (model.Type == typeof(AngularMeetingNotes).Name) {
                 var m = (AngularMeetingNotes)model;
                 EditNote(caller, m.Id, m.Contents, m.Title, connectionId);
@@ -3563,7 +3569,18 @@ namespace RadialReview.Accessors {
                         Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularRock(r.ForRock))
                     }
                 );
+
+                if (r.L10Recurrence.VtoId>0){
+                    var vtoId=r.L10Recurrence.VtoId;
+                    var rocksInVTO = s.QueryOver<VtoModel.Vto_Rocks>().Where(x => x.DeleteTime == null && x.Rock.Id == rockId && x.Vto.Id==vtoId).List().ToList();
+                    foreach (var rv in rocksInVTO) {
+                        rv.DeleteTime = now;
+                        s.Update(rv);
+                    }
+                }
             }
+
+
 
 
             var rocksInOthers = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null && x.ForRock.Id == rockId).RowCount();
@@ -3573,7 +3590,6 @@ namespace RadialReview.Accessors {
                 rock.DeleteTime = now;
                 s.Update(rock);
             }
-
 
         }
 

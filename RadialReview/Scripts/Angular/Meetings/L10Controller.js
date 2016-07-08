@@ -79,7 +79,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
     } else {
         dataDateRange.startDate = moment(dataDateRange.startDate).toDate();
     }
-    if (typeof (dataDateRange.end) === "undefined") {
+    if (typeof (dataDateRange.endDate) === "undefined") {
         dataDateRange.endDate = moment().add('days', 1).toDate();
     } else {
         dataDateRange.endDate = moment(dataDateRange.endDate).toDate();
@@ -475,6 +475,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
             controller.addClass("loading");
             $(event.target).addClass("disabled");
 
+            if (typeof(args) === "undefined")
+                args = "";
+
             $http.get("/L10/Add" + type + "/" + $scope.meetingId + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp + args).error(function (data) {
                 showJsonAlert(data, true, true);
             }).finally(function () {
@@ -511,6 +514,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
             $scope.model.Search = '';
             self.visible = false;
             $scope.ShowSearch = false;
+            angular.element(".searchresultspopup").addClass("ng-hide");
         }, 150);
     }
 

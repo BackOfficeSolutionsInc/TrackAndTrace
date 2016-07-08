@@ -87,8 +87,8 @@ namespace TractionTools.Tests.TestUtils {
 
         //protected static string AdminEmail = "admin" + Guid.NewGuid().ToString().Replace("-", "").ToLower() + "@admin.com";
         //protected static string AdminPassword = Guid.NewGuid().ToString().Replace("-", "").ToLower();
-        protected NHibernateUserManager UserManager = new NHibernateUserManager(new NHibernateUserStore());
-        protected async Task<UserOrganizationModel> GetAdminUser(Guid id)
+        protected static NHibernateUserManager UserManager = new NHibernateUserManager(new NHibernateUserStore());
+        protected static async Task<UserOrganizationModel> GetAdminUser(Guid id)
         {
             
             if (AdminUsers.ContainsKey(id)) {
@@ -180,7 +180,7 @@ namespace TractionTools.Tests.TestUtils {
             return AdminUsers[id];
         }
 
-        private async Task CreateGeneralAdmin()
+        private static async Task CreateGeneralAdmin()
         {
             bool genAdmin=false;
             DbExecute(s => {
@@ -238,7 +238,7 @@ namespace TractionTools.Tests.TestUtils {
             ApplicationCreated = true;
         }
 
-        public void MockHttpContext()
+        public static void MockHttpContext()
         {
             if (HttpContext.Current == null) {
                 HttpContext.Current = new HttpContext(new HttpRequest("", "http://fake.url", ""), new HttpResponse(new StringWriter()));

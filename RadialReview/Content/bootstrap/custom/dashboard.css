@@ -64,6 +64,12 @@ input.blend {
 input.blend:not(:disabled):focus {
   border-bottom: 2px solid #ef7622;
 }
+textarea.blend {
+  padding-left: 4px;
+}
+textarea.blend:not(:disabled):focus {
+  border: 1px solid #ef7622;
+}
 select.blend {
   padding-left: 0px;
 }
@@ -316,6 +322,16 @@ input[type=checkbox].blend:checked:after {
 html {
   background-color: #F7F7F7;
 }
+#alerts {
+  position: fixed;
+  top: 40px;
+  left: 30px;
+  right: 30px;
+  z-index: 10000000;
+}
+#alerts .alert {
+  box-shadow: 0 2px 14px 0px rgba(0, 0, 0, 0.5);
+}
 .tiny {
   /* color: red !important; */
   padding: 0px;
@@ -388,6 +404,9 @@ body.resizing .notes-tile:after,
 }
 .dashboard ._md-select-menu-container {
   z-index: 2000 !important;
+}
+.dashboard .userprofile {
+  font-family: 'Roboto', sans-serif;
 }
 .dashboard .userprofile.heading {
   height: 0px;
@@ -755,6 +774,9 @@ body.resizing .notes-tile:after,
 .dashboard .rock-list-container .rock-completion-container {
   text-align: left;
 }
+.dashboard .rock-list-container .rock-pane {
+  margin-top: 4px;
+}
 .dashboard .rock-list-container .icon-column {
   display: table-cell;
   padding-right: 2px;
@@ -831,6 +853,9 @@ body.resizing .notes-tile:after,
 .dashboard .rock-list-container input {
   max-width: 100%;
   border-bottom: inherit;
+}
+.dashboard .rock-list-container .empty-search {
+  padding: 20px 4px !important;
 }
 .dashboard .rock-list-container .rock-completion-container {
   padding: 2px;
@@ -1030,7 +1055,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .width_1 .todo-list-container .todotype-column,
 .dashboard .width_1 .todo-list-container .picture-column {
-  display: none!important;
+  display: none !important;
 }
 .dashboard .todo-pane {
   max-height: 360px;
@@ -1063,6 +1088,9 @@ body.resizing .notes-tile:after,
 }
 .dashboard .no-todos {
   padding: 23px 15px 15px 15px !important;
+}
+.dashboard .l10-issue-tile .tile {
+  padding: 2px 5px;
 }
 .dashboard .issues-list-container {
   /*.picture-column {
@@ -1300,6 +1328,10 @@ body.resizing .notes-tile:after,
 .dashboard .members-pane {
   max-height: calc(50vh - 80px);
   min-height: 60px;
+  font-family: 'Roboto', sans-serif;
+}
+.dashboard .members-pane table {
+  margin-top: 5px;
 }
 .dashboard .members-pane tr:hover {
   background-color: #fdece0;
@@ -1483,7 +1515,10 @@ body.resizing .notes-tile:after,
   padding: 2px 6px;
   white-space: nowrap;
   overflow-x: hidden;
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
+  font-family: 'Roboto', sans-serif;
 }
 .dashboard .tiny > .heading a {
   font-size: 10px;
@@ -1675,7 +1710,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .grid-tile .heading {
   background-color: rgba(0, 0, 0, 0.1) !important;
-  border-bottom: 0px !important;
+  border-bottom: 1px solid #dedede !important;
 }
 .dashboard .software-updates {
   background: none;

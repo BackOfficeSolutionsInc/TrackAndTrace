@@ -64,6 +64,12 @@ input.blend {
 input.blend:not(:disabled):focus {
   border-bottom: 2px solid #ef7622;
 }
+textarea.blend {
+  padding-left: 4px;
+}
+textarea.blend:not(:disabled):focus {
+  border: 1px solid #ef7622;
+}
 select.blend {
   padding-left: 0px;
 }
@@ -496,6 +502,7 @@ html {
 }
 .meeting-archive .todo-list-container .empty-cell,
 .meeting-archive .todo-list-container .delete-column,
+.meeting-archive .todo-list-container .todotype-column,
 .meeting-archive .todo-list-container .createtime-column {
   display: none;
 }
@@ -505,6 +512,10 @@ html {
 .meeting-archive .todo-list-container .date-column,
 .meeting-archive .todo-list-container .checkbox-column {
   vertical-align: middle !important;
+}
+.meeting-archive .todo-list-container .checkbox-column {
+  padding-left: 24px!important;
+  padding-right: 24px!important;
 }
 .meeting-archive .todo-list-container input.due-date {
   text-align: right;

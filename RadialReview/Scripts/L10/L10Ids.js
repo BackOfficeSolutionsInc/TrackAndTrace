@@ -8,6 +8,31 @@ $(function () {
     var CheckOffIssue = Undo.Command.extend({
         constructor: function (row) {
             this.row = row;
+
+            this.issueRow = $(row).closest(".issue-row");
+            if ($(this.issueRow).hasClass("selected")) {
+                $(this.issueRow).addClass("wasSelected");
+                var next = $(this.issueRow).next("[data-checked='False'],[data-checked='false']");
+                setTimeout(function () {
+                    try {
+                        if (next.length) {
+                            $(next).click();
+
+                        } else {
+                            var prev = $(this.issueRow).prev("[data-checked='False'],[data-checked='false']")
+                            if (prev.length)
+                                prev.click();
+                            else {
+                                $("#issueDetails").html("");
+                            }
+
+                        }
+                    } catch (e) {
+                    }
+                },500);
+
+            }
+
             this.checked = $(row).prop("checked");
             this.func = function (checked) {
                 var issueId = $(this.row).data("recurrence_issue");
@@ -48,6 +73,8 @@ $(function () {
         },
         undo: function () {
             this.func(!this.checked);
+            if ($(this.issueRow).hasClass("wasSelected"))
+                $(this.issueRow).removeClass("wasSelected").click();
         }
     });
 
@@ -370,7 +397,7 @@ function updateIssueCompletion(issueId, complete) {
     $(selector).prop("checked", complete);
     $(selector).parents(".issue-row").attr("data-checked", complete);
     $(selector).parents(".issue-row").data("checked", complete);
-    
+
     refreshCurrentIssueDetails();
 }
 
@@ -455,7 +482,7 @@ function constructRow(issue) {
         + '<span class="rank123 badge" data-rank="' + issue.rank + '">IDS</span>\n'
 		+ '</div>\n'
 		+ '<span class="profile-image">\n'
-        + ''+profilePicture(issue.imageUrl,issue.owner)+''
+        + '' + profilePicture(issue.imageUrl, issue.owner) + ''
 		//+ '		<span class="profile-picture">\n'
 		//+ '			<span class="picture-container" title="' + issue.owner + '">\n'
 		//+ '				<span class="picture" style="background: url(' + issue.imageUrl + ') no-repeat center center;"></span>\n'
@@ -734,7 +761,7 @@ function refreshRanks(last) {
                 url: "/L10/UpdateIssuesRank/",
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(refreshRankArr) ,
+                data: JSON.stringify(refreshRankArr),
                 method: "POST",
                 success: function (d) {
                     showJsonAlert(d);
@@ -786,7 +813,7 @@ $(function () {
 
             if (p > 6)
                 p = 0;
-        } else if (e.button == 2 || e.which==3) {
+        } else if (e.button == 2 || e.which == 3) {
             p -= 1;
             p = Math.max(0, p);
         } else {
@@ -911,7 +938,7 @@ $(function () {
                     showJsonAlert(d);
                 }
             });
-           // refreshRanks();
+            // refreshRanks();
         }, 500);
 
         e.preventDefault();

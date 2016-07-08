@@ -48,3 +48,9 @@ function removeRock(rockId) {
     }
 
 }
+
+$(window).on("page-rocks", function () {
+    if (typeof (recalculatePercentage) === "function") {
+        recalculatePercentage();
+    }
+});

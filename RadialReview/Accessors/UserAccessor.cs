@@ -781,6 +781,7 @@ namespace RadialReview.Accessors {
                     var deleteTime = user.DeleteTime.Value;
 
                     user.DeleteTime = null;
+                    user.DetachTime = null;
 
                     if (user.User != null) {
                         var newArray = user.User.UserOrganizationIds.ToList();

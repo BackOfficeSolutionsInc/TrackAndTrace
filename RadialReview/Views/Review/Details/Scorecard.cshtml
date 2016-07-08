@@ -1,11 +1,16 @@
-﻿@model long
-
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 @{
     ViewBag.Title = "Scorecard";
-    Html.RenderPartial("~/Views/Angular/_L10App.cshtml", 0L, new ViewDataDictionary() { { "PullUrl", "/Review/ScorecardData/" + Model+"?" } });
+    Html.RenderPartial("~/Views/Angular/_L10App.cshtml", 0L, new ViewDataDictionary() { { "PullUrl", "/Review/ScorecardData/" + Model.Review.Id+"?" } });
 
 }
 
+<script>
+    var dataDateRange = {
+        startDate: new Date(@(Model.Review.DueDate.ToJavascriptMilliseconds()) + 1000*60*60*24*7*(-13)),
+        endDate: new Date(@(Model.Review.DueDate.ToJavascriptMilliseconds()) + 1000*60*60*24*7*2)//two weeks
+        };
+</script>
 
 <div class="ng-cloak2 zoom8" ng-app="L10App">
     <div ng-controller="L10Controller">
@@ -14,7 +19,7 @@
         {"AddController", false},
         {"ElasticInput", true},
         {"DisableName", true},
-        { "ForceMin", ViewBag.NumberOfWeeks??13*7 }
+        //{ "ForceMin", (Model.NumberOfWeeks)*7 }
         });}
     </div>
 </div>

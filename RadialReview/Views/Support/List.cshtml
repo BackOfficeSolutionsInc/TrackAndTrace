@@ -1,0 +1,125 @@
+﻿@model IEnumerable<RadialReview.Accessors.SupportData>
+
+@{
+    ViewBag.Title = "List";
+    //var color= new Func<RadialReview.Accessors.SupportStatus,string>(x=>
+    //    {
+    //        switch(x){
+    //            case RadialReview.Accessors.SupportStatus.Open: return "label-danger";
+    //            case RadialReview.Accessors.SupportStatus.Backlog: return "label-default";
+    //            case RadialReview.Accessors.SupportStatus.WillNotFix: return "label-info";
+    //            case RadialReview.Accessors.SupportStatus.Closed: return "label-success";
+    //        }
+    //        return "label-warning";
+    //    }
+    //);
+
+}
+
+<div class="pull-right" style="margin-top:17px;">
+    <a class="btn btn-link" href="/support/list?all=true">all</a>
+    <a class="btn btn-link" href="/support/list?">open</a>
+    <a class="btn btn-link" href="/support/list?backlog=true">relavent</a>
+    <a class="btn btn-link" href="/support/list?backlog=true&open=false">backlog</a>
+    <a class="btn btn-link" href="/support/list?closed=true&open=false">closed</a>
+    <a class="btn btn-link" href="/support/list?nofix=true&open=false">nofix</a>
+</div>
+<h2>Tickets</h2>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th style="width:1px;padding:0px inherit">
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th class=" ellipsis" style="max-width:200px">
+                @Html.DisplayNameFor(model => model.Subject)
+            </th>
+            <th class=" ellipsis" style="max-width:200px">
+                @Html.DisplayNameFor(model => model.Body)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th class=" ellipsis" style="max-width:50px">
+                @Html.DisplayNameFor(model => model.PageTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CloseTime)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+
+                <td>
+                    <select style="" class="status status-@(item.Status)" onchange="$.ajax('/support/status/@(item.Lookup)?status='+$(this).val());recalc(this)">
+                        @foreach (var v in Enum.GetValues(typeof(RadialReview.Accessors.SupportStatus))) {
+                            <option value="@v" @(item.Status == (RadialReview.Accessors.SupportStatus)v ? "selected" : "")>@v</option>
+                        }
+                    </select>
+                    <span style="display:none;">@item.Status</span>
+                </td>
+                <td class=" ellipsis" style="max-width:200px" title="@item.Subject">
+                    @Html.DisplayFor(model => item.Subject)
+                </td>
+                <td class=" ellipsis" style="max-width:200px" title="@item.Body">
+                    @Html.DisplayFor(model => item.Body)
+                </td>
+                <td class=" ellipsis" style="max-width:100px" title="@item.Email">
+                    @Html.DisplayFor(model => item.Email)
+                </td>
+                <td class=" ellipsis" style="max-width:100px" title="@item.PageTitle">
+                    @Html.DisplayFor(model => item.PageTitle)
+                </td>
+                <td class=" ellipsis" style="max-width:100px">
+                    @Html.DisplayFor(model => item.CreateTime)
+                </td>
+                <td class=" ellipsis" style="max-width:100px">
+                    @Html.DisplayFor(model => item.CloseTime)
+                </td>
+                <td>
+                    @Html.ActionLink("View", "Details", new { id = item.Lookup })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@using (Html.BeginScripts()) {
+    <script>
+        function recalc(self) {
+            $(self).removeAttr("class");
+            $(self).addClass("status status-" + $(self).val());
+        }
+        $("table").tablesorter();
+    </script>
+}
+
+<style>
+    .status {
+        border-radius: 2px;
+        border: none;
+        padding: 2px;
+    }
+
+    .status-Open {
+        background-color: #5cb85c;
+    }
+
+    .status-Closed {
+        background-color: #ccc;
+    }
+
+    .status-WillNotFix {
+        background-color: #f0ad4e;
+    }
+
+    .status-Backlog {
+        background-color: #5bc0de;
+    }
+</style>

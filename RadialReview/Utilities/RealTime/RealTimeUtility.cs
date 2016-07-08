@@ -86,12 +86,22 @@ namespace RadialReview.Utilities.RealTime {
             return updater;
 
         }
-        public RTRecurrenceUpdater UpdateRecurrences(IEnumerable<long> recurrences){
+        public RTRecurrenceUpdater UpdateRecurrences(IEnumerable<long> recurrences)
+        {
             return UpdateRecurrences(recurrences.ToArray());
         }
+        public RTVtoUpdater UpdateVtos(IEnumerable<long> vtos)
+        {
+            return UpdateVtos(vtos.ToArray());
+        }
 
-        public RTRecurrenceUpdater UpdateRecurrences(params long[] recurrences){
+        public RTRecurrenceUpdater UpdateRecurrences(params long[] recurrences)
+        {
             return new RTRecurrenceUpdater(recurrences, this);
+        }
+        public RTVtoUpdater UpdateVtos(params long[] vtos)
+        {
+            return new RTVtoUpdater(vtos, this);
         }
 
         protected void AddAction(Action a)

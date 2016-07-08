@@ -370,6 +370,7 @@
     <Compile Include="Accessors\S3Response.cs" />
     <Compile Include="Accessors\ScorecardAccessor.cs" />
     <Compile Include="Accessors\SettingsAccessor.cs" />
+    <Compile Include="Accessors\SupportAccessor.cs" />
     <Compile Include="Accessors\SurveyAccessor.cs" />
     <Compile Include="Accessors\TaskAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
@@ -378,6 +379,7 @@
     <Compile Include="Accessors\TodoIntegrations\BaseCampAccessor.cs" />
     <Compile Include="Accessors\TodoIntegrations\ExternalTodoAccessor.cs" />
     <Compile Include="Accessors\TodoIntegrations\TrelloAccessor.cs" />
+    <Compile Include="Accessors\TrackingAccessor.cs" />
     <Compile Include="Accessors\TranscriptAccessor.cs" />
     <Compile Include="Accessors\UploadAccessor.cs" />
     <Compile Include="Accessors\UserAccessor.cs" />
@@ -419,6 +421,7 @@
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\GetStartedController.cs" />
     <Compile Include="Controllers\QuarterlyController.cs" />
+    <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\Upload\Upload_RocksController.cs" />
     <Compile Include="Controllers\Upload\Upload_UsersController.cs" />
     <Compile Include="Controllers\Upload\Upload_TodosController.cs" />
@@ -518,6 +521,7 @@
     <Compile Include="Hubs\BaseHub.cs" />
     <Compile Include="Hubs\MessageHub.cs" />
     <Compile Include="Hubs\MeetingHub.cs" />
+    <Compile Include="Hubs\OrganizationHub.cs" />
     <Compile Include="Hubs\VtoHub.cs" />
     <Compile Include="Hubs\WebRtcHub.cs" />
     <Compile Include="Models\Angular\Base\Angularized.cs" />
@@ -548,6 +552,7 @@
     <Compile Include="Models\Application\KeyValueModel.cs" />
     <Compile Include="Models\Application\MailModel.cs" />
     <Compile Include="Models\Application\NameId.cs" />
+    <Compile Include="Models\Application\Tracker.cs" />
     <Compile Include="Models\Application\UploadModel.cs" />
     <Compile Include="Models\Application\YearStart.cs" />
     <Compile Include="Models\Askables\AboutCompanyAskable.cs" />
@@ -841,15 +846,18 @@
     </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="Models\Enums\AccessLevel.cs" />
+    <Compile Include="Controllers\TController.cs" />
     <Compile Include="Utilities\AwsUtil.cs" />
     <Compile Include="Utilities\Cache\Cache.cs" />
     <Compile Include="Utilities\Cache\CacheKeys.cs" />
+    <Compile Include="Utilities\DataTypes\Chart.cs" />
     <Compile Include="Utilities\DataTypes\DateRange.cs" />
     <Compile Include="Utilities\DataTypes\DiscreteDistribution.cs" />
     <Compile Include="Utilities\DataTypes\Histogram.cs" />
     <Compile Include="Utilities\DataTypes\Ratio.cs" />
     <Compile Include="Utilities\Config.cs" />
     <Compile Include="Utilities\DataTypes\Rect.cs" />
+    <Compile Include="Utilities\DataTypes\TimeData.cs" />
     <Compile Include="Utilities\DbUtil.cs" />
     <Compile Include="Utilities\Encrypt\Crypto.cs" />
     <Compile Include="Utilities\ExceptionUtility.cs" />
@@ -873,6 +881,7 @@
     <Compile Include="Utilities\RandomUtil.cs" />
     <Compile Include="Utilities\RealTime\RealTimeUtility.cs" />
     <Compile Include="Utilities\RealTime\RecurrenceUpdater.cs" />
+    <Compile Include="Utilities\RealTime\VtoUpdater.cs" />
     <Compile Include="Utilities\ReflectionUtility.cs" />
     <Compile Include="Utilities\ResourceUtility.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
@@ -1132,9 +1141,12 @@
     <None Include="Resources\star.png" />
     <None Include="Resources\Unchecked.png" />
     <None Include="Resources\EOS_Model.png" />
+    <Content Include="Scripts\Angular\AccountabilityChart\ACController.js" />
     <Content Include="Scripts\Angular\GettingStartd\GSApp.js" />
     <Content Include="Scripts\Angular\GettingStartd\GSController.js" />
     <Content Include="Scripts\Angular\Helpers\angular-elastic-input.js" />
+    <Content Include="Scripts\Angular\Helpers\d3\tree.js" />
+    <Content Include="Scripts\Angular\Helpers\d3\barchart.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\ElemReady.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\FastWidth.js" />
@@ -1154,9 +1166,11 @@
     <Content Include="Scripts\Angular\MaterialDesign\md-stepper.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
-    <Content Include="Scripts\d3\accountabilityChart.js" />
+    <Content Include="Scripts\AccountabilityChart\accountabilityChart.js" />
     <Content Include="Scripts\Dashboard\dashboard.js" />
+    <Content Include="Scripts\home\html2canvas.js" />
     <Content Include="Scripts\home\landscape.js" />
+    <Content Include="Scripts\home\pretty-json.min.js" />
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
     <Content Include="Scripts\jquery\jquery.autoNumeric.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.js" />
@@ -1172,6 +1186,7 @@
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\L10\L10Wizard.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
+    <Content Include="Scripts\Main\log-helper.js" />
     <Content Include="Scripts\speechrecog.js" />
     <Content Include="Scripts\Tour\startL10.js" />
     <Content Include="Scripts\Tour\createL10.js" />
@@ -1570,6 +1585,8 @@
     <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
     <Content Include="Views\TileData\UserNotes.cshtml" />
     <Content Include="Views\Review\Details\Scorecard.cshtml" />
+    <Content Include="Views\Support\Details.cshtml" />
+    <Content Include="Views\Support\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1997,6 +2014,7 @@
       <DependentUpon>lf-ng-md-file-input.min.js</DependentUpon>
     </Content>
     <Content Include="Views\Admin\Meetings.cshtml" />
+    <Content Include="Views\Admin\MeetingsTable.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RadialReview.Utilities.DataTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -30,5 +31,20 @@ namespace RadialReview.Controllers
 				OrganizationId = u.Organization.Id,
 	        });
 	    }
+
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult Data(long id)
+        {
+            var tree = _OrganizationAccessor.GetOrganizationTree(GetUser(), id);
+
+            var c=new Chart() {
+                height = "80%",
+                width = "80%",
+                data = tree,
+            };
+
+            return Json( c, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

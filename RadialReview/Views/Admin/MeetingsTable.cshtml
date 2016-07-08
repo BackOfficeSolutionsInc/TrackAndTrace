@@ -1,0 +1,48 @@
+﻿@model IEnumerable<RadialReview.Models.L10.L10Meeting>
+
+@{
+    ViewBag.Title = "MeetingsTable";
+    var total = Model.Where(x => x.CompleteTime != null && x.CompleteTime.Value - x.StartTime.Value < TimeSpan.FromMinutes(200) && x.OrganizationId != 592 && x.OrganizationId != 1634).Count();
+    var now = DateTime.UtcNow;
+}
+
+<h4 class="pull-right">Meetings/Week <b>@(Math.Round(10.0 * total / ViewBag.Weeks) / 10.0)</b> </h4>
+<h2>MeetingsTable</h2>
+<h4>Local Time: @Html.Organization().ConvertFromUTC(now).ToString()</h4>
+<h4 class="gray">Server Time: @now.ToString()</h4>
+
+<table>
+    <tr style="border-bottom:1px solid gray">
+        <td>Server</td>
+        <td>Local</td>
+
+        @foreach (var d in Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>()) {
+            <th>@d.ToString()</th>
+        }
+</tr>
+@foreach (var h in Enumerable.Range(0, 24)) {
+    <tr>
+        <td style="color:gray">@(h%12==0?12:h%12)</td>
+        <td style="border-right:1px solid gray">@{var localH = (h+(Html.Organization().ConvertFromUTC(now)-now).TotalHours+12);}
+        @(localH % 12 == 0 ? 12 : localH%12)</td>
+        @foreach (var d in Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>()) {
+            var val = Model.Where(x => x.CreateTime.Hour >= h && x.CompleteTime != null && x.CompleteTime.Value.Hour <= h && (x.CreateTime.DayOfWeek == d || x.CompleteTime.Value.DayOfWeek == d) && x.CompleteTime.Value - x.StartTime.Value < TimeSpan.FromMinutes(200) && x.OrganizationId != 592 && x.OrganizationId != 1634).Count();
+            var percent = val / (double)total;
+            <td title="Avg @(Math.Round(10.0*val/ViewBag.Weeks)/10.0) meetings/week" class="@((now.DayOfWeek==d && now.Hour==h)?"now":"")" style="background-color:rgba(255,0,0,@(percent * 20))">@(Math.Round((double)percent * 10000.0) / 100.0)</td>
+        }
+    </tr>
+
+}
+</table>
+
+<style>
+    th,
+    td{
+        width:80px;
+        height:20px;
+        text-align:center;
+    }
+    .now {
+        border: 1px solid blue;
+    }
+</style>

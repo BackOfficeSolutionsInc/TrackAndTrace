@@ -30,7 +30,7 @@ namespace TractionTools.Tests.Accessors {
             MockHttpContext();
             var result =ctrl.AddAngularRock(r.Id).Data as ResultObject;
             Assert.IsNotNull(result);
-            var rock = result.Object as RockModel;
+            var rock = result.Object as AngularRock;
             Assert.IsNotNull(rock);
             
             rocks = L10Accessor.GetRocksForRecurrence(r.Creator, r.Id);
@@ -42,9 +42,12 @@ namespace TractionTools.Tests.Accessors {
 
             Assert.AreNotEqual(r.Id, r2.Id);
             DbCommit(s=>{
-                rock._AddedToL10 = false;
-                rock._AddedToVTO = false;
-                var sameRock=s.Get<RockModel>(rock.Id);
+                //rock._AddedToL10 = false;
+                //rock._AddedToVTO = false;
+                var sameRock = s.Get<RockModel>(rock.Id);
+                sameRock._AddedToL10 = false;
+                sameRock._AddedToVTO = false;
+
                 L10Accessor.AddRock(s, PermissionsUtility.Create(s, r2.Creator), r2.Id, sameRock);
             });
             var rocks2 = L10Accessor.GetRocksForRecurrence(r2.Creator, r2.Id);

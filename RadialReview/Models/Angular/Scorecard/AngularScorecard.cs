@@ -22,15 +22,21 @@ namespace RadialReview.Models.Angular.Scorecard
         {
 
         }
-		public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart,DateRange range=null) : base(id)
+		//public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart,DateRange range=null,bool includeNextWeek=true,DateTime? now=null) : base(id)
+        public AngularScorecard(long id, TimeSettings settings, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null)
+            : base(id)
 		{
-			Weeks = TimingUtility.GetPeriods(weekstart, timezoneOffset, DateTime.UtcNow, currentWeek.NotNull(x => x.Value.AddDays(7)), /*scores,*/ true, scorecardPeriod,yearStart,range:range)
+            var cur = currentWeek;
+            if (cur != null)
+                cur = cur.Value.AddDays(7);
+
+            Weeks = TimingUtility.GetPeriods(settings, now ?? DateTime.UtcNow, cur, includeNextWeek, range: range)
                 .Select(x => new AngularWeek(x)).ToList();
 			Measurables = measurables.ToList();
 			Scores = scores.Select(x => new AngularScore(x,false)).ToList();
 
-			DateFormat1 = TimingUtility.ScorecardFormat1(scorecardPeriod);
-			DateFormat2 = TimingUtility.ScorecardFormat2(scorecardPeriod);
+            DateFormat1 = TimingUtility.ScorecardFormat1(settings.GetTimeSettings().Period);
+            DateFormat2 = TimingUtility.ScorecardFormat2(settings.GetTimeSettings().Period);
 
 			foreach (var s in Scores){
 				var found = Measurables.FirstOrDefault(x => x.Id == s.Measurable.Id);

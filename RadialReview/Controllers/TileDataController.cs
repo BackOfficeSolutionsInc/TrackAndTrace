@@ -62,12 +62,8 @@ namespace RadialReview.Controllers
 		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
 		public PartialViewResult UserScorecard2()
 		{
-            ViewBag.NumberOfWeeks = 13;
-            switch (GetUser().GetOrganizationSettings().ScorecardPeriod) {
-                case Models.Scorecard.ScorecardPeriod.Monthly: ViewBag.NumberOfWeeks = 52; break;
-                case Models.Scorecard.ScorecardPeriod.Weekly: ViewBag.NumberOfWeeks = 13; break;
-                case Models.Scorecard.ScorecardPeriod.Quarterly: ViewBag.NumberOfWeeks = 52; break;
-            }
+            ViewBag.NumberOfWeeks = TimingUtility.NumberOfWeeks(GetUser());
+
 			return PartialView("UserScorecard");
 		}
 		[Access(AccessLevel.Any)]

@@ -25,6 +25,9 @@ namespace RadialReview.Models
         public virtual DateTime? CompleteTime { get; set; }
         public virtual Boolean Sent { get; set; }
 		public virtual string EmailType { get; set; }
+
+        public virtual string _ReplyToEmail { get; set; }
+        public virtual string _ReplyToName { get; set; }
     }
 
     public class EmailModelMap:ClassMap<EmailModel>

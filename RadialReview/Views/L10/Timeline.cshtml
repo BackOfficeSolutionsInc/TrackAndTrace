@@ -48,9 +48,9 @@
 								<span style="width:100px;text-align: center">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime))</span>
 							</span>
 							<span class="pull-right">
-								<span style="width:75px;text-align: right">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime))</span>
+								<span style="width:75px;text-align: right">@Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime).ToShortTimeString()</span>
 								<span> - </span>
-								<span style="width:75px">@(Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", meeting.Meeting.CompleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value))))</span>
+								<span style="width:75px">@meeting.Meeting.CompleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToShortTimeString())))</span>
 							</span>
 							&nbsp;
 						</div>

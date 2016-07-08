@@ -1,20 +1,20 @@
-﻿var l10App = angular.module('GSApp', ['helpers', 'rockstate', 'buttonbar', 'xeditable',"puElasticInput"]);
+﻿var gsApp = angular.module('GSApp', ['helpers', 'rockstate', 'buttonbar', 'xeditable',"puElasticInput"]);
 
 
-//l10App.config(['$locationProvider', function ($locationProvider) {
+//gsApp.config(['$locationProvider', function ($locationProvider) {
 //    $locationProvider.html5Mode({
 //        enabled: true,
 //        requireBase: false
 //    });
 //}]);
 
-l10App.config(['fcsaNumberConfigProvider', function(fcsaNumberConfigProvider) {
+gsApp.config(['fcsaNumberConfigProvider', function(fcsaNumberConfigProvider) {
     fcsaNumberConfigProvider.setDefaultOptions({
         "preventInvalidInput": true
     });
 }]);
 
-l10App.config(['$mdThemingProvider', function ($mdThemingProvider) {
+gsApp.config(['$mdThemingProvider', function ($mdThemingProvider) {
     var customPrimary = {
         '50': '#837870',
         '100': '#756c64',

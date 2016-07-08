@@ -317,8 +317,8 @@
         var o = {
             // _model:{},
             scope: $scope,
-            preExtend: function (data, status) { console.log("preExtend update:", data); },
-            postExtend: function (data, status) { console.log("postExtend update"); },
+            preExtend: function (data, status) {    /*console.log("preExtend update:", data); */ },
+            postExtend: function (data, status) {   /*console.log("postExtend update");       */ },
             preDelete: function (data, status) { },
             postDelete: function (data, status) { },
             preResolve: function (data, status) { },

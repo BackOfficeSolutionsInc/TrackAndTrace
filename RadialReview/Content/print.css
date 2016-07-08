@@ -251,6 +251,7 @@ svg .legend {
     position: absolute;
     top: -4px !important;
     left: -4px !important;
+    border-color: lightgray;
 }
 
 .roleTable .fill:before {
@@ -750,11 +751,20 @@ html {
 }
 
 .elastic-wrapper {
-    opacity:0;
-    width:0px;
-    height:0px;
+    opacity: 0;
+    width: 0px;
+    height: 0px;
 }
 
-#local{
-    display:none;
+#local {
+    display: none;
+}
+
+.scorecard-table .date.current {
+    color: #ccc !important;
+}
+
+.ico.glyphicon-remove {
+    top: 10px;
+    left: -1px;
 }

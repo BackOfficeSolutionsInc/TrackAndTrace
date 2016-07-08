@@ -69,6 +69,9 @@ namespace RadialReview.Models.Application
 		public List<String> BccList { get; set; } 
         public string HtmlBody { get; set; }
         public string Subject { get; set; }
+
+        public string ReplyToAddress { get; set; }
+        public string ReplyToName { get; set; }
         //public virtual bool Send {get;set;}
         //public virtual DateTime? CompleteTime {get;set;}
 
@@ -92,6 +95,7 @@ namespace RadialReview.Models.Application
 				ToAddress = "",
 			});
 		}
+
 
     }
 

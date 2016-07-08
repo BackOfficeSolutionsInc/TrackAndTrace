@@ -392,7 +392,7 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
             //force.stop();
             for (var i = 0; i < 5; i++) {
                 //e.alpha *= .95;
-                console.log(e.alpha);
+                //console.log(e.alpha);
                 gs.each(gravity(2.5 * e.alpha))
                     .each(collide(.5))
                     .attr("transform", function (d) {

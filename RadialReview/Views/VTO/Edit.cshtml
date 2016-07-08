@@ -63,7 +63,7 @@
                         </div>
                         <div class="col-sm-8">
                             <div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
-                            <div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name " type="text" ng-model-options="{ debounce: 250 }"> </div>
+                            <div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name " type="text" ng-model-options="{ debounce: 75 }"> </div>
                             <div class="page-title">VISION</div>
                         </div>
                         <div class="col-sm-1"></div>
@@ -82,7 +82,7 @@
                                                     <div style="text-align:center;">
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
-                                                               ng-model-options="{ debounce: 250 }"
+                                                               ng-model-options="{ debounce: 75 }"
                                                                ng-change="functions.sendUpdate((model))"
                                                                ng-model="(model).CoreValueTitle" />
                                                     </div>
@@ -98,7 +98,8 @@
                                                         <tr class="add-row-row" ng-repeat="value in (model).Values | filter:{Deleted:false}">
                                                             <td class="row-number">{{$index+1}}.</td>
                                                             <td>
-                                                                <textarea ng-model-options="{ debounce: 250 }"
+                                                                <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddCompanyValue?vto='+vtoId,'model.Values')"
+                                                                          ng-model-options="{ debounce: 75 }"
                                                                           ng-change="functions.sendUpdate(value)"
                                                                           ng-model="value.CompanyValue"
                                                                           textarea-resize></textarea>
@@ -128,7 +129,7 @@
                                                     <div style="text-align:center;" class="tmm">
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
-                                                               ng-model-options="{ debounce: 250 }"
+                                                               ng-model-options="{ debounce: 75 }"
                                                                ng-change="functions.sendUpdate((model).CoreFocus)"
                                                                ng-model="(model).CoreFocus.CoreFocusTitle" />
                                                     </div>
@@ -145,10 +146,10 @@
                                                             <tr class="purpose">
                                                                 <td>
                                                                     <div class="title" style="color:transparent;height:0px;">{{(model).CoreFocus.PurposeTitle}}:</div>
-                                                                    <input style="width:100%;" class="title" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" />
+                                                                    <input style="width:100%;" class="title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" />
                                                                 </td>
                                                                 <td>
-                                                                    <textarea textarea-resize ng-model="(model).CoreFocus.Purpose" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
+                                                                    <textarea textarea-resize ng-model="(model).CoreFocus.Purpose" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
                                                                 </td>
                                                             </tr>
                                                             <tr class="niche">
@@ -156,7 +157,7 @@
                                                                     <span class="title">Our Niche:</span>
                                                                 </td>
                                                                 <td>
-                                                                    <textarea textarea-resize ng-model="(model).CoreFocus.Niche" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
+                                                                    <textarea textarea-resize ng-model="(model).CoreFocus.Niche" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -177,7 +178,7 @@
                                                     <div style="text-align:center;" class="tmm">
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
-                                                               ng-model-options="{ debounce: 250 }"
+                                                               ng-model-options="{ debounce: 75 }"
                                                                ng-change="functions.sendUpdate((model))"
                                                                ng-model="(model).TenYearTargetTitle" />
                                                     </div>
@@ -188,7 +189,7 @@
                                     <div class="col-lg-9">
                                         <div class="boxed content">
                                             <div class="target">
-                                                <textarea textarea-resize ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model))"></textarea>
+                                                <textarea textarea-resize ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model))"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -203,7 +204,7 @@
                                                     <div style="text-align:center;">
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
-                                                               ng-model-options="{ debounce: 250 }"
+                                                               ng-model-options="{ debounce: 75 }"
                                                                ng-change="functions.sendUpdate((model).Strategy)"
                                                                ng-model="(model.Strategy).MarketingStrategyTitle" />
                                                     </div>
@@ -218,7 +219,7 @@
                                                     <div class="target-market">
                                                         <span class="title">Target Market/"The List":</span>
                                                         <div>
-                                                            <textarea textarea-resize ng-model="(model.Strategy).TargetMarket" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
+                                                            <textarea textarea-resize ng-model="(model.Strategy).TargetMarket" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
                                                         </div>
                                                     </div>
                                                     <div class="three-uniques">
@@ -227,7 +228,7 @@
                                                             <tr class="add-row-row" ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
                                                                 <td class="row-number">{{$index+1}}.</td>
                                                                 <td>
-                                                                    <textarea textarea-resize ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data"></textarea>
+                                                                    <textarea textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data"></textarea>
                                                                 </td>
                                                                 <td class="delete-column">
                                                                     <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)"></span>
@@ -242,13 +243,13 @@
                                                     <div class="proven-process">
                                                         <span class="title">Proven Process:</span>
                                                         <div>
-                                                            <textarea textarea-resize ng-model="(model.Strategy).ProvenProcess" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
+                                                            <textarea textarea-resize ng-model="(model.Strategy).ProvenProcess" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
                                                         </div>
                                                     </div>
                                                     <div class="guarantee">
                                                         <span class="title">Guarantee:</span>
                                                         <div>
-                                                            <textarea textarea-resize ng-model="(model.Strategy).Guarantee" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
+                                                            <textarea textarea-resize ng-model="(model.Strategy).Guarantee" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -268,7 +269,7 @@
                                                     <div style="text-align:center; margin: 9px;" class="tmm">
                                                         <input style="width:100%;"
                                                                class="title alignCenter"
-                                                               ng-model-options="{ debounce: 250 }"
+                                                               ng-model-options="{ debounce: 75 }"
                                                                ng-change="functions.sendUpdate((model.ThreeYearPicture))"
                                                                ng-model="(model.ThreeYearPicture).ThreeYearPictureTitle" />
                                                     </div>
@@ -278,22 +279,22 @@
                                         <div class="boxed content">
                                             <div>
                                                 <span class="bold lbl">Future Date:</span> <span class="future-date input">
-                                                    <input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture).FutureDate' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
+                                                    <input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
                                                 </span>
                                             </div>
                                             <div>
                                                 <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                    <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
+                                                    <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
                                                 </span>
                                             </div>
                                             <div>
                                                 <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                    <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
+                                                    <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
                                                 </span>
                                             </div>
                                             <div>
                                                 <span class="bold lbl">Measurables:</span><span class="measurables input">
-                                                    <textarea textarea-resize type="text" ng-model='(model.ThreeYearPicture).Measurables' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))"></textarea>
+                                                    <textarea textarea-resize type="text" ng-model='(model.ThreeYearPicture).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))"></textarea>
                                                 </span>
                                             </div>
                                             <div class="looks-like">What does it look like?</div>
@@ -302,7 +303,8 @@
                                                     <tr class="add-row-row" ng-repeat="item in (model.ThreeYearPicture).LooksLike | filter:{Deleted:false}">
                                                         <td class="row-number">{{$index+1}}.</td>
                                                         <td>
-                                                            <textarea textarea-resize ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
+                                                            <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddThreeYear?vto='+vtoId,'model.ThreeYearPicture.LooksLike')"
+                                                                      textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
                                                         </td>
                                                         <td class="delete-column">
                                                             <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)"></span>
@@ -336,7 +338,7 @@
                         </div>
                         <div class="col-sm-8">
                             <div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
-                            @*<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name " type="text" ng-model-options="{ debounce: 250 }"> </div>*@
+                            @*<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name " type="text" ng-model-options="{ debounce: 75 }"> </div>*@
                             <div class="page-title">@ViewBag.TractionPageTitle</div>
                         </div>
                         <div class="col-sm-1"></div>
@@ -354,7 +356,7 @@
                                                 <div style="text-align:center; margin: 9px;" class="">
                                                     <input style="width:100%;"
                                                            class="title alignCenter"
-                                                           ng-model-options="{ debounce: 250 }"
+                                                           ng-model-options="{ debounce: 75 }"
                                                            ng-change="functions.sendUpdate((model.OneYearPlan))"
                                                            ng-model="(model.OneYearPlan).OneYearPlanTitle" />
                                                 </div>
@@ -364,22 +366,22 @@
                                     <div class="boxed content">
                                         <div>
                                             <span class="bold lbl">Future Date:</span> <span class="future-date input">
-                                                <input type="date" class="datepicker2" ng-model='(model.OneYearPlan).FutureDate' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
+                                                <input type="date" class="datepicker2" ng-model='(model.OneYearPlan).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
+                                                <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
+                                                <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Measurables:</span><span class="measurables input">
-                                                <textarea textarea-resize type="text" ng-model='(model.OneYearPlan).Measurables' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.OneYearPlan))"></textarea>
+                                                <textarea textarea-resize type="text" ng-model='(model.OneYearPlan).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))"></textarea>
                                             </span>
                                         </div>
                                         <div class="smallBreak2">&nbsp;</div>
@@ -389,7 +391,7 @@
                                                 <tr class="add-row-row" ng-repeat="item in (model.OneYearPlan).GoalsForYear | filter:{Deleted:false}">
                                                     <td class="number">{{$index+1}}.</td>
                                                     <td>
-                                                        <textarea textarea-resize ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
+                                                        <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddYearGoal?vto='+vtoId,'model.OneYearPlan.GoalsForYear')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
                                                         <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)"></span>
                                                     </td>
                                                 </tr>
@@ -413,7 +415,7 @@
                                                 <div style="text-align:center; margin: 9px;" class="">
                                                     <input style="width:100%;"
                                                            class="title alignCenter"
-                                                           ng-model-options="{ debounce: 250 }"
+                                                           ng-model-options="{ debounce: 75 }"
                                                            ng-change="functions.sendUpdate((model.QuarterlyRocks))"
                                                            ng-model="(model.QuarterlyRocks).RocksTitle" />
                                                 </div>
@@ -423,32 +425,35 @@
                                     <div class="boxed content">
                                         <div>
                                             <span class="bold lbl">Future Date:</span><span class="future-date input">
-                                                <input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks).FutureDate' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
+                                                <input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                <input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Revenue' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
+                                                <input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                <input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Profit' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
+                                                <input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
                                             </span>
                                         </div>
                                         <div>
                                             <span class="bold lbl">Measurables:</span><span class="measurables input">
-                                                <textarea textarea-resize type="text" ng-model='(model.QuarterlyRocks).Measurables' ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))"></textarea>
+                                                <textarea textarea-resize type="text" ng-model='(model.QuarterlyRocks).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))"></textarea>
                                             </span>
                                         </div>
                                         <div class="smallBreak2">&nbsp;</div>
                                         <div class="rocks-table border-table">
                                             <table class="add-row-container">
                                                 <tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight">Who</th></tr>
-                                                <tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false}">
+                                                <tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{CompanyRock:true}}">
                                                     <td class="number">{{$index+1}}.</td>
                                                     <td>
-                                                        <textarea textarea-resize style="width: 80%;" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(item)" ng-model="item.Rock.Name"></textarea>
+                                                        <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddRock?vto='+vtoId,'model.QuarterlyRocks.Rocks')"
+                                                                  textarea-resize
+                                                                  style="width: 80%;width: calc(100% - 18px);"
+                                                                  ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Rock.Name"></textarea>
                                                         <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteRock?value='+item.Id)"></span>
                                                     </td>
 
@@ -480,7 +485,7 @@
                                                 <div style="text-align:center; margin: 9px;" class="">
                                                     <input style="width:100%;"
                                                            class="title alignCenter"
-                                                           ng-model-options="{ debounce: 250 }"
+                                                           ng-model-options="{ debounce: 75 }"
                                                            ng-change="functions.sendUpdate((model))"
                                                            ng-model="(model).IssuesListTitle" />
                                                 </div>
@@ -493,7 +498,7 @@
                                                 <tr class="add-row-row" ng-repeat="item in (model).Issues | filter:{Deleted:false}">
                                                     <td class="number">{{$index+1}}.</td>
                                                     <td>
-                                                        <textarea textarea-resize ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
+                                                        <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddIssue?vto='+vtoId,'model.Issues')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
                                                         @*</td>
                                                             <td class="delete-column">*@
                                                         <div class="pull-right" style="width:25px;margin-top: -4px;margin-bottom: -5px;">

@@ -204,11 +204,11 @@ function getFormattedDate(date) {
     return _userFormat;
 }
 
-function generateDatepicker(selector,date,name,id) {
-    if (typeof(date)==="undefined"){
+function generateDatepicker(selector, date, name, id) {
+    if (typeof (date) === "undefined") {
         date = new Date();
-    }else if (typeof(date)==="string"){
-        console.error("Could not determine format from date string: "+date)
+    } else if (typeof (date) === "string") {
+        console.error("Could not determine format from date string: " + date)
     }
 
     if (typeof (name) === "undefined")
@@ -218,7 +218,7 @@ function generateDatepicker(selector,date,name,id) {
 
     var _d = date.getDate(),
                 dd = _d > 9 ? _d : '0' + _d,
-                _m = date.getMonth()+1,
+                _m = date.getMonth() + 1,
                 mm = _m > 9 ? _m : '0' + _m,
                 yyyy = date.getFullYear(),
                 formatted = mm + '-' + dd + '-' + (yyyy);
@@ -226,7 +226,7 @@ function generateDatepicker(selector,date,name,id) {
     var _userFormat = window.dateFormat
         .replace(/mm/gi, mm).replace(/m/gi, _m)
         .replace(/dd/gi, dd).replace(/d/gi, _d)
-        .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy-2000));
+        .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy - 2000));
 
     var guid = generateGuid();
     var builder = '<div class="input-append date ' + guid + '">';
@@ -234,7 +234,7 @@ function generateDatepicker(selector,date,name,id) {
                ' data-val-date="The field Model must be a date." type="text" ' +
                'value="' + _userFormat + '">';
     builder += '<span class="add-on"><i class="icon-th"></i></span>';
-    builder += '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="'+formatted+'" />';
+    builder += '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="' + formatted + '" />';
     builder += '</div>';
     var dp = $(builder);
     $(selector).append(dp);
@@ -311,7 +311,8 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 ///      },...],                                                                                                                ///
 ///      pushUrl:"",                                                                                                            ///
 ///      success:function,                                                                                                      ///
-///      cancel:function,                                                                                                       ///
+///      cancel:function,                                                                                                       ///  
+///      reformat: function,                                                                                                    ///
 ///  }                                                                                                                          ///
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
@@ -491,7 +492,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
         if (typeof (reformatArg) === "function") {
             var o = reformatArg(formData);
             if (typeof (o) !== "undefined" && o != null)
-                formData = o;
+                formData = o;//Data was returned, otherwise formdata was manipulated
         }
 
         if (validationArg) {
@@ -1130,6 +1131,71 @@ Constants = {
     StartHubSettings: { transport: ['webSockets', 'longPolling'] }
 };
 
+
+function supportEmail(title) {
+    var message = "[";
+    var mArray = [];
+    for (var i in consoleStore) {
+        mArray.push(JSON.stringify(consoleStore[i]));
+    }
+    message = "[" + mArray.join(",\n") + "]";
+    var fields = [
+            { name: "Subject", text: "Subject", type: "text", },
+            { name: "Body", text: "Body", type: "textarea" }
+    ];
+
+    if (typeof (window.UserId) === "undefined")
+        fields.push({ name: "Email", text: "Email", type: "text" });
+    var image = null;
+    var show = function () {
+        showModal({
+            title: "How can we help you?",
+            icon: "default",//{ icon: "modal-icon-default", title: "Contact Support", color: "#ef7622" },
+            fields: fields,
+            pushUrl: "/support/email",
+            reformat: function (data) {
+                data.Console = message;
+                data.Url = window.location.href;
+                data.User = window.UserId;
+                data.Org = window.OrgId;
+                data.PageTitle = title;
+                if (image != null) {
+                    data.ImageData = image;
+                }
+            }
+        });
+    };
+    try {
+        $.getScript("/Scripts/home/html2canvas.js").done(function () {
+            try {
+                console.log("begin render");
+                screenshotPage(function (res) {
+                    image = res;
+                    console.log("end render");
+                });
+                show();
+                //html2canvas(document.body, {
+                //    allowTaint: true,
+                //    onrendered: function (canvas) {
+                //        image = canvas;
+
+                //        
+                //        show();
+                //    }
+                //});
+            } catch (e) {
+                show();
+            }
+        }).error(function () {
+            show();
+        });
+    } catch (e) {
+        show();
+    }
+
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Create issues or todos 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1177,39 +1243,13 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-//function ensureLoaded(scriptPath,onLoad) {
-//    var tagName = "script";
-//    var attr = "src"
-//    if (scriptPath.indexOf(".css") != -1) {
-//        tagName = "link";
-//        attr = "href";
-//    }
-
-//    var list = document.getElementsByTagName(tagName);
-//    var i = list.length, flag = false;
-//    while (i--) {
-//        if (list[i][attr] == scriptPath) {
-//            flag = true;
-//        }
-//    }
-//    if (!flag) {
-//        var tag = document.createElement(tagName);
-//        tag[attr] = scriptPath;
-//        if (typeof(onLoad)!=="undefined")
-//            tag["onload"] = onLoad;
-//        document.getElementsByTagName('body')[0].appendChild(tag);
-//    }
-//}
 
 jQuery.cachedScript = function (url, options) {
-    // Allow user to set any option except for dataType, cache, and url
     options = $.extend(options || {}, {
         dataType: "script",
         cache: true,
         url: url
     });
-    // Use $.ajax() since it is more flexible than $.getScript
-    // Return the jqXHR object so we can chain callbacks
     return jQuery.ajax(options);
 };
 
@@ -1223,8 +1263,8 @@ function startTour(name, method) {
         //ensureLoaded("/Scripts/Tour/lib/jquery.scrollintoview.min.js");
         //ensureLoaded("/Content/Tour/lib/anno.css");
         if (typeof (Tours) === "undefined") {
-            Tours = {             
-                NextButton: function(){
+            Tours = {
+                NextButton: function () {
                     return {
                         text: "Next1",
                         click: function (a, e) {
@@ -1261,7 +1301,7 @@ function startTour(name, method) {
                                 an.switchToChainNext();
                             }
                         }
-                        
+
                         $target[0].addEventListener('click', handler, true) // `true` is essential                   
                         return handler
                     };

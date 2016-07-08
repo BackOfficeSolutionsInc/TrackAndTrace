@@ -1,7 +1,4 @@
-﻿@import url('../Angular/xeditable.min.css');
-@import url('../Angular/tablesort.css');
-@import url('../Angular/livesearch.css');
-@import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
+﻿@import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
 .profile-picture,
 .picture-container {
   width: 32px;
@@ -188,6 +185,12 @@ input.blend {
 }
 input.blend:not(:disabled):focus {
   border-bottom: 2px solid #ef7622;
+}
+textarea.blend {
+  padding-left: 4px;
+}
+textarea.blend:not(:disabled):focus {
+  border: 1px solid #ef7622;
 }
 select.blend {
   padding-left: 0px;
@@ -1242,9 +1245,6 @@ body,
 .wizard .issues-list-container .details-row,
 .wizard .issues-list-container thead {
   display: none;
-}
-.wizard .issues-list-container .owner-column > * {
-  display: inline-block !important;
 }
 .wizard .todo-list-container .create-row {
   float: right;

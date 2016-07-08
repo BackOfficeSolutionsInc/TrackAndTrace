@@ -16,12 +16,13 @@ using RadialReview.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models
 {
 	[DebuggerDisplay("User {User}")]
 	[DataContract]
-    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable/*, IAngularizer<UserOrganizationModel>*/
+    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable, TimeSettings/*, IAngularizer<UserOrganizationModel>*/
     {
         public static long ADMIN_ID = -7231398885982031L;
 
@@ -29,8 +30,25 @@ namespace RadialReview.Models
             IsRadialAdmin = true,
             Id = UserOrganizationModel.ADMIN_ID,
         };
-		
-		public virtual long? _ClientTimestamp { get; set; }
+
+        public virtual DateTime? _MethodStart { get; set; }
+        public virtual long? _ClientTimestamp { get; set; }
+        public virtual int? _ClientOffset { get; set; }
+        protected virtual TimeData _timeData { get; set; }
+        public virtual TimeData GetTimeSettings()
+        {
+            if (_timeData == null) {
+                var orgSettings = GetOrganizationSettings();
+                _timeData= new TimeData() {
+                    Now = _MethodStart ?? DateTime.UtcNow,
+                    Period = orgSettings.ScorecardPeriod,
+                    TimezoneOffset = _ClientOffset ?? orgSettings.GetTimezoneOffset(),
+                    WeekStart = orgSettings.WeekStart,
+                    YearStart = orgSettings.YearStart
+                };
+            }
+            return _timeData;
+        }
 
 		[DataMember]
 		public virtual string Name { get { return GetName(); } }
@@ -362,7 +380,12 @@ namespace RadialReview.Models
 				Username = self.GetUsername();
 			}
 		}
-	}
+
+        public virtual int GetTimezoneOffset()
+        {
+            return _ClientOffset ?? GetOrganizationSettings().GetTimezoneOffset();
+        }
+    }
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
     {

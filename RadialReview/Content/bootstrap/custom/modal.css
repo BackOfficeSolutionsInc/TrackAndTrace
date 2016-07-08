@@ -27,6 +27,9 @@
   padding-top: 0px;
   padding-bottom: 0px;
 }
+#modal .modal-icon .form-horizontal .form-group {
+  padding-top: 5px;
+}
 #modal .modal-icon .modal-body:after {
   display: block;
   content: "";

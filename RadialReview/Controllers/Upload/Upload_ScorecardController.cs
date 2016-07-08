@@ -209,6 +209,21 @@ namespace RadialReview.Controllers {
                                     _Ordering = ii
                                 };
 
+                                //Empty row?
+                                if (string.IsNullOrWhiteSpace(measurable.Title)) {
+                                    if (scoreRect == null) {
+                                        continue;
+                                    } else {
+                                        var scoreRow = measurableRectType == "Row"
+                                      ? new Rect(scoreRect.MinX, scoreRect.MinY + ident, scoreRect.MaxX, scoreRect.MinY + ident)
+                                      : new Rect(scoreRect.MinX + ident, scoreRect.MinY, scoreRect.MinX + ident, scoreRect.MaxY);
+
+                                        var scoresFound = scoreRow.GetArray1D(csvData, x => ParceScore(x));
+                                        if (scoresFound.All(x => x == 0 || x == null))
+                                            continue;
+                                    }
+                                }
+
                                 L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateNewMeasurable(recurrence, measurable), skipRealTime: true,rowNum:ii);
                                 ii += 1;
                                 measurableLookup[ident] = measurable;

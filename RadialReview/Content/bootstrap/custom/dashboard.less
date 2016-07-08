@@ -11,6 +11,18 @@ html {
     background-color: #F7F7F7;
 }
 
+#alerts {
+    position: fixed;
+    top: 40px;
+    left: 30px;
+    right: 30px;
+    z-index: 10000000;
+
+    .alert {
+        box-shadow: 0 2px 14px 0px rgba(0,0,0,.5);
+    }
+}
+
 .tiny {
     /* color: red !important; */
     padding: 0px;
@@ -99,8 +111,12 @@ body.resizing .notes-tile,
         z-index: 2000 !important;
     }
 
-    .userprofile.heading {
-        height: 0px;
+    .userprofile {
+        font-family: 'Roboto',sans-serif;
+
+        &.heading {
+            height: 0px;
+        }
     }
 
     priority:focus, priority *:focus {
@@ -279,6 +295,10 @@ body.resizing .notes-tile,
             text-align: left;
         }
 
+        .rock-pane {
+            margin-top: 4px;
+        }
+
         .icon-column {
             display: table-cell;
             padding-right: 2px;
@@ -367,6 +387,10 @@ body.resizing .notes-tile,
         input {
             max-width: 100%;
             border-bottom: inherit;
+        }
+
+        .empty-search {
+            padding: 20px 4px !important;
         }
 
         .rock-completion-container {
@@ -479,7 +503,7 @@ body.resizing .notes-tile,
     .width_1 .todo-list-container {
         .todotype-column,
         .picture-column {
-            display: none!important;
+            display: none !important;
         }
     }
 
@@ -524,7 +548,14 @@ body.resizing .notes-tile,
         padding: 23px 15px 15px 15px !important;
     }
     //ISSUES LIST
+    .l10-issue-tile {
+        .tile {
+            padding: 2px 5px;
+        }
+    }
+
     .issues-list-container {
+
 
         table {
             .dataTableTiny();
@@ -617,7 +648,7 @@ body.resizing .notes-tile,
             }
         }
     }
-    
+
     .width_1 .faq-tile ul {
         font-size: 11px !important;
         padding-left: 1px;
@@ -672,12 +703,15 @@ body.resizing .notes-tile,
             text-align: center;
         }
     }
-
-
     //MEMBERS LIST
     .members-pane {
         max-height: ~"calc(50vh - 80px)";
         min-height: 60px;
+        font-family: 'Roboto', sans-serif;
+
+        table {
+            margin-top: 5px;
+        }
 
         tr:hover {
             background-color: lighten(@traction-orange,40%);
@@ -884,7 +918,10 @@ body.resizing .notes-tile,
         padding: 2px 6px;
         white-space: nowrap;
         overflow-x: hidden;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
         text-overflow: ellipsis;
+        font-family: 'Roboto', sans-serif;
 
         a {
             font-size: 10px;
@@ -1041,6 +1078,7 @@ body.resizing .notes-tile,
 
 
 @media(max-width:768px) {
+
     #grid {
         width: 100%;
         padding: 10px;
@@ -1099,7 +1137,8 @@ body.resizing .notes-tile,
 
     .grid-tile .heading {
         background-color: rgba(0,0,0,.1) !important;
-        border-bottom: 0px !important;
+        //border-bottom: 0px !important;
+        border-bottom: 1px solid #dedede !important;
     }
 
     .software-updates {

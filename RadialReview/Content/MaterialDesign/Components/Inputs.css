@@ -63,6 +63,12 @@ input.blend {
 input.blend:not(:disabled):focus {
   border-bottom: 2px solid #ef7622;
 }
+textarea.blend {
+  padding-left: 4px;
+}
+textarea.blend:not(:disabled):focus {
+  border: 1px solid #ef7622;
+}
 select.blend {
   padding-left: 0px;
 }

@@ -866,7 +866,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		public ReviewsModel GetReviewContainer(UserOrganizationModel caller, long reviewContainerId, bool populateAnswers, bool populateReport, bool sensitive = true,bool populateReview=false) {
+		public ReviewsModel GetReviewContainer(UserOrganizationModel caller, long reviewContainerId, bool populateAnswers, bool populateReport, bool sensitive = true,bool populateReview=false,bool deduplicate=false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -891,6 +891,8 @@ namespace RadialReview.Accessors {
                     
                     if (reviewContainer.Reviews==null && populateReview) {
                         reviewContainer.Reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.DeleteTime == null).List().ToList();
+                        if (deduplicate)
+                            reviewContainer.Reviews = reviewContainer.Reviews.GroupBy(x=>x.ForUserId).Select(x=>x.First()).ToList();
                     }
 
 					return reviewContainer;

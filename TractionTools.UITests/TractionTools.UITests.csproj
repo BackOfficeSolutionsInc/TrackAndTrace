@@ -146,6 +146,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="L10Wizard\L10Wizard.cs" />
     <Compile Include="MeetingArchive\MeetingTests.cs" />
     <Compile Include="MeetingArchive\VideoConferenceTest.cs" />
     <Compile Include="Selenium\BaseSelenium.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="Utilities\Extensions\WebDriverExtensions.cs" />
     <Compile Include="Utilities\Generator.cs" />
     <Compile Include="Utilities\TestCtx.cs" />
+    <Compile Include="Utilities\TestUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

@@ -16,8 +16,7 @@
     @*@Html.Partial("_ReportsHeader")*@
 }
 
-@using (Html.BeginStyles())
-{
+@using (Html.BeginStyles()) {
     <style>
         .bar {
         }
@@ -66,8 +65,7 @@
     </style>
 }
 
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
     <script>
         function newTitle(item, about) {
             var progressBar = $(item).find(".progress-bar");
@@ -123,23 +121,18 @@
     };
 
 }
-<div class="panel panel-primary">
-    @foreach (var panel in panels)
-    {
-        if (panel.Item1 == 1 || panel.Item3.Any())
-        {
+@foreach (var panel in panels) {
+    <div class="panel panel-primary">
+        @if (panel.Item1 == 1 || panel.Item3.Any()) {
             <div class="panel-heading">
                 <h3 class="panel-title">@panel.Item2</h3>
                 <div class="pull-right"></div>
             </div>
-            if (!panel.Item3.Any())
-            {
+            if (!panel.Item3.Any()) {
                 <div class="panel-body gray">
                     You don't manage any users in this review.
                 </div>
-            }
-            else
-            {
+            } else {
                 <div class="table-responsive">
                     <table class="table table-condensed table-hover tablesorter">
                         <thead>
@@ -151,28 +144,26 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var r in panel.Item3.OrderBy(x => x.ForUser.GetNameAndTitle()))
-                            {
+                            @foreach (var r in panel.Item3.OrderBy(x => x.ForUser.GetNameAndTitle())) {
                                 <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
-	                                @if (r.ForUser.GetPersonallyManaging()) { 
-										@: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
-									}>
+                                    @if (r.ForUser.GetPersonallyManaging()) {  @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
+                                                                                                                                									}>
                                     <td class="table-hover-underline">@r.ForUser.GetNameAndTitle()</td>
                                     <td class="alignCenter">
                                         <a data-sort="@(r.ClientReview.Visible? "1" : "2")">@r.ClientReview.Visible.GetIcon()</a>
                                     </td>
                                     @*<td class="alignCenter">
-                                        <div data-sort="@(r.ClientReview.SignedTime.HasValue?"1":"2")">
-                                            @if (r.ClientReview.SignedTime.HasValue)
-                                            { 
-                                                @r.ClientReview.SignedTime.Value.ToShortDateString()  
-                                            }
-                                            else
-                                            {
-                                                <div class="gray">Unsigned</div>
-                                            }
-                                        </div>
-                                    </td>*@
+                                            <div data-sort="@(r.ClientReview.SignedTime.HasValue?"1":"2")">
+                                                @if (r.ClientReview.SignedTime.HasValue)
+                                                {
+                                                    @r.ClientReview.SignedTime.Value.ToShortDateString()
+                                                }
+                                                else
+                                                {
+                                                    <div class="gray">Unsigned</div>
+                                                }
+                                            </div>
+                                        </td>*@
                                 </tr>
                             }
                         </tbody>
@@ -180,5 +171,5 @@
                 </div>
             }
         }
-    }
-</div>
+    </div>
+}

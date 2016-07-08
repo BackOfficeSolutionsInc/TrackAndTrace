@@ -184,6 +184,7 @@ namespace TractionTools.UITests {
             return Find(e, selector);
         }
 
+        [DebuggerHidden]
         public static IWebElement Find(this IWebElement e, string selector)
         {
             return e.FindElement(By.CssSelector(selector));
@@ -294,6 +295,34 @@ namespace TractionTools.UITests {
             throw new NoSuchElementException();
         }
 
+        public static void WaitForNotVisible(this IWebDriver driver, string selector, TimeSpan? timeout = null)
+        {
+            var found = new WebDriverWait(driver, timeout ?? TimeSpan.FromSeconds(10)).Until(ExpectedConditions.InvisibilityOfElementLocated(By.CssSelector(selector)));
+            if (found)
+                return;
+            throw new NoSuchElementException();
+            //try {
+            //    WaitForVisible(driver, selector, timeout);
+            //} catch (NoSuchElementException e) {
+            //    return;
+            //} catch (WebDriverTimeoutException e) {
+            //    return;
+            //}
+            //throw new NoSuchElementException();
+        }
+
+        public static IWebElement WaitForVisible(this IWebDriver driver, string selector, TimeSpan? timeout = null)
+        {
+            //var start = DateTime.UtcNow;
+            //var _timeout = timeout ?? TimeSpan.FromSeconds(10);
+            //var element = driver.FindElement(By.CssSelector(selector), _timeout);
+            //var remain = _timeout - (DateTime.UtcNow - start);
+            var found = new WebDriverWait(driver, timeout ?? TimeSpan.FromSeconds(10)).Until(ExpectedConditions.ElementIsVisible(By.CssSelector(selector)));
+            if (found!=null)
+                return found;
+            throw new NoSuchElementException();
+
+        }
 
         public static IWebElement WaitForText(this IWebDriver driver, By by, string text, TimeSpan? timeout = null)
         {

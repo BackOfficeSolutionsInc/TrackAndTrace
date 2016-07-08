@@ -70,6 +70,21 @@ namespace RadialReview.Controllers {
             }
         }
 
+
+        [Access(AccessLevel.Radial)]
+        public async Task<ActionResult> MeetingsTable(int weeks = 3)
+        {
+            ViewBag.Weeks = weeks;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var recent = DateTime.UtcNow.AddDays(-weeks*7);
+                    var notRecent = DateTime.UtcNow.AddDays(-weeks * 7-1);
+                    var measurables = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && (x.CompleteTime == null || x.CompleteTime >= recent) && x.CreateTime > notRecent).List().ToList();
+                    return View(measurables);
+                }
+            }
+        }
+        
         [Access(AccessLevel.Radial)]
         public async Task<ActionResult> ShiftScorecard(long recurrence = 0, int weeks = 0)
         {
@@ -840,6 +855,7 @@ namespace RadialReview.Controllers {
                 yAxis = categories.Skip(1).FirstOrDefault().NotNull(x => x.Id),
                 AnswersAbout = answers,
                 Categories = categories.ToDictionary(x => x.Id, x => x.Category.Translate()),
+                NumberOfWeeks = TimingUtility.NumberOfWeeks(GetUser())
             };
             return model;
         }

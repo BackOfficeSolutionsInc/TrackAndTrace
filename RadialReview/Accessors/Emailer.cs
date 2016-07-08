@@ -300,10 +300,12 @@ namespace RadialReview.Accessors
 				}
 			}
 
-			return new EmailMessage()
+
+			var oEmail= new EmailMessage()
 			{
+               
 				from_email = MandrillStrings.FromAddress,
-				from_name = MandrillStrings.FromName,
+				from_name = email._ReplyToName??MandrillStrings.FromName,
 				html = email.Body,
 				subject = email.Subject,
 				to = toAddresses,
@@ -311,6 +313,13 @@ namespace RadialReview.Accessors
 				track_clicks = true,
 				google_analytics_domains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x=>x.Split(new []{','},StringSplitOptions.RemoveEmptyEntries).ToList())
 			};
+
+            if (!string.IsNullOrWhiteSpace(email._ReplyToEmail)){
+                oEmail.AddHeader("Reply-To", email._ReplyToEmail);
+            }
+
+
+            return oEmail;
 		}
 
 		private static async Task<List<Mandrill.EmailResult>> SendMessage(MandrillApi api, EmailModel email)
@@ -413,7 +422,10 @@ namespace RadialReview.Accessors
 							ToAddress = email.ToAddress,
 							Bcc = String.Join(",",email.BccList),
 							SentTime = now,
-							EmailType = email.EmailType
+							EmailType = email.EmailType,
+                            _ReplyToName = email.ReplyToName,
+                            _ReplyToEmail = email.ReplyToAddress,
+                            
 						};
 						s.Save(unsent);
 						unsentEmails.Add(unsent);

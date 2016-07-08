@@ -52,12 +52,12 @@ namespace RadialReview.Controllers
 				scorecard.Measurables = current._MeetingMeasurables.Select(x => new AngularMeetingMeasurable(x)).ToList();
 
 
-				var sow = GetUser().Organization.Settings.WeekStart;
-				var offset = GetUser().Organization.GetTimezoneOffset();
-			    var period = GetUser().Organization.Settings.ScorecardPeriod;
+                //var sow = GetUser().Organization.Settings.WeekStart;
+                //var offset = GetUser().Organization.GetTimezoneOffset();
+                //var period = GetUser().Organization.Settings.ScorecardPeriod;
 
 
-				scorecard.Weeks = TimingUtility.GetPeriods(sow, offset, DateTime.UtcNow, current.StartTime, /*scores,*/ true, period, new YearStart(GetUser().Organization)).Select(x => new AngularWeek(x)).ToList();
+				scorecard.Weeks = TimingUtility.GetPeriods(GetUser(), DateTime.UtcNow, current.StartTime, true).Select(x => new AngularWeek(x)).ToList();
 			    scorecard.Scores = scores.Select(x => new AngularScore(x)).ToList();
 
 				model.AgendaItems.Add(scorecard);

@@ -65,10 +65,34 @@ function ($scope, $http, $timeout,radial, signalR, vtoDataUrlBase, vtoId, vtoCal
 	};
 
 	$scope.functions.AddRow = function(url, self) {
-		$scope.functions.Get(url);
-
-		debugger;
+	    $scope.functions.Get(url);
 	};
+
+	$scope.functions.shouldCreateRow = function ($event, self, url, collection) {
+	    if ($event.keyCode == 9 && self.$last) {
+	        $scope.functions.AddRow(url, self);
+	        $event.preventDefault();
+	        var that = $event.currentTarget;
+	        var watcher=$scope.$watchCollection(
+                    collection,
+                    function (newValue, oldValue) {
+                        if (newValue.length > oldValue.length) {
+                            angular.element(that)
+                                .closest("[ng-repeat]")
+                                .siblings()
+                                .filter(function(){
+                                    return $(this).find("textarea").length;
+                                }).last()
+                                .find("textarea").last()
+                                .focus()
+                            watcher();
+                        }
+
+                    }
+                );
+	    }
+	}
+
 	$scope.functions.Get = function (url, dat) {
 		var _clientTimestamp = new Date().getTime();
 		url += (url.indexOf("?") != -1) ? "&" : "?";

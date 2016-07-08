@@ -175,11 +175,18 @@ namespace RadialReview {
                 "~/Scripts/L10/AV/app.js"
             ));
 
-            bundles.Add(new ScriptBundle("~/bundles/AccountabilityChart").Include("~/Scripts/d3/accountabilityChart.js","~/Scripts/d3/d3.min.js"));
+            bundles.Add(new ScriptBundle("~/bundles/AccountabilityChart")
+                .Include(angularHelpers_Scripts)
+            .Include(
+                "~/Scripts/d3/d3.min.js",
+                "~/Scripts/Angular/Helpers/d3/barchart.js",
+                "~/Scripts/AccountabilityChart/accountabilityChart.js",
+                "~/Scripts/Angular/AccountabilityChart/ACController.js"
+            ));
             bundles.Add(new StyleBundle("~/Content/AccountabilityChart").Include("~/Content/AccountabilityChart/AccountabilityChart.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/d3").Include("~/Scripts/d3/d3.min.js"));
-            bundles.Add(new ScriptBundle("~/bundles/d3v3").Include("~/Scripts/d3/d3.v3.js","~/Scripts/d3/line.v1.js"));
+            bundles.Add(new ScriptBundle("~/bundles/d3v3").Include("~/Scripts/d3/d3.v3.js", "~/Scripts/d3/line.v1.js"));
             bundles.Add(new ScriptBundle("~/bundles/linechart").Include("~/Scripts/d3/line.v1.js"));
             bundles.Add(new StyleBundle("~/Content/Charts").Include("~/Content/Chart/Chart.css"));
             bundles.Add(new ScriptBundle("~/bundles/TranslateSliders").Include("~/Scripts/review/translateSlider.js"));
@@ -193,9 +200,9 @@ namespace RadialReview {
 
             bundles.Add(new StyleBundle("~/Content/ClientDetails").Include(
                     "~/Content/Chart/Scatter.v2.css",
-                  //"~/Content/Chart/Scatter.v2.css",
+                //"~/Content/Chart/Scatter.v2.css",
                     "~/Content/ReportBuilder/evaluation.css",
-                  //"~/Content/ReportBuilder/evaluation.css",
+                //"~/Content/ReportBuilder/evaluation.css",
                     "~/Content/Chart/Chart.css",
                     "~/Content/ReportBuilder/ClientDetails.css",
                     "~/Content/chart.css"
@@ -245,9 +252,14 @@ namespace RadialReview {
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/L10Wizard").Include("~/Scripts/Wizard/wizard.js", "~/Scripts/L10/L10Wizard.js", "~/Scripts/L10/L10.js"));
-            bundles.Add(new StyleBundle("~/Content/L10Wizard").Include("~/Content/L10/L10Wizard.css"));
+            bundles.Add(new StyleBundle("~/Content/L10Wizard").Include(
+                "~/Content/L10/L10Wizard.css",
+                "~/Content/Angular/xeditable.min.css",
+                "~/Content/Angular/tablesort.css",
+                "~/Content/Angular/livesearch.css"
+            ));
             bundles.Add(new ScriptBundle("~/bundles/SetCard").Include("~/Scripts/jquery/jquery.redirect.js"));
-                                              
+
             //_L10App.cshtml
             bundles.Add(new ScriptBundle("~/bundles/L10js").Include("~/Scripts/jquery/jquery.ba-throttle-debounce.js", "~/Scripts/L10/L10.js"));
 
@@ -273,7 +285,8 @@ namespace RadialReview {
 
             bundles.Add(new ScriptBundle("~/bundles/main").Include(
                       "~/Scripts/Main/radial.js",
-                        /*"~/Scripts/jquery.signalR-{version}.js",Was deleted*/
+                      "~/Scripts/Main/log-helper.js",
+                /*"~/Scripts/jquery.signalR-{version}.js",Was deleted*/
                       "~/Scripts/jquery/jquery.tablesorter.js",
                       "~/Scripts/Main/finally.js",
                       "~/Scripts/Main/intercom.min.js",

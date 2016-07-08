@@ -154,8 +154,8 @@ namespace RadialReview.Controllers
 				user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
                 if (user._ClientTimestamp!=null)
                 {
-                    var diff = (DateTime.UtcNow - user._ClientTimestamp.Value.ToDateTime()).TotalMinutes;
-                    Thread.SetData(Thread.GetNamedDataSlot("timeOffset"), diff);
+                    var diff = (int)(Math.Round((DateTime.UtcNow - user._ClientTimestamp.Value.ToDateTime()).TotalMinutes/30.0)*30.0);
+                    user._ClientOffset = diff;// Thread.SetData(Thread.GetNamedDataSlot("timeOffset"), diff);
                 }
 			}
 			return user;

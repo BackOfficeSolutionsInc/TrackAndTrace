@@ -10,13 +10,14 @@
     //var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
     var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
     var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key" : "";
+    var allowEditOwner = ViewBag.AllowEditOwner == null || ((bool)ViewBag.AllowEditOwner) == true;
 
     var filter = (ViewBag.Filter ?? " | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)");
 
 
     var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
     var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
-    
+
     var attrLookup = new Dictionary<string, string>(){
         {"checkbox-column",""},
         {"priority-column",""},
@@ -31,7 +32,7 @@
 
 }
 
-<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak issues-list-container app scroller">
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak issues-list-container app scroller issues-pane">
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
         <div class="row">
             <div class="col-md-12 priority-{{@(selector).Prioritization}}">
@@ -44,7 +45,7 @@
                                 <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" md-order-by="Complete">&nbsp;</th>
                                 <th md-column @(attrLookup["priority-column"]) class="priority-column" md-order-by="Priority">Priority</th>
                                 <th md-column @(attrLookup["owner-column"]) class="owner-column" md-order-by="Owner.Name">&nbsp;</th>
-                                <th md-column @(attrLookup["issue-column"]) class="issue-column" md-order-by="Name" style="padding-left: 4px;">Issue</th>
+                                <th md-column @(attrLookup["issue-column"]) class="issue-column message-column" md-order-by="Name" style="padding-left: 4px;">Issue</th>
                                 <th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="CreateTime">Created</th>
                                 <th md-column md-numeric @(attrLookup["complete-column"]) class="complete-column" md-order-by="CompleteTime">Completed</th>
                                 <th md-column md-numeric @(attrLookup["vto-column"]) class="vto-column"></th>
@@ -65,11 +66,24 @@
                                     <priority ng-model="issue.Priority" ng-change="functions.sendUpdate(issue)"></priority>
                                 </td>
                                 <td md-cell style="vertical-align: top" class="owner-column picture-column">
-                                    <a href="#" data-display="false" data-value="{{issue.Owner.Id}}" data-placement="right" class="inlineEdit" data-type="select" data-pk="{{::issue.Id}}" data-url="/L10/XUpdateIssue" data-name="owner" data-source="/Dropdown/MeetingMembers/{{::model.Id}}?userId=true">
-                                        <profile-image user="issue.Owner"></profile-image>
-                                    </a>
+                                    <span class="item-wrapper place-right">
+                                        @if (allowEditOwner) {
+                                            <span onaftersave="functions.sendUpdate(issue)"
+                                                  editable-select="issue.Owner"
+                                                  onshow="loadPossibleOwners()"
+                                                  e-ng-options="s as s.Name for s in possibleOwners">
+                                                <profile-image user="issue.Owner"></profile-image>
+                                            </span>
+                                        } else {
+                                            <profile-image user="issue.Owner"></profile-image>
+
+                                        }
+                                    </span>
+                                    @*<a href="#" data-display="false" data-value="{{issue.Owner.Id}}" data-placement="right" class="inlineEdit" data-type="select" data-pk="{{::issue.Id}}" data-url="/L10/XUpdateIssue" data-name="owner" data-source="/Dropdown/MeetingMembers/{{::model.Id}}?userId=true">
+                                            <profile-image user="issue.Owner"></profile-image>
+                                        </a>*@
                                 </td>
-                                <td md-cell class="issue-column" style="width:100%;padding-left:2px" ng-click="@(detailsCode)">
+                                <td md-cell class="issue-column message-column" style="width:100%;padding-left:2px" ng-click="@(detailsCode)">
                                     @*<div style="padding-top: 6px;">{{issue.Name}}</div><div style="padding-top: 6px;"></div>*@
 
                                     <input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 400}" type="text" @*ng-if="model.Selected!=issue.Key"*@ ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />

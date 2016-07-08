@@ -47,10 +47,10 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static void UpdateVTO(ISession s, long vtoId, Action<dynamic> action)
+        public static void UpdateVTO(ISession s, long vtoId,string connectionId, Action<dynamic> action)
         {
             var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-            var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId));
+            var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
             action(group);
         }
 
@@ -107,10 +107,10 @@ namespace RadialReview.Accessors
                     if (ang.L10Recurrence != null) {
                         try {
                             var recur = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, false);
-                            var isLeadership = recur.TeamType == L10TeamType.LeadershipTeam;
-                            if (isLeadership) {
-                                ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
-                            }
+                            //var isLeadership = recur.TeamType == L10TeamType.LeadershipTeam;
+                            //if (isLeadership) {
+                             //   ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
+                            //}
                         } catch (Exception e) {
 
                         }
@@ -532,7 +532,7 @@ namespace RadialReview.Accessors
                     s.Update(coreFocus);
 
                     var update = new AngularUpdate() { AngularCoreFocus.Create(coreFocus) };
-                    UpdateVTO(s, coreFocus.Vto.Id, x => x.update(update));
+                    UpdateVTO(s, coreFocus.Vto.Id,connectionId, x => x.update(update));
                     tx.Commit();
                     s.Flush();
                 }
@@ -602,7 +602,7 @@ namespace RadialReview.Accessors
                     s.Flush();
 
                     var update = new AngularUpdate() { AngularVtoRock.Create(rock), new AngularRock(rock.Rock), };
-                    UpdateVTO(s, rock.Vto.Id, x => x.update(update));
+                    UpdateVTO(s, rock.Vto.Id,null, x => x.update(update));
                 }
             }
         }
@@ -618,6 +618,8 @@ namespace RadialReview.Accessors
                     var perm = PermissionsUtility.Create(s, caller).EditVTO(rock.Vto.Id);
 
                     var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+
+                    bool skipUpdate = false;
 
                     if (deleted != null)
                     {
@@ -661,15 +663,23 @@ namespace RadialReview.Accessors
                                     }
                                 }
 
-                                var recurRocks = L10Accessor.GetRocksForRecurrence(s, perm, vto.L10Recurrence.Value);
+                                //var recurRocks = L10Accessor.GetRocksForRecurrence(s, perm, vto.L10Recurrence.Value);
                                 var arecur = new AngularRecurrence(vto.L10Recurrence.Value)
                                 {
-                                    Rocks = recurRocks.Select(x => new AngularRock(x.ForRock)).ToList(),
+                                    Rocks = AngularList.Create(AngularListType.Remove,new AngularRock(rock.Rock.Id).AsList()),
                                 };
                                 var group1 = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(vto.L10Recurrence.Value));
                                 group1.update(new AngularUpdate() { arecur });
-                            }
+                            }    
+                            var update = new AngularUpdate() { 
+                                new AngularQuarterlyRocks(){
+                                    Rocks = AngularList.Create(AngularListType.Remove,AngularVtoRock.Create(rock).AsList())
+                                }
+                            };
+                            UpdateVTO(s, rock.Vto.Id, null, x => x.update(update));
+                            skipUpdate = true; // Assumes all you do is delete the rock.
                         }
+                    
                     }
                     else
                     {
@@ -698,8 +708,10 @@ namespace RadialReview.Accessors
                     tx.Commit();
                     s.Flush();
 
-                    var update = new AngularUpdate() { AngularVtoRock.Create(rock) };
-                    UpdateVTO(s, rock.Vto.Id, x => x.update(update));
+                    if (!skipUpdate) {
+                        var update2 = new AngularUpdate() { AngularVtoRock.Create(rock) };
+                        UpdateVTO(s, rock.Vto.Id, connectionId, x => x.update(update2));
+                    }
 
 
                 }
@@ -746,9 +758,9 @@ namespace RadialReview.Accessors
 
             if (updateFunc != null) {
                 if (skipUpdate)
-                    UpdateVTO(s, vtoId, x => x.update(updateFunc(vto, angularItems)));
+                    UpdateVTO(s, vtoId, null, x => x.update(updateFunc(vto, angularItems)));
 
-                UpdateVTO(s, vtoId, x => x.update(new AngularUpdate() { updateFunc(vto, angularItems) }));
+                UpdateVTO(s, vtoId, null, x => x.update(new AngularUpdate() { updateFunc(vto, angularItems) }));
             }
             return str;
         }
@@ -856,9 +868,9 @@ namespace RadialReview.Accessors
             vtoRocks.Add(vtoRock);
 
 
-            var angularItems = AngularList.Create(AngularListType.ReplaceAll, AngularVtoRock.Create(vtoRocks));
+            var angularItems = AngularList.Create(AngularListType.Add, AngularVtoRock.Create(vtoRock).AsList());
             var update = new AngularUpdate() { new AngularQuarterlyRocks(vto.QuarterlyRocks.Id) { Rocks = angularItems } };
-            UpdateVTO(s, vtoId, x => x.update(update));
+            UpdateVTO(s, vtoId,null, x => x.update(update));
 
             /*if (vto.L10Recurrence.HasValue)
             {
@@ -899,7 +911,7 @@ namespace RadialReview.Accessors
             var rock = new RockModel() {
                 CreateTime = now,
                 OrganizationId = organizationId,
-                CompanyRock = false,
+                CompanyRock = true,
                 Category = category,
                 //Period = s.Load<PeriodModel>(vto.PeriodId),
                 PeriodId = vto.PeriodId,

@@ -8,7 +8,7 @@
 
         <span class="pull-left navbar-icon-container hidden-xs">
             @if (((int?)ViewBag.Organizations ?? 0) > 0) {
-                <span id="header-tab-new-issue" class="navbar-icon-button glyphicon glyphicon-pushpin issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+                <span id="header-tab-new-issue" class="navbar-icon-button icon fontastic-icon-pinboard glyphico1n glyphicon-pushpi1n issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
                 <span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
             }
         </span>
@@ -72,7 +72,7 @@
                         <li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
 
                         <li class="divider"></li>
-                            <li><a href="mailto:support@mytractiontools.com">Contact Support</a></li>
+                            <li><a href="#" onclick="supportEmail('@ViewBag.Title','@ProductStrings.SupportEmail')"><span class="icon fontastic-icon-lifebuoy pull-right" style="color:#EF7622"></span>Contact Support</a></li>
                         <li class="divider"></li>
                         @if (((int?)ViewBag.Organizations ?? 0) > 1) {
                             <li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")" id="header-tab-dropdown-changeorganization">

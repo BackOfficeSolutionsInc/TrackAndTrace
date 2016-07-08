@@ -597,6 +597,7 @@ namespace RadialReview.Controllers {
             public AngularScorecard Scorecard { get; set; }
 
             public DateTime CurrentTime { get; set; }
+            public int NumberOfWeeks { get; set; }
 
             /*
             public Table EvaluationTable
@@ -905,6 +906,7 @@ namespace RadialReview.Controllers {
                 CurrentTime = DateTime.UtcNow;
             }
 
+
         }
 
         [Access(AccessLevel.UserOrganization)]
@@ -912,8 +914,10 @@ namespace RadialReview.Controllers {
         {
             var reviewId = id;
             var review = _ReviewAccessor.GetReview(GetUser(), reviewId, false, false);
+            var start = review.DueDate.AddDays(-7 * 13);
+            var end = review.DueDate.AddDays(14);
 
-            var scorecard = ScorecardAccessor.GetAngularScorecardForUser(GetUser(), review.ForUserId, new DateRange(review.DueDate.AddDays(-7 * 13), review.DueDate.AddDays(14)));
+            var scorecard = ScorecardAccessor.GetAngularScorecardForUser(GetUser(), review.ForUserId,new DateRange(start,end),includeNextWeek:true,now:review.DueDate);
             foreach (var m in scorecard.Measurables) {
                 m.Disabled = true;
             }
@@ -924,7 +928,11 @@ namespace RadialReview.Controllers {
             }
 
             var container = new AngularRecurrence(-1) {
-                Scorecard = scorecard
+                Scorecard = scorecard,
+                date = new AngularDateRange() {
+                    startDate = start,
+                    endDate=end
+                }
             };
             return Json(container, JsonRequestBehavior.AllowGet);
 
@@ -1002,6 +1010,7 @@ namespace RadialReview.Controllers {
                 JobDescription = user.JobDescription,
                 ChartTypes = chartTypes,
                 NextRocks = nextRocks,
+                NumberOfWeeks = TimingUtility.NumberOfWeeks(GetUser())
                 // HasScorecard = hasScorecard
                 //Period = reviewContainer.Period,
                 //NextPeriod = reviewContainer.NextPeriod,

@@ -5,6 +5,8 @@
     function radialFactory($scope, hubName, rejoin) {
     
 
+        $scope.dateFormat = $scope.dateFormat || window.dateFormat || "MM-dd-yyyy";
+
         $scope.functions = $scope.functions || {};
 
         $scope.functions.showModal = function (title, pull, push, callback, validation, onSuccess) {

@@ -176,7 +176,7 @@ namespace RadialReview.Controllers
 
 			var scorecardType = GetUser().Organization.Settings.ScorecardPeriod;
 			model.ScorecardType = scorecardType;
-			model.Weeks = TimingUtility.GetPeriods(sow, offset, DateTime.UtcNow, model.MeetingStart, /*model.Scores,*/ true, scorecardType, new YearStart(GetUser().Organization));
+			model.Weeks = TimingUtility.GetPeriods(GetUser(), DateTime.UtcNow, model.MeetingStart, /*model.Scores,*/ true);
 			return PartialView("Scorecard", model);
 			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
 			model.EndDate = ordered.LastOrDefault().NotNull(x => DateTime.UtcNow).AddDays(7);

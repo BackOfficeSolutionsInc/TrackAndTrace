@@ -22,7 +22,7 @@ namespace RadialReview.Api.V0
 		{
 			var org = GetUser().Organization;
 			var now = DateTime.UtcNow;
-			var periods = TimingUtility.GetPeriods(org.Settings.WeekStart, org.GetTimezoneOffset(), now, now.AddDays(7), /*null,*/ true, org.Settings.ScorecardPeriod, new YearStart(org),true);
+			var periods = TimingUtility.GetPeriods(org, now, now.AddDays(7), /*null,*/ true, true);
 
 
 			return periods.FirstOrDefault(x => x.IsCurrentWeek);

@@ -22,23 +22,15 @@ using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Accessors {
     public class ScorecardAccessor {
-        public static AngularScorecard GetAngularScorecardForUser(UserOrganizationModel caller, long userId, DateRange range, bool includeAdmin = true)
+        public static AngularScorecard GetAngularScorecardForUser(UserOrganizationModel caller, long userId, DateRange range, bool includeAdmin = true, bool includeNextWeek = true, DateTime? now = null)
         {
             var measurables = ScorecardAccessor.GetUserMeasurables(caller, userId, ordered: true, includeAdmin: true);
 
-            var scorecardStart = range.StartTime;
-            var scorecardEnd = range.EndTime;
+            var scorecardStart = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
+            var scorecardEnd = range.EndTime.AddDays(6).StartOfWeek(DayOfWeek.Sunday);
 
             var scores = ScorecardAccessor.GetUserScores(caller, userId, scorecardStart, scorecardEnd, includeAdmin: includeAdmin);
-            return new AngularScorecard(-1,
-                    caller.Organization.Settings.WeekStart,
-                    caller.Organization.GetTimezoneOffset(),
-                    measurables.Select(x => new AngularMeasurable(x) { }),
-                    scores.ToList(),
-                    DateTime.UtcNow,
-                    caller.Organization.Settings.ScorecardPeriod,
-                    new YearStart(caller.Organization)
-                );
+            return new AngularScorecard(-1,caller,measurables.Select(x => new AngularMeasurable(x) { }),scores.ToList(),now,range,includeNextWeek,now);
         }
 
         public static List<ScoreModel> GetScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end, bool loadUsers)
@@ -355,7 +347,10 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
-                    var query = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.DateDue >= sd && x.DateDue <= ed);
+                    var scorecardStart = sd.StartOfWeek(DayOfWeek.Sunday);
+                    var scorecardEnd = ed.AddDays(6.999).StartOfWeek(DayOfWeek.Sunday);
+
+                    var query = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.ForWeek >= scorecardStart && x.ForWeek <= scorecardEnd);
 
 
                     if (includeAdmin) {

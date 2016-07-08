@@ -66,6 +66,7 @@ namespace RadialReview
 	        GlobalConfiguration.Configure(WebApiConfig.Register);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+           // ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
 
             //ServerUtility.RegisterCacheEntry();
             //ServerUtility.Reschedule();

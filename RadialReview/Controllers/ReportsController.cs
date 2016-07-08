@@ -132,7 +132,7 @@ namespace RadialReview.Controllers
         public ActionResult List(long id){
             var reviewContainerId = id; 
             var user = GetUser().Hydrate().ManagingUsers(true).Execute();
-            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false, true);
+            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false, true,deduplicate:true);
             var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
             var acceptedReviews = new List<ReviewModel>();
@@ -151,6 +151,7 @@ namespace RadialReview.Controllers
                 }
             }
             reviewContainer.Reviews = acceptedReviews;
+            reviewContainer.Reviews = reviewContainer.Reviews.GroupBy(x => x.ForUserId).Select(x => x.First()).ToList();
 
             var model = new ReviewsViewModel(reviewContainer);
             return View(model);

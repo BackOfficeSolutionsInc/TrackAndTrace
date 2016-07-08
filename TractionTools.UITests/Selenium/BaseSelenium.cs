@@ -75,7 +75,7 @@ namespace TractionTools.UITests.Selenium {
         private static string TempFolder;
         private WithBrowsers? _RequiredBrowsers = null;
         private Dictionary<IWebDriver, Credentials> currentDriverUser = new Dictionary<IWebDriver, Credentials>();
-        private Dictionary<Guid, Credentials> _AdminCredentials = new Dictionary<Guid, Credentials>();
+        private static Dictionary<Guid, Credentials> _AdminCredentials = new Dictionary<Guid, Credentials>();
         private static object lck = new object();
 
         public static FirefoxDriver _FirefoxDriver;
@@ -350,7 +350,7 @@ namespace TractionTools.UITests.Selenium {
             }
             test(ctx);
         }
-        protected async Task<Credentials> GetAdminCredentials(Guid id)
+        protected static async Task<Credentials> GetAdminCredentials(Guid id)
         {
             if (!_AdminCredentials.ContainsKey(id)) {
                 var user = await GetAdminUser(id);

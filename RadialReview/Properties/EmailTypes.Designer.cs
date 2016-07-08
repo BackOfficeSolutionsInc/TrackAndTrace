@@ -61,6 +61,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CustomerSupport.
+        /// </summary>
+        public static string CustomerSupport {
+            get {
+                return ResourceManager.GetString("CustomerSupport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DailyTodo.
         /// </summary>
         public static string DailyTodo {

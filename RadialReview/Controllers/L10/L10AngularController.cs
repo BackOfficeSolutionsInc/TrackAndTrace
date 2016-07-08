@@ -91,7 +91,7 @@ namespace RadialReview.Controllers {
                 ForUserId = GetUser().Id,
             };
             L10Accessor.CreateRock(GetUser(), recurrenceId, AddRockVm.CreateRock(recurrenceId, rock, true));
-            return Json(ResultObject.SilentSuccess(rock), JsonRequestBehavior.AllowGet);
+            return Json(ResultObject.SilentSuccess(new AngularRock(rock)), JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
@@ -116,7 +116,9 @@ namespace RadialReview.Controllers {
         public async Task<JsonResult> AddAngularTodo(long id)
         {
             var recurrenceId = id;
-            await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel());
+            await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel() {
+                ForRecurrenceId=id
+            });
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
         [HttpPost]

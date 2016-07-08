@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Models;
+using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,8 @@ namespace TractionTools.Tests.Utilities {
                     o.Settings.TimeZoneId = "GMT Standard Time";
                     s.Save(o);
 
+                    var plan = PaymentAccessor.GeneratePlan(PaymentPlanType.Professional_Monthly_March2016, new DateTime(2016,5,14));
+                    PaymentAccessor.AttachPlan(s, o, plan);
                     //User
                     var u = new UserOrganizationModel() { Organization = o };
                     s.Save(u);
