@@ -295,8 +295,8 @@ The {2} Team</value>
     <value>You have a new survey to complete</value>
   </data>
   <data name="PaymentException_Body" xml:space="preserve">
-    <value>&lt;p&gt;Payment Failed: {0}&lt;/p&gt;&lt;p&gt;{1}&lt;/p&gt;&lt;p&gt;{2}&lt;/p&gt;</value>
-    <comment>[Message,Details,Trace]</comment>
+    <value>&lt;p&gt;Payment Failed: {0}&lt;/p&gt;&lt;p&gt;{1}&lt;/p&gt;&lt;p&gt;{2}&lt;/p&gt;&lt;p&gt;{3}&lt;/p&gt;</value>
+    <comment>[Message,Details,Trace,id_taskID]</comment>
   </data>
   <data name="PaymentException_Subject" xml:space="preserve">
     <value>Payment Failed for {0}</value>

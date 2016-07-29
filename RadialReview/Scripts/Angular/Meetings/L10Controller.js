@@ -243,8 +243,13 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
             return "";
 
         var v = s.Measured;
-        var goal = s.Measurable.Target;
-        var dir = s.Measurable.Direction;
+        var goal = s.Target;//s.Measurable.Target;
+        var dir = s.Direction;//s.Measurable.Direction;
+
+        if (typeof (goal) === "undefined")
+            goal = s.Measurable.Target;
+        if (typeof (dir) === "undefined")
+            dir = s.Measurable.Direction;
         if (typeof (goal) === "undefined") {
             goal = $("[data-measurable=" + s.Measurable.Id + "][data-week=" + s.ForWeek + "]").data("goal");
             console.log("goal not found, trying element. Found: " + goal);
@@ -252,22 +257,31 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 
         if (!$.trim(v)) {
             return "";
-        } else if ($.isNumeric(v)) {
-            if (dir == "GreaterThan" || dir == 1) {
-                if (+v >= +goal)
-                    return "success";
-                else
-                    return ("danger");
-            } else {
-                if (+v < +goal)
-                    return ("success");
-                else
-                    return ("danger");
-            }
-
         } else {
-            return ("error");
+            var met = metGoal(dir, goal, v);
+            if (met == true)
+                return "success";
+            else if (met == false)
+                return "danger";
+            else
+                return "error";
         }
+        //if ($.isNumeric(v)) {
+        //    if (dir == "GreaterThan" || dir == 1) {
+        //        if (+v >= +goal)
+        //            return "success";
+        //        else
+        //            return ("danger");
+        //    } else {
+        //        if (+v < +goal)
+        //            return ("success");
+        //        else
+        //            return ("danger");
+        //    }
+
+        //} else {
+        //    return ("error");
+        //}
     };
 
     $scope.proxyLookup = {};
@@ -337,7 +351,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 
             $scope.proxyLookup[wKey][measurableId] = {
                 Id: -1, Type: "AngularScore", ForWeek: week, Measured: null,
-                Measurable: measurable
+                Measurable: measurable,
+                Target: measurable.Target, // WRONG (scores generated before nearest)
+                Direction: measurable.Direction
             };
         }
 

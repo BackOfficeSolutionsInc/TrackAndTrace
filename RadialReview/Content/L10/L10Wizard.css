@@ -1743,7 +1743,7 @@ body,
 .wizard .delete-row:hover {
   color: #3e3935;
 }
-.modal-content {
+#class-container:not(.modal-icon) .modal-content {
   background: #fff;
   border-radius: 2px;
   padding: 1rem;
@@ -1760,13 +1760,13 @@ body,
         background-color: @traction-orange;
     }*/
 }
-.modal-content .modal-header {
+#class-container:not(.modal-icon) .modal-content .modal-header {
   border-bottom: none;
 }
-.modal-content .modal-footer {
+#class-container:not(.modal-icon) .modal-content .modal-footer {
   border-top: none;
 }
-.modal-content .btn {
+#class-container:not(.modal-icon) .modal-content .btn {
   margin: 0;
   padding: 9px;
   border: none;
@@ -1784,48 +1784,48 @@ body,
   font-family: 'Roboto', san-sarif;
   outline: none;
 }
-.modal-content .btn:disabled,
-.modal-content .btn.disabled,
-.modal-content .btn:disabled:active,
-.modal-content .btn.disabled:active,
-.modal-content .btn:disabled:active:hover,
-.modal-content .btn.disabled:active:hover {
+#class-container:not(.modal-icon) .modal-content .btn:disabled,
+#class-container:not(.modal-icon) .modal-content .btn.disabled,
+#class-container:not(.modal-icon) .modal-content .btn:disabled:active,
+#class-container:not(.modal-icon) .modal-content .btn.disabled:active,
+#class-container:not(.modal-icon) .modal-content .btn:disabled:active:hover,
+#class-container:not(.modal-icon) .modal-content .btn.disabled:active:hover {
   color: rgba(0, 0, 0, 0.26) !important;
   background-color: transparent !important;
   cursor: default;
 }
-.modal-content .btn.btn-primary {
+#class-container:not(.modal-icon) .modal-content .btn.btn-primary {
   /*background-color: @traction-orange;*/
   background-color: transparent;
   color: #ef7622;
 }
-.modal-content .btn.btn-primary:not(:disabled):not(.disabled):focus,
-.modal-content .btn.btn-primary:not(:disabled):not(.disabled):hover {
+#class-container:not(.modal-icon) .modal-content .btn.btn-primary:not(:disabled):not(.disabled):focus,
+#class-container:not(.modal-icon) .modal-content .btn.btn-primary:not(:disabled):not(.disabled):hover {
   background-color: transparent !important;
   color: #ef7622 !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
   outline: none;
 }
-.modal-content .btn.btn-primary:not(:disabled):not(.disabled):active,
-.modal-content .btn.btn-primary:not(:disabled):not(.disabled):active:hover {
+#class-container:not(.modal-icon) .modal-content .btn.btn-primary:not(:disabled):not(.disabled):active,
+#class-container:not(.modal-icon) .modal-content .btn.btn-primary:not(:disabled):not(.disabled):active:hover {
   background-color: rgba(239, 118, 34, 0.12) !important;
 }
-.modal-content .btn.btn-default {
+#class-container:not(.modal-icon) .modal-content .btn.btn-default {
   /*background-color: @traction-orange;*/
   background-color: transparent;
   color: #5e5e5e;
 }
-.modal-content .btn.btn-default:not(:disabled):not(.disabled):focus,
-.modal-content .btn.btn-default:not(:disabled):not(.disabled):hover {
+#class-container:not(.modal-icon) .modal-content .btn.btn-default:not(:disabled):not(.disabled):focus,
+#class-container:not(.modal-icon) .modal-content .btn.btn-default:not(:disabled):not(.disabled):hover {
   background-color: transparent !important;
   color: #5e5e5e !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
   outline: none;
 }
-.modal-content .btn.btn-default:not(:disabled):not(.disabled):active,
-.modal-content .btn.btn-default:not(:disabled):not(.disabled):active:hover {
+#class-container:not(.modal-icon) .modal-content .btn.btn-default:not(:disabled):not(.disabled):active,
+#class-container:not(.modal-icon) .modal-content .btn.btn-default:not(:disabled):not(.disabled):active:hover {
   background-color: rgba(94, 94, 94, 0.12) !important;
 }
 /*@-moz-keyframes grow-in {

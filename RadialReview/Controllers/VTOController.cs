@@ -75,6 +75,7 @@ namespace RadialReview.Controllers
 	    }
 
 		[Access(AccessLevel.UserOrganization)]
+        [OutputCache(NoStore = true, Duration = 0)]
 		public JsonResult Data(long id)
 		{
 			var model = VtoAccessor.GetAngularVTO(GetUser(), id);

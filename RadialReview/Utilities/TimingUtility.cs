@@ -80,7 +80,7 @@ namespace RadialReview.Utilities {
             }
         }
 
-        public static DateTime ScorecardRangeEnd(ScorecardPeriod scorecardType, DateTime current, bool inclusive = false)
+        public static DateTime ScorecardRangeEnd(DateTime clientTime,ScorecardPeriod scorecardType, DateTime current, bool inclusive = false)
         {
             var extraDay = -1;
             if (inclusive)

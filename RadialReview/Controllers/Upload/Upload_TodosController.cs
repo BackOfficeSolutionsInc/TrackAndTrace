@@ -39,7 +39,7 @@ namespace RadialReview.Controllers {
                 var m = new UploadTodosSelectedDataVM() { };
                 var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
                 var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
-                m.AllUsers = allUsers.ToSelectList(x => x.Item1 + " " + x.Item2, x => x.Item3);
+                m.AllUsers = allUsers.ToSelectList(x => x.FirstName + " " + x.LastName, x => x.UserOrgId);
                 var now = DateTime.UtcNow;
                 if (fileType == FileType.CSV && (users != null || details != null || duedate != null)) {
                     var csvData = ui.Csv;
@@ -177,7 +177,7 @@ namespace RadialReview.Controllers {
             public List<string> Users { get; set; }
             public List<string> DetailsStrings { get; set; }
             public List<DateTime> DueDates { get; set; }
-            public Dictionary<string, DiscreteDistribution<Tuple<string, string, long>>> UserLookup { get; set; }
+            public Dictionary<string, DiscreteDistribution<TinyUser>> UserLookup { get; set; }
 
             public bool IncludeUsers { get; set; }
             public bool IncludeDetails { get; set; }

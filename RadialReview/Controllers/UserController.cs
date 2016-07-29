@@ -516,10 +516,10 @@ namespace RadialReview.Controllers {
             results = Math.Max(0, Math.Min(100, results));
             var o = UserAccessor.Search(GetUser(), GetUser().Organization.Id, q, results, excludeLong)
             .Select(x => new {
-                name = x.Item1.ToTitleCase()+" "+x.Item2.ToTitleCase(),
-                first = x.Item1.ToTitleCase(), 
-                last = x.Item2.ToTitleCase(), 
-                id = x.Item3 
+                name = x.FirstName.ToTitleCase()+" "+x.LastName.ToTitleCase(),
+                first = x.FirstName.ToTitleCase(),
+                last = x.LastName.ToTitleCase(), 
+                id = x.UserOrgId 
             }).ToList();
             return Json(ResultObject.Create(o), JsonRequestBehavior.AllowGet);
         }

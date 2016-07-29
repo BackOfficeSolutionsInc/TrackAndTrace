@@ -89,6 +89,8 @@
                     // Fire off callback:
                     settings.onResize.call(this);
 
+                    scrollTop = Math.max(20, scrollTop);
+
                     // Either animate or directly apply height:
                     settings.animate && textarea.css('display') === 'block' ?
                         toChange.stop().animate({ height: scrollTop }, settings.animateDuration, settings.animateCallback)

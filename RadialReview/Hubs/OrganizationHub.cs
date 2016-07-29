@@ -12,6 +12,11 @@ namespace RadialReview.Hubs {
 
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static string GenerateId(long organizationId)
+        {
+            return "OrganzationId_" + organizationId;
+        }
+
         public void Join()
         {
             log.Info("Organization.Join (" + Context.ConnectionId + ")");

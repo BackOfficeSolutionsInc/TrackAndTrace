@@ -24,7 +24,14 @@ namespace RadialReview.Models.Todo
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime DueDate { get; set; }
+        /// <summary>
+        /// When did the todo get completed?
+        /// </summary>
 		public virtual DateTime? CompleteTime { get; set; }
+        /// <summary>
+        /// When did the todo get closed out during a meeting
+        /// </summary>
+        public virtual DateTime? CloseTime { get; set; }
 		public virtual String Message { get; set; }
 		public virtual String Details { get; set; }
 		public virtual long CreatedById { get; set; }
@@ -68,6 +75,7 @@ namespace RadialReview.Models.Todo
 
                 Map(x => x.TodoType).CustomType<TodoType>();
 
+                Map(x => x.CloseTime);
                 Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.CompleteTime);

@@ -33,7 +33,7 @@
                 @{var i = 0;}
                 @foreach (var row in Model.Scores) {
                     try { 
-                    var users = Model.UserLookup[Model.Users[i]].GetProbabilities().OrderByDescending(x => x.Value).Select(x => x.Key).ToSelectList(x => x.Item1 + " " + x.Item2, x => x.Item3);
+                    var users = Model.UserLookup[Model.Users[i]].GetProbabilities().OrderByDescending(x => x.Value).Select(x => x.Key).ToSelectList(x => x.FirstName + " " + x.LastName, x => x.UserOrgId);
                     if (!users.Any()) {
                         users = Model.AllUsers.OrderBy(c=>c.Text).ToList();
                     }

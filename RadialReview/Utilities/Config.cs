@@ -316,6 +316,9 @@ namespace RadialReview.Utilities {
             return GetAppSetting("NotesServer_ApiKey");
         }
 
+       
+
+
         public class RedisConfig {
             public string Server { get; set; }
             public int Port { get; set; }

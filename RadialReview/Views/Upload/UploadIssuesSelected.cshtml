@@ -64,7 +64,7 @@
                     var users = !Model.IncludeUsers?Model.AllUsers.Select((x,ii)=>{
                         x.Selected = (ii == 0);
                         return x;
-                    }).OrderBy(x=>x.Text).ToList():Model.UserLookup[Model.Users[i]].GetProbabilities().OrderByDescending(x => x.Value).Select(x => x.Key).ToSelectList(x => x.Item1 + " " + x.Item2, x => x.Item3);
+                    }).OrderBy(x=>x.Text).ToList():Model.UserLookup[Model.Users[i]].GetProbabilities().OrderByDescending(x => x.Value).Select(x => x.Key).ToSelectList(x => x.FirstName + " " + x.LastName, x => x.UserOrgId);
                     var issue = Model.Issues[i];
                     var details =   Model.DetailsStrings[i];
                     <tr>

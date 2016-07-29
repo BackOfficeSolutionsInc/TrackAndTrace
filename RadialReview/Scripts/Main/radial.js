@@ -253,6 +253,55 @@ function generateDatepicker(selector, date, name, id) {
     });
 }
 
+function metGoal(direction, goal, measured) {
+    
+    if (!$.trim(measured)) {
+        return undefined;
+    } else if ($.isNumeric(measured)) {
+        var m = +measured;
+        var g = +goal;
+        if (direction == "GreaterThan" || direction == 1) {
+            return m >= g;
+        } else if (direction == "LessThan" || direction == -1) {
+            return m < g;
+        } else if (direction == "LessThanOrEqual" || direction == -2) {
+            return m <= g;
+        } else if (direction == "GreaterThanNotEqual" || direction == 2) {
+            return m > g;
+        } else if (direction == "EqualTo" || direction == 0) {
+            return m == g;
+        } else {
+            console.log("Error: goal met could not be calculated. Unhandled direction: " + direction);
+            return undefined;
+        }
+    } else {
+        return undefined;
+    }
+}
+
+Date.prototype.addDays = function (pDays) {
+    var mDate = new Date(this.valueOf());
+    mDate.setDate(mDate.getDate() + pDays);
+    return mDate;
+};
+Date.prototype.startOfWeek = function (pStartOfWeek) {
+    var mDifference = this.getDay() - pStartOfWeek;
+
+    if (mDifference < 0) {
+        mDifference += 7;
+    }
+
+    return new Date(this.addDays(mDifference * -1));
+}
+
+function getWeekSinceEpoch(day)
+{
+    var oneDay = 24 * 60 * 60 * 1000;
+    var span = day.startOfWeek(0);
+    return Math.floor((span.getTime()/oneDay) / 7);
+}
+
+
 function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel) {
 
     $("#modal-icon").attr("class", "");
@@ -813,9 +862,9 @@ function profilePicture(url, name, initials) {
     }
 
     return "<span class='profile-picture'>" +
-		"<span class='picture-container' title='" + escapeString(name) + "'>" +
-			picture +
-	"</span>" +
+        "<span class='picture-container' title='" + escapeString(name) + "'>" +
+            picture +
+    "</span>" +
 "</span>";
 }
 
@@ -865,13 +914,13 @@ $.fn.flash = function (ms, backgroundColor, borderColor, color) {
     var originalColor = this.css('color');
 
     this.css({ 'border-color': borderColor, 'background-color': backgroundColor, "boxShadow": "0px 0px 5px 3px " + borderColor, "color": color })
-	.animate({ 'border-color': originalBorderColor, 'background-color': originalBackgroundColor, "boxShadow": "0px 0px 0px 0px " + borderColor, "color": originalColor }, ms, function () {
-	    $(this).css("boxShadow", originalBoxColor);
-	    $(this).css("background-color", "");
-	    $(this).css("border-color", "");
-	    $(this).css("color", "");
-	    $(this).css("boxShadow", "");
-	});
+    .animate({ 'border-color': originalBorderColor, 'background-color': originalBackgroundColor, "boxShadow": "0px 0px 0px 0px " + borderColor, "color": originalColor }, ms, function () {
+        $(this).css("boxShadow", originalBoxColor);
+        $(this).css("background-color", "");
+        $(this).css("border-color", "");
+        $(this).css("color", "");
+        $(this).css("boxShadow", "");
+    });
 
 
 };
@@ -925,8 +974,8 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
     if (typeof (ajaxOptions.data) === "string" && ajaxOptions.data.indexOf("_clientTimestamp") != -1) {
         return;
         /*var start = ajaxOptions.data.indexOf("_clientTimestamp")+17;
-		debugger;
-		date = ajaxOptions.data.substr(start).split("&")[0];*/
+        debugger;
+        date = ajaxOptions.data.substr(start).split("&")[0];*/
     }
 
     //var date = (new Date().getTime());
@@ -979,10 +1028,10 @@ function dateFormatter(date) {
 
 $(function () {
     /*$('img').hide().on('load', function () {
-		// do something, maybe:
-		$(this).fadeIn();
-		$(this).addClass("loaded");
-	});*/
+        // do something, maybe:
+        $(this).fadeIn();
+        $(this).addClass("loaded");
+    });*/
 
     $(window).bind('beforeunload', function () {
         if (document.activeElement) $(document.activeElement).blur();
@@ -1417,3 +1466,21 @@ function waitUntil(isready, success, error, count, interval) {
 
 //Debounce
 (function (n, t) { var $ = n.jQuery || n.Cowboy || (n.Cowboy = {}), i; $.throttle = i = function (n, i, r, u) { function o() { function o() { e = +new Date; r.apply(h, c) } function l() { f = t } var h = this, s = +new Date - e, c = arguments; u && !f && o(); f && clearTimeout(f); u === t && s > n ? o() : i !== !0 && (f = setTimeout(u ? l : o, u === t ? n - s : n)) } var f, e = 0; return typeof i != "boolean" && (u = r, r = i, i = t), $.guid && (o.guid = r.guid = r.guid || $.guid++), o }; $.debounce = function (n, r, u) { return u === t ? i(n, r, !1) : i(n, u, r !== !1) } })(this);
+
+
+///POLYFILLS
+Error.captureStackTrace = Error.captureStackTrace || function (obj) {
+    if (Error.prepareStackTrace) {
+        var frame = {
+            isEval: function () { return false; },
+            getFileName: function () { return "filename"; },
+            getLineNumber: function () { return 1; },
+            getColumnNumber: function () { return 1; },
+            getFunctionName: function () { return "functionName" }
+        };
+
+        obj.stack = Error.prepareStackTrace(obj, [frame, frame, frame]);
+    } else {
+        obj.stack = obj.stack || obj.name || "Error";
+    }
+};

@@ -178,12 +178,14 @@ namespace RadialReview {
             bundles.Add(new ScriptBundle("~/bundles/AccountabilityChart")
                 .Include(angularHelpers_Scripts)
             .Include(
-                "~/Scripts/d3/d3.min.js",
-                "~/Scripts/Angular/Helpers/d3/barchart.js",
+                "~/Scripts/d3/d3.js",
+                "~/Scripts/Angular/Helpers/d3/panzoom.js",
+                "~/Scripts/Angular/Helpers/d3/tree.js",
                 "~/Scripts/AccountabilityChart/accountabilityChart.js",
                 "~/Scripts/Angular/AccountabilityChart/ACController.js"
             ));
-            bundles.Add(new StyleBundle("~/Content/AccountabilityChart").Include("~/Content/AccountabilityChart/AccountabilityChart.css"));
+            bundles.Add(new StyleBundle("~/Content/AccChart")
+                .Include("~/Content/AccountabilityChart/AccountabilityChart.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/d3").Include("~/Scripts/d3/d3.min.js"));
             bundles.Add(new ScriptBundle("~/bundles/d3v3").Include("~/Scripts/d3/d3.v3.js", "~/Scripts/d3/line.v1.js"));
@@ -299,12 +301,14 @@ namespace RadialReview {
                 "~/Scripts/Grid/style.css"
             ));
             bundles.Add(new ScriptBundle("~/bundles/Dashboard").Include(
+                "~/Scripts/Dashboard/dashboard.js",
                 "~/Scripts/jquery/jquery.ba-throttle-debounce.js",
                 "~/Scripts/L10/L10.js",
                 "~/Scripts/L10/L10Scorecard.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/DashboardGrid").Include(
+                "~/Scripts/Dashboard/dashboard.js",
                 "~/Scripts/Grid/fixtures.js",
                 "~/Scripts/Grid/src/gridList.js",
                 "~/Scripts/Grid/src/jquery.gridList.js",

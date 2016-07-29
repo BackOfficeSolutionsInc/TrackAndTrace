@@ -40,7 +40,7 @@ namespace RadialReview.Controllers {
                 var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
                 var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
                 //var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
-                m.AllUsers = allUsers.ToSelectList(x => x.Item1 + " " + x.Item2, x => x.Item3);
+                m.AllUsers = allUsers.ToSelectList(x => x.FirstName + " " + x.LastName, x => x.UserOrgId);
                 if (fileType == FileType.CSV) {
                     var csvData = ui.Csv;
 
@@ -157,7 +157,7 @@ namespace RadialReview.Controllers {
             public List<string> Issues { get; set; }
             public List<string> Users { get; set; }
             public List<string> DetailsStrings { get; set; }
-            public Dictionary<string, DiscreteDistribution<Tuple<string, string, long>>> UserLookup { get; set; }
+            public Dictionary<string, DiscreteDistribution<TinyUser>> UserLookup { get; set; }
 
             public bool IncludeUsers { get; set; }
             public bool IncludeDetails { get; set; }

@@ -23,12 +23,9 @@ function initL10() {
     } catch (e) {
         console.error(e);
     }
-
-
-    //updateTime();
+    
     resizing();
     if (meetingStart && (isLeader || !followLeader)) {
-
         loadPage(window.location.hash.replace("#", ""));
     }
 
@@ -37,40 +34,12 @@ function initL10() {
         loadPage("startmeeting");
     }
 
-    //setInterval(updateTime, 100);
     $(window).resize(resizing);
 
     $(".agenda .agenda-items a").click(function () {
         var loc = $(this).data("location");
         loadPage(loc);
     });
-
-    //$("body").on("click", ".issuesModal:not(.disabled)", function () {
-    //    var dat = $(this).data();
-    //    var parm = $.param(dat);
-    //    var m = $(this).data("method");
-    //    if (!m)
-    //        m = "Modal";
-    //    var title = dat.title || "Add an issue";
-    //    showModal(title, "/Issues/" + m + "?" + parm, "/Issues/" + m);
-    //});
-
-    //$("body").on("click", ".todoModal:not(.disabled)", function () {
-    //    var dat = $(this).data();
-    //    var parm = $.param(dat);
-    //    var m = $(this).data("method");
-    //    if (!m)
-    //        m = "Modal";
-    //    var title = dat.title || "Add a to-do";
-    //    showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m, null, function () {
-    //        debugger;
-    //        if ($('#modalBody').find(".select-user").val() == null)
-    //            return "You must select at least one to-do owner.";
-    //        return true;
-    //    });
-    //});
-
-
 }
 
 function highlight(item) {
@@ -148,44 +117,51 @@ function updateTime() {
 
         if (typeof startTime != 'undefined') {
             var elapsed = ms2Time(now - startTime);
-            //if (elapsed.hours == 0)
-            //    $(".elapsed-time .hour-item").hide();
-            //else
-            //    $(".elapsed-time .hour-item").show();
-           // $(".elapsed-time .hour").html(elapsed.hours);
-            $(".elapsed-time .minute").html(elapsed.hours*60+elapsed.minutes);
+            $(".elapsed-time .minute").html(elapsed.hours * 60 + elapsed.minutes);
             $(".elapsed-time .second").html(pad(elapsed.seconds, 2));
             $(".elapsed-time").show();
         } else {
             $(".elapsed-time").hide();
         }
-
-
         var nowUtc = new Date().getTime();
         if (typeof currentPage != 'undefined' && currentPage != null && typeof countDown != 'undefined') {
             var ee = ms2Time(nowUtc - currentPageStartTime);
             setPageTime(currentPage, (ee.minutes + ee.hours * 60 + currentPageBaseMinutes + ee.seconds / 60));
         }
     }
-
 }
-
+var firstSetPageTime = true;
 function setPageTime(pageName, minutes) {
-    if (typeof(meetingStart)!=="undefined" && meetingStart == true) {
-        var over = $(".page-" + pageName + " .page-time").data("over");
-        var sec = Math.floor(60 * (minutes - Math.floor(minutes)));
-        var displayMinutes = Math.floor(minutes);
-        if (countDown) {
-            displayMinutes = over - Math.floor(minutes);
-        }
+    try{
+        if (typeof (meetingStart) !== "undefined" && meetingStart == true) {
+            var over = $(".page-" + pageName + " .page-time").data("over");
+            var sec = Math.floor(60 * (minutes - Math.floor(minutes)));
+            var displayMinutes = Math.floor(minutes);
+            if (countDown) {
+                displayMinutes = over - Math.floor(minutes);
+            }
 
-        $(".page-" + pageName + " .page-time").html(displayMinutes + "m<span class='second'>" + sec + "s</span>");
-        //$(".page-time.page-" + pageName).prop("title", Math.floor(minutes) + "m" + pad(sec, 2) + "s");
-        if (minutes >= over) {
-            $(".page-" + pageName + " .page-time").addClass("over");
-        } else {
-            $(".page-" + pageName + " .page-time").removeClass("over");
+            $(".page-" + pageName + " .page-time").html(displayMinutes + "m<span class='second'>" + sec + "s</span>");
+            if (minutes >= over) {
+                var p = $(".current.page-" + pageName + " .page-time");
+                if (!firstSetPageTime && p.length && !p.hasClass("over")) {
+                    var audio1 = new Audio('https://s3.amazonaws.com/Radial/audio/pop+pop.mp3');
+                    audio1.play();
+                    setTimeout(function () {
+                        var audio2 = new Audio('https://s3.amazonaws.com/Radial/audio/pop+pop.mp3');
+                        //audio.currentTime = 0;
+                        audio2.play();
+                    }, 250);
+                } else if ($(".page-" + pageName + " .page-time").length) {
+                    firstSetPageTime = false;
+                }
+                $(".page-" + pageName + " .page-time").addClass("over");
+            } else {
+                $(".page-" + pageName + " .page-time").removeClass("over");
+            }
         }
+    } catch (e) {
+        console.error(e);
     }
 
 }
@@ -193,8 +169,6 @@ function setupMeeting(_startTime, leaderId) {
     console.log("setupmeeting");
     $(".over").removeClass(".over")
     $(".page-item .page-time").each(function () {
-        //var o = 0;
-        //if (countDown)
         var o = $(this).data("over");
         $(this).html("<span class='gray'>" + (Math.round(100 * o) / 100.0) + "m</span>")
 
@@ -365,20 +339,20 @@ function fixSidebar() {
     //debugger;
     if ($(document).width() < 767) {
         $(".fixed-pos").css("top", 0);
-        $(".fixed-pos.fader").css("background-color", "rgba(247, 247, 247, 0)");
+        $(".fixed-pos.fader").css("background-color", "rgba(238, 238, 238, 0)");
         $(".fixed-pos.fader").css("box-shadow", "none");
         $(".fixed-pos.fader").css("border-bottom", "1px solid #eeeeee");
         $(".fixed-pos.fader").css("z-index", "-1");
         $(".fixed-pos.fader").css("padding-bottom", "9px");
     } else {
         $(".fixed-pos").css("top", $(".slider-container.level-10").scrollTop());
-        $(".fixed-pos.fader").css("background-color", "rgba(247, 247, 247, " + (($(".slider-container.level-10").scrollTop() / 70)) + ")");
-        $(".fixed-pos.fader").css("box-shadow", "0 4px 2px -2px rgba(128, 128, 128, " + Math.min(.2,$(".slider-container.level-10").scrollTop() / 350) + ")");
+        $(".fixed-pos.fader").css("background-color", "rgba(238, 238, 238, " + (($(".slider-container.level-10").scrollTop() / 70)) + ")");
+        $(".fixed-pos.fader").css("box-shadow", "0 4px 2px -2px rgba(128, 128, 128, " + Math.min(.2, $(".slider-container.level-10").scrollTop() / 350) + ")");
         //$(".fixed-pos.fader").css("border-bottom", "none");
         $(".fixed-pos.fader").css("z-index", 2);//$(".slider-container.level-10").scrollTop() - 10);
-        $(".fixed-pos.fader").css("padding-bottom", (1-$(".slider-container.level-10").scrollTop() / 70) * 9);
+        $(".fixed-pos.fader").css("padding-bottom", (1 - $(".slider-container.level-10").scrollTop() / 70) * 9);
 
-        
+
     }
 }
 
@@ -464,17 +438,15 @@ $(document).keydown(function (event) {
 
 function showPrint() {
     //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
-    showModal("Generate Quarterly Printout", "/Quarterly/Modal", "/Quarterly/Printout/"+recurrenceId, "callbackPrint");
+    showModal("Generate Quarterly Printout", "/Quarterly/Modal", "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
 }
 function callbackPrint() {
 
     $("#modalForm").unbind("submit");
     $("#modalForm").attr("target", "_blank");
     $("#modalForm").attr("method", "post");
-    $("#modalForm").attr("action", "/Quarterly/Printout/"+recurrenceId);
+    $("#modalForm").attr("action", "/Quarterly/Printout/" + recurrenceId);
     $("#modalForm").bind("submit", function () {
         $("#modal").modal('hide');
     });
-
-    // $("#modalForm").bind("submit");
 }

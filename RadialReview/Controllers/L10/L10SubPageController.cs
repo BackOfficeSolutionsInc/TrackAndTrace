@@ -139,7 +139,7 @@ namespace RadialReview.Controllers
 			if (ModelState.IsValid)
 			{
 
-				var allMembers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id).Select(x=>x.Item3);
+				var allMembers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id).Select(x=>x.UserOrgId);
 
                 List<long> attendees = new List<long>();
                 if (model.Attendees!=null)
@@ -253,8 +253,9 @@ namespace RadialReview.Controllers
 
 		#region Conclusion
 		private PartialViewResult Conclusion(L10MeetingVM model, FormCollection form, bool start)
-		{
-			model.SendEmail = true;
+        {
+            model.SendEmail = true;
+            model.CloseTodos = true;
 
 			model.Meeting._MeetingAttendees.ForEach(x=>x.Rating=x.Rating??10);
 			
@@ -268,7 +269,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public async Task<ActionResult> ForceConclude(long id)
         {
-            await L10Accessor.ConcludeMeeting(GetUser(), id,new List<Tuple<long,decimal?>>(), false);
+            await L10Accessor.ConcludeMeeting(GetUser(), id,new List<Tuple<long,decimal?>>(), false,false);
             return Content("Done");
         }
 
@@ -312,7 +313,7 @@ namespace RadialReview.Controllers
 
 				if (ModelState.IsValid)
 				{
-					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues, model.SendEmail);
+					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues, model.SendEmail,model.CloseTodos);
 
 
 					//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();

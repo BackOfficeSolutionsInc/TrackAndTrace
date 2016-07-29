@@ -18,7 +18,7 @@ function interceptLogger(name, oldLogger) {
                     line = f.split("\n")[2].split("/");
                     lineNum = line[line.length - 1].split(")")[0];//substr(0,line[line.length-1].length-1)
                 } catch (e) {
-                    debugger;
+                    //debugger;
                 }
                 window.consoleStore.shift();
                 

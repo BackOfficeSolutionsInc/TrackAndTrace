@@ -95,8 +95,8 @@ namespace RadialReview.Controllers
 				try{
 					var trace = capturedException.StackTrace.NotNull(x => x.Replace("\n", "</br>"));
 					var email = Mail.To(EmailTypes.PaymentException, ProductStrings.ErrorEmail)
-						.Subject(EmailStrings.PaymentException_Subject, "<Non-payment exception>")
-						.Body(EmailStrings.PaymentException_Body, capturedException.NotNull(x=>x.Message), "<Non-payment>", trace);
+						.Subject(EmailStrings.PaymentException_Subject, "{Non-payment exception}")
+						.Body(EmailStrings.PaymentException_Body, capturedException.NotNull(x=>x.Message), "{Non-payment}", trace,"[Id="+id+"] --  [TaskId=" + taskId + "]");
 
 					await Emailer.SendEmail(email, true);
 				}

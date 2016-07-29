@@ -6,7 +6,8 @@
     .todo .page-header.listing {
         margin-top: -28px;
         padding-top: 26px;
-        background-color: #F7F7F7;
+        /*background-color: #F7F7F7;*/
+        background-color: #eee;
         z-index: 11;
         box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
     }
@@ -27,21 +28,40 @@
     padding: 0 5px 0 0;
     margin: 2px;
     border: 1px solid #CCC;
-    background: #EEE;
+    /*background: #EEE;*/
+    background: #F5F5F5;
     /*position: relative;*/
     line-height: 14px;
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
+    -moz-transition: background-color ease .15s,color ease .15s
+    -o-transition: background-color ease .15s,color ease .15s
+    -webkit-transition: background-color ease .15s,color ease .15s
+    transition: background-color ease .15s,color ease .15s,padding ease .15s;
 }
 
     .todo-list > .todo-row.selected {
         border: 1px solid #A5ACB8;
-        background: #E9ECF4;
+        /*background: #E9ECF4;*/
+        background: white;
+        box-shadow: 0px 6px 5px -2px rgba(0,0,0,0.1);
+        margin: 0 0px 4px 0px;
+        margin: -1px;
+        padding: 1px 8px 1px 1px;
     }
 
+        .todo-list > .todo-row.selected > .todo-checkbox {
+            /*top:-5px;*/
+            margin-left: 2px;
+        }
+
         .todo-list > .todo-row.selected > .message {
-            font-weight: bold;
+            /*font-weight: bold;*/
             top: -2px;
             position: relative;
-            color: #3B70CB !important;
+            /*color: #3B70CB !important;
+            text-shadow: 0 0 0 #3B70CB;*/
+            text-shadow: 0 0 0 #333;
+            /*text-shadow: 0 0 0 #3B70CB;*/
         }
 
         .todo-list > .todo-row.selected > .move-icon {
@@ -74,7 +94,7 @@
 
 /*.todo-list .todo-checkbox:checked ~ * .message,*/
 .todo-list .todo-checkbox:checked ~ .message {
-    text-decoration: line-through;
+    /*text-decoration: line-through;*/
 }
 
 .todo-list .todo-checkbox ~ .profile-image {
@@ -463,17 +483,17 @@ body.dragging, body.dragging * {
 
 .todoDetails .message-input {
     width: 100%;
-    outline:none;
-    border:none;
-    border-bottom:2px solid #EF7622;
-    margin-top:-1px;
-    color:black !important;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid #EF7622;
+    margin-top: -1px;
+    color: black !important;
 }
 
 
 .todoDetails .message:hover {
-    border-top:1px solid transparent;
-    border-bottom:1px solid #EF7622;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid #EF7622;
 }
 
 

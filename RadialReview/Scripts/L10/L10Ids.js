@@ -321,7 +321,7 @@ function sendNewIssueAccountable(self, id) {
         owner: val
     };
     var found = $(".ids .assignee[data-recurrence_issue=" + id + "]");
-    found.html("<span class='btn btn-link' data-recurrence_issue='" + id + "'></span>");
+    //found.html("<span class='btn btn-link' data-recurrence_issue='" + id + "'></span>");
     found.attr("data-accountable", val);
     $.ajax({
         method: "POST",

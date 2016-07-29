@@ -344,9 +344,9 @@ function makeXEditable_Scorecard(selector) {
             var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
 
             if ($(this).data("name") == "direction") {
-                $(items).attr("data-goal-dir", $(this).attr("data-value"));
+                $(items).filter(".future-score").attr("data-goal-dir", $(this).attr("data-value"));
             } else if ($(this).data("name") == "target") {
-                $(items).attr("data-goal", $(this).attr("data-value"));
+                $(items).filter(".future-score").attr("data-goal", $(this).attr("data-value"));
             }
             var isUnit = $(this).hasClass("unit");
 
@@ -433,7 +433,7 @@ function updateMeasurable(id, name, text, value) {
     highlight(sel);
 
 
-    $($("tr[data-meetingmeasurable='" + id + "'] .score input")).each(function (d) {
+    $($("tr[data-meetingmeasurable='" + id + "'] .score.future input")).each(function (d) {
 
         if (name == "target")
             $(this).attr("data-goal", value);
@@ -467,22 +467,30 @@ function updateScore(self, skipChart) {
         if (!$.trim(v)) {
             //$(self).removeClass("error");
             //do nothing
-        } else if ($.isNumeric(v)) {
-            if (dir == "GreaterThan") {
-                if (+v >= +goal)
-                    $(self).addClass("success");
-                else
-                    $(self).addClass("danger");
-            } else {
-                if (+v < +goal)
-                    $(self).addClass("success");
-                else
-                    $(self).addClass("danger");
-            }
-
-        } else {
-            $(self).addClass("error");
+        } else {//if ($.isNumeric(v)) {
+            var met = metGoal(dir, goal, v);
+            if (met == true)
+                $(self).addClass("success");
+            else if (met == false)
+                $(self).addClass("danger");
+            else
+                $(self).addClass("error");
         }
+        //    if (dir == "GreaterThan") {
+        //        if (+v >= +goal)
+        //            $(self).addClass("success");
+        //        else
+        //            $(self).addClass("danger");
+        //    } else {
+        //        if (+v < +goal)
+        //            $(self).addClass("success");
+        //        else
+        //            $(self).addClass("danger");
+        //    }
+
+        //} else {
+        //    $(self).addClass("error");
+        //}
 
         if (!skipChart && includeChart) {
             var arr = [];
@@ -498,25 +506,25 @@ function updateScore(self, skipChart) {
                 else {
                     min = Math.min(min, v);
                     max = Math.max(max, v);
-
-                    if (dir == "GreaterThan") {
-                        if (+v >= +goal)
-                            arr.push(v);
-                        else
-                            arr.push(v);
-                    } else {
-                        if (+v < +goal)
-                            arr.push(v);
-                        else
-                            arr.push(v);
-                    }
+                    arr.push(v);
+                    //if (dir == "GreaterThan") {
+                    //    if (+v >= +goal)
+                    //        arr.push(v);
+                    //    else
+                    //        arr.push(v);
+                    //} else {
+                    //    if (+v < +goal)
+                    //        arr.push(v);
+                    //    else
+                    //        arr.push(v);
+                    //}
                 }
             });
 
             var range;
             var green = 'rgb(92 ,184,92)';
             var red = 'rgb(217 ,83, 79)';
-            if (dir == "GreaterThan") {
+            if (metGoal(dir,0,1)){//dir == "GreaterThan") {
                 var d = {};
                 d[(":" + goal)] = red;
                 d[(goal + ":")] = green;

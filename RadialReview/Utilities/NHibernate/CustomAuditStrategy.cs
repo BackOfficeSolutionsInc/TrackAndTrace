@@ -29,6 +29,9 @@ namespace RadialReview.Utilities.NHibernate
             _auditConfiguration = auditConfiguration;
         }
 
+        private static DateTime lastFlush = DateTime.MinValue;
+        private static DateTime lastCall = DateTime.MinValue;
+
         public void Perform(ISession session, string entityName, object id, object data, object revision)
         {
             var auditedEntityName = _auditConfiguration.AuditEntCfg.GetAuditEntityName(entityName);
@@ -58,6 +61,26 @@ namespace RadialReview.Utilities.NHibernate
             // Save the audit data
             session.Save(auditedEntityName, data);
             SessionCacheCleaner.ScheduleAuditDataRemoval(session, data);
+
+
+            //To Speed things along.
+            var now = DateTime.UtcNow;
+            if (lastCall==DateTime.MinValue){
+                lastFlush = now;
+            }else{
+                if (now - lastCall < TimeSpan.FromSeconds(.1)) {
+                    if (now - lastFlush > TimeSpan.FromSeconds(1)) {
+                        lastFlush = DateTime.UtcNow;
+                        session.Flush();
+                        session.Clear();
+                    }
+                }else{
+                    lastFlush = now;
+                }
+            }
+            lastCall = now;
+
+            
         }
 
         public void PerformCollectionChange(ISession session, string entityName, string propertyName, AuditConfiguration auditCfg, PersistentCollectionChangeData persistentCollectionChangeData, object revision)

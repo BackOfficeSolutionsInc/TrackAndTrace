@@ -99,10 +99,16 @@ namespace RadialReview.Controllers {
                     scores = goals1.Select(x => new List<Decimal?>()).ToList();
                 }
                 var direction = goalsRect.GetArray1D(csvData, x => {
+                    if (x.Contains("<="))
+                        return LessGreater.LessThanOrEqual;
+                    if (x.Contains(">="))
+                        return LessGreater.GreaterThan;
                     if (x.Contains("<"))
                         return LessGreater.LessThan;
                     if (x.Contains(">"))
                         return LessGreater.GreaterThan;
+                    if (x.Contains("="))
+                        return LessGreater.EqualTo;
                     return LessGreater.GreaterThan;
                 });
                 var units = goalsRect.GetArray1D(csvData, x => {
@@ -131,7 +137,7 @@ namespace RadialReview.Controllers {
                     ScoreRange = scoreRect.NotNull(x => string.Join(",", x.ToString())),
                     MeasurableRectType = "" + dateRect.NotNull(x => x.GetRectType()),
                     DateRange = dateRect.NotNull(x => string.Join(",", x.ToString())),
-                    AllUsers = allUsers.Select(x => new SelectListItem() { Text = x.Item1 + " " + x.Item2, Value = x.Item3 + "" }).ToList(),
+                    AllUsers = allUsers.Select(x => new SelectListItem() { Text = x.FirstName + " " + x.LastName, Value = x.UserOrgId+ "" }).ToList(),
                     Direction = direction,
                     Units = units
                 };
@@ -282,7 +288,7 @@ namespace RadialReview.Controllers {
 
             public List<Tuple<long, long>> Errors { get; set; }
 
-            public Dictionary<string, DiscreteDistribution<Tuple<string, string, long>>> UserLookup { get; set; }
+            public Dictionary<string, DiscreteDistribution<TinyUser>> UserLookup { get; set; }
 
             public List<List<decimal?>> Scores { get; set; }
 

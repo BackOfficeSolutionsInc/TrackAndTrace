@@ -48,16 +48,16 @@ namespace RadialReview.Models.Timeline
 			{"CreateMeasurable",		new Item("Create measurable",	"#f0ad4e","glyphicon glyphicon-scale")},
 			{"SetMeasurableOrdering",	new Item("Reorder measurables",	"#f0ad4e","glyphicon glyphicon-scale")},	
 
-			{"CreateRock",				new Item("Create rock",			"#f0ad4e","icon fontastic-icon-bullseye")},
 			{"UpdateRockCompletion",	new Item("Update rock",			"#f0ad4e","icon fontastic-icon-bullseye")},
+			{"CreateRock",				new Item("Create rock",			"#f0ad4e","icon fontastic-icon-bullseye")},
 
-			{"CreateTodo",				new Item("Create to-do",		"#f0ad4e","glyphicon glyphicon-check")},
 			{"UpdateTodo",				new Item("Update to-do",		"#f0ad4e","glyphicon glyphicon-check")},
+			{"CreateTodo",				new Item("Create to-do",		"#f0ad4e","glyphicon glyphicon-check")},
 			{"UpdateTodos",				new Item("Update to-do",		"#f0ad4e","glyphicon glyphicon-check")},
 
+			{"UpdateIssue",				new Item("Update issue",		"#f0ad4e","glyphicon glyphicon-pushpin")},
 			{"CreateIssue",				new Item("Create issue",		"#f0ad4e","glyphicon glyphicon-pushpin")},
 			{"UpdateIssues",			new Item("Update issue",		"#f0ad4e","glyphicon glyphicon-pushpin")},
-			{"UpdateIssue",				new Item("Update issue",		"#f0ad4e","glyphicon glyphicon-pushpin")},
 			{"CopyIssue",				new Item("Copy issue",			"#f0ad4e","glyphicon glyphicon-pushpin")},
 			
 
@@ -65,8 +65,8 @@ namespace RadialReview.Models.Timeline
 
 			{"UpdatePage",				new Item("Change page",			"#f0ad4e","glyphicon glyphicon-bookmark")},
 
-			{"CreateNote",				new Item("Create note",			"#f0ad4e","glyphicon glyphicon-file")},
 			{"EditNote",				new Item("Edit note",			"#f0ad4e","glyphicon glyphicon-file")},
+			{"CreateNote",				new Item("Create note",			"#f0ad4e","glyphicon glyphicon-file")},
 
 			{"EditL10",					new Item("Edit L10",			"#f0ad4e","glyphicon glyphicon-cog")},
 			{"EditL10Recurrence",		new Item("Edit L10",			"#f0ad4e","glyphicon glyphicon-cog")},
@@ -74,9 +74,9 @@ namespace RadialReview.Models.Timeline
 		};
 
 
-		public static List<string> GetIconOrdering()
+        public static List<Item> GetIconOrdering()
 		{
-			return _lookup.Select(x => x.Value.Icon).Distinct().ToList();
+			return _lookup.Distinct(x => x.Value.Icon).Select(x=>x.Value).ToList();
 		} 
 
 		public static Item Find(string key)

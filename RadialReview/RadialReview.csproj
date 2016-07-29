@@ -313,6 +313,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accessors\AccountabilityAccessor.cs" />
     <Compile Include="Accessors\ApplicationAccessor.cs" />
     <Compile Include="Accessors\AskableAccessor.cs" />
     <Compile Include="Accessors\AttachAccessor.cs" />
@@ -326,6 +327,9 @@
     <Compile Include="Accessors\Emailer.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
+    <Compile Include="App_Start\HookConfig.cs" />
+    <Compile Include="Hooks\BasecampTodoHook.cs" />
+    <Compile Include="Hooks\CreateUserOrganization_UpdateHierarchy.cs" />
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
     <Compile Include="Accessors\ImageAccessor.cs" />
@@ -517,6 +521,7 @@
     <Compile Include="Helpers\HtmlPrefixScopeExtensions.cs" />
     <Compile Include="Helpers\SecuredValueHtmlHelper.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
+    <Compile Include="Hooks\HooksRegistry.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
     <Compile Include="Hubs\MessageHub.cs" />
@@ -524,6 +529,9 @@
     <Compile Include="Hubs\OrganizationHub.cs" />
     <Compile Include="Hubs\VtoHub.cs" />
     <Compile Include="Hubs\WebRtcHub.cs" />
+    <Compile Include="Models\Accountability\AccountabilityModel.cs" />
+    <Compile Include="Models\Angular\Accountability\AngularAccountability.cs" />
+    <Compile Include="Models\Angular\DataType\AngularTree.cs" />
     <Compile Include="Models\Angular\Base\Angularized.cs" />
     <Compile Include="Models\Angular\Base\AngularList.cs" />
     <Compile Include="Models\Angular\Base\BaseAngular.cs" />
@@ -540,6 +548,7 @@
     <Compile Include="Models\Angular\Meeting\AngularMeetingRock.cs" />
     <Compile Include="Models\Angular\Meeting\AngularRecurrence.cs" />
     <Compile Include="Models\Angular\Meeting\AngularWeek.cs" />
+    <Compile Include="Models\Angular\Positions\AngularPosition.cs" />
     <Compile Include="Models\Angular\Rocks\AngularRock.cs" />
     <Compile Include="Models\Angular\Roles\AngularRole.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularMeasurable.cs" />
@@ -739,6 +748,7 @@
     <Compile Include="Models\ViewModels\UserPositionViewModel.cs" />
     <Compile Include="Models\ViewModels\UserTemplateVM.cs" />
     <Compile Include="Models\VTO\VtoModel.cs" />
+    <Compile Include="Models\Webhook\BasecampWebhook.cs" />
     <Compile Include="Properties\ErrorMessageStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -850,6 +860,7 @@
     <Compile Include="Utilities\AwsUtil.cs" />
     <Compile Include="Utilities\Cache\Cache.cs" />
     <Compile Include="Utilities\Cache\CacheKeys.cs" />
+    <Compile Include="Utilities\DataTypes\AccountabilityTree.cs" />
     <Compile Include="Utilities\DataTypes\Chart.cs" />
     <Compile Include="Utilities\DataTypes\DateRange.cs" />
     <Compile Include="Utilities\DataTypes\DiscreteDistribution.cs" />
@@ -858,6 +869,7 @@
     <Compile Include="Utilities\Config.cs" />
     <Compile Include="Utilities\DataTypes\Rect.cs" />
     <Compile Include="Utilities\DataTypes\TimeData.cs" />
+    <Compile Include="Utilities\DataTypes\TinyUser.cs" />
     <Compile Include="Utilities\DbUtil.cs" />
     <Compile Include="Utilities\Encrypt\Crypto.cs" />
     <Compile Include="Utilities\ExceptionUtility.cs" />
@@ -870,6 +882,10 @@
     <Compile Include="Utilities\Extensions\ViewBagExtensions.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
+    <Compile Include="Utilities\Hooks\ICreateTodo.cs" />
+    <Compile Include="Utilities\Hooks\ICreateUserOrganization.cs" />
+    <Compile Include="Utilities\Hooks\IDeleteUserOrganizationHook.cs" />
+    <Compile Include="Utilities\Hooks\IHook.cs" />
     <Compile Include="Utilities\HtmlUtility.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
@@ -940,6 +956,7 @@
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\Synchronize\SyncAction.cs" />
     <Compile Include="Utilities\Synchronize\SyncUtil.cs" />
+    <Compile Include="Utilities\TestUtilities.cs" />
     <Compile Include="Utilities\TimingUtility.cs" />
     <Compile Include="Utilities\ViewUtility.cs" />
     <Compile Include="Models\Audit\LogModel.cs" />
@@ -948,12 +965,16 @@
     <None Include=".bin\bower.cmd" />
     <None Include=".bin\git.cmd" />
     <None Include=".bin\node.cmd" />
-    <None Include="Content\AccountabilityChart\AccountabilityChart.less" />
+    <Content Include="Content\AccountabilityChart\AccountabilityChart.less">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\AccountabilityChart\AccountabilityChart.css">
       <DependentUpon>AccountabilityChart.less</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\AccountabilityChart\AccountabilityChart.min.css">
       <DependentUpon>AccountabilityChart.css</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Angular\Issues.css">
       <DependentUpon>Issues.less</DependentUpon>
@@ -984,11 +1005,15 @@
     <Content Include="Content\GettingStarted\GettingStarted.min.css">
       <DependentUpon>GettingStarted.css</DependentUpon>
     </Content>
+    <Content Include="Content\img\graystripe-light.png" />
     <Content Include="Content\L10\Archive\Archive.css">
       <DependentUpon>Archive.less</DependentUpon>
     </Content>
     <Content Include="Content\L10\Archive\Archive.min.css">
       <DependentUpon>Archive.css</DependentUpon>
+    </Content>
+    <Content Include="Content\L10\L10.min.css">
+      <DependentUpon>L10.css</DependentUpon>
     </Content>
     <Content Include="Content\MaterialDesign\Components\Animations.css">
       <DependentUpon>Animations.less</DependentUpon>
@@ -1133,6 +1158,7 @@
     <Content Include="Content\MaterialDesign\Components\DataTable.less" />
     <Content Include="Content\L10\Archive\Archive.less" />
     <Content Include="Content\GettingStarted\GettingStarted.less" />
+    <Content Include="Content\L10\L10.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1145,6 +1171,7 @@
     <Content Include="Scripts\Angular\GettingStartd\GSApp.js" />
     <Content Include="Scripts\Angular\GettingStartd\GSController.js" />
     <Content Include="Scripts\Angular\Helpers\angular-elastic-input.js" />
+    <Content Include="Scripts\Angular\Helpers\d3\panzoom.js" />
     <Content Include="Scripts\Angular\Helpers\d3\tree.js" />
     <Content Include="Scripts\Angular\Helpers\d3\barchart.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\AnywhereButHere.js" />
@@ -1587,6 +1614,7 @@
     <Content Include="Views\Review\Details\Scorecard.cshtml" />
     <Content Include="Views\Support\Details.cshtml" />
     <Content Include="Views\Support\List.cshtml" />
+    <Content Include="Views\TileData\L10Notes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />

@@ -6,7 +6,7 @@ using Amazon.SimpleDB.Model;
 
 namespace RadialReview.Models.Angular.Base
 {
-	public class BaseAngular : IAngularItem
+	public class BaseAngular  : IAngularItem
 	{
 		public long Id { get; set; }
 		public string Type

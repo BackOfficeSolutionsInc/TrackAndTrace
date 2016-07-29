@@ -96,7 +96,15 @@ namespace RadialReview.Controllers {
             var result = rgm.Select(x => new DropDownItem() {
                 text = x.GetName() + "<span class='label label-default group-" + x.GetGroupType() + "'>" + x.GetGroupType() + "</span>",
                 value = "" + x.Id
-            }).OrderBy(x => x.text);
+            }).OrderBy(x => x.text).ToList();
+
+            if (Emailer.IsValid(q)) {
+                result.Add(new DropDownItem() {
+                    text = q,
+                    value = "\""+q.ToLower()+"\""
+                });
+            }
+
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

@@ -454,6 +454,13 @@ body.resizing .notes-tile:after,
   width: 140px;
   max-width: 140px;
 }
+.dashboard .width_2 .l10-scorecard-tile .accountable-column,
+.dashboard .width_2 .l10-scorecard-tile .admin-column {
+  display: none;
+}
+.dashboard .l10-scorecard-tile .admin-column {
+  display: none;
+}
 .dashboard .scorecard-tile .scorecard-table .score input:focus,
 .dashboard .scorecard-tile .scorecard-table .score input:active {
   background-color: transparent;
@@ -587,6 +594,7 @@ body.resizing .notes-tile:after,
 .dashboard .scorecard table tr td {
   max-height: 24px !important;
   height: 24px;
+  max-height: none !important;
 }
 .dashboard .scorecard table .score input {
   padding-left: 0px !important;
@@ -1655,7 +1663,7 @@ body.resizing .notes-tile:after,
     left: 0px !important;
     width: 100% !important;
     top: 0px !important;
-    height: 200px !important;
+    /*height: 200px !important;*/
   }
   .settings-container {
     display: none;
@@ -1671,11 +1679,47 @@ body.resizing .notes-tile:after,
     padding: 3px;
     font-size: 11px;
   }
+  .scorecard-list-container .goal-column {
+    display: none;
+  }
+  .grid-tile {
+    height: initial !important;
+    width: initial !important;
+  }
+  .grid > li {
+    padding: 0px 0 10px 0;
+  }
+  .grid > li .inner {
+    position: relative !important;
+  }
+  .grid > li .content {
+    position: relative !important;
+  }
   .grid > li .heading {
     cursor: default !important;
   }
-  .scorecard-list-container .goal-column {
+  .grid .content .tile {
+    position: relative !important;
+    top: initial !important;
+    bottom: initial !important;
+    left: initial !important;
+    right: initial !important;
+    overflow: initial !important;
+  }
+  .rock-list-container {
+    height: initial !important;
+  }
+  .userprofile {
     display: none;
+  }
+  .grid-container {
+    top: 20px !important;
+    left: 10px!important;
+    right: 10px!important;
+    bottom: 10px!important;
+  }
+  #grid {
+    padding-top: 0;
   }
 }
 .dashboard {

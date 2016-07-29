@@ -29,6 +29,8 @@ using RadialReview.NHibernate;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System.Text;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
 
@@ -870,6 +872,8 @@ namespace RadialReview.Accessors {
 
                     s.Update(user);
                     user.UpdateCache(s);
+
+                    HooksRegistry.Each<IDeleteUserOrganizationHook>(x => x.UndeleteUser(s, user));
                     tx.Commit();
                     s.Flush();
 
@@ -974,6 +978,9 @@ namespace RadialReview.Accessors {
                     }
                     s.Update(user);
                     user.UpdateCache(s);
+
+                    HooksRegistry.Each<IDeleteUserOrganizationHook>(x => x.DeleteUser(s, user));
+
                     tx.Commit();
                     s.Flush();
 
@@ -1048,7 +1055,7 @@ namespace RadialReview.Accessors {
             //}
         }
 
-        public static List<Tuple<string, string, long>> Search(UserOrganizationModel caller, long orgId, string search, int take = int.MaxValue, long[] exclude = null)
+        public static List<TinyUser> Search(UserOrganizationModel caller, long orgId, string search, int take = int.MaxValue, long[] exclude = null)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -1058,11 +1065,11 @@ namespace RadialReview.Accessors {
 
                     exclude = exclude ?? new long[0];
 
-                    users = users.Where(x => !exclude.Any(y => y == x.Item3)).ToList();
+                    users = users.Where(x => !exclude.Any(y => y == x.UserOrgId)).ToList();
 
                     var splits = search.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    var dist = new DiscreteDistribution<Tuple<string, string, long>>(0, 7, true);
+                    var dist = new DiscreteDistribution<TinyUser>(0, 7, true);
 
                     foreach (var u in users) {
                         var fname = false;
@@ -1074,8 +1081,8 @@ namespace RadialReview.Accessors {
                         var exactFirst = false;
                         var exactLast = false;
 
-                        var f = u.Item1.ToLower();
-                        var l = u.Item2.ToLower();
+                        var f = u.FirstName.ToLower();
+                        var l = u.LastName.ToLower();
                         foreach (var t in splits) {
                             if (f.Contains(t))
                                 fname = true;

@@ -105,69 +105,66 @@ namespace RadialReview.Models.Todo
 		public virtual string BasecampAssigneeId { get; set; }
 		public virtual string ApiUrl { get; set; }
 
-		public override async Task<bool> AddTodo(ISession s, TodoModel todo)
-		{
-			var accessToken = Token;
-			var httpWebRequest = (HttpWebRequest)WebRequest.Create(ApiUrl+ "projects/" + ProjectId + "/todolists/" + ListId + "/todos.json");
+        public override async Task<bool> AddTodo(ISession s, TodoModel todo)
+        {
+            var accessToken = Token;
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(ApiUrl + "projects/" + ProjectId + "/todolists/" + ListId + "/todos.json");
 
-			httpWebRequest.Headers.Add("Authorization", "Bearer " + accessToken);
-			httpWebRequest.ContentType = "application/json";
-			httpWebRequest.Method = "POST";
-			httpWebRequest.UserAgent = Config.Basecamp.GetUserAgent();
+            httpWebRequest.Headers.Add("Authorization", "Bearer " + accessToken);
+            httpWebRequest.ContentType = "application/json";
+            httpWebRequest.Method = "POST";
+            httpWebRequest.UserAgent = Config.Basecamp.GetUserAgent();
 
-			using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream())){
-				var json = @"{
-				  ""content"": """+todo.Message.EscapeJSONString()+@""",
-				  ""due_at"": """+string.Concat(todo.DueDate.ToString("s"), "Z")+@""",
+            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream())) {
+                var json = @"{
+				  ""content"": """ + todo.Message.EscapeJSONString() + @""",
+				  ""due_at"": """ + string.Concat(todo.DueDate.ToString("s"), "Z") + @""",
 				  ""assignee"": {
-					""id"": "+BasecampAssigneeId+@",
+					""id"": " + BasecampAssigneeId + @",
 					""type"": ""Person""
 				  }
 				}";
-				streamWriter.Write(json);
-				streamWriter.Flush();
-				streamWriter.Close();
-			}
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
 
-			var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-			string newId = null;
-			using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-			{
-				var result = streamReader.ReadToEnd();
-				
-				newId = (string)JObject.Parse(result)["id"];
-			}
+            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            string newId = null;
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream())) {
+                var result = streamReader.ReadToEnd();
 
-			if (!String.IsNullOrWhiteSpace(todo.Details) && !String.IsNullOrWhiteSpace(newId))
-			{
+                newId = (string)JObject.Parse(result)["id"];
+            }
 
-				var httpWebRequest2 = (HttpWebRequest)WebRequest.Create(ApiUrl + "projects/" + ProjectId + "/todos/" + newId + "/comments.json");
-				httpWebRequest2.Headers.Add("Authorization", "Bearer " + accessToken);
-				httpWebRequest2.ContentType = "application/json"; 
-				httpWebRequest2.Method = "POST";
-				httpWebRequest2.UserAgent = Config.Basecamp.GetUserAgent();
+            if (!String.IsNullOrWhiteSpace(todo.Details) && !String.IsNullOrWhiteSpace(newId)) {
 
-				using (var streamWriter = new StreamWriter(httpWebRequest2.GetRequestStream())){
-					
-					var padDetails =await PadAccessor.GetText(todo.PadId);
+                var httpWebRequest2 = (HttpWebRequest)WebRequest.Create(ApiUrl + "projects/" + ProjectId + "/todos/" + newId + "/comments.json");
+                httpWebRequest2.Headers.Add("Authorization", "Bearer " + accessToken);
+                httpWebRequest2.ContentType = "application/json";
+                httpWebRequest2.Method = "POST";
+                httpWebRequest2.UserAgent = Config.Basecamp.GetUserAgent();
 
-					var json = @"{""content"": """ + padDetails.EscapeJSONString()/*todo.Details*/ + @""",""subject"": ""Details""}";
-					streamWriter.Write(json);
-					streamWriter.Flush();
-					streamWriter.Close();
-				}
+                using (var streamWriter = new StreamWriter(httpWebRequest2.GetRequestStream())) {
 
-				var httpResponse2 = (HttpWebResponse)httpWebRequest2.GetResponse();
-				using (var streamReader = new StreamReader(httpResponse2.GetResponseStream()))
-				{
-					var result = streamReader.ReadToEnd();
-					var a = true;
-				}
-			}
-			return true;
+                    var padDetails = await PadAccessor.GetText(todo.PadId);
+
+                    var json = @"{""content"": """ + padDetails.EscapeJSONString()/*todo.Details*/ + @""",""subject"": ""Details""}";
+                    streamWriter.Write(json);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+
+                var httpResponse2 = (HttpWebResponse)httpWebRequest2.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse2.GetResponseStream())) {
+                    var result = streamReader.ReadToEnd();
+                    var a = true;
+                }
+            }
+            return true;
 
 
-		}
+        }
 
 		public override String GetServiceName()
 		{

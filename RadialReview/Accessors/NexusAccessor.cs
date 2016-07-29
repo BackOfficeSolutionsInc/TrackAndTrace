@@ -17,6 +17,8 @@ using RadialReview.Utilities.Query;
 using RadialReview.Models.Application;
 using System.Threading.Tasks;
 using RadialReview.Models.Json;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
     public class NexusAccessor : BaseAccessor {
@@ -123,6 +125,7 @@ namespace RadialReview.Accessors {
 
                     newUserId = newUser.Id;
                     newUser.UpdateCache(db);
+                    HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUser(db, newUser));
                     tx.Commit();
                 }
 
@@ -142,6 +145,9 @@ namespace RadialReview.Accessors {
                     //manager.ManagingUsers.Add(newUser);
                     //caller.CreatedNexuses.Add(nexus);
                     db.SaveOrUpdate(caller);
+
+
+
                     tx.Commit();
                     db.Flush();
                 }

@@ -24,6 +24,10 @@ using RadialReview.Utilities;
 using RadialReview.Models.Responsibilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.VTO;
+using NHibernate;
+using RadialReview.Models.Accountability;
+using RadialReview.Models.UserTemplate;
+using RadialReview.Models.Scorecard;
 
 namespace RadialReview.Controllers {
     public class MigrationController : BaseController {
@@ -1293,8 +1297,245 @@ namespace RadialReview.Controllers {
                     s.Flush();
                 }
             }
-            return ""+updated;
+            return "" + updated;
         }
 
+        [Access(Controllers.AccessLevel.Radial)]
+        public string M07_12_2016()
+        {
+            HttpContext.Server.ScriptTimeout = 60 * 20;
+            var updatedA = 0;
+            var updatedB = 0;
+            var updatedC = 0;
+            var caller = GetUser();
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var os = s.QueryOver<OrganizationModel>().Where(x=>x.DeleteTime==null).List().ToList();
+                    var allNodes = s.QueryOver<AccountabilityNode>().List().ToList();
+                    var perms = PermissionsUtility.Create(s, caller);
+
+                    var usersF = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).Future();
+                    var rolesF = s.QueryOver<RoleModel>().Where(x => x.DeleteTime == null).Future();
+                    var managerLinksF = s.QueryOver<ManagerDuration>().Where(x => x.DeletedBy == null).Future();
+
+
+                    var users = usersF.ToList();
+                    var roles = rolesF.ToList();
+                    var managerLinks = managerLinksF.ToList();
+
+                    foreach (var o in os) {
+                        if (!(o.AccountabilityChartId > 0)) {
+                            o.AccountabilityChartId = AccountabilityAccessor.CreateChart(s, perms, o.Id, false).Id;
+                            s.Update(o);
+                            updatedA += 1;
+                        }
+
+                        var c = s.Get<AccountabilityChart>(o.AccountabilityChartId);
+                        var nodes = allNodes.Where(x => x.ParentNodeId == c.RootId);
+                        if (!nodes.Any()) {
+                            makeTree(s, caller, perms, c.RootId, o.AccountabilityChartId, o.Id,users,roles,managerLinks);
+                            updatedB += 1;
+                        }
+                    }
+                    
+                    allNodes = s.QueryOver<AccountabilityNode>().List().ToList();
+                    var rs = s.QueryOver<RoleModel>().Where(x=>x.DeleteTime==null).List().ToList();
+                    var roleMaps = s.QueryOver<AccountabilityNodeRoleMap>().Where(x=>x.DeleteTime==null).List().ToList();
+
+                    foreach (var r in rs.Where(x=>x.FromTemplateItemId==null).GroupBy(x=>x.ForUserId)) {
+                        var uNodes = allNodes.Where(x => x.UserId == r.Key);
+                        foreach (var u in uNodes) {
+                            var myMaps = roleMaps.Where(x => x.AccountabilityGroupId == u.AccountabilityRolesGroupId).ToList();
+                            var myRoles = SetUtility.AddRemove(myMaps.Select(x => x.RoleId), r.Select(x => x.Id));
+
+                            foreach (var addedRole in myRoles.AddedValues) {
+                                s.Save(new AccountabilityNodeRoleMap() {
+                                    RoleId = addedRole,
+                                    OrganizationId = u.OrganizationId,
+                                    PositionId =null,
+                                    AccountabilityChartId = u.AccountabilityChartId,
+                                    AccountabilityGroupId = u.AccountabilityRolesGroupId,
+                                });
+                                updatedC++;
+                            }
+
+                        }
+                    }
+
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+
+
+            return "(" + updatedA + ")  " + updatedB+" (" + updatedC+ ")";
+        }
+
+        protected static void makeTreeDive(ISession s, long chartId, long orgId, long caller, long myId, long parentId, List<UserOrganizationModel> users, List<RoleModel> roles, List<DeepSubordinateModel> links, List<ManagerDuration> mds)
+        {
+            var own = links.Any(x => x.ManagerId == caller && x.SubordinateId == myId);
+            // var children = links.Where(x=>x.ManagerId==parent);
+            var me = users.FirstOrDefault(x => x.Id == myId);
+            var children = mds.Where(x => x.ManagerId == myId).ToList();
+
+
+            var group = new AccountabilityRolesGroup() {                    
+                AccountabilityChartId = chartId,
+                OrganizationId = orgId,
+                PositionId = me.Positions.NotNull(x => x.FirstOrDefault().NotNull(y => y.Position.Id)),
+            };
+            if (group.PositionId == 0)
+                group.PositionId = null;
+
+            s.Save(group);
+
+            var node = new AccountabilityNode() {
+                AccountabilityChartId = chartId,
+                OrganizationId = orgId,
+                ParentNodeId = parentId,
+                UserId = me.Id,
+                AccountabilityRolesGroupId = group.Id
+            };
+            s.Save(node);
+
+
+
+            //node.AccountabilityRolesGroupId = group.Id;
+            //s.Update(node);
+
+           /* var templates = new List<UserTemplate>();
+
+            if (group.PositionId != null) {
+                templates = s.QueryOver<UserTemplate>().Where(x => x.AttachType == AttachType.Position && x.AttachId == group.PositionId).List().ToList();
+               
+            }
+
+            foreach (var r in roles.Where(x => x.ForUserId == myId)) {
+                var position = templates.FirstOrDefault(x=>x.Id==r.FromTemplateItemId);
+                long? positionId = null;
+                if (position != null) {
+                    positionId = position.AttachId;
+                }
+
+                s.Save(new AccountabilityNodeRoleMap() {
+                    AccountabilityGroupId = group.Id,
+                    RoleId = r.Id,
+                    OrganizationId = orgId,
+                    AccountabilityChartId = chartId,
+                    PositionId = positionId
+                });
+            }*/
+
+            children.ForEach(x => makeTreeDive(s, chartId, orgId, caller, x.SubordinateId, node.Id, users, roles, links, mds));
+        }
+
+        protected void makeTree(ISession s, UserOrganizationModel caller, PermissionsUtility perms, long parentNode, long chartId, long orgId,
+            List<UserOrganizationModel> allUsers,List<RoleModel> allRoles,List<ManagerDuration> allManagerDurations)
+        {
+            var map = DeepSubordianteAccessor.GetOrganizationMap(s, perms, orgId);
+
+            var org = s.Get<OrganizationModel>(orgId);
+
+            var userIds = map.SelectMany(x => new List<long> { x.ManagerId, x.SubordinateId }).Distinct().ToArray();
+
+            var users = allUsers.Where(x => x.Organization.Id == orgId && userIds.Any(y => y == x.Id)).ToList();
+            var roles = allRoles.Where(x=>x.OrganizationId==orgId).ToList();
+            var managerLinks = allManagerDurations.Where(x => userIds.Any(y=>y==x.ManagerId)).ToList();
+
+         
+
+            List<long> tln = users.Where(x => x.ManagingOrganization).Select(x => x.Id).ToList();
+
+            var trees = new List<AccountabilityTree>();
+            foreach (var topLevelNode in tln) {
+                makeTreeDive(s, chartId, orgId, caller.Id, topLevelNode, parentNode, users, roles, map, managerLinks);
+            }
+
+        }
+
+
+
+        [Access(Controllers.AccessLevel.Radial)]
+        public string M07_21_2016()
+        {
+            HttpContext.Server.ScriptTimeout = 60 * 20;
+            var updatedA = 0;
+            var caller = GetUser();
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var scores = s.QueryOver<ScoreModel>().Where(x => x.OriginalGoal == null).List().ToList();
+
+                    foreach (var score in scores) {
+                        score.OriginalGoal = score.Measurable.Goal;
+                        score.OriginalGoalDirection = score.Measurable.GoalDirection;
+                        s.Update(score);
+                        updatedA += 1;
+
+                        if (updatedA % 20 == 0) { //20, same as the ADO batch size
+                            //flush a batch of inserts and release memory:
+                            s.Flush();
+                            s.Clear();
+                        }
+                    }
+
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+
+
+            return "(" + updatedA + ") ";
+        }
+
+
+
+        [Access(Controllers.AccessLevel.Radial)]
+        public string M07_28_2016()
+        {
+            HttpContext.Server.ScriptTimeout = 60 * 20;
+            var updatedA = 0;
+            var caller = GetUser();
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var td = s.QueryOver<TodoModel>().Where(x => x.CloseTime == null).List().ToList();
+                    var meetings = s.QueryOver<L10Meeting>().Select(x => x.Id, x => x.L10RecurrenceId, x => x.CompleteTime).List<object[]>()
+                        .Select(x=>new {
+                            meeting=(long)x[0],
+                            recur = (long)x[1],
+                            time=(DateTime?)x[2]
+                        })
+                        .ToList();
+                    var mLu = meetings.ToDictionary(
+                            x => x.meeting,
+                            x => x
+                        );
+                    var rLu = meetings.GroupBy(x=>x.recur).ToDictionary(
+                         x => x.Key,
+                         x => x.OrderBy(y => y.time).Select(y => y.time).ToList()
+                     );
+                    foreach (var t in td) {
+
+                        if (t.CompleteDuringMeetingId.HasValue) {
+                            t.CloseTime = mLu[t.CompleteDuringMeetingId.Value].time;
+                        } else if (t.ForRecurrenceId.HasValue && rLu.ContainsKey(t.ForRecurrenceId.Value)) {
+                            t.CloseTime = rLu[t.ForRecurrenceId.Value].LastOrDefault(x => x!=null && t.CompleteTime <= x);
+                        }
+                        s.Update(t);
+                        updatedA += 1;
+
+                        //if (updatedA % 20 == 0) { //20, same as the ADO batch size
+                        //    //flush a batch of inserts and release memory:
+                        //    s.Flush();
+                        //    s.Clear();
+                        //}
+                    }
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return "(" + updatedA + ") ";
+        }
     }
 }

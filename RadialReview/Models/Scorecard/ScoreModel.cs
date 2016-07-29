@@ -30,7 +30,8 @@ namespace RadialReview.Models.Scorecard
 		public virtual DateTime? DateEntered { get; set; }
 		public virtual DateTime DateDue { get; set; }
 
-
+        public virtual decimal? OriginalGoal { get; set; }
+        public virtual LessGreater? OriginalGoalDirection { get; set; }
 
 		public virtual MeasurableModel Measurable { get; set; }
 		public virtual long OrganizationId { get; set; }
@@ -59,16 +60,23 @@ namespace RadialReview.Models.Scorecard
 			}
 			var v = Measured.Value;
 			var g = Measurable.Goal;
-			var dir = (decimal) Measurable.GoalDirection;
+			var dir = Math.Sign((decimal) (OriginalGoalDirection?? Measurable.GoalDirection));
 			if (MetGoal()){
-				var diff = (Measured - Measurable.Goal) * (decimal)Measurable.GoalDirection;
+                var diff = (Measured - (OriginalGoal ?? Measurable.Goal)) * dir;
 				if (diff == 0)
 					return name + " goal was met at " +g;
 				if (v == Math.Floor(v) && g == Math.Floor(g))
 					return name + " goal was exceeded by " + Measurable.UnitType.Format((v - g)*dir);
 				return name + " goal was exceeded by " + ((v - g)/g*dir*100).ToString("0.####") + "%";
 			}else{
-				return name + " goal was missed by " + Measurable.UnitType.Format((g - v) * dir);
+
+                var diff = (g - v);
+                if (dir == 0)
+                    diff = Math.Abs(diff);
+                else
+                    diff = diff * dir;
+
+                return name + " goal was missed by " + Measurable.UnitType.Format(diff);
 			}
 		}
 
@@ -83,7 +91,7 @@ namespace RadialReview.Models.Scorecard
 			var footer = "Week: " + week + "\nOwner: " + accountable;
 			if (Measured.HasValue){
 
-				var goal = "GOAL: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.UnitType.Format(Measurable.Goal);
+				var goal = "GOAL: " + (OriginalGoalDirection??(Measurable.GoalDirection)).GetDisplayName() + " " + Measurable.UnitType.Format(Measurable.Goal);
 				var recorded = "RECORDED: " + Measurable.UnitType.Format(Measured.Value);
 				return goal + "\n" + recorded + "\n\n" + footer;
 			}
@@ -99,11 +107,11 @@ namespace RadialReview.Models.Scorecard
 				return "Enter "+name ;
 			}
 			var v = Measured.Value;
-			var g = Measurable.Goal;
-			var dir = (decimal)Measurable.GoalDirection;
+			var g = OriginalGoal ?? Measurable.Goal;
+			var dir = Math.Sign((decimal)(OriginalGoalDirection ?? Measurable.GoalDirection));
 			if (MetGoal())
 			{
-				var diff = (Measured - Measurable.Goal) * (decimal)Measurable.GoalDirection;
+                var diff = (Measured - g) * dir;
 				if (diff == 0)
 					return name + " goal was met at " + g;
 				if (v == Math.Floor(v) && g == Math.Floor(g))
@@ -112,7 +120,13 @@ namespace RadialReview.Models.Scorecard
 			}
 			else
 			{
-				return name + " goal was missed by " + Measurable.UnitType.Format((g - v) * dir);
+                var diff = (g - v);
+                if (dir == 0)
+                    diff = Math.Abs(diff);
+                else
+                    diff = diff * dir;
+
+                return name + " goal was missed by " + Measurable.UnitType.Format(diff);
 			}
 		}
 
@@ -129,7 +143,7 @@ namespace RadialReview.Models.Scorecard
 			if (Measured.HasValue)
 			{
 
-				var goal = "GOAL: " + Measurable.GoalDirection.GetDisplayName() + " " + Measurable.UnitType.Format(Measurable.Goal);
+				var goal = "GOAL: " + (OriginalGoalDirection ?? Measurable.GoalDirection).GetDisplayName() + " " + Measurable.UnitType.Format(OriginalGoal ?? Measurable.Goal);
 				var recorded = "RECORDED: " + Measurable.UnitType.Format(Measured.Value);
 				return goal + "\n" + recorded + "\n\n" + footer;
 			}
@@ -138,15 +152,8 @@ namespace RadialReview.Models.Scorecard
 
 		public virtual bool MetGoal()
 		{
-			switch (Measurable.GoalDirection)
-			{
-				case LessGreater.LessThan:
-					return Measured < Measurable.Goal;
-				case LessGreater.GreaterThan:
-					return Measured >= Measurable.Goal;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+            return Measurable.GoalDirection.MeetGoal((OriginalGoal ?? Measurable.Goal),Measured);
+           
 		}
 
 
@@ -158,8 +165,10 @@ namespace RadialReview.Models.Scorecard
 				Id(x => x.Id);
 				Map(x => x.DateEntered);
 				Map(x => x.DateDue);
-				Map(x => x.ForWeek);
-				Map(x => x.Measured);
+                Map(x => x.ForWeek);
+                Map(x => x.Measured);
+                Map(x => x.OriginalGoal);
+                Map(x => x.OriginalGoalDirection);
 				Map(x => x.OrganizationId);
 				Map(x => x.AccountableUserId).Column("AccountableUserId");
 				References(x => x.AccountableUser).Column("AccountableUserId").LazyLoad().ReadOnly();

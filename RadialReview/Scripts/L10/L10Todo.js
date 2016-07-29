@@ -219,7 +219,7 @@ function sendNewAccountable(self, id) {
 		accountableUser: val
 	};
 	var found = $(".todo .assignee[data-todo=" + id + "]");
-	found.html("<span class='btn btn-link' data-todo='" + id + "'></span>");
+	//found.html("<span class='btn btn-link' data-todo='" + id + "'></span>");
 	found.attr("data-accountable", val);
 	$.ajax({
 		method: "POST",

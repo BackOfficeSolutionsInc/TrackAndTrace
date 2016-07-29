@@ -101,7 +101,7 @@
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-												@TimingUtility.ScorecardRangeEnd(Model.ScorecardType, r.DisplayDate).ToString(TimingUtility.ScorecardFormat2(Model.ScorecardType))
+												@TimingUtility.ScorecardRangeEnd(ViewBag.ClientTime??Html.Organization().ConvertFromUTC(DateTime.UtcNow),Model.ScorecardType, r.DisplayDate).ToString(TimingUtility.ScorecardFormat2(Model.ScorecardType))
 											</th>
 											@*if (r.IsCurrentWeek){
 													<th class="date current buttonColumn"></th>

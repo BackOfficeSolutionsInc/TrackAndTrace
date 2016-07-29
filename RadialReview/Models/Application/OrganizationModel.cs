@@ -257,6 +257,7 @@ namespace RadialReview.Models {
         public virtual DateTime CreationTime { get; set; }
         public virtual bool SendEmailImmediately { get; set; }
         public virtual String ImageUrl { get; set; }
+        public virtual long AccountabilityChartId { get; set; }
 
         public virtual IList<ReviewsModel> Reviews { get; set; }
 
@@ -335,6 +336,8 @@ namespace RadialReview.Models {
                 Map(x => x.StrictHierarchy);
                 Map(x => x.ManagersCanEditPositions);
                 Map(x => x.ManagersCanRemoveUsers);
+                Map(x => x.AccountabilityChartId);
+
                 //Map(x => x.ImageUrl);
                 Map(x => x.SendEmailImmediately);
                 Component(x => x._Settings).ColumnPrefix("Settings_");
@@ -375,5 +378,6 @@ namespace RadialReview.Models {
                     .Inverse();*/
             }
         }
+
     }
 }

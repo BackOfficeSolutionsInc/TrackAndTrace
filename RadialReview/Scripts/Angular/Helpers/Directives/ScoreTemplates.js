@@ -38,37 +38,58 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
             //    }
             //};
            
+            var currWeekNumber= getWeekSinceEpoch(new Date().addDays(13));
 
             var scorecardColor = function (s) {
                 if (!s)
                     return "";
 
                 var v = s.Measured;
-                var goal = s.Measurable.Target;
-                var dir = s.Measurable.Direction;
+
+                var useMeasurableTarget = s.ForWeek >= currWeekNumber
+                var goal = undefined;
+                var dir = undefined;
+                if (!useMeasurableTarget) {
+                    goal = s.Target;//s.Measurable.Target;
+                    dir = s.Direction;//s.Measurable.Direction;
+                }
+                if (typeof (goal) === "undefined")
+                    goal = s.Measurable.Target;
+                if (typeof (dir) === "undefined")
+                    dir = s.Measurable.Direction;
+
                 if (typeof (goal) === "undefined") {
                     goal = $("[data-measurable=" + s.Measurable.Id + "][data-week=" + s.ForWeek + "]").data("goal");
-                    console.log("goal not found, trying element. Found: " + goal);
+                    console.log("goal not found, trying element. Found: " + goal + " -- "+s.Id+","+s.Measurable.Id);
                 }
 
                 if (!$.trim(v)) {
                     return "";
-                } else if ($.isNumeric(v)) {
-                    if (dir == "GreaterThan" || dir == 1) {
-                        if (+v >= +goal)
-                            return "success";
-                        else
-                            return ("danger");
-                    } else {
-                        if (+v < +goal)
-                            return ("success");
-                        else
-                            return ("danger");
-                    }
-
                 } else {
-                    return ("error");
+                    var met = metGoal(dir, goal, v);
+                    if (met == true)
+                        return "success";
+                    else if (met == false)
+                        return "danger";
+                    else
+                        return "error";
                 }
+                //if ($.isNumeric(v)) {
+                //    if (dir == "GreaterThan" || dir == 1) {
+                //        if (+v >= +goal)
+                //            return "success";
+                //        else
+                //            return ("danger");
+                //    } else {
+                //        if (+v < +goal)
+                //            return ("success");
+                //        else
+                //            return ("danger");
+                //    }
+
+                //} else {
+                //    return ("error");
+                //}
             };
           
             $scope.scoreColor = scorecardColor($scope.score);
@@ -119,6 +140,8 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
             $scope.$watch("score.Measured", refreshMeasurable);
             $scope.$watch("score.Measurable.Direction", refreshMeasurable);
             $scope.$watch("score.Measurable.Target", refreshMeasurable);
+            $scope.$watch("score.Direction", refreshMeasurable);
+            $scope.$watch("score.Target", refreshMeasurable);
             //refresh(ngModelCtrl.$modelValue);
         },
         controller: ["$scope", "$element", "$attrs", function ($scope, $element, $attrs) {
@@ -138,7 +161,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
             //$scope.week = week;//$scope.score.Week;
             $scope.fcsa = $scope.getFcsa($scope.measurable);
         }],
-        template: "<input data-goal='{{measurable.Target}}' data-goal-dir='{{measurable.Direction}}'" +
+        template: "<input data-goal='{{score.Target}}' data-goal-dir='{{score.Direction}}'" +
                   " data-row='{{$parent.$index}}' data-col='{{$index}}'" +
                   " type='text' placeholder='' ng-model-options='{debounce: 75}' ng-disabled='measurable.Disabled'" +
                   " ng-model='score.Measured'" +

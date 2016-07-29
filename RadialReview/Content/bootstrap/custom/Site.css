@@ -284,7 +284,7 @@
   background-color: #ef7622;
 }
 tr.grayRow {
-  background-image: url("/Content/img/graystripe.png");
+  background-image: url("/Content/img/graystripe-light.png");
 }
 .btn.heading:focus,
 .btn.heading:active {
@@ -329,6 +329,27 @@ select:-webkit-autofill:focus {
   color: #3e3935;
   text-decoration: underline;
 }
+.body-full-height {
+  overflow: auto;
+}
+.body-full-height #alerts {
+  margin-bottom: 0;
+}
+.body-full-height #wrap {
+  /*top: 31px;
+        bottom: 0px;
+        position: absolute;
+        width: 100%;*/
+}
+.body-full-height #wrap #main {
+  top: 31px;
+  bottom: 3px;
+  position: absolute;
+  padding-bottom: 0;
+}
+.body-full-height .full-height {
+  height: 100%;
+}
 .body-full-width .jumbotron {
   height: 24px;
   padding: 0;
@@ -342,7 +363,7 @@ select:-webkit-autofill:focus {
   font-size: 32px;
   margin-top: -6px;
 }
-.video-container .volume {
+.body-full-width .jumbotron .video-container .volume {
   position: absolute;
   top: 0;
   left: 0;

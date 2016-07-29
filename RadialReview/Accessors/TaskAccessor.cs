@@ -342,8 +342,11 @@ namespace RadialReview.Accessors
 							AccountableUserId = m.AccountableUserId,
 							DateDue = nextDue,
 							MeasurableId = m.Id,
+                            Measurable = m,
 							OrganizationId = m.OrganizationId,
-							ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
+                            ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday),
+                            OriginalGoal = m.Goal,
+                            OriginalGoalDirection = m.GoalDirection
 						};
 						s.Save(score);
 						m.NextGeneration = nextDue;

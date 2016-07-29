@@ -37,6 +37,7 @@ namespace RadialReview.Controllers
 		}
 
 	    [Access(AccessLevel.UserOrganization)]
+        [OutputCache(NoStore = true, Duration = 0)]
 	    public JsonResult DetailsData(long id,bool scores = true,bool historical=true,long start=0, long end= long.MaxValue,bool fullScorecard = false)
         {
             var startRange = start.ToDateTime();

@@ -35,6 +35,7 @@ namespace RadialReview.Controllers {
 
 
         [Access(AccessLevel.UserOrganization)]
+        [OutputCache(NoStore = true, Duration = 0)]
 
         //[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
         //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
@@ -360,11 +361,22 @@ namespace RadialReview.Controllers {
         public class DashboardVM {
             public long DashboardId { get; set; }
             public String TileJson { get; set; }
-            public List<SelectListItem> L10s { get; set; }
+            public List<L10> L10s { get; set; }
+
+            public class L10 {
+                public bool Selected { get; set; }
+                public string Text { get; set; }
+                public string Value { get; set; }
+                public List<SelectListItem> Notes { get; set; }
+                public L10()
+                {
+                    Notes = new List<SelectListItem>();
+                }
+            }
 
             public DashboardVM()
             {
-                L10s = new List<SelectListItem>();
+                L10s = new List<L10>();
             }
         }
 
@@ -383,6 +395,8 @@ namespace RadialReview.Controllers {
 
             var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, true);
 
+            var notes = L10Accessor.GetVisibleL10Notes_Unsafe(l10s.Select(x=>x.Id).ToList());
+
 
             var jsonTiles = Json(ResultObject.SilentSuccess(tiles), JsonRequestBehavior.AllowGet);
             var jsonTilesStr = new JavaScriptSerializer().Serialize(jsonTiles.Data);
@@ -393,7 +407,14 @@ namespace RadialReview.Controllers {
             return View(new DashboardVM() {
                 DashboardId = id.Value,
                 TileJson = jsonTilesStr,
-                L10s = l10s.Select(x => new SelectListItem() { Value = "" + x.Id, Text = x.Name }).ToList()
+                L10s = l10s.Select(x => new DashboardVM.L10() { 
+                    Value = "" + x.Id, 
+                    Text = x.Name, 
+                    Notes = notes.Where(y=>y.Recurrence.Id==x.Id).Select(z=>new SelectListItem(){
+                        Text = z.Name,
+                        Value =""+z.Id
+                    }).ToList()
+                }).ToList()
             });
         }
 

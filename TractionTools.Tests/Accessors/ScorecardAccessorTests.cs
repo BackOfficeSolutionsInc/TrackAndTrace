@@ -11,6 +11,9 @@ using System.Collections.Generic;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Scorecard;
 using System.Threading.Tasks;
+using TractionTools.Tests.Utilities;
+using RadialReview.Utilities;
+using RadialReview;
 
 namespace TractionTools.Tests.Accessors
 {
@@ -35,9 +38,7 @@ namespace TractionTools.Tests.Accessors
                 employee = new UserOrganizationModel() { Organization = org };
                 s.Save(employee);
                 manager = new UserOrganizationModel() { Organization = org, ManagerAtOrganization = true };
-                s.Save(manager);
-
-                
+                s.Save(manager);                
             });
             MockApplication();
             MockHttpContext();
@@ -141,6 +142,109 @@ namespace TractionTools.Tests.Accessors
                 Assert.AreEqual(1, recurLoaded._DefaultMeasurables.Count);
                 Assert.AreEqual("Measurable D", recurLoaded._DefaultMeasurables[0].Measurable.Title);
                 Assert.AreEqual(recur.Id, recurLoaded._DefaultMeasurables[0].L10Recurrence.Id);
+        }
+
+        
+        [TestMethod]
+        public void UpdateScoreInMeeting_CreateScores()
+        {
+            var r = L10Utility.CreateRecurrence();
+            MeasurableModel m=null;
+            DbCommit(s=>{
+                var perms = PermissionsUtility.Create(s,r.Creator);
+                m = new MeasurableModel(){
+                    OrganizationId=r.Org.Id,
+                    Title = "UpdateScoreInMeeting_CreateScores",   
+                    AccountableUserId = r.Creator.Id,
+                    AdminUserId = r.Employee.Id
+                };
+                var mvm = L10Controller.AddMeasurableVm.CreateNewMeasurable(r.Id,m);
+                MockHttpContext();
+                L10Accessor.AddMeasurable(s, perms, null, r.Id, mvm, skipRealTime: true);
+            });
+
+            L10Accessor.StartMeeting(r.Creator, r.Creator, r.Id, r.Creator.Id.AsList());
+
+            var week = DateTime.UtcNow.AddDays(-7*16);
+            using (var frame = TestUtilities.CreateFrame()) {
+                {
+                    var score = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, -1, week, m.Id, 101.5m, null, null);
+
+                    frame.EnsureContainsAndClear(
+                        "Score not found. Score below boundry. Creating scores down to value.",
+                        "Scores created: 1");
+
+                    Assert.AreEqual(week.StartOfWeek(DayOfWeek.Sunday), score.ForWeek);
+                    Assert.AreEqual(r.Org.Id, score.OrganizationId);
+                    Assert.AreEqual(m.Id, score.Measurable.Id);
+                    Assert.AreEqual(m.Id, score.MeasurableId);
+                    Assert.AreEqual(101.5m, score.Measured);
+                    Assert.AreEqual(r.Creator.Id, score.AccountableUserId);
+                    Assert.AreEqual(r.Creator.Id, m.AccountableUserId);
+                    Assert.AreEqual(r.Employee.Id, m.AdminUserId);
+                }
+
+                {
+                    week = DateTime.UtcNow.AddDays(7 * 3);
+                    var score2 = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, -1, week, m.Id, 102, null, null);
+
+                    frame.EnsureContainsAndClear(
+                        "Score not found. Score above boundry. Creating scores up to value.",
+                        "Scores created: 3");
+
+                    Assert.AreEqual(week.StartOfWeek(DayOfWeek.Sunday), score2.ForWeek);
+                    Assert.AreEqual(r.Org.Id, score2.OrganizationId);
+                    Assert.AreEqual(m.Id, score2.Measurable.Id);
+                    Assert.AreEqual(m.Id, score2.MeasurableId);
+                    Assert.AreEqual(102m, score2.Measured);
+                    Assert.AreEqual(r.Creator.Id, score2.AccountableUserId);
+                    Assert.AreEqual(r.Creator.Id, m.AccountableUserId);
+                    Assert.AreEqual(r.Employee.Id, m.AdminUserId);
+                }
+                var scoreId = -1L;
+                {
+                    week = DateTime.UtcNow.AddDays(-7 * 15);
+
+                    var score3 = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, -1, week, m.Id, 1042, null, null);
+
+                    frame.EnsureContainsAndClear(
+                        "Score not found. Score inside boundry. Creating score.",
+                        "Scores created: 1");
+
+                    Assert.AreEqual(week.StartOfWeek(DayOfWeek.Sunday), score3.ForWeek);
+                    Assert.AreEqual(r.Org.Id, score3.OrganizationId);
+                    Assert.AreEqual(m.Id, score3.Measurable.Id);
+                    Assert.AreEqual(m.Id, score3.MeasurableId);
+                    Assert.AreEqual(1042m, score3.Measured);
+                    Assert.AreEqual(r.Creator.Id, score3.AccountableUserId);
+                    Assert.AreEqual(r.Creator.Id, m.AccountableUserId);
+                    Assert.AreEqual(r.Employee.Id, m.AdminUserId);
+                    scoreId = score3.Id;
+                }
+
+                {
+                    week = DateTime.UtcNow.AddDays(-7 * 15);
+
+                    r.Creator._ClientTimestamp = DateTime.UtcNow.ToJavascriptMilliseconds();
+
+                    var score4 = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, scoreId, week, m.Id, 333, null, null);
+
+                    frame.EnsureContainsAndClear("Found one or more score. Updating All.");
+                    Assert.AreEqual(scoreId, score4.Id);
+                    Assert.AreEqual(week.StartOfWeek(DayOfWeek.Sunday), score4.ForWeek);
+                    Assert.AreEqual(r.Org.Id, score4.OrganizationId);
+                    Assert.AreEqual(m.Id, score4.Measurable.Id);
+                    Assert.AreEqual(m.Id, score4.MeasurableId);
+                    Assert.AreEqual(333m, score4.Measured);
+                    Assert.AreEqual(r.Creator.Id, score4.AccountableUserId);
+                    Assert.AreEqual(r.Creator.Id, m.AccountableUserId);
+                    Assert.AreEqual(r.Employee.Id, m.AdminUserId);
+                }
+            }
+
+
+
+
         }
     }
 }

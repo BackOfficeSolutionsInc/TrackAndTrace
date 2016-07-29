@@ -65,17 +65,8 @@ namespace RadialReview.Models.ViewModels
 			public MeasurableVM(UserTemplate.UserTemplate.UT_Measurable m)
 			{
 				Measurable = m.Measurable;
-				switch (m.GoalDirection)
-				{
-					case LessGreater.LessThan:
-						GoalDirection = "< ";
-						break;
-					case LessGreater.GreaterThan:
-						GoalDirection = "≥ ";
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
+                GoalDirection = m.GoalDirection.ToSymbol()+" ";
+
 				Goal = m.Goal;
 			}
 

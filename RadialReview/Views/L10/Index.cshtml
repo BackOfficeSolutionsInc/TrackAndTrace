@@ -63,21 +63,20 @@
                                 <td class="alignCenter">
                                     <div class="btn-group">
                                         <a href="/L10/Details/@meeting.Recurrence.Id" class="btn btn-default btn-sm"><span style="top: 2px;" class="icon fontastic-icon-archive-1" title="View meeting archive"></span></a>
-                                       
-                                        <a @if (meeting.EditMeeting) {
-                                               @:href="/L10/Wizard/@meeting.Recurrence.Id"
-                                         } class="btn btn-default btn-sm @(meeting.EditMeeting?"":"disable")"><span style="top: 2px;" class="glyphicon glyphicon-edit" title="Edit meeting"></span></a> 
+
+                                        <a @if (meeting.EditMeeting) { @: href="/L10/Wizard/@meeting.Recurrence.Id"
+                                                                                    } class="btn btn-default btn-sm @(meeting.EditMeeting?"":"disable")"><span style="top: 2px;" class="glyphicon glyphicon-edit" title="Edit meeting"></span></a>
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                                 <span style="top: 2px;" class="glyphicon glyphicon-chevron-down"></span>
                                             </button>
                                             <ul class="dropdown-menu alignLeft pull-right" role="menu">
-                                                <li><a href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone"></span> Texting Actions</a></li>
-                                                @*<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>*@
-                                                <li role="separator" class="divider"></li>
-                                                <li><a href="/Quarterly/Printout/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf" title=""></span> Generate Quarterly Printout</a></li>
+                                                <li><a href="#"  onclick="showPrint(@(meeting.Recurrence.Id))" @*href="/Quarterly/Printout/@meeting.Recurrence.Id"*@><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf" title=""></span> Generate Quarterly Printout</a></li>
                                                 <li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
-
+                                                <li><a  href="/L10/Timeline/" @meeting.Recurrence.Id><span class="icon fontastic-icon-back-in-time"></span> Timeline</a></li>
+                                                <li role="separator" class="divider"></li>
+                                                <li><a  href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone"></span> Texting Actions</a></li>
+                                                @*<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>*@
                                                 @if (meeting.EditMeeting) {
 
                                                     <li role="separator" class="divider"></li>
@@ -104,7 +103,7 @@
 
 <style>
     .table .btn-default {
-        color: #5e5e5e!important;
+        color: #5e5e5e !important;
     }
 
     .body-full-width #alerts:not(:empty) {
@@ -112,6 +111,17 @@
         margin-bottom: -15px;
     }
 
+    html, body {
+        background-color: #eee;
+    }
+
+    .panel {
+        border: none;
+    }
+
+    .grayRow {
+        /*background-color: #f2f2f2;*/
+    }
 </style>
 
 @using (Html.BeginScripts()) {
@@ -123,5 +133,25 @@
 
             location.href = "/l10/meeting/" + id + additional;
         }
-    </script>    
+
+        
+        var curRecur=0;
+        function showPrint(recurrenceId) {
+            //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
+            curRecur=recurrenceId;
+            showModal("Generate Quarterly Printout", "/Quarterly/Modal", "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
+
+        }
+        
+        function callbackPrint() {
+            $("#modalForm").unbind("submit");
+            $("#modalForm").attr("target", "_blank");
+            $("#modalForm").attr("method", "post");
+            $("#modalForm").attr("action", "/Quarterly/Printout/" + curRecur);
+            $("#modalForm").bind("submit", function () {
+                $("#modal").modal('hide');
+            });
+        }
+
+    </script>
 }

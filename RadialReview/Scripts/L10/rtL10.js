@@ -113,7 +113,7 @@ $(function () {
 	});
 
 	window.onbeforeunload = function (e) {
-		
+	    console.log("onbeforeunload 1");
 		if ($(":focus").length) {
 			$(":focus").blur();
 		}

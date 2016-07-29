@@ -14,6 +14,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.L10;
+using RadialReview.Models.Accountability;
 
 namespace RadialReview.Utilities {
     public partial class PermissionsUtility {
@@ -159,14 +160,22 @@ namespace RadialReview.Utilities {
                     anyFlags = true;
                     var currentTrue = false;
                     //Is a OrgAdmin
-                    currentTrue = currentTrue || (permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.Admins && IsOrgAdmin(resourceType, resourceId)));
-                    //Special UserIds
+                    currentTrue = currentTrue || (permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.Admins && IsOrgAdmin(resourceType, resourceId)));                    
+                    //Email address
                     currentTrue = currentTrue || (permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.RGM && x.AccessorId == caller.Id));
-
                     //Is creator
                     currentTrue = currentTrue || (permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.Creator && IsCreator(resourceType, resourceId)));
                     //Is a Member
                     currentTrue = currentTrue || (permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.Members && IsMember(resourceType, resourceId)));
+                    //Special UserIds
+                    currentTrue = currentTrue || (permItems.Any(x => {
+                        var aretrue = x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.Email && caller.User != null;
+                        if (aretrue) {
+                            var e = session.Get<EmailPermItem>(x.AccessorId);
+                            return e.Email.ToLower() == caller.User.UserName.ToLower();
+                        }
+                        return false;
+                    }));
                     //Special Teams/Positions/Etc (only call if necessary)
                     if (!currentTrue && permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.RGM && x.AccessorId != caller.Id)) {
                         //Expensive, only call once.
@@ -271,5 +280,7 @@ namespace RadialReview.Utilities {
                 throw new PermissionsException("You cannot upload documents");
             return this;
         }
+
+    
     }
 }

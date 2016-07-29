@@ -122,7 +122,7 @@
 							delay: 250,
 							data: function (params) {
 								return {
-									q: params.term, // search term
+								    q: encodeURI(params.term), // search term
 									page: params.page
 								};
 							},
@@ -159,7 +159,7 @@
 				var on = $(self).is(":checked");
 				$(self).attr("disabled", true);
 				$.ajax({
-					url: "/Permissions/UpdatePerm/" + id + "?" + level + "=" + on,
+				    url: "/Permissions/UpdatePerm/" + encodeURIComponent(id) + "?" + level + "=" + on,
 					success: function(data) {
 						if (!showJsonAlert(data, false, true)) {
 							$(self).prop('checked', !on);
@@ -176,10 +176,11 @@
 		}
 
 		function add_@(guid)(accessorId) {
+		    debugger;
 			console.log(accessorId);
 
 			$.ajax({
-				url: "/Permissions/BlankDropdownRow/" + accessorId + "?resource=@Model.ResId&type=@Model.ResType",
+			    url: "/Permissions/BlankDropdownRow/?q=" + encodeURIComponent(accessorId) + "&resource=@Model.ResId&type=@Model.ResType",
 				success: function (data) {
 					$("#container_@guid table").append(data);
 				}

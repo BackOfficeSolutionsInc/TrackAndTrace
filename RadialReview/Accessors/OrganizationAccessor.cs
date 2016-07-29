@@ -26,16 +26,20 @@ using RadialReview.Models.UserModels;
 using RadialReview.Utilities.Query;
 using NHibernate;
 using WebGrease.Css.Extensions;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
+
     public class OrganizationAccessor : BaseAccessor {
 
 
-        public OrganizationModel CreateOrganization(UserModel user, string name, PaymentPlanType planType, DateTime now, out UserOrganizationModel newUser, bool enableL10, bool enableReview,bool startDeactivated=false,string positionName=null)
+        public OrganizationModel CreateOrganization(UserModel user, string name, PaymentPlanType planType, DateTime now, out UserOrganizationModel newUser, bool enableL10, bool enableReview, bool startDeactivated = false, string positionName = null)
         {
             UserOrganizationModel userOrgModel;
             OrganizationModel organization;
             OrganizationTeamModel allMemberTeam;
+            PermissionsUtility perms;
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
@@ -61,6 +65,7 @@ namespace RadialReview.Accessors {
                     //db.SaveChanges();
                     //db.UserModels.Attach(user);
                     user = s.Get<UserModel>(user.Id);
+
 
 
 
@@ -99,6 +104,10 @@ namespace RadialReview.Accessors {
 
                     s.Save(organization);
 
+                    perms = PermissionsUtility.Create(s,userOrgModel);
+                    var acChart = AccountabilityAccessor.CreateChart(s,perms, organization.Id, false);
+                    organization.AccountabilityChartId = acChart.Id;
+
                     if (positionName != null) {
                         var orgPos = new OrganizationPositionModel() {
                             Organization = s.Load<OrganizationModel>(organization.Id),
@@ -115,7 +124,7 @@ namespace RadialReview.Accessors {
                         userOrgModel.Positions.Add(posDur);
                         s.Update(userOrgModel);
                     }
-                    
+
 
                     //Add team for every member
                     allMemberTeam = new OrganizationTeamModel() {
@@ -195,6 +204,13 @@ namespace RadialReview.Accessors {
                     newUser = userOrgModel;
 
                     userOrgModel.UpdateCache(s);
+
+                    tx.Commit();
+                }
+                using (var tx = s.BeginTransaction()) {
+
+                    HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUser(s, userOrgModel));
+
 
                     tx.Commit();
                     s.Flush();
@@ -284,7 +300,7 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static List<Tuple<string, string, long>> GetMembers_Tiny(UserOrganizationModel caller, long organizationId)
+        public static List<TinyUser> GetMembers_Tiny(UserOrganizationModel caller, long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -293,7 +309,8 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-        public static List<Tuple<string, string, long>> GetMembers_Tiny(ISession s, PermissionsUtility perms, long organizationId)
+
+        public static List<TinyUser> GetMembers_Tiny(ISession s, PermissionsUtility perms, long organizationId)
         {
             perms.ViewOrganization(organizationId);
             UserOrganizationModel uo = null;
@@ -303,16 +320,24 @@ namespace RadialReview.Accessors {
                 .Left.JoinAlias(x => x.User, () => u)
                 .Left.JoinAlias(x => x.TempUser, () => t)
                 .Where(x => x.Organization.Id == organizationId && x.DeleteTime == null)
-                .Select(x => u.FirstName, x => u.LastName, x => x.Id, x => t.FirstName, x => t.LastName)
+                .Select(x => u.FirstName, x => u.LastName, x => x.Id, x => t.FirstName, x => t.LastName, x => u.UserName, x => t.Email)
                 .List<object[]>()
                 .Select(x => {
                     var fname = (string)x[0];
                     var lname = (string)x[1];
+                    var email = (string)x[5];
+                    var uoId = (long)x[2];
                     if (fname == null && lname == null) {
                         fname = (string)x[3];
                         lname = (string)x[4];
+                        email = (string)x[6];
                     }
-                    return Tuple.Create(fname, lname, (long)x[2]);
+                    return new TinyUser() {
+                        FirstName = fname,
+                        LastName = lname,
+                        Email = email,
+                        UserOrgId = uoId
+                    };// Tuple.Create(fname, lname, (long)x[2], email);
                 }).ToList();
 
         }
@@ -560,45 +585,65 @@ namespace RadialReview.Accessors {
             }
         }
 
+        public static Tree GetOrganizationTree(ISession s, PermissionsUtility perms, long orgId, long? parentId = null, bool includeTeams = false,bool includeRoles =false)
+        {
+            perms.ViewOrganization(orgId);
 
+            var org = s.Get<OrganizationModel>(orgId);
+
+            List<UserOrganizationModel> managers;
+
+            if (parentId == null) {
+                managers = s.QueryOver<UserOrganizationModel>()
+                            .Where(x => x.Organization.Id == orgId && x.ManagingOrganization)
+                          //.Fetch(x => x.Teams).Default
+                            .List()
+                            .ToListAlive();
+            } else {
+                var parent = s.Get<UserOrganizationModel>(parentId);
+
+                if (orgId != parent.Organization.Id)
+                    throw new PermissionsException("Organizations do not match");
+
+                perms.ViewOrganization(parent.Organization.Id);
+                managers=parent.AsList();
+            }
+
+                var managerIds = managers.Select(x => x.Id).ToList();
+
+            if (includeTeams) {
+                var managerTeams = s.QueryOver<TeamDurationModel>().Where(x => x.DeleteTime == null)
+                    .WhereRestrictionOn(x => x.UserId).IsIn(managerIds).List().ToList();
+
+                foreach (var t in managerTeams) {
+                    managers.First(x => x.Id == t.UserId).Teams.Add(t);
+                }
+            }
+
+            var caller = perms.GetCaller();
+
+            var deep = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
+
+            //var classes = "organizations".AsList("admin");
+
+            var managingOrg = caller.ManagingOrganization && orgId == caller.Organization.Id;
+
+            var tree = new Tree() {
+                name = org.Name.Translate(),
+                @class = "organizations",
+                id = -1 * orgId,
+                children = managers.Select(x => x.GetTree(s, deep, caller.Id, force: managingOrg, includeRoles: includeRoles)).ToList()
+            };
+
+            return tree;
+        }
 
         public Tree GetOrganizationTree(UserOrganizationModel caller, long orgId, bool includeRoles = false)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var perms = PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
-
-                    var org = s.Get<OrganizationModel>(orgId);
-
-                    var managers = s.QueryOver<UserOrganizationModel>()
-                                        .Where(x => x.Organization.Id == orgId && x.ManagingOrganization)
-                        //.Fetch(x => x.Teams).Default
-                                        .List()
-                                        .ToListAlive();
-                    var managerIds = managers.Select(x => x.Id).ToList();
-
-                    var managerTeams = s.QueryOver<TeamDurationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.UserId).IsIn(managerIds).List().ToList();
-
-                    foreach (var t in managerTeams) {
-                        managers.First(x => x.Id == t.UserId).Teams.Add(t);
-                    }
-
-
-
-                    var deep = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
-
-                    //var classes = "organizations".AsList("admin");
-
-                    var managingOrg = caller.ManagingOrganization && orgId == caller.Organization.Id;
-
-                    var tree = new Tree() {
-                        name = org.Name.Translate(),
-                        @class = "organizations",
-                        id = -1 * orgId,
-                        children = managers.Select(x => x.GetTree(s, deep, caller.Id, force: managingOrg, includeRoles: includeRoles)).ToList()
-                    };
-
-                    return tree;
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetOrganizationTree(s, perms, orgId, null, true, includeRoles);
                 }
             }
         }
@@ -913,20 +958,20 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public void EnsureAllAtOrganization(UserOrganizationModel caller, long organizationId, List<long> userIds,bool includedDeleted=false)
+        public void EnsureAllAtOrganization(UserOrganizationModel caller, long organizationId, List<long> userIds, bool includedDeleted = false)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
-                    var q= s.QueryOver<UserOrganizationModel>().Where(x =>x.Organization.Id == organizationId);
-                    if(!includedDeleted){
-                        q = q.Where(x=>x.DeleteTime==null);
+                    var q = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId);
+                    if (!includedDeleted) {
+                        q = q.Where(x => x.DeleteTime == null);
                     }
 
-                    var foundIds = q.WhereRestrictionOn(x=>x.Id).IsIn(userIds).Select(x=>x.Id).List<long>().ToList();
+                    var foundIds = q.WhereRestrictionOn(x => x.Id).IsIn(userIds).Select(x => x.Id).List<long>().ToList();
 
-                    foreach(var id in userIds){
-                        if (!foundIds.Any(x=>x==id))
+                    foreach (var id in userIds) {
+                        if (!foundIds.Any(x => x == id))
                             throw new PermissionsException("User not part of organization");
                     }
 

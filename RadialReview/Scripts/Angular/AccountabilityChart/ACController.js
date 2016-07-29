@@ -1,192 +1,13 @@
-﻿var acapp = angular.module('ACApp', ['helpers']);
+﻿var acapp = angular.module('ACApp', ['helpers', 'panzoom', 'tree']);
 
 
-
-
-
-//var acharts = angular.module('charts', [])
-//    .controller('mainCtrl', function AppCtrl($scope) {
-//        $scope.options = { width: 500, height: 300, 'bar': 'aaa' };
-//        $scope.data = [1, 2, 3, 4];
-//        $scope.hovered = function (d) {
-//            $scope.barValue = d;
-//            $scope.$apply();
-//        };
-//        $scope.barValue = 'None';
-//    })
-acapp.directive('barChart', function () {
-    var chart = d3.custom.barChart();
-    return {
-        restrict: 'E',
-        replace: true,
-        template: '<div class="chart chart-bar"></div>',
-        scope: {
-            height: '=height',
-            data: '=data',
-            hovered: '&hovered'
-        },
-        link: function (scope, element, attrs) {
-            var chartEl = d3.select(element[0]);
-            chart.on('customHover', function (d, i) {
-                scope.hovered({ args: d });
-            });
-
-            scope.$watch('data', function (newVal, oldVal) {
-                chartEl.datum(newVal).call(chart);
-            });
-
-            scope.$watch('height', function (d, i) {
-                chartEl.call(chart.height(scope.height));
-            })
-        }
-    }
-}).directive('tree', function () {
-    var chart = d3.custom.barChart();
-    return {
-        restrict: 'E',
-        replace: true,
-        template: '<div class="chart chart-tree"></div>',
-        scope: {
-           // height: '=height',
-            data: '=data',
-            hovered: '&hovered'
-        },
-        link: function (scope, element, attrs) {
-            var chartEl = d3.select(element[0]);
-            chart.on('customHover', function (d, i) {
-                scope.hovered({ args: d });
-            });
-
-            scope.$watch('data', function (newVal, oldVal) {
-                chartEl.datum(newVal).call(chart);
-            });
-
-            scope.$watch('height', function (d, i) {
-                chartEl.call(chart.height(scope.height));
-            })
-        }
-    }
-})
-    .directive('chartForm', function () {
-        return {
-            restrict: 'E',
-            replace: true,
-            controller: function AppCtrl($scope) {
-                $scope.update = function (d, i) { $scope.data = randomData(); };
-                function randomData() {
-                    return d3.range(~~(Math.random() * 50) + 1).map(function (d, i) { return ~~(Math.random() * 1000); });
-                }
-            },
-            template: '<div class="form">' +
-                    'Height: {{options.height}}<br />' +
-                    '<input type="range" ng-model="options.height" min="100" max="800"/>' +
-                    '<br /><button ng-click="update()">Update Data</button>' +
-                    '<br />Hovered bar data: {{barValue}}</div>'
-        }
-    });
-
-
-//acapp.directive("panzoom",["$compile", function ($compile) {
-//    return {
-//        templateNamespace: 'svg',
-//        restrict: "A",
-//        scope: { graph: "=" },
-//        transclude: true,
-//        //replace:true,
-//        template: //'<svg ng-attr-height="{{graph.height}}" ng-attr-width="{{graph.width}}">  ' +
-//                  '    <g class="pz-zoom">                                                  ' +
-//                  '         <g class="pz-pan" ng-transclude></g>                            ' +
-//                  '    </g>                                                                 ' ,
-//                  //'</svg>                                                                   ',
-
-//        link: function (scope,element,attr,ctrl,transclude) {
-
-//            scope.getGraph = function () {
-//                return scope.graph;
-//            }
-//            //debugger;
-//            //var pzZoom = element.find(".pz-zoom");
-//            //var pzPan = pzZoom.find(".pz-pan");
-
-//            //function zoomed() {
-//            //    pzPan.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-//            //}
-
-//            //var zoom = d3.behavior.zoom().scaleExtent([1, 10]).on("zoom", zoomed);
-
-//            ////var drag = d3.behavior.drag()
-//            ////    .origin(function (d) { return d; })
-//            ////    .on("dragstart", dragstarted)
-//            ////    .on("drag", dragged)
-//            ////    .on("dragend", dragended);
-
-//            //d3.select(pzZoom[0]).call(zoom);
-
-
-//            //var template = '<g class="pz-zoom"><g class="pz-pan"></g></g>';
-//            //var templateEl = angular.element(template);
-
-//            transclude(scope, function (clonedContent) {
-//                d3.select(element[0]).select(".pz-pan").selectAll("*").remove();
-//                d3.select(element[0]).select(".pz-pan").append(clonedContent);
-//              //  ;
-//               // element.find().replaceWith(clonedContent);
-//            });
-
-//            //transclude(scope, function (clonedContent) {
-//            //    templateEl.find(".pz-pan").append(clonedContent);
-
-//            //    $compile(templateEl)(scope, function (clonedTemplate) {
-//            //        element.append(clonedTemplate);
-//            //    });
-//            //});
-//        }
-//    }
-//}]);
-
-
-//acapp.directive("tree", function () {
-//    return {
-
-//        templateNamespace: 'svg',
-//       // replace:true,
-//        restrict: "E",
-//       // require: '^panzoom',
-//       // scope: true,
-//        template: '' +
-//                    '    <circle ng-repeat="circle in graph.data.children"                   ' +
-//                    '    cx="10"                                           ' +
-//                    '    ng-attr-cy="{{circle.id}}"                                           ' +
-//                    '    r= "2">                                          ' +
-//                    '    </circle>                                                           ' +
-//                    '                                                                        ',
-//        link: function (scope, element, attrs, ctrl) {
-//           // scope.graph = ctrl.getGraph();
-//            //
-//            //scope.graph = scope.graph || {};
-//            //scope.graph.height = scope.graph.height || 100;
-//            //scope.graph.width = scope.graph.width || 100;
-//        }
-//    };
-//});
-
-acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'radial', 'orgId', 'dataUrl', "$compile", "$sce", "$q", "$window",
-function ($scope, $http, $timeout, $location, radial, orgId, dataUrl, $compile, $sce, $q, $window) {
-
-    $scope.options = { width: 500, height: 300, 'bar': 'aaa' };
-    $scope.data = [1, 2, 3, 4];
-    $scope.hovered = function (d) {
-        $scope.barValue = d;
-        $scope.$apply();
-    };
-    $scope.barValue = 'None';
-
-
-
+acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'radial','orgId', 'chartId', 'dataUrl', "$compile", "$sce", "$q", "$window", "$rootScope",
+function ($scope, $http, $timeout, $location, radial,orgId, chartId, dataUrl, $compile, $sce, $q, $window, $rootScope) {
     $scope.orgId = orgId;
-    $scope.graph = $scope.graph || {};
-    $scope.graph.height = $scope.graph.height || 100;
-    $scope.graph.width = $scope.graph.width || 100;
+    $scope.chartId = chartId;
+    $scope.model = $scope.model || {};
+    $scope.model.height = $scope.model.height || 10000;
+    $scope.model.width = $scope.model.width || 10000;
 
     function rejoin(connection, proxy, callback) {
         try {
@@ -218,9 +39,9 @@ function ($scope, $http, $timeout, $location, radial, orgId, dataUrl, $compile, 
         console.log("reloading...");
         var url = dataUrl;
         if (dataUrl.indexOf("{0}") != -1) {
-            url = url.replace("{0}", $scope.orgId);
+            url = url.replace("{0}", $scope.chartId);
         } else {
-            url = url + $scope.orgId;
+            url = url + $scope.chartId;
         }
 
         var date = ((+new Date()) + (window.tzoffset * 60 * 1000));
@@ -233,14 +54,17 @@ function ($scope, $http, $timeout, $location, radial, orgId, dataUrl, $compile, 
         $http({ method: 'get', url: url })
         .success(function (data, status) {
             var ddr = undefined;
-            //debugger;
-            console.log("Got Data");
+
+            console.log("Data Loaded");
             r.updater.convertDates(data);
             if (clearData) {
                 r.updater.clearAndApply(data);
+                $scope.search.searchTerms = [];
             } else {
                 r.updater.applyUpdate(data);
             }
+            $rootScope.$emit("CenterNode", $scope.model.center || 0);
+
         }).error(function (data, status) {
             console.log("Error");
             console.error(data);
@@ -248,5 +72,153 @@ function ($scope, $http, $timeout, $location, radial, orgId, dataUrl, $compile, 
     }
     $scope.functions.reload(true);
 
+    var self = this;
+
+    $scope.functions.selectedItemChange = function (id) {
+        $rootScope.$emit("SelectNode", id);
+    };
+
+    $scope.search = {};
+    $scope.search.querySearch = function (query) {
+        function createFilterFor(query) {
+            var lowercaseQuery = angular.lowercase(query);
+            return function filterFn(x) {
+                var any = (x.Name + "").toLowerCase().indexOf(lowercaseQuery) === 0;
+                if (x.User && x.User.Name) {
+                    var f = x.User.Name.toLowerCase().indexOf(lowercaseQuery);
+                    any = any || (f != -1 && f == 0 || x.User.Name[f - 1] == " ");
+                }
+                return any;
+            };
+        }        
+        var possible = $scope.model.data.AllUsers;
+        return possible.filter(createFilterFor(query));
+    }
+
+    $scope.search.searchTerms = {};
+
+
+    $scope.nodeWatch = function (node) {
+        var uname = null;
+        var roles = null;
+        if (node.User && node.User.Name)
+            uname = node.User.Name;
+        if (node.Group && node.Group.Roles)
+            roles = node.Group.Roles;
+        return {
+            name: uname,
+            roles: roles
+        }
+    }
+
+    
+
+    $scope.nodeEnter = function (nodeEnter) {
+        var rect = nodeEnter.append("rect")
+            .attr("class", "acc-rect")
+            .attr("width", 0)
+            .attr("height", 0)
+            .attr("x", 0);
+
+
+        var node = nodeEnter.append("foreignObject")
+            .append("xhtml:div")
+            .classed("acc-node", true)
+            .style("font", "14px 'Helvetica Neue'");
+
+        var owner = node.append("xhtml:div")
+            .classed("acc-owner", true);
+
+        //nodeEnter.append("g")
+        //    .classed("acc-owner-delete", true)
+        //    .append("text")
+        //    .text("x");
+
+        //owner.append("input")
+        //    .classed("name",true)
+        //    .attr("ng-model", function (d) {
+        //        return "model.Lookup['AngularAccountabilityNode_" + d.id + "'].User.Name";
+        //    });
+        var autoComplete = owner.append("md-autocomplete")
+            .attr("md-selected-item", function (d) {
+                return "model.Lookup['AngularAccountabilityNode_" + d.id + "'].User";
+            }).attr("md-item-text", function (d) {
+                return "item.Name";
+            }).attr("md-items",function (d) { return "item in search.querySearch(search.searchText_" + d.id+")"; } )
+            .attr("md-search-text", function (d) { return "search.searchText_" + d.id; });
+        autoComplete.append("md-item-template")
+            .append("span")
+            .attr("md-highlight-text", function (d) { return "search.searchText_" + d.id; })
+            .attr("md-highlight-flags", "^i")
+            .text("{{item.Name||item.User.Name}}");//.attr("");
+        autoComplete.append("md-not-found")          
+           .text(function (d) {
+               return "No matches were found.";
+           });//.attr("");
+
+        var rows = node.append("xhtml:div").classed("acc-roles", true);
+
+
+        //node.append("input").attr("ng-model", function (d) {
+        //    return "model.Lookup['AngularAccountabilityNode_" + d.id + "'].User.Name";
+        //});
+
+        var roles = rows.selectAll(".role-row").data(function (d) {
+            return d.Group.Roles;
+        });
+
+        roles.enter().append("input").attr("ng-model", function (d) {
+            return "model.Lookup['AngularRole_" + d.Id + "'].Name";
+        });
+
+        nodeEnter.call(function (d3Selection) {
+            d3Selection.each(function (d, i) {
+                // this is the actual DOM element
+                $compile(this)($scope);
+            });
+        });
+
+        // If it fails, show our other labels instead.
+
+        //newSwitches.append("text")
+        //    .attr("class", "label")
+        //    .attr("x", function (d, i) { return ((cDim.barWidth + cDim.barMargin) * i) + (cDim.barWidth / 2); })
+        //    .attr("y", function (d, i) { return cDim.height - barHeight(d.casualties) + 24; })
+        //    .text(function (d, i) { return d.display_division });
+
+
+        //var node = rect.append("foreignObject").attr("width", 480).attr("height", 500)
+        //    .append("div").attr("xmlns", "http://www.w3.org/1999/xhtml")
+        //    .text("asdf")
+
+        //node.append("input")
+        //    .attr("ng-model", function (d) {
+        //        return "model.Lookup['AccountabilityTree_" + d.id + "'].user.Name";
+        //    });
+        //.attr("y", function (d) { return 13; })
+        //.attr("text-anchor", "middle");
+        //.text(function (d) { return d.name || d.user.Name; });
+
+
+
+    }
+    $scope.nodeUpdate = function (nodeUpdate) {
+        nodeUpdate.select(".acc-rect")
+            .attr("width", function (d) {
+                return d.width;
+            })
+            //.attr("x", function (d) {
+            //    return -d.width/2;
+            //})
+            .attr("height", function (d) {
+                return (d.height || 20);
+            });
+
+        nodeUpdate.select("text");
+    };
+    $scope.nodeExit = function (nodeExit) {
+        nodeExit.select(".acc-rect").attr("height", 1e-6);
+        //nodeExit.select("text");
+    };
 
 }]);

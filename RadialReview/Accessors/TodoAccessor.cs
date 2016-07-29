@@ -24,6 +24,8 @@ using RadialReview.Utilities.Encrypt;
 using RadialReview.Controllers;
 using NHibernate;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
     public class TodoAccessor : BaseAccessor {
@@ -141,6 +143,8 @@ namespace RadialReview.Accessors {
             //    todo.DueDate = todo.DueDate.Date.AddDays(1).AddMinutes(-todo.Organization.GetTimezoneOffset()).AddMilliseconds(-1);
             todo.Ordering = -todo.Id;
             s.Update(todo);
+
+            HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));
 
             if (recurrenceId > 0) {
                 var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();

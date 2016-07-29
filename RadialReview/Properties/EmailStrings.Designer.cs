@@ -210,7 +210,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;p&gt;Payment Failed: {0}&lt;/p&gt;&lt;p&gt;{1}&lt;/p&gt;&lt;p&gt;{2}&lt;/p&gt;.
+        ///   Looks up a localized string similar to &lt;p&gt;Payment Failed: {0}&lt;/p&gt;&lt;p&gt;{1}&lt;/p&gt;&lt;p&gt;{2}&lt;/p&gt;&lt;p&gt;{3}&lt;/p&gt;.
         /// </summary>
         public static string PaymentException_Body {
             get {

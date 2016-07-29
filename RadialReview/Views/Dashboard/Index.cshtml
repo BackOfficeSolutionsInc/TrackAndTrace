@@ -134,6 +134,17 @@
                                 <li><a onclick="createTile('/TileData/L10Rocks/@i.Value','Url',@i.Value)">Rocks</a></li>
                                 <li><a onclick="createTile('/TileData/L10Todos/@i.Value','Url',@i.Value)">To-do list</a></li>
                                 <li><a onclick="createTile('/TileData/L10Issues/@i.Value','Url',@i.Value)">Issues</a></li>
+                                <li class="dropdown-submenu">
+                                    <a tabindex="-1" href="#" @(i.Notes.Any()?"":"disabled")>Notes</a>
+                                    @if (i.Notes.Any()) { 
+                                    <ul class="dropdown-menu" style="">
+                                        @foreach (var n in i.Notes) 
+                                        {
+                                            <li><a onclick="createTile('/TileData/L10Notes/@n.Value','Url',@n.Value)">@n.Text</a></li>
+                                        }
+                                    </ul>
+                                    }
+                                </li>
                             </ul>
                         </li>
                     }

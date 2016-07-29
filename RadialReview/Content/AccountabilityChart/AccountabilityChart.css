@@ -1,19 +1,68 @@
 ﻿.body-content {
-  padding: 0!important;
+  padding: 0 !important;
   width: 100%;
   margin: 0;
   max-width: 100% !important;
 }
-.acc-chart {
-  background-color: white;
-  border: 1px solid red;
+.md-scroll-mask {
+  position: fixed!important;
 }
-.acc-chart .link {
+.acc-chart svg button md-icon {
+  display: none;
+}
+.acc-chart svg md-autocomplete,
+.acc-chart svg md-autocomplete * {
+  position: inherit;
+}
+.acc-chart svg .templink {
   fill: none;
   stroke: #ccc;
   stroke-width: 1.5px;
 }
-.acc-chart .acc-box {
+.acc-chart svg .ghost.showing {
+  display: block;
+}
+.acc-chart svg .ghost,
+.acc-chart svg .activeDrag .ghost {
+  display: none;
+}
+.acc-chart svg .link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+.acc-chart svg .acc-node {
   fill: none;
   stroke: black;
+  width: 200px;
+  padding: 2px;
+  /*position:relative;*/
+}
+.acc-chart svg .acc-node .acc-owner {
+  margin: 3px;
+}
+.acc-chart svg .acc-node .acc-owner .name {
+  text-align: center;
+  width: 100%;
+  font-weight: bold;
+  cursor: text;
+}
+.acc-chart svg .acc-node .acc-owner .acc-owner-delete {
+  position: absolute;
+  /*float: right;
+                display: inline-block;
+                height: 0;*/
+  /* -moz-transform: translate(0,-10px);
+                -ms-transform: translate(0,-10px);
+                -o-transform: translate(0,-10px);
+                -webkit-transform: translate(0,-10px);
+                transform: translate(0,-10px);*/
+}
+.acc-chart svg .acc-node input {
+  background-color: transparent;
+  border: none;
+  width: 100%;
+}
+.acc-chart svg .acc-node input:focus {
+  outline: none;
 }

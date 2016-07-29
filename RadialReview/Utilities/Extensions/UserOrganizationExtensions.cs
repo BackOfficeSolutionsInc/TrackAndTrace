@@ -267,6 +267,9 @@ namespace RadialReview
 			if (includeRoles)
 			{
 				var roles = s.QueryOver<RoleModel>().Where(x => x.DeleteTime == null && x.ForUserId == self.Id).List();
+                foreach (var r in roles) {
+                    var a = r.Owner.NotNull(x => x.GetName());
+                }
 				data["Roles"] = roles.ToList();
 			}
 
@@ -278,7 +281,9 @@ namespace RadialReview
 				@class = String.Join(" ", classes.Select(y => Regex.Replace(y, "[^a-zA-Z0-9]", "_"))),
 				managing = managing,
 				manager = self.IsManager(),
-				children = self.ManagingUsers.NotNull(x => x.ToListAlive()).Select(x => x.Subordinate.GetTree(s, deepClaims, youId, force, includeRoles)).ToList(),
+				children = self.ManagingUsers.NotNull(x => x.ToListAlive())
+                                .Select(x => x.Subordinate.GetTree(s, deepClaims, youId, force, includeRoles))
+                                .ToList(),
 				data = data,
 			};
 		}

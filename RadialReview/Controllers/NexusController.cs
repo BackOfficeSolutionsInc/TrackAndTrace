@@ -50,6 +50,7 @@ namespace RadialReview.Controllers
         }
         
         [Access(AccessLevel.Any)]
+        [AsyncTimeout(60*20*1000)]
         public async Task<ActionResult> Index(String id)
         {
             try
@@ -85,6 +86,7 @@ namespace RadialReview.Controllers
                         };
                     case NexusActions.CreateReview:
                         {
+                           // HttpContext.Server.ScriptTimeout = 60*20;
 							var sent = await _ReviewEngine.CreateReviewFromPrereview(System.Web.HttpContext.Current, nexus);
 							NexusAccessor.Execute(nexus);
                             return Content("Sent:"+ sent);

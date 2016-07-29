@@ -30,7 +30,7 @@ namespace RadialReview.Accessors {
             var scorecardEnd = range.EndTime.AddDays(6).StartOfWeek(DayOfWeek.Sunday);
 
             var scores = ScorecardAccessor.GetUserScores(caller, userId, scorecardStart, scorecardEnd, includeAdmin: includeAdmin);
-            return new AngularScorecard(-1,caller,measurables.Select(x => new AngularMeasurable(x) { }),scores.ToList(),now,range,includeNextWeek,now);
+            return new AngularScorecard(-1, caller, measurables.Select(x => new AngularMeasurable(x) { }), scores.ToList(), now, range, includeNextWeek, now);
         }
 
         public static List<ScoreModel> GetScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end, bool loadUsers)
@@ -406,7 +406,9 @@ namespace RadialReview.Accessors {
             var score = s.Get<ScoreModel>(scoreId);
 
 
-            if (score != null && score.DeleteTime != null) {
+            if (score != null && score.DeleteTime == null && false) {
+                TestUtilities.Log("Score found. Updating.");
+
                 SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(scoreId));
 
                 //Editable in this meeting?
@@ -446,8 +448,9 @@ namespace RadialReview.Accessors {
                 //See if we can find it given week.
                 var scores = existingScores.OrderBy(x => x.Id).Where(x => (x.ForWeek == week)).ToList();
                 if (scores.Any()) {
-                    SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(score.Id));
+                    TestUtilities.Log("Found one or more score. Updating All.");
                     foreach (var sc in scores) {
+                        SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(sc.Id));
                         if (sc.Measured != value) {
                             sc.Measured = value;
                             sc.DateEntered = (value == null) ? null : (DateTime?)now;
@@ -466,65 +469,94 @@ namespace RadialReview.Accessors {
                     DateTime start, end;
 
                     if (week > maxDate) {
+                        var scoresCreated = 0;
+                        TestUtilities.Log("Score not found. Score above boundry. Creating scores up to value.");
                         //Create going up until sufficient
                         var n = maxDate;
                         ScoreModel curr = null;
+                        var measurable = s.Get<MeasurableModel>(m.Id);
+
                         while (n < week) {
                             var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int)m.DueDate).Add(m.DueTime);
                             curr = new ScoreModel() {
                                 AccountableUserId = m.AccountableUserId,
                                 DateDue = nextDue,
                                 MeasurableId = m.Id,
+                                Measurable = measurable,
                                 OrganizationId = m.OrganizationId,
-                                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
+                                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday),
+                                OriginalGoal = measurable.Goal,
+                                OriginalGoalDirection = measurable.GoalDirection
                             };
                             s.Save(curr);
+                            scoresCreated++;
                             m.NextGeneration = nextDue;
                             n = nextDue.StartOfWeek(DayOfWeek.Sunday);
                         }
                         curr.DateEntered = (value == null) ? null : nowQ;
                         curr.Measured = value;
+                        curr.Measurable = s.Get<MeasurableModel>(curr.MeasurableId);
                         score = curr;
+                        TestUtilities.Log("Scores created: " + scoresCreated);
                     } else if (week < minDate) {
+                        TestUtilities.Log("Score not found. Score below boundry. Creating scores down to value.");
                         var n = week;
                         var first = true;
+                        var scoresCreated = 0;
+                        var measurable = s.Get<MeasurableModel>(m.Id);
+
                         while (n < minDate) {
                             var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime);
                             var curr = new ScoreModel() {
                                 AccountableUserId = m.AccountableUserId,
                                 DateDue = nextDue,
                                 MeasurableId = m.Id,
+                                Measurable = measurable,
                                 OrganizationId = m.OrganizationId,
-                                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
+                                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday),
+                                OriginalGoal = measurable.Goal,
+                                OriginalGoalDirection = measurable.GoalDirection
                             };
                             if (first) {
                                 curr.Measured = value;
                                 curr.DateEntered = (value == null) ? null : nowQ;
                                 first = false;
                                 s.Save(curr);
+                                scoresCreated++;
+                                score = curr;
                             }
 
                             //m.NextGeneration = nextDue;
                             n = nextDue.AddDays(7).StartOfWeek(DayOfWeek.Sunday);
-                            score = curr;
+                            curr.Measurable = s.Get<MeasurableModel>(curr.MeasurableId);
+
                         }
+                        TestUtilities.Log("Scores created: " + scoresCreated);
                     } else {
+                        TestUtilities.Log("Score not found. Score inside boundry. Creating score.");
                         // cant create scores between these dates..
+                        var measurable = s.Get<MeasurableModel>(m.Id);
                         var curr = new ScoreModel() {
                             AccountableUserId = m.AccountableUserId,
                             DateDue = week.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime),
                             MeasurableId = m.Id,
+                            Measurable = measurable,
                             OrganizationId = m.OrganizationId,
                             ForWeek = week.StartOfWeek(DayOfWeek.Sunday),
                             Measured = value,
-                            DateEntered = (value == null) ? null : nowQ
+                            DateEntered = (value == null) ? null : nowQ,
+                            OriginalGoal = measurable.Goal,
+                            OriginalGoalDirection = measurable.GoalDirection
                         };
                         s.Save(curr);
+                        curr.Measurable = s.Get<MeasurableModel>(curr.MeasurableId);
                         score = curr;
+                        TestUtilities.Log("Scores created: 1");
                     }
                     s.Update(m);
 
                 }
+                #region comments
                 //if (score != null && score.Measured != value)
                 //{
                 //    //Found it with false id
@@ -615,6 +647,8 @@ namespace RadialReview.Accessors {
                 //    }
                 //    s.Update(m);
                 //}
+                #endregion
+
             }
             var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
             var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting), connectionId);

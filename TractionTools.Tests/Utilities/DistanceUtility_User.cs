@@ -3,12 +3,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RadialReview.Utilities;
 using System.Collections.Generic;
 using RadialReview.Utilities.DataTypes;
+using System.Linq;
 
 namespace TractionTools.Tests.Utilities {
     [TestClass]
     public class DistanceUtility_User {
 
-        public static List<Tuple<string, string, long>> Available = new List<Tuple<string, string, long>>{
+        public static List<TinyUser> Available = new List<Tuple<string, string, long>>{
                 Tuple.Create("James","Bond",100L),                Tuple.Create("Cameron","Diaz",101L),
                 Tuple.Create("William","Defoe",102L),             Tuple.Create("Andy","Warhol",103L),
                 Tuple.Create("Bill","Clinton",104L),              Tuple.Create("William","Gates",105L),
@@ -17,7 +18,11 @@ namespace TractionTools.Tests.Utilities {
                 Tuple.Create("Jordan","Smith",110L),              Tuple.Create("Timothy","Dalton",111L),
                 Tuple.Create("James","Dean",112L),                Tuple.Create("Don","Jackson",113L),
                 Tuple.Create("Carson","Daily",114L),
-         };
+         }.Select(x => new TinyUser() {
+             FirstName =x.Item1,
+             LastName=x.Item2,
+             UserOrgId = x.Item3
+         }).ToList();
 
         private void AssertHistogram(NameFormat expected, string[] namesIn)
         {
@@ -27,11 +32,15 @@ namespace TractionTools.Tests.Utilities {
             Assert.AreEqual(expected, found);
         }
 
-        private void AssertDistribution(DiscreteDistribution<Tuple<string,string,long>> dist, long id, int matches = 1, long deflt = -1)
+        private void AssertDistribution(DiscreteDistribution<TinyUser> dist, long id, int matches = 1, long deflt = -1)
         {
-            Tuple<string, string, long> res = Tuple.Create("","",deflt);
+            TinyUser res = new TinyUser(){
+             FirstName="",
+             LastName="",
+             UserOrgId=deflt,
+            };
             Assert.AreEqual(matches, dist.TryResolveOne(ref res));
-            Assert.AreEqual(id, res.Item3);
+            Assert.AreEqual(id, res.UserOrgId);
 
         }
 

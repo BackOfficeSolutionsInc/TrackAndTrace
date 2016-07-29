@@ -1,4 +1,5 @@
-﻿using RadialReview.Models;
+﻿using RadialReview.Accessors;
+using RadialReview.Models;
 using RadialReview.Properties;
 using RadialReview.Utilities.DataTypes;
 using System;
@@ -68,16 +69,16 @@ namespace RadialReview.Utilities {
 
         public static Dictionary<string, DiscreteDistribution<UserOrganizationModel>> TryMatch(IEnumerable<string> names, IEnumerable<UserOrganizationModel> available, int thresh = 2)
         {
-            var available_first_last_id = available.Select(x => Tuple.Create(x.GetFirstName().ToLower(), x.GetLastName().ToLower(), x.Id)).ToList();
+            var available_first_last_id = available.Select(x => TinyUser.FromUserOrganization(x)).ToList();
             var matches = TryMatch(names, available_first_last_id, thresh);
 
             var output = new Dictionary<string, DiscreteDistribution<UserOrganizationModel>>();
             foreach (var m in matches.Keys) {
-                output.Add(m, matches[m].Convert(x => available.FirstOrDefault(y => y.Id == x.Item3)));
+                output.Add(m, matches[m].Convert(x => available.FirstOrDefault(y => y.Id == x.UserOrgId)));
             }
             return output;
         }
-        public static Dictionary<string, DiscreteDistribution<Tuple<string, string, long>>> TryMatch(IEnumerable<string> names, IEnumerable<Tuple<string, string, long>> available_first_last_id, int thresh = 2)
+        public static Dictionary<string, DiscreteDistribution<TinyUser>> TryMatch(IEnumerable<string> names, IEnumerable<TinyUser> available_first_last_id, int thresh = 2)
         {
             var names2 = names.ToList();
             var available_first_last_id2 = available_first_last_id.ToList();
@@ -89,22 +90,22 @@ namespace RadialReview.Utilities {
 
             var format = _DetermineNameFormat(names, available_first_last_id, nicknameCache, thresh);
 
-            var defaultMatch = available_first_last_id2.FirstOrDefault().NotNull(x => x.Item3);
+            var defaultMatch = available_first_last_id2.FirstOrDefault().NotNull(x => x.UserOrgId);
             var output = new Dictionary<string, DiscreteDistribution<long>>();
             foreach (var name in names2) {
                 //long match = defaultMatch;
                 output[name] = _TryMatch_SecondPass(name.ToLower(), available_first_last_id2, format, nicknameCache, thresh);
                 // match;
             }
-            var output2 = new Dictionary<string, DiscreteDistribution<Tuple<string,string,long>>>();
+            var output2 = new Dictionary<string, DiscreteDistribution<TinyUser>>();
             foreach (var m in output.Keys) {
-                output2.Add(m, output[m].Convert(x => available_first_last_id2.FirstOrDefault(y => y.Item3 == x)));
+                output2.Add(m, output[m].Convert(x => available_first_last_id2.FirstOrDefault(y => y.UserOrgId == x)));
             }
 
             return output2;
         }
 
-        public static NameFormat _DetermineNameFormat(IEnumerable<string> names, IEnumerable<Tuple<string, string, long>> available_first_last_id, Dictionary<string, List<string>> nicknameCache, int thresh = 2)
+        public static NameFormat _DetermineNameFormat(IEnumerable<string> names, IEnumerable<TinyUser> available_first_last_id, Dictionary<string, List<string>> nicknameCache, int thresh = 2)
         {
             var histogram = new DiscreteDistribution<NameFormat>(thresh, 0);
             var names2 = names.Select(x => x.ToLower()).ToList();
@@ -147,9 +148,9 @@ namespace RadialReview.Utilities {
             return format;
 
         }
-        public static DiscreteDistribution<long> _TryMatch_SecondPass(string name, List<Tuple<string, string, long>> available_first_last_id, NameFormat format, Dictionary<string, List<string>> nicknameCache, int thresh)
+        public static DiscreteDistribution<long> _TryMatch_SecondPass(string name, List<TinyUser> available_first_last_id, NameFormat format, Dictionary<string, List<string>> nicknameCache, int thresh)
         {
-            available_first_last_id = available_first_last_id.Select(x => Tuple.Create(x.Item1.ToLower(), x.Item2.ToLower(), x.Item3)).ToList();
+            available_first_last_id = available_first_last_id.Select(x => x.Standardize()).ToList();
             name = name.ToLower();
             var names = name.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -173,16 +174,16 @@ namespace RadialReview.Utilities {
 
                         foreach (var a in available_first_last_id) {
                             var best = int.MaxValue;
-                            foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                            foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                 var score = 0;
-                                if (a.Item1 == nickname)
+                                if (a.FirstName == nickname)
                                     score -= 1;
-                                if (nickname.Length > 0 && a.Item2.Length > 0 && name1.Length > 0 && name2.Length > 0 && nickname[0] == name1[0] && a.Item2[0] == name2[0])
+                                if (nickname.Length > 0 && a.LastName.Length > 0 && name1.Length > 0 && name2.Length > 0 && nickname[0] == name1[0] && a.LastName[0] == name2[0])
                                     best = Math.Min(best, score);
 
                             }
                             if (best != int.MaxValue)
-                                possible_id_score.Add(Tuple.Create(a.Item3, best, a.Item1, ""));
+                                possible_id_score.Add(Tuple.Create(a.UserOrgId, best, a.FirstName, ""));
                         }
                         break;
                     }
@@ -192,19 +193,19 @@ namespace RadialReview.Utilities {
                         } else {
                             foreach (var a in available_first_last_id) {
                                 var best = int.MaxValue;
-                                foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                                foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                     if (nickname.Length > 0 && name1.Length > 0 && nickname[0] == name1[0]) {
-                                        var score = DamerauLevenshteinDistance(name2, a.Item2, thresh);
-                                        if (a.Item1 == nickname)
+                                        var score = DamerauLevenshteinDistance(name2, a.LastName, thresh);
+                                        if (a.FirstName == nickname)
                                             score -= 1;
                                         if (score <= thresh) {
                                             best = Math.Min(best, score);
-                                            //possible_id_score.Add(Tuple.Create(a.Item3, score, a.Item1, nickname));
+                                            //possible_id_score.Add(Tuple.Create(a.UserOrgId, score, a.FirstName, nickname));
                                         }
                                     }
                                 } 
                                 if (best != int.MaxValue)
-                                    possible_id_score.Add(Tuple.Create(a.Item3, best ,a.Item1, ""));
+                                    possible_id_score.Add(Tuple.Create(a.UserOrgId, best ,a.FirstName, ""));
                             }
                         }
                         break;
@@ -214,20 +215,20 @@ namespace RadialReview.Utilities {
                         var fn = name1;
                         foreach (var a in available_first_last_id) {
                             var best = int.MaxValue;
-                            foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                            foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                 var score = DamerauLevenshteinDistance(fn, nickname, thresh);
-                                if (a.Item1 == nickname)
+                                if (a.FirstName == nickname)
                                     score -= 1;
                                 if (score <= thresh) {
                                     best = Math.Min(best, score);
                                 }
                             } 
                             if (best != int.MaxValue)
-                                possible_id_score.Add(Tuple.Create(a.Item3, best, fn, ""));
+                                possible_id_score.Add(Tuple.Create(a.UserOrgId, best, fn, ""));
                         }
                         string b = "";
                         foreach (var i in possible_id_score) {
-                            b += i.Item1 + "," + i.Item2 + "," + i.Item3 + "," + i.Item4 + "\n";
+                            b += i.Item1 + "," + i.Item2 + "," + i.Item3+ "," + i.Item4 + "\n";
                         }
                         break;
                     }
@@ -237,18 +238,18 @@ namespace RadialReview.Utilities {
                         } else {
                             var fn = name1;
                             foreach (var a in available_first_last_id) {
-                                if (a.Item2.Length > 0 && name2.Length > 0 && a.Item2[0] == name2[0]) {
+                                if (a.LastName.Length > 0 && name2.Length > 0 && a.LastName[0] == name2[0]) {
                                     var best = int.MaxValue;
-                                    foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                                    foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                         var score = DamerauLevenshteinDistance(fn, nickname, thresh);
                                         if (score <= thresh) {
-                                            if (a.Item1 == nickname)
+                                            if (a.FirstName == nickname)
                                                 score -= 1;
                                             best = Math.Min(best, score);
                                         }
                                     }
                                     if (best != int.MaxValue)
-                                        possible_id_score.Add(Tuple.Create(a.Item3, best, fn, ""));
+                                        possible_id_score.Add(Tuple.Create(a.UserOrgId, best, fn, ""));
                                 }
                             }
                         }
@@ -259,17 +260,17 @@ namespace RadialReview.Utilities {
                         var ln = name2;
                         foreach (var a in available_first_last_id) {
                             var best = int.MaxValue;
-                            foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                            foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                 var fnScore = DamerauLevenshteinDistance(fn, nickname, thresh);
-                                var lnScore = DamerauLevenshteinDistance(ln, a.Item2, thresh);
-                                if (a.Item1 == nickname)
+                                var lnScore = DamerauLevenshteinDistance(ln, a.LastName, thresh);
+                                if (a.FirstName == nickname)
                                     fnScore -= 1;
                                 if ((int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0) <= thresh) {
                                     best = Math.Min(best, (int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0));
                                 }
                             }
                             if (best != int.MaxValue)
-                                possible_id_score.Add(Tuple.Create(a.Item3, best, fn, ""));
+                                possible_id_score.Add(Tuple.Create(a.UserOrgId, best, fn, ""));
                         }
                         break;
                     }
@@ -291,24 +292,24 @@ namespace RadialReview.Utilities {
                 case NameFormat.LIFI: {
                         foreach (var a in available_first_last_id) {
                             var best = int.MaxValue;
-                            foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                            foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                 var score = 0;
-                                if (a.Item1 == nickname)
+                                if (a.FirstName == nickname)
                                     score -= 1;
-                                if (nickname.Length > 0 && a.Item2.Length > 0 && name1.Length > 0 && name2.Length > 0 && a.Item2[0] == name1[0] && nickname[0] == name2[0])
+                                if (nickname.Length > 0 && a.LastName.Length > 0 && name1.Length > 0 && name2.Length > 0 && a.LastName[0] == name1[0] && nickname[0] == name2[0])
                                     best = Math.Min(best, score);
                             }
                             if (best != int.MaxValue)
-                                possible_id_score.Add(Tuple.Create(a.Item3, best, a.Item1, ""));
+                                possible_id_score.Add(Tuple.Create(a.UserOrgId, best, a.FirstName, ""));
                         }
                         break;
                     }
                 case NameFormat.LN: {
                         var ln = name1;
                         foreach (var a in available_first_last_id) {
-                            var score = DamerauLevenshteinDistance(ln, a.Item2, thresh);
+                            var score = DamerauLevenshteinDistance(ln, a.LastName, thresh);
                             if (score <= thresh) {
-                                possible_id_score.Add(Tuple.Create(a.Item3, score, a.Item1, (string)null));
+                                possible_id_score.Add(Tuple.Create(a.UserOrgId, score, a.FirstName, (string)null));
                             }
                         }
                         break;
@@ -318,17 +319,17 @@ namespace RadialReview.Utilities {
                         var fn = name2;
                         foreach (var a in available_first_last_id) {
                             var best = int.MaxValue;
-                            foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                            foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                 var fnScore = DamerauLevenshteinDistance(fn, nickname, thresh);
-                                var lnScore = DamerauLevenshteinDistance(ln, a.Item2, thresh);
-                                if (a.Item1 == nickname)
+                                var lnScore = DamerauLevenshteinDistance(ln, a.LastName, thresh);
+                                if (a.FirstName == nickname)
                                     fnScore -= 1;
                                 if ((int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0) <= thresh) {
                                     best = Math.Min(best, (int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0));
                                 }
                             }
                             if (best!=int.MaxValue)
-                                possible_id_score.Add(Tuple.Create(a.Item3, best, fn, ""));
+                                possible_id_score.Add(Tuple.Create(a.UserOrgId, best, fn, ""));
                         }
                         break;
                     }
@@ -367,10 +368,10 @@ namespace RadialReview.Utilities {
             return true;*/
         }
 
-        public static void _TryMatch_FirstPass(string name, List<Tuple<string, string, long>> available_first_last_id, DiscreteDistribution<NameFormat> formats, Dictionary<string, List<string>> nicknameCache, int thresh = 2)
+        public static void _TryMatch_FirstPass(string name, List<TinyUser> available_first_last_id, DiscreteDistribution<NameFormat> formats, Dictionary<string, List<string>> nicknameCache, int thresh = 2)
         {
             name = name.ToLower();
-            available_first_last_id = available_first_last_id.Select(x => Tuple.Create(x.Item1.ToLower(), x.Item2.ToLower(), x.Item3)).ToList();
+            available_first_last_id = available_first_last_id.Select(x =>x.Standardize()).ToList();
             var namesz = name.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
             if (namesz.Count() == 0) {
@@ -390,7 +391,7 @@ namespace RadialReview.Utilities {
                         //Try first name
                         var added = false;
                         var best = int.MaxValue;
-                        foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                        foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                             var fnScore = DamerauLevenshteinDistance(n, nickname, thresh);
 
                             if (fnScore <= thresh)
@@ -407,7 +408,7 @@ namespace RadialReview.Utilities {
                         }
                         if (best != int.MaxValue)
                             formats.Add(NameFormat.FN, best);
-                        var lnScore = DamerauLevenshteinDistance(n, a.Item2.ToLower(), thresh);
+                        var lnScore = DamerauLevenshteinDistance(n, a.LastName.ToLower(), thresh);
                         if (lnScore <= thresh)
                             formats.Add(NameFormat.LN, lnScore);
                         //if (lnScore <= thresh) {
@@ -427,20 +428,20 @@ namespace RadialReview.Utilities {
                         //Try first name
                         if (names[0].TrimEnd('.').Length == 1 && names[1].TrimEnd('.').Length == 1) { // J. S.
                             //FILI
-                            if ((a.Item1.Length > 0 && a.Item1[0] == names[0][0]) && (a.Item2.Length > 0 && a.Item2[0] == names[1][0])) {
+                            if ((a.FirstName.Length > 0 && a.FirstName[0] == names[0][0]) && (a.LastName.Length > 0 && a.LastName[0] == names[1][0])) {
                                 //formats.Add(NameFormat.FILI);
                                 //formats.Add(NameFormat.FILI);
                                 formats.Add(NameFormat.FILI, 0);
                             }
-                            if ((a.Item1.Length > 0 && a.Item1[0] == names[1][0]) && (a.Item2.Length > 0 && a.Item2[0] == names[0][0])) {
+                            if ((a.FirstName.Length > 0 && a.FirstName[0] == names[1][0]) && (a.LastName.Length > 0 && a.LastName[0] == names[0][0])) {
                                 //formats.Add(NameFormat.LIFI);
                                 //formats.Add(NameFormat.LIFI);
                                 formats.Add(NameFormat.LIFI, 0);
                             }
                         } else if (names[0].TrimEnd('.').Length == 1 && names[1].TrimEnd('.').Length > 1) {// J. Smith
 
-                            if (a.Item1.Length > 0 && names[0][0] == a.Item1[0]) {
-                                var lnThresh = DamerauLevenshteinDistance(ln, a.Item2.ToLower(), thresh);
+                            if (a.FirstName.Length > 0 && names[0][0] == a.FirstName[0]) {
+                                var lnThresh = DamerauLevenshteinDistance(ln, a.LastName.ToLower(), thresh);
                                 if (lnThresh <= thresh)
                                     formats.Add(NameFormat.FILN, lnThresh);
                                 //if (lnThresh <= thresh) {
@@ -450,10 +451,10 @@ namespace RadialReview.Utilities {
                                 //}
                             }
                         } else if (names[0].TrimEnd('.').Length > 1 && names[1].TrimEnd('.').Length == 1) {// John S.
-                            if (a.Item2.Length > 0 && names[1][0] == a.Item2[0]) {
+                            if (a.LastName.Length > 0 && names[1][0] == a.LastName[0]) {
                                 bool added = false;
                                 var best = int.MaxValue;
-                                foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                                foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                     var fnThresh = DamerauLevenshteinDistance(names[0], nickname.ToLower(), thresh);
                                     if (fnThresh <= thresh)
                                         best = Math.Min(best, fnThresh);
@@ -474,9 +475,9 @@ namespace RadialReview.Utilities {
                             // John Smith
                             var added = false;
                             var best = int.MaxValue;
-                            foreach (var nickname in GetNicknames(a.Item1, ref nicknameCache)) {
+                            foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                 var fnScore = DamerauLevenshteinDistance(fn, nickname.ToLower(), thresh);
-                                var lnScore = DamerauLevenshteinDistance(ln, a.Item2.ToLower(), thresh);
+                                var lnScore = DamerauLevenshteinDistance(ln, a.LastName.ToLower(), thresh);
                                 if ((int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0) <= thresh)
                                     best = Math.Min(best, (int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0));
                                 //if (fnThresh <= thresh && lnThresh <= thresh && !added) {
@@ -494,9 +495,9 @@ namespace RadialReview.Utilities {
                             // Smith John
                             added = false;
                             best = int.MaxValue;
-                            foreach (var nickname in GetNicknames(a.Item2, ref nicknameCache)) {
+                            foreach (var nickname in GetNicknames(a.LastName, ref nicknameCache)) {
                                 var fnScore = DamerauLevenshteinDistance(fn, nickname.ToLower(), thresh);
-                                var lnScore = DamerauLevenshteinDistance(ln, a.Item1.ToLower(), thresh);
+                                var lnScore = DamerauLevenshteinDistance(ln, a.FirstName.ToLower(), thresh);
 
                                 if ((int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0) <= thresh)
                                     best = Math.Min(best, (int)Math.Ceiling(fnScore / 2.0 + lnScore / 2.0));

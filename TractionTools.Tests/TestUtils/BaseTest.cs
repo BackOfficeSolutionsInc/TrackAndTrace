@@ -13,6 +13,7 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.Productivity;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -305,6 +306,21 @@ namespace TractionTools.Tests.TestUtils {
             return new UserOrganizationModel() {
                 IsRadialAdmin = true
             };
+        }
+        
+        public static string GetTestName()
+        {
+            var stackTrace = new StackTrace();
+            foreach (var stackFrame in stackTrace.GetFrames()) {
+                MethodBase methodBase = stackFrame.GetMethod();
+                Object[] attributes = methodBase.GetCustomAttributes(typeof(TestMethodAttribute), false);
+                if (attributes.Length >= 1) {
+                    return methodBase.Name;
+                }
+            }
+            Console.WriteLine(string.Join("\n", stackTrace.GetFrames().Select(x => x.GetMethod().Name)));
+            throw new Exception("Not called from a test method");
+            //return "Not called from a test method";
         }
     }
 }

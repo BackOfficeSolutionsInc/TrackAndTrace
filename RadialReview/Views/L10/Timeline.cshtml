@@ -8,7 +8,7 @@
 
 }
 
-<div class="top-fixed container">
+<div class="top-fixed" style="padding: 10px 40px;">
 	<div class="row">
 		<div class="col-lg-12">
 			<div class="clearfix">
@@ -21,10 +21,10 @@
 					<tr>
 						@foreach (var k in TimelineLookup.GetIconOrdering())
 						{
-							<td><span class="filter-switch on" data-filter="@k"><span class="@k"></span></span></td>
+							<td title="@k.FriendlyName"><span class="filter-switch on" data-filter="@k.Icon" ><span class="@k.Icon"></span></span></td>
 						}
 						<td><div style="width: 10px;text-align: center">|</div></td>
-						<td><span class="filter-switch on" data-filter="glyphicon glyphicon-comment"><span class="glyphicon glyphicon-comment"></span></span></td>
+						<td><span class="filter-switch on" data-filter="glyphicon glyphicon-comment" title="Transcriptions"><span class="glyphicon glyphicon-comment"></span></span></td>
 						<td><div style="width: 10px;text-align: center"></div></td>
 						<td> <span class="btn-link btn" onclick="$('.filter-switch:not(.on)').trigger('click')">Show All</span> | <span class="btn-link btn"  onclick="$('.filter-switch.on').trigger('click')">Hide All</span></td>
 					</tr>
@@ -50,7 +50,7 @@
 							<span class="pull-right">
 								<span style="width:75px;text-align: right">@Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime).ToShortTimeString()</span>
 								<span> - </span>
-								<span style="width:75px">@meeting.Meeting.CompleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToShortTimeString())))</span>
+								<span style="width:75px">@(meeting.Meeting.CompleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToShortTimeString())??"On-going")</span>
 							</span>
 							&nbsp;
 						</div>

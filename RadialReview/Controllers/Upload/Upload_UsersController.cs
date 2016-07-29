@@ -88,7 +88,7 @@ namespace RadialReview.Controllers {
 
 
                 for (var i = 0; i < newNames.Count; i++) {
-                    var found = userLookup[newNames[i]].GetProbabilities().Where(x => x.Value > 0.4).Select(x => x.Key.Item1 + " " + x.Key.Item2);
+                    var found = userLookup[newNames[i]].GetProbabilities().Where(x => x.Value > 0.4).Select(x => x.Key.FirstName + " " + x.Key.LastName);
 
                     if (!found.Any())
                         m.ExistingUser.Add(null);

@@ -18,14 +18,15 @@ namespace RadialReview.Models
             RGM     = 200,
             Members = 300,
             Admins  = 400,
+            Email   = 500,
 		}
-		public enum ResourceType
-		{
-			Invalid = 0,
+        public enum ResourceType {
+            Invalid = 0,
             L10Recurrence = 1,
             InvoiceForOrganization = 2,
             VTO = 3,
-		}
+            AccountabilityHierarchy= 4,
+        }
 		[Flags]
 		public enum AccessLevel
 		{
@@ -96,5 +97,29 @@ namespace RadialReview.Models
 			}
 		}
 
+    }
+}
+
+public class EmailPermItem : IHistorical{
+    public virtual long Id { get; set; }
+    public virtual string Email { get; set; }
+    public virtual long CreatorId { get; set; }
+    public virtual DateTime CreateTime { get; set; }
+    public virtual DateTime? DeleteTime { get; set; }
+
+    public EmailPermItem()
+    {
+        CreateTime = DateTime.UtcNow;
+    }
+
+    public class Map : ClassMap<EmailPermItem> {
+        public Map()
+        {
+            Id(x => x.Id);
+            Map(x => x.Email);
+            Map(x => x.CreatorId);
+            Map(x => x.CreateTime);
+            Map(x => x.DeleteTime);
+        }
     }
 }

@@ -19,6 +19,7 @@ using RadialReview.Utilities.Serializers;
 using RadialReview.Utilities.Productivity;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using RadialReview.App_Start;
 
 namespace RadialReview
 {
@@ -65,6 +66,8 @@ namespace RadialReview
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 	        GlobalConfiguration.Configure(WebApiConfig.Register);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            HookConfig.RegisterHooks();
 
            // ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
 

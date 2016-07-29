@@ -32,6 +32,16 @@ namespace RadialReview.Controllers
 
 
         [Access(AccessLevel.Any)]
+        public PartialViewResult L10Notes(long id)
+        {
+            var note = L10Accessor.GetNote(GetUser(), id);
+            ViewBag.Title = note.Name;
+            var url = Config.NotesUrl() + "p/" + note.PadId + "?showControls=true&showChat=false";
+
+            return PartialView("L10Notes", url);
+        }
+
+        [Access(AccessLevel.Any)]
         public PartialViewResult UserRoles()
         {
             return PartialView("UserRoles");

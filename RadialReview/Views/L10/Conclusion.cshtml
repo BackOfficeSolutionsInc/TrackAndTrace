@@ -71,9 +71,13 @@
                                         <td style="width:50%;"></td>
                                     </tr>
                                 }
+                            <tr>
+                                <td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
+                                <td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>
+                            </tr>
                                 <tr>
-                                    <td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
-                                    <td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>
+                                    <td colspan="3" class="alignRight"><label>Close completed to-dos:</label></td>
+                                    <td>@Html.CheckBoxFor(x => x.CloseTodos, new { @class = "checkbox", style = "margin:auto;" })</td>
                                 </tr>
                             </table>
 
@@ -96,6 +100,7 @@
     }
     function ConclusionSuccess() {
         startTime = undefined;
+        skipBeforeUnload = true;
     }
 </script>
 

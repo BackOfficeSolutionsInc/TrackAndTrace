@@ -1,13 +1,41 @@
-﻿.body-content{
-    padding:0!important;
-    width:100%;
-    margin:0;
-    max-width:100% !important;
+﻿.body-content {
+    padding: 0 !important;
+    width: 100%;
+    margin: 0;
+    max-width: 100% !important;
 }
 
-.acc-chart {
-    background-color:white;
-    border:1px solid red;
+.md-scroll-mask{
+    position:fixed!important;
+}
+
+.acc-chart svg{
+
+    button md-icon{
+        display:none;
+    }
+
+    md-autocomplete,
+    md-autocomplete *
+    /*md-autocomplete button,
+    md-autocomplete button md-icon*/
+    {
+        position:inherit;
+    }
+
+    .templink {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+    }
+
+    .ghost.showing {
+        display: block;
+    }
+
+    .ghost, .activeDrag .ghost {
+        display: none;
+    }
 
     .link {
         fill: none;
@@ -15,8 +43,58 @@
         stroke-width: 1.5px;
     }
 
-    .acc-box{
-        fill:none;
-        stroke:black;
+    .acc-node {
+        fill: none;
+        stroke: black;
+        width: 200px;
+        padding: 2px;
+        /*position:relative;*/
+
+        .acc-owner {
+            .name {
+                text-align: center;
+                width: 100%;
+                font-weight: bold;
+                cursor: text;
+            }
+
+           //cursor: move; /* fallback: no `url()` support or images disabled */
+           //cursor: -webkit-grab; /* Chrome 1-21, Safari 4+ */
+           //cursor: -moz-grab; /* Firefox 1.5-26 */
+           //cursor: grab; /* W3C standards syntax, should come least */
+            //border: 20px solid transparent;
+            margin: 3px;
+
+            &:hover {
+                //border: 20px solid gray;
+            }
+
+            .acc-owner-delete {
+                position: absolute;
+                /*float: right;
+                display: inline-block;
+                height: 0;*/
+                /* -moz-transform: translate(0,-10px);
+                -ms-transform: translate(0,-10px);
+                -o-transform: translate(0,-10px);
+                -webkit-transform: translate(0,-10px);
+                transform: translate(0,-10px);*/
+            }
+        }
+
+
+        .acc-roles {
+        }
+
+
+        input {
+            background-color: transparent;
+            border: none;
+            width: 100%;
+
+            &:focus {
+                outline: none;
+            }
+        }
     }
 }

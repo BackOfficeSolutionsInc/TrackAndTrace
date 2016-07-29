@@ -3,50 +3,70 @@
     ViewBag.Title = "Accountability Chart";
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.FullWidth = true;
+    ViewBag.FullHeight = true;
 
     Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
+@*
+    <div class="acc-chart">
+        <div id="viewer"></div>
+    </div>
+    <svg height="80%" width="80%">
 
-<div class="acc-chart">
-    <div id="viewer"></div>
-</div>
-@*<svg height="80%" width="80%">
-    
-    <g>
         <g>
-            <circle cx="10" cy="5" r="2" class="ng-scope">
-            </circle>
+            <g>
+                <circle cx="10" cy="5" r="2" class="ng-scope">
+                </circle>
+            </g>
         </g>
-    </g>
-</svg>*@
-<div ng-app="ACApp">
-    <div ng-controller="ACController">
-        @*<svg panzoom graph="model">
-            <tree></tree>
-         </svg>*@
-        <chart-form></chart-form>
-        <bar-chart height="options.height" data="data" hovered="hovered(args)"></bar-chart>
-<!--<bar-chart height="300" data="data" hovered="hovered(args)></bar-chart>-->
+    </svg>*@
+<div ng-app="ACApp" class="full-height acc-chart">
+    <div ng-controller="ACController" class="full-height">
+        <md-autocomplete style="position:fixed;top: 30px;right: 0px;width:320px"
+                         md-selected-item="search.selected"
+                         md-search-text-change="search.searchTextChange(search.searchText)"
+                         md-search-text="search.searchText"
+                         md-selected-item-change="functions.selectedItemChange(item.id)"
+                         md-items="item in search.querySearch(search.searchText)"
+                         md-item-text="item.name||item.User.Name"
+                         md-min-length="1"
+                         placeholder="Search">
+            <md-item-template>
+                <span md-highlight-text="search.searchText" md-highlight-flags="^i">{{item.Name||item.User.Name}}</span>
+            </md-item-template>
+            <md-not-found>
+                No states matching "{{search.searchText}}" were found.
+                @*<a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>*@
+            </md-not-found>
+        </md-autocomplete>
+
+        <svg panzoom graph="model">
+            <tree graph="model" tt-enter="nodeEnter" tt-update="nodeUpdate" tt-exit="nodeExit" tt-watch="nodeWatch"></tree>
+        </svg>
+        <!--<chart-form></chart-form>
+                <bar-chart height="options.height" data="data" hovered="hovered(args)"></bar-chart>
+        <bar-chart height="300" data="data" hovered="hovered(args)></bar-chart>-->
         @*<panzoom>
-            @*<tree></tree
-            
-        </panzoom>*@
+
+            </panzoom>*@
     </div>
 </div>
 
 
 @using (Html.BeginStyles()) {
-    @Styles.Render("~/Content/AccountabilityChart")
+    @Styles.Render("~/Content/AccChart")
 
     <style>
-        svg{
-            background-color:lightgoldenrodyellow;
+        svg {
+            background-color: lightgoldenrodyellow;
         }
+
         .dot circle {
             fill: lightsteelblue;
             stroke: steelblue;
             stroke-width: 1.5px;
         }
+
 
             .dot circle.dragging {
                 fill: red;
@@ -59,6 +79,34 @@
             shape-rendering: crispEdges;
             vector-effect: non-scaling-stroke;
         }
+
+        .node {
+            cursor: pointer;
+        }
+
+            .node rect {
+                fill: #fff;
+                stroke: steelblue;
+                stroke-width: 3px;
+            }
+
+            .node text {
+                font: 12px sans-serif;
+            }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+
+        .collapsed rect {
+            fill: lightsteelblue;
+        }
+
+        .selected rect {
+            stroke: red !important;
+        }
     </style>
 }
 
@@ -68,6 +116,7 @@
 
         angular.module('ACApp')
             .value('orgId',@Model.OrganizationId)
+            .value('chartId',@Model.ChartId)
             .value('dataUrl', "/Accountability/Data/{0}")
 
 

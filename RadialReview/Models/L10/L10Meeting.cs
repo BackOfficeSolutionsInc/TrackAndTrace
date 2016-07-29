@@ -9,6 +9,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models.L10
 {
@@ -41,6 +42,8 @@ namespace RadialReview.Models.L10
 		public virtual DateTime? _MeetingLeaderCurrentPageStartTime { get; set; }
 		public virtual double? _MeetingLeaderCurrentPageBaseMinutes { get; set; }
 
+        public virtual Ratio TodoCompletion { get; set; }
+
 		
 		public L10Meeting()
 		{
@@ -62,10 +65,12 @@ namespace RadialReview.Models.L10
 				Map(x => x.CompleteTime);
 				Map(x => x.OrganizationId).Column("OrganizationId");
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();
-				Map(x => x.L10RecurrenceId).Column("L10RecurrenceId"); ;
+				Map(x => x.L10RecurrenceId).Column("L10RecurrenceId");
 				References(x => x.L10Recurrence).Column("L10RecurrenceId").Not.LazyLoad().ReadOnly();
-				Map(x => x.MeetingLeaderId).Column("MeetingLeaderId"); ;
+				Map(x => x.MeetingLeaderId).Column("MeetingLeaderId");
 				References(x => x.MeetingLeader).Column("MeetingLeaderId").Not.LazyLoad().ReadOnly();
+
+                Component(x => x.TodoCompletion).ColumnPrefix("TodoCompletion_");
 
 				//HasMany(x => x.MeetingAttendees).KeyColumn("L10MeetingId").Not.LazyLoad().Cascade.None();
 				//HasMany(x => x.MeetingMeasurables).KeyColumn("L10MeetingId").Not.LazyLoad().Cascade.None();

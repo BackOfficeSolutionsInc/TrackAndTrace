@@ -130,6 +130,13 @@ namespace RadialReview.Controllers
             return Json(tree, JsonRequestBehavior.AllowGet);
         }
 
+        //[Access(AccessLevel.UserOrganization)]
+        //public JsonResult OrganizationHierarchies(long id)
+        //{
+        //    var tree = _OrganizationAccessor.GetOrganizationTree(GetUser(), id);
+        //    return Json(tree.AsList(), JsonRequestBehavior.AllowGet);
+        //}
+
         public class Merger
         {
             public Dictionary<long, List<decimal>> dictionary { get; set; }

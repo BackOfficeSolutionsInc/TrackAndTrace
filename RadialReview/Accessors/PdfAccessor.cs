@@ -860,7 +860,7 @@ namespace RadialReview.Accessors {
                     row.Cells[3].AddParagraph("" + m.Completion.NotNull(x => x.Value.GetDisplayName()));
                     row.Cells[3].Format.Font.Bold = m.Completion == RockState.AtRisk;
                     row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
-                    row.Cells[4].AddParagraph(m.Name);
+                    row.Cells[4].AddParagraph("" + m.NotNull(x => x.Name));
                     row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
                     mn++;
                 }

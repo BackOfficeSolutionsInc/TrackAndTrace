@@ -31,6 +31,7 @@ using RadialReview.Models.Prereview;
 using RadialReview.Models.UserTemplate;
 using RadialReview.Models.VTO;
 using Twilio;
+using RadialReview.Models.Accountability;
 
 namespace RadialReview.Utilities {
     //[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -360,6 +361,32 @@ namespace RadialReview.Utilities {
         {
             log.Info("ViewApplication always returns true.");
             return this;
+        }
+        #endregion
+
+        #region Accountability
+        public PermissionsUtility ViewHierarchy(long hierarchyId)
+        {
+            return CanView(PermItem.ResourceType.AccountabilityHierarchy, hierarchyId, x => {
+
+                var chart = session.Get<AccountabilityChart>(hierarchyId);
+                x.ViewOrganization(chart.OrganizationId);
+                return x;
+            });
+        }
+        public PermissionsUtility EditHierarchy(long hierarchyId)
+        {
+            return CanEdit(PermItem.ResourceType.AccountabilityHierarchy, hierarchyId, x => {
+
+                var chart = session.Get<AccountabilityChart>(hierarchyId);
+                ViewOrganization(chart.OrganizationId);
+
+                //Both are managers at the organization
+                if (!(caller.ManagerAtOrganization || caller.ManagingOrganization))
+                    throw new PermissionsException();
+
+                return x;
+            });
         }
         #endregion
 

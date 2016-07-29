@@ -238,20 +238,20 @@ namespace TractionTools.UITests.Selenium {
             }
         }
 
-        protected static string GetTestName()
-        {
-            var stackTrace = new StackTrace();
-            foreach (var stackFrame in stackTrace.GetFrames()) {
-                MethodBase methodBase = stackFrame.GetMethod();
-                Object[] attributes = methodBase.GetCustomAttributes(typeof(TestMethodAttribute), false);
-                if (attributes.Length >= 1) {
-                    return methodBase.Name;
-                }
-            }
-            Console.WriteLine(string.Join("\n", stackTrace.GetFrames().Select(x => x.GetMethod().Name)));
-            throw new Exception("Not called from a test method");
-            //return "Not called from a test method";
-        }
+        //protected static string GetTestName()
+        //{
+        //    var stackTrace = new StackTrace();
+        //    foreach (var stackFrame in stackTrace.GetFrames()) {
+        //        MethodBase methodBase = stackFrame.GetMethod();
+        //        Object[] attributes = methodBase.GetCustomAttributes(typeof(TestMethodAttribute), false);
+        //        if (attributes.Length >= 1) {
+        //            return methodBase.Name;
+        //        }
+        //    }
+        //    Console.WriteLine(string.Join("\n", stackTrace.GetFrames().Select(x => x.GetMethod().Name)));
+        //    throw new Exception("Not called from a test method");
+        //    //return "Not called from a test method";
+        //}
 
         public void TestView(Credentials mockUser, string url, Action<TestCtx> test, WithBrowsers browsers = WithBrowsers.All)
         {

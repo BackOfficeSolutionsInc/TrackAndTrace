@@ -35,30 +35,55 @@ namespace RadialReview.Controllers
 		}
 
 	    [Access(AccessLevel.UserOrganization)]
-	    public PartialViewResult BlankDropdownRow(long id,long resource,PermItem.ResourceType type)
+	    public PartialViewResult BlankDropdownRow(string q,long resource,PermItem.ResourceType type)
 	    {
-			var rgm = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), id);
+            var num = q.TryParseLong();
+            if (num != null) {
 
-		    var isAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(type, resource));
+                var rgm = _ResponsibilitiesAccessor.GetResponsibilityGroup(GetUser(), num.Value);
 
-		    ViewBag.CanEdit_View = isAdmin;
-		    ViewBag.CanEdit_Edit = isAdmin;
-		    ViewBag.CanEdit_Admin = isAdmin;
+                var isAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(type, resource));
 
-		    var piVM = new PermItemVM(){
-				AccessorId = id,
-				AccessorType = PermItem.AccessType.RGM,
-				CanView = true,
-				CanEdit = false,
-				CanAdmin = false,
-				Title = rgm.GetName(),
-				ImageUrl = rgm.GetImageUrl(),
-				Edited = false
-		    };
+                ViewBag.CanEdit_View = isAdmin;
+                ViewBag.CanEdit_Edit = isAdmin;
+                ViewBag.CanEdit_Admin = isAdmin;
 
-		    var vm = PermissionsAccessor.CreatePermItem(GetUser(), piVM, PermItem.ResourceType.L10Recurrence, resource);
+                var piVM = new PermItemVM() {
+                    AccessorId = num.Value,
+                    AccessorType = PermItem.AccessType.RGM,
+                    CanView = true,
+                    CanEdit = false,
+                    CanAdmin = false,
+                    Title = rgm.GetName(),
+                    ImageUrl = rgm.GetImageUrl(),
+                    Edited = false
+                };
 
-			return PartialView("PermItemRow", vm);
+                var vm = PermissionsAccessor.CreatePermItem(GetUser(), piVM, PermItem.ResourceType.L10Recurrence, resource);
+			    return PartialView("PermItemRow", vm);
+            } else if(q!=null && Emailer.IsValid(q)) {
+                var tp = PermTiny.Email(q);
+                var isAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(type, resource));
+
+                ViewBag.CanEdit_View = isAdmin;
+                ViewBag.CanEdit_Edit = isAdmin;
+                ViewBag.CanEdit_Admin = isAdmin;
+
+                PermissionsAccessor.CreatePermItems(GetUser(),PermItem.ResourceType.L10Recurrence, resource,tp);
+                var piVM = new PermItemVM() {
+                    AccessorId = tp.PermItem.AccessorId,
+                    AccessorType = PermItem.AccessType.Email,
+                    CanView = tp.PermItem.CanView,
+                    CanEdit = tp.PermItem.CanEdit,
+                    CanAdmin = tp.PermItem.CanAdmin,
+                    Title = q,
+                    //ImageUrl = rgm.GetImageUrl(),
+                    Edited = false,
+                    Id = tp.PermItem.Id
+                };
+                return PartialView("PermItemRow", piVM);
+            }
+            throw new Exception("Could not add permission.");
 	    }
 
 	    [Access(AccessLevel.UserOrganization)]
