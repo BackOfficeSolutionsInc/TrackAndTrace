@@ -79,16 +79,22 @@ namespace RadialReview.Utilities {
                 default: throw new ArgumentOutOfRangeException("offset");
             }
         }
+                
+        public static DateTime ScorecardRangeStart(int clientOffset,ScorecardPeriod scorecardType, DateTime current)
+        {
+            return current.AddMinutes(clientOffset);
+        }
 
-        public static DateTime ScorecardRangeEnd(DateTime clientTime,ScorecardPeriod scorecardType, DateTime current, bool inclusive = false)
+
+        public static DateTime ScorecardRangeEnd(int clientOffset,ScorecardPeriod scorecardType, DateTime current, bool inclusive = false)
         {
             var extraDay = -1;
             if (inclusive)
                 extraDay = 0;
             switch (scorecardType) {
-                case ScorecardPeriod.Weekly: return current.AddDays(7 + extraDay);
-                case ScorecardPeriod.Monthly: return new DateTime(current.Year, current.Month, 1).AddMonths(1).Add(TimeSpan.FromDays(extraDay));
-                case ScorecardPeriod.Quarterly: return new DateTime(current.Year, current.Month, 1).AddMonths(3).Add(TimeSpan.FromDays(extraDay));
+                case ScorecardPeriod.Weekly: return current.AddDays(7 + extraDay).AddMinutes(clientOffset);
+                case ScorecardPeriod.Monthly: return new DateTime(current.Year, current.Month, 1).AddMonths(1).Add(TimeSpan.FromDays(extraDay)).AddMinutes(clientOffset);
+                case ScorecardPeriod.Quarterly: return new DateTime(current.Year, current.Month, 1).AddMonths(3).Add(TimeSpan.FromDays(extraDay)).AddMinutes(clientOffset);
                 default: throw new ArgumentOutOfRangeException();
             }
         }
@@ -680,5 +686,6 @@ namespace RadialReview.Utilities {
             }
             return 13;
         }
+
     }
 }

@@ -33,7 +33,7 @@
                         source = d3.select("[data-id='" + source + "']").datum();
                     }
                     if (source) {
-                        console.log("CenterNode called " + source.id);
+                        console.log("CenterNode called " + source.Id);
                         x = -source.x0;
                         y = -source.y0;
                         x = x * scale + svg.width() / 2;
@@ -57,7 +57,7 @@
                 console.log("ShowNode called " + id);
                 //http://bl.ocks.org/jjzieve/a743242f46321491a950
                 function searchTree(obj, id, path) {
-                    if (obj.id === id) { //if search is found return, add the object to the path and return it
+                    if (obj.Id === id) { //if search is found return, add the object to the path and return it
                         path.push(obj);
                         return path;
                     }
@@ -80,7 +80,7 @@
                 }
                 function openPaths(paths) {
                     for (var i = 0; i < paths.length; i++) {
-                        if (paths[i].id !== "1") {//i.e. not root
+                        if (paths[i].Id !== "1") {//i.e. not root
                             paths[i].class = 'found';
                             if (paths[i]._children) { //if children are hidden: open them, otherwise: don't do anything
                                 paths[i].children = paths[i]._children;
@@ -213,7 +213,7 @@
                 // Update the nodes�
                 var node = self.selectAll("g.node")
                     .data(nodes, function (d) {
-                        return (d.id);//|| (d.id = ++i));
+                        return (d.Id);//|| (d.Id = ++i));
                     });
 
 
@@ -249,7 +249,7 @@
 
                 // Transition nodes to their new position.
                 var nodeUpdate = node
-                    .attr("data-id", function (d) { return d.id })
+                    .attr("data-id", function (d) { return d.Id })
                     .attr("data-height", function (d) {
                         var maxH = 0; var maxW = 0;
                         var dive = function (parent) {
@@ -305,7 +305,7 @@
 
                 // Update the links�
                 var link = self.selectAll("path.link")
-                    .data(links, function (d) { return d.target.id; });
+                    .data(links, function (d) { return d.target.Id; });
 
                 // Enter any new links at the parent's previous position.
                 link.enter().insert("path", "g")
@@ -501,7 +501,7 @@
                 d3.select(domNode).attr('class', 'node activeDrag');
 
                 svgGroup.selectAll("g.node").sort(function (a, b) { // select the parent and sort the path's
-                    if (a.id != draggingNode.id) return 1; // a is not the hovered element, send "a" to the back
+                    if (a.Id != draggingNode.Id) return 1; // a is not the hovered element, send "a" to the back
                     else return -1; // a is the hovered element, bring "a" to the front
                 });
                 // if nodes has children, remove the links and nodes
@@ -510,14 +510,14 @@
                     links = tree.links(nodes);
                     nodePaths = svgGroup.selectAll("path.link")
                         .data(links, function (d) {
-                            return d.target.id;
+                            return d.target.Id;
                         }).remove();
                     // remove child nodes
                     nodesExit = svgGroup.selectAll("g.node")
                         .data(nodes, function (d) {
-                            return d.id;
+                            return d.Id;
                         }).filter(function (d, i) {
-                            if (d.id == draggingNode.id) {
+                            if (d.Id == draggingNode.Id) {
                                 return false;
                             }
                             return true;
@@ -527,7 +527,7 @@
                 // remove parent link
                 parentLink = tree.links(tree.nodes(draggingNode.parent));
                 svgGroup.selectAll('path.link').filter(function (d, i) {
-                    if (d.target.id == draggingNode.id) {
+                    if (d.target.Id == draggingNode.Id) {
                         return true;
                     }
                     return false;

@@ -346,17 +346,22 @@ namespace RadialReview.Utilities
             nhConf.SetEnversProperty(ConfigurationKey.AuditStrategy, typeof(CustomValidityAuditStrategy));
 
 
-            enversConf.Audit<VtoModel.VtoItem>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoModel.VtoItem_Bool>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoModel.VtoItem_String>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoModel.VtoItem_DateTime>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoModel.VtoItem_Decimal>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoModel>();
-            enversConf.Audit<VtoModel.CoreFocusModel>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoModel.MarketingStrategyModel>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoModel.OneYearPlanModel>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoModel.QuarterlyRocksModel>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoModel.ThreeYearPictureModel>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoItem>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoItem_Bool>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoItem_String>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoItem_DateTime>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoItem_Decimal>().ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<CoreFocusModel>();//.ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<MarketingStrategyModel>();//.ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<OneYearPlanModel>();//.ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<QuarterlyRocksModel>();//.ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<ThreeYearPictureModel>();//.ExcludeRelationData(x => x.Vto);
+            enversConf.Audit<VtoModel>()
+                .ExcludeRelationData(x => x.CoreFocus)
+                .ExcludeRelationData(x => x.MarketingStrategy)
+                .ExcludeRelationData(x => x.OneYearPlan)
+                .ExcludeRelationData(x => x.QuarterlyRocks)
+                .ExcludeRelationData(x => x.ThreeYearPicture);
 
             enversConf.Audit<TodoModel>();
             enversConf.Audit<IssueModel>();
@@ -437,6 +442,8 @@ namespace RadialReview.Utilities
             config.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { auditEvents };
             config.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { auditEvents };
 
+
+            config.SetProperty("command_timeout", "600");
             //KILL/CREATE DATABASE:
             //new SchemaExport(config).Execute(true, true, false);
             // DELETE THE EXISTING DB ON EACH RUN

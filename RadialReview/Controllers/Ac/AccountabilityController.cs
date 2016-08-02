@@ -10,7 +10,7 @@ using System.Web.Mvc;
 
 namespace RadialReview.Controllers
 {
-	public class AccountabilityController : BaseController
+	public partial class AccountabilityController : BaseController
     {
         // GET: Accountablity
         public ActionResult Index()

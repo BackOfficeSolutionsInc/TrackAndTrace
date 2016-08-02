@@ -257,6 +257,29 @@
     @Scripts.Render("~/bundles/MeasurableList")
     <script>
 
+
+        scrollRight = scrollRight || function scrollRight() {
+
+            if ($(".scroll-right:not(.scroll-once)").length > 0) {
+                setTimeout(function () {
+                    //debugger;
+                    //$(".scroll-right").scrollLeft(4000);
+                    $(".scroll-right:not(.scroll-once)").each(function () {
+                        var that = this;
+                        var dist = Math.max(4000, $(that).prop("scrollWidth"));
+                        console.log("dist", dist);
+                        $(that).addClass("scroll-once").animate({ scrollLeft:dist }, 500);
+                    });
+                    //}); 
+                }, 1);
+            } else {
+                //debugger;
+                setTimeout(scrollRight, 50);
+            }
+        }
+
+        scrollRight();
+
         $(function () {
             fixHelperModified = function (e, tr) {
                 var $originals = tr.children();

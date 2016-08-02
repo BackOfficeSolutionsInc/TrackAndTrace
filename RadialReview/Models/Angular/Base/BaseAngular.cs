@@ -35,11 +35,22 @@ namespace RadialReview.Models.Angular.Base
 
 	public class Removed
 	{
-		public static T Create<T>(T instance)
-		{
-			return (T)new Removed<T>(instance).GetTransparentProxy();
-		}
 
+        //public static T Create<T>(T instance)
+        //{
+        //    return (T)new Removed<T>(instance).GetTransparentProxy();
+        //}
+
+        public static long Long()
+        {
+            return long.MaxValue - 1;
+        }
+        public static T From<T>() where T : IAngularItem,new() 
+        {
+            var obj= (T)Activator.CreateInstance<T>();
+            obj.Id = Long();
+            return obj;
+        }
 		public static DateTime Date()
 		{
 			return DateTime.MaxValue - TimeSpan.FromSeconds(1);
@@ -91,7 +102,7 @@ namespace RadialReview.Models.Angular.Base
 			}
 		}
 
-		public long Id{get { return 0; }}
+        public long Id { get { return 0; } set { } }
 
 		public string Type{get { return "Removed"; }}
 

@@ -1100,10 +1100,33 @@ namespace RadialReview.Accessors {
                         }
                     }
 
+
+                    /// match up attendees, measureables, and rocks
+                    /// 
+
+                    l10Recurrence._DefaultAttendees.ToList().ForEach(a => {
+                        if (oldRecur != null)
+                            a.Id = oldRecur._DefaultAttendees.FirstOrDefault(x => x.User.Id == a.User.Id).NotNull(x => x.Id);
+                    });
+                    l10Recurrence._DefaultRocks.ToList().ForEach(a => {
+                        if (oldRecur != null)
+                            a.Id = oldRecur._DefaultRocks.FirstOrDefault(x => x.ForRock.Id == a.ForRock.Id).NotNull(x => x.Id);
+                    });
+                    l10Recurrence._DefaultMeasurables.ToList().ForEach(a => {
+                        if (oldRecur != null) {
+                            var found = oldRecur._DefaultMeasurables.FirstOrDefault(x => ((x.Measurable == null && a.Measurable == null) || (x.Measurable != null && a.Measurable != null && x.Measurable.Id == a.Measurable.Id)) && !x._Used);
+                            if (found != null) {
+                                a.Id = found.Id;
+                                found._Used = true;
+                            }
+                        }
+                    });
+
+
                     //Update new measurablse, attendees, rocks
 
                     s.UpdateList(oldRecur.NotNull(x => x._DefaultAttendees), l10Recurrence._DefaultAttendees, now);
-                    s.UpdateList(oldRecur.NotNull(x => x._DefaultMeasurables), l10Recurrence._DefaultMeasurables, now);
+                    s.UpdateList(oldRecur.NotNull(x => x._DefaultMeasurables.Where(y=>!y.IsDivider)), l10Recurrence._DefaultMeasurables, now);
                     s.UpdateList(oldRecur.NotNull(x => x._DefaultRocks), l10Recurrence._DefaultRocks, now);
 
 
@@ -1123,7 +1146,7 @@ namespace RadialReview.Accessors {
                             VtoAccessor.AddRock(s, perm, vto.Id, a);
                         }
                         foreach (var a in updateRocksRecur.RemovedValues) {
-                            var vtoRocks = s.QueryOver<VtoModel.Vto_Rocks>().Where(x => x.Vto.Id == vto.Id && x.Rock.Id == a.Id && x.DeleteTime == null).List().ToList();
+                            var vtoRocks = s.QueryOver<Vto_Rocks>().Where(x => x.Vto.Id == vto.Id && x.Rock.Id == a.Id && x.DeleteTime == null).List().ToList();
 
                             foreach (var r in vtoRocks) {
                                 r.DeleteTime = now;
@@ -1476,7 +1499,7 @@ namespace RadialReview.Accessors {
                         });
                         List<Tuple<long, long>> rockVtoIds = null;
                         var rockVtos = new Func<List<Tuple<long, long>>>(() => {
-                            rockVtoIds = rockVtoIds ?? s.QueryOver<VtoModel.Vto_Rocks>()
+                            rockVtoIds = rockVtoIds ?? s.QueryOver<Vto_Rocks>()
                             .Where(x => x.DeleteTime == null && x.Rock.Id == id)
                             .Select(x => x.Vto.Id, x => x.Id)
                             .List<object[]>().Select(x => Tuple.Create((long)x[0], (long)x[1])).ToList();
@@ -3685,7 +3708,7 @@ namespace RadialReview.Accessors {
 
                 if (r.L10Recurrence.VtoId > 0) {
                     var vtoId = r.L10Recurrence.VtoId;
-                    var rocksInVTO = s.QueryOver<VtoModel.Vto_Rocks>().Where(x => x.DeleteTime == null && x.Rock.Id == rockId && x.Vto.Id == vtoId).List().ToList();
+                    var rocksInVTO = s.QueryOver<Vto_Rocks>().Where(x => x.DeleteTime == null && x.Rock.Id == rockId && x.Vto.Id == vtoId).List().ToList();
                     foreach (var rv in rocksInVTO) {
                         rv.DeleteTime = now;
                         s.Update(rv);
@@ -3711,6 +3734,8 @@ namespace RadialReview.Accessors {
             perm.AdminL10Recurrence(recurrenceId);
             var measurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId && x.Measurable.Id == measurableId).List().ToList();
 
+
+
             if (!measurables.Any())
                 throw new PermissionsException("Measurable does not exist.");
             foreach (var r in measurables) {
@@ -3726,6 +3751,19 @@ namespace RadialReview.Accessors {
                     }
                 );
             }
+            var cur = _GetCurrentL10Meeting(s, perm, recurrenceId, true, false, false);
+
+            if (cur != null) {
+                var mmeasurables = s.QueryOver<L10Meeting.L10Meeting_Measurable>().Where(x =>
+                    x.DeleteTime == null && x.L10Meeting.Id == cur.Id && x.Measurable.Id == measurableId).List().ToList();
+                foreach (var r in mmeasurables) {
+                    r.DeleteTime = DateTime.UtcNow;
+                    s.Update(r);
+                }
+
+            }
+
+
         }
 
         public static L10MeetingStatsVM GetStats(UserOrganizationModel caller, long recurrenceId)
@@ -3782,9 +3820,9 @@ namespace RadialReview.Accessors {
                     if (oldTodos.Count() > 0) {
                         completion = (decimal)oldTodos.Count(x => x.CompleteTime != null) / (decimal)oldTodos.Count() * 100m;
                     }
-                    if (meeting.TodoCompletion!=null)
+                    if (meeting.TodoCompletion != null)
                         completion = meeting.TodoCompletion.GetValue(0) * 100m;
-                    
+
                     var stats = new L10MeetingStatsVM() {
                         IssuesSolved = issuesSolved,
                         TodosCreated = todosCreated,
@@ -3920,7 +3958,7 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static VtoModel.VtoItem_String MoveIssueToVto(UserOrganizationModel caller, long issue_recurrence)
+        public static VtoItem_String MoveIssueToVto(UserOrganizationModel caller, long issue_recurrence)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -3955,7 +3993,7 @@ namespace RadialReview.Accessors {
                 using (var tx = s.BeginTransaction()) {
                     var now = DateTime.UtcNow;
                     var perm = PermissionsUtility.Create(s, caller);
-                    var vtoIssueStr = s.Get<VtoModel.VtoItem_String>(vtoIssue);
+                    var vtoIssueStr = s.Get<VtoItem_String>(vtoIssue);
 
                     IssueModel.IssueModel_Recurrence issueRecur;
                     perm.EditVTO(vtoIssueStr.Vto.Id);

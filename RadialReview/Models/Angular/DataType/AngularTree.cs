@@ -1,4 +1,5 @@
-﻿using RadialReview.Models.Angular.Base;
+﻿using Newtonsoft.Json;
+using RadialReview.Models.Angular.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,14 @@ namespace RadialReview.Models.Angular {
 
         public AngularTreeNode(long id ) : base(id){
         }
-
-        public long id { get { return Id;  } }
+        //[JsonIgnore]
+        //public long id
+        //{
+        //    // get is intentionally omitted here
+        //    get { return Id; }
+        //}
+        //[JsonIgnore]
+        //public new long Id { get { return base.Id; } set { base.Id=value; }}
         public bool collapsed { get; set; }
 
         protected IEnumerable<T> __children { get; set; }

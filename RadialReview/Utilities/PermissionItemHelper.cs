@@ -160,7 +160,7 @@ namespace RadialReview.Utilities {
                     anyFlags = true;
                     var currentTrue = false;
                     //Is a OrgAdmin
-                    currentTrue = currentTrue || (permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.Admins && IsOrgAdmin(resourceType, resourceId)));                    
+                    currentTrue = currentTrue || (permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.Admins && IsOrgAdmin(resourceType, resourceId)));
                     //Email address
                     currentTrue = currentTrue || (permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.RGM && x.AccessorId == caller.Id));
                     //Is creator
@@ -281,6 +281,36 @@ namespace RadialReview.Utilities {
             return this;
         }
 
-    
+
+
+        public PermissionsUtility ViewOrganizationPosition(long positionId)
+        {
+            var orgId = session.Get<OrganizationPositionModel>(positionId).Organization.Id;
+            return ViewOrganization(orgId);
+        }
+
+        public PermissionsUtility EditAccountabilityNode(long id)
+        {
+            var node = session.Get<AccountabilityNode>(id);
+            try {
+                return EditHierarchy(node.AccountabilityChartId);
+            } catch (PermissionsException e) {
+                if (node.UserId != null) {
+                    return EditUserOrganization(node.UserId.Value);
+                }
+                var parentId = node.ParentNodeId;
+                while (true) {
+                    if (parentId == null)
+                        break;
+                    var parent = session.Get<AccountabilityNode>(parentId.Value);
+                    if (parent.UserId != null) {
+                        return EditUserOrganization(parent.UserId.Value);
+                    }
+
+                    parentId = parent.ParentNodeId;
+                }
+            }
+            throw new PermissionsException("Could not edit node.");
+        }
     }
 }

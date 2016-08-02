@@ -90,9 +90,18 @@ function ($scope, $http, $timeout, $location, radial,orgId, chartId, dataUrl, $c
                 }
                 return any;
             };
-        }        
+        }
         var possible = $scope.model.data.AllUsers;
         return possible.filter(createFilterFor(query));
+    }
+
+    $scope.search.queryPositions = function (query) {
+        return $http({
+            method: 'GET',
+            url: '/dropdown/angularpositions?create=true&q='+query
+        }).then(function (results) {
+            return results.data;
+        });
     }
 
     $scope.search.searchTerms = {};
@@ -111,6 +120,44 @@ function ($scope, $http, $timeout, $location, radial,orgId, chartId, dataUrl, $c
         }
     }
 
+    function fixNodeRecurse(self) {
+        if (self.Type == "AngularAccountabilityNode") {
+            //var parentId = null;
+            //if (self.parent) {
+            //    self.parent.children = null;
+            //    self.parent._children = null;
+
+            ////}
+            //delete self.Id;
+            delete self.children;
+            delete self._children;
+            delete self.parent;
+            //delete self.Group;
+            //delete self.User;
+            ////if (self.children) {
+            //    self.children = null;
+            //    //for (var i in self.children) {
+            //    //    self.children[i] = {
+            //    //        Id: self.children[i].Id
+            //    //    };
+            //    //}
+            //}
+        }
+    }
+
+    $scope.functions.sendUpdate = function (self) {
+        var dat = angular.copy(self);
+        var _clientTimestamp = new Date().getTime();
+
+        fixNodeRecurse(dat);
+
+
+        r.updater.convertDatesForServer(dat, tzoffset());
+        
+        $http.post("/Accountability/Update" + self.Type + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
+            showJsonAlert(data, true, true);
+        });
+    };
     
 
     $scope.nodeEnter = function (nodeEnter) {
@@ -126,6 +173,38 @@ function ($scope, $http, $timeout, $location, radial,orgId, chartId, dataUrl, $c
             .classed("acc-node", true)
             .style("font", "14px 'Helvetica Neue'");
 
+        var buttons = node.append("xhtml:div")
+            .classed("acc-buttons", true);
+        
+        var position = node.append("xhtml:div")
+            .classed("acc-position", true);
+
+        var posAutoComplete = position.append("md-autocomplete")
+            .attr("md-selected-item", function (d) {
+                return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
+            }).attr("md-item-text", function (d) {
+                return "pitem.Name";
+            }).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
+            .attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
+            .attr("md-selected-item-change", function (d) {
+                return "functions.sendUpdate(model.Lookup['AngularAccountabilityNode_" + d.Id + "'])";
+            }).attr("md-no-cache","true").attr("md-delay","300");
+        posAutoComplete.append("md-item-template")
+            .append("span")
+            .attr("md-highlight-text", function (d) { return "search.searchPos_" + d.Id; })
+            .attr("md-highlight-flags", "^i")
+            .text("{{pitem.Name}}");//.attr("");
+        posAutoComplete.append("md-not-found")
+           .text(function (d) {
+               return "No matches were found.";
+           });//.attr("");
+
+        //var roles = position.append("input").attr("ng-model", function (d) {
+        //    return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name";
+        //}).attr("ng-change", function (d) {
+        //    return "functions.sendUpdate(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group)";
+        //});
+
         var owner = node.append("xhtml:div")
             .classed("acc-owner", true);
 
@@ -137,20 +216,20 @@ function ($scope, $http, $timeout, $location, radial,orgId, chartId, dataUrl, $c
         //owner.append("input")
         //    .classed("name",true)
         //    .attr("ng-model", function (d) {
-        //        return "model.Lookup['AngularAccountabilityNode_" + d.id + "'].User.Name";
+        //        return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name";
         //    });
         var autoComplete = owner.append("md-autocomplete")
             .attr("md-selected-item", function (d) {
-                return "model.Lookup['AngularAccountabilityNode_" + d.id + "'].User";
+                return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User";
             }).attr("md-item-text", function (d) {
-                return "item.Name";
-            }).attr("md-items",function (d) { return "item in search.querySearch(search.searchText_" + d.id+")"; } )
-            .attr("md-search-text", function (d) { return "search.searchText_" + d.id; });
+                return "uitem.Name";
+            }).attr("md-items",function (d) { return "uitem in search.querySearch(search.searchText_" + d.Id+")"; } )
+            .attr("md-search-text", function (d) { return "search.searchText_" + d.Id; });
         autoComplete.append("md-item-template")
             .append("span")
-            .attr("md-highlight-text", function (d) { return "search.searchText_" + d.id; })
+            .attr("md-highlight-text", function (d) { return "search.searchText_" + d.Id; })
             .attr("md-highlight-flags", "^i")
-            .text("{{item.Name||item.User.Name}}");//.attr("");
+            .text("{{uitem.Name||uitem.User.Name}}");//.attr("");
         autoComplete.append("md-not-found")          
            .text(function (d) {
                return "No matches were found.";
@@ -160,7 +239,7 @@ function ($scope, $http, $timeout, $location, radial,orgId, chartId, dataUrl, $c
 
 
         //node.append("input").attr("ng-model", function (d) {
-        //    return "model.Lookup['AngularAccountabilityNode_" + d.id + "'].User.Name";
+        //    return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name";
         //});
 
         var roles = rows.selectAll(".role-row").data(function (d) {
@@ -193,7 +272,7 @@ function ($scope, $http, $timeout, $location, radial,orgId, chartId, dataUrl, $c
 
         //node.append("input")
         //    .attr("ng-model", function (d) {
-        //        return "model.Lookup['AccountabilityTree_" + d.id + "'].user.Name";
+        //        return "model.Lookup['AccountabilityTree_" + d.Id + "'].user.Name";
         //    });
         //.attr("y", function (d) { return 13; })
         //.attr("text-anchor", "middle");

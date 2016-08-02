@@ -135,7 +135,7 @@ namespace RadialReview.Utilities.Serializers
 				_Serialize(value, sub, lookup, now);
 				Merge(lookup, resolved, sub); //lookup[resolved.GetKey()] = sub;
                 var output = new AngularPointer(resolved, now, false);
-				if (value is Removed){
+				if (value is Removed || resolved.Id == Removed.Long()){
 					output = null;
 				}
 				return output;

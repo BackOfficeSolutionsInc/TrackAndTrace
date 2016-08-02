@@ -66,3 +66,6 @@
 .acc-chart svg .acc-node input:focus {
   outline: none;
 }
+.acc-chart svg aria-status p {
+  display: none;
+}

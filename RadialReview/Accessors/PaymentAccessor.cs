@@ -302,7 +302,9 @@ namespace RadialReview.Accessors {
                     //))
                     .Where(() => uo.Organization.Id == org.Id && uo.CreateTime < rangeEnd && (uo.DeleteTime == null || uo.DeleteTime > rangeStart) && !uo.IsRadialAdmin)
                     .Select(x => x.Id, x => u.IsRadialAdmin)
-                    .List<object[]>();
+                    .List<object[]>()
+                    .Where(x=>x[1]==null || (bool)x[1]==false)
+                    .ToList();
 
 
 

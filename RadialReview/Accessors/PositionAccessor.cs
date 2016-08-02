@@ -1,4 +1,5 @@
-﻿using RadialReview.Exceptions;
+﻿using NHibernate.Criterion;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
@@ -28,6 +29,20 @@ namespace RadialReview.Accessors
             }
         }*/
 
+        public static List<OrganizationPositionModel> SearchPositions(UserOrganizationModel caller,long orgId,string query)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    perms.ViewOrganization(orgId);
+                    var positions = s.QueryOver<OrganizationPositionModel>()
+                        .Where(x => x.Organization.Id == orgId && x.DeleteTime==null)
+                        .WhereRestrictionOn(x => x.CustomName).IsInsensitiveLike(query, MatchMode.Anywhere)
+                        .List().ToList();
+                    return positions;
+                }
+            }
+        }
         public List<PositionModel> AllPositions()
         {
             using (var s = HibernateSession.GetCurrentSession())

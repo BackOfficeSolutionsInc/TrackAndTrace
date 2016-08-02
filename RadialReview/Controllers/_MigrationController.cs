@@ -988,7 +988,7 @@ namespace RadialReview.Controllers {
                     //Fix TempUser userIds
 
                     var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null).List().ToList();
-                    var vtoRocks = s.QueryOver<VtoModel.Vto_Rocks>().Where(x => x.DeleteTime == null).List().ToList();
+                    var vtoRocks = s.QueryOver<Vto_Rocks>().Where(x => x.DeleteTime == null).List().ToList();
                     var perm = PermissionsUtility.Create(s, GetUser());
                     var now = DateTime.UtcNow;
                     foreach (var rock in rocks) {
@@ -998,7 +998,7 @@ namespace RadialReview.Controllers {
                                 rock.ForRock._AddedToL10 = false;
                                 rock.ForRock._AddedToVTO = false;
                                 var vto = s.Get<VtoModel>(recur.VtoId);
-                                var vtoRock = new VtoModel.Vto_Rocks {
+                                var vtoRock = new Vto_Rocks {
                                     CreateTime = now,
                                     Rock = rock.ForRock,
                                     Vto = vto,
@@ -1204,7 +1204,7 @@ namespace RadialReview.Controllers {
                         }
                     }
                     var b2 = 0;
-                    var pictures = s.QueryOver<VtoModel.ThreeYearPictureModel>().List().ToList();
+                    var pictures = s.QueryOver<ThreeYearPictureModel>().List().ToList();
                     foreach (var p in pictures) {
                         var any = false;
                         if (p.Profit != null && p.ProfitStr == null) {
@@ -1220,7 +1220,7 @@ namespace RadialReview.Controllers {
                             s.Update(p);
                         }
                     }
-                    var one = s.QueryOver<VtoModel.OneYearPlanModel>().List().ToList();
+                    var one = s.QueryOver<OneYearPlanModel>().List().ToList();
                     foreach (var p in one) {
                         var any = false;
                         if (p.Profit != null && p.ProfitStr == null) {
@@ -1236,7 +1236,7 @@ namespace RadialReview.Controllers {
                             s.Update(p);
                         }
                     }
-                    var rocks = s.QueryOver<VtoModel.QuarterlyRocksModel>().List().ToList();
+                    var rocks = s.QueryOver<QuarterlyRocksModel>().List().ToList();
                     foreach (var p in rocks) {
                         var any = false;
                         if (p.Profit != null && p.ProfitStr == null) {
@@ -1457,6 +1457,7 @@ namespace RadialReview.Controllers {
 
 
         [Access(Controllers.AccessLevel.Radial)]
+        [AsyncTimeout(20 * 60 * 1000)]
         public string M07_21_2016()
         {
             HttpContext.Server.ScriptTimeout = 60 * 20;
@@ -1492,14 +1493,16 @@ namespace RadialReview.Controllers {
 
 
         [Access(Controllers.AccessLevel.Radial)]
-        public string M07_28_2016()
+        [AsyncTimeout(20*60*1000)]
+        public string M07_28_2016(long id=0,int take=100)
         {
+            var lastId = 0L;
             HttpContext.Server.ScriptTimeout = 60 * 20;
             var updatedA = 0;
             var caller = GetUser();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var td = s.QueryOver<TodoModel>().Where(x => x.CloseTime == null).List().ToList();
+                    var td = s.QueryOver<TodoModel>().Where(x => x.CloseTime == null && x.Id > id).Take(take).List().ToList();
                     var meetings = s.QueryOver<L10Meeting>().Select(x => x.Id, x => x.L10RecurrenceId, x => x.CompleteTime).List<object[]>()
                         .Select(x=>new {
                             meeting=(long)x[0],
@@ -1524,6 +1527,7 @@ namespace RadialReview.Controllers {
                         }
                         s.Update(t);
                         updatedA += 1;
+                        lastId = t.Id;
 
                         //if (updatedA % 20 == 0) { //20, same as the ADO batch size
                         //    //flush a batch of inserts and release memory:
@@ -1535,7 +1539,7 @@ namespace RadialReview.Controllers {
                     s.Flush();
                 }
             }
-            return "(" + updatedA + ") ";
+            return "(" + updatedA + ") last:" + lastId;
         }
     }
 }

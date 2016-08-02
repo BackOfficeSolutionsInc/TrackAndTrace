@@ -449,6 +449,7 @@ namespace RadialReview.Accessors {
                 var scores = existingScores.OrderBy(x => x.Id).Where(x => (x.ForWeek == week)).ToList();
                 if (scores.Any()) {
                     TestUtilities.Log("Found one or more score. Updating All.");
+
                     foreach (var sc in scores) {
                         SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(sc.Id));
                         if (sc.Measured != value) {
@@ -456,6 +457,7 @@ namespace RadialReview.Accessors {
                             sc.DateEntered = (value == null) ? null : (DateTime?)now;
                             s.Update(sc);
                         }
+                        score = sc;
                     }
                 } else {
                     var ordered = existingScores.OrderBy(x => x.DateDue);
@@ -654,10 +656,12 @@ namespace RadialReview.Accessors {
             var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting), connectionId);
             group.updateTextContents(dom, value);
 
-            var toUpdate = new AngularScore(score, false);
-            toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
-            toUpdate.Measured = toUpdate.Measured ?? Removed.Decimal();
-            group.update(new AngularUpdate() { toUpdate });
+            if (score != null) {
+                var toUpdate = new AngularScore(score, false);
+                toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
+                toUpdate.Measured = toUpdate.Measured ?? Removed.Decimal();
+                group.update(new AngularUpdate() { toUpdate });
+            }
 
             Audit.L10Log(s, perms.GetCaller(), recurrenceId, "UpdateScoreInMeeting", ForModel.Create(score), score.NotNull(x => x.Measurable.NotNull(y => y.Title)) + " updated to " + value);
             return score;

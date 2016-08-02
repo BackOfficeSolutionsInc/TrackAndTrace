@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.L10;
+using RadialReview.Models.Angular.Positions;
 
 namespace RadialReview.Controllers {
     public class DropDownController : BaseController {
@@ -85,6 +86,25 @@ namespace RadialReview.Controllers {
             //}).OrderBy(x => x.text);
             //return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult AngularPositions(string q, bool create=false)
+        {
+            var pos = PositionAccessor.SearchPositions(GetUser(), GetUser().Organization.Id, q);
+
+            var apos = pos.Select(x => new AngularPosition(x)).ToList();
+            
+            if (create && !apos.Any(x => x.Name == q)) {
+        
+                apos.Add(new AngularPosition(-2) {
+                    Name = q + AccountabilityAccessor.CREATE_TEXT 
+                });
+            }
+
+
+            return Json(apos, JsonRequestBehavior.AllowGet);
+        }
+
 
         [Access(AccessLevel.UserOrganization)]
         public JsonResult OrganizationRGM(string q)

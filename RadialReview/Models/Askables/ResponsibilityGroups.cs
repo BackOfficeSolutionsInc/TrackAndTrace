@@ -98,6 +98,11 @@ namespace RadialReview.Models.Askables
 	    public override string GetImageUrl(){
             return ConstantStrings.AmazonS3Location + ConstantStrings.ImagePositionPlaceholder;
 	    }
+
+        public OrganizationPositionModel()
+        {
+
+        }
     }
 
     public class OrganizationTeamModel : ResponsibilityGroupModel

@@ -75,7 +75,9 @@
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-												@r.DisplayDate.AddDays(0).ToString(TimingUtility.ScorecardFormat1(Model.ScorecardType))
+												@*@r.DisplayDate.AddDays(0).ToString(TimingUtility.ScorecardFormat1(Model.ScorecardType))*@
+                                                @TimingUtility.ScorecardRangeStart( Html.UserOrganization().GetTimeSettings().TimezoneOffset, Model.ScorecardType, r.DisplayDate).ToString(TimingUtility.ScorecardFormat1(Model.ScorecardType))
+
 											</th>
 											@*if (r.IsCurrentWeek){
 													<th class="date current buttonColumn"></th>
@@ -101,7 +103,7 @@
 										foreach (var r in Model.Weeks)
 										{
 											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
-												@TimingUtility.ScorecardRangeEnd(ViewBag.ClientTime??Html.Organization().ConvertFromUTC(DateTime.UtcNow),Model.ScorecardType, r.DisplayDate).ToString(TimingUtility.ScorecardFormat2(Model.ScorecardType))
+												@TimingUtility.ScorecardRangeEnd( Html.UserOrganization().GetTimeSettings().TimezoneOffset, Model.ScorecardType, r.DisplayDate).ToString(TimingUtility.ScorecardFormat2(Model.ScorecardType))
 											</th>
 											@*if (r.IsCurrentWeek){
 													<th class="date current buttonColumn"></th>
@@ -287,11 +289,13 @@
 	    if ($(".scroll-right").length>0){
 	        setTimeout(function(){
 	            //debugger;
-	            $(".scroll-right").scrollLeft(4000);
+	            //$(".scroll-right").scrollLeft(4000);
+	            $(".scroll-right").animate({scrollLeft: $(".scroll-right").width()},500);
+	            //}); 
 	        },1);
 	    }else{
 	        //debugger;
-	        setTimeout(scrollRight,100);
+	        setTimeout(scrollRight,50);
 	    }
 	}
 

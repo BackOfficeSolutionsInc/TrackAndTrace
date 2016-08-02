@@ -81,7 +81,7 @@ namespace RadialReview.Models.Angular.VTO
 		
 		public bool Deleted { get; set; }
 
-		public static AngularVtoString Create(VtoModel.VtoItem_String strs)
+		public static AngularVtoString Create(VtoItem_String strs)
 		{
 			return new AngularVtoString()
 			{
@@ -90,7 +90,7 @@ namespace RadialReview.Models.Angular.VTO
 				Deleted = strs.DeleteTime!=null
 			};
 		}
-		public static List<AngularVtoString> Create(IEnumerable<VtoModel.VtoItem_String> strs)
+		public static List<AngularVtoString> Create(IEnumerable<VtoItem_String> strs)
 		{
 			return strs.Select(AngularVtoString.Create).ToList();
 		}
@@ -108,7 +108,7 @@ namespace RadialReview.Models.Angular.VTO
 
 		public DateTime? Data { get; set; }
 
-		public static AngularVtoDateTime Create(VtoModel.VtoItem_DateTime futureDate)
+		public static AngularVtoDateTime Create(VtoItem_DateTime futureDate)
 		{
 			return new AngularVtoDateTime(){
 				Id = futureDate.Id,
@@ -127,7 +127,7 @@ namespace RadialReview.Models.Angular.VTO
 		}
 		public decimal? Data { get; set; }
 
-		public static AngularVtoDecimal Create(VtoModel.VtoItem_Decimal value)
+		public static AngularVtoDecimal Create(VtoItem_Decimal value)
 		{
 			return new AngularVtoDecimal(){
 				Id = value.Id,
@@ -151,7 +151,7 @@ namespace RadialReview.Models.Angular.VTO
         public string PurposeTitle { get; set; }
         public string CoreFocusTitle { get; set; }
 
-		public static AngularCoreFocus Create(VtoModel.CoreFocusModel coreFocus)
+		public static AngularCoreFocus Create(CoreFocusModel coreFocus)
 		{
 			return new AngularCoreFocus(){
 				Id=coreFocus.Id,
@@ -180,7 +180,7 @@ namespace RadialReview.Models.Angular.VTO
         public String MarketingStrategyTitle { get; set; }
 		public IEnumerable<AngularVtoString> Uniques { get; set; }
 
-		internal static AngularStrategy Create(VtoModel.MarketingStrategyModel marketingStrategyModel)
+		internal static AngularStrategy Create(MarketingStrategyModel marketingStrategyModel)
 		{
 			return new AngularStrategy()
 			{
@@ -211,7 +211,7 @@ namespace RadialReview.Models.Angular.VTO
         public String ThreeYearPictureTitle { get; set; }
 		public IEnumerable<AngularVtoString> LooksLike { get; set; }
 
-		public static AngularThreeYearPicture Create(VtoModel.ThreeYearPictureModel threeYearPicture)
+		public static AngularThreeYearPicture Create(ThreeYearPictureModel threeYearPicture)
 		{
 			return new AngularThreeYearPicture(){
 				FutureDate = (threeYearPicture.FutureDate),
@@ -239,7 +239,7 @@ namespace RadialReview.Models.Angular.VTO
         public String OneYearPlanTitle { get; set; }
 		public IEnumerable<AngularVtoString> GoalsForYear { get; set; }
 
-		public static AngularOneYearPlan Create(VtoModel.OneYearPlanModel oneYearPlan)
+		public static AngularOneYearPlan Create(OneYearPlanModel oneYearPlan)
 		{
 			return new AngularOneYearPlan(){
 				Id = oneYearPlan.Id,
@@ -267,7 +267,7 @@ namespace RadialReview.Models.Angular.VTO
         public String RocksTitle { get; set; }
 		public IEnumerable<AngularVtoRock> Rocks { get; set; }
 
-		public static AngularQuarterlyRocks Create(VtoModel.QuarterlyRocksModel quarterlyRocksModel)
+		public static AngularQuarterlyRocks Create(QuarterlyRocksModel quarterlyRocksModel)
 		{
 			return new AngularQuarterlyRocks(){
 				Id = quarterlyRocksModel.Id,
@@ -292,7 +292,7 @@ namespace RadialReview.Models.Angular.VTO
 		public AngularRock Rock { get; set; }
 		public bool Deleted { get; set; }
 
-		public static AngularVtoRock Create(VtoModel.Vto_Rocks rock)
+		public static AngularVtoRock Create(Vto_Rocks rock)
 		{
 			return new AngularVtoRock(){
 				Rock = new AngularRock(rock.Rock),
@@ -301,7 +301,7 @@ namespace RadialReview.Models.Angular.VTO
 			};
 		}
 
-		public static List<AngularVtoRock> Create(IEnumerable<VtoModel.Vto_Rocks> rocks){
+		public static List<AngularVtoRock> Create(IEnumerable<Vto_Rocks> rocks){
 			return rocks.Select(Create).ToList();
 		}
 	}

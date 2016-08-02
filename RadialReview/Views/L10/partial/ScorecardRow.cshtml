@@ -93,6 +93,9 @@
                                data-oldval="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
                                type="text"
                                placeholder="N/A"
+                               @if (found!=null && !found._Editable) {
+                                   @:disabled
+                               }
                                value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
                                class="grid rt score-value @(seenCurrent?"future-score":"")"
                                data-scoreid="@(found.NotNull(x => x.Id))"

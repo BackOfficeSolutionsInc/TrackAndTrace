@@ -109,16 +109,36 @@ namespace RadialReview
 		}
         public static string SubstringAfter(this string value, string search, int? length = null, int startIndex = 0)
         {
+            if (length != null && length < 0)
+                throw new ArgumentOutOfRangeException("Length must be greater than zero.");
+
             if (value == null)
                 return null;
-            var loc = value.IndexOf(search,startIndex);
+            var loc = value.IndexOf(search, startIndex);
             if (loc == -1)
                 return null;
-                //throw new ArgumentOutOfRangeException("search","Search term was not found");
+            //throw new ArgumentOutOfRangeException("search","Search term was not found");
             if (length == null) {
                 return value.Substring(loc + search.Length);
             } else {
-                return value.Substring(loc + search.Length,length.Value);
+                return value.Substring(loc + search.Length, length.Value);
+            }
+        }
+        public static string SubstringBefore(this string value, string search, int? length = null, int startIndex = 0)
+        {
+            if (length != null && length < 0)
+                throw new ArgumentOutOfRangeException("Length must be greater than zero.");
+            if (value == null)
+                return null;
+            var loc = value.IndexOf(search, startIndex);
+            if (loc == -1)
+                return null;
+            //throw new ArgumentOutOfRangeException("search","Search term was not found");
+            if (length == null) {
+                return value.Substring(0,loc);
+            } else {
+                //return value.Substring(loc + search.Length, length.Value);
+                return value.Substring(loc-length.Value, loc);
             }
         }
 

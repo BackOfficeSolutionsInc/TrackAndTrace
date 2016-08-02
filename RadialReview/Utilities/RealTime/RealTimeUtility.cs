@@ -49,7 +49,7 @@ namespace RadialReview.Utilities.RealTime {
             SkipExecution = true;
         }
 
-        public bool Execute()
+        protected bool Execute()
         {
             if (SkipExecution)
                 return false;
@@ -107,6 +107,10 @@ namespace RadialReview.Utilities.RealTime {
         protected void AddAction(Action a)
         {
             _actions.Add(a);
+        }  
+        public RTOrganizationUpdater UpdateOrganization(long orgId)
+        {
+            return new RTOrganizationUpdater(orgId, this);
         }
 
         protected dynamic GetGroup<HUB>(string name) where HUB : IHub
@@ -124,5 +128,7 @@ namespace RadialReview.Utilities.RealTime {
             if (!Executed)
                 Execute();
         }
+
+      
     }
 }

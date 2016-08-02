@@ -87,27 +87,29 @@
 
 <table class="table table-condensed table-striped table-hover">
     <thead class="table-header">
-        <tr><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>CreateTime</th><th>Status</th><th>LastLogin</th><th>TrialEnd</th><th>Last Meeting</th><th>cc exp</th></tr>
+        <tr><th style="border-right:1px solid black;">#</th><th>OrgId</th><th>OrgName</th><th>User</th><th>Position</th><th>CreateTime</th><th>Status</th><th>LastLogin</th><th>TrialEnd</th><th>Last Meeting</th><th>cc exp</th></tr>
     </thead>
-    @foreach (var i in Model) {
-        <tr>
-            <td>@i.OrgId</td>
-            <td class="alignRight"><a href="/Organization/Which/@i.OrgId">@i.OrgName</a></td>
-            <td style="width:120px;">@i.Username  </td>
-            <td>@i.Position</td>
-            <td class="alignLeft">@i.OrgCreateTime.NotNull(x => x.Value.ToShortDateString())</td>
-            <td class="account-@i.Status {sorter: 'digit'} account">
-                <span style="display: none">@(scoreOrder[i.Status])</span>
-                @if (i.Status == AccountType.Cancelled) {
-                    @:Cancelled
+    <tbody>
+        @foreach (var i in Model) {
+            <tr>
+                <th class="rowId"></th>
+                <td>@i.OrgId</td>
+                <td class="alignRight"><a href="/Organization/Which/@i.OrgId">@i.OrgName</a></td>
+                <td style="width:120px;">@i.Username  </td>
+                <td>@i.Position</td>
+                <td class="alignLeft">@i.OrgCreateTime.NotNull(x => x.Value.ToShortDateString())</td>
+                <td class="account-@i.Status {sorter: 'digit'} account">
+                    <span style="display: none">@(scoreOrder[i.Status])</span>
+                    @if (i.Status == AccountType.Cancelled) {
+                @:Cancelled
                 } else {
-                    @Html.EnumDropDownList("at-" + i.OrgId, i.Status, new { onchange = "changeAccountType(this," + i.OrgId + ")" })
+                @Html.EnumDropDownList("at-" + i.OrgId, i.Status, new { onchange = "changeAccountType(this," + i.OrgId + ")" })
                 }
 
-            </td>
+                </td>
 
-            @*<td class="account-@i.Status select" data-sort="@(scoreOrder[i.Status])"><span class="hidden">@(scoreOrder[i.Status])</span><span class="" data-sort="@(scoreOrder[i.Status])">@i.Status</span></td>*@
-            <td class="alignRight" style="color:@(i.LastLogin.NotNull(x =>{
+                @*<td class="account-@i.Status select" data-sort="@(scoreOrder[i.Status])"><span class="hidden">@(scoreOrder[i.Status])</span><span class="" data-sort="@(scoreOrder[i.Status])">@i.Status</span></td>*@
+                <td class="alignRight" style="color:@(i.LastLogin.NotNull(x =>{
 						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
 						                         {
 													 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(7)))
@@ -121,14 +123,14 @@
 						                         }
 						                         return "red";
 					                         })??"darkred")">
-                @i.LastLogin.NotNull(x => x.Value.ToShortDateString())
-            </td>
-            <td title="@i.TrialEnd.NotNull(x => x.Value.ToShortDateString())" style="color:white;background-color:@(i.Status!=AccountType.Demo?"blueviolet":i.TrialEnd.NotNull(x => (x > DateTime.UtcNow) ? "blueviolet" : "deeppink") ?? "blueviolet");">
-                @if (i.TrialEnd != DateTime.MinValue && i.Status == AccountType.Demo) {
-                    @i.TrialEnd.NotNull(x => x.Value.ToShortDateString())
+                    @i.LastLogin.NotNull(x => x.Value.ToShortDateString())
+                </td>
+                <td title="@i.TrialEnd.NotNull(x => x.Value.ToShortDateString())" style="color:white;background-color:@(i.Status!=AccountType.Demo?"blueviolet":i.TrialEnd.NotNull(x => (x > DateTime.UtcNow) ? "blueviolet" : "deeppink") ?? "blueviolet");">
+                    @if (i.TrialEnd != DateTime.MinValue && i.Status == AccountType.Demo) {
+                @i.TrialEnd.NotNull(x => x.Value.ToShortDateString())
                 }
-            </td>
-            <td class="alignRight" style="background-color:@(i.LastMeeting.NotNull(x =>{
+                </td>
+                <td class="alignRight" style="background-color:@(i.LastMeeting.NotNull(x =>{
 						                         if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(28)))
 						                         {
 													 if (x > DateTime.UtcNow.Subtract(TimeSpan.FromDays(14)))
@@ -142,26 +144,34 @@
 						                         }
                                                  return "#FF7979";
 					                         })??"lightgray")">
-                @(i.LastMeeting.NotNull(x => x.Value.ToShortDateString()))
-            </td>
-            <td class="alignRight" style="background-color:@creditCardBG(i);color:@(i.CreditCardExp.NotNull(x=>"black")??"transparent")">
-                @(creditCardTxt(i))
-            </td>
+                    @(i.LastMeeting.NotNull(x => x.Value.ToShortDateString()))
+                </td>
+                <td class="alignRight" style="background-color:@creditCardBG(i);color:@(i.CreditCardExp.NotNull(x=>"black")??"transparent")">
+                    @(creditCardTxt(i))
+                </td>
 
-        </tr>
-    }
+            </tr>
+        }
+    </tbody>
 </table>
 
 @using (Html.BeginScripts()) {
     <script>
         $("table").tablesorter({
             // sortForce: [[0, 1]],
-            sortList: [[0,1]],
+            sortList: [[1,1]],
             sortStable: true,
             headers: {
-                4: { sorter: 'attr' },
+                5: { sorter: 'attr' },
             }
+        }).bind("sortEnd",function() { 
+            $("tbody .rowId").each(function(i){
+                $(this).html(i+1);
+            })
         });
+        $("tbody .rowId").each(function(i){
+            $(this).html(i+1);
+        })
 
         var acType = {
             @foreach (var kv in scoreOrder) {
@@ -205,6 +215,9 @@
 }
 
 <style>
+    .rowId{
+        border-right:1px solid black;
+    }
     .account {
         padding: 0 !important;
         vertical-align: middle !important;

@@ -17,7 +17,7 @@ namespace RadialReview.Utilities.DataTypes {
 
         public override bool Equals(object obj){
             if (obj is TinyUser) {
-                return this.Tuplize() == ((TinyUser)obj).Tuplize();
+                return this.Tuplize().Equals(((TinyUser)obj).Tuplize());
             }
             return false;
         }

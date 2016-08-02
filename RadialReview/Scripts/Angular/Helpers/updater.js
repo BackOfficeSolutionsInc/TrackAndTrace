@@ -145,17 +145,12 @@
 
     //When sending data TO the server
     function convertDatesForServer(obj) {
+        _convertDatesForServer(obj, []);
+    }
 
-
-
-        if (typeof(obj)==="undefined" || obj == null)
+    function _convertDatesForServer(obj, seen) {
+        if (typeof (obj) === "undefined" || obj == null)
             return obj;
-
-        //if (typeof (offsetMin) === "undefined") {
-        //    offsetMins = 
-        //}
-
-
         for (var key in obj) {
             var value = obj[key];
             var type = typeof (value);
@@ -164,13 +159,29 @@
             } else if (obj[key].getDate !== undefined) {
                 obj[key] = new Date(obj[key].getTime() + tzoffset() * 60 * 1000); //obj[key].getTimezoneOffset() * 60000);
             } else if (type == 'object') {
-                convertDates(value);
+                var alreadyParsed = false;
+                for (var i in seen) {
+                    if (seen[i] == value) {
+                        alreadyParsed = true;
+                        break;
+                    }
+                }
+                if (!alreadyParsed) {
+                    seen.push(value);
+                    _convertDatesForServer(value, seen);
+                }
+
             }
         }
     }
 
     //When parsing data FROM the server
     function convertDates(obj) {
+        var arr = [];
+        _convertDates(obj, arr);
+    }
+
+    function _convertDates(obj, seen) {
         var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
         //var dateRegex2 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
         var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
@@ -187,7 +198,18 @@
             } else if (obj[key].getDate !== undefined) {
                 obj[key] = new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
             } else if (type == 'object') {
-                convertDates(value);
+                var alreadyParsed=false;
+                for (var i in seen) {
+                    if (seen[i] == value) {
+                        alreadyParsed = true;
+                        break;
+                    }
+                }
+                if (!alreadyParsed) {
+                    seen.push(value);
+                    _convertDates(value, seen);
+                }
+                
             }
         }
     }

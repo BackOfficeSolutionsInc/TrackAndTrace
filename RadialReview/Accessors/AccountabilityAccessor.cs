@@ -6,6 +6,7 @@ using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Positions;
 using RadialReview.Models.Angular.Roles;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Askables;
@@ -13,6 +14,7 @@ using RadialReview.Models.UserModels;
 using RadialReview.Models.UserTemplate;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Utilities.RealTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -365,5 +367,90 @@ namespace RadialReview.Accessors {
                 }
             }
         }
+        public static void UpdateAccountabilityRolesGroup_Unsafe(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, long? positionId)
+        {
+            var node = s.Get<AccountabilityNode>(nodeId);
+            var arg = node.AccountabilityRolesGroup;
+            var updater= rt.UpdateOrganization(arg.OrganizationId);
+
+            if (arg.PositionId != positionId) {
+                if (positionId != null) {
+                    perms.ViewOrganizationPosition(positionId.Value);
+                    arg.Position = s.Get<OrganizationPositionModel>(positionId);
+                    updater.Update(new AngularAccountabilityGroup(arg.Id) {
+                        Position = new AngularPosition(arg.Position)
+                    });
+                } else {
+                    updater.Update(new AngularAccountabilityGroup(arg.Id) {
+                        Position = Removed.From<AngularPosition>()
+                    });
+                }
+                arg.PositionId = positionId;
+                s.Update(arg);
+            }
+        }
+
+        public static void UpdateAccountabilityNode(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, AngularAccountabilityGroup newARG,long? userId)
+        {
+            perms.EditAccountabilityNode(nodeId);
+
+            var node = s.Get<AccountabilityNode>(nodeId);
+
+            if (newARG != null) {
+                if (newARG.Position.NotNull(x => x.Id) == -2) {
+                    perms.EditPositions(node.OrganizationId);
+                    var opm = new OrganizationPositionModel() {
+                        CreatedBy =perms.GetCaller().Id,
+                        Organization = s.Load<OrganizationModel>(node.OrganizationId),
+                        CustomName = newARG.Position.Name.SubstringBefore(CREATE_TEXT)
+                    };
+                    s.Save(opm);
+                    newARG.Position.Id = opm.Id;
+                }
+
+                UpdateAccountabilityRolesGroup_Unsafe(s, rt, perms, nodeId, newARG.Position.NotNull(x=>(long?)x.Id));
+            }
+            var updater = rt.UpdateOrganization(node.OrganizationId);
+            if (node.UserId != userId) {
+                if (userId != null) {
+                    perms.EditUserOrganization(userId.Value);
+                    node.User = s.Get<UserOrganizationModel>(userId.Value);
+                    updater.Update(new AngularAccountabilityNode(node.Id) {
+                        User = AngularUser.CreateUser(node.User)
+                    });
+                } else {
+                    updater.Update(new AngularAccountabilityNode(node.Id) {
+                        User = Removed.From<AngularUser>()
+                    });
+                }
+                node.UserId = userId;
+                s.Update(node);
+            }
+
+        }
+
+        public static void Update(UserOrganizationModel caller, IAngularItem model, string connectionId)
+        {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    using (var rt = RealTimeUtility.Create(connectionId)) {
+                        var perms = PermissionsUtility.Create(s, caller);
+
+                        if (model.Type == typeof(AngularAccountabilityNode).Name) {
+                            var m = (AngularAccountabilityNode)model;
+                            //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
+                            UpdateAccountabilityNode(s, rt, perms, m.Id, m.Group,m.User.Id);
+                        } else {
+                            throw new PermissionsException("Unhandled type: " + model.Type);
+                        }
+
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
+        }
+
+        public const string CREATE_TEXT = " (Create)";
     }
 }

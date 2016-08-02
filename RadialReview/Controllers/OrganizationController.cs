@@ -84,6 +84,12 @@ namespace RadialReview.Controllers
 
                     var stats=    orgs.Select(x=>{
                             var user = list.Where(y=>y.OrganizationId==x.Id).OrderByDescending(y=>y.LastLogin).FirstOrDefault();
+                            DateTime? trialEnd =DateTime.MinValue;
+                            try {
+                                trialEnd = tokens.ContainsKey(x.Id) ? (DateTime?)null : x.NotNull(u => u.PaymentPlan.NotNull(z => z.FreeUntil));
+                            } catch (Exception e) { 
+                            }
+
                             return new OrgStats()
                             {OrgId = x.NotNull(y=>y.Id),
                                 OrgName = x.NotNull(y=>y.GetName()),
@@ -93,7 +99,7 @@ namespace RadialReview.Controllers
                                 OrgCreateTime = x.NotNull(u => u.CreationTime),
                                 Status = x.NotNull(y=>y.AccountType),
                                 LastMeeting = meetingLastLU.GetOrDefault(x.NotNull(y=>y.Id),null),
-                                TrialEnd  = tokens.ContainsKey(x.Id)?(DateTime?)null:x.NotNull(u => u.PaymentPlan.FreeUntil),
+                                TrialEnd  = trialEnd,
                                 CreditCardExp = !tokens.ContainsKey(x.Id)?(DateTime?)null:new DateTime(tokens[x.Id].YearExpire,tokens[x.Id].MonthExpire,1)
                             };
                         }).ToList();

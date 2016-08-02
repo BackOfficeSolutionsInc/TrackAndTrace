@@ -54,7 +54,7 @@ namespace RadialReview.Utilities.DataTypes {
         //    return Dive(tree,null,id);
         //}
 
-        public long Id{get { return this.id; }}
+        public long Id { get { return this.id; } set { this.id = value; } }
 
         public string Type{get { return "AccountabilityTree"; }}
 

@@ -12,7 +12,7 @@ namespace RadialReview.Models.Angular.Base
 	}
 	public interface IAngularItem : IAngular
 	{
-		long Id { get; }
+        long Id { get; set; }
 		string Type { get; }
         bool Hide { get; }
 	}

@@ -4,28 +4,6 @@ var canMoveCells = true;
 
 
 $(function () {
-
-    /*window.onbeforeunload = function(e) {
-		return 'dialog';
-		if (window.onbeforeunload) {
-			debugger;
-			console.log("unload exists");
-			window.onbeforeunload();
-		}
-		if ($(":focus").length) {
-			$(":focus").blur();
-		}
-
-
-	};*/
-
-    /*$(".main-window-container").on("change", ".score input", function (e, d) {
-		console.log("CHANGE");
-		updateScore(this);
-		if (!d) {
-			updateServerScore(this);
-		}
-	});*/
     $('.main-window-container').on('keydown', ".grid", changeInput);
     $('.main-window-container').on('click', ".grid", function (e, d) { if (!d) mode = "scan"; });
     $('.main-window-container').on('change', ".grid", function (e, d) { if (!d) mode = "type"; });
@@ -34,10 +12,6 @@ $(function () {
             e.preventDefault();
         }
     });
-
-    /*$("body").on("click", ".scorecard-table .target.direction", function(e, d) {
-		$(this).html("<select><option>");
-	});*/
 
 });
 function blurChangeTimeout(key, self, d, i, executeNow) {
@@ -840,3 +814,8 @@ function removeMeasurable(id) {
 $('body').on('DOMNodeInserted', 'input', function () {
 
 });*/
+
+
+$(window).on("page-scorecard", function () {
+    scrollRight();
+});

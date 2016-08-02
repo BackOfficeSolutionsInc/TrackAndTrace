@@ -78,15 +78,15 @@ namespace RadialReview.Accessors {
             perms.ViewVTO(vtoId);
             var model = s.Get<VtoModel>(vtoId);
             model._Values = OrganizationAccessor.GetCompanyValues(s.ToQueryProvider(true), perms, model.Organization.Id, null);
-            model.MarketingStrategy._Uniques = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
-            model.ThreeYearPicture._LooksLike = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_LookLike && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
-            model.OneYearPlan._GoalsForYear = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_YearGoals && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
+            model.MarketingStrategy._Uniques = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
+            model.ThreeYearPicture._LooksLike = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_LookLike && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
+            model.OneYearPlan._GoalsForYear = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_YearGoals && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
             //model.._GoalsForYear = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
-            model.QuarterlyRocks._Rocks = s.QueryOver<VtoModel.Vto_Rocks>()
+            model.QuarterlyRocks._Rocks = s.QueryOver<Vto_Rocks>()
                 .Where(x => x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList()
 
                 .Where(x => x.Rock.DeleteTime == null && x.Rock.CompanyRock).ToList();
-            model._Issues = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
+            model._Issues = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
             return model;
         }
 
@@ -121,18 +121,19 @@ namespace RadialReview.Accessors {
 
             var model = new VtoModel();
             model.Organization = s.Get<OrganizationModel>(recurrence.OrganizationId);
-            s.Save(model.MarketingStrategy);
-            s.Save(model.CoreFocus);
-            s.Save(model.ThreeYearPicture);
-            s.Save(model.OneYearPlan);
-            s.Save(model.QuarterlyRocks);
+            
             s.SaveOrUpdate(model);
+            //s.Save(model.MarketingStrategy);
+            //s.Save(model.CoreFocus);
+            //s.Save(model.ThreeYearPicture);
+            //s.Save(model.OneYearPlan);
+            //s.Save(model.QuarterlyRocks);
 
-            model.CoreFocus.Vto = model;
-            model.MarketingStrategy.Vto = model;
-            model.OneYearPlan.Vto = model;
-            model.QuarterlyRocks.Vto = model;
-            model.ThreeYearPicture.Vto = model;
+            model.CoreFocus.Vto = model.Id;
+            model.MarketingStrategy.Vto = model.Id;
+            model.OneYearPlan.Vto = model.Id;
+            model.QuarterlyRocks.Vto = model.Id;
+            model.ThreeYearPicture.Vto = model.Id;
             model.L10Recurrence = recurrenceId;
 
             model.Name = recurrence.Name;
@@ -150,14 +151,14 @@ namespace RadialReview.Accessors {
 
             var model = new VtoModel();
             model.Organization = s.Get<OrganizationModel>(organizationId);
-            s.Save(model.MarketingStrategy);
-            //s.Save(model.OrganizationWide);
-            s.Save(model.CoreFocus);
-            s.Save(model.ThreeYearPicture);
-            s.Save(model.OneYearPlan);
-            s.Save(model.QuarterlyRocks);
-
             s.SaveOrUpdate(model);
+            //s.Save(model.MarketingStrategy);
+            ////s.Save(model.OrganizationWide);
+            //s.Save(model.CoreFocus);
+            //s.Save(model.ThreeYearPicture);
+            //s.Save(model.OneYearPlan);
+            //s.Save(model.QuarterlyRocks);
+
 
             //model.Name.Vto = model;
             //s.Update(model.Name);
@@ -165,31 +166,31 @@ namespace RadialReview.Accessors {
             //model.OrganizationWide.Vto = model;
             //s.Update(model.OrganizationWide);
 
-            model.CoreFocus.Vto = model;
+            model.CoreFocus.Vto = model.Id;
             //model.CoreFocus.Niche.Vto = model;
             //model.CoreFocus.Purpose.Vto = model;
 
             //s.Update(model.CoreFocus);
 
-            model.MarketingStrategy.Vto = model;
+            model.MarketingStrategy.Vto = model.Id;
             //model.MarketingStrategy.Guarantee.Vto = model;
             //model.MarketingStrategy.ProvenProcess.Vto = model;
             //model.MarketingStrategy.TargetMarket.Vto = model;
             //model.MarketingStrategy.TenYearTarget.Vto = model;
 
 
-            model.OneYearPlan.Vto = model;
+            model.OneYearPlan.Vto = model.Id;
             //model.OneYearPlan.FutureDate.Vto = model;
             //model.OneYearPlan.Measurables.Vto = model;
             //model.OneYearPlan.Profit.Vto = model;
             //model.OneYearPlan.Revenue.Vto = model;
 
-            model.QuarterlyRocks.Vto = model;
+            model.QuarterlyRocks.Vto = model.Id;
             //model.QuarterlyRocks.Measurables.Vto = model;
             //model.QuarterlyRocks.Profit.Vto = model;
             //model.QuarterlyRocks.Revenue.Vto = model;
 
-            model.ThreeYearPicture.Vto = model;
+            model.ThreeYearPicture.Vto = model.Id;
             //model.ThreeYearPicture.FutureDate.Vto = model;
             //model.ThreeYearPicture.Measurables.Vto = model;
             //model.ThreeYearPicture.Profit.Vto = model;
@@ -217,10 +218,10 @@ namespace RadialReview.Accessors {
         public static void UpdateVtoString(UserOrganizationModel caller, long vtoStringId, String message, bool? deleted, string connectionId = null)
         {
             long? update_VtoId = null;
-            VtoModel.VtoItem_String str = null;
+            VtoItem_String str = null;
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    str = s.Get<VtoModel.VtoItem_String>(vtoStringId);
+                    str = s.Get<VtoItem_String>(vtoStringId);
                     var perm = PermissionsUtility.Create(s, caller).EditVTO(str.Vto.Id);
                     //if (str.Data != message)
                     //{
@@ -345,8 +346,8 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
-                    var threeYear = s.Get<VtoModel.ThreeYearPictureModel>(id);
-                    var vtoId = threeYear.Vto.Id;
+                    var threeYear = s.Get<ThreeYearPictureModel>(id);
+                    var vtoId = threeYear.Vto;
 
                     var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
                     var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
@@ -377,8 +378,8 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
-                    var quarterlyRocks = s.Get<VtoModel.QuarterlyRocksModel>(id);
-                    var vtoId = quarterlyRocks.Vto.Id;
+                    var quarterlyRocks = s.Get<QuarterlyRocksModel>(id);
+                    var vtoId = quarterlyRocks.Vto;
 
                     var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
                     var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
@@ -410,8 +411,8 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
-                    var plan = s.Get<VtoModel.OneYearPlanModel>(id);
-                    var vtoId = plan.Vto.Id;
+                    var plan = s.Get<OneYearPlanModel>(id);
+                    var vtoId = plan.Vto;
 
                     var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
                     var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
@@ -443,8 +444,8 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
-                    var strategy = s.Get<VtoModel.MarketingStrategyModel>(strategyId);
-                    var vtoId = strategy.Vto.Id;
+                    var strategy = s.Get<MarketingStrategyModel>(strategyId);
+                    var vtoId = strategy.Vto;
 
                     var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
                     var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
@@ -474,8 +475,8 @@ namespace RadialReview.Accessors {
             //var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var coreFocus = s.Get<VtoModel.CoreFocusModel>(coreFocusId);
-                    PermissionsUtility.Create(s, caller).EditVTO(coreFocus.Vto.Id);
+                    var coreFocus = s.Get<CoreFocusModel>(coreFocusId);
+                    PermissionsUtility.Create(s, caller).EditVTO(coreFocus.Vto);
 
                     coreFocus.Purpose = purpose;
                     coreFocus.Niche = niche;
@@ -484,7 +485,7 @@ namespace RadialReview.Accessors {
                     s.Update(coreFocus);
 
                     var update = new AngularUpdate() { AngularCoreFocus.Create(coreFocus) };
-                    UpdateVTO(s, coreFocus.Vto.Id, connectionId, x => x.update(update));
+                    UpdateVTO(s, coreFocus.Vto, connectionId, x => x.update(update));
                     tx.Commit();
                     s.Flush();
                 }
@@ -532,7 +533,7 @@ namespace RadialReview.Accessors {
             //var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var rock = s.Get<VtoModel.Vto_Rocks>(rockId);
+                    var rock = s.Get<Vto_Rocks>(rockId);
                     PermissionsUtility.Create(s, caller).EditVTO(rock.Vto.Id).ViewUserOrganization(accountableUser, false);
 
                     rock.Rock.AccountableUser = s.Get<UserOrganizationModel>(accountableUser);
@@ -556,7 +557,7 @@ namespace RadialReview.Accessors {
             //var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var rock = s.Get<VtoModel.Vto_Rocks>(rockId);
+                    var rock = s.Get<Vto_Rocks>(rockId);
                     var perm = PermissionsUtility.Create(s, caller).EditVTO(rock.Vto.Id);
 
                     var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
@@ -660,16 +661,16 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static VtoModel.VtoItem_String AddString(ISession s, PermissionsUtility perms, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularItem> updateFunc, bool skipUpdate = false, ForModel forModel = null, string value = null)
+        public static VtoItem_String AddString(ISession s, PermissionsUtility perms, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularItem> updateFunc, bool skipUpdate = false, ForModel forModel = null, string value = null)
         {
             perms.EditVTO(vtoId);
             var vto = s.Get<VtoModel>(vtoId);
             var organizationId = vto.Organization.Id;
 
-            var items = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Vto.Id == vtoId && x.Type == type && x.DeleteTime == null).List().ToList();
+            var items = s.QueryOver<VtoItem_String>().Where(x => x.Vto.Id == vtoId && x.Type == type && x.DeleteTime == null).List().ToList();
             var count = items.Count();
 
-            var str = new VtoModel.VtoItem_String() {
+            var str = new VtoItem_String() {
                 Type = type,
                 Ordering = count,
                 Vto = vto,
@@ -769,10 +770,10 @@ namespace RadialReview.Accessors {
             //existing.Add(rock);
             var now = nowTime ?? DateTime.UtcNow;
 
-            var vtoRocks = s.QueryOver<VtoModel.Vto_Rocks>().Where(x => x.Vto.Id == vtoId).List().ToList();
+            var vtoRocks = s.QueryOver<Vto_Rocks>().Where(x => x.Vto.Id == vtoId).List().ToList();
 
             s.SaveOrUpdate(rock);
-            var vtoRock = new VtoModel.Vto_Rocks {
+            var vtoRock = new Vto_Rocks {
                 CreateTime = now,
                 Rock = rock,
                 Vto = vto,
