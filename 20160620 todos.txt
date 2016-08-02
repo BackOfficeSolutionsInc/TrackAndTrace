@@ -1,0 +1,133 @@
+* Dan sedor (Update all L10)
+
+* License agreement to Don
+* vaughn
+* google calendar <=> todo
+
+* scorecard issue 
+* edit issue name / update list
+
+* Renodis L10/Edit
+
+* Basecamp v3
+
+* Todo completion %
+
+* Paul Glenn review
+* Add rocks from dashboard
+* Mobile
+	* Remove editing scorecard items 
+	* Change title when screen size is smaller
+	
+* Finish Anno Tours
+* Accountability Chart
+* Fix for Ed
+* Copy to another L10 not working for Lori
+* Super admin Sensitivity limits
+* Margaret Dixon
+* Date to L10 printout
+* Refresh and not lose video
+* Fwd: Issues List for Med Lien Solutions
+	* Scorecard not on correct day.
+* reply to ken
+* reply to aaron
+-------------------------------
+** Test Scorecard for Daniel
+** Ensure sync Curt
+* Test that all bundles work correctly
+* Populate data for demo (scorecard)
+* Test Duplicates on Report Builder
+
+-------------------------------
+* Email about notes tile
+* Test phone icon
+* Test VTO Rocks
+* Josh Greg fix emails
+* email Umesh
+-------------------------------
+* Scorecard change goal. Goal sticks around.
+* letsjoin.com scorecard (monday to sunday) (sunday to saturday)
+* Colors on scorecard
+
+* Notes on dashboard
+* Joseph frost Price point
+* Jon Kaplan
+
+* I'm looking at our scorecard and we updated it last week's meeting, but it didn't hold the numbers. Any idea what's going on with that?
+
+* Turn Server video conference
+* Scrolling issue on conclusion
+* VTO Rocks
+* Mobile
+	* Scrolling
+	* Remove editing scorecard items 
+	* Change title when screen size is smaller
+	* push-pin in title bar
+	* button in title bar bigger	
+* Bug 
+	* click issue
+	* change page
+	* come back
+	* notes panel not loaded
+* David Bradfield API
+* scorlling 
+	* Email Joseph Frost
+	
+* Hotel
+*Minnesota call setup agent	
+* Information to Jay
+* Todo completion percentage		
+* Scrolling problem (Change owner of todo)
+
+* Michael Erath Q2 Rocks issue
+*Gino todos
+*Chris Hamer
+* phone number for maggie
+* PING on timer complete
+* adjust $10/p/m  	base:0 	for paytons client
+* Call chris
+* Fix edit page
+* IDS Cumulative goals
+*UNIVERSAL GRANET EXTENSION
+* Tax info for Mn
+* Ratio not showing 
+* Uber detroit
+* Send Erin data
+* Dustin scorecard bug
+* Todo percentage not updating on remote team people
+
+*Maggie 
+	* Todo list upload
+	* scorecard upload
+* issue reassign from archive
+* tab to add row
+* Umesh April on scorecard
+* Umesh Tibrewal 
+	* - Company Rocks
+	* - Core Values
+	* - April?
+* Last two weeks on review scorecard
+* SSL
+* Migration for Admin PermItem
+* Review 
+	* add scorecard
+
+* Links for Stacy Tangerine travel
+* Can see L10s not visible (Ed)
+*Ian Cottingham
+* ESGI bug
+* Email amber
+* Email address for maggie
+* remove adam caster
+* text-a-* code alert box 
+* Rock Page
+	* button bar
+* Tiles
+	* Pictures on the Rock tiles
+	* Rock tile pictures only on L10 type tile
+
+* Mobile
+	* Icon
+* Notes tile
+* Personal Todo list
+* Charge Stoneworks
