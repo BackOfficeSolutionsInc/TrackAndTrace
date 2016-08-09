@@ -1270,6 +1270,9 @@ namespace RadialReview.Utilities {
 
             var user = session.Get<UserOrganizationModel>(userId);
 
+			if (caller.Id == userId)
+				return this;
+
             if (IsManagingOrganization(user.Organization.Id))
                 return this;
 

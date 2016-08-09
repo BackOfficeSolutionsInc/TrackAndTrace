@@ -883,6 +883,7 @@
     <Compile Include="Utilities\Extensions\ViewBagExtensions.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
+    <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\Hooks\ICreateTodo.cs" />
     <Compile Include="Utilities\Hooks\ICreateUserOrganization.cs" />
     <Compile Include="Utilities\Hooks\IDeleteUserOrganizationHook.cs" />
@@ -1161,6 +1162,10 @@
     <Content Include="Content\L10\Archive\Archive.less" />
     <Content Include="Content\GettingStarted\GettingStarted.less" />
     <Content Include="Content\L10\L10.less" />
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1185,6 +1190,7 @@
     <Content Include="Scripts\Angular\Helpers\Directives\RightClick.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\ScoreTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\TableSort.js" />
+    <Content Include="Scripts\Angular\Helpers\Directives\vsRepeat.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\angular-xeditable.js" />
     <Content Include="Scripts\Angular\Helpers\radialModule.js" />
     <Content Include="Scripts\Angular\Helpers\updater.js" />

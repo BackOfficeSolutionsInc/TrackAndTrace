@@ -41,7 +41,18 @@ namespace RadialReview.Models.Angular.Accountability {
 
         }
 
-        public AngularUser User { get; set; }
+		private AngularUser _User;
+
+		public AngularUser User
+		{
+			get {
+				if (_User != null && _User.Id == AngularUser.NoUser().Id)
+					return null;
+				return _User;
+			}
+			set { _User = value; }
+		}
+				
         public AngularAccountabilityGroup Group { get; set; }     
 
     }

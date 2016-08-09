@@ -358,7 +358,8 @@
 	-webkit-background-size: 40px 40px;
 	background-size: 40px 40px;*
     background-color: #EFEFEF !important;*/
-    background-color:#f7f7f7 !important
+    background-color:#f7f7f7 !important;
+    background-color:#ececec !important;
 }
 
 /*.scorecard-table .score input[disabled].success {

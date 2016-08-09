@@ -23,6 +23,9 @@
                     <td class="name-column">{{value.Name}}</td>
                 </tr>              
             </table>
+			<div class="gray empty-search" style="padding: 15px 15px;" ng-show="(@(selector)).length==0">
+				No roles fit your search criteria.
+			</div>
         </div>
     </div>
 </div>

@@ -1,109 +1,192 @@
-﻿.body-content {
-    padding: 0 !important;
-    width: 100%;
-    margin: 0;
-    max-width: 100% !important;
+﻿
+@import "../MaterialDesign/Components/Snackbar";
+
+#alerts {
+    .material-snackbar();
+    z-index:10011;
+} 
+
+
+.body-content {
+	padding: 0 !important;
+	width: 100%;
+	margin: 0;
+	max-width: 100% !important;
 }
 
-.md-scroll-mask{
-    position:fixed!important;
+.md-scroll-mask {
+	position: fixed !important;
 }
 
-.acc-chart svg{
+.acc-chart svg {
 
-    button md-icon{
-        display:none;
-    }
+	button md-icon {
+		display: none;
+	}
 
-    md-autocomplete,
-    md-autocomplete *
-    /*md-autocomplete button,
-    md-autocomplete button md-icon*/
-    {
-        position:inherit;
-    }
+	md-autocomplete,
+	md-autocomplete *
+	/*md-autocomplete button,
+    md-autocomplete button md-icon*/ {
+		position: inherit;
+	}
 
-    .templink { 
-        fill: none;
-        stroke: #ccc;
-        stroke-width: 1.5px; 
-    }
+	.templink {
+		fill: none;
+		stroke: #ccc;
+		stroke-width: 1.5px;
+	}
 
-    .ghost.showing {
-        display: block;
-    }
+	.ghost.showing {
+		display: block;
+		stroke: #4682b4;
+		stroke-width: 3;
+		fill: #b0c4de;
+	}
 
-    .ghost, .activeDrag .ghost {
-        display: none;
-    }
+	.ghost, .activeDrag .ghost {
+		display: none;
+	}
 
-    .link {
-        fill: none;
-        stroke: #ccc;
-        stroke-width: 1.5px;
-    }
+	.link {
+		fill: none;
+		stroke: #ccc;
+		stroke-width: 1.5px;
+	}
 
-    .acc-node {
-        fill: none;
-        stroke: black;
-        width: 200px;
-        padding: 2px;
-        /*position:relative;*/
+	.acc-node {
+		fill: none;
+		stroke: black;
+		width: 200px;
+		/*padding: 2px;*/
+		/*position:relative;*/
+		md-autocomplete {
+			background-color: transparent;
+			height: 20px;
 
-        .acc-buttons{
-            height:20px;
-            width:100%;
-        }
+			md-autocomplete-wrap {
+				box-shadow: none;
+				height: 20px;
+			}
 
-        .acc-owner {
-            .name {
-                text-align: center;
-                width: 100%;
-                font-weight: bold;
-                cursor: text;
-            }
+			button {
+				display: none;
+			}
 
-           //cursor: move; /* fallback: no `url()` support or images disabled */
-           //cursor: -webkit-grab; /* Chrome 1-21, Safari 4+ */
-           //cursor: -moz-grab; /* Firefox 1.5-26 */
-           //cursor: grab; /* W3C standards syntax, should come least */
-            //border: 20px solid transparent;
-            margin: 3px;
+			input {
+				text-align: center;
+				height: 20px;
+				line-height: 20px;
+				padding: 0px;
 
-            &:hover {
-                //border: 20px solid gray;
-            }
+				&:focus {
+					/*text-align: left !important;*/
+				}
+			}
+		}
 
-            .acc-owner-delete {
-                position: absolute;
-                /*float: right;
+		.move-icon {
+			cursor: move;
+		}
+
+		.acc-buttons {
+			height: 20px;
+			width: 100%;
+			background-color: steelblue;
+
+			.button {
+				cursor: pointer;
+				color: rgba(255,255,255,50%);
+				transition: color ease .2s;
+
+				&:hover {
+					color: rgba(255,255,255,100%);
+				}
+			}
+
+			.glyphicon {
+				position: inherit;
+			}
+
+			.minimize {
+				margin-top: 10px;
+			}
+
+			.button.add,
+			.minimize-icon {
+				padding: 2px 3px;
+			}
+
+			.minimize-icon.glyphicon-chevron-right {
+				color: rgba(255,255,255,100%);
+			}
+
+			.add {
+				float: right;
+			}
+		}
+
+		.acc-position {
+			margin: 3px 0px;
+
+			input {
+				font-size: 20px;
+			}
+		}
+
+		.acc-owner {
+			.name {
+				text-align: center;
+				width: 100%;
+				font-weight: bold;
+				cursor: text;
+			}
+			//cursor: move; /* fallback: no `url()` support or images disabled */
+			//cursor: -webkit-grab; /* Chrome 1-21, Safari 4+ */
+			//cursor: -moz-grab; /* Firefox 1.5-26 */
+			//cursor: grab; /* W3C standards syntax, should come least */
+			//border: 20px solid transparent;
+			margin: 3px 0px;
+
+			&:hover {
+				//border: 20px solid gray;
+			}
+
+			.acc-owner-delete {
+				position: absolute;
+				/*float: right;
                 display: inline-block;
                 height: 0;*/
-                /* -moz-transform: translate(0,-10px);
+				/* -moz-transform: translate(0,-10px);
                 -ms-transform: translate(0,-10px);
                 -o-transform: translate(0,-10px);
                 -webkit-transform: translate(0,-10px);
                 transform: translate(0,-10px);*/
-            }
-        }
+			}
+			}
+		.acc-line{
+			margin:0px 10px;
+			border-bottom: 2px solid steelblue;
+		}
 
 
-        .acc-roles {
-        }
+		.acc-roles {
+			padding: 5px 10px;
+		}
 
 
-        input {
-            background-color: transparent;
-            border: none;
-            width: 100%;
+		input {
+			background-color: transparent;
+			border: none;
+			width: 100%;
 
-            &:focus {
-                outline: none;
-            }
-        }
-    }
+			&:focus {
+				outline: none;
+			}
+		}
+	}
 
-    aria-status p{
-        display:none;
-    }
+	aria-status p {
+		display: none;
+	}
 }

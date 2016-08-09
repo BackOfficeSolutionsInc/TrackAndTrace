@@ -1791,14 +1791,16 @@ namespace RadialReview.Accessors {
                     var todos = GetTodosForRecurrence(s, perms, recurrenceId, meeting.Id);
 
                     foreach (var todo in todos) {
-                        if (todo.CompleteTime != null) {
-                            todo.CompleteDuringMeetingId = meeting.Id;
-                            if (closeTodos) {
-                                todo.CloseTime = now;
-                            }
-                            s.Update(todo);
-                        }
-                        todoRatio.Add(todo.CompleteTime != null ? 1 : 0, 1);
+						if (todo.CreateTime < meeting.StartTime){
+							if (todo.CompleteTime != null){
+								todo.CompleteDuringMeetingId = meeting.Id;
+								if (closeTodos){
+									todo.CloseTime = now;
+								}
+								s.Update(todo);
+							}
+							todoRatio.Add(todo.CompleteTime != null ? 1 : 0, 1);
+						}
                     }
                     //s.QueryOver<TodoModel>().Where(x=>x.CompleteTime)
                     //foreach(var todo )
@@ -3315,7 +3317,17 @@ namespace RadialReview.Accessors {
 
                     recur.Scorecard = new AngularScorecard(recurrenceId, caller.GetTimeSettings(), measurables, scores, DateTime.UtcNow, scorecardRange);
 
-                    recur.Rocks = recurrence._DefaultRocks.Select(x => new AngularRock(x.ForRock)).ToList();
+					var allRocks = recurrence._DefaultRocks.Select(x => new AngularRock(x.ForRock)).ToList();
+
+					if (range != null)
+					{
+						var histRock =	s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+							.Where(x => x.DeleteTime != null && x.L10Recurrence.Id == recurrenceId)
+							.Where(range.Filter<L10Recurrence.L10Recurrence_Rocks>()).List();
+						allRocks.AddRange(histRock.Select(x => new AngularRock(x.ForRock)));
+					}
+					recur.Rocks = allRocks.Distinct(x => x.Id);
+
                     recur.Todos = GetAllTodosForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularTodo(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
                     recur.IssuesList.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId, includeCompleted: includeHistorical, range: range).Select(x => new AngularIssue(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
 
@@ -3386,7 +3398,7 @@ namespace RadialReview.Accessors {
                 //else
                 //	throw new Exception("Shouldn't get here");
                 else
-                    UpdateScore(caller, m.Measurable.Id, m.ForWeek, m.Measured, connectionId, true);
+                    UpdateScore(caller, m.Measurable.Id, m.ForWeek, m.Measured, connectionId, false);
             } else if (model.Type == typeof(AngularMeetingNotes).Name) {
                 var m = (AngularMeetingNotes)model;
                 EditNote(caller, m.Id, m.Contents, m.Title, connectionId);
@@ -4053,38 +4065,41 @@ namespace RadialReview.Accessors {
 
                     perm.ViewUserOrganization(userId, true, PermissionType.EditEmployeeDetails);
 
-                    var rockList = new List<RockModel>();
-                    if (periodId != null) {
-                        try {
-                            var period = s.Get<PeriodModel>(periodId);
-                            //PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime);
-                            if (period != null && period.OrganizationId > 0) {
-                                perm.ViewOrganization(period.OrganizationId);
+					return s.QueryOver<RockModel>()
+						.Where(x => x.AccountableUser.Id == userId && x.DeleteTime == null)
+						.List().ToList();
+					//var rockList = new List<RockModel>();
+					//if (periodId != null) {
+					//    try {
+					//        var period = s.Get<PeriodModel>(periodId);
+					//        //PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime);
+					//        if (period != null && period.OrganizationId > 0) {
+					//            perm.ViewOrganization(period.OrganizationId);
 
-                                //var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id).Select(x => new AngularRock(x));
-                                var periodRocks = RockAccessor.GetAllRocks(s, perm, userId).Where(x => periodId == x.PeriodId);
-                                rockList.AddRange(periodRocks);
-                            }
-                        } catch (Exception e) {
+					//            //var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id).Select(x => new AngularRock(x));
+					//            var periodRocks = RockAccessor.GetAllRocks(s, perm, userId).Where(x => periodId == x.PeriodId);
+					//            rockList.AddRange(periodRocks);
+					//        }
+					//    } catch (Exception e) {
 
-                        }
+					//    }
 
-                    }
-
-
-                    RockModel rock = null;
-                    L10Recurrence recur = null;
-                    var recurrenceRocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
-                        .JoinAlias(x => x.ForRock, () => rock)
-                        .JoinAlias(x => x.L10Recurrence, () => recur)
-                        .Where(x => rock.AccountableUser.Id == userId && x.DeleteTime == null && rock.DeleteTime == null && recur.DeleteTime == null)
-                        .Select(x => x.ForRock).List<RockModel>()
-                        .Distinct(x => x.Id).ToList();
+					//}
 
 
-                    rockList.AddRange(recurrenceRocks);
+					//RockModel rock = null;
+					//L10Recurrence recur = null;
+					//var recurrenceRocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+					//    .JoinAlias(x => x.ForRock, () => rock)
+					//    .JoinAlias(x => x.L10Recurrence, () => recur)
+					//    .Where(x => rock.AccountableUser.Id == userId && x.DeleteTime == null && rock.DeleteTime == null && recur.DeleteTime == null)
+					//    .Select(x => x.ForRock).List<RockModel>()
+					//    .Distinct(x => x.Id).ToList();
 
-                    return rockList.Distinct(x => x.Id).ToList();
+					//.Distinct(x => x.Id).ToList();
+					//rockList.AddRange(recurrenceRocks);
+
+					//return rockList.Distinct(x => x.Id).ToList();
 
                 }
             }

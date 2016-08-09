@@ -1,13 +1,20 @@
-{ 
-
-  "dependencies": { }, 
-    "frameworks": {
-        "net452": {},
-        "dnxcore50": {}
-    },
-  "runtimes" : { 
-	"win-x86":{}
-  }, 
-  "supports" : { "CompatibilityProfile" : {}, "CompatibilityProfile" : {} } 
-
+﻿{
+  "dependencies": {
+    "DocX": "1.0.0.22",
+    "LumenWorks.Framework.IO": "3.8.0",
+    "Manatee.Trello": "1.11.1",
+    "Newtonsoft.Json": "9.0.1",
+    "OxyPlot": "1.0.0-unstable2100",
+    "OxyPlot.Core": "1.0.0-unstable2100",
+    "OxyPlot.Wpf": "1.0.0-unstable2100"
+  },
+  "frameworks": {
+    "net452": {}
+  },
+  "runtimes": {
+    "win-x86": {}
+  },
+  "supports": {
+    "CompatibilityProfile": {}
+  }
 }

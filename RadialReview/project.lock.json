@@ -2,15 +2,339 @@
   "locked": false,
   "version": 2,
   "targets": {
-    ".NETFramework,Version=v4.5.2": {},
-    ".NETFramework,Version=v4.5.2/win-x86": {},
-    "DNXCore,Version=v5.0": {},
-    "DNXCore,Version=v5.0/win-x86": {}
+    ".NETFramework,Version=v4.5.2": {
+      "DocX/1.0.0.22": {
+        "type": "package",
+        "compile": {
+          "lib/net40/DocX.dll": {}
+        },
+        "runtime": {
+          "lib/net40/DocX.dll": {}
+        }
+      },
+      "LumenWorks.Framework.IO/3.8.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/LumenWorks.Framework.IO.dll": {}
+        },
+        "runtime": {
+          "lib/net20/LumenWorks.Framework.IO.dll": {}
+        }
+      },
+      "Manatee.Trello/1.11.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Manatee.Trello.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Manatee.Trello.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "OxyPlot/1.0.0-unstable2100": {
+        "type": "package",
+        "dependencies": {
+          "OxyPlot.WindowsForms": "[1.0.0-unstable2100]",
+          "OxyPlot.Wpf": "[1.0.0-unstable2100]"
+        }
+      },
+      "OxyPlot.Core/1.0.0-unstable2100": {
+        "type": "package",
+        "compile": {
+          "lib/net45/OxyPlot.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OxyPlot.dll": {}
+        }
+      },
+      "OxyPlot.WindowsForms/1.0.0-unstable2100": {
+        "type": "package",
+        "dependencies": {
+          "OxyPlot.Core": "[1.0.0-unstable2100]"
+        },
+        "compile": {
+          "lib/net45/OxyPlot.WindowsForms.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OxyPlot.WindowsForms.dll": {}
+        }
+      },
+      "OxyPlot.Wpf/1.0.0-unstable2100": {
+        "type": "package",
+        "dependencies": {
+          "OxyPlot.Core": "[1.0.0-unstable2100]"
+        },
+        "compile": {
+          "lib/net45/OxyPlot.Wpf.dll": {},
+          "lib/net45/OxyPlot.Xps.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OxyPlot.Wpf.dll": {},
+          "lib/net45/OxyPlot.Xps.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.2/win-x86": {
+      "DocX/1.0.0.22": {
+        "type": "package",
+        "compile": {
+          "lib/net40/DocX.dll": {}
+        },
+        "runtime": {
+          "lib/net40/DocX.dll": {}
+        }
+      },
+      "LumenWorks.Framework.IO/3.8.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/LumenWorks.Framework.IO.dll": {}
+        },
+        "runtime": {
+          "lib/net20/LumenWorks.Framework.IO.dll": {}
+        }
+      },
+      "Manatee.Trello/1.11.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Manatee.Trello.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Manatee.Trello.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "OxyPlot/1.0.0-unstable2100": {
+        "type": "package",
+        "dependencies": {
+          "OxyPlot.WindowsForms": "[1.0.0-unstable2100]",
+          "OxyPlot.Wpf": "[1.0.0-unstable2100]"
+        }
+      },
+      "OxyPlot.Core/1.0.0-unstable2100": {
+        "type": "package",
+        "compile": {
+          "lib/net45/OxyPlot.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OxyPlot.dll": {}
+        }
+      },
+      "OxyPlot.WindowsForms/1.0.0-unstable2100": {
+        "type": "package",
+        "dependencies": {
+          "OxyPlot.Core": "[1.0.0-unstable2100]"
+        },
+        "compile": {
+          "lib/net45/OxyPlot.WindowsForms.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OxyPlot.WindowsForms.dll": {}
+        }
+      },
+      "OxyPlot.Wpf/1.0.0-unstable2100": {
+        "type": "package",
+        "dependencies": {
+          "OxyPlot.Core": "[1.0.0-unstable2100]"
+        },
+        "compile": {
+          "lib/net45/OxyPlot.Wpf.dll": {},
+          "lib/net45/OxyPlot.Xps.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OxyPlot.Wpf.dll": {},
+          "lib/net45/OxyPlot.Xps.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "DocX/1.0.0.22": {
+      "sha512": "F2h7b4BU3rVlscSGClU7HpE3KQPHGjDDFOh0oPY5ZcZEMfvIwUxFTZu8VcFrgS9NPdK8VhUeSLjTupPUNfjTMA==",
+      "type": "package",
+      "files": [
+        "DocX.1.0.0.22.nupkg.sha512",
+        "DocX.nuspec",
+        "lib/net40/DocX.dll"
+      ]
+    },
+    "LumenWorks.Framework.IO/3.8.0": {
+      "sha512": "Br2Q9j/tf2uF3Ci4CajidD18tui9DOg2iIzH5Xjro35ra6r8HGMD12B+ZlJ8v9AN3YXl7iPu5YDGbBlXVcZpHw==",
+      "type": "package",
+      "files": [
+        "COPYING.txt",
+        "LumenWorks.Framework.IO.3.8.0.nupkg.sha512",
+        "LumenWorks.Framework.IO.nuspec",
+        "lib/net20/LumenWorks.Framework.IO.dll",
+        "lib/net20/LumenWorks.Framework.IO.xml"
+      ]
+    },
+    "Manatee.Trello/1.11.1": {
+      "sha512": "kTEtj4pmKjUyv6tD8VVOfRQv7Pyi1ZeQtTaGGeiBu7+VSaI9Q4zQyz5UuY2dON0fkXR1kCGYtIZo6U1h1ambjA==",
+      "type": "package",
+      "files": [
+        "Manatee.Trello.1.11.1.nupkg.sha512",
+        "Manatee.Trello.nuspec",
+        "lib/MonoAndroid/Manatee.Trello.XML",
+        "lib/MonoAndroid/Manatee.Trello.dll",
+        "lib/MonoAndroid/Manatee.Trello.pdb",
+        "lib/MonoMac/Manatee.Trello.XML",
+        "lib/MonoMac/Manatee.Trello.dll",
+        "lib/MonoMac/Manatee.Trello.pdb",
+        "lib/MonoTouch/Manatee.Trello.XML",
+        "lib/MonoTouch/Manatee.Trello.dll",
+        "lib/MonoTouch/Manatee.Trello.pdb",
+        "lib/net35-client/Manatee.Trello.XML",
+        "lib/net35-client/Manatee.Trello.dll",
+        "lib/net35-client/Manatee.Trello.pdb",
+        "lib/net35/Manatee.Trello.XML",
+        "lib/net35/Manatee.Trello.dll",
+        "lib/net35/Manatee.Trello.pdb",
+        "lib/net40-client/Manatee.Trello.XML",
+        "lib/net40-client/Manatee.Trello.dll",
+        "lib/net40-client/Manatee.Trello.pdb",
+        "lib/net40/Manatee.Trello.XML",
+        "lib/net40/Manatee.Trello.dll",
+        "lib/net40/Manatee.Trello.pdb",
+        "lib/net45/Manatee.Trello.XML",
+        "lib/net45/Manatee.Trello.dll",
+        "lib/net45/Manatee.Trello.pdb"
+      ]
+    },
+    "Newtonsoft.Json/9.0.1": {
+      "sha512": "U82mHQSKaIk+lpSVCbWYKNavmNH1i5xrExDEquU1i6I5pV6UMOqRnJRSlKO3cMPfcpp0RgDY+8jUXHdQ4IfXvw==",
+      "type": "package",
+      "files": [
+        "Newtonsoft.Json.9.0.1.nupkg.sha512",
+        "Newtonsoft.Json.nuspec",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "tools/install.ps1"
+      ]
+    },
+    "OxyPlot/1.0.0-unstable2100": {
+      "sha512": "6kXoTcES58Eb0BIfVfSqB16OtOJJ3ecfNnIClVsCp+VEpVvkjDfuuse+C9lp0dgJpHfGwIeYykuGTk6hPOhWPg==",
+      "type": "package",
+      "files": [
+        "AUTHORS",
+        "CHANGELOG.md",
+        "CONTRIBUTORS",
+        "LICENSE",
+        "OxyPlot.1.0.0-unstable2100.nupkg.sha512",
+        "OxyPlot.nuspec",
+        "README.md"
+      ]
+    },
+    "OxyPlot.Core/1.0.0-unstable2100": {
+      "sha512": "84By9uwviOV0zW1yE0ZRDAtotUSuCf4T9RUKt166Bep8Ub5FSVl09qkiyq02+gAl52woew0AF+M6pM44KhFtkQ==",
+      "type": "package",
+      "files": [
+        "AUTHORS",
+        "CHANGELOG.md",
+        "CONTRIBUTORS",
+        "LICENSE",
+        "OxyPlot.Core.1.0.0-unstable2100.nupkg.sha512",
+        "OxyPlot.Core.nuspec",
+        "README.md",
+        "lib/net40-client/OxyPlot.XML",
+        "lib/net40-client/OxyPlot.dll",
+        "lib/net40-client/OxyPlot.pdb",
+        "lib/net40/OxyPlot.XML",
+        "lib/net40/OxyPlot.dll",
+        "lib/net40/OxyPlot.pdb",
+        "lib/net45/OxyPlot.dll",
+        "lib/net45/OxyPlot.pdb",
+        "lib/net45/OxyPlot.xml",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1+Xamarin.iOS10/OxyPlot.dll",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1+Xamarin.iOS10/OxyPlot.pdb",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1+Xamarin.iOS10/OxyPlot.xml",
+        "lib/sl5/OxyPlot.XML",
+        "lib/sl5/OxyPlot.dll",
+        "lib/sl5/OxyPlot.pdb"
+      ]
+    },
+    "OxyPlot.WindowsForms/1.0.0-unstable2100": {
+      "sha512": "usOhjTcVbLNtSRLfej6ft3QSgvyHnoHthOQPgaL551S/3eyL4bLAMynEGAV5WV6AgFvlweNDGJZSRocH3LVgfA==",
+      "type": "package",
+      "files": [
+        "AUTHORS",
+        "CHANGELOG.md",
+        "CONTRIBUTORS",
+        "LICENSE",
+        "OxyPlot.WindowsForms.1.0.0-unstable2100.nupkg.sha512",
+        "OxyPlot.WindowsForms.nuspec",
+        "README.md",
+        "lib/net40/OxyPlot.WindowsForms.XML",
+        "lib/net40/OxyPlot.WindowsForms.dll",
+        "lib/net40/OxyPlot.WindowsForms.pdb",
+        "lib/net45/OxyPlot.WindowsForms.XML",
+        "lib/net45/OxyPlot.WindowsForms.dll",
+        "lib/net45/OxyPlot.WindowsForms.pdb"
+      ]
+    },
+    "OxyPlot.Wpf/1.0.0-unstable2100": {
+      "sha512": "nKtC1cmygSKjT/weJrA2GlR7EUUHI3e/TnTHRZAjwgX2hXOyK9esdFqIfrNs5X5oOlsxtidVW64gcQTM4zbDIA==",
+      "type": "package",
+      "files": [
+        "AUTHORS",
+        "CHANGELOG.md",
+        "CONTRIBUTORS",
+        "LICENSE",
+        "OxyPlot.Wpf.1.0.0-unstable2100.nupkg.sha512",
+        "OxyPlot.Wpf.nuspec",
+        "README.md",
+        "lib/net40/OxyPlot.Wpf.XML",
+        "lib/net40/OxyPlot.Wpf.dll",
+        "lib/net40/OxyPlot.Wpf.pdb",
+        "lib/net40/OxyPlot.Xps.XML",
+        "lib/net40/OxyPlot.Xps.dll",
+        "lib/net40/OxyPlot.Xps.pdb",
+        "lib/net45/OxyPlot.Wpf.XML",
+        "lib/net45/OxyPlot.Wpf.dll",
+        "lib/net45/OxyPlot.Wpf.pdb",
+        "lib/net45/OxyPlot.Xps.XML",
+        "lib/net45/OxyPlot.Xps.dll",
+        "lib/net45/OxyPlot.Xps.pdb"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    "": [],
-    ".NETFramework,Version=v4.5.2": [],
-    "DNXCore,Version=v5.0": []
+    "": [
+      "DocX >= 1.0.0.22",
+      "LumenWorks.Framework.IO >= 3.8.0",
+      "Manatee.Trello >= 1.11.1",
+      "Newtonsoft.Json >= 9.0.1",
+      "OxyPlot >= 1.0.0-unstable2100",
+      "OxyPlot.Core >= 1.0.0-unstable2100",
+      "OxyPlot.Wpf >= 1.0.0-unstable2100"
+    ],
+    ".NETFramework,Version=v4.5.2": []
   }
 }

@@ -1,17 +1,25 @@
 * Dan sedor (Update all L10)
 
-* License agreement to Don
 * vaughn
 * google calendar <=> todo
 
-* scorecard issue 
+* scorecard context issue 
 * edit issue name / update list
+* Scorecard,rocks context todo (in the details section)
+
+* NaNm
+
+* Dont panic labs
+
+* Add user from wizard
+
+* decimals Joe Bussiere
+
+* Edit > Rock > Profile picture colors
 
 * Renodis L10/Edit
 
 * Basecamp v3
-
-* Todo completion %
 
 * Paul Glenn review
 * Add rocks from dashboard
@@ -45,6 +53,12 @@
 * Josh Greg fix emails
 * email Umesh
 -------------------------------
+
+* Todo completion %
+* Test VTO under slow conection
+
+* permissions bug (Tanner Vonnahme)
+* License agreement to Don
 * Scorecard change goal. Goal sticks around.
 * letsjoin.com scorecard (monday to sunday) (sunday to saturday)
 * Colors on scorecard

@@ -2,8 +2,8 @@
   "BrowserLink": {
     "CssIgnorePatterns": "bootstrap*; reset.css; normalize.css; jquery*; toastr*; foundation*; animate*; inuit*; elements*; ratchet*; hint*; flat-ui*; 960*; skeleton*",
     "EnableMenu": true,
-    "EnablePixelPushing": true,
-    "ShowMenu": true
+    "EnablePixelPushing": false,
+    "ShowMenu": false
   },
   "CodeGen": {
     "AddTypeScriptReferencePath": true,
@@ -41,5 +41,17 @@
     "BlockCommentCompletion": true,
     "EvalTreatment": "MakeImmediateSafe",
     "TermSemicolons": true
+  },
+  "Less": {
+    "CompileOnBuild": true,
+    "CompileOnSave": true,
+    "EnableChainCompilation": true,
+    "GenerateSourceMaps": false,
+    "MinifyInPlace": false,
+    "OutputDirectory": null,
+    "ProcessSourceMapsForEditorEnhancements": true,
+    "ShowPreviewPane": true,
+    "StrictMath": false,
+    "AdjustRelativePaths": true
   }
 }

@@ -114,7 +114,8 @@ namespace RadialReview.Accessors
             return s.QueryOver<DeepSubordinateModel>().Where(x => x.OrganizationId == organizationId).List().ToList();
         }
 
-        public static void Remove(ISession s, UserOrganizationModel manager, UserOrganizationModel subordinate, DateTime now)
+		[Obsolete("Use UserAccessor.RemoveManager",false)]
+        public static void Remove(ISession s, UserOrganizationModel manager, UserOrganizationModel subordinate, DateTime now,bool ignoreCircular=false)
         {
             //Grab all subordinates' deep subordinates
             var allSuperiors = SubordinateUtility.GetSuperiors(s,manager, false);
@@ -122,13 +123,15 @@ namespace RadialReview.Accessors
             var allSubordinates = SubordinateUtility.GetSubordinates(s,subordinate, false);
             allSubordinates.Add(subordinate);
 
+			var selfRemove = false;
+
             foreach (var SUP in allSuperiors)
             {
                 var managerSubordinates = s.QueryOver<DeepSubordinateModel>().Where(x => x.ManagerId == SUP.Id).List().ToListAlive();
 
                 foreach (var sub in allSubordinates)
                 {
-                    var found = managerSubordinates.FirstOrDefault(x => x.SubordinateId == sub.Id);
+                    var found = managerSubordinates.FirstOrDefault(x => x.SubordinateId == sub.Id && x.Links>0);
                     if (found == null)
                     {
                         log.Error("Manager link doesn't exist for orgId=(" + manager.Organization.Id + "). Advise that you run deep subordinate creation.");
@@ -138,15 +141,19 @@ namespace RadialReview.Accessors
                         found.Links -= 1;
                         if (found.Links == 0)
                             found.DeleteTime = now;
-                        if (found.Links < 0)
-                            throw new Exception("This shouldn't happen.");
+						if (found.Links < 0)
+						{
+							if (!ignoreCircular)
+								throw new Exception("This shouldn't happen.");
+						}
                         s.Update(found);
                     }
                 }
             }
         }
 
-        public static void Add(ISession s, UserOrganizationModel manager, UserOrganizationModel subordinate, long organizationId, DateTime now)
+		[Obsolete("Use UserAccessor.AddManager", false)]
+		public static void Add(ISession s, UserOrganizationModel manager, UserOrganizationModel subordinate, long organizationId, DateTime now, bool ignoreCircular =false)
         {
             //Get **users** subordinates, make them deep subordinates of manager
             var allSubordinates = SubordinateUtility.GetSubordinates(s,subordinate, false);
@@ -161,7 +168,7 @@ namespace RadialReview.Accessors
 
                 foreach (var sub in allSubordinates)
                 {
-                    if (sub.Id == SUP.Id)
+                    if (sub.Id == SUP.Id && !ignoreCircular)
                         throw new PermissionsException("A circular dependency was found. " + manager.GetName() + " cannot manage " + subordinate.GetName() + " because " + manager.GetName() + " is " + subordinate.GetName() + "'s subordinate.");
 
                     var found = managerSubordinates.FirstOrDefault(x => x.SubordinateId == sub.Id);

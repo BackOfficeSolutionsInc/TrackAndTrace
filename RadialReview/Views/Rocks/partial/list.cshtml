@@ -35,7 +35,7 @@
         }*@
         <div id="Rocks_list" class="tab-pane rock-pane scrollbox scroller">
             <div></div>
-            <md-table-container>
+            <md-table-container class="repeater-container">
                 <table md-table @*ts-wrapper*@ width="100%" class="component" ng-show="(@(selector)  @(filter)).length">
                     <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
                         <tr class="table-header" md-row>
@@ -49,7 +49,7 @@
                             <th md-column @(attrLookup["delete-column"]) class="delete-column"></th>
                         </tr>
                     </thead>
-                    <tbody md-body>
+                    <tbody md-body vs-repeat vs-autoresize vs-scroll-parent=".repeater-container">
                         <tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}  keep-background" id="rock_{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
                             <td class="icon-column"></td>
                             <td md-cell class="rock-completion-container hidden-width-1 status-column" style="min-width: 80px;;vertical-align: top;">

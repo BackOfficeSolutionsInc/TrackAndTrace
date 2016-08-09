@@ -30,6 +30,7 @@ using Novacode;
 using System.Globalization;
 using System.Threading;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Utilities.Synchronize;
 
 namespace RadialReview.Accessors {
     public class VtoAccessor : BaseAccessor {
@@ -223,9 +224,9 @@ namespace RadialReview.Accessors {
                 using (var tx = s.BeginTransaction()) {
                     str = s.Get<VtoItem_String>(vtoStringId);
                     var perm = PermissionsUtility.Create(s, caller).EditVTO(str.Vto.Id);
-                    //if (str.Data != message)
-                    //{
-                    /*newstr = new VtoModel.VtoItem_String(){
+					//if (str.Data != message)
+					//{
+					/*newstr = new VtoModel.VtoItem_String(){
                         BaseId = str.BaseId,
                         CopiedFrom = str.Id,
                         Data = message,
@@ -233,6 +234,9 @@ namespace RadialReview.Accessors {
                         Type = str.Type,
                         Vto = str.Vto,
                     };*/
+
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateVtoItem(vtoStringId));
+											
                     str.Data = message;
                     if (str.BaseId == 0)
                         str.BaseId = str.Id;
@@ -286,7 +290,10 @@ namespace RadialReview.Accessors {
                     PermissionsUtility.Create(s, caller).EditVTO(vtoId);
                     var vto = s.Get<VtoModel>(vtoId);
 
-                    vto.Name = name;
+
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateVto(vtoId));
+
+					vto.Name = name;
                     vto.TenYearTarget = tenYearTarget;
                     vto.TenYearTargetTitle = tenYearTargetTitle;
                     vto.CoreValueTitle = coreValueTitle;
@@ -352,7 +359,10 @@ namespace RadialReview.Accessors {
                     var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
                     var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
 
-                    PermissionsUtility.Create(s, caller).EditVTO(vtoId);
+
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateThreeYearPicture(id));
+
+					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 
                     threeYear.FutureDate = futuredate;
                     threeYear.RevenueStr = revenue;
@@ -384,7 +394,9 @@ namespace RadialReview.Accessors {
                     var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
                     var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
 
-                    PermissionsUtility.Create(s, caller).EditVTO(vtoId);
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateQuarterlyRocks(id));
+
+					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 
                     quarterlyRocks.FutureDate = futuredate;
                     quarterlyRocks.RevenueStr = revenue;
@@ -417,7 +429,9 @@ namespace RadialReview.Accessors {
                     var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
                     var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
 
-                    PermissionsUtility.Create(s, caller).EditVTO(vtoId);
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateOneYearPlan(id));
+
+					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
 
                     plan.FutureDate = futuredate;
                     plan.RevenueStr = revenue;
@@ -451,8 +465,9 @@ namespace RadialReview.Accessors {
                     var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
 
                     PermissionsUtility.Create(s, caller).EditVTO(vtoId);
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateStrategy(strategyId));
 
-                    strategy.ProvenProcess = provenProcess;
+					strategy.ProvenProcess = provenProcess;
                     strategy.Guarantee = guarantee;
                     strategy.TargetMarket = targetMarket;
                     strategy.MarketingStrategyTitle = marketingStrategyTitle;
@@ -478,7 +493,8 @@ namespace RadialReview.Accessors {
                     var coreFocus = s.Get<CoreFocusModel>(coreFocusId);
                     PermissionsUtility.Create(s, caller).EditVTO(coreFocus.Vto);
 
-                    coreFocus.Purpose = purpose;
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateCoreFocus(coreFocusId));
+					coreFocus.Purpose = purpose;
                     coreFocus.Niche = niche;
                     coreFocus.PurposeTitle = purposeTitle;
                     coreFocus.CoreFocusTitle = coreFocusTitle;
@@ -500,7 +516,9 @@ namespace RadialReview.Accessors {
                     var companyValue = s.Get<CompanyValueModel>(companyValueId);
                     PermissionsUtility.Create(s, caller).EditCompanyValues(companyValue.OrganizationId);
 
-                    if (message != null) {
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateCompanyValue(companyValueId));
+
+					if (message != null) {
                         companyValue.CompanyValue = message;
                         s.Update(companyValue);
                     }
@@ -536,7 +554,9 @@ namespace RadialReview.Accessors {
                     var rock = s.Get<Vto_Rocks>(rockId);
                     PermissionsUtility.Create(s, caller).EditVTO(rock.Vto.Id).ViewUserOrganization(accountableUser, false);
 
-                    rock.Rock.AccountableUser = s.Get<UserOrganizationModel>(accountableUser);
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateRockOwner(rockId));
+
+					rock.Rock.AccountableUser = s.Get<UserOrganizationModel>(accountableUser);
                     rock.Rock.ForUserId = accountableUser;
 
                     var a = rock.Rock.AccountableUser.GetName();
@@ -561,8 +581,10 @@ namespace RadialReview.Accessors {
                     var perm = PermissionsUtility.Create(s, caller).EditVTO(rock.Vto.Id);
 
                     var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateRock(rockId));
 
-                    bool skipUpdate = false;
+
+					bool skipUpdate = false;
 
                     if (deleted != null) {
                         var vto = s.Get<VtoModel>(rock.Vto.Id);

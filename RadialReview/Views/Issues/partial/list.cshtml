@@ -36,7 +36,7 @@
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
         <div class="row">
             <div class="col-md-12 priority-{{@(selector).Prioritization}}">
-                <md-table-container>
+                <md-table-container class="repeater-container">
                     <table md-table @*ts-wrapper*@ width="100%" class="component "
                            click-anywhere-but-here="model.Selected = -1"
                            ng-show="((@(selector)).Issues @(filter)).length">
@@ -52,14 +52,14 @@
                                 <th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
                             </tr>
                         </thead>
-                        <tbody md-body>
+                        <tbody md-body vs-repeat vs-autoresize vs-scroll-parent=".repeater-container">
                             <tr ng-hide="issue.Hide" ng-repeat="issue in ((@(selector)).Issues) | orderBy: @(orderVariable) @(filter)"
                                 ng-class="{grayRow: issue.Complete}"
                                 class="clickable"
                                 md-row>
                                 <td md-cell class="checkbox-column" @*style="vertical-align: top;min-width: 25px;text-align: center;top:5px;position: relative" *@>
                                     @*<input type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />*@
-                                    <md-checkbox aria-label="Complete" ng-model="issue.Complete" class="md-warn md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)"></md-checkbox>
+                                    <md-checkbox aria-label="Complete" ng-model="issue.Complete" class="md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)"></md-checkbox>
 
                                 </td>
                                 <td md-cell class="priority-column" style="vertical-align: top;padding-top: 5px;">

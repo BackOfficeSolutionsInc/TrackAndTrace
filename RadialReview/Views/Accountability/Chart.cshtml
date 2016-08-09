@@ -41,7 +41,16 @@
         </md-autocomplete>
 
         <svg panzoom graph="model">
-            <tree graph="model" tt-enter="nodeEnter" tt-update="nodeUpdate" tt-exit="nodeExit" tt-watch="nodeWatch"></tree>
+            <tree graph="model" 
+				  tt-enter="nodeEnter" 
+				  tt-update="nodeUpdate" 
+				  tt-exit="nodeExit" 
+				  tt-watch="nodeWatch"
+				  tt-drag-start="dragStart"
+				  tt-drag-end="dragEnd"
+				  tt-collapse="collapseExpand"
+				  tt-expand="collapseExpand"
+			></tree>
         </svg>
         <!--<chart-form></chart-form>
                 <bar-chart height="options.height" data="data" hovered="hovered(args)"></bar-chart>

@@ -122,7 +122,6 @@
 
         this.destroy = function () {
             for (var i = 0; i < this.destroyList.length; i++) {
-                debugger;
                 $(this.destroyList[i]).remove();
             }
             this.destroyList=[]

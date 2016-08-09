@@ -21,7 +21,7 @@
                 <div class="component">
                     <div class="clearfix"></div>
                     <div style="position: relative;" ng-hide="(@(selector)).Measurables.length==0">
-                        <div class="table-responsive scroll-right scroller" style1="min-height: 200px;">
+                        <div class="table-responsive scroll-right scroller repeater-container-scorecard" style1="min-height: 200px;">
                             <table id="ScorecardTable" class="scorecard-table ng-cloak">
                                 <thead>
                                     <tr class="top-row">
@@ -44,11 +44,11 @@
                                             <th class="button-column">&nbsp;</th>
                                         }
                                         @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
-                                            <th class=" who alignRight accountable-column  text-column" title="This person is accountable for reaching the goal">Acc</th>
-                                            <th class=" who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
+                                            <th class="who alignRight accountable-column  text-column" title="This person is accountable for reaching the goal">Acc</th>
+                                            <th class="who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
                                         }
-                                        <th class=" measurable measurable-column text-column">Measurable</th>
-                                        <th class=" target goal-column data-column" colspan="2">Goal</th>
+                                        <th class="measurable measurable-column text-column">Measurable</th>
+                                        <th class="target goal-column data-column" colspan="2">Goal</th>
                                         <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:'ForWeekNumber' " class="date  data-column score-column" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
                                             {{functions.subtractDays(week.DisplayDate,-6) | date: (@(selector)).DateFormat2}}
                                         </th>
@@ -56,7 +56,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}" data-measurable="{{::measurable.Id}}" class="specialClass @(reorderable ? "reorderable" : "")" ng-repeat="measurable in (@(selector)).Measurables  | orderBy: ['Ordering'] ">
+                                    <tr  vs-scroll-parent1=".repeater-container-scorecard" ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}" data-measurable="{{::measurable.Id}}" class="specialClass @(reorderable ? "reorderable" : "")" ng-repeat="measurable in (@(selector)).Measurables  | orderBy: ['Ordering'] ">
                                         @if (reorderable) {
                                             <td class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}"><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
                                         }
@@ -257,6 +257,8 @@
     @Scripts.Render("~/bundles/MeasurableList")
     <script>
 
+		if (typeof (scrollRight) === "undefined")
+			scrollRight = false;
 
         scrollRight = scrollRight || function scrollRight() {
 

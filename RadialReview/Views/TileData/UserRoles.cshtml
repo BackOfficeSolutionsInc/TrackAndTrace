@@ -5,7 +5,7 @@
         @{ Html.RenderPartial("~/Views/Roles/partial/list.cshtml", new ViewDataDictionary(){
 		        {"AddHeaders", false},
 		        {"AddController", false},
-	       }); }
+	       }); }<div ng-show="(model.Roles)===undefined" class="gray alignCenter" elem-ready="functions.reload((model.Roles)===undefined)">Please wait</div>
     </div>
 </div>
 

@@ -13,12 +13,14 @@
 
 <div ng-app="L10App" class="ng-cloak">
     <div ng-controller="L10Controller">
-        @{
-            Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");
-            Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary() { { "AddHeaders", false } });
-            Html.RenderPartial("~/Views/Angular/_L10App.cshtml", Model, dict);
+		<div style="background-color:white;padding:10px">
+			@{
+				Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");
+				Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary() { { "AddHeaders", false } });
+				Html.RenderPartial("~/Views/Angular/_L10App.cshtml", Model, dict);
 
-        }
+			}
+		</div>
     </div>
 </div>
 
@@ -44,6 +46,10 @@
         .height-placeholder {
             min-height: 60px;
         }
+
+		.repeater-container{
+			height:500px;
+		}
 
         .component {
             margin: 0px;

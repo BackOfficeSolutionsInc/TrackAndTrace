@@ -60,7 +60,7 @@ namespace RadialReview.Utilities.Synchronize
 					.Where(x => x.DeleteTime == null && x.CreateTime >= after && x.Action == actionStr && x.UserId==caller.Id)
 					.Select(x => x.Timestamp,x=>x.CreateTime)
 					.List<object[]>()
-					.Select(x=>new {ClientTimestamp = (long)x[0],ServerTimestamp = ((DateTime)x[1]).ToJavascriptMilliseconds()})
+					.Select(x=>new {ClientTimestamp = (long)x[0]- clientTimestamp, ServerTimestamp = ((DateTime)x[1]).ToJavascriptMilliseconds()})
 					.ToList();
 
 				s.Save(new Sync(){
@@ -70,7 +70,7 @@ namespace RadialReview.Utilities.Synchronize
 					UserId = caller.Id,
 				});
 
-				if (!syncs.All(x => x.ClientTimestamp < clientTimestamp)){
+				if (!syncs.All(x => x.ClientTimestamp < 0)){
 					s.Transaction.Commit();
 					s.Flush();
 					throw new SyncException(clientTimestamp);

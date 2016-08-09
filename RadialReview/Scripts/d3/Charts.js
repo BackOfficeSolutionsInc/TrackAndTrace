@@ -1,8 +1,7 @@
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Charts;
 (function (Charts) {
@@ -16,7 +15,7 @@ var Charts;
             return s;
         };
         return Util;
-    })();
+    }());
     Charts.Util = Util;
     var Margin = (function () {
         function Margin() {
@@ -26,7 +25,7 @@ var Charts;
             this.right = 30;
         }
         return Margin;
-    })();
+    }());
     Charts.Margin = Margin;
     var Dimension = (function () {
         function Dimension(width, height) {
@@ -34,7 +33,7 @@ var Charts;
             this.height = height;
         }
         return Dimension;
-    })();
+    }());
     Charts.Dimension = Dimension;
     var Base = (function () {
         function Base(_selector, _dimension, _margin) {
@@ -84,7 +83,7 @@ var Charts;
             }
         };
         return Base;
-    })();
+    }());
     Charts.Base = Base;
     var Pie = (function (_super) {
         __extends(Pie, _super);
@@ -153,7 +152,7 @@ var Charts;
             return this;
         };
         return Pie;
-    })(Base);
+    }(Base));
     Charts.Pie = Pie;
     var Line = (function (_super) {
         __extends(Line, _super);
@@ -210,7 +209,7 @@ var Charts;
             return this;
         };
         return Line;
-    })(Base);
+    }(Base));
     Charts.Line = Line;
     var Histogram = (function (_super) {
         __extends(Histogram, _super);
@@ -342,7 +341,7 @@ var Charts;
             this.SetInitialized();
         };
         return Histogram;
-    })(Base);
+    }(Base));
     Charts.Histogram = Histogram;
 })(Charts || (Charts = {}));
 //# sourceMappingURL=../~/Scripts/d3/Charts.js.map

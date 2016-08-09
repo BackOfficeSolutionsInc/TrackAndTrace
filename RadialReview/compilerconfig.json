@@ -1,0 +1,10 @@
+﻿[
+  {
+    "outputFile": "Content/AccountabilityChart/AccountabilityChart.css",
+    "inputFile": "Content/AccountabilityChart/AccountabilityChart.less"
+  },
+  {
+    "outputFile": "Content/L10/Archive/Archive.css",
+    "inputFile": "Content/L10/Archive/Archive.less"
+  }
+]

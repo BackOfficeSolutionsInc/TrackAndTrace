@@ -453,9 +453,9 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.Manager)]
         [HttpPost]
-        public JsonResult RemoveManager(long managerId, long userId)
+        public JsonResult RemoveManager(long userId,long managerId)
         {
-            _UserAccessor.RemoveManager(GetUser(), managerId, userId, DateTime.UtcNow);
+            _UserAccessor.RemoveManager(GetUser(),userId, managerId,  DateTime.UtcNow);
             return Json(ResultObject.Success("Removed manager."));
         }
 

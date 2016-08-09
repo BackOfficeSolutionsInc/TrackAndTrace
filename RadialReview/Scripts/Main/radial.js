@@ -728,7 +728,18 @@ function clearAlerts() {
     alertsTimer = setTimeout(function () {
         found.remove();
     }, 1000);*/
+}
 
+function showAngularError(d, status, headers, config, statusTxt) {
+	if (typeof (d.data) !== "undefined" && d.data!=null) {
+		showJsonAlert(d.data);
+	} else {
+		if (typeof (d.statusText) !== "undefined" && d.statusText !== "") {
+			showAlert(d.statusText);
+		} else {
+			showJsonAlert();
+		}
+	}
 }
 
 function showJsonAlert(data, showSuccess, clearOthers) {
@@ -741,7 +752,7 @@ function showJsonAlert(data, showSuccess, clearOthers) {
         if (!data) {
             showAlert(stdError);
             debugger;
-        } if (typeof (data) === "string") {
+        } else if (typeof (data) === "string") {
             if (data.trim().length < 300)
                 showAlert(data.trim(), "alert-danger", "Error");
             else

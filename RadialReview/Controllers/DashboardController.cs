@@ -112,8 +112,8 @@ namespace RadialReview.Controllers {
             if (tiles.Any(x => x.Type == TileType.Rocks || (x.DataUrl ?? "").Contains("UserRock"))) {
                 try {
                     var now = DateTime.UtcNow;
-                    var currentPeriod = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime).FirstOrDefault().NotNull(x => x.Id);
-                    var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id, currentPeriod).Select(x => new AngularRock(x));
+                    //var currentPeriod = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).Where(x => x.StartTime <= now && now <= x.EndTime).FirstOrDefault().NotNull(x => x.Id);
+                    var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id).Select(x => new AngularRock(x));
                     //  var rocks = _RockAccessor.GetAllRocks(GetUser(), GetUser().Id)
                     //     .Where(x => currentPeriods.Any(y => y.Id == x.PeriodId))
                     //       .Select(x => new AngularRock(x));

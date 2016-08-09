@@ -38,41 +38,5 @@ namespace RadialReview.Controllers
                 ChartId = idr
 	        });
 	    }
-
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult Append(long id){
-            var nodeId = id;
-            AccountabilityAccessor.AppendNode(GetUser(), nodeId);
-            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-        }
-
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult Swap(long id,long parent){
-            var nodeId = id;
-            AccountabilityAccessor.SwapParents(GetUser(), nodeId,parent);
-            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-        }
-
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult Remove(long id){
-            var nodeId = id;
-            AccountabilityAccessor.RemoveNode(GetUser(), nodeId);
-            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-        }
-
-
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult Data(long id,long? parent=null)
-        {
-            var tree = AccountabilityAccessor.GetTree(GetUser(), id, parent);
-           // var acTreeId = tree.Flatten().FirstOrDefault(x => x.user.NotNull(y => y.Id == (parent ?? GetUser().Id)));
-            var c=new Chart<AngularAccountabilityChart>(parent??id) {
-                height = "100%",
-                width = "100%",
-                data = tree,
-            };
-            return Json(c, JsonRequestBehavior.AllowGet);
-        }
-
     }
 }

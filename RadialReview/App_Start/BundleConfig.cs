@@ -27,6 +27,7 @@ namespace RadialReview {
 				"~/Scripts/Angular/Helpers/Directives/FastWidth.js",
 				"~/Scripts/Angular/Helpers/Directives/PriorityTemplates.js",
 				"~/Scripts/Angular/Helpers/Directives/fcsaNumber.js",
+				"~/Scripts/Angular/Helpers/Directives/vsRepeat.js",
 				"~/Scripts/Angular/Helpers/angular-timer.min.js",
 				"~/Scripts/Angular/Helpers/angular-elastic-input.js",
                      
@@ -182,8 +183,9 @@ namespace RadialReview {
                 "~/Scripts/Angular/Helpers/d3/panzoom.js",
                 "~/Scripts/Angular/Helpers/d3/tree.js",
                 "~/Scripts/AccountabilityChart/accountabilityChart.js",
-                "~/Scripts/Angular/AccountabilityChart/ACController.js"
-            ));
+				"~/Scripts/Angular/AccountabilityChart/ACController.js",
+				"~/Scripts/undo.js"
+			));
             bundles.Add(new StyleBundle("~/Content/AccChart")
                 .Include("~/Content/AccountabilityChart/AccountabilityChart.css"));
 

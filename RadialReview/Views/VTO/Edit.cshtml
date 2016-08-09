@@ -144,7 +144,7 @@
                                                     <div>
                                                         <table class="table" style="margin-bottom:0px;">
                                                             <tr class="purpose">
-                                                                <td>
+                                                                <td style="width: 175px;">
                                                                     <div class="title" style="color:transparent;height:0px;">{{(model).CoreFocus.PurposeTitle}}:</div>
                                                                     <input style="width:100%;" class="title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" />
                                                                 </td>
@@ -228,7 +228,7 @@
                                                             <tr class="add-row-row" ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
                                                                 <td class="row-number">{{$index+1}}.</td>
                                                                 <td>
-                                                                    <textarea textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data"></textarea>
+                                                                    <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddUniques?vto='+vtoId,'model.Strategy.Uniques')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data"></textarea>
                                                                 </td>
                                                                 <td class="delete-column">
                                                                     <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)"></span>

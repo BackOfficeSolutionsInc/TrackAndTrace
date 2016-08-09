@@ -27,7 +27,7 @@ input.blend {
   padding-bottom: 7px;
   font-size: 13px;
   font-family: 'Roboto', sans-serif;
-  color: #3e3935;
+  color: #3E3935;
   -moz-transition: all .08s ease;
   -o-transition: all .08s ease;
   -webkit-transition: all .08s ease;
@@ -62,19 +62,19 @@ input.blend {
   padding-left: 4px;
 }
 input.blend:not(:disabled):focus {
-  border-bottom: 2px solid #ef7622;
+  border-bottom: 2px solid #EF7622;
 }
 textarea.blend {
   padding-left: 4px;
 }
 textarea.blend:not(:disabled):focus {
-  border: 1px solid #ef7622;
+  border: 1px solid #EF7622;
 }
 select.blend {
   padding-left: 0px;
 }
 select.blend:not(:disabled):focus {
-  border-bottom: 1px solid #ef7622;
+  border-bottom: 1px solid #EF7622;
 }
 input.blend[type='file'] {
   /*opacity: .5;
@@ -195,7 +195,7 @@ input[type=checkbox].blend:focus:before {
 }
 input[type=checkbox].blend:checked:before {
   border: 0px;
-  background-color: #ef7622;
+  background-color: #EF7622;
 }
 input[type=checkbox].blend:checked:after {
   content: "✔";
@@ -514,8 +514,8 @@ html {
   vertical-align: middle !important;
 }
 .meeting-archive .todo-list-container .checkbox-column {
-  padding-left: 24px!important;
-  padding-right: 24px!important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
 }
 .meeting-archive .todo-list-container input.due-date {
   text-align: right;
@@ -544,6 +544,10 @@ html {
 .meeting-archive .rock-list-container .company-rock-column,
 .meeting-archive .rock-list-container .due-column {
   display: none;
+}
+.repeater-container {
+  max-height: 800px;
+  max-height: calc(100vh - 270px);
 }
 .md-datepicker-button {
   display: none;

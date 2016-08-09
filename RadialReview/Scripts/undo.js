@@ -88,6 +88,15 @@
         },
         changed: function () {
             // do nothing, override
+        },
+        rollback: function () {
+        	this.stackPosition++;
+        	var cmds =this.commands[this.stackPosition];
+        	if (cmds.rollback)
+        		cmds.rollback();
+        	else
+        		cmds.undo();
+        	this.changed();
         }
     });
 
@@ -106,7 +115,11 @@
         },
         redo: function () {
             this.execute();
-        }
+        },
+        rollback: function () {
+			//override
+        	this.undo();
+		}
     });
 
     Undo.Command.extend = function (protoProps) {
@@ -146,6 +159,7 @@ $(document).keydown(function (event) {
                 undoStack.canRedo() && undoStack.redo()
             }
             else {
+            	debugger;
                 //fire your custom undo logic
                 event.preventDefault();
                 undoStack.canUndo() && undoStack.undo();

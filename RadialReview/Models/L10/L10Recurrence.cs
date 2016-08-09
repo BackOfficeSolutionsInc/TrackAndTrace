@@ -177,7 +177,7 @@ namespace RadialReview.Models.L10
 				}
 			}
 		}*/
-		public class L10Recurrence_Rocks : ILongIdentifiable, IDeletable, IOneToMany
+		public class L10Recurrence_Rocks : ILongIdentifiable, IHistorical, IOneToMany
 		{
 			public virtual long Id { get; set; }
 			public virtual DateTime CreateTime { get; set; }

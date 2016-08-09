@@ -438,6 +438,8 @@ namespace RadialReview.Accessors
 
             public int NumberL10s { get; set; }
             public int NumberPayingClients { get; set; }
+
+			public int NumberNewTrialsStarted { get; set; }
 	    }
 
 		public static AppStat Stats()
@@ -581,6 +583,9 @@ namespace RadialReview.Accessors
 
                     var payingClients = s.QueryOver<OrganizationModel>().Where(x =>x.DeleteTime == null && x.AccountType == AccountType.Paying).RowCount();
 
+					var newTrials = demoOrgs.Where(x => today.AddDays(-7) < x.CreationTime && x.CreationTime <= today).Count();
+
+
 
 					return new AppStat{
 					    DemoClientsHaveLoggedInThisWeek = loggedInThisWeek,
@@ -604,6 +609,8 @@ namespace RadialReview.Accessors
                         ProspectInTrial4 = prospectInTrial[3],
                         NumberL10s = numberL10s,
                         NumberPayingClients = payingClients,
+
+						NumberNewTrialsStarted = newTrials,
 				    };
 			    }
 		    }

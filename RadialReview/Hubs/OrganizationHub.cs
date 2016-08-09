@@ -17,15 +17,23 @@ namespace RadialReview.Hubs {
             return "OrganzationId_" + organizationId;
         }
 
-        public void Join()
+        public void Join(long orgId, string connectionId)
         {
             log.Info("Organization.Join (" + Context.ConnectionId + ")");
-            //try {
-            //} catch (Exception e) {
-            //    log.Error("Meeting.Join  (" + meetingId + ", " + connectionId + ")", e);
-            //    throw;
-            //}
-            //return;
-        }
+
+			new PermissionsAccessor().Permitted(GetUser(),x=>x.ViewOrganization(orgId));
+
+			if (connectionId != Context.ConnectionId)
+				throw new PermissionsException("wrong connection id");
+
+			var hub = GlobalHost.ConnectionManager.GetHubContext<OrganizationHub>();
+			hub.Groups.Add(Context.ConnectionId, OrganizationHub.GenerateId(GetUser().Organization.Id));
+			//try {
+			//} catch (Exception e) {
+			//    log.Error("Meeting.Join  (" + meetingId + ", " + connectionId + ")", e);
+			//    throw;
+			//}
+			//return;
+		}
     }
 }

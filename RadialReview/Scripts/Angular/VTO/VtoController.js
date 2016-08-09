@@ -39,11 +39,7 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
 	            vtoCallback();
 	        }, 1);
 	    }
-	}).error(function (data, status) {
-	    //$scope.model = {};
-	    console.log("Error");
-	    console.error(data);
-	});
+	}).error(showAngularError);
     $scope.functions = {};
     $scope.filters = {};
 
@@ -61,10 +57,8 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
         var _clientTimestamp = new Date().getTime();
         r.updater.convertDatesForServer(dat, tzoffset());
         console.log(self)
-        $http.post("/VTO/Update" + self.Type + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp,dat).error(
-            function (data) {
-                showJsonAlert(data, true, true);
-            });
+        $http.post("/VTO/Update" + self.Type + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, dat)
+		.then(function(){},showAngularError);
     };
 
     $scope.functions.AddRow = function (url, self) {
@@ -100,9 +94,7 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
         var _clientTimestamp = new Date().getTime();
         url += (url.indexOf("?") != -1) ? "&" : "?";
         url += "connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp;
-        $http.get(url).error(function (data) {
-            showJsonAlert(data, false, true);
-        });
+        $http.get(url).then(function () { }, showAngularError)
     };
 
 }]).directive('blurToCurrency', function ($filter) {
